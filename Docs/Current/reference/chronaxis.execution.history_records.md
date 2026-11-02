@@ -73,7 +73,7 @@ class HistorySample
 |`original_present`|bool|是|无|True表示原始诊断值列存在；False表示没有该列。这样能区分未提供诊断列与列中真实保存了None。|
 |`original_value`|int &#124; float &#124; bool &#124; str &#124; None|是|无|归一化之前的原值；配合original_present区分真实None与没有保留原值。|
 
-源码：[`src/chronaxis/execution/history_records.py:26`](../../../src/chronaxis/execution/history_records.py#L26)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:26`](../../../src/chronaxis/execution/history_records.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistorySample-__post_init__"></a>
 ### `HistorySample.__post_init__`
@@ -110,7 +110,7 @@ TypeError/ValueError/OverflowError为记录矛盾或非法标量。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history_records.py:45`](../../../src/chronaxis/execution/history_records.py#L45)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:45`](../../../src/chronaxis/execution/history_records.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoryProgress"></a>
 ## `HistoryProgress`
@@ -133,7 +133,7 @@ class HistoryProgress
 |`source_eof`|bool|是|无|来源读取是否到达真实EOF的布尔值。|
 |`observed_end_ns`|int &#124; None|是|无|实际观测终点纳秒；未知时保留None，不能填请求终点。|
 
-源码：[`src/chronaxis/execution/history_records.py:79`](../../../src/chronaxis/execution/history_records.py#L79)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:79`](../../../src/chronaxis/execution/history_records.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoryProgress-__post_init__"></a>
 ### `HistoryProgress.__post_init__`
@@ -166,7 +166,7 @@ TypeError/ValueError/OverflowError为记录结构或时间错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history_records.py:90`](../../../src/chronaxis/execution/history_records.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:90`](../../../src/chronaxis/execution/history_records.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-record_values"></a>
 ## `record_values`
@@ -197,7 +197,7 @@ TypeError为未支持记录。
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/execution/history_records.py:112`](../../../src/chronaxis/execution/history_records.py#L112)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:112`](../../../src/chronaxis/execution/history_records.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-estimate_record_bytes"></a>
 ## `estimate_record_bytes`
@@ -224,7 +224,7 @@ bytes估算，非全进程RSS。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history_records.py:147`](../../../src/chronaxis/execution/history_records.py#L147)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:147`](../../../src/chronaxis/execution/history_records.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-encode_record"></a>
 ## `encode_record`
@@ -256,7 +256,7 @@ ResultFormatError为超长/不支持结构。
 
 返回类型：bytes。
 
-源码：[`src/chronaxis/execution/history_records.py:159`](../../../src/chronaxis/execution/history_records.py#L159)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:159`](../../../src/chronaxis/execution/history_records.py#L159)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-decode_record"></a>
 ## `decode_record`
@@ -295,4 +295,4 @@ ResultFormatError并保留原格式/模型异常链。
 
 返回类型：HistoryRecord。
 
-源码：[`src/chronaxis/execution/history_records.py:177`](../../../src/chronaxis/execution/history_records.py#L177)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history_records.py:177`](../../../src/chronaxis/execution/history_records.py#L177)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

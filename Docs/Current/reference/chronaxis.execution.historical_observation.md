@@ -72,7 +72,7 @@ class ObservationScope
 |`observed_end_ns`|int &#124; None|是|无|外包络末端，逐端检查，不先计算域外跨度。|
 |`actual`|[Interval](chronaxis.core.models.md#api-Interval) &#124; None|是|无|与原domain的交集；None为空，Interval(t,t)是真实单点。|
 
-源码：[`src/chronaxis/execution/historical_observation.py:41`](../../../src/chronaxis/execution/historical_observation.py#L41)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:41`](../../../src/chronaxis/execution/historical_observation.py#L41)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ObservationScope-__post_init__"></a>
 ### `ObservationScope.__post_init__`
@@ -107,7 +107,7 @@ ObservationScope.__post_init__()
 - `TypeError`：actual须为Interval或明确None。
 - `ValueError`：实际交集不能超出已核实组端点。
 
-源码：[`src/chronaxis/execution/historical_observation.py:50`](../../../src/chronaxis/execution/historical_observation.py#L50)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:50`](../../../src/chronaxis/execution/historical_observation.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_SourceScopeProof"></a>
 ## `_SourceScopeProof`
@@ -130,7 +130,7 @@ class _SourceScopeProof
 |`observation`|[SourceScanObservation](chronaxis.execution.observed_ingestion.md#api-SourceScanObservation)|是|无|本owner拥有的有限原行和端点事实副本。|
 |`clock_key`|tuple|是|无|该来源实际进入的可比时钟组。|
 
-源码：[`src/chronaxis/execution/historical_observation.py:79`](../../../src/chronaxis/execution/historical_observation.py#L79)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:79`](../../../src/chronaxis/execution/historical_observation.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes"></a>
 ## `HistoricalObservationScopes`
@@ -142,7 +142,7 @@ HistoricalObservationScopes(history, context, bindings, plan, source_scans)
 ```
 
 
-源码：[`src/chronaxis/execution/historical_observation.py:91`](../../../src/chronaxis/execution/historical_observation.py#L91)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:91`](../../../src/chronaxis/execution/historical_observation.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-__init__"></a>
 ### `HistoricalObservationScopes.__init__`
@@ -172,7 +172,7 @@ HistoricalObservationScopes.__init__(history, context, bindings, plan, source_sc
 类型、身份、投影、同步元数据、实际历史或预算原错；持续清理失败从
     historical_observation_scopes_cleanup_owner恢复close。
 
-源码：[`src/chronaxis/execution/historical_observation.py:94`](../../../src/chronaxis/execution/historical_observation.py#L94)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:94`](../../../src/chronaxis/execution/historical_observation.py#L94)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_clock_key"></a>
 ### `HistoricalObservationScopes._clock_key`
@@ -198,7 +198,7 @@ tuple。
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/historical_observation.py:162`](../../../src/chronaxis/execution/historical_observation.py#L162)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:162`](../../../src/chronaxis/execution/historical_observation.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_require_contract"></a>
 ### `HistoricalObservationScopes._require_contract`
@@ -229,7 +229,7 @@ HistoricalObservationScopes._require_contract()
 - `ValueError`：范围须保原计划绑定、会话及请求domain。
 - `ValueError`：范围计划、历史、绑定及上下文来源须完全对应。
 
-源码：[`src/chronaxis/execution/historical_observation.py:171`](../../../src/chronaxis/execution/historical_observation.py#L171)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:171`](../../../src/chronaxis/execution/historical_observation.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_validate_source"></a>
 ### `HistoricalObservationScopes._validate_source`
@@ -261,7 +261,7 @@ HistoricalObservationScopes._validate_source(source, scan)
 - `ValueError`：范围扫描必须保同一history、原SourcePlan和实际原request。
 - `ValueError`：范围扫描、实际描述/请求/历史SHA/计数/投影/EOF事实不一致。
 
-源码：[`src/chronaxis/execution/historical_observation.py:184`](../../../src/chronaxis/execution/historical_observation.py#L184)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:184`](../../../src/chronaxis/execution/historical_observation.py#L184)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_verify_source"></a>
 ### `HistoricalObservationScopes._verify_source`
@@ -292,7 +292,7 @@ HistoricalObservationScopes._verify_source(source, digest, counts)
 
 - `ResultFormatError`：观测范围未完成当前实际历史EOF、摘要或计数核对。
 
-源码：[`src/chronaxis/execution/historical_observation.py:223`](../../../src/chronaxis/execution/historical_observation.py#L223)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:223`](../../../src/chronaxis/execution/historical_observation.py#L223)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_build_scopes"></a>
 ### `HistoricalObservationScopes._build_scopes`
@@ -322,7 +322,7 @@ HistoricalObservationScopes._build_scopes()
 
 - `ValueError`：非空原时间行缺少已核实的观测首末端。
 
-源码：[`src/chronaxis/execution/historical_observation.py:247`](../../../src/chronaxis/execution/historical_observation.py#L247)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:247`](../../../src/chronaxis/execution/historical_observation.py#L247)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-_adopt_cleanup"></a>
 ### `HistoricalObservationScopes._adopt_cleanup`
@@ -347,7 +347,7 @@ HistoricalObservationScopes._adopt_cleanup(exc)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/historical_observation.py:276`](../../../src/chronaxis/execution/historical_observation.py#L276)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:276`](../../../src/chronaxis/execution/historical_observation.py#L276)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-closed"></a>
 ### `HistoricalObservationScopes.closed`
@@ -375,7 +375,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_observation.py:283`](../../../src/chronaxis/execution/historical_observation.py#L283)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:283`](../../../src/chronaxis/execution/historical_observation.py#L283)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-assert_current"></a>
 ### `HistoricalObservationScopes.assert_current`
@@ -409,7 +409,7 @@ ResultClosedError为本层/扫描/历史失效，ValueError为对象或证明已
 - `ValueError`：观测范围必须与调用方原history/context/bindings/plan共同使用。
 - `ValueError`：观测范围所借扫描或当前历史证明已改变。
 
-源码：[`src/chronaxis/execution/historical_observation.py:287`](../../../src/chronaxis/execution/historical_observation.py#L287)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:287`](../../../src/chronaxis/execution/historical_observation.py#L287)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-identity"></a>
 ### `HistoricalObservationScopes.identity`
@@ -437,7 +437,7 @@ str。
 
 当前证明或活性失效。
 
-源码：[`src/chronaxis/execution/historical_observation.py:307`](../../../src/chronaxis/execution/historical_observation.py#L307)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:307`](../../../src/chronaxis/execution/historical_observation.py#L307)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-source_observations"></a>
 ### `HistoricalObservationScopes.source_observations`
@@ -465,7 +465,7 @@ tuple。
 
 当前证明或活性失效。
 
-源码：[`src/chronaxis/execution/historical_observation.py:313`](../../../src/chronaxis/execution/historical_observation.py#L313)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:313`](../../../src/chronaxis/execution/historical_observation.py#L313)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-dataset_scope"></a>
 ### `HistoricalObservationScopes.dataset_scope`
@@ -493,7 +493,7 @@ ObservationScope。
 
 证明或活性失效。
 
-源码：[`src/chronaxis/execution/historical_observation.py:319`](../../../src/chronaxis/execution/historical_observation.py#L319)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:319`](../../../src/chronaxis/execution/historical_observation.py#L319)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-for_dependencies"></a>
 ### `HistoricalObservationScopes.for_dependencies`
@@ -522,7 +522,7 @@ HistoricalObservationScopes.for_dependencies(names)
 
 - `ValueError`：联合依赖不属于同一可比时钟组。
 
-源码：[`src/chronaxis/execution/historical_observation.py:323`](../../../src/chronaxis/execution/historical_observation.py#L323)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:323`](../../../src/chronaxis/execution/historical_observation.py#L323)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-for_source"></a>
 ### `HistoricalObservationScopes.for_source`
@@ -552,7 +552,7 @@ HistoricalObservationScopes.for_source(name)
 
 - `ValueError`：未知观测来源或来源名称类型错误。
 
-源码：[`src/chronaxis/execution/historical_observation.py:342`](../../../src/chronaxis/execution/historical_observation.py#L342)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:342`](../../../src/chronaxis/execution/historical_observation.py#L342)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalObservationScopes-close"></a>
 ### `HistoricalObservationScopes.close`
@@ -578,4 +578,4 @@ HistoricalObservationScopes.close()
 
 原reader或预算取消，未完责任保留。
 
-源码：[`src/chronaxis/execution/historical_observation.py:354`](../../../src/chronaxis/execution/historical_observation.py#L354)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_observation.py:354`](../../../src/chronaxis/execution/historical_observation.py#L354)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

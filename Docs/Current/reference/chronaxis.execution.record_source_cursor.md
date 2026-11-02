@@ -57,7 +57,7 @@ RecordSourceCursor(plan, source, definitions, values, clocks, budget, work_dir, 
 ```
 
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:22`](../../../src/chronaxis/execution/record_source_cursor.py#L22)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:22`](../../../src/chronaxis/execution/record_source_cursor.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-__init__"></a>
 ### `RecordSourceCursor.__init__`
@@ -94,7 +94,7 @@ RecordSourceCursor.__init__(plan, source, definitions, values, clocks, budget, w
 
 原构造错误，恢复入口record_source_cleanup_owner。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:25`](../../../src/chronaxis/execution/record_source_cursor.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:25`](../../../src/chronaxis/execution/record_source_cursor.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_consume_message"></a>
 ### `RecordSourceCursor._consume_message`
@@ -119,7 +119,7 @@ None。
 
 原消费错误。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:136`](../../../src/chronaxis/execution/record_source_cursor.py#L136)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:136`](../../../src/chronaxis/execution/record_source_cursor.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_new"></a>
 ### `RecordSourceCursor._new`
@@ -147,7 +147,7 @@ owner。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:146`](../../../src/chronaxis/execution/record_source_cursor.py#L146)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:146`](../../../src/chronaxis/execution/record_source_cursor.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_enqueue"></a>
 ### `RecordSourceCursor._enqueue`
@@ -172,7 +172,7 @@ None。
 
 预算/取消。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:154`](../../../src/chronaxis/execution/record_source_cursor.py#L154)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:154`](../../../src/chronaxis/execution/record_source_cursor.py#L154)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-peek"></a>
 ### `RecordSourceCursor.peek`
@@ -198,7 +198,7 @@ DecodedTimeGroup或EOF的None。
 
 原输入/预算错误；失败后只清理。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:163`](../../../src/chronaxis/execution/record_source_cursor.py#L163)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:163`](../../../src/chronaxis/execution/record_source_cursor.py#L163)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-advance"></a>
 ### `RecordSourceCursor.advance`
@@ -224,7 +224,7 @@ None。
 
 预算/取消。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:222`](../../../src/chronaxis/execution/record_source_cursor.py#L222)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:222`](../../../src/chronaxis/execution/record_source_cursor.py#L222)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_retain_frame_notices"></a>
 ### `RecordSourceCursor._retain_frame_notices`
@@ -251,7 +251,7 @@ None。
 已核元数据不一致或预算失败；最高游标负责清理。
 只复制实际差异及原绑定，不保留完整READY、样本或历史仓。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:228`](../../../src/chronaxis/execution/record_source_cursor.py#L228)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:228`](../../../src/chronaxis/execution/record_source_cursor.py#L228)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_require_closed"></a>
 ### `RecordSourceCursor._require_closed`
@@ -278,7 +278,7 @@ None。
 
 AnalysisError。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:263`](../../../src/chronaxis/execution/record_source_cursor.py#L263)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:263`](../../../src/chronaxis/execution/record_source_cursor.py#L263)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-_close_slot"></a>
 ### `RecordSourceCursor._close_slot`
@@ -303,7 +303,7 @@ None。
 
 原关闭错。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:268`](../../../src/chronaxis/execution/record_source_cursor.py#L268)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:268`](../../../src/chronaxis/execution/record_source_cursor.py#L268)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSourceCursor-close"></a>
 ### `RecordSourceCursor.close`
@@ -329,4 +329,4 @@ None。
 
 原关闭/预算错，可从同一owner重试。
 
-源码：[`src/chronaxis/execution/record_source_cursor.py:276`](../../../src/chronaxis/execution/record_source_cursor.py#L276)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_source_cursor.py:276`](../../../src/chronaxis/execution/record_source_cursor.py#L276)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

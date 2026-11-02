@@ -69,7 +69,7 @@ _ini_problem(fields, section, key, code, message, *, headers=None)
 
 ImportProblem；不为缺失字段编造一个不存在的字段行。
 
-源码：[`src/chronaxis/migration/sclicer.py:20`](../../../src/chronaxis/migration/sclicer.py#L20)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:20`](../../../src/chronaxis/migration/sclicer.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_seconds"></a>
 ## `_seconds`
@@ -103,7 +103,7 @@ ImportProblem为非法或不能精确表示的时长。
 
 - `ValueError`：时长必须有限且非负，固定窗口须大于零。
 
-源码：[`src/chronaxis/migration/sclicer.py:32`](../../../src/chronaxis/migration/sclicer.py#L32)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:32`](../../../src/chronaxis/migration/sclicer.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_boolean"></a>
 ## `_boolean`
@@ -132,7 +132,7 @@ bool；
 
 ImportProblem。
 
-源码：[`src/chronaxis/migration/sclicer.py:51`](../../../src/chronaxis/migration/sclicer.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:51`](../../../src/chronaxis/migration/sclicer.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_AliasTransformer"></a>
 ## `_AliasTransformer`
@@ -146,7 +146,7 @@ _AliasTransformer(aliases, fields, section, key)
 继承关系：ast.NodeTransformer。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/migration/sclicer.py:59`](../../../src/chronaxis/migration/sclicer.py#L59)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:59`](../../../src/chronaxis/migration/sclicer.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_AliasTransformer-__init__"></a>
 ### `_AliasTransformer.__init__`
@@ -174,7 +174,7 @@ _AliasTransformer.__init__(aliases, fields, section, key)
 
 无。
 
-源码：[`src/chronaxis/migration/sclicer.py:62`](../../../src/chronaxis/migration/sclicer.py#L62)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:62`](../../../src/chronaxis/migration/sclicer.py#L62)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_AliasTransformer-visit_Name"></a>
 ### `_AliasTransformer.visit_Name`
@@ -199,7 +199,7 @@ _AliasTransformer.visit_Name(node)
 
 ImportProblem为缺映射。
 
-源码：[`src/chronaxis/migration/sclicer.py:66`](../../../src/chronaxis/migration/sclicer.py#L66)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:66`](../../../src/chronaxis/migration/sclicer.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_AliasTransformer-visit_Call"></a>
 ### `_AliasTransformer.visit_Call`
@@ -224,7 +224,7 @@ _AliasTransformer.visit_Call(node)
 
 ImportProblem为任意调用。
 
-源码：[`src/chronaxis/migration/sclicer.py:72`](../../../src/chronaxis/migration/sclicer.py#L72)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:72`](../../../src/chronaxis/migration/sclicer.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_expression"></a>
 ## `_expression`
@@ -253,7 +253,7 @@ _expression(text, aliases, fields, section, key)
 
 ImportProblem为危险语法、旧slope或缺映射；取消和资源错误不吞。
 
-源码：[`src/chronaxis/migration/sclicer.py:84`](../../../src/chronaxis/migration/sclicer.py#L84)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:84`](../../../src/chronaxis/migration/sclicer.py#L84)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-convert_sclicer"></a>
 ## `convert_sclicer`
@@ -284,4 +284,4 @@ None；新rules/windows按原段序填充。
 
 ImportProblem为语义问题。
 
-源码：[`src/chronaxis/migration/sclicer.py:108`](../../../src/chronaxis/migration/sclicer.py#L108)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/sclicer.py:108`](../../../src/chronaxis/migration/sclicer.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

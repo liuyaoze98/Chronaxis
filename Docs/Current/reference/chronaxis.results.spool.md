@@ -69,7 +69,7 @@ tuple键。
 
 内部结构错误直接传播。
 
-源码：[`src/chronaxis/results/spool.py:25`](../../../src/chronaxis/results/spool.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:25`](../../../src/chronaxis/results/spool.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool"></a>
 ## `ResultSpool`
@@ -87,7 +87,7 @@ ResultSpool(budget: ResourceBudget, work_dir=None, result_buffer_rows: int=4096,
 ```
 
 
-源码：[`src/chronaxis/results/spool.py:34`](../../../src/chronaxis/results/spool.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:34`](../../../src/chronaxis/results/spool.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-__init__"></a>
 ### `ResultSpool.__init__`
@@ -121,7 +121,7 @@ ResultSpool。
 ValueError/TypeError为配置；预算/目录/取消原样传播；
     持续清理失败附result_spool_cleanup_owner。已有目录保持原样，不写失败诊断。
 
-源码：[`src/chronaxis/results/spool.py:44`](../../../src/chronaxis/results/spool.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:44`](../../../src/chronaxis/results/spool.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_require_building"></a>
 ### `ResultSpool._require_building`
@@ -153,7 +153,7 @@ ResultClosedError/AnalysisError为状态不符。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:112`](../../../src/chronaxis/results/spool.py#L112)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:112`](../../../src/chronaxis/results/spool.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-row_limit"></a>
 ### `ResultSpool.row_limit`
@@ -185,7 +185,7 @@ ResultFormatError为未知表或内部行长越界；不读取文件猜大小。
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/spool.py:122`](../../../src/chronaxis/results/spool.py#L122)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:122`](../../../src/chronaxis/results/spool.py#L122)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-reader_cost_for"></a>
 ### `ResultSpool.reader_cost_for`
@@ -212,7 +212,7 @@ ResultSpool.reader_cost_for(table: str) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/spool.py:136`](../../../src/chronaxis/results/spool.py#L136)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:136`](../../../src/chronaxis/results/spool.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-append"></a>
 ### `ResultSpool.append`
@@ -239,7 +239,7 @@ AnalysisError/预算/格式错误；失败后不再接受追加。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:146`](../../../src/chronaxis/results/spool.py#L146)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:146`](../../../src/chronaxis/results/spool.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_append_core"></a>
 ### `ResultSpool._append_core`
@@ -271,7 +271,7 @@ ResultSpool._append_core(row) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:158`](../../../src/chronaxis/results/spool.py#L158)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:158`](../../../src/chronaxis/results/spool.py#L158)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_run_path"></a>
 ### `ResultSpool._run_path`
@@ -300,7 +300,7 @@ Path。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/results/spool.py:211`](../../../src/chronaxis/results/spool.py#L211)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:211`](../../../src/chronaxis/results/spool.py#L211)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_write_bytes"></a>
 ### `ResultSpool._write_bytes`
@@ -332,7 +332,7 @@ BudgetExceededError/OSError为配额、磁盘满或短写失败。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:219`](../../../src/chronaxis/results/spool.py#L219)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:219`](../../../src/chronaxis/results/spool.py#L219)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_clear_buffer"></a>
 ### `ResultSpool._clear_buffer`
@@ -360,7 +360,7 @@ ResultSpool._clear_buffer() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:239`](../../../src/chronaxis/results/spool.py#L239)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:239`](../../../src/chronaxis/results/spool.py#L239)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_flush"></a>
 ### `ResultSpool._flush`
@@ -388,7 +388,7 @@ ResultSpool._flush() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:248`](../../../src/chronaxis/results/spool.py#L248)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:248`](../../../src/chronaxis/results/spool.py#L248)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_read_entry"></a>
 ### `ResultSpool._read_entry`
@@ -419,7 +419,7 @@ ResultFormatError/IO错误为损坏或超大行。
 - `ResultFormatError`：暂存行超限或缺少完整换行。
 - `ResultFormatError`：内部排序索引比结果行多，不能确认完整EOF。
 
-源码：[`src/chronaxis/results/spool.py:282`](../../../src/chronaxis/results/spool.py#L282)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:282`](../../../src/chronaxis/results/spool.py#L282)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_merge"></a>
 ### `ResultSpool._merge`
@@ -449,7 +449,7 @@ ResultSpool._merge(left: Path, right: Path | None, destination: Path, *, table=N
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:302`](../../../src/chronaxis/results/spool.py#L302)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:302`](../../../src/chronaxis/results/spool.py#L302)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-seal"></a>
 ### `ResultSpool.seal`
@@ -477,7 +477,7 @@ None，files保存本次固定表的最终排序路径。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:311`](../../../src/chronaxis/results/spool.py#L311)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:311`](../../../src/chronaxis/results/spool.py#L311)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_seal_table"></a>
 ### `ResultSpool._seal_table`
@@ -502,7 +502,7 @@ ResultSpool._seal_table(table)
 
 未启用表/写入/排序失败；调用方按原运行资源树清理。
 
-源码：[`src/chronaxis/results/spool.py:327`](../../../src/chronaxis/results/spool.py#L327)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:327`](../../../src/chronaxis/results/spool.py#L327)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-_fail"></a>
 ### `ResultSpool._fail`
@@ -529,7 +529,7 @@ ResultSpool._fail(exc: BaseException) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:355`](../../../src/chronaxis/results/spool.py#L355)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:355`](../../../src/chronaxis/results/spool.py#L355)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ResultSpool-close"></a>
 ### `ResultSpool.close`
@@ -557,4 +557,4 @@ ResultSpool.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/spool.py:396`](../../../src/chronaxis/results/spool.py#L396)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/spool.py:396`](../../../src/chronaxis/results/spool.py#L396)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

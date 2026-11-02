@@ -31,20 +31,20 @@ Chronaxis 希望把日志读取、条件筛选和指标计算整理成可复用�
 
 ## 安装与运行环境
 
-当前版本为 **0.1.0.dev0**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，升级说明见[版本规则](Docs/Release/versioning.md)。
+当前版本为 **0.1.0.dev1**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，升级说明见[版本规则](Docs/Release/versioning.md)。
 
-取得公开源码后，在包含 `pyproject.toml` 的仓库根目录执行：
+从 PyPI 安装：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install .
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev1"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-若取得的是发行 wheel，将上面的安装命令替换为：
+从源码安装时，在包含 `pyproject.toml` 的仓库根目录执行 `python -m pip install .`。若取得的是发行 wheel，将上面的安装命令替换为：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
 ```
 
 安装时会自动安装 CAN 读取、DBC 解码等所需依赖。离线安装请提前准备依赖包，具体方法见[安装说明](Docs/Current/installation.md)。
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 | `config resolve` / `config origins` | 查看展开后的配置／配置定义来源 |
 | `guide` | 显示可直接阅读的AI指南路径；`--language en`选择英文 |
 
-- [用户手册](Docs/Current/index.md)：配置、运行与结果解读。
+- [在线 HTML 用户手册](https://liuyaoze98.github.io/Chronaxis/)：配置、运行与结果解读；[源码中的手册](Docs/Current/index.md)可在本地阅读。
 - [配置说明](Docs/Current/configuration.md)与[完整字段参考](Docs/Current/reference/configuration-schema.md)。
 - [源码 AI 指南](Docs/AI/README.md)：直接阅读，按任务查询示例、API 和字段，无需先导出。
 - [独立批量任务](Docs/Current/batch.md)与[结果说明](Docs/Current/results.md)。

@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 基线5c95e101972bbdb1228d6fa8f0afadfc34cb050b；device_label: home。
+> 基线66a66ec751da79d6562f341e646dd7f47c726f68；device_label: home。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 

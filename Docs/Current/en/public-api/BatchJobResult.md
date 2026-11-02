@@ -49,5 +49,5 @@ No explicit parameters. Returns a JSON-compatible dict. No documented exceptions
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:119`](../../../../src/chronaxis/batch/models.py#L119) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/batch/models.py:147`](../../../../src/chronaxis/batch/models.py#L147) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
+- [`src/chronaxis/batch/models.py:119`](../../../../src/chronaxis/batch/models.py#L119) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/models.py:147`](../../../../src/chronaxis/batch/models.py#L147) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.

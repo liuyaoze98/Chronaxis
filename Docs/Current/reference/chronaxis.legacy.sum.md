@@ -69,7 +69,7 @@ class LegacySkipReason(Enum)
 |`EVALUATION_ERROR`|[LegacySkipReason](chronaxis.legacy.sum.md#api-LegacySkipReason)|类成员，不作为构造参数填写|'evaluation_error'|本次表达式求值失败，保留失败原因而不填零贡献。|
 |`NONFINITE_INPUT`|[LegacySkipReason](chronaxis.legacy.sum.md#api-LegacySkipReason)|类成员，不作为构造参数填写|'nonfinite_input'|输入出现NaN或无穷等非有限值，本次消息不能作为有限贡献累计。|
 
-源码：[`src/chronaxis/legacy/sum.py:31`](../../../src/chronaxis/legacy/sum.py#L31)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:31`](../../../src/chronaxis/legacy/sum.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_require_contribution"></a>
 ## `_require_contribution`
@@ -105,7 +105,7 @@ TypeError为类型不符；ValueError为非有限数值或贡献/原因关系矛
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:48`](../../../src/chronaxis/legacy/sum.py#L48)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:48`](../../../src/chronaxis/legacy/sum.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumContribution"></a>
 ## `LegacySumContribution`
@@ -128,7 +128,7 @@ class LegacySumContribution
 |`value`|float &#124; None|是|无|已计算一次的贡献，不再施加时间或单位倍率。|
 |`skip_reason`|[LegacySkipReason](chronaxis.legacy.sum.md#api-LegacySkipReason) &#124; None|否|None|仅None贡献需要明确原因。|
 
-源码：[`src/chronaxis/legacy/sum.py:72`](../../../src/chronaxis/legacy/sum.py#L72)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:72`](../../../src/chronaxis/legacy/sum.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumContribution-__post_init__"></a>
 ### `LegacySumContribution.__post_init__`
@@ -160,7 +160,7 @@ TypeError为非模型或数值/原因类型不符；ValueError为结构或有限
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:84`](../../../src/chronaxis/legacy/sum.py#L84)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:84`](../../../src/chronaxis/legacy/sum.py#L84)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumSnapshot"></a>
 ## `LegacySumSnapshot`
@@ -190,7 +190,7 @@ class LegacySumSnapshot
 |`skip_counts`|Mapping[[LegacySkipReason](chronaxis.legacy.sum.md#api-LegacySkipReason), int]|是|无|固定四键的独立冻结映射。|
 |`reason`|str &#124; None|是|无|no_evaluations/all_skipped；有贡献时为None。|
 
-源码：[`src/chronaxis/legacy/sum.py:98`](../../../src/chronaxis/legacy/sum.py#L98)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:98`](../../../src/chronaxis/legacy/sum.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumSnapshot-__post_init__"></a>
 ### `LegacySumSnapshot.__post_init__`
@@ -219,7 +219,7 @@ TypeError为字段类型不符；ValueError为计数、原因域或结果关系�
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:117`](../../../src/chronaxis/legacy/sum.py#L117)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:117`](../../../src/chronaxis/legacy/sum.py#L117)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_sum_reference"></a>
 ## `_sum_reference`
@@ -251,7 +251,7 @@ OverflowError为任一中间累计非有限；取消及内存发生异常时直�
 
 返回类型：float。
 
-源码：[`src/chronaxis/legacy/sum.py:169`](../../../src/chronaxis/legacy/sum.py#L169)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:169`](../../../src/chronaxis/legacy/sum.py#L169)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator"></a>
 ## `LegacySumAccumulator`
@@ -269,7 +269,7 @@ LegacySumAccumulator(budget: ResourceBudget, session_id: str, source: str, *, le
 ```
 
 
-源码：[`src/chronaxis/legacy/sum.py:190`](../../../src/chronaxis/legacy/sum.py#L190)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:190`](../../../src/chronaxis/legacy/sum.py#L190)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-__init__"></a>
 ### `LegacySumAccumulator.__init__`
@@ -301,7 +301,7 @@ LegacySumAccumulator.__init__(budget: ResourceBudget, session_id: str, source: s
 TypeError/ValueError为配置不符；预算及取消原错传播。构造清理持续
     失败时，原异常的legacy_sum_cleanup_owner保留真实未返回owner。
 
-源码：[`src/chronaxis/legacy/sum.py:200`](../../../src/chronaxis/legacy/sum.py#L200)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:200`](../../../src/chronaxis/legacy/sum.py#L200)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-closed"></a>
 ### `LegacySumAccumulator.closed`
@@ -331,7 +331,7 @@ bool；
 
 返回类型：bool。
 
-源码：[`src/chronaxis/legacy/sum.py:252`](../../../src/chronaxis/legacy/sum.py#L252)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:252`](../../../src/chronaxis/legacy/sum.py#L252)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-_ensure_open"></a>
 ### `LegacySumAccumulator._ensure_open`
@@ -363,7 +363,7 @@ ResultClosedError为已关闭或正在清理。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:256`](../../../src/chronaxis/legacy/sum.py#L256)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:256`](../../../src/chronaxis/legacy/sum.py#L256)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-_candidate"></a>
 ### `LegacySumAccumulator._candidate`
@@ -391,7 +391,7 @@ TypeError/ValueError为贡献或顺序错误；OverflowError为中间累计溢�
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/legacy/sum.py:264`](../../../src/chronaxis/legacy/sum.py#L264)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:264`](../../../src/chronaxis/legacy/sum.py#L264)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-_release_failed_batch"></a>
 ### `LegacySumAccumulator._release_failed_batch`
@@ -418,7 +418,7 @@ None；持续未释费用设置_closing，禁止覆盖该责任槽。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:303`](../../../src/chronaxis/legacy/sum.py#L303)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:303`](../../../src/chronaxis/legacy/sum.py#L303)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-consume"></a>
 ### `LegacySumAccumulator.consume`
@@ -447,7 +447,7 @@ TypeError/ValueError为类型、批上限、来源或顺序；OverflowError为�
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:321`](../../../src/chronaxis/legacy/sum.py#L321)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:321`](../../../src/chronaxis/legacy/sum.py#L321)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-snapshot"></a>
 ### `LegacySumAccumulator.snapshot`
@@ -475,7 +475,7 @@ ResultClosedError为关闭中；分配或取消原样传播并附真实恢复own
 
 返回类型：[LegacySumSnapshot](chronaxis.legacy.sum.md#api-LegacySumSnapshot)。
 
-源码：[`src/chronaxis/legacy/sum.py:358`](../../../src/chronaxis/legacy/sum.py#L358)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:358`](../../../src/chronaxis/legacy/sum.py#L358)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacySumAccumulator-close"></a>
 ### `LegacySumAccumulator.close`
@@ -504,4 +504,4 @@ None；只有所有自有槽实际归零才closed=True，重复close无操作。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/sum.py:382`](../../../src/chronaxis/legacy/sum.py#L382)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/sum.py:382`](../../../src/chronaxis/legacy/sum.py#L382)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

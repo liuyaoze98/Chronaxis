@@ -72,7 +72,7 @@ _readonly(array: np.ndarray) -> np.ndarray
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:38`](../../../src/chronaxis/core/numeric_numpy.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:38`](../../../src/chronaxis/core/numeric_numpy.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumericArray"></a>
 ## `NumericArray`
@@ -100,7 +100,7 @@ class NumericArray
 |`quality`|np.ndarray|是|无|uint16足够容纳九种质量位。|
 |`labels`|tuple[str, ...]|否|()|enum顺序域，其他dtype为空。|
 
-源码：[`src/chronaxis/core/numeric_numpy.py:54`](../../../src/chronaxis/core/numeric_numpy.py#L54)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:54`](../../../src/chronaxis/core/numeric_numpy.py#L54)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumericArray-__post_init__"></a>
 ### `NumericArray.__post_init__`
@@ -139,7 +139,7 @@ TypeError为布局；ValueError为shape/质量/非法正常值。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:71`](../../../src/chronaxis/core/numeric_numpy.py#L71)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:71`](../../../src/chronaxis/core/numeric_numpy.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_output"></a>
 ## `_output`
@@ -169,7 +169,7 @@ _output(dtype, values, quality, labels=()) -> NumericArray
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:124`](../../../src/chronaxis/core/numeric_numpy.py#L124)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:124`](../../../src/chronaxis/core/numeric_numpy.py#L124)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_magnitude"></a>
 ## `_magnitude`
@@ -200,7 +200,7 @@ _magnitude(values: np.ndarray) -> np.ndarray
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:135`](../../../src/chronaxis/core/numeric_numpy.py#L135)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:135`](../../../src/chronaxis/core/numeric_numpy.py#L135)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_from_magnitude"></a>
 ## `_from_magnitude`
@@ -232,7 +232,7 @@ _from_magnitude(magnitude: np.ndarray, negative: np.ndarray) -> np.ndarray
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:159`](../../../src/chronaxis/core/numeric_numpy.py#L159)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:159`](../../../src/chronaxis/core/numeric_numpy.py#L159)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-to_float_numpy"></a>
 ## `to_float_numpy`
@@ -263,7 +263,7 @@ TypeError为结构/逻辑类型；分配错误传播。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:182`](../../../src/chronaxis/core/numeric_numpy.py#L182)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:182`](../../../src/chronaxis/core/numeric_numpy.py#L182)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_integer_compare"></a>
 ## `_integer_compare`
@@ -293,7 +293,7 @@ bool结果列，invalid占位False。
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:222`](../../../src/chronaxis/core/numeric_numpy.py#L222)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:222`](../../../src/chronaxis/core/numeric_numpy.py#L222)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_integer_arithmetic"></a>
 ## `_integer_arithmetic`
@@ -327,7 +327,7 @@ _integer_arithmetic(operator, left, right, selected)
 加减按符号检查安全门槛；乘法在uint64幅度域检查limit // b。
     检查后才调用逐元素函数，避免先发生整数回绕再判断溢出。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:255`](../../../src/chronaxis/core/numeric_numpy.py#L255)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:255`](../../../src/chronaxis/core/numeric_numpy.py#L255)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-binary_numpy"></a>
 ## `binary_numpy`
@@ -364,7 +364,7 @@ TypeError、ValueError: 模型、类型、长度、注册运算或枚举域不�
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:319`](../../../src/chronaxis/core/numeric_numpy.py#L319)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:319`](../../../src/chronaxis/core/numeric_numpy.py#L319)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-unary_numpy"></a>
 ## `unary_numpy`
@@ -396,4 +396,4 @@ TypeError/ValueError为结构/未知运算，分配错误传播。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/numeric_numpy.py:408`](../../../src/chronaxis/core/numeric_numpy.py#L408)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric_numpy.py:408`](../../../src/chronaxis/core/numeric_numpy.py#L408)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

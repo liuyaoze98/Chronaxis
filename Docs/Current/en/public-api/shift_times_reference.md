@@ -22,4 +22,4 @@ No side effects: it does not import or call NumPy implementations or modify the 
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:319`](../../../../src/chronaxis/timebase/conversion.py#L319) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
+- [`src/chronaxis/timebase/conversion.py:319`](../../../../src/chronaxis/timebase/conversion.py#L319) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.

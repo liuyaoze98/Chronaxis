@@ -62,7 +62,7 @@ _reject(document, path, message, code='invalid_import', hint=None)
 
 PlanValidationError。
 
-源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_source_paths"></a>
 ## `_source_paths`
@@ -92,7 +92,7 @@ None。
 
 只改本次副本，metadata内任意path不解释为文件；不调用stat或resolve。
 
-源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_append_definitions"></a>
 ## `_append_definitions`
@@ -126,7 +126,7 @@ None。
 
 names保存首个同名声明的位置；所有修改仅发生在本次展开容器，无全局状态。
 
-源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-expand_document_imports"></a>
 ## `expand_document_imports`
@@ -154,4 +154,4 @@ expand_document_imports(document)
 未声明imports时原样返回，不增加复制或文件读取。批量文件通过每个子计划
 自行使用imports；纯字典API不调用此函数。版本错误由原入口拒绝，不读其导入。
 
-源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

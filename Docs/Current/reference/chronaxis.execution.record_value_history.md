@@ -51,7 +51,7 @@ RecordValueHistory(budget, path, dtype, conditioned=False, *, sample_updates=Fal
 ```
 
 
-源码：[`src/chronaxis/execution/record_value_history.py:14`](../../../src/chronaxis/execution/record_value_history.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:14`](../../../src/chronaxis/execution/record_value_history.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-__init__"></a>
 ### `RecordValueHistory.__init__`
@@ -81,7 +81,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:17`](../../../src/chronaxis/execution/record_value_history.py#L17)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:17`](../../../src/chronaxis/execution/record_value_history.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-count"></a>
 ### `RecordValueHistory.count`
@@ -109,7 +109,7 @@ int。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:42`](../../../src/chronaxis/execution/record_value_history.py#L42)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:42`](../../../src/chronaxis/execution/record_value_history.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-last_time"></a>
 ### `RecordValueHistory.last_time`
@@ -137,7 +137,7 @@ int或None。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:47`](../../../src/chronaxis/execution/record_value_history.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:47`](../../../src/chronaxis/execution/record_value_history.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-_open"></a>
 ### `RecordValueHistory._open`
@@ -163,7 +163,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_value_history.py:51`](../../../src/chronaxis/execution/record_value_history.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:51`](../../../src/chronaxis/execution/record_value_history.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-append"></a>
 ### `RecordValueHistory.append`
@@ -190,7 +190,7 @@ None。
 
 顺序/短写/预算错误，失败后只能清理。
 
-源码：[`src/chronaxis/execution/record_value_history.py:56`](../../../src/chronaxis/execution/record_value_history.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:56`](../../../src/chronaxis/execution/record_value_history.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-expire_at"></a>
 ### `RecordValueHistory.expire_at`
@@ -216,7 +216,7 @@ None。
 
 时间回退。
 
-源码：[`src/chronaxis/execution/record_value_history.py:89`](../../../src/chronaxis/execution/record_value_history.py#L89)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:89`](../../../src/chronaxis/execution/record_value_history.py#L89)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-at"></a>
 ### `RecordValueHistory.at`
@@ -241,7 +241,7 @@ RecordValueHistory.at(index)
 
 越界/短读。
 
-源码：[`src/chronaxis/execution/record_value_history.py:100`](../../../src/chronaxis/execution/record_value_history.py#L100)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:100`](../../../src/chronaxis/execution/record_value_history.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-lower"></a>
 ### `RecordValueHistory.lower`
@@ -266,7 +266,7 @@ int。
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:123`](../../../src/chronaxis/execution/record_value_history.py#L123)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:123`](../../../src/chronaxis/execution/record_value_history.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-rows"></a>
 ### `RecordValueHistory.rows`
@@ -292,7 +292,7 @@ RecordValueHistory.rows(start_ns, end_ns)
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:134`](../../../src/chronaxis/execution/record_value_history.py#L134)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:134`](../../../src/chronaxis/execution/record_value_history.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-closed"></a>
 ### `RecordValueHistory.closed`
@@ -320,7 +320,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:147`](../../../src/chronaxis/execution/record_value_history.py#L147)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:147`](../../../src/chronaxis/execution/record_value_history.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordValueHistory-close"></a>
 ### `RecordValueHistory.close`
@@ -346,4 +346,4 @@ None。
 
 原关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_value_history.py:151`](../../../src/chronaxis/execution/record_value_history.py#L151)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_value_history.py:151`](../../../src/chronaxis/execution/record_value_history.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

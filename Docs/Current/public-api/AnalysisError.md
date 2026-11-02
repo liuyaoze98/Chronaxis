@@ -20,4 +20,4 @@ class AnalysisError(RuntimeError)
 继承关系：RuntimeError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:8`](../../../src/chronaxis/results/errors.py#L8)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/errors.py:8`](../../../src/chronaxis/results/errors.py#L8)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -57,7 +57,7 @@ ValueError。
 
 版本不能猜测或迁移；旧INI由独立legacy import入口处理。
 
-源码：[`src/chronaxis/configuration/file_tools.py:11`](../../../src/chronaxis/configuration/file_tools.py#L11)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:11`](../../../src/chronaxis/configuration/file_tools.py#L11)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-validate_document"></a>
 ## `validate_document`
@@ -78,7 +78,7 @@ validate_document(document, base, *, return_plan=False)
 |`base`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。解释配置相对文件路径的词法绝对目录；不打开其中的日志或DBC。|
 |`return_plan`|bool|否|False|仅关键字。默认False只返回配置种类；True同时返回已编译计划，供配置工具复用结果，避免重复加载DBC。|
 
-源码：[`src/chronaxis/configuration/file_tools.py:26`](../../../src/chronaxis/configuration/file_tools.py#L26)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:26`](../../../src/chronaxis/configuration/file_tools.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-path_fields"></a>
 ## `path_fields`
@@ -106,7 +106,7 @@ path_fields(data, config_type)
 
 只认来源文件/DBC、批量子计划和公共定义；metadata与表达式中的path文字保持原样。
 
-源码：[`src/chronaxis/configuration/file_tools.py:54`](../../../src/chronaxis/configuration/file_tools.py#L54)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:54`](../../../src/chronaxis/configuration/file_tools.py#L54)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-same_native_value"></a>
 ## `same_native_value`
@@ -132,7 +132,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/configuration/file_tools.py:76`](../../../src/chronaxis/configuration/file_tools.py#L76)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:76`](../../../src/chronaxis/configuration/file_tools.py#L76)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-serialize_configuration"></a>
 ## `serialize_configuration`
@@ -160,7 +160,7 @@ ValueError。
 
 输出后独立重解析并核类型和值，避免YAML隐式类型或浮点表示改写含义。注释不参与互转。
 
-源码：[`src/chronaxis/configuration/file_tools.py:87`](../../../src/chronaxis/configuration/file_tools.py#L87)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:87`](../../../src/chronaxis/configuration/file_tools.py#L87)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-output_format"></a>
 ## `output_format`
@@ -185,7 +185,7 @@ json/yaml。
 
 ValueError。
 
-源码：[`src/chronaxis/configuration/file_tools.py:105`](../../../src/chronaxis/configuration/file_tools.py#L105)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:105`](../../../src/chronaxis/configuration/file_tools.py#L105)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-write_new_configuration"></a>
 ## `write_new_configuration`
@@ -213,7 +213,7 @@ IO/取消。
 
 已存在文件、硬链接和符号链接都由独占打开拒绝；部分写失败仅清理本次创建的文件。
 
-源码：[`src/chronaxis/configuration/file_tools.py:112`](../../../src/chronaxis/configuration/file_tools.py#L112)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:112`](../../../src/chronaxis/configuration/file_tools.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-convert_configuration"></a>
 ## `convert_configuration`
@@ -241,7 +241,7 @@ convert_configuration(source, output)
 
 相对路径存在时仅接受同目录输出；跨目录需使用resolve显式重定位，不静默修改原值。
 
-源码：[`src/chronaxis/configuration/file_tools.py:130`](../../../src/chronaxis/configuration/file_tools.py#L130)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/file_tools.py:130`](../../../src/chronaxis/configuration/file_tools.py#L130)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 ## 内部匿名回调
 

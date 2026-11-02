@@ -77,7 +77,7 @@ PlanValidationError: 字段、格式、名称、时序、时间基准或来源�
 
 返回类型：tuple[[SourcePlan](chronaxis.planning.models.md#api-SourcePlan), ...]。
 
-源码：[`src/chronaxis/planning/inputs.py:34`](../../../src/chronaxis/planning/inputs.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/inputs.py:34`](../../../src/chronaxis/planning/inputs.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_signals"></a>
 ## `parse_signals`
@@ -111,4 +111,4 @@ PlanValidationError: 结构、来源、字段、类型、单位、有效期或�
 
 返回类型：tuple[[SignalPlan](chronaxis.planning.models.md#api-SignalPlan), ...]。
 
-源码：[`src/chronaxis/planning/inputs.py:209`](../../../src/chronaxis/planning/inputs.py#L209)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/inputs.py:209`](../../../src/chronaxis/planning/inputs.py#L209)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

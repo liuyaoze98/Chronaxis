@@ -35,4 +35,4 @@ TypeError: 任一输入不是非布尔整数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/timebase/conversion.py:301`](../../../src/chronaxis/timebase/conversion.py#L301)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/timebase/conversion.py:301`](../../../src/chronaxis/timebase/conversion.py#L301)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

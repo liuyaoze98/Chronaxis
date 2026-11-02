@@ -40,4 +40,4 @@ if __name__ == "__main__":
 
 ## Source locations
 
-- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
+- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.

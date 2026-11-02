@@ -55,7 +55,7 @@ RawSignalGroups(budget, definitions, session_id, consumer, *, backend='numpy', c
 ```
 
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:23`](../../../src/chronaxis/execution/raw_signal_groups.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:23`](../../../src/chronaxis/execution/raw_signal_groups.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-__init__"></a>
 ### `RawSignalGroups.__init__`
@@ -85,7 +85,7 @@ owner。
 
 配置、预算或取消；构造恢复句柄raw_groups_cleanup_owner。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:26`](../../../src/chronaxis/execution/raw_signal_groups.py#L26)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:26`](../../../src/chronaxis/execution/raw_signal_groups.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-_require_open"></a>
 ### `RawSignalGroups._require_open`
@@ -111,7 +111,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:72`](../../../src/chronaxis/execution/raw_signal_groups.py#L72)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:72`](../../../src/chronaxis/execution/raw_signal_groups.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-configure_metadata"></a>
 ### `RawSignalGroups.configure_metadata`
@@ -140,7 +140,7 @@ None。
 
 仅保存当前纯时钟字段的有限候选，费用包含在定义固定预算中。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:77`](../../../src/chronaxis/execution/raw_signal_groups.py#L77)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:77`](../../../src/chronaxis/execution/raw_signal_groups.py#L77)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-consume"></a>
 ### `RawSignalGroups.consume`
@@ -165,7 +165,7 @@ None。
 
 身份/时间回退、预算、归一化或消费者错误；失败后禁止finish。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:92`](../../../src/chronaxis/execution/raw_signal_groups.py#L92)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:92`](../../../src/chronaxis/execution/raw_signal_groups.py#L92)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-_flush"></a>
 ### `RawSignalGroups._flush`
@@ -191,7 +191,7 @@ None。
 
 消费/清理错误。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:156`](../../../src/chronaxis/execution/raw_signal_groups.py#L156)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:156`](../../../src/chronaxis/execution/raw_signal_groups.py#L156)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-finish"></a>
 ### `RawSignalGroups.finish`
@@ -217,7 +217,7 @@ None。
 
 消费/清理错误。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:169`](../../../src/chronaxis/execution/raw_signal_groups.py#L169)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:169`](../../../src/chronaxis/execution/raw_signal_groups.py#L169)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawSignalGroups-close"></a>
 ### `RawSignalGroups.close`
@@ -243,4 +243,4 @@ None。
 
 释放失败可重试。
 
-源码：[`src/chronaxis/execution/raw_signal_groups.py:181`](../../../src/chronaxis/execution/raw_signal_groups.py#L181)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/raw_signal_groups.py:181`](../../../src/chronaxis/execution/raw_signal_groups.py#L181)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

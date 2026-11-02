@@ -52,4 +52,4 @@ report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
-源码：[`src/chronaxis/planning/reports.py:231`](../../../src/chronaxis/planning/reports.py#L231)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:231`](../../../src/chronaxis/planning/reports.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

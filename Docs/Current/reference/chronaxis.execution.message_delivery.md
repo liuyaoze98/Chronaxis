@@ -49,4 +49,4 @@ None，非目标帧不构造消息。
 
 预算/值/消费者及清理错误原样传播。
 
-源码：[`src/chronaxis/execution/message_delivery.py:7`](../../../src/chronaxis/execution/message_delivery.py#L7)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/message_delivery.py:7`](../../../src/chronaxis/execution/message_delivery.py#L7)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -60,7 +60,7 @@ class CalculationDefinition
 |`scope`|str|否|'session'|这次指标属于整个会话session、一次事件event还是一个上下文片段segment。|
 |`minimum_coverage`|float|否|0.0|要求达到的最低覆盖比例，0～1且包含端点。0.9表示90%，不能填90；它影响质量判断，不补齐数据。|
 
-源码：[`src/chronaxis/core/calculations.py:38`](../../../src/chronaxis/core/calculations.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:38`](../../../src/chronaxis/core/calculations.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CalculationDefinition-__post_init__"></a>
 ### `CalculationDefinition.__post_init__`
@@ -92,7 +92,7 @@ TypeError/ValueError为ID/窗口/未知算子或政策。
 - `ValueError`：未知partial_policy或scope。
 - `ValueError`：minimum_coverage需0—1有限数值。
 
-源码：[`src/chronaxis/core/calculations.py:58`](../../../src/chronaxis/core/calculations.py#L58)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:58`](../../../src/chronaxis/core/calculations.py#L58)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CalculationSeries"></a>
 ## `CalculationSeries`
@@ -117,7 +117,7 @@ class CalculationSeries
 |`binding_identity`|str|否|'explicit-synthetic'|当前输入执行身份/外部合成声明。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|否|()|所有实际依赖原字段关联。|
 
-源码：[`src/chronaxis/core/calculations.py:85`](../../../src/chronaxis/core/calculations.py#L85)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:85`](../../../src/chronaxis/core/calculations.py#L85)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CalculationSeries-__post_init__"></a>
 ### `CalculationSeries.__post_init__`
@@ -143,7 +143,7 @@ None；全部检查通过后对象创建成功。省略diagnostics时，会根�
 
 字段类型不对会抛TypeError；时间回退、列长度不一致或首末范围不符会抛ValueError；时间超出int64范围会抛OverflowError。不会自动排序、补值或截短数组。
 
-源码：[`src/chronaxis/core/calculations.py:107`](../../../src/chronaxis/core/calculations.py#L107)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:107`](../../../src/chronaxis/core/calculations.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CalculationResult"></a>
 ## `CalculationResult`
@@ -179,7 +179,7 @@ class CalculationResult
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|用于定位原始数据的来源信息，例如来源名、原字段及对应记录位置。|
 |`coverage_status`|str|否|'sufficient'|sufficient表示三种覆盖比例都达到minimum_coverage；否则为indeterminate。它与status分别记录，不会改变已经算出的部分数值。|
 
-源码：[`src/chronaxis/core/calculations.py:170`](../../../src/chronaxis/core/calculations.py#L170)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:170`](../../../src/chronaxis/core/calculations.py#L170)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CalculationResult-__post_init__"></a>
 ### `CalculationResult.__post_init__`
@@ -205,7 +205,7 @@ None。合法字段保持原样；不会把错误的9秒自动改成8秒，也�
 
 对象/字段类型不符时抛TypeError；数值为NaN/无穷大、状态名称不支持、时长超过窗口、覆盖率不在0—1内或范围长度不一致时抛ValueError。
 
-源码：[`src/chronaxis/core/calculations.py:201`](../../../src/chronaxis/core/calculations.py#L201)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:201`](../../../src/chronaxis/core/calculations.py#L201)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-calculation_unit"></a>
 ## `calculation_unit`
@@ -242,7 +242,7 @@ ValueError: 要求的单位不在同一已知维度，转换未注册或因子�
 例如功率积分推导能量单位；输入工程单位已由上游完成转换，本函数
     不重复DBC缩放。转换仅在最终结果处应用一次，方向符号不在这里推断。
 
-源码：[`src/chronaxis/core/calculations.py:263`](../../../src/chronaxis/core/calculations.py#L263)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:263`](../../../src/chronaxis/core/calculations.py#L263)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-merge_ranges"></a>
 ## `merge_ranges`
@@ -267,7 +267,7 @@ Interval tuple，不修改原活动/条件或填平已知缺口。
 
 模型错误传播，无数值分析副作用。
 
-源码：[`src/chronaxis/core/calculations.py:316`](../../../src/chronaxis/core/calculations.py#L316)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:316`](../../../src/chronaxis/core/calculations.py#L316)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-classify_calculation_value"></a>
 ## `classify_calculation_value`
@@ -299,7 +299,7 @@ classify_calculation_value(spec, value, observed_duration_ns, known_duration_ns,
 
 内部参数错误原样传播；不构造范围或追溯记录。
 
-源码：[`src/chronaxis/core/calculations.py:338`](../../../src/chronaxis/core/calculations.py#L338)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:338`](../../../src/chronaxis/core/calculations.py#L338)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-classify_coverage"></a>
 ## `classify_coverage`
@@ -327,7 +327,7 @@ sufficient或indeterminate。
 
 无主动异常；内部量由各数值核独立求得，不构造区间明细。
 
-源码：[`src/chronaxis/core/calculations.py:384`](../../../src/chronaxis/core/calculations.py#L384)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:384`](../../../src/chronaxis/core/calculations.py#L384)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-make_calculation_result"></a>
 ## `make_calculation_result`
@@ -373,4 +373,4 @@ CalculationResult，保留覆盖、来源与原因。完整观测且全程FALSE�
     有部分候选值时，report保留并标partial，strict清为None。
     本函数不计算积分或样本归约，各时长和候选值由调用者独立计算。
 
-源码：[`src/chronaxis/core/calculations.py:396`](../../../src/chronaxis/core/calculations.py#L396)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations.py:396`](../../../src/chronaxis/core/calculations.py#L396)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

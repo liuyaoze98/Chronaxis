@@ -51,4 +51,4 @@ int，用户1对应内部0。
 
 PlanValidationError，非法或旧0基声明。
 
-源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

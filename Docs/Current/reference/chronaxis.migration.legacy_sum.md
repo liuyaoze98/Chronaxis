@@ -67,7 +67,7 @@ _reject(fields, headers, section, key, code, message)
 
 ImportProblem。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:20`](../../../src/chronaxis/migration/legacy_sum.py#L20)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:20`](../../../src/chronaxis/migration/legacy_sum.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_targets"></a>
 ## `_targets`
@@ -96,7 +96,7 @@ _targets(fields, section, key, targets, message='保原字段并显式映射')
 
 无；原字段缺失由必填校验处理。相同global可映射多个section参数。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:28`](../../../src/chronaxis/migration/legacy_sum.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:28`](../../../src/chronaxis/migration/legacy_sum.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_constant"></a>
 ## `_constant`
@@ -131,7 +131,7 @@ ImportProblem为非法、过大、非有限或除零；资源/取消原错传播
 
 - `ValueError`：参数必须能精确表示为有限FLOAT64。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:50`](../../../src/chronaxis/migration/legacy_sum.py#L50)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:50`](../../../src/chronaxis/migration/legacy_sum.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_constant-evaluate"></a>
 ### `_constant.evaluate`
@@ -164,7 +164,7 @@ ValueError/算术错误。
 - `ValueError`：常量仅允许有限数字、括号、正负及加减乘除。
 - `ValueError`：常量中间整数超过4096位。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:78`](../../../src/chronaxis/migration/legacy_sum.py#L78)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:78`](../../../src/chronaxis/migration/legacy_sum.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_formula"></a>
 ## `_formula`
@@ -195,7 +195,7 @@ _formula(text, signals, parameters, aliases, fields, headers, section)
 
 ImportProblem为危险AST、未知名、缺alias或未使用signal门控。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:115`](../../../src/chronaxis/migration/legacy_sum.py#L115)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:115`](../../../src/chronaxis/migration/legacy_sum.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_io_fields"></a>
 ## `_io_fields`
@@ -223,7 +223,7 @@ _io_fields(parser, fields, headers, issues)
 
 ImportProblem。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:147`](../../../src/chronaxis/migration/legacy_sum.py#L147)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:147`](../../../src/chronaxis/migration/legacy_sum.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-convert_legacy_sum"></a>
 ## `convert_legacy_sum`
@@ -254,4 +254,4 @@ None；只填新message_calculations。
 ImportProblem为原配置/映射拒绝；
 不把解析成功或声明SHA当作实际CAN输入/DBC已验证，不修改数值核。
 
-源码：[`src/chronaxis/migration/legacy_sum.py:165`](../../../src/chronaxis/migration/legacy_sum.py#L165)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/legacy_sum.py:165`](../../../src/chronaxis/migration/legacy_sum.py#L165)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

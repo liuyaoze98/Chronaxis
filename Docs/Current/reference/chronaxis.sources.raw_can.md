@@ -44,7 +44,7 @@ CANTextError(path, line_number, reason)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/sources/raw_can.py:15`](../../../src/chronaxis/sources/raw_can.py#L15)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/raw_can.py:15`](../../../src/chronaxis/sources/raw_can.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CANTextError-__init__"></a>
 ### `CANTextError.__init__`
@@ -71,7 +71,7 @@ CANTextError.__init__(path, line_number, reason)
 
 无；不包含整行私人载荷或隐式记录日志。
 
-源码：[`src/chronaxis/sources/raw_can.py:18`](../../../src/chronaxis/sources/raw_can.py#L18)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/raw_can.py:18`](../../../src/chronaxis/sources/raw_can.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawCANRecord"></a>
 ## `RawCANRecord`
@@ -97,7 +97,7 @@ class RawCANRecord
 |`time_quantized`|bool|否|False|文本比纳秒更细时的实际舍入事实。|
 |`source_time_ns`|int &#124; None|否|None|显式平移前的精确时间；手工旧构造省略时与time_ns相同。|
 
-源码：[`src/chronaxis/sources/raw_can.py:30`](../../../src/chronaxis/sources/raw_can.py#L30)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/raw_can.py:30`](../../../src/chronaxis/sources/raw_can.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawCANRecord-__post_init__"></a>
 ### `RawCANRecord.__post_init__`
@@ -130,4 +130,4 @@ RawCANRecord.__post_init__()
 - `ValueError`：文本CAN记录需要时间原文、版本和量化标志。
 - `ValueError`：DLC编码需0到15或None。
 
-源码：[`src/chronaxis/sources/raw_can.py:44`](../../../src/chronaxis/sources/raw_can.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/raw_can.py:44`](../../../src/chronaxis/sources/raw_can.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

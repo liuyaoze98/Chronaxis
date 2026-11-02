@@ -54,4 +54,4 @@ WindowDeltaResult；阈值比较包含等于，UNKNOWN不伪装False。
 
 输入结构错误；定宽数值溢出以质量结果返回。
 
-源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -60,7 +60,7 @@ ArgumentParser，不读取任何配置或来源。
 
 返回类型：argparse.ArgumentParser。
 
-源码：[`src/chronaxis/cli.py:19`](../../../src/chronaxis/cli.py#L19)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/cli.py:19`](../../../src/chronaxis/cli.py#L19)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_brief"></a>
 ## `_brief`
@@ -88,7 +88,7 @@ _brief(result, files) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/cli.py:83`](../../../src/chronaxis/cli.py#L83)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/cli.py:83`](../../../src/chronaxis/cli.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_issue_text"></a>
 ## `_issue_text`
@@ -115,7 +115,7 @@ _issue_text(issue) -> str
 
 返回类型：str。
 
-源码：[`src/chronaxis/cli.py:97`](../../../src/chronaxis/cli.py#L97)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/cli.py:97`](../../../src/chronaxis/cli.py#L97)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_run_import"></a>
 ## `_run_import`
@@ -142,7 +142,7 @@ _run_import(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:111`](../../../src/chronaxis/cli.py#L111)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/cli.py:111`](../../../src/chronaxis/cli.py#L111)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-main"></a>
 ## `main`
@@ -173,4 +173,4 @@ argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程�
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:133`](../../../src/chronaxis/cli.py#L133)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/cli.py:133`](../../../src/chronaxis/cli.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

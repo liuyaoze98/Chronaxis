@@ -62,7 +62,7 @@ job_packet(job)
 
 配置转换错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:20`](../../../src/chronaxis/batch/process_transport.py#L20)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:20`](../../../src/chronaxis/batch/process_transport.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-restore_job"></a>
 ## `restore_job`
@@ -87,7 +87,7 @@ BatchJob。
 
 重建或身份不一致。
 
-源码：[`src/chronaxis/batch/process_transport.py:28`](../../../src/chronaxis/batch/process_transport.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:28`](../../../src/chronaxis/batch/process_transport.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -112,7 +112,7 @@ None。
 
 断管退出，父进程负责树清理。
 
-源码：[`src/chronaxis/batch/process_transport.py:38`](../../../src/chronaxis/batch/process_transport.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:38`](../../../src/chronaxis/batch/process_transport.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker"></a>
 ## `ProcessWorker`
@@ -124,7 +124,7 @@ ProcessWorker()
 ```
 
 
-源码：[`src/chronaxis/batch/process_transport.py:81`](../../../src/chronaxis/batch/process_transport.py#L81)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:81`](../../../src/chronaxis/batch/process_transport.py#L81)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker-__init__"></a>
 ### `ProcessWorker.__init__`
@@ -150,7 +150,7 @@ ProcessWorker.__init__()
 
 启动/树登记失败立即回收。
 
-源码：[`src/chronaxis/batch/process_transport.py:84`](../../../src/chronaxis/batch/process_transport.py#L84)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:84`](../../../src/chronaxis/batch/process_transport.py#L84)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker-submit"></a>
 ### `ProcessWorker.submit`
@@ -177,7 +177,7 @@ None。
 
 转换或通信错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:106`](../../../src/chronaxis/batch/process_transport.py#L106)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:106`](../../../src/chronaxis/batch/process_transport.py#L106)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker-ready"></a>
 ### `ProcessWorker.ready`
@@ -203,7 +203,7 @@ bool。
 
 原管道错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:110`](../../../src/chronaxis/batch/process_transport.py#L110)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:110`](../../../src/chronaxis/batch/process_transport.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker-receive"></a>
 ### `ProcessWorker.receive`
@@ -229,7 +229,7 @@ BatchJobResult。
 
 进程死亡或协议错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:117`](../../../src/chronaxis/batch/process_transport.py#L117)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:117`](../../../src/chronaxis/batch/process_transport.py#L117)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ProcessWorker-close"></a>
 ### `ProcessWorker.close`
@@ -255,4 +255,4 @@ None。
 
 清理失败保留全部所有者。
 
-源码：[`src/chronaxis/batch/process_transport.py:129`](../../../src/chronaxis/batch/process_transport.py#L129)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/process_transport.py:129`](../../../src/chronaxis/batch/process_transport.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

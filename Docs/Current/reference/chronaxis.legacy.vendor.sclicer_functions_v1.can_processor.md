@@ -38,7 +38,7 @@ build_writer(out_path, out_fmt)
 
 tuple: 一个包含写入器和路径的元组 (writer, out_path)
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:11`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L11)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:11`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L11)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-eval_expr"></a>
 ## `eval_expr`
@@ -65,7 +65,7 @@ eval_expr(expr, sig_dict)
 
 bool: 若表达式评估结果为真则返回 True；若表达式语法非法、引用缺失信号或评估出错，返回 False
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:38`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:38`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_frame"></a>
 ## `parse_frame`
@@ -95,7 +95,7 @@ dict: 包含信号名和对应值的字典；如果解析失败，返回空字�
 
 无显式异常抛出，所有异常都会被捕获并返回空字典
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:91`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L91)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:91`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-get_signals_for_message_id"></a>
 ## `get_signals_for_message_id`
@@ -125,4 +125,4 @@ set: 包含信号名称的集合；如果未找到报文，返回空集合
 
 无显式异常抛出，所有异常都会被捕获并返回空集合
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:116`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L116)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py:116`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/can_processor.py#L116)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

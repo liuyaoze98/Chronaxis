@@ -47,7 +47,7 @@ class LegacyDisjunction
 |`bucket`|str|是|无|`"positive"`选择方向原值大于0的报文；`"negative"`选择小于0的报文。方向为0不进入任何一组，公式结果保留原符号。|
 |`value_policy`|str|否|'raw_decoded-v1'|填`"raw_decoded-v1"`：根据当前报文刚解码出的原始方向值分组，不先应用scale、offset或方向转换，也不使用前一次报文的值。|
 
-源码：[`src/chronaxis/legacy/disjunction.py:23`](../../../src/chronaxis/legacy/disjunction.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/disjunction.py:23`](../../../src/chronaxis/legacy/disjunction.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyDisjunction-__post_init__"></a>
 ### `LegacyDisjunction.__post_init__`
@@ -81,7 +81,7 @@ TypeError为非原生文本；ValueError为别名、桶或策略不支持。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/disjunction.py:34`](../../../src/chronaxis/legacy/disjunction.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/disjunction.py:34`](../../../src/chronaxis/legacy/disjunction.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyDisjunctionTrace"></a>
 ## `LegacyDisjunctionTrace`
@@ -104,7 +104,7 @@ class LegacyDisjunctionTrace
 |`raw_value`|int &#124; float &#124; bool &#124; None|是|无|未归一化方向值；None为缺失。|
 |`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|同条原消息的真实来源引用。|
 
-源码：[`src/chronaxis/legacy/disjunction.py:51`](../../../src/chronaxis/legacy/disjunction.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/disjunction.py:51`](../../../src/chronaxis/legacy/disjunction.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyDisjunctionTrace-__post_init__"></a>
 ### `LegacyDisjunctionTrace.__post_init__`
@@ -139,4 +139,4 @@ TypeError为非模型/原生数值；ValueError为原字段与引用不一致。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/disjunction.py:63`](../../../src/chronaxis/legacy/disjunction.py#L63)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/disjunction.py:63`](../../../src/chronaxis/legacy/disjunction.py#L63)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

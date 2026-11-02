@@ -58,7 +58,7 @@ DriverExpression(static, state, driver, *, backend='numpy', derived=(), observat
 ```
 
 
-源码：[`src/chronaxis/execution/driver_expression.py:25`](../../../src/chronaxis/execution/driver_expression.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:25`](../../../src/chronaxis/execution/driver_expression.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-__init__"></a>
 ### `DriverExpression.__init__`
@@ -89,7 +89,7 @@ DriverExpression.__init__(static, state, driver, *, backend='numpy', derived=(),
 声明不一致、非数值/BOOL表达式、预算或取消错误；
     构造清理失败提供driver_expression_cleanup_owner重试句柄。
 
-源码：[`src/chronaxis/execution/driver_expression.py:28`](../../../src/chronaxis/execution/driver_expression.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:28`](../../../src/chronaxis/execution/driver_expression.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-_require_open"></a>
 ### `DriverExpression._require_open`
@@ -115,7 +115,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/driver_expression.py:89`](../../../src/chronaxis/execution/driver_expression.py#L89)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:89`](../../../src/chronaxis/execution/driver_expression.py#L89)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-_context_at"></a>
 ### `DriverExpression._context_at`
@@ -141,7 +141,7 @@ context及未来到期点。
 
 模型/分配错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:94`](../../../src/chronaxis/execution/driver_expression.py#L94)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:94`](../../../src/chronaxis/execution/driver_expression.py#L94)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-_evaluate_values"></a>
 ### `DriverExpression._evaluate_values`
@@ -166,7 +166,7 @@ ScalarValue。
 
 原计算/分配错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:120`](../../../src/chronaxis/execution/driver_expression.py#L120)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:120`](../../../src/chronaxis/execution/driver_expression.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-evaluate"></a>
 ### `DriverExpression.evaluate`
@@ -197,7 +197,7 @@ None或(time_ns, ScalarValue,
 
 必须在每次完整组提交后调用，不能用最新状态补算丢掉的历史组。
 
-源码：[`src/chronaxis/execution/driver_expression.py:138`](../../../src/chronaxis/execution/driver_expression.py#L138)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:138`](../../../src/chronaxis/execution/driver_expression.py#L138)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-invalidated_at"></a>
 ### `DriverExpression.invalidated_at`
@@ -225,7 +225,7 @@ int或None。
 
 关闭/失败。
 
-源码：[`src/chronaxis/execution/driver_expression.py:218`](../../../src/chronaxis/execution/driver_expression.py#L218)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:218`](../../../src/chronaxis/execution/driver_expression.py#L218)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-evaluate_at"></a>
 ### `DriverExpression.evaluate_at`
@@ -252,7 +252,7 @@ DriverExpression.evaluate_at(time_ns, *, continuous=True)
 
 时间/状态/预算/数值错误；失败后仅可关闭，费用释放失败仍保原责任。
 
-源码：[`src/chronaxis/execution/driver_expression.py:223`](../../../src/chronaxis/execution/driver_expression.py#L223)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:223`](../../../src/chronaxis/execution/driver_expression.py#L223)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DriverExpression-close"></a>
 ### `DriverExpression.close`
@@ -278,4 +278,4 @@ None。
 
 释放失败可重试。
 
-源码：[`src/chronaxis/execution/driver_expression.py:266`](../../../src/chronaxis/execution/driver_expression.py#L266)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/driver_expression.py:266`](../../../src/chronaxis/execution/driver_expression.py#L266)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

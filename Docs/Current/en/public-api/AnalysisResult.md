@@ -32,7 +32,7 @@ AnalysisResult(spool: chronaxis.results.spool.ResultSpool, metadata: chronaxis.r
 ```
 
 
-Source: [`src/chronaxis/results/result.py:193`](../../../../src/chronaxis/results/result.py#L193) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:193`](../../../../src/chronaxis/results/result.py#L193) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-__init__"></a>
 ### `AnalysisResult.__init__`
@@ -61,7 +61,7 @@ None; initializes the instance.
 
 Invalid models/table formats are rejected. Budget, staging, or internal-manifest failures can raise AnalysisError with their cause. If construction fails with cleanup pending, the exception's analysis_result_cleanup_owner provides a close retry. Ordinary callers should use AnalysisRunner.run instead of transferring spool ownership themselves.
 
-Source: [`src/chronaxis/results/result.py:203`](../../../../src/chronaxis/results/result.py#L203) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:203`](../../../../src/chronaxis/results/result.py#L203) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-run_manifest"></a>
 ### `AnalysisResult.run_manifest`
@@ -91,7 +91,7 @@ Diagnostics remain available after close; no files are read.
 
 Return type: dict。
 
-Source: [`src/chronaxis/results/result.py:325`](../../../../src/chronaxis/results/result.py#L325) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:325`](../../../../src/chronaxis/results/result.py#L325) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_events"></a>
 ### `AnalysisResult.iter_events`
@@ -119,7 +119,7 @@ ResultClosedError if the result is closed or closing, preventing cursor creation
 
 Return type: Iterator[[SummaryEventRow](../../reference/chronaxis.results.summary.md#api-SummaryEventRow)]。
 
-Source: [`src/chronaxis/results/result.py:350`](../../../../src/chronaxis/results/result.py#L350) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:350`](../../../../src/chronaxis/results/result.py#L350) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_sequences"></a>
 ### `AnalysisResult.iter_sequences`
@@ -147,7 +147,7 @@ ResultClosedError if the result is closed or closing, preventing cursor creation
 
 Return type: Iterator[[SummarySequenceRow](../../reference/chronaxis.results.summary.md#api-SummarySequenceRow)]。
 
-Source: [`src/chronaxis/results/result.py:358`](../../../../src/chronaxis/results/result.py#L358) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:358`](../../../../src/chronaxis/results/result.py#L358) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_segments"></a>
 ### `AnalysisResult.iter_segments`
@@ -175,7 +175,7 @@ ResultClosedError if the result is closed or closing, preventing cursor creation
 
 Return type: Iterator[[SummarySegmentRow](../../reference/chronaxis.results.summary.md#api-SummarySegmentRow)]。
 
-Source: [`src/chronaxis/results/result.py:366`](../../../../src/chronaxis/results/result.py#L366) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:366`](../../../../src/chronaxis/results/result.py#L366) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_calculations"></a>
 ### `AnalysisResult.iter_calculations`
@@ -203,7 +203,7 @@ ResultClosedError if the result is closed or closing, preventing cursor creation
 
 Return type: Iterator[[SummaryCalculationRow](../../reference/chronaxis.results.summary.md#api-SummaryCalculationRow)]。
 
-Source: [`src/chronaxis/results/result.py:374`](../../../../src/chronaxis/results/result.py#L374) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:374`](../../../../src/chronaxis/results/result.py#L374) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_contributions"></a>
 ### `AnalysisResult.iter_contributions`
@@ -231,7 +231,7 @@ ContributionsUnavailableError if outputs.contributions did not request full; cha
 
 Return type: Iterator[[SummaryContributionRow](../../reference/chronaxis.results.summary.md#api-SummaryContributionRow)]。
 
-Source: [`src/chronaxis/results/result.py:383`](../../../../src/chronaxis/results/result.py#L383) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:383`](../../../../src/chronaxis/results/result.py#L383) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_selections"></a>
 ### `AnalysisResult.iter_selections`
@@ -259,7 +259,7 @@ ResultClosedError if the result is closed or closing, preventing cursor creation
 
 Return type: Iterator[[SummarySelectionRow](../../reference/chronaxis.results.summary.md#api-SummarySelectionRow)]。
 
-Source: [`src/chronaxis/results/result.py:395`](../../../../src/chronaxis/results/result.py#L395) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:395`](../../../../src/chronaxis/results/result.py#L395) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-iter_input_trace"></a>
 ### `AnalysisResult.iter_input_trace`
@@ -287,7 +287,7 @@ ResultClosedError if closed. AnalysisError if input trace was not generated; ena
 
 Return type: Iterator[[SummaryInputRow](../../reference/chronaxis.results.summary.md#api-SummaryInputRow)]。
 
-Source: [`src/chronaxis/results/result.py:400`](../../../../src/chronaxis/results/result.py#L400) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:400`](../../../../src/chronaxis/results/result.py#L400) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-contributions_available"></a>
 ### `AnalysisResult.contributions_available`
@@ -317,7 +317,7 @@ None. This fixed run fact remains readable after close, but no new cursor can be
 
 Return type: bool。
 
-Source: [`src/chronaxis/results/result.py:410`](../../../../src/chronaxis/results/result.py#L410) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:410`](../../../../src/chronaxis/results/result.py#L410) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-write"></a>
 ### `AnalysisResult.write`
@@ -348,7 +348,7 @@ Publishes to a new output directory without overwriting an existing one. On fail
 
 Return type: [OutputManifest](OutputManifest.md#api-OutputManifest)。
 
-Source: [`src/chronaxis/results/result.py:523`](../../../../src/chronaxis/results/result.py#L523) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:523`](../../../../src/chronaxis/results/result.py#L523) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-close"></a>
 ### `AnalysisResult.close`
@@ -376,7 +376,7 @@ Attempts to close every acquired resource. If file-handle closure, staging clean
 
 Return type: None。
 
-Source: [`src/chronaxis/results/result.py:660`](../../../../src/chronaxis/results/result.py#L660) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:660`](../../../../src/chronaxis/results/result.py#L660) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-__enter__"></a>
 ### `AnalysisResult.__enter__`
@@ -404,7 +404,7 @@ ResultClosedError if already closed.
 
 Return type: '[AnalysisResult](AnalysisResult.md#api-AnalysisResult)'。
 
-Source: [`src/chronaxis/results/result.py:711`](../../../../src/chronaxis/results/result.py#L711) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:711`](../../../../src/chronaxis/results/result.py#L711) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisResult-__exit__"></a>
 ### `AnalysisResult.__exit__`
@@ -431,4 +431,4 @@ False; exceptions continue to propagate to the caller.
 
 On a normal with exit, close failures propagate. If the block already raised an exception, that original exception is preserved and close failures are attached as diagnostics so the primary cause is not hidden.
 
-Source: [`src/chronaxis/results/result.py:719`](../../../../src/chronaxis/results/result.py#L719) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/result.py:719`](../../../../src/chronaxis/results/result.py#L719) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).

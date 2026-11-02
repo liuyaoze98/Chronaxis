@@ -23,7 +23,7 @@ AnalysisRunner(backend=None)
 ```
 
 
-Source: [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -53,7 +53,7 @@ Exact diagnostics reported directly by this function (Chinese text is retained):
 - `TypeError`: `AnalysisRunner backend需要reference、numpy或None。` — backend must be reference, numpy, or None.
 - `ValueError`: `AnalysisRunner仅支持reference与numpy后端。` — only reference and numpy are supported.
 
-Source: [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -81,7 +81,7 @@ None/reference/numpy.
 
 None.
 
-Source: [`src/chronaxis/runner.py:45`](../../../../src/chronaxis/runner.py#L45) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:45`](../../../../src/chronaxis/runner.py#L45) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -110,7 +110,7 @@ TypeError if plan is not AnalysisPlan or its execution model is invalid. Ordinar
 
 No source I/O or directory creation.
 
-Source: [`src/chronaxis/runner.py:65`](../../../../src/chronaxis/runner.py#L65) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:65`](../../../../src/chronaxis/runner.py#L65) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -139,7 +139,7 @@ TypeError for an invalid plan or execution type. Manually corrupted typed refere
 
 Does not read CSV/DBC or measure actual resource use.
 
-Source: [`src/chronaxis/runner.py:75`](../../../../src/chronaxis/runner.py#L75) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:75`](../../../../src/chronaxis/runner.py#L75) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -206,4 +206,4 @@ if __name__ == '__main__':
 
 ```
 
-Source: [`src/chronaxis/runner.py:86`](../../../../src/chronaxis/runner.py#L86) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/runner.py:86`](../../../../src/chronaxis/runner.py#L86) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).

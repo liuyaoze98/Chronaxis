@@ -51,7 +51,7 @@ class RunMetadata:
     worker_config: str = 'single-thread'
     dependency_versions: tuple[tuple[str, str], ...] = ()
     limitations: tuple[str, ...] = ()
-    software_version: str = '0.1.0.dev0'
+    software_version: str = '0.1.0.dev1'
     device_label: str = 'pending'
     signal_bindings: tuple[SignalDefinition, ...] = ()  # 本次实际完整定义，不含样本或输入行。
     preset_bindings: tuple[PresetBindingMetadata, ...] = ()  # 原预设版本及最终角色。

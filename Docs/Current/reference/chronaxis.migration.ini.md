@@ -45,7 +45,7 @@ ImportProblem(issue: LegacyImportIssue)
 继承关系：Exception。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/migration/ini.py:15`](../../../src/chronaxis/migration/ini.py#L15)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:15`](../../../src/chronaxis/migration/ini.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ImportProblem-__init__"></a>
 ### `ImportProblem.__init__`
@@ -70,7 +70,7 @@ ImportProblem.__init__(issue: LegacyImportIssue)
 
 无。
 
-源码：[`src/chronaxis/migration/ini.py:18`](../../../src/chronaxis/migration/ini.py#L18)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:18`](../../../src/chronaxis/migration/ini.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-problem"></a>
 ## `problem`
@@ -100,7 +100,7 @@ problem(code, origin, path, message, line=None, column=None)
 
 ImportProblem。
 
-源码：[`src/chronaxis/migration/ini.py:24`](../../../src/chronaxis/migration/ini.py#L24)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:24`](../../../src/chronaxis/migration/ini.py#L24)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-field_path"></a>
 ## `field_path`
@@ -126,7 +126,7 @@ str；
 
 无。
 
-源码：[`src/chronaxis/migration/ini.py:29`](../../../src/chronaxis/migration/ini.py#L29)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:29`](../../../src/chronaxis/migration/ini.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-locate"></a>
 ## `locate`
@@ -153,7 +153,7 @@ locate(fields, section, key=None)
 
 无。
 
-源码：[`src/chronaxis/migration/ini.py:34`](../../../src/chronaxis/migration/ini.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:34`](../../../src/chronaxis/migration/ini.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-mark"></a>
 ## `mark`
@@ -183,7 +183,7 @@ mark(fields, section, key, target, status='mapped', message='按显式映射转�
 
 无。
 
-源码：[`src/chronaxis/migration/ini.py:44`](../../../src/chronaxis/migration/ini.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:44`](../../../src/chronaxis/migration/ini.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_ini"></a>
 ## `parse_ini`
@@ -211,4 +211,4 @@ parse_ini(text, fields, *, preserve_case=False)
 ImportProblem为配置语法错误；
 MemoryError/取消原样传播。Sclicer无inline注释；ChrgInfo的井号不是INI注释。
 
-源码：[`src/chronaxis/migration/ini.py:52`](../../../src/chronaxis/migration/ini.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/ini.py:52`](../../../src/chronaxis/migration/ini.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

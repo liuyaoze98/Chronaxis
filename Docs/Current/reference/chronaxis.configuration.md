@@ -61,7 +61,7 @@ parse_configuration(text, *, format, source='<configuration>')
 
 不替换环境变量或执行模板。UTF-8文件开头的BOM可选；字段原始字符串保留。
 
-源码：[`src/chronaxis/configuration/__init__.py:12`](../../../src/chronaxis/configuration/__init__.py#L12)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/__init__.py:12`](../../../src/chronaxis/configuration/__init__.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-load_configuration"></a>
 ## `load_configuration`
@@ -88,4 +88,4 @@ load_configuration(path)
 
 后缀不识别时不打开文件；读取结束即关闭句柄，再解析文本，不持有调用者输入文件。
 
-源码：[`src/chronaxis/configuration/__init__.py:30`](../../../src/chronaxis/configuration/__init__.py#L30)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/__init__.py:30`](../../../src/chronaxis/configuration/__init__.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

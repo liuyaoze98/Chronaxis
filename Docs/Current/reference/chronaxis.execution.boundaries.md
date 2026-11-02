@@ -93,7 +93,7 @@ TypeError: 输入不是原生int。
 
 无，不读取状态或申请查询预算。
 
-源码：[`src/chronaxis/execution/boundaries.py:34`](../../../src/chronaxis/execution/boundaries.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:34`](../../../src/chronaxis/execution/boundaries.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RuleDeadline"></a>
 ## `RuleDeadline`
@@ -115,7 +115,7 @@ class RuleDeadline
 |`rule_id`|str|是|无|当前duration规则标识，不能用表达式文本替代身份。|
 |`time_ns`|int|是|无|已检查的原生int64纳秒；查询再检查必须严格晚于游标。|
 
-源码：[`src/chronaxis/execution/boundaries.py:56`](../../../src/chronaxis/execution/boundaries.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:56`](../../../src/chronaxis/execution/boundaries.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RuleDeadline-__post_init__"></a>
 ### `RuleDeadline.__post_init__`
@@ -147,7 +147,7 @@ TypeError: 标识不是原生str或时间不是原生int。
 
 无，不注册timer或打开资源。
 
-源码：[`src/chronaxis/execution/boundaries.py:67`](../../../src/chronaxis/execution/boundaries.py#L67)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:67`](../../../src/chronaxis/execution/boundaries.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryReason"></a>
 ## `BoundaryReason`
@@ -169,7 +169,7 @@ class BoundaryReason
 |`reason_type`|str|是|无|ttl/duration/update/source_eof/domain_end中的一种。|
 |`target`|str|是|无|目标简单标识，update与domain_end固定为空串。|
 
-源码：[`src/chronaxis/execution/boundaries.py:90`](../../../src/chronaxis/execution/boundaries.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:90`](../../../src/chronaxis/execution/boundaries.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryReason-__post_init__"></a>
 ### `BoundaryReason.__post_init__`
@@ -206,7 +206,7 @@ TypeError: kind或target不是原生str。
 
 无，不求值条件或改变来源状态。
 
-源码：[`src/chronaxis/execution/boundaries.py:101`](../../../src/chronaxis/execution/boundaries.py#L101)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:101`](../../../src/chronaxis/execution/boundaries.py#L101)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_reason_key"></a>
 ## `_reason_key`
@@ -235,7 +235,7 @@ KeyError: 内部原因种类与固定协议不一致。
 
 无，只作为当前查询中已预留排序空间的key函数。
 
-源码：[`src/chronaxis/execution/boundaries.py:127`](../../../src/chronaxis/execution/boundaries.py#L127)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:127`](../../../src/chronaxis/execution/boundaries.py#L127)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult"></a>
 ## `BoundaryResult`
@@ -251,7 +251,7 @@ BoundaryResult(owner, cost, time_ns, reasons, binding_identity, compiled_identit
 ```
 
 
-源码：[`src/chronaxis/execution/boundaries.py:143`](../../../src/chronaxis/execution/boundaries.py#L143)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:143`](../../../src/chronaxis/execution/boundaries.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-__init__"></a>
 ### `BoundaryResult.__init__`
@@ -285,7 +285,7 @@ MemoryError: 构造分配失败，由查询完整抵销申请。
 
 只建立结果自有字段；不追加owner登记或改动caller资源。
 
-源码：[`src/chronaxis/execution/boundaries.py:151`](../../../src/chronaxis/execution/boundaries.py#L151)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:151`](../../../src/chronaxis/execution/boundaries.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-_ensure_open"></a>
 ### `BoundaryResult._ensure_open`
@@ -315,7 +315,7 @@ ResultClosedError: 本结果已关闭。
 
 - `ResultClosedError`：下一边界结果已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:172`](../../../src/chronaxis/execution/boundaries.py#L172)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:172`](../../../src/chronaxis/execution/boundaries.py#L172)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-closed"></a>
 ### `BoundaryResult.closed`
@@ -343,7 +343,7 @@ bool；关闭后仍可检查此状态。
 
 无。
 
-源码：[`src/chronaxis/execution/boundaries.py:187`](../../../src/chronaxis/execution/boundaries.py#L187)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:187`](../../../src/chronaxis/execution/boundaries.py#L187)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-time_ns"></a>
 ### `BoundaryResult.time_ns`
@@ -371,7 +371,7 @@ BoundaryResult.time_ns
 
 ResultClosedError: 结果已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:201`](../../../src/chronaxis/execution/boundaries.py#L201)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:201`](../../../src/chronaxis/execution/boundaries.py#L201)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-reasons"></a>
 ### `BoundaryResult.reasons`
@@ -399,7 +399,7 @@ BoundaryReason tuple，固定种类顺序及target字典序；不表示消费优
 
 ResultClosedError: 结果已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:216`](../../../src/chronaxis/execution/boundaries.py#L216)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:216`](../../../src/chronaxis/execution/boundaries.py#L216)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-binding_identity"></a>
 ### `BoundaryResult.binding_identity`
@@ -427,7 +427,7 @@ SHA字符串，与当前登记表达式所属绑定一致。
 
 ResultClosedError: 结果已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:231`](../../../src/chronaxis/execution/boundaries.py#L231)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:231`](../../../src/chronaxis/execution/boundaries.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-compiled_identity"></a>
 ### `BoundaryResult.compiled_identity`
@@ -455,7 +455,7 @@ SHA字符串，不以同名表达式或同文本替代登记关系。
 
 ResultClosedError: 结果已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:246`](../../../src/chronaxis/execution/boundaries.py#L246)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:246`](../../../src/chronaxis/execution/boundaries.py#L246)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-close"></a>
 ### `BoundaryResult.close`
@@ -486,7 +486,7 @@ ValueError: 内部预算账本不一致，不能吞掉重复释放或漏计错�
 
 清除本结果持有的原因、身份及owner引用。
 
-源码：[`src/chronaxis/execution/boundaries.py:260`](../../../src/chronaxis/execution/boundaries.py#L260)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:260`](../../../src/chronaxis/execution/boundaries.py#L260)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryResult-_discard"></a>
 ### `BoundaryResult._discard`
@@ -512,7 +512,7 @@ None；本方法不再次释放申请。
 
 脱离取消传播，finally仍关闭，owner随后只移除残留登记。
 
-源码：[`src/chronaxis/execution/boundaries.py:286`](../../../src/chronaxis/execution/boundaries.py#L286)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:286`](../../../src/chronaxis/execution/boundaries.py#L286)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries"></a>
 ## `BoundaryQueries`
@@ -529,7 +529,7 @@ BoundaryQueries(expressions: ExpressionQueries, *, observation=None)
 ```
 
 
-源码：[`src/chronaxis/execution/boundaries.py:300`](../../../src/chronaxis/execution/boundaries.py#L300)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:300`](../../../src/chronaxis/execution/boundaries.py#L300)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-__init__"></a>
 ### `BoundaryQueries.__init__`
@@ -562,7 +562,7 @@ TypeError: 参数不是ExpressionQueries。
 
 只拥有固定预算及自有结果登记；不关闭、复制或推进caller资源。
 
-源码：[`src/chronaxis/execution/boundaries.py:309`](../../../src/chronaxis/execution/boundaries.py#L309)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:309`](../../../src/chronaxis/execution/boundaries.py#L309)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-closed"></a>
 ### `BoundaryQueries.closed`
@@ -590,7 +590,7 @@ bool，独立于caller是否已经关闭。
 
 无。
 
-源码：[`src/chronaxis/execution/boundaries.py:368`](../../../src/chronaxis/execution/boundaries.py#L368)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:368`](../../../src/chronaxis/execution/boundaries.py#L368)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-_ensure_open"></a>
 ### `BoundaryQueries._ensure_open`
@@ -620,7 +620,7 @@ ResultClosedError: 本owner、表达式owner、保持owner或state已关闭。
 
 - `ResultClosedError`：下一边界owner已关闭。
 
-源码：[`src/chronaxis/execution/boundaries.py:381`](../../../src/chronaxis/execution/boundaries.py#L381)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:381`](../../../src/chronaxis/execution/boundaries.py#L381)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-_query_cost"></a>
 ### `BoundaryQueries._query_cost`
@@ -650,7 +650,7 @@ KeyError: 内部实际绑定不能解析已登记依赖。
 
 本步骤不访问当前样本、不调用next_expiry、不创建依赖或来源集合。
 
-源码：[`src/chronaxis/execution/boundaries.py:397`](../../../src/chronaxis/execution/boundaries.py#L397)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:397`](../../../src/chronaxis/execution/boundaries.py#L397)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-_register"></a>
 ### `BoundaryQueries._register`
@@ -682,7 +682,7 @@ MemoryError、KeyboardInterrupt: 构造或登记失败/取消，查询清理原�
 
 不建立登记归属；不改变caller状态。
 
-源码：[`src/chronaxis/execution/boundaries.py:419`](../../../src/chronaxis/execution/boundaries.py#L419)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:419`](../../../src/chronaxis/execution/boundaries.py#L419)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-query_next"></a>
 ### `BoundaryQueries.query_next`
@@ -725,7 +725,7 @@ TypeError、TimeOverflowError: 计划、tuple、快照或时间类型/范围错�
 
 返回类型：[BoundaryResult](chronaxis.execution.boundaries.md#api-BoundaryResult) &#124; None。
 
-源码：[`src/chronaxis/execution/boundaries.py:436`](../../../src/chronaxis/execution/boundaries.py#L436)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:436`](../../../src/chronaxis/execution/boundaries.py#L436)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BoundaryQueries-close"></a>
 ### `BoundaryQueries.close`
@@ -756,4 +756,4 @@ ValueError: 内部账本金额不一致，不能静默绕过。
 
 逐项关闭自有结果并丢弃caller引用，不打开或删除文件。
 
-源码：[`src/chronaxis/execution/boundaries.py:538`](../../../src/chronaxis/execution/boundaries.py#L538)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/boundaries.py:538`](../../../src/chronaxis/execution/boundaries.py#L538)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

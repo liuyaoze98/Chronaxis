@@ -43,7 +43,7 @@ NumpySampleReduction(spec, input_unit, dtype, *, partial_limit=4096)
 ```
 
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:20`](../../../src/chronaxis/core/sample_reduction_numpy.py#L20)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:20`](../../../src/chronaxis/core/sample_reduction_numpy.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-__init__"></a>
 ### `NumpySampleReduction.__init__`
@@ -71,7 +71,7 @@ NumpySampleReduction.__init__(spec, input_unit, dtype, *, partial_limit=4096)
 
 配置、分配错误传播。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:23`](../../../src/chronaxis/core/sample_reduction_numpy.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:23`](../../../src/chronaxis/core/sample_reduction_numpy.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-selected_duration_ns"></a>
 ### `NumpySampleReduction.selected_duration_ns`
@@ -99,7 +99,7 @@ NumpySampleReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:37`](../../../src/chronaxis/core/sample_reduction_numpy.py#L37)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:37`](../../../src/chronaxis/core/sample_reduction_numpy.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-value_valid_duration_ns"></a>
 ### `NumpySampleReduction.value_valid_duration_ns`
@@ -127,7 +127,7 @@ NumpySampleReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:42`](../../../src/chronaxis/core/sample_reduction_numpy.py#L42)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:42`](../../../src/chronaxis/core/sample_reduction_numpy.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-valid_sample_count"></a>
 ### `NumpySampleReduction.valid_sample_count`
@@ -155,7 +155,7 @@ NumpySampleReduction.valid_sample_count
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:47`](../../../src/chronaxis/core/sample_reduction_numpy.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:47`](../../../src/chronaxis/core/sample_reduction_numpy.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-push"></a>
 ### `NumpySampleReduction.push`
@@ -185,7 +185,7 @@ SampleCalculationFacts；mean精度入值覆盖，数值归约故障不改覆盖
 
 - `ValueError`：样本归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:51`](../../../src/chronaxis/core/sample_reduction_numpy.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:51`](../../../src/chronaxis/core/sample_reduction_numpy.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpySampleReduction-finish"></a>
 ### `NumpySampleReduction.finish`
@@ -211,4 +211,4 @@ SampleReductionResult快照，覆盖政策由外层分类。
 
 配置、分配或取消传播；原序和、除法、精度、换算故障写None与质量。
 
-源码：[`src/chronaxis/core/sample_reduction_numpy.py:122`](../../../src/chronaxis/core/sample_reduction_numpy.py#L122)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/sample_reduction_numpy.py:122`](../../../src/chronaxis/core/sample_reduction_numpy.py#L122)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

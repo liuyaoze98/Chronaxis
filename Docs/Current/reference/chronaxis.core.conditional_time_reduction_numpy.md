@@ -47,7 +47,7 @@ NumpyConditionalTimeReduction(spec, input_unit, dtype, *, selected_duration_ns=N
 ```
 
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:25`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:25`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-__init__"></a>
 ### `NumpyConditionalTimeReduction.__init__`
@@ -78,7 +78,7 @@ NumpyConditionalTimeReduction.__init__(spec, input_unit, dtype, *, selected_dura
 
 配置、数组分配错误传播。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:28`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:28`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-selected_weight_seconds"></a>
 ### `NumpyConditionalTimeReduction.selected_weight_seconds`
@@ -106,7 +106,7 @@ float或不适用None。
 
 权重求和故障。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:49`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L49)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:49`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-selected_duration_ns"></a>
 ### `NumpyConditionalTimeReduction.selected_duration_ns`
@@ -134,7 +134,7 @@ NumpyConditionalTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:59`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L59)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:59`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-value_valid_duration_ns"></a>
 ### `NumpyConditionalTimeReduction.value_valid_duration_ns`
@@ -162,7 +162,7 @@ NumpyConditionalTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:64`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L64)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:64`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-push"></a>
 ### `NumpyConditionalTimeReduction.push`
@@ -196,7 +196,7 @@ ConditionalTimeCalculationFacts；权重故障仅改变数值失败状态，不�
 
 - `ValueError`：条件时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:68`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L68)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:68`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L68)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalTimeReduction-finish"></a>
 ### `NumpyConditionalTimeReduction.finish`
@@ -228,4 +228,4 @@ mean首遍RuntimeError、次遍分母不符ValueError；
 - `RuntimeError`：条件时间均值首遍只收事实，不能生成数值。
 - `ValueError`：条件均值次遍选择时长与全窗分母不同。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:185`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L185)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:185`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L185)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

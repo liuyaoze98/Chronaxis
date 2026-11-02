@@ -66,7 +66,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-Source: [`src/chronaxis/planning/plan.py:59`](../../../../src/chronaxis/planning/plan.py#L59) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/planning/plan.py:59`](../../../../src/chronaxis/planning/plan.py#L59) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -100,4 +100,4 @@ Checks the current public configuration, expands nodes, and parses sources/signa
 
 Return type: '[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)'。
 
-Source: [`src/chronaxis/planning/plan.py:99`](../../../../src/chronaxis/planning/plan.py#L99) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/planning/plan.py:99`](../../../../src/chronaxis/planning/plan.py#L99) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).

@@ -40,7 +40,7 @@ CANDependencyError(module_name)
 |---|---|---|---|---|
 |`code`|str|类成员，不作为构造参数填写|'dependency_missing'|固定为dependency_missing，标明CAN库或其依赖缺失；不表示信号字段配置错误。|
 
-源码：[`src/chronaxis/can_dependencies.py:17`](../../../src/chronaxis/can_dependencies.py#L17)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/can_dependencies.py:17`](../../../src/chronaxis/can_dependencies.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CANDependencyError-__init__"></a>
 ### `CANDependencyError.__init__`
@@ -65,7 +65,7 @@ None。
 
 无。
 
-源码：[`src/chronaxis/can_dependencies.py:22`](../../../src/chronaxis/can_dependencies.py#L22)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/can_dependencies.py:22`](../../../src/chronaxis/can_dependencies.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-import_can_dependency"></a>
 ## `import_can_dependency`
@@ -91,4 +91,4 @@ import_can_dependency(module_name)
 CANDependencyError 表示模块或其依赖缺失；
 其他 ImportError 原样传播，避免将损坏或不兼容安装误报成信号错误。
 
-源码：[`src/chronaxis/can_dependencies.py:29`](../../../src/chronaxis/can_dependencies.py#L29)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/can_dependencies.py:29`](../../../src/chronaxis/can_dependencies.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

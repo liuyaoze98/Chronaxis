@@ -87,7 +87,7 @@ ValueError为重叠；实际分配错误传播，调用方须先预约全部候�
 
 - `ValueError`：条件时间指标未知范围重叠。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:28`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:28`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation"></a>
 ## `HistoricalConditionalTimeCalculation`
@@ -99,7 +99,7 @@ HistoricalConditionalTimeCalculation(history, context, bindings, compiled, spec,
 ```
 
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:46`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L46)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:46`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-__init__"></a>
 ### `HistoricalConditionalTimeCalculation.__init__`
@@ -134,7 +134,7 @@ HistoricalConditionalTimeCalculation.__init__(history, context, bindings, compil
 类型、能力、预算或构造错误；持续清理失败的原异常附
     historical_conditional_time_calculation_cleanup_owner，恢复环境后可调用其close。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:53`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L53)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:53`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_make_reducer"></a>
 ### `HistoricalConditionalTimeCalculation._make_reducer`
@@ -159,7 +159,7 @@ HistoricalConditionalTimeCalculation._make_reducer(denominator=None)
 
 配置、数值模型或分配错误传播。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:115`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L115)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:115`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_make_blocks"></a>
 ### `HistoricalConditionalTimeCalculation._make_blocks`
@@ -185,7 +185,7 @@ HistoricalConditionalTimeCalculation._make_blocks()
 
 原构造/身份/预算错误。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:131`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L131)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:131`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L131)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_reset_facts"></a>
 ### `HistoricalConditionalTimeCalculation._reset_facts`
@@ -211,7 +211,7 @@ HistoricalConditionalTimeCalculation._reset_facts()
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:141`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L141)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:141`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L141)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-closed"></a>
 ### `HistoricalConditionalTimeCalculation.closed`
@@ -239,7 +239,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:152`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L152)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:152`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L152)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-failed"></a>
 ### `HistoricalConditionalTimeCalculation.failed`
@@ -267,7 +267,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:157`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L157)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:157`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L157)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-finished"></a>
 ### `HistoricalConditionalTimeCalculation.finished`
@@ -295,7 +295,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:162`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L162)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:162`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-result"></a>
 ### `HistoricalConditionalTimeCalculation.result`
@@ -327,7 +327,7 @@ CalculationResult。
 
 - `RuntimeError`：历史时间指标尚未成功完成。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:167`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L167)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:167`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L167)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_require_open"></a>
 ### `HistoricalConditionalTimeCalculation._require_open`
@@ -357,7 +357,7 @@ ResultClosedError。
 
 - `ResultClosedError`：历史时间指标已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:177`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L177)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:177`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L177)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_reserve"></a>
 ### `HistoricalConditionalTimeCalculation._reserve`
@@ -382,7 +382,7 @@ HistoricalConditionalTimeCalculation._reserve(amount)
 
 预算或取消错误。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:182`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L182)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:182`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L182)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_release"></a>
 ### `HistoricalConditionalTimeCalculation._release`
@@ -407,7 +407,7 @@ HistoricalConditionalTimeCalculation._release(amount)
 
 原释放/取消错误。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:194`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L194)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:194`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L194)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_append_facts"></a>
 ### `HistoricalConditionalTimeCalculation._append_facts`
@@ -439,7 +439,7 @@ HistoricalConditionalTimeCalculation._append_facts(facts)
 - `ValueError`：时间指标块必须按原请求真实交集连续推进。
 - `ValueError`：时间指标块有效与未知未完整划分。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:206`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L206)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:206`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L206)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_facts_snapshot"></a>
 ### `HistoricalConditionalTimeCalculation._facts_snapshot`
@@ -471,7 +471,7 @@ ConditionalTimeCalculationFacts。
 - `ValueError`：时间指标全窗覆盖划分不完整。
 - `ValueError`：条件时间指标全窗条件覆盖划分不完整。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:251`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L251)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:251`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L251)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-_finish_pass"></a>
 ### `HistoricalConditionalTimeCalculation._finish_pass`
@@ -501,7 +501,7 @@ True表示进入第二遍，False表示最终完成。
 
 - `ValueError`：两遍时间均值的真实覆盖或来源不同。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:270`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L270)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:270`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L270)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-step"></a>
 ### `HistoricalConditionalTimeCalculation.step`
@@ -531,7 +531,7 @@ bool；完成后重复False。
 
 - `RuntimeError`：失败的时间指标只能关闭。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:316`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L316)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:316`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L316)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalConditionalTimeCalculation-close"></a>
 ### `HistoricalConditionalTimeCalculation.close`
@@ -557,4 +557,4 @@ None，重复关闭安全。
 
 关闭或释放取消可重试。
 
-源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:346`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L346)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_conditional_time_calculation.py:346`](../../../src/chronaxis/execution/historical_conditional_time_calculation.py#L346)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

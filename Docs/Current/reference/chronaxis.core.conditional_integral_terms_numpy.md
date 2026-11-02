@@ -46,7 +46,7 @@ class NumpyConditionalIntegralTerms
 |`valid`|np.ndarray|是|无|bool形状(N-1,)，仅TRUE且正常面积可归约。|
 |`facts`|[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)|是|无|当前块双覆盖、样本与来源，不是全窗结果。|
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:21`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L21)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:21`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L21)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-NumpyConditionalIntegralTerms-__post_init__"></a>
 ### `NumpyConditionalIntegralTerms.__post_init__`
@@ -77,7 +77,7 @@ TypeError/ValueError为类型、形状、可写或占位错误。
 - `TypeError`：数组条件积分项需要同长一维float64/bool及ConditionalIntegralFacts。
 - `ValueError`：数组条件积分项必须只读且有限，无效位置只能0存储。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:28`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:28`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-compute_conditional_integral_terms_numpy"></a>
 ## `compute_conditional_integral_terms_numpy`
@@ -107,4 +107,4 @@ NumpyConditionalIntegralTerms；只读面积/掩码形状N-1，临时列形状N�
 
 输入、单位、时间和分配错误传播；浮点故障写质量并使对应值/面积失效。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:44`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:44`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

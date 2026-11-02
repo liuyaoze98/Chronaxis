@@ -66,7 +66,7 @@ No explicit parameters. No documented exceptions.
 
 ## Source locations
 
-- [`src/chronaxis/planning/checks.py:26`](../../../../src/chronaxis/planning/checks.py#L26) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/planning/checks.py:32`](../../../../src/chronaxis/planning/checks.py#L32) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/planning/checks.py:56`](../../../../src/chronaxis/planning/checks.py#L56) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/planning/checks.py:70`](../../../../src/chronaxis/planning/checks.py#L70) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
+- [`src/chronaxis/planning/checks.py:26`](../../../../src/chronaxis/planning/checks.py#L26) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/checks.py:32`](../../../../src/chronaxis/planning/checks.py#L32) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/checks.py:56`](../../../../src/chronaxis/planning/checks.py#L56) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/checks.py:70`](../../../../src/chronaxis/planning/checks.py#L70) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.

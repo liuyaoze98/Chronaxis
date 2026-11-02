@@ -44,4 +44,4 @@ apply_overrides(target, document, prefix, locations, origins)
 |`locations`|dict|是|无|位置或关键字。最终字段到原位置的可修改索引，删除已被整体替换的旧字段。|
 |`origins`|dict|是|无|位置或关键字。最终字段到声明文件/字段位置的可修改索引。|
 
-源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

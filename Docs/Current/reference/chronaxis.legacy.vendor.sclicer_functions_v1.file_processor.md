@@ -62,7 +62,7 @@ generator: 按时间顺序生成 can.Message 对象的生成器
 ValueError: 当输入文件的格式不是 .blf、.asc 或 .csv 时抛出
 FileNotFoundError: 当输入路径既不是文件也不是文件夹时抛出
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:13`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L13)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:13`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-check_csv_header"></a>
 ## `check_csv_header`
@@ -87,7 +87,7 @@ bool: 若文件头包含timestamp/arbitration_id/data三列则返回True
 
 ValueError: 当文件头缺失timestamp/arbitration_id/data三列时抛出
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:65`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:65`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-merge_convert"></a>
 ## `merge_convert`
@@ -116,7 +116,7 @@ merge_convert(inputs, out_base, out_fmt, db)
 ValueError: 当输入文件为csv格式且缺失timestamp/id/data三列时抛出
 FileNotFoundError: 当输入路径既不是文件也不是文件夹时抛出
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:85`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L85)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:85`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L85)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-output_suffix"></a>
 ## `output_suffix`
@@ -137,7 +137,7 @@ output_suffix(path)
 
 str: 带时间戳的输出基础名（不含扩展名）
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:120`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L120)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:120`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-fix_asc_header"></a>
 ## `fix_asc_header`
@@ -168,4 +168,4 @@ fix_asc_header(file_path, utc_offset=0)
 
 返回None，不返回额外的计算值。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:133`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L133)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py:133`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/file_processor.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

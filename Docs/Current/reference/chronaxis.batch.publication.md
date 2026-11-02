@@ -59,4 +59,4 @@ batch_report.json路径。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -73,7 +73,7 @@ WindowReplayFrame(owner, cost, time_ns, end_ns, point, continuous)
 ```
 
 
-源码：[`src/chronaxis/execution/window_replay.py:27`](../../../src/chronaxis/execution/window_replay.py#L27)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:27`](../../../src/chronaxis/execution/window_replay.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-__init__"></a>
 ### `WindowReplayFrame.__init__`
@@ -103,7 +103,7 @@ WindowReplayFrame.__init__(owner, cost, time_ns, end_ns, point, continuous)
 
 构造失败由调用方回收子结果和workspace。
 
-源码：[`src/chronaxis/execution/window_replay.py:35`](../../../src/chronaxis/execution/window_replay.py#L35)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:35`](../../../src/chronaxis/execution/window_replay.py#L35)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-_ensure_open"></a>
 ### `WindowReplayFrame._ensure_open`
@@ -133,7 +133,7 @@ ResultClosedError。
 
 - `ResultClosedError`：窗口回读帧已关闭或正在关闭。
 
-源码：[`src/chronaxis/execution/window_replay.py:47`](../../../src/chronaxis/execution/window_replay.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:47`](../../../src/chronaxis/execution/window_replay.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-closed"></a>
 ### `WindowReplayFrame.closed`
@@ -161,7 +161,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/window_replay.py:56`](../../../src/chronaxis/execution/window_replay.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:56`](../../../src/chronaxis/execution/window_replay.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-time_ns"></a>
 ### `WindowReplayFrame.time_ns`
@@ -189,7 +189,7 @@ int纳秒。
 
 关闭时拒绝。
 
-源码：[`src/chronaxis/execution/window_replay.py:61`](../../../src/chronaxis/execution/window_replay.py#L61)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:61`](../../../src/chronaxis/execution/window_replay.py#L61)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-end_ns"></a>
 ### `WindowReplayFrame.end_ns`
@@ -217,7 +217,7 @@ int纳秒。
 
 关闭时拒绝。
 
-源码：[`src/chronaxis/execution/window_replay.py:67`](../../../src/chronaxis/execution/window_replay.py#L67)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:67`](../../../src/chronaxis/execution/window_replay.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-point_result"></a>
 ### `WindowReplayFrame.point_result`
@@ -245,7 +245,7 @@ ExpressionResult。
 
 关闭时拒绝。
 
-源码：[`src/chronaxis/execution/window_replay.py:73`](../../../src/chronaxis/execution/window_replay.py#L73)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:73`](../../../src/chronaxis/execution/window_replay.py#L73)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-continuous_result"></a>
 ### `WindowReplayFrame.continuous_result`
@@ -273,7 +273,7 @@ ExpressionResult或None。
 
 关闭时拒绝。
 
-源码：[`src/chronaxis/execution/window_replay.py:82`](../../../src/chronaxis/execution/window_replay.py#L82)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:82`](../../../src/chronaxis/execution/window_replay.py#L82)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-_discard"></a>
 ### `WindowReplayFrame._discard`
@@ -299,7 +299,7 @@ WindowReplayFrame._discard()
 
 登记取消仍在finally关闭字段。
 
-源码：[`src/chronaxis/execution/window_replay.py:90`](../../../src/chronaxis/execution/window_replay.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:90`](../../../src/chronaxis/execution/window_replay.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-WindowReplayFrame-close"></a>
 ### `WindowReplayFrame.close`
@@ -325,7 +325,7 @@ WindowReplayFrame.close()
 
 子关闭/预算/取消传播。
 
-源码：[`src/chronaxis/execution/window_replay.py:103`](../../../src/chronaxis/execution/window_replay.py#L103)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:103`](../../../src/chronaxis/execution/window_replay.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay"></a>
 ## `HistoricalWindowReplay`
@@ -342,7 +342,7 @@ HistoricalWindowReplay(history: DecodedHistoryStore, context: HoldContext, bindi
 ```
 
 
-源码：[`src/chronaxis/execution/window_replay.py:127`](../../../src/chronaxis/execution/window_replay.py#L127)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:127`](../../../src/chronaxis/execution/window_replay.py#L127)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-__init__"></a>
 ### `HistoricalWindowReplay.__init__`
@@ -373,7 +373,7 @@ HistoricalWindowReplay.__init__(history: DecodedHistoryStore, context: HoldConte
 类型/域/来源身份/预算/构造取消；保留原异常，不关闭借用历史。
     持续清理失败时，从异常的window_replay_cleanup_owner取得自有恢复句柄。
 
-源码：[`src/chronaxis/execution/window_replay.py:136`](../../../src/chronaxis/execution/window_replay.py#L136)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:136`](../../../src/chronaxis/execution/window_replay.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-closed"></a>
 ### `HistoricalWindowReplay.closed`
@@ -401,7 +401,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/window_replay.py:222`](../../../src/chronaxis/execution/window_replay.py#L222)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:222`](../../../src/chronaxis/execution/window_replay.py#L222)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-failed"></a>
 ### `HistoricalWindowReplay.failed`
@@ -429,7 +429,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/window_replay.py:227`](../../../src/chronaxis/execution/window_replay.py#L227)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:227`](../../../src/chronaxis/execution/window_replay.py#L227)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-_ensure_open"></a>
 ### `HistoricalWindowReplay._ensure_open`
@@ -459,7 +459,7 @@ ResultClosedError。
 
 - `ResultClosedError`：窗口回读已关闭、正在关闭或推进失败。
 
-源码：[`src/chronaxis/execution/window_replay.py:231`](../../../src/chronaxis/execution/window_replay.py#L231)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:231`](../../../src/chronaxis/execution/window_replay.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-__iter__"></a>
 ### `HistoricalWindowReplay.__iter__`
@@ -485,7 +485,7 @@ HistoricalWindowReplay.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/window_replay.py:240`](../../../src/chronaxis/execution/window_replay.py#L240)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:240`](../../../src/chronaxis/execution/window_replay.py#L240)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-_seed"></a>
 ### `HistoricalWindowReplay._seed`
@@ -511,7 +511,7 @@ HistoricalWindowReplay._seed()
 
 真实历史/原子state错误传播，外层标失败。
 
-源码：[`src/chronaxis/execution/window_replay.py:244`](../../../src/chronaxis/execution/window_replay.py#L244)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:244`](../../../src/chronaxis/execution/window_replay.py#L244)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-_query"></a>
 ### `HistoricalWindowReplay._query`
@@ -536,7 +536,7 @@ HistoricalWindowReplay._query(*, point)
 
 原保持/表达式/预算错误传播；数组shape=(1,), int64纳秒。
 
-源码：[`src/chronaxis/execution/window_replay.py:257`](../../../src/chronaxis/execution/window_replay.py#L257)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:257`](../../../src/chronaxis/execution/window_replay.py#L257)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-__next__"></a>
 ### `HistoricalWindowReplay.__next__`
@@ -562,7 +562,7 @@ WindowReplayFrame；末点连续视图为None。
 
 StopIteration表示窗口完成；任何推进故障标failed，先前输出保持。
 
-源码：[`src/chronaxis/execution/window_replay.py:267`](../../../src/chronaxis/execution/window_replay.py#L267)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:267`](../../../src/chronaxis/execution/window_replay.py#L267)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalWindowReplay-close"></a>
 ### `HistoricalWindowReplay.close`
@@ -588,4 +588,4 @@ HistoricalWindowReplay.close()
 
 子关闭/预算取消，保留尚未完成句柄供重试。
 
-源码：[`src/chronaxis/execution/window_replay.py:325`](../../../src/chronaxis/execution/window_replay.py#L325)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/window_replay.py:325`](../../../src/chronaxis/execution/window_replay.py#L325)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

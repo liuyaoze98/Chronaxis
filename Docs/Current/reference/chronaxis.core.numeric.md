@@ -75,7 +75,7 @@ class ScalarValue
 |`quality`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag)|否|QualityFlag.NONE|输入原因和计算失败原因。|
 |`labels`|tuple[str, ...]|否|()|仅enum有固定公开逻辑域。|
 
-源码：[`src/chronaxis/core/numeric.py:48`](../../../src/chronaxis/core/numeric.py#L48)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:48`](../../../src/chronaxis/core/numeric.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ScalarValue-__post_init__"></a>
 ### `ScalarValue.__post_init__`
@@ -105,7 +105,7 @@ TypeError: 字段类型或枚举标签域结构不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/numeric.py:64`](../../../src/chronaxis/core/numeric.py#L64)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:64`](../../../src/chronaxis/core/numeric.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-result_dtype"></a>
 ## `result_dtype`
@@ -141,7 +141,7 @@ TypeError: 类型声明或字面量证明标志的类型不合法。
 
 返回类型：[SignalDType](chronaxis.core.types.md#api-SignalDType)。
 
-源码：[`src/chronaxis/core/numeric.py:129`](../../../src/chronaxis/core/numeric.py#L129)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:129`](../../../src/chronaxis/core/numeric.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_exact_float"></a>
 ## `_exact_float`
@@ -168,7 +168,7 @@ float值及NONE，或None及PRECISION_LOSS/NONFINITE。
 
 返回类型：tuple[float &#124; None, [QualityFlag](chronaxis.core.types.md#api-QualityFlag)]。
 
-源码：[`src/chronaxis/core/numeric.py:177`](../../../src/chronaxis/core/numeric.py#L177)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:177`](../../../src/chronaxis/core/numeric.py#L177)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-to_float_reference"></a>
 ## `to_float_reference`
@@ -199,7 +199,7 @@ TypeError/ValueError为结构或逻辑dtype。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:203`](../../../src/chronaxis/core/numeric.py#L203)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:203`](../../../src/chronaxis/core/numeric.py#L203)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-binary_reference"></a>
 ## `binary_reference`
@@ -240,7 +240,7 @@ TypeError、ValueError: 输入模型、运算类型或枚举比较域不符合�
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:224`](../../../src/chronaxis/core/numeric.py#L224)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:224`](../../../src/chronaxis/core/numeric.py#L224)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-unary_reference"></a>
 ## `unary_reference`
@@ -272,7 +272,7 @@ TypeError/ValueError为输入或未支持逻辑/运算。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:297`](../../../src/chronaxis/core/numeric.py#L297)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:297`](../../../src/chronaxis/core/numeric.py#L297)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-normalize_reference"></a>
 ## `normalize_reference`
@@ -313,7 +313,7 @@ TypeError: 声明、质量或原生标量结构不合法。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:326`](../../../src/chronaxis/core/numeric.py#L326)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:326`](../../../src/chronaxis/core/numeric.py#L326)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-memory_series_reference"></a>
 ## `memory_series_reference`
@@ -346,4 +346,4 @@ SignalSeries。保存正常转换值或无效原值，以及质量、时间、�
 
 返回类型：[SignalSeries](chronaxis.core.state.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/core/numeric.py:437`](../../../src/chronaxis/core/numeric.py#L437)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/numeric.py:437`](../../../src/chronaxis/core/numeric.py#L437)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

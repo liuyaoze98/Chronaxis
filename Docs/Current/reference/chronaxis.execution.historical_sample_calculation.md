@@ -85,7 +85,7 @@ ValueError为重叠；分配错误传播，调用方须先预约全部候选元�
 
 - `ValueError`：样本指标未知范围重叠。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:27`](../../../src/chronaxis/execution/historical_sample_calculation.py#L27)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:27`](../../../src/chronaxis/execution/historical_sample_calculation.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation"></a>
 ## `HistoricalSampleCalculation`
@@ -97,7 +97,7 @@ HistoricalSampleCalculation(history, context, bindings, compiled, spec, conditio
 ```
 
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:45`](../../../src/chronaxis/execution/historical_sample_calculation.py#L45)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:45`](../../../src/chronaxis/execution/historical_sample_calculation.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-__init__"></a>
 ### `HistoricalSampleCalculation.__init__`
@@ -132,7 +132,7 @@ HistoricalSampleCalculation.__init__(history, context, bindings, compiled, spec,
 类型、能力、预算或构造错误；持续清理失败的原异常附
     historical_sample_calculation_cleanup_owner，恢复环境后可调用其close。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:52`](../../../src/chronaxis/execution/historical_sample_calculation.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:52`](../../../src/chronaxis/execution/historical_sample_calculation.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_make_reducer"></a>
 ### `HistoricalSampleCalculation._make_reducer`
@@ -158,7 +158,7 @@ HistoricalSampleCalculation._make_reducer()
 
 原配置、数值模型或分配错误。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:119`](../../../src/chronaxis/execution/historical_sample_calculation.py#L119)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:119`](../../../src/chronaxis/execution/historical_sample_calculation.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_make_blocks"></a>
 ### `HistoricalSampleCalculation._make_blocks`
@@ -184,7 +184,7 @@ HistoricalCalculationBlocks或HistoricalConditionalBlocks。
 
 原构造、身份、条件或预算错误；持续清理入口由构造调用方接管。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:134`](../../../src/chronaxis/execution/historical_sample_calculation.py#L134)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:134`](../../../src/chronaxis/execution/historical_sample_calculation.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-closed"></a>
 ### `HistoricalSampleCalculation.closed`
@@ -212,7 +212,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:150`](../../../src/chronaxis/execution/historical_sample_calculation.py#L150)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:150`](../../../src/chronaxis/execution/historical_sample_calculation.py#L150)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-failed"></a>
 ### `HistoricalSampleCalculation.failed`
@@ -240,7 +240,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:155`](../../../src/chronaxis/execution/historical_sample_calculation.py#L155)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:155`](../../../src/chronaxis/execution/historical_sample_calculation.py#L155)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-finished"></a>
 ### `HistoricalSampleCalculation.finished`
@@ -268,7 +268,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 无。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:160`](../../../src/chronaxis/execution/historical_sample_calculation.py#L160)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:160`](../../../src/chronaxis/execution/historical_sample_calculation.py#L160)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-result"></a>
 ### `HistoricalSampleCalculation.result`
@@ -300,7 +300,7 @@ CalculationResult。
 
 - `RuntimeError`：历史样本指标尚未成功完成。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:165`](../../../src/chronaxis/execution/historical_sample_calculation.py#L165)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:165`](../../../src/chronaxis/execution/historical_sample_calculation.py#L165)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_require_open"></a>
 ### `HistoricalSampleCalculation._require_open`
@@ -330,7 +330,7 @@ ResultClosedError。
 
 - `ResultClosedError`：历史样本指标已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:175`](../../../src/chronaxis/execution/historical_sample_calculation.py#L175)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:175`](../../../src/chronaxis/execution/historical_sample_calculation.py#L175)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_reserve"></a>
 ### `HistoricalSampleCalculation._reserve`
@@ -355,7 +355,7 @@ HistoricalSampleCalculation._reserve(amount)
 
 预算或取消错误。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:180`](../../../src/chronaxis/execution/historical_sample_calculation.py#L180)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:180`](../../../src/chronaxis/execution/historical_sample_calculation.py#L180)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_release"></a>
 ### `HistoricalSampleCalculation._release`
@@ -380,7 +380,7 @@ HistoricalSampleCalculation._release(amount)
 
 原释放或取消错误。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:192`](../../../src/chronaxis/execution/historical_sample_calculation.py#L192)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:192`](../../../src/chronaxis/execution/historical_sample_calculation.py#L192)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_append_facts"></a>
 ### `HistoricalSampleCalculation._append_facts`
@@ -411,7 +411,7 @@ HistoricalSampleCalculation._append_facts(facts)
 - `ValueError`：样本块缺失真实交集。
 - `ValueError`：样本块必须按真实交集连续推进。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:204`](../../../src/chronaxis/execution/historical_sample_calculation.py#L204)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:204`](../../../src/chronaxis/execution/historical_sample_calculation.py#L204)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_facts_snapshot"></a>
 ### `HistoricalSampleCalculation._facts_snapshot`
@@ -443,7 +443,7 @@ SampleCalculationFacts。
 - `ValueError`：样本全窗值覆盖不完整。
 - `ValueError`：样本全窗条件覆盖不完整。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:244`](../../../src/chronaxis/execution/historical_sample_calculation.py#L244)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:244`](../../../src/chronaxis/execution/historical_sample_calculation.py#L244)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-_finish"></a>
 ### `HistoricalSampleCalculation._finish`
@@ -469,7 +469,7 @@ False表示最终完成。
 
 覆盖、数值快照、预算或取消错误。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:263`](../../../src/chronaxis/execution/historical_sample_calculation.py#L263)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:263`](../../../src/chronaxis/execution/historical_sample_calculation.py#L263)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-step"></a>
 ### `HistoricalSampleCalculation.step`
@@ -499,7 +499,7 @@ bool；完成后重复False。
 
 - `RuntimeError`：失败的样本指标只能关闭。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:284`](../../../src/chronaxis/execution/historical_sample_calculation.py#L284)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:284`](../../../src/chronaxis/execution/historical_sample_calculation.py#L284)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-HistoricalSampleCalculation-close"></a>
 ### `HistoricalSampleCalculation.close`
@@ -525,4 +525,4 @@ None，重复关闭安全。
 
 关闭或释放取消可重试。
 
-源码：[`src/chronaxis/execution/historical_sample_calculation.py:314`](../../../src/chronaxis/execution/historical_sample_calculation.py#L314)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/historical_sample_calculation.py:314`](../../../src/chronaxis/execution/historical_sample_calculation.py#L314)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

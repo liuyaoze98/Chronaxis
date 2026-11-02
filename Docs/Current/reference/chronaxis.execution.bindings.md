@@ -73,7 +73,7 @@ TypeError为未声明结构；调用方已申请元数据构造预算。
 
 - `TypeError`：运行绑定元数据含未支持类型。
 
-源码：[`src/chronaxis/execution/bindings.py:32`](../../../src/chronaxis/execution/bindings.py#L32)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:32`](../../../src/chronaxis/execution/bindings.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_fingerprint"></a>
 ## `_fingerprint`
@@ -98,7 +98,7 @@ SHA256文本。
 
 树/分配错误。
 
-源码：[`src/chronaxis/execution/bindings.py:52`](../../../src/chronaxis/execution/bindings.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:52`](../../../src/chronaxis/execution/bindings.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease"></a>
 ## `DecodedBindingLease`
@@ -114,7 +114,7 @@ DecodedBindingLease(budget)
 ```
 
 
-源码：[`src/chronaxis/execution/bindings.py:57`](../../../src/chronaxis/execution/bindings.py#L57)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:57`](../../../src/chronaxis/execution/bindings.py#L57)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-__init__"></a>
 ### `DecodedBindingLease.__init__`
@@ -139,7 +139,7 @@ DecodedBindingLease.__init__(budget)
 
 无主动异常；构造不接已经付费的裸金额，也不复制样本。
 
-源码：[`src/chronaxis/execution/bindings.py:65`](../../../src/chronaxis/execution/bindings.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:65`](../../../src/chronaxis/execution/bindings.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-bindings"></a>
 ### `DecodedBindingLease.bindings`
@@ -173,7 +173,7 @@ ResultClosedError为关闭。
 
 返回类型：[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)。
 
-源码：[`src/chronaxis/execution/bindings.py:79`](../../../src/chronaxis/execution/bindings.py#L79)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:79`](../../../src/chronaxis/execution/bindings.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-closed"></a>
 ### `DecodedBindingLease.closed`
@@ -203,7 +203,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/bindings.py:86`](../../../src/chronaxis/execution/bindings.py#L86)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:86`](../../../src/chronaxis/execution/bindings.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-_close_reader"></a>
 ### `DecodedBindingLease._close_reader`
@@ -229,7 +229,7 @@ DecodedBindingLease._close_reader()
 
 原reader.close错误传播；完成后取消不留重复释放槽。
 
-源码：[`src/chronaxis/execution/bindings.py:90`](../../../src/chronaxis/execution/bindings.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:90`](../../../src/chronaxis/execution/bindings.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-_clear_temporary"></a>
 ### `DecodedBindingLease._clear_temporary`
@@ -255,7 +255,7 @@ DecodedBindingLease._clear_temporary()
 
 无主动异常；不遍历原rows或删除历史。
 
-源码：[`src/chronaxis/execution/bindings.py:107`](../../../src/chronaxis/execution/bindings.py#L107)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:107`](../../../src/chronaxis/execution/bindings.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedBindingLease-close"></a>
 ### `DecodedBindingLease.close`
@@ -285,7 +285,7 @@ None，完成后幂等。
 
 只关闭本lease的当前reader，不关闭调用方history/scan/其他reader。
 
-源码：[`src/chronaxis/execution/bindings.py:115`](../../../src/chronaxis/execution/bindings.py#L115)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:115`](../../../src/chronaxis/execution/bindings.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_require_empty_source_scan"></a>
 ## `_require_empty_source_scan`
@@ -313,7 +313,7 @@ _require_empty_source_scan(source, history, observed_scans)
 ValueError/ResultClosedError为缺失、重复、失效或不对应的证明。
 不重新读取原CSV，不复制原行；后续工厂仍须逐源核当前历史文件的真实EOF。
 
-源码：[`src/chronaxis/execution/bindings.py:134`](../../../src/chronaxis/execution/bindings.py#L134)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:134`](../../../src/chronaxis/execution/bindings.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_decoded_source_contract"></a>
 ## `require_decoded_source_contract`
@@ -350,7 +350,7 @@ TypeError为非规定模型；ValueError为会话、domain、来源、完整时�
 
 返回类型：dict[str, [SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)]。
 
-源码：[`src/chronaxis/execution/bindings.py:168`](../../../src/chronaxis/execution/bindings.py#L168)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:168`](../../../src/chronaxis/execution/bindings.py#L168)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-bind_decoded_history"></a>
 ## `bind_decoded_history`
@@ -380,4 +380,4 @@ DecodedBindingLease，样本不保留，来源摘要/计数/投影/EOF事实纳�
 
 返回类型：[DecodedBindingLease](chronaxis.execution.bindings.md#api-DecodedBindingLease)。
 
-源码：[`src/chronaxis/execution/bindings.py:221`](../../../src/chronaxis/execution/bindings.py#L221)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/bindings.py:221`](../../../src/chronaxis/execution/bindings.py#L221)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

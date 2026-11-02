@@ -56,7 +56,7 @@ PlanValidationError：周期非法或乘3后溢出。
 
 无，不读取文件。
 
-源码：[`src/chronaxis/planning/signal_validity.py:12`](../../../src/chronaxis/planning/signal_validity.py#L12)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/signal_validity.py:12`](../../../src/chronaxis/planning/signal_validity.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-declared_valid_for"></a>
 ## `declared_valid_for`
@@ -87,4 +87,4 @@ PlanValidationError：空值、非法时长、无周期依据或默认有效期�
 
 无；validate/explain不会因此打开DBC。
 
-源码：[`src/chronaxis/planning/signal_validity.py:28`](../../../src/chronaxis/planning/signal_validity.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/signal_validity.py:28`](../../../src/chronaxis/planning/signal_validity.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

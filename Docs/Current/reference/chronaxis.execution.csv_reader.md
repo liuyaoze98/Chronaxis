@@ -97,7 +97,7 @@ BudgetedSignalCSVSourceAdapter(budget: ResourceBudget, spec: SignalCSVSpec, sess
 继承关系：[SignalCSVSourceAdapter](chronaxis.sources.signal_csv.md#api-SignalCSVSourceAdapter)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/csv_reader.py:25`](../../../src/chronaxis/execution/csv_reader.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:25`](../../../src/chronaxis/execution/csv_reader.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-__init__"></a>
 ### `BudgetedSignalCSVSourceAdapter.__init__`
@@ -132,7 +132,7 @@ BudgetedSignalCSVSourceAdapter.__init__(budget: ResourceBudget, spec: SignalCSVS
 
 - `TypeError`：预算CSV需要ResourceBudget/SignalCSVSpec/信号tuple。
 
-源码：[`src/chronaxis/execution/csv_reader.py:33`](../../../src/chronaxis/execution/csv_reader.py#L33)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:33`](../../../src/chronaxis/execution/csv_reader.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-iter_batches"></a>
 ### `BudgetedSignalCSVSourceAdapter.iter_batches`
@@ -165,7 +165,7 @@ BudgetedSignalCSVSourceAdapter.iter_batches(request: ReadRequest, *, observe_bou
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/execution/csv_reader.py:65`](../../../src/chronaxis/execution/csv_reader.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:65`](../../../src/chronaxis/execution/csv_reader.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-iter_batches_with_observation"></a>
 ### `BudgetedSignalCSVSourceAdapter.iter_batches_with_observation`
@@ -196,7 +196,7 @@ CSVObservationRead；迭代交付原SignalBatch，真正StopIteration后
 
 增加本read自有固定预算，默认iter_batches不启用此采集。
 
-源码：[`src/chronaxis/execution/csv_reader.py:95`](../../../src/chronaxis/execution/csv_reader.py#L95)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:95`](../../../src/chronaxis/execution/csv_reader.py#L95)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-_ensure_open"></a>
 ### `BudgetedSignalCSVSourceAdapter._ensure_open`
@@ -228,7 +228,7 @@ SourceClosedError为来源已关闭。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/csv_reader.py:123`](../../../src/chronaxis/execution/csv_reader.py#L123)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:123`](../../../src/chronaxis/execution/csv_reader.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-_read_resources"></a>
 ### `BudgetedSignalCSVSourceAdapter._read_resources`
@@ -259,7 +259,7 @@ _CSVResources。
 
 返回类型：'[_CSVResources](chronaxis.execution.csv_reader.md#api-_CSVResources)'。
 
-源码：[`src/chronaxis/execution/csv_reader.py:131`](../../../src/chronaxis/execution/csv_reader.py#L131)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:131`](../../../src/chronaxis/execution/csv_reader.py#L131)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-_close_handle"></a>
 ### `BudgetedSignalCSVSourceAdapter._close_handle`
@@ -285,7 +285,7 @@ BudgetedSignalCSVSourceAdapter._close_handle(handle, primary)
 
 无主错或GeneratorExit时原关闭错误传播；其他主错只增加note。
 
-源码：[`src/chronaxis/execution/csv_reader.py:155`](../../../src/chronaxis/execution/csv_reader.py#L155)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:155`](../../../src/chronaxis/execution/csv_reader.py#L155)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BudgetedSignalCSVSourceAdapter-close"></a>
 ### `BudgetedSignalCSVSourceAdapter.close`
@@ -314,7 +314,7 @@ BudgetedSignalCSVSourceAdapter.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/csv_reader.py:171`](../../../src/chronaxis/execution/csv_reader.py#L171)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:171`](../../../src/chronaxis/execution/csv_reader.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest"></a>
 ## `_CSVRequest`
@@ -326,7 +326,7 @@ _CSVRequest(owner, request, *, observe_bounds=False)
 ```
 
 
-源码：[`src/chronaxis/execution/csv_reader.py:245`](../../../src/chronaxis/execution/csv_reader.py#L245)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:245`](../../../src/chronaxis/execution/csv_reader.py#L245)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-__init__"></a>
 ### `_CSVRequest.__init__`
@@ -353,7 +353,7 @@ _CSVRequest.__init__(owner, request, *, observe_bounds=False)
 
 原配置、预算、取消或登记错误；持续清理失败附csv_request_cleanup_owner。
 
-源码：[`src/chronaxis/execution/csv_reader.py:248`](../../../src/chronaxis/execution/csv_reader.py#L248)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:248`](../../../src/chronaxis/execution/csv_reader.py#L248)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_adopt_cleanup"></a>
 ### `_CSVRequest._adopt_cleanup`
@@ -378,7 +378,7 @@ _CSVRequest._adopt_cleanup(exc)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_reader.py:271`](../../../src/chronaxis/execution/csv_reader.py#L271)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:271`](../../../src/chronaxis/execution/csv_reader.py#L271)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_created_iterator"></a>
 ### `_CSVRequest._created_iterator`
@@ -403,7 +403,7 @@ _CSVRequest._created_iterator(iterator)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_reader.py:280`](../../../src/chronaxis/execution/csv_reader.py#L280)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:280`](../../../src/chronaxis/execution/csv_reader.py#L280)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_read_resources"></a>
 ### `_CSVRequest._read_resources`
@@ -433,7 +433,7 @@ _CSVRequest._read_resources()
 
 - `SourceClosedError`：默认CSV请求尚有资源待清理。
 
-源码：[`src/chronaxis/execution/csv_reader.py:287`](../../../src/chronaxis/execution/csv_reader.py#L287)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:287`](../../../src/chronaxis/execution/csv_reader.py#L287)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_opened_handle"></a>
 ### `_CSVRequest._opened_handle`
@@ -458,7 +458,7 @@ _CSVRequest._opened_handle(handle)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_reader.py:303`](../../../src/chronaxis/execution/csv_reader.py#L303)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:303`](../../../src/chronaxis/execution/csv_reader.py#L303)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_close_handle"></a>
 ### `_CSVRequest._close_handle`
@@ -484,7 +484,7 @@ _CSVRequest._close_handle(handle, primary)
 
 无主错或GeneratorExit时传播原关闭错误，其余主错保留并加note。
 
-源码：[`src/chronaxis/execution/csv_reader.py:310`](../../../src/chronaxis/execution/csv_reader.py#L310)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:310`](../../../src/chronaxis/execution/csv_reader.py#L310)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_end_file"></a>
 ### `_CSVRequest._end_file`
@@ -510,7 +510,7 @@ _CSVRequest._end_file(resources, primary)
 
 正常结束或GeneratorExit时传播原清理错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:322`](../../../src/chronaxis/execution/csv_reader.py#L322)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:322`](../../../src/chronaxis/execution/csv_reader.py#L322)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-_close_resources"></a>
 ### `_CSVRequest._close_resources`
@@ -539,7 +539,7 @@ _CSVRequest._close_resources(primary)
 
 - `SourceReadError`：默认CSV文件尚未成功关闭。
 
-源码：[`src/chronaxis/execution/csv_reader.py:335`](../../../src/chronaxis/execution/csv_reader.py#L335)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:335`](../../../src/chronaxis/execution/csv_reader.py#L335)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-__iter__"></a>
 ### `_CSVRequest.__iter__`
@@ -565,7 +565,7 @@ _CSVRequest.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/csv_reader.py:351`](../../../src/chronaxis/execution/csv_reader.py#L351)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:351`](../../../src/chronaxis/execution/csv_reader.py#L351)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-__next__"></a>
 ### `_CSVRequest.__next__`
@@ -597,7 +597,7 @@ _CSVRequest.__next__() -> SignalBatch
 
 返回类型：[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)。
 
-源码：[`src/chronaxis/execution/csv_reader.py:355`](../../../src/chronaxis/execution/csv_reader.py#L355)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:355`](../../../src/chronaxis/execution/csv_reader.py#L355)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRequest-close"></a>
 ### `_CSVRequest.close`
@@ -625,7 +625,7 @@ _CSVRequest.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/csv_reader.py:379`](../../../src/chronaxis/execution/csv_reader.py#L379)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:379`](../../../src/chronaxis/execution/csv_reader.py#L379)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources"></a>
 ## `_CSVResources`
@@ -640,7 +640,7 @@ _CSVResources(owner)
 ```
 
 
-源码：[`src/chronaxis/execution/csv_reader.py:434`](../../../src/chronaxis/execution/csv_reader.py#L434)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:434`](../../../src/chronaxis/execution/csv_reader.py#L434)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-__init__"></a>
 ### `_CSVResources.__init__`
@@ -665,7 +665,7 @@ _CSVResources.__init__(owner)
 
 BudgetExceededError。
 
-源码：[`src/chronaxis/execution/csv_reader.py:441`](../../../src/chronaxis/execution/csv_reader.py#L441)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:441`](../../../src/chronaxis/execution/csv_reader.py#L441)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-_sync"></a>
 ### `_CSVResources._sync`
@@ -690,7 +690,7 @@ _CSVResources._sync(key)
 
 原字典登记错误可重试。
 
-源码：[`src/chronaxis/execution/csv_reader.py:460`](../../../src/chronaxis/execution/csv_reader.py#L460)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:460`](../../../src/chronaxis/execution/csv_reader.py#L460)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-_add"></a>
 ### `_CSVResources._add`
@@ -721,7 +721,7 @@ _CSVResources._add(key, amount)
 
 - `SourceClosedError`：默认CSV资源已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/csv_reader.py:471`](../../../src/chronaxis/execution/csv_reader.py#L471)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:471`](../../../src/chronaxis/execution/csv_reader.py#L471)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-_release_amount"></a>
 ### `_CSVResources._release_amount`
@@ -747,7 +747,7 @@ _CSVResources._release_amount(key, amount)
 
 原释放或取消。
 
-源码：[`src/chronaxis/execution/csv_reader.py:484`](../../../src/chronaxis/execution/csv_reader.py#L484)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:484`](../../../src/chronaxis/execution/csv_reader.py#L484)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-_move"></a>
 ### `_CSVResources._move`
@@ -778,7 +778,7 @@ _CSVResources._move(source, target, amount)
 
 - `ValueError`：默认CSV费用交接超出原用途余额。
 
-源码：[`src/chronaxis/execution/csv_reader.py:494`](../../../src/chronaxis/execution/csv_reader.py#L494)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:494`](../../../src/chronaxis/execution/csv_reader.py#L494)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-_release"></a>
 ### `_CSVResources._release`
@@ -803,7 +803,7 @@ _CSVResources._release(key)
 
 账本一致性错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:507`](../../../src/chronaxis/execution/csv_reader.py#L507)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:507`](../../../src/chronaxis/execution/csv_reader.py#L507)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-lines"></a>
 ### `_CSVResources.lines`
@@ -828,7 +828,7 @@ _PhysicalLines。
 
 构造错误传播。
 
-源码：[`src/chronaxis/execution/csv_reader.py:511`](../../../src/chronaxis/execution/csv_reader.py#L511)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:511`](../../../src/chronaxis/execution/csv_reader.py#L511)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-records"></a>
 ### `_CSVResources.records`
@@ -853,7 +853,7 @@ _CSVRecords。
 
 构造错误传播。
 
-源码：[`src/chronaxis/execution/csv_reader.py:519`](../../../src/chronaxis/execution/csv_reader.py#L519)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:519`](../../../src/chronaxis/execution/csv_reader.py#L519)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-before_sample"></a>
 ### `_CSVResources.before_sample`
@@ -880,7 +880,7 @@ _CSVResources.before_sample(time_text, text, path)
 
 预算超限。
 
-源码：[`src/chronaxis/execution/csv_reader.py:526`](../../../src/chronaxis/execution/csv_reader.py#L526)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:526`](../../../src/chronaxis/execution/csv_reader.py#L526)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-before_pack"></a>
 ### `_CSVResources.before_pack`
@@ -906,7 +906,7 @@ _CSVResources.before_pack(pending, validator)
 
 超限在pack_decoded/validator.accept之前失败，无丢样本或回退。
 
-源码：[`src/chronaxis/execution/csv_reader.py:534`](../../../src/chronaxis/execution/csv_reader.py#L534)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:534`](../../../src/chronaxis/execution/csv_reader.py#L534)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-after_pack"></a>
 ### `_CSVResources.after_pack`
@@ -931,7 +931,7 @@ _CSVResources.after_pack(validator)
 
 内部账本一致性错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:554`](../../../src/chronaxis/execution/csv_reader.py#L554)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:554`](../../../src/chronaxis/execution/csv_reader.py#L554)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-clear_pending"></a>
 ### `_CSVResources.clear_pending`
@@ -957,7 +957,7 @@ _CSVResources.clear_pending()
 
 账本一致性错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:567`](../../../src/chronaxis/execution/csv_reader.py#L567)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:567`](../../../src/chronaxis/execution/csv_reader.py#L567)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-end_file"></a>
 ### `_CSVResources.end_file`
@@ -983,7 +983,7 @@ _CSVResources.end_file()
 
 账本一致性错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:574`](../../../src/chronaxis/execution/csv_reader.py#L574)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:574`](../../../src/chronaxis/execution/csv_reader.py#L574)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVResources-close"></a>
 ### `_CSVResources.close`
@@ -1009,7 +1009,7 @@ _CSVResources.close()
 
 账本一致性错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:583`](../../../src/chronaxis/execution/csv_reader.py#L583)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:583`](../../../src/chronaxis/execution/csv_reader.py#L583)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PhysicalLines"></a>
 ## `_PhysicalLines`
@@ -1021,7 +1021,7 @@ _PhysicalLines(resources, handle)
 ```
 
 
-源码：[`src/chronaxis/execution/csv_reader.py:599`](../../../src/chronaxis/execution/csv_reader.py#L599)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:599`](../../../src/chronaxis/execution/csv_reader.py#L599)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PhysicalLines-__init__"></a>
 ### `_PhysicalLines.__init__`
@@ -1047,7 +1047,7 @@ _PhysicalLines.__init__(resources, handle)
 
 无。
 
-源码：[`src/chronaxis/execution/csv_reader.py:602`](../../../src/chronaxis/execution/csv_reader.py#L602)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:602`](../../../src/chronaxis/execution/csv_reader.py#L602)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PhysicalLines-__iter__"></a>
 ### `_PhysicalLines.__iter__`
@@ -1073,7 +1073,7 @@ _PhysicalLines.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/csv_reader.py:606`](../../../src/chronaxis/execution/csv_reader.py#L606)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:606`](../../../src/chronaxis/execution/csv_reader.py#L606)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PhysicalLines-__next__"></a>
 ### `_PhysicalLines.__next__`
@@ -1104,7 +1104,7 @@ BudgetExceededError/原I/O错误。
 - `BudgetExceededError`：CSV物理行/引用记录累积超出剩余RAM估算。
 - `BudgetExceededError`：CSV物理行超过剩余RAM允许长度，未解析截断行。
 
-源码：[`src/chronaxis/execution/csv_reader.py:610`](../../../src/chronaxis/execution/csv_reader.py#L610)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:610`](../../../src/chronaxis/execution/csv_reader.py#L610)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRecords"></a>
 ## `_CSVRecords`
@@ -1116,7 +1116,7 @@ _CSVRecords(resources, reader)
 ```
 
 
-源码：[`src/chronaxis/execution/csv_reader.py:640`](../../../src/chronaxis/execution/csv_reader.py#L640)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:640`](../../../src/chronaxis/execution/csv_reader.py#L640)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRecords-__init__"></a>
 ### `_CSVRecords.__init__`
@@ -1142,7 +1142,7 @@ _CSVRecords.__init__(resources, reader)
 
 无。
 
-源码：[`src/chronaxis/execution/csv_reader.py:643`](../../../src/chronaxis/execution/csv_reader.py#L643)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:643`](../../../src/chronaxis/execution/csv_reader.py#L643)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRecords-__iter__"></a>
 ### `_CSVRecords.__iter__`
@@ -1168,7 +1168,7 @@ _CSVRecords.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/csv_reader.py:647`](../../../src/chronaxis/execution/csv_reader.py#L647)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:647`](../../../src/chronaxis/execution/csv_reader.py#L647)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_CSVRecords-__next__"></a>
 ### `_CSVRecords.__next__`
@@ -1194,4 +1194,4 @@ _CSVRecords.__next__()
 
 EOF/原csv错误/预算或I/O错误。
 
-源码：[`src/chronaxis/execution/csv_reader.py:651`](../../../src/chronaxis/execution/csv_reader.py#L651)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/csv_reader.py:651`](../../../src/chronaxis/execution/csv_reader.py#L651)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

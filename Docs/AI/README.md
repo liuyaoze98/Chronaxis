@@ -24,7 +24,7 @@ python "$guide/run_analysis.py" "$guide/examples/conditional-energy.yaml" result
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m pip check
 ```
 

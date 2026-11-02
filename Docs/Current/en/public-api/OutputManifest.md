@@ -28,4 +28,4 @@ OutputManifest(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Pat
 |`row_counts`|tuple[tuple[str, int], ...]|Yes|None|Actual row counts for each supported result table.|
 |`status`|str|No|'completed'|Publication status; successful publication is completed.|
 
-Source: [`src/chronaxis/results/manifest.py:320`](../../../../src/chronaxis/results/manifest.py#L320) (line numbers refer to `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`).
+Source: [`src/chronaxis/results/manifest.py:320`](../../../../src/chronaxis/results/manifest.py#L320) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).

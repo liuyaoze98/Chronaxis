@@ -99,7 +99,7 @@ ResultFormatError为深度或未支持元数据。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history.py:34`](../../../src/chronaxis/execution/history.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:34`](../../../src/chronaxis/execution/history.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_pending_bytes"></a>
 ## `_pending_bytes`
@@ -126,7 +126,7 @@ _pending_bytes(validator: BatchValidator) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history.py:56`](../../../src/chronaxis/execution/history.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:56`](../../../src/chronaxis/execution/history.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_batch_bytes"></a>
 ## `_batch_bytes`
@@ -153,7 +153,7 @@ _batch_bytes(batch: SignalBatch) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history.py:66`](../../../src/chronaxis/execution/history.py#L66)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:66`](../../../src/chronaxis/execution/history.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore"></a>
 ## `DecodedHistoryStore`
@@ -169,7 +169,7 @@ DecodedHistoryStore(budget: ResourceBudget, work_dir: str | Path, descriptions: 
 ```
 
 
-源码：[`src/chronaxis/execution/history.py:78`](../../../src/chronaxis/execution/history.py#L78)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:78`](../../../src/chronaxis/execution/history.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-__init__"></a>
 ### `DecodedHistoryStore.__init__`
@@ -198,7 +198,7 @@ building存储。
 ValueError/TypeError/预算或实际目录创建原错；持续
     清理失败附history_cleanup_owner，已有目录不写失败标记也不抵销借用费用。
 
-源码：[`src/chronaxis/execution/history.py:86`](../../../src/chronaxis/execution/history.py#L86)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:86`](../../../src/chronaxis/execution/history.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_check"></a>
 ### `DecodedHistoryStore._check`
@@ -229,7 +229,7 @@ ResultClosedError或AnalysisError为状态不允许。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:139`](../../../src/chronaxis/execution/history.py#L139)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:139`](../../../src/chronaxis/execution/history.py#L139)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_write_bytes"></a>
 ### `DecodedHistoryStore._write_bytes`
@@ -261,7 +261,7 @@ DecodedHistoryStore._write_bytes(handle, payload: bytes) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:151`](../../../src/chronaxis/execution/history.py#L151)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:151`](../../../src/chronaxis/execution/history.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_writer"></a>
 ### `DecodedHistoryStore._writer`
@@ -295,7 +295,7 @@ DecodedHistoryStore._writer(slot, path, mode)
 
 - `AnalysisError`：历史仍有未关闭诊断FD，不能覆盖恢复责任。
 
-源码：[`src/chronaxis/execution/history.py:167`](../../../src/chronaxis/execution/history.py#L167)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:167`](../../../src/chronaxis/execution/history.py#L167)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_close_handle"></a>
 ### `DecodedHistoryStore._close_handle`
@@ -326,7 +326,7 @@ DecodedHistoryStore._close_handle(slot, primary=None)
 
 - `AnalysisError`：历史写FD close返回但实际尚未关闭。
 
-源码：[`src/chronaxis/execution/history.py:195`](../../../src/chronaxis/execution/history.py#L195)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:195`](../../../src/chronaxis/execution/history.py#L195)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_write_record"></a>
 ### `DecodedHistoryStore._write_record`
@@ -355,7 +355,7 @@ DecodedHistoryStore._write_record(handle, name: str, record: HistoryRecord) -> N
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:219`](../../../src/chronaxis/execution/history.py#L219)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:219`](../../../src/chronaxis/execution/history.py#L219)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-append"></a>
 ### `DecodedHistoryStore.append`
@@ -391,7 +391,7 @@ AnalysisError保留格式/协议/预算/磁盘异常链；取消原样传播。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:246`](../../../src/chronaxis/execution/history.py#L246)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:246`](../../../src/chronaxis/execution/history.py#L246)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-_record_failure"></a>
 ### `DecodedHistoryStore._record_failure`
@@ -418,7 +418,7 @@ DecodedHistoryStore._record_failure(exc: BaseException) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:327`](../../../src/chronaxis/execution/history.py#L327)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:327`](../../../src/chronaxis/execution/history.py#L327)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-seal"></a>
 ### `DecodedHistoryStore.seal`
@@ -450,7 +450,7 @@ AnalysisError为未结束来源或错误状态。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:349`](../../../src/chronaxis/execution/history.py#L349)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:349`](../../../src/chronaxis/execution/history.py#L349)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-iter_records"></a>
 ### `DecodedHistoryStore.iter_records`
@@ -481,7 +481,7 @@ DecodedHistoryStore.iter_records(source: str) -> Iterator[HistoryRecord]
 
 返回类型：Iterator[HistoryRecord]。
 
-源码：[`src/chronaxis/execution/history.py:361`](../../../src/chronaxis/execution/history.py#L361)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:361`](../../../src/chronaxis/execution/history.py#L361)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-source_completions"></a>
 ### `DecodedHistoryStore.source_completions`
@@ -511,7 +511,7 @@ DecodedHistoryStore.source_completions: Mapping[str, HistoryProgress]
 
 返回类型：Mapping[str, [HistoryProgress](chronaxis.execution.history_records.md#api-HistoryProgress)]。
 
-源码：[`src/chronaxis/execution/history.py:380`](../../../src/chronaxis/execution/history.py#L380)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:380`](../../../src/chronaxis/execution/history.py#L380)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-iter_groups"></a>
 ### `DecodedHistoryStore.iter_groups`
@@ -542,7 +542,7 @@ DecodedHistoryStore.iter_groups(*, sources=None) -> Iterator[DecodedTimeGroup]
 
 返回类型：Iterator[[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)]。
 
-源码：[`src/chronaxis/execution/history.py:389`](../../../src/chronaxis/execution/history.py#L389)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:389`](../../../src/chronaxis/execution/history.py#L389)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DecodedHistoryStore-close"></a>
 ### `DecodedHistoryStore.close`
@@ -571,7 +571,7 @@ DecodedHistoryStore.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:408`](../../../src/chronaxis/execution/history.py#L408)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:408`](../../../src/chronaxis/execution/history.py#L408)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator"></a>
 ## `_HistoryIterator`
@@ -586,7 +586,7 @@ _HistoryIterator(owner: DecodedHistoryStore, source: str)
 ```
 
 
-源码：[`src/chronaxis/execution/history.py:452`](../../../src/chronaxis/execution/history.py#L452)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:452`](../../../src/chronaxis/execution/history.py#L452)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator-__init__"></a>
 ### `_HistoryIterator.__init__`
@@ -612,7 +612,7 @@ _HistoryIterator.__init__(owner: DecodedHistoryStore, source: str)
 
 预算/打开/取消原错，持续清理失败时从history_iterator_cleanup_owner恢复close。
 
-源码：[`src/chronaxis/execution/history.py:459`](../../../src/chronaxis/execution/history.py#L459)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:459`](../../../src/chronaxis/execution/history.py#L459)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator-__iter__"></a>
 ### `_HistoryIterator.__iter__`
@@ -640,7 +640,7 @@ _HistoryIterator.__iter__() -> '_HistoryIterator'
 
 返回类型：'[_HistoryIterator](chronaxis.execution.history.md#api-_HistoryIterator)'。
 
-源码：[`src/chronaxis/execution/history.py:489`](../../../src/chronaxis/execution/history.py#L489)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:489`](../../../src/chronaxis/execution/history.py#L489)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator-verified_eof"></a>
 ### `_HistoryIterator.verified_eof`
@@ -670,7 +670,7 @@ True表示已读到文件末尾且完成结束检查；False表示尚未完成�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/history.py:497`](../../../src/chronaxis/execution/history.py#L497)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:497`](../../../src/chronaxis/execution/history.py#L497)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator-__next__"></a>
 ### `_HistoryIterator.__next__`
@@ -709,7 +709,7 @@ StopIteration为已校验完整EOF；损坏/关闭/实际读错误传播并关�
 
 返回类型：HistoryRecord。
 
-源码：[`src/chronaxis/execution/history.py:501`](../../../src/chronaxis/execution/history.py#L501)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:501`](../../../src/chronaxis/execution/history.py#L501)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_HistoryIterator-close"></a>
 ### `_HistoryIterator.close`
@@ -737,4 +737,4 @@ _HistoryIterator.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history.py:549`](../../../src/chronaxis/execution/history.py#L549)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/history.py:549`](../../../src/chronaxis/execution/history.py#L549)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

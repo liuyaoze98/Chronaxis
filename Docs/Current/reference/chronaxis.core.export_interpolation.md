@@ -57,7 +57,7 @@ float tuple。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-linear_numpy"></a>
 ## `linear_numpy`
@@ -91,4 +91,4 @@ shape(N,) float64 ndarray。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

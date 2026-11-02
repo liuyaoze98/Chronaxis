@@ -82,7 +82,7 @@ class RecordTimeResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 |`coverage_status`|str &#124; None|否|None|对明确配置的覆盖门槛给出的结论；独立于数值本身的complete/partial/indeterminate状态。|
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:42`](../../../src/chronaxis/execution/record_time_calculation.py#L42)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:42`](../../../src/chronaxis/execution/record_time_calculation.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation"></a>
 ## `RecordTimeCalculation`
@@ -96,7 +96,7 @@ RecordTimeCalculation(budget, spec, input_unit, dtype, step_ns, *, backend='nump
 继承关系：[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:53`](../../../src/chronaxis/execution/record_time_calculation.py#L53)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:53`](../../../src/chronaxis/execution/record_time_calculation.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-__init__"></a>
 ### `RecordTimeCalculation.__init__`
@@ -130,7 +130,7 @@ RecordTimeCalculation.__init__(budget, spec, input_unit, dtype, step_ns, *, back
 
 配置/预算失败；持续清理故障附record_time_cleanup_owner。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:56`](../../../src/chronaxis/execution/record_time_calculation.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:56`](../../../src/chronaxis/execution/record_time_calculation.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-_append_mean"></a>
 ### `RecordTimeCalculation._append_mean`
@@ -156,7 +156,7 @@ None。
 
 配额、短写、IO或取消传播。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:107`](../../../src/chronaxis/execution/record_time_calculation.py#L107)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:107`](../../../src/chronaxis/execution/record_time_calculation.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-_flush"></a>
 ### `RecordTimeCalculation._flush`
@@ -183,7 +183,7 @@ None。
 最小两点工作区也放不下时报告计算项与用途；数值、取消原错传播。
 不降低每行估算、不放宽限额，也不丢弃、重排或重复累计真实样本。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:136`](../../../src/chronaxis/execution/record_time_calculation.py#L136)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:136`](../../../src/chronaxis/execution/record_time_calculation.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-_flush_block"></a>
 ### `RecordTimeCalculation._flush_block`
@@ -209,7 +209,7 @@ None。
 
 预算/数值结构/IO/取消，失败后不得交付前缀。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:171`](../../../src/chronaxis/execution/record_time_calculation.py#L171)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:171`](../../../src/chronaxis/execution/record_time_calculation.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-_finish_mean"></a>
 ### `RecordTimeCalculation._finish_mean`
@@ -235,7 +235,7 @@ TimeReductionResult。
 
 临时数据短缺/多出、IO、预算或取消。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:220`](../../../src/chronaxis/execution/record_time_calculation.py#L220)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:220`](../../../src/chronaxis/execution/record_time_calculation.py#L220)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-finish"></a>
 ### `RecordTimeCalculation.finish`
@@ -261,7 +261,7 @@ RecordTimeResult，重复调用同一结果。
 
 失败拒绝前缀，close可重试。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:264`](../../../src/chronaxis/execution/record_time_calculation.py#L264)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:264`](../../../src/chronaxis/execution/record_time_calculation.py#L264)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-closed"></a>
 ### `RecordTimeCalculation.closed`
@@ -289,7 +289,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:304`](../../../src/chronaxis/execution/record_time_calculation.py#L304)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:304`](../../../src/chronaxis/execution/record_time_calculation.py#L304)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordTimeCalculation-close"></a>
 ### `RecordTimeCalculation.close`
@@ -315,4 +315,4 @@ None。
 
 文件关闭/费用释放失败可重试；重复关闭安全。
 
-源码：[`src/chronaxis/execution/record_time_calculation.py:308`](../../../src/chronaxis/execution/record_time_calculation.py#L308)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_time_calculation.py:308`](../../../src/chronaxis/execution/record_time_calculation.py#L308)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

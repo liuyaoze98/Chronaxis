@@ -64,7 +64,7 @@ TypeError/OverflowError为未声明时基或非法偏移；不读取输入。
 
 返回类型：str。
 
-源码：[`src/chronaxis/sources/descriptions.py:23`](../../../src/chronaxis/sources/descriptions.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/descriptions.py:23`](../../../src/chronaxis/sources/descriptions.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-describe_fields"></a>
 ## `describe_fields`
@@ -99,4 +99,4 @@ TypeError或ValueError: 字段描述或定位信息不符合公共模型要求�
 
 返回类型：tuple[[FieldDescription](chronaxis.sources.models.md#api-FieldDescription), ...]。
 
-源码：[`src/chronaxis/sources/descriptions.py:38`](../../../src/chronaxis/sources/descriptions.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/descriptions.py:38`](../../../src/chronaxis/sources/descriptions.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

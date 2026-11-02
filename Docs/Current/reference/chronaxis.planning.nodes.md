@@ -69,7 +69,7 @@ StaticExpression。保留类型、单位和依赖，尚未读取数据或执行�
 
 PlanValidationError: 受控语法、名称、依赖、类型、单位或同步声明不合法。
 
-源码：[`src/chronaxis/planning/nodes.py:24`](../../../src/chronaxis/planning/nodes.py#L24)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/nodes.py:24`](../../../src/chronaxis/planning/nodes.py#L24)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-register_id"></a>
 ## `register_id`
@@ -102,7 +102,7 @@ PlanValidationError: ID非法或已经存在，不自动改名或覆盖。
 
 返回类型：str。
 
-源码：[`src/chronaxis/planning/nodes.py:49`](../../../src/chronaxis/planning/nodes.py#L49)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/nodes.py:49`](../../../src/chronaxis/planning/nodes.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_rules"></a>
 ## `parse_rules`
@@ -132,7 +132,7 @@ PlanValidationError: 字段、ID、kind、条件类型、初始触发或持续�
 
 返回类型：tuple[[RulePlan](chronaxis.planning.models.md#api-RulePlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:75`](../../../src/chronaxis/planning/nodes.py#L75)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/nodes.py:75`](../../../src/chronaxis/planning/nodes.py#L75)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_windows"></a>
 ## `parse_windows`
@@ -166,7 +166,7 @@ PlanValidationError: 引用、ID、锚点、扩展时间或合并参数冲突。
 
 返回类型：tuple[[WindowPlan](chronaxis.planning.models.md#api-WindowPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:173`](../../../src/chronaxis/planning/nodes.py#L173)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/nodes.py:173`](../../../src/chronaxis/planning/nodes.py#L173)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_calculations"></a>
 ## `parse_calculations`
@@ -205,4 +205,4 @@ PlanValidationError: 算子、ID、引用、信号类型、条件、单位或覆
 
 返回类型：tuple[[CalculationPlan](chronaxis.planning.models.md#api-CalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:244`](../../../src/chronaxis/planning/nodes.py#L244)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/nodes.py:244`](../../../src/chronaxis/planning/nodes.py#L244)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

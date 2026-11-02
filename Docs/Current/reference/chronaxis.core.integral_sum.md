@@ -43,7 +43,7 @@ class IntegralStateLimitError(ValueError)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/core/integral_sum.py:15`](../../../src/chronaxis/core/integral_sum.py#L15)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_sum.py:15`](../../../src/chronaxis/core/integral_sum.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_partial_limit"></a>
 ## `require_partial_limit`
@@ -74,7 +74,7 @@ ValueError 为 bool、非整数或非正数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/integral_sum.py:22`](../../../src/chronaxis/core/integral_sum.py#L22)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_sum.py:22`](../../../src/chronaxis/core/integral_sum.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_sum_finish"></a>
 ## `require_sum_finish`
@@ -106,7 +106,7 @@ TypeError/ValueError 为文字或因子错误；单位维度由外层 calculatio
 
 返回类型：tuple[str, float]。
 
-源码：[`src/chronaxis/core/integral_sum.py:33`](../../../src/chronaxis/core/integral_sum.py#L33)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_sum.py:33`](../../../src/chronaxis/core/integral_sum.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-IntegralSumResult"></a>
 ## `IntegralSumResult`
@@ -130,7 +130,7 @@ class IntegralSumResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|本次数值归约诊断，输入覆盖质量另保留在 IntegralFacts。|
 |`valid_term_count`|int|是|无|原序有效面积项数，不冒充真实样本计数。|
 
-源码：[`src/chronaxis/core/integral_sum.py:47`](../../../src/chronaxis/core/integral_sum.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_sum.py:47`](../../../src/chronaxis/core/integral_sum.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-IntegralSumResult-__post_init__"></a>
 ### `IntegralSumResult.__post_init__`
@@ -163,4 +163,4 @@ TypeError/ValueError 为结构或状态不一致。
 - `ValueError`：积分计算失败需要有效项、None值及明确质量原因。
 - `ValueError`：积分成功结果的数值、计数或质量不一致。
 
-源码：[`src/chronaxis/core/integral_sum.py:60`](../../../src/chronaxis/core/integral_sum.py#L60)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_sum.py:60`](../../../src/chronaxis/core/integral_sum.py#L60)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

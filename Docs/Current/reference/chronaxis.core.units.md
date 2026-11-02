@@ -52,7 +52,7 @@ TypeError为其他类型；ValueError为非有限float。
 
 返回类型：int &#124; float。
 
-源码：[`src/chronaxis/core/units.py:25`](../../../src/chronaxis/core/units.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/units.py:25`](../../../src/chronaxis/core/units.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-validate_conversion"></a>
 ## `validate_conversion`
@@ -84,4 +84,4 @@ ValueError: 已知单位量纲不兼容，倍率不符合单位关系，或偏�
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/units.py:44`](../../../src/chronaxis/core/units.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/units.py:44`](../../../src/chronaxis/core/units.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

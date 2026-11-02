@@ -34,4 +34,4 @@ TimeConversion(time_ns: int, input_representation: str, input_unit: str, input_t
 |`rounding`|str|否|'round_half_even'|最终纳秒固定采用最近偶数舍入。|
 |`source_timezone`|str &#124; None|否|None|日期实际采用的tzinfo说明，纯数值不猜。|
 
-源码：[`src/chronaxis/timebase/conversion.py:47`](../../../src/chronaxis/timebase/conversion.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/timebase/conversion.py:47`](../../../src/chronaxis/timebase/conversion.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

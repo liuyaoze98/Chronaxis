@@ -79,7 +79,7 @@ CalculationSeries。所有列使用形状(N,)的共同纳秒轴，真实更新�
 独立归一化各依赖列，加入域内窗口边界，对齐后整列计算数值与条件。
     输出模型复制并冻结本次结果，保留完整历史，不广播或额外读取旧链。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:44`](../../../src/chronaxis/core/calculations_memory_numpy.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:44`](../../../src/chronaxis/core/calculations_memory_numpy.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-select_memory_numpy"></a>
 ## `select_memory_numpy`
@@ -110,7 +110,7 @@ SelectionRow迭代器；值、标签与未知诊断完整保留。
 
 完整输入/中间数组占用内存，输出不攒列表，不改旧I/O或原输入。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:106`](../../../src/chronaxis/core/calculations_memory_numpy.py#L106)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:106`](../../../src/chronaxis/core/calculations_memory_numpy.py#L106)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-compute_memory_numpy"></a>
 ## `compute_memory_numpy`
@@ -142,4 +142,4 @@ CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆�
 先用数组转换、对齐和表达式生成CalculationSeries，再调用独立数组指标内核。
     只创建本次结果，不修改原行，也不调用参考数值计算。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:119`](../../../src/chronaxis/core/calculations_memory_numpy.py#L119)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:119`](../../../src/chronaxis/core/calculations_memory_numpy.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

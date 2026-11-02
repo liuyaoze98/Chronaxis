@@ -70,7 +70,7 @@ class LegacyImportFiles
 |`original`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|已发布原INI副本的绝对Path。|
 |`report`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|迁移报告的已发布绝对Path。|
 
-源码：[`src/chronaxis/migration/publication.py:32`](../../../src/chronaxis/migration/publication.py#L32)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:32`](../../../src/chronaxis/migration/publication.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_mapping_json"></a>
 ## `_mapping_json`
@@ -99,7 +99,7 @@ TypeError为非MappingProxyType；MemoryError保持原生异常。
 
 - `TypeError`：导入计划JSON仅允许固定MappingProxyType扩展。
 
-源码：[`src/chronaxis/migration/publication.py:40`](../../../src/chronaxis/migration/publication.py#L40)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:40`](../../../src/chronaxis/migration/publication.py#L40)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_require_result"></a>
 ## `_require_result`
@@ -131,7 +131,7 @@ TypeError为非固定模型；ValueError为状态、原SHA或计划身份不一�
 - `ValueError`：无计划时仅接受失败转换报告，plan_identity必须为None。
 - `ValueError`：成功转换报告必须关联同一完整AnalysisPlan。
 
-源码：[`src/chronaxis/migration/publication.py:51`](../../../src/chronaxis/migration/publication.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:51`](../../../src/chronaxis/migration/publication.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_targets"></a>
 ## `_targets`
@@ -165,7 +165,7 @@ TypeError为路径容器；ValueError为后缀/Ref/源冲突；FileExistsError�
 - `ValueError`：导入输出禁止位于RefProjects。
 - `ValueError`：导入输出不能与原INI或mapping配置同路径。
 
-源码：[`src/chronaxis/migration/publication.py:71`](../../../src/chronaxis/migration/publication.py#L71)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:71`](../../../src/chronaxis/migration/publication.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner"></a>
 ## `_PublicationOwner`
@@ -177,7 +177,7 @@ _PublicationOwner(targets)
 ```
 
 
-源码：[`src/chronaxis/migration/publication.py:105`](../../../src/chronaxis/migration/publication.py#L105)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:105`](../../../src/chronaxis/migration/publication.py#L105)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner-__init__"></a>
 ### `_PublicationOwner.__init__`
@@ -202,7 +202,7 @@ _PublicationOwner.__init__(targets)
 
 原内存/UUID错误传播。
 
-源码：[`src/chronaxis/migration/publication.py:108`](../../../src/chronaxis/migration/publication.py#L108)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:108`](../../../src/chronaxis/migration/publication.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner-_close_handle"></a>
 ### `_PublicationOwner._close_handle`
@@ -232,7 +232,7 @@ _PublicationOwner._close_handle()
 
 - `OSError`：导入临时文件FD尚未关闭。
 
-源码：[`src/chronaxis/migration/publication.py:119`](../../../src/chronaxis/migration/publication.py#L119)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:119`](../../../src/chronaxis/migration/publication.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner-write"></a>
 ### `_PublicationOwner.write`
@@ -263,7 +263,7 @@ _PublicationOwner.write(index, value, *, original=False)
 
 - `OSError`：原INI临时文件写入不完整。
 
-源码：[`src/chronaxis/migration/publication.py:134`](../../../src/chronaxis/migration/publication.py#L134)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:134`](../../../src/chronaxis/migration/publication.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner-install"></a>
 ### `_PublicationOwner.install`
@@ -288,7 +288,7 @@ _PublicationOwner.install(index)
 
 原rename错误；不能用exists预检查取代最终no-replace。
 
-源码：[`src/chronaxis/migration/publication.py:161`](../../../src/chronaxis/migration/publication.py#L161)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:161`](../../../src/chronaxis/migration/publication.py#L161)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_PublicationOwner-close"></a>
 ### `_PublicationOwner.close`
@@ -314,7 +314,7 @@ _PublicationOwner.close()
 
 原close/unlink错误附同一最高owner。
 
-源码：[`src/chronaxis/migration/publication.py:171`](../../../src/chronaxis/migration/publication.py#L171)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:171`](../../../src/chronaxis/migration/publication.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-write_legacy_import"></a>
 ## `write_legacy_import`
@@ -348,4 +348,4 @@ LegacyImportFiles，均为绝对Path，转换失败时plan=None。
 
 返回类型：[LegacyImportFiles](chronaxis.migration.publication.md#api-LegacyImportFiles)。
 
-源码：[`src/chronaxis/migration/publication.py:193`](../../../src/chronaxis/migration/publication.py#L193)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/publication.py:193`](../../../src/chronaxis/migration/publication.py#L193)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

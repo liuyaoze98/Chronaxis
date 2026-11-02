@@ -25,7 +25,7 @@ PlanValidationError(path: str, message: str, code: str = 'invalid_config', *, hi
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PlanValidationError-__init__"></a>
 ### `PlanValidationError.__init__`
@@ -57,7 +57,7 @@ None；异常文本含路径和原因。
 
 无；参数由校验器内部构造。
 
-源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PlanValidationError-refresh_text"></a>
 ### `PlanValidationError.refresh_text`
@@ -83,7 +83,7 @@ None。
 
 无；附加定位后调用。
 
-源码：[`src/chronaxis/planning/checks.py:56`](../../../src/chronaxis/planning/checks.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/checks.py:56`](../../../src/chronaxis/planning/checks.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PlanValidationError-to_dict"></a>
 ### `PlanValidationError.to_dict`
@@ -109,4 +109,4 @@ PlanValidationError.to_dict()
 
 无。
 
-源码：[`src/chronaxis/planning/checks.py:70`](../../../src/chronaxis/planning/checks.py#L70)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/checks.py:70`](../../../src/chronaxis/planning/checks.py#L70)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

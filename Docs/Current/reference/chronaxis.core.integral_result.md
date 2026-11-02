@@ -63,4 +63,4 @@ TypeError/ValueError 为模型、单位、范围或计数矛盾；分配错误�
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/core/integral_result.py:16`](../../../src/chronaxis/core/integral_result.py#L16)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/integral_result.py:16`](../../../src/chronaxis/core/integral_result.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

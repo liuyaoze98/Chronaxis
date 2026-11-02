@@ -65,6 +65,7 @@ def lock(manual, runtime, device):
     # sdist精确打包含依赖的构建文件；不夹带未登记数据或Docs内的构建产物。
     resources = ["README.md", "README.en.md", "LICENSE", "Docs/Release/versioning.md", "Docs/Release/distribution.md",
                  "Docs/Release/publishing.md", "Docs/Release/publishing.en.md", "Docs/Release/release-notes-0.1.0.dev0.md",
+                 "Docs/Release/release-notes-0.1.0.dev1.md", "Docs/Release/release-notes-0.1.0.dev1.en.md",
                  "Docs/Release/trusted-publishing.md", "Docs/Release/trusted-publishing.en.md",
                  "Docs/Release/third-party.md", "Docs/Release/security.md", "Docs/Release/ThirdParty/highlight.js-LICENSE.txt",
                  "Docs/Release/ThirdParty/marked-LICENSE.txt", "tools/public_docs.py",

@@ -43,7 +43,7 @@ AnalysisRunner(backend=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -73,7 +73,7 @@ TypeError为非文本覆盖；ValueError为未知后端。
 - `TypeError`：AnalysisRunner backend需要reference、numpy或None。
 - `ValueError`：AnalysisRunner仅支持reference与numpy后端。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -101,7 +101,7 @@ None/reference/numpy。
 
 无。
 
-源码：[`src/chronaxis/runner.py:45`](../../../src/chronaxis/runner.py#L45)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:45`](../../../src/chronaxis/runner.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-_effective_plan"></a>
 ### `AnalysisRunner._effective_plan`
@@ -130,7 +130,7 @@ TypeError为非计划/执行声明；不重新解析配置或复制原输入行�
 
 - `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。
 
-源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -159,7 +159,7 @@ TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正�
 
 无来源I/O或目录创建。
 
-源码：[`src/chronaxis/runner.py:65`](../../../src/chronaxis/runner.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:65`](../../../src/chronaxis/runner.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -188,7 +188,7 @@ TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏带�
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:75`](../../../src/chronaxis/runner.py#L75)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:75`](../../../src/chronaxis/runner.py#L75)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -256,4 +256,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:86`](../../../src/chronaxis/runner.py#L86)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/runner.py:86`](../../../src/chronaxis/runner.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -9,7 +9,7 @@ A local wheel can be installed without the source repository. Python must be >=3
 In your Python 3.12 virtual environment, replace the filename below with the wheel you received. A normal installation includes the dependencies for signal tables, CAN logs and DBC decoding. Prepare the dependency packages in advance for offline installation.
 
 ```powershell
-python -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+python -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
 python -m chronaxis guide --language en
 ```
 

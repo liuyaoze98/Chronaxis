@@ -7,7 +7,7 @@
 在自己的 Python 3.12 虚拟环境中，把下列文件名换成实际收到的同版 wheel。普通安装已包含信号表分析、CAN 日志和 DBC 解码的运行依赖，无需添加 `[can]`。离线安装时需事先备齐依赖包。
 
 ```powershell
-python -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+python -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
 python -m chronaxis guide
 ```
 

@@ -40,7 +40,7 @@ BatchJobResult(job_id: str, status: str, plan_path: str | None = None, plan_iden
 |`worker_pid`|int &#124; None|否|None|实际执行此任务的分析工作进程PID；未启动的任务为None。复用同一进程的任务可具有相同PID。|
 |`recovery`|[CleanupHandle](../reference/chronaxis.batch.models.md#api-CleanupHandle) &#124; None|否|None|关闭失败后保留的CleanupHandle；调用close()重试释放资源，正常关闭时为None；不写入JSON。|
 
-源码：[`src/chronaxis/batch/models.py:119`](../../../src/chronaxis/batch/models.py#L119)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:119`](../../../src/chronaxis/batch/models.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchJobResult-to_dict"></a>
 ### `BatchJobResult.to_dict`
@@ -68,4 +68,4 @@ JSON对象。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/models.py:147`](../../../src/chronaxis/batch/models.py#L147)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:147`](../../../src/chronaxis/batch/models.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

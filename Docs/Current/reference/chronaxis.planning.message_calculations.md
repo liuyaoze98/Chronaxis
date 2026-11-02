@@ -89,7 +89,7 @@ TypeError为指标/绑定模型错误；ValueError为来源能力、声明或定
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/message_calculations.py:28`](../../../src/chronaxis/planning/message_calculations.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/message_calculations.py:28`](../../../src/chronaxis/planning/message_calculations.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-parse_message_calculations"></a>
 ## `parse_message_calculations`
@@ -123,4 +123,4 @@ PlanValidationError保具体JSON路径；cache_policy报旧完整缓存能力尚
 
 返回类型：tuple[[MessageCalculationPlan](chronaxis.planning.models.md#api-MessageCalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/message_calculations.py:98`](../../../src/chronaxis/planning/message_calculations.py#L98)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/message_calculations.py:98`](../../../src/chronaxis/planning/message_calculations.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

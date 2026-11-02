@@ -1,7 +1,7 @@
 <a id="支持范围与限制"></a>
 # Supported features and requirements
 
-Use this page to determine whether the current version can process your inputs and task. Configuration version is the integer `3`. YAML suits hand-written plans; JSON is also supported. Software version `0.1.0.dev0` is a development preview, installable from a wheel or public source; see [installation](installation.md).
+Use this page to determine whether the current version can process your inputs and task. Configuration version is the integer `3`. YAML suits hand-written plans; JSON is also supported. Software version `0.1.0.dev1` is a development preview, installable from a wheel or public source; see [installation](installation.md).
 
 | Area | Supported scope |
 |---|---|

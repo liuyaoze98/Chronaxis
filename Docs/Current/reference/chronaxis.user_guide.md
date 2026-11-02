@@ -54,7 +54,7 @@ README的绝对Path。
 
 未知语言ValueError；指南缺失FileNotFoundError。只支持普通目录安装。
 
-源码：[`src/chronaxis/user_guide.py:14`](../../../src/chronaxis/user_guide.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/user_guide.py:14`](../../../src/chronaxis/user_guide.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_installed_archive"></a>
 ## `_installed_archive`
@@ -79,7 +79,7 @@ _installed_archive(root)
 
 清单/资源缺失或越界。
 
-源码：[`src/chronaxis/user_guide.py:37`](../../../src/chronaxis/user_guide.py#L37)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/user_guide.py:37`](../../../src/chronaxis/user_guide.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-export_guide"></a>
 ## `export_guide`
@@ -104,4 +104,4 @@ export_guide(output)
 
 已有目标、缺资料或I/O失败。
 
-源码：[`src/chronaxis/user_guide.py:56`](../../../src/chronaxis/user_guide.py#L56)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/user_guide.py:56`](../../../src/chronaxis/user_guide.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

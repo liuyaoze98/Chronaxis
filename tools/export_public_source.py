@@ -41,7 +41,7 @@ def included(name):
         return False
     if name in {'README.md', 'README.en.md', 'LICENSE', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes'}:
         return True
-    if name == '.github/workflows/pypi-publish.yml':
+    if name in {'.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml'}:
         return True
     if name.startswith(('src/chronaxis/', 'examples/', 'tests/fixtures/',
                         'Docs/Current/', 'Docs/AI/', 'Docs/Schema/', 'Docs/Release/')):
@@ -63,9 +63,9 @@ def export(destination, revision='HEAD'):
              'Docs/Schema', 'Docs/Release', 'README.md', 'README.en.md', 'LICENSE',
              'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes']
     # 旧提交可能尚无发布工作流；只导出该版本实际存在的明确文件。
-    workflow = '.github/workflows/pypi-publish.yml'
-    if subprocess.check_output(['git', 'ls-tree', '--name-only', revision, '--', workflow], cwd=ROOT).strip():
-        paths.append(workflow)
+    for workflow in ('.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml'):
+        if subprocess.check_output(['git', 'ls-tree', '--name-only', revision, '--', workflow], cwd=ROOT).strip():
+            paths.append(workflow)
     data = subprocess.check_output(['git', 'archive', '--format=zip', revision, *paths], cwd=ROOT)
     files = {}
     with ZipFile(BytesIO(data)) as archive:

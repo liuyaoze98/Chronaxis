@@ -20,7 +20,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:123`](../../../src/chronaxis/batch/runner.py#L123)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:123`](../../../src/chronaxis/batch/runner.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -52,7 +52,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:126`](../../../src/chronaxis/batch/runner.py#L126)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:126`](../../../src/chronaxis/batch/runner.py#L126)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -93,4 +93,4 @@ BatchReport，close可重试子进程内失败清理。
 
 返回类型：[BatchReport](BatchReport.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:138`](../../../src/chronaxis/batch/runner.py#L138)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:138`](../../../src/chronaxis/batch/runner.py#L138)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

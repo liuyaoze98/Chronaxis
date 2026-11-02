@@ -61,4 +61,4 @@ ImportProblem为配置非法；取消和内存错误原样传播。
 - `ValueError`：duration_sec必须有限。
 - `ValueError`：正时限不能小于可表示的纳秒。
 
-源码：[`src/chronaxis/migration/start_end.py:14`](../../../src/chronaxis/migration/start_end.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/start_end.py:14`](../../../src/chronaxis/migration/start_end.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -132,7 +132,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:59`](../../../src/chronaxis/planning/plan.py#L59)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/plan.py:59`](../../../src/chronaxis/planning/plan.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -169,7 +169,7 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:99`](../../../src/chronaxis/planning/plan.py#L99)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/plan.py:99`](../../../src/chronaxis/planning/plan.py#L99)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-load_analysis_plan"></a>
 ## `load_analysis_plan`
@@ -209,4 +209,4 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:258`](../../../src/chronaxis/planning/plan.py#L258)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/plan.py:258`](../../../src/chronaxis/planning/plan.py#L258)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

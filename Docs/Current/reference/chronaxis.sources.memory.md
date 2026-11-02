@@ -68,7 +68,7 @@ MemorySourceAdapter(source: SourceSpec, session_id: str, signals: tuple[SignalDe
 ```
 
 
-源码：[`src/chronaxis/sources/memory.py:38`](../../../src/chronaxis/sources/memory.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:38`](../../../src/chronaxis/sources/memory.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-__init__"></a>
 ### `MemorySourceAdapter.__init__`
@@ -105,7 +105,7 @@ TypeError: 来源或信号容器类型错误，或backend不受支持。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/memory.py:48`](../../../src/chronaxis/sources/memory.py#L48)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:48`](../../../src/chronaxis/sources/memory.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-_ensure_open"></a>
 ### `MemorySourceAdapter._ensure_open`
@@ -133,7 +133,7 @@ SourceClosedError包含来源名称。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/memory.py:92`](../../../src/chronaxis/sources/memory.py#L92)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:92`](../../../src/chronaxis/sources/memory.py#L92)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-describe"></a>
 ### `MemorySourceAdapter.describe`
@@ -168,7 +168,7 @@ SourceClosedError: 实例已经关闭。
 
 返回类型：[SourceDescription](chronaxis.sources.models.md#api-SourceDescription)。
 
-源码：[`src/chronaxis/sources/memory.py:104`](../../../src/chronaxis/sources/memory.py#L104)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:104`](../../../src/chronaxis/sources/memory.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-iter_batches"></a>
 ### `MemorySourceAdapter.iter_batches`
@@ -202,7 +202,7 @@ SourceClosedError: 实例已经关闭。
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/memory.py:133`](../../../src/chronaxis/sources/memory.py#L133)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:133`](../../../src/chronaxis/sources/memory.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-iter_batches-iterate"></a>
 ### `MemorySourceAdapter.iter_batches.iterate`
@@ -230,7 +230,7 @@ MemorySourceAdapter.iter_batches.iterate() -> Iterator[SignalBatch]
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/memory.py:157`](../../../src/chronaxis/sources/memory.py#L157)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:157`](../../../src/chronaxis/sources/memory.py#L157)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-_iterate"></a>
 ### `MemorySourceAdapter._iterate`
@@ -265,7 +265,7 @@ SourceReadError: 转换、生命周期或协议校验失败，保留来源名和
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/memory.py:181`](../../../src/chronaxis/sources/memory.py#L181)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:181`](../../../src/chronaxis/sources/memory.py#L181)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-_make_batch"></a>
 ### `MemorySourceAdapter._make_batch`
@@ -299,7 +299,7 @@ TypeError、ValueError或OverflowError: 归一化或列模型校验失败。
 
 返回类型：[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)。
 
-源码：[`src/chronaxis/sources/memory.py:253`](../../../src/chronaxis/sources/memory.py#L253)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:253`](../../../src/chronaxis/sources/memory.py#L253)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MemorySourceAdapter-close"></a>
 ### `MemorySourceAdapter.close`
@@ -331,4 +331,4 @@ None。重复调用直接返回；后续描述和读取操作被拒绝。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/memory.py:276`](../../../src/chronaxis/sources/memory.py#L276)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/memory.py:276`](../../../src/chronaxis/sources/memory.py#L276)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

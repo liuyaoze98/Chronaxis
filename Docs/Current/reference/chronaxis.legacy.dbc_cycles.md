@@ -53,7 +53,7 @@ require_cycle_fields(fields, channel=None)
 
 TypeError/ValueError为类型、数量、重复或通道不符。
 
-源码：[`src/chronaxis/legacy/dbc_cycles.py:14`](../../../src/chronaxis/legacy/dbc_cycles.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/dbc_cycles.py:14`](../../../src/chronaxis/legacy/dbc_cycles.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-cycle_time_ns"></a>
 ## `cycle_time_ns`
@@ -79,4 +79,4 @@ cycle_time_ns(value)
 TypeError/ValueError/TimeOverflowError为缺失、类型、
     非正、非有限、不能精确到纳秒或越界；不为非法值选择默认周期。
 
-源码：[`src/chronaxis/legacy/dbc_cycles.py:28`](../../../src/chronaxis/legacy/dbc_cycles.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/dbc_cycles.py:28`](../../../src/chronaxis/legacy/dbc_cycles.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -40,4 +40,4 @@ TypeError/ValueError: 文本/时区非法、naive缺时区、本地时刻模糊�
 
 返回类型：[TimeConversion](TimeConversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:236`](../../../src/chronaxis/timebase/conversion.py#L236)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/timebase/conversion.py:236`](../../../src/chronaxis/timebase/conversion.py#L236)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

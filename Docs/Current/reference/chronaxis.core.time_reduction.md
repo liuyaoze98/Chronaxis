@@ -67,7 +67,7 @@ class TimeCalculationFacts
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 |`ranges_retained`|bool|否|True|精简执行可不构造未知位置，不能用于完整覆盖证据。|
 
-源码：[`src/chronaxis/core/time_reduction.py:23`](../../../src/chronaxis/core/time_reduction.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:23`](../../../src/chronaxis/core/time_reduction.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-TimeCalculationFacts-__post_init__"></a>
 ### `TimeCalculationFacts.__post_init__`
@@ -104,7 +104,7 @@ TypeError/ValueError为结构或矛盾时长。
 - `TypeError`：时间事实需要带有明确类型的质量和完整来源tuple。
 - `ValueError`：时间事实未知范围无序、重叠或越界。
 
-源码：[`src/chronaxis/core/time_reduction.py:44`](../../../src/chronaxis/core/time_reduction.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:44`](../../../src/chronaxis/core/time_reduction.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-TimeReductionResult"></a>
 ## `TimeReductionResult`
@@ -128,7 +128,7 @@ class TimeReductionResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|仅本次数值归约故障，输入原因在facts。|
 |`valid_term_count`|int|是|无|原值经算子门槛后有效的正区间数。|
 
-源码：[`src/chronaxis/core/time_reduction.py:86`](../../../src/chronaxis/core/time_reduction.py#L86)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:86`](../../../src/chronaxis/core/time_reduction.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-TimeReductionResult-__post_init__"></a>
 ### `TimeReductionResult.__post_init__`
@@ -161,7 +161,7 @@ TypeError/ValueError为字段或状态矛盾。
 - `ValueError`：时间计算故障需要有效项、None和质量原因。
 - `ValueError`：时间成功数值、项数或质量矛盾。
 
-源码：[`src/chronaxis/core/time_reduction.py:99`](../../../src/chronaxis/core/time_reduction.py#L99)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:99`](../../../src/chronaxis/core/time_reduction.py#L99)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-MeanTimeBlock"></a>
 ## `MeanTimeBlock`
@@ -183,7 +183,7 @@ class MeanTimeBlock
 |`values`|object|是|无|已通过均值精度门槛的有限数值列。|
 |`weights`|object|是|无|与values同长的正权重，周期模式为折算秒数。|
 
-源码：[`src/chronaxis/core/time_reduction.py:121`](../../../src/chronaxis/core/time_reduction.py#L121)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:121`](../../../src/chronaxis/core/time_reduction.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_time_config"></a>
 ## `require_time_config`
@@ -220,7 +220,7 @@ TypeError/ValueError为不支持能力或非法配置。
 - `ValueError`：时间算子与dtype不匹配。
 - `ValueError`：仅时间均值第二遍接受正原生int64整窗有效时长。
 
-源码：[`src/chronaxis/core/time_reduction.py:133`](../../../src/chronaxis/core/time_reduction.py#L133)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:133`](../../../src/chronaxis/core/time_reduction.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_time_series"></a>
 ## `require_time_series`
@@ -254,7 +254,7 @@ TypeError/ValueError/OverflowError。
 - `ValueError`：时间归约只接受同单位同dtype的无条件输入。
 - `OverflowError`：时间统计正交集时长超过int64。
 
-源码：[`src/chronaxis/core/time_reduction.py:164`](../../../src/chronaxis/core/time_reduction.py#L164)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:164`](../../../src/chronaxis/core/time_reduction.py#L164)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_time_options"></a>
 ## `require_time_options`
@@ -282,4 +282,4 @@ None。
 
 类型、长度或将合成边界当周期记录时拒绝。
 
-源码：[`src/chronaxis/core/time_reduction.py:181`](../../../src/chronaxis/core/time_reduction.py#L181)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/time_reduction.py:181`](../../../src/chronaxis/core/time_reduction.py#L181)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

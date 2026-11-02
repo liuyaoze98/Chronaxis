@@ -69,7 +69,7 @@ _new_root(value) -> Path
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/runner.py:23`](../../../src/chronaxis/batch/runner.py#L23)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:23`](../../../src/chronaxis/batch/runner.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_facts"></a>
 ## `_facts`
@@ -97,7 +97,7 @@ _facts(job, plan=None) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/runner.py:38`](../../../src/chronaxis/batch/runner.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:38`](../../../src/chronaxis/batch/runner.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_diagnostics"></a>
 ## `_diagnostics`
@@ -124,7 +124,7 @@ _diagnostics(error) -> tuple[str, ...]
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/batch/runner.py:49`](../../../src/chronaxis/batch/runner.py#L49)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:49`](../../../src/chronaxis/batch/runner.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_cancelled"></a>
 ## `_cancelled`
@@ -152,7 +152,7 @@ _cancelled(job, reason) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:60`](../../../src/chronaxis/batch/runner.py#L60)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:60`](../../../src/chronaxis/batch/runner.py#L60)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_report"></a>
 ## `_report`
@@ -186,7 +186,7 @@ _report(root, jobs, results, process_count, fail_fast, cancelled, label, reason)
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:65`](../../../src/chronaxis/batch/runner.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:65`](../../../src/chronaxis/batch/runner.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_run_job"></a>
 ## `_run_job`
@@ -217,7 +217,7 @@ _run_job(job, directory, backend, stop, cancel) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:74`](../../../src/chronaxis/batch/runner.py#L74)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:74`](../../../src/chronaxis/batch/runner.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_pause"></a>
 ## `_pause`
@@ -243,7 +243,7 @@ None。
 
 主进程取消。
 
-源码：[`src/chronaxis/batch/runner.py:118`](../../../src/chronaxis/batch/runner.py#L118)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:118`](../../../src/chronaxis/batch/runner.py#L118)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchRunner"></a>
 ## `BatchRunner`
@@ -255,7 +255,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:123`](../../../src/chronaxis/batch/runner.py#L123)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:123`](../../../src/chronaxis/batch/runner.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -287,7 +287,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:126`](../../../src/chronaxis/batch/runner.py#L126)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:126`](../../../src/chronaxis/batch/runner.py#L126)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -328,4 +328,4 @@ BatchReport，close可重试子进程内失败清理。
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:138`](../../../src/chronaxis/batch/runner.py#L138)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/runner.py:138`](../../../src/chronaxis/batch/runner.py#L138)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

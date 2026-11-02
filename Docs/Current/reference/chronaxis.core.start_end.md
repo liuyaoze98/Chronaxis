@@ -58,7 +58,7 @@ class StartEndSpec
 |`timeout_ns`|int &#124; None|否|None|从开始时刻算起；正纳秒或显式不限时。 None表示不设置超时上限，等待结束条件或实际观测结束。|
 |`emit_initial`|bool|否|True|首次已知开始条件为TRUE时允许启动。|
 
-源码：[`src/chronaxis/core/start_end.py:18`](../../../src/chronaxis/core/start_end.py#L18)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:18`](../../../src/chronaxis/core/start_end.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndSpec-__post_init__"></a>
 ### `StartEndSpec.__post_init__`
@@ -89,7 +89,7 @@ StartEndSpec.__post_init__()
 - `TypeError`：emit_initial必须为bool。
 - `ValueError`：start_end时限必须为正或None。
 
-源码：[`src/chronaxis/core/start_end.py:24`](../../../src/chronaxis/core/start_end.py#L24)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:24`](../../../src/chronaxis/core/start_end.py#L24)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector"></a>
 ## `StartEndDetector`
@@ -105,7 +105,7 @@ StartEndDetector(rule, start_ns, end_ns, spec, source_refs=(), *, backend='refer
 ```
 
 
-源码：[`src/chronaxis/core/start_end.py:35`](../../../src/chronaxis/core/start_end.py#L35)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:35`](../../../src/chronaxis/core/start_end.py#L35)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-__init__"></a>
 ### `StartEndDetector.__init__`
@@ -141,7 +141,7 @@ None；初始化实例状态。
 - `ValueError`：start_end需要StartEndSpec和duration=0输出规则。
 - `ValueError`：start_end后端需reference或numpy。
 
-源码：[`src/chronaxis/core/start_end.py:43`](../../../src/chronaxis/core/start_end.py#L43)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:43`](../../../src/chronaxis/core/start_end.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-next_deadline_ns"></a>
 ### `StartEndDetector.next_deadline_ns`
@@ -169,7 +169,7 @@ int或None。
 
 无。
 
-源码：[`src/chronaxis/core/start_end.py:67`](../../../src/chronaxis/core/start_end.py#L67)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:67`](../../../src/chronaxis/core/start_end.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-_close"></a>
 ### `StartEndDetector._close`
@@ -196,7 +196,7 @@ StartEndDetector._close(time_ns, status, quality=Q.NONE)
 
 Event结构或分配错误；失败后调用方丢弃实例。
 
-源码：[`src/chronaxis/core/start_end.py:71`](../../../src/chronaxis/core/start_end.py#L71)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:71`](../../../src/chronaxis/core/start_end.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-_unknown_status"></a>
 ### `StartEndDetector._unknown_status`
@@ -223,7 +223,7 @@ str。
 
 无。
 
-源码：[`src/chronaxis/core/start_end.py:85`](../../../src/chronaxis/core/start_end.py#L85)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:85`](../../../src/chronaxis/core/start_end.py#L85)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-_advance"></a>
 ### `StartEndDetector._advance`
@@ -255,7 +255,7 @@ StartEndDetector._advance(start_condition, end_condition, advance=None)
 跨过时限前未出现其它组，表示此前连续结束条件已知不成立；
 同一时刻未知则不能证明截止点没有end_condition，保留未知/EOF原因。
 
-源码：[`src/chronaxis/core/start_end.py:90`](../../../src/chronaxis/core/start_end.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:90`](../../../src/chronaxis/core/start_end.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-push"></a>
 ### `StartEndDetector.push`
@@ -288,7 +288,7 @@ StartEndDetector.push(ticks, end_ticks, *, advances=None)
 - `ValueError`：start_end检测器已finish。
 - `ValueError`：start_end两个条件必须在相同完整时间组求值。
 
-源码：[`src/chronaxis/core/start_end.py:137`](../../../src/chronaxis/core/start_end.py#L137)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:137`](../../../src/chronaxis/core/start_end.py#L137)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-drain_events"></a>
 ### `StartEndDetector.drain_events`
@@ -314,7 +314,7 @@ Event tuple。
 
 分配错误。
 
-源码：[`src/chronaxis/core/start_end.py:158`](../../../src/chronaxis/core/start_end.py#L158)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:158`](../../../src/chronaxis/core/start_end.py#L158)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-StartEndDetector-finish"></a>
 ### `StartEndDetector.finish`
@@ -344,4 +344,4 @@ StartEndDetector.finish()
 
 - `ValueError`：start_end需要唯一finish且已有真实terminal。
 
-源码：[`src/chronaxis/core/start_end.py:164`](../../../src/chronaxis/core/start_end.py#L164)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/start_end.py:164`](../../../src/chronaxis/core/start_end.py#L164)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

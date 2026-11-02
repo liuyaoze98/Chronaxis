@@ -23,10 +23,10 @@ Enter only the workflow filename, without `.github/workflows/`. The environment 
 Open [GitHub Actions](https://github.com/liuyaoze98/Chronaxis/actions/workflows/pypi-publish.yml), select Run workflow, and choose main.
 
 1. Run without selecting the upload option: download the two release files and check the source tag and SHA256 values. Nothing is uploaded to PyPI.
-2. After verification succeeds and the PyPI setup is complete, run with the upload option selected. Check the [PyPI project page](https://pypi.org/project/chronaxis/0.1.0.dev0/) after success.
+2. After verification succeeds and the PyPI setup is complete, run with the upload option selected. Check the [PyPI project page](https://pypi.org/project/chronaxis/0.1.0.dev1/) after success.
 3. Follow the [publishing workflow](publishing.en.md) to install from PyPI in a new environment, verify dependencies, guides, and the energy example, then publish the GitHub Release draft.
 
-The current workflow is pinned to version 0.1.0.dev0 and its reviewed hashes. It does not rebuild files or move the source tag. Before releasing another version, verify its packages, then update the workflow version, source commit, and both file hashes. Do not enable skip-existing to bypass an upload failure; first compare the remote files with the local files.
+The current workflow is pinned to version 0.1.0.dev1 and its reviewed hashes. It does not rebuild files or move the source tag. Before releasing another version, verify its packages, then update the workflow version, source commit, and both file hashes. Do not enable skip-existing to bypass an upload failure; first compare the remote files with the local files.
 
 TestPyPI is an optional, separate upload testing service. Without a TestPyPI account, verify installation locally first, then verify installation from the production PyPI service.
 

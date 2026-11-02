@@ -33,7 +33,7 @@ BatchReport(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJo
 |`worker_process_count`|int|否|0|本次实际启动的分析工作进程数量；可能少于process_count，空批次或开始前取消时为0。不包含CAN读取子进程。|
 |`infrastructure_error`|str &#124; None|否|None|调度/汇总基础设施异常的说明；None表示未记录这类错误，不代表每个任务成功。任务错误查看jobs中的status、error_type、error_message及error_chain。|
 
-源码：[`src/chronaxis/batch/models.py:160`](../../../src/chronaxis/batch/models.py#L160)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:160`](../../../src/chronaxis/batch/models.py#L160)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchReport-status"></a>
 ### `BatchReport.status`
@@ -63,7 +63,7 @@ failed/cancelled/completed。
 
 返回类型：str。
 
-源码：[`src/chronaxis/batch/models.py:173`](../../../src/chronaxis/batch/models.py#L173)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:173`](../../../src/chronaxis/batch/models.py#L173)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchReport-to_dict"></a>
 ### `BatchReport.to_dict`
@@ -91,7 +91,7 @@ JSON对象。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-BatchReport-close"></a>
 ### `BatchReport.close`
@@ -119,4 +119,4 @@ BatchReport.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/batch/models.py:190`](../../../src/chronaxis/batch/models.py#L190)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/batch/models.py:190`](../../../src/chronaxis/batch/models.py#L190)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

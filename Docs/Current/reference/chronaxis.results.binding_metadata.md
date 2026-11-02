@@ -41,7 +41,7 @@ class PresetRoleMetadata
 |`contract_version`|str|是|无|实际检查的角色契约版本。|
 |`contract_status`|str|否|'checked_against_declared_metadata'|校验的是给定声明。|
 
-源码：[`src/chronaxis/results/binding_metadata.py:15`](../../../src/chronaxis/results/binding_metadata.py#L15)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/binding_metadata.py:15`](../../../src/chronaxis/results/binding_metadata.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PresetRoleMetadata-__post_init__"></a>
 ### `PresetRoleMetadata.__post_init__`
@@ -72,7 +72,7 @@ PresetRoleMetadata.__post_init__()
 - `ValueError`：预设角色查找方式需explicit或semantic_unique。
 - `ValueError`：预设角色状态只能说明已检查声明元数据。
 
-源码：[`src/chronaxis/results/binding_metadata.py:24`](../../../src/chronaxis/results/binding_metadata.py#L24)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/binding_metadata.py:24`](../../../src/chronaxis/results/binding_metadata.py#L24)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PresetBindingMetadata"></a>
 ## `PresetBindingMetadata`
@@ -92,7 +92,7 @@ class PresetBindingMetadata
 |`version`|str|是|无|原预设版本，与角色契约版本独立。|
 |`roles`|tuple[[PresetRoleMetadata](chronaxis.results.binding_metadata.md#api-PresetRoleMetadata), ...]|是|无|有限冻结记录，不含输入行。|
 
-源码：[`src/chronaxis/results/binding_metadata.py:37`](../../../src/chronaxis/results/binding_metadata.py#L37)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/binding_metadata.py:37`](../../../src/chronaxis/results/binding_metadata.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PresetBindingMetadata-__post_init__"></a>
 ### `PresetBindingMetadata.__post_init__`
@@ -123,4 +123,4 @@ PresetBindingMetadata.__post_init__()
 - `TypeError`：预设清单角色需冻结PresetRoleMetadata tuple。
 - `ValueError`：预设清单不能重复同一角色。
 
-源码：[`src/chronaxis/results/binding_metadata.py:45`](../../../src/chronaxis/results/binding_metadata.py#L45)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/results/binding_metadata.py:45`](../../../src/chronaxis/results/binding_metadata.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

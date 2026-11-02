@@ -94,7 +94,7 @@ RecordSessionCalculations(plan, budget, work_dir, *, requirements=None)
 ```
 
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:46`](../../../src/chronaxis/execution/record_session_calculations.py#L46)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:46`](../../../src/chronaxis/execution/record_session_calculations.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-__init__"></a>
 ### `RecordSessionCalculations.__init__`
@@ -122,7 +122,7 @@ RecordSessionCalculations.__init__(plan, budget, work_dir, *, requirements=None)
 
 构造原错附record_session_cleanup_owner供父会话接管。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:49`](../../../src/chronaxis/execution/record_session_calculations.py#L49)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:49`](../../../src/chronaxis/execution/record_session_calculations.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_new"></a>
 ### `RecordSessionCalculations._new`
@@ -150,7 +150,7 @@ owner。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:95`](../../../src/chronaxis/execution/record_session_calculations.py#L95)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:95`](../../../src/chronaxis/execution/record_session_calculations.py#L95)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_consume_group"></a>
 ### `RecordSessionCalculations._consume_group`
@@ -176,7 +176,7 @@ None。
 表达式/预算/累计原错。
 非驱动无效更新仅截断待算值，不新增周期；条件截止独立处理。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:103`](../../../src/chronaxis/execution/record_session_calculations.py#L103)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:103`](../../../src/chronaxis/execution/record_session_calculations.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_selection"></a>
 ### `RecordSessionCalculations._emit_selection`
@@ -203,7 +203,7 @@ None。
 
 暂存错误。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:169`](../../../src/chronaxis/execution/record_session_calculations.py#L169)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:169`](../../../src/chronaxis/execution/record_session_calculations.py#L169)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_input_trace"></a>
 ### `RecordSessionCalculations._emit_input_trace`
@@ -234,7 +234,7 @@ None。
 
 暂存错误。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:178`](../../../src/chronaxis/execution/record_session_calculations.py#L178)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:178`](../../../src/chronaxis/execution/record_session_calculations.py#L178)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_contribution"></a>
 ### `RecordSessionCalculations._emit_contribution`
@@ -261,7 +261,7 @@ None。
 
 暂存原错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:185`](../../../src/chronaxis/execution/record_session_calculations.py#L185)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:185`](../../../src/chronaxis/execution/record_session_calculations.py#L185)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-execute_into"></a>
 ### `RecordSessionCalculations.execute_into`
@@ -287,7 +287,7 @@ None。
 任一输入/计算失败附真实恢复owner。
 只构造所需字段；独立驱动仅传帧定位，DBC周期在首帧前取得一次。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:195`](../../../src/chronaxis/execution/record_session_calculations.py#L195)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:195`](../../../src/chronaxis/execution/record_session_calculations.py#L195)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_finish_actual_tails"></a>
 ### `RecordSessionCalculations._finish_actual_tails`
@@ -314,7 +314,7 @@ None。
 表达式、预算或累计错误原样传播。
 不新增样本、贡献或追溯；观察结束和TTL都来自真实输入，domain仅负责裁剪。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:418`](../../../src/chronaxis/execution/record_session_calculations.py#L418)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:418`](../../../src/chronaxis/execution/record_session_calculations.py#L418)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_consume_constants"></a>
 ### `RecordSessionCalculations._consume_constants`
@@ -340,7 +340,7 @@ None。
 
 求值/预算/计算原错；无观测不喂任何点。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:457`](../../../src/chronaxis/execution/record_session_calculations.py#L457)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:457`](../../../src/chronaxis/execution/record_session_calculations.py#L457)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_event"></a>
 ### `RecordSessionCalculations._emit_event`
@@ -365,7 +365,7 @@ None。
 
 原写入错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:478`](../../../src/chronaxis/execution/record_session_calculations.py#L478)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:478`](../../../src/chronaxis/execution/record_session_calculations.py#L478)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_event_duration"></a>
 ### `RecordSessionCalculations._emit_event_duration`
@@ -392,7 +392,7 @@ None。
 
 原发布错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:493`](../../../src/chronaxis/execution/record_session_calculations.py#L493)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:493`](../../../src/chronaxis/execution/record_session_calculations.py#L493)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_segment"></a>
 ### `RecordSessionCalculations._emit_segment`
@@ -417,7 +417,7 @@ None。
 
 原发布/计算错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:504`](../../../src/chronaxis/execution/record_session_calculations.py#L504)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:504`](../../../src/chronaxis/execution/record_session_calculations.py#L504)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_count_outcome"></a>
 ### `RecordSessionCalculations._count_outcome`
@@ -443,7 +443,7 @@ None。
 
 未支持的内部状态。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:518`](../../../src/chronaxis/execution/record_session_calculations.py#L518)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:518`](../../../src/chronaxis/execution/record_session_calculations.py#L518)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-analysis_outcome"></a>
 ### `RecordSessionCalculations.analysis_outcome`
@@ -469,7 +469,7 @@ AnalysisOutcome。
 
 规则未完成。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:524`](../../../src/chronaxis/execution/record_session_calculations.py#L524)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:524`](../../../src/chronaxis/execution/record_session_calculations.py#L524)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-threshold_summaries"></a>
 ### `RecordSessionCalculations.threshold_summaries`
@@ -495,7 +495,7 @@ tuple。
 
 未完成统计错误。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:529`](../../../src/chronaxis/execution/record_session_calculations.py#L529)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:529`](../../../src/chronaxis/execution/record_session_calculations.py#L529)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_emit_sequence"></a>
 ### `RecordSessionCalculations._emit_sequence`
@@ -520,7 +520,7 @@ None。
 
 原写入错。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:542`](../../../src/chronaxis/execution/record_session_calculations.py#L542)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:542`](../../../src/chronaxis/execution/record_session_calculations.py#L542)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_consume_message"></a>
 ### `RecordSessionCalculations._consume_message`
@@ -545,7 +545,7 @@ None。
 
 预算、计算或取消原错；完整明细仍逐消息交付。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:554`](../../../src/chronaxis/execution/record_session_calculations.py#L554)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:554`](../../../src/chronaxis/execution/record_session_calculations.py#L554)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_flush_messages"></a>
 ### `RecordSessionCalculations._flush_messages`
@@ -571,7 +571,7 @@ None。
 
 原计算/取消错误优先；清理失败保留费用，供close重试。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:595`](../../../src/chronaxis/execution/record_session_calculations.py#L595)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:595`](../../../src/chronaxis/execution/record_session_calculations.py#L595)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_advance_observed_domain"></a>
 ### `RecordSessionCalculations._advance_observed_domain`
@@ -597,7 +597,7 @@ None。显式范围保持原裁剪规则；省略范围只保一个当前并集�
 
 非法时间或已封闭检测器的推进错误沿原清理路径传播。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:623`](../../../src/chronaxis/execution/record_session_calculations.py#L623)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:623`](../../../src/chronaxis/execution/record_session_calculations.py#L623)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_merge_sources"></a>
 ### `RecordSessionCalculations._merge_sources`
@@ -624,7 +624,7 @@ None，所有实际来源EOF才返回。
 原读取/计算/预算错误。
 不按文件顺序拼接不同来源，不为跨源合并建磁盘历史。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:655`](../../../src/chronaxis/execution/record_session_calculations.py#L655)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:655`](../../../src/chronaxis/execution/record_session_calculations.py#L655)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_close_slot"></a>
 ### `RecordSessionCalculations._close_slot`
@@ -649,7 +649,7 @@ None。
 
 原关闭错，槽保留以便重试。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:712`](../../../src/chronaxis/execution/record_session_calculations.py#L712)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:712`](../../../src/chronaxis/execution/record_session_calculations.py#L712)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-_require_closed"></a>
 ### `RecordSessionCalculations._require_closed`
@@ -676,7 +676,7 @@ None。
 
 AnalysisError保留原责任。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:721`](../../../src/chronaxis/execution/record_session_calculations.py#L721)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:721`](../../../src/chronaxis/execution/record_session_calculations.py#L721)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RecordSessionCalculations-close"></a>
 ### `RecordSessionCalculations.close`
@@ -702,4 +702,4 @@ None。
 
 原关闭/预算错误；不会抵销其他owner的费用。
 
-源码：[`src/chronaxis/execution/record_session_calculations.py:726`](../../../src/chronaxis/execution/record_session_calculations.py#L726)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/execution/record_session_calculations.py:726`](../../../src/chronaxis/execution/record_session_calculations.py#L726)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

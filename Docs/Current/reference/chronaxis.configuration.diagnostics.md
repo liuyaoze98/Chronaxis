@@ -49,7 +49,7 @@ tuple或无法定位时None。
 
 引号键用标准JSON解码，不执行表达式；组合诊断如$.signals/derived不能冒充字段。
 
-源码：[`src/chronaxis/configuration/diagnostics.py:12`](../../../src/chronaxis/configuration/diagnostics.py#L12)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/diagnostics.py:12`](../../../src/chronaxis/configuration/diagnostics.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-child_path"></a>
 ## `child_path`
@@ -75,7 +75,7 @@ child_path(path, key)
 
 内部路径不合法。
 
-源码：[`src/chronaxis/configuration/diagnostics.py:46`](../../../src/chronaxis/configuration/diagnostics.py#L46)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/diagnostics.py:46`](../../../src/chronaxis/configuration/diagnostics.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-value_preview"></a>
 ## `value_preview`
@@ -102,7 +102,7 @@ value_preview(value)
 
 容器仅报类型/大小，防止错误输出整份配置、内存行或自由元数据。
 
-源码：[`src/chronaxis/configuration/diagnostics.py:52`](../../../src/chronaxis/configuration/diagnostics.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/diagnostics.py:52`](../../../src/chronaxis/configuration/diagnostics.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-locate_error"></a>
 ## `locate_error`
@@ -130,4 +130,4 @@ locate_error(error, document)
 
 不保存document、原字典或位置表；只复制源码名、单一位置、对象名和短值。
 
-源码：[`src/chronaxis/configuration/diagnostics.py:65`](../../../src/chronaxis/configuration/diagnostics.py#L65)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/configuration/diagnostics.py:65`](../../../src/chronaxis/configuration/diagnostics.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

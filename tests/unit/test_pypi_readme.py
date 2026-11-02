@@ -2,6 +2,7 @@
 from pathlib import Path
 from runpy import run_path
 import re
+import tomllib
 import unittest
 from urllib.parse import unquote
 
@@ -34,7 +35,8 @@ class PyPIReadmeTests(unittest.TestCase):
         result = HELPER["build"](ROOT)
         links = re.findall(r"\]\(([^)]+)\)", result)
         self.assertGreater(len(links), 20)
-        prefix = REPO + "/blob/v0.1.0.dev0/"
+        version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf8"))["project"]["version"]
+        prefix = REPO + "/blob/v" + version + "/"
         for target in links:
             self.assertTrue(target.startswith(("https://", "mailto:", "#")), target)
             if target.startswith(prefix):

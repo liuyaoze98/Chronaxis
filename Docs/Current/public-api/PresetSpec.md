@@ -31,7 +31,7 @@ PresetSpec(id: str, preset_type: str, version: str, role_bindings: collections.a
 |`role_bindings`|Mapping|是|无|将业务角色关联到signals中已定义的分析名，例如{"signal": "temperature"}。允许角色由preset_type决定；省略角色时须符合语义声明自动查找要求。|
 |`parameters`|Mapping|是|无|提供所选预设的业务参数字典，例如阈值预设的unit、enter_threshold、exit_threshold。值来自业务阈值和设备单位；各类型字段不能互相套用，完整选项见预设指南。|
 
-源码：[`src/chronaxis/planning/preset_models.py:52`](../../../src/chronaxis/planning/preset_models.py#L52)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/preset_models.py:52`](../../../src/chronaxis/planning/preset_models.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-PresetSpec-from_dict"></a>
 ### `PresetSpec.from_dict`
@@ -75,4 +75,4 @@ print(spec.id, spec.preset_type)
 
 ```
 
-源码：[`src/chronaxis/planning/preset_models.py:90`](../../../src/chronaxis/planning/preset_models.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/preset_models.py:90`](../../../src/chronaxis/planning/preset_models.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

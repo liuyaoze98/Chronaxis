@@ -74,7 +74,7 @@ TypeError为原生类型错误；ValueError为未知mode。
 - `TypeError`：mode/source_name/device_label需要原生str。
 - `TypeError`：base_dir需要str或Path。
 
-源码：[`src/chronaxis/migration/api.py:26`](../../../src/chronaxis/migration/api.py#L26)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/api.py:26`](../../../src/chronaxis/migration/api.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_report"></a>
 ## `_report`
@@ -106,7 +106,7 @@ LegacyImportResult；
 
 资源错误原样传播。
 
-源码：[`src/chronaxis/migration/api.py:41`](../../../src/chronaxis/migration/api.py#L41)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/api.py:41`](../../../src/chronaxis/migration/api.py#L41)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_prepare_mapping"></a>
 ## `_prepare_mapping`
@@ -132,7 +132,7 @@ _prepare_mapping(mapping, base)
 
 ImportProblem/PlanValidationError为配置问题。目录输入会展开文件集合，缺省CAN声明会读取DBC。
 
-源码：[`src/chronaxis/migration/api.py:49`](../../../src/chronaxis/migration/api.py#L49)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/api.py:49`](../../../src/chronaxis/migration/api.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-import_legacy_ini"></a>
 ## `import_legacy_ini`
@@ -166,7 +166,7 @@ MemoryError及取消保持原对象；配置语义与UTF-8错误进入report，�
 
 返回类型：[LegacyImportResult](chronaxis.migration.models.md#api-LegacyImportResult)。
 
-源码：[`src/chronaxis/migration/api.py:160`](../../../src/chronaxis/migration/api.py#L160)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/api.py:160`](../../../src/chronaxis/migration/api.py#L160)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-load_legacy_ini"></a>
 ## `load_legacy_ini`
@@ -196,4 +196,4 @@ API类型、未知mode、文件读取OSError、MemoryError及取消按原接口�
 
 返回类型：[LegacyImportResult](chronaxis.migration.models.md#api-LegacyImportResult)。
 
-源码：[`src/chronaxis/migration/api.py:217`](../../../src/chronaxis/migration/api.py#L217)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/api.py:217`](../../../src/chronaxis/migration/api.py#L217)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

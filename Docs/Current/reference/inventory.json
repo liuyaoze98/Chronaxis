@@ -1,5 +1,5 @@
 {
-  "baseline": "5c95e101972bbdb1228d6fa8f0afadfc34cb050b",
+  "baseline": "66a66ec751da79d6562f341e646dd7f47c726f68",
   "device_label": "home",
   "modules": [
     {
@@ -1294,7 +1294,7 @@
     {
       "module": "chronaxis.can_dependencies",
       "path": "src/chronaxis/can_dependencies.py",
-      "sha256": "ed43b1396852e3dea1d82cd0537983ef2c9ae3d42abe3fb33ea35392bf873dbe",
+      "sha256": "375b6717d876a9f1ac49cd24a3ab00e3f2348a7c4ee2006c6ae853f5faec55cf",
       "exports": [],
       "objects": [
         {
@@ -52094,7 +52094,7 @@
     {
       "module": "chronaxis.results.manifest",
       "path": "src/chronaxis/results/manifest.py",
-      "sha256": "2406d350a8051eacde3f9648c10e8d3f6a795fe925868fe5525bb59ba390f3a0",
+      "sha256": "a14e601772147646da2e63a46805fe1c4106c310df5f17c3ccd789a49ba7a5c8",
       "exports": [],
       "objects": [
         {
@@ -52190,7 +52190,7 @@
             {
               "name": "software_version",
               "type": "str",
-              "default": "'0.1.0.dev0'",
+              "default": "'0.1.0.dev1'",
               "description": ""
             },
             {

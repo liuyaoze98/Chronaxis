@@ -1,6 +1,6 @@
 # Current完整API参考
 
-> 固定源码基线5c95e101972bbdb1228d6fa8f0afadfc34cb050b；device_label: home。
+> 固定源码基线66a66ec751da79d6562f341e646dd7f47c726f68；device_label: home。
 
 覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。vendor模块原样保留，只在本参考解释；不包含RefProjects及未跟踪的同步冲突副本。
 

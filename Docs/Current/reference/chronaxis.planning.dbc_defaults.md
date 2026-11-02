@@ -46,7 +46,7 @@ _numeric_dtype(signal)
 |---|---|---|---|---|
 |`signal`|cantools.database.can.Signal|是|无|位置或关键字。DBC信号定义，按解码值范围、符号及缩放推导数值类型，不自动选择enum。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:11`](../../../src/chronaxis/planning/dbc_defaults.py#L11)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:11`](../../../src/chronaxis/planning/dbc_defaults.py#L11)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_enum_choices"></a>
 ## `_enum_choices`
@@ -63,7 +63,7 @@ _enum_choices(signal)
 |---|---|---|---|---|
 |`signal`|cantools.database.can.Signal|是|无|位置或关键字。含choices和conversion的DBC信号；返回解码值到文字映射，浮点编码不截断。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:25`](../../../src/chronaxis/planning/dbc_defaults.py#L25)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:25`](../../../src/chronaxis/planning/dbc_defaults.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DBCDefaults"></a>
 ## `DBCDefaults`
@@ -75,7 +75,7 @@ DBCDefaults()
 ```
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:42`](../../../src/chronaxis/planning/dbc_defaults.py#L42)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:42`](../../../src/chronaxis/planning/dbc_defaults.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DBCDefaults-__init__"></a>
 ### `DBCDefaults.__init__`
@@ -89,7 +89,7 @@ DBCDefaults.__init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:44`](../../../src/chronaxis/planning/dbc_defaults.py#L44)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:44`](../../../src/chronaxis/planning/dbc_defaults.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-DBCDefaults-fill"></a>
 ### `DBCDefaults.fill`
@@ -109,4 +109,4 @@ DBCDefaults.fill(raw, config, field, path)
 |`field`|CANReferenceTemplate|是|无|位置或关键字。信号定位，含报文ID、DBC信号名与可选帧型限制。|
 |`path`|str|是|无|位置或关键字。原声明字段路径，失败用它定位配置。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:48`](../../../src/chronaxis/planning/dbc_defaults.py#L48)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:48`](../../../src/chronaxis/planning/dbc_defaults.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

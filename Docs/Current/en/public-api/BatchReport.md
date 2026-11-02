@@ -60,7 +60,7 @@ No explicit parameters. Returns None, not additional calculation values. Raises 
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:160`](../../../../src/chronaxis/batch/models.py#L160) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/batch/models.py:173`](../../../../src/chronaxis/batch/models.py#L173) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
-- [`src/chronaxis/batch/models.py:190`](../../../../src/chronaxis/batch/models.py#L190) — line at `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`.
+- [`src/chronaxis/batch/models.py:160`](../../../../src/chronaxis/batch/models.py#L160) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/models.py:173`](../../../../src/chronaxis/batch/models.py#L173) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/models.py:190`](../../../../src/chronaxis/batch/models.py#L190) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.

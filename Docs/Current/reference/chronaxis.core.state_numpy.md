@@ -69,7 +69,7 @@ TypeError为类型/dtype/masked数组；ValueError为形状/回退。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:30`](../../../src/chronaxis/core/state_numpy.py#L30)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:30`](../../../src/chronaxis/core/state_numpy.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_readonly"></a>
 ## `_readonly`
@@ -96,7 +96,7 @@ NumPy分配错误传播；不宣称整体执行器内存有界。
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/state_numpy.py:47`](../../../src/chronaxis/core/state_numpy.py#L47)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:47`](../../../src/chronaxis/core/state_numpy.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-SignalArray"></a>
 ## `SignalArray`
@@ -123,7 +123,7 @@ class SignalArray
 |`quality`|np.ndarray|是|无|(Ni,) uint16，最高质量位256。|
 |`labels`|tuple[str, ...]|否|()|enum代码对应标签，其他dtype为空。|
 
-源码：[`src/chronaxis/core/state_numpy.py:63`](../../../src/chronaxis/core/state_numpy.py#L63)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:63`](../../../src/chronaxis/core/state_numpy.py#L63)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-SignalArray-__post_init__"></a>
 ### `SignalArray.__post_init__`
@@ -165,7 +165,7 @@ TypeError/ValueError为dtype/形状/质量矛盾或不匹配历史。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:79`](../../../src/chronaxis/core/state_numpy.py#L79)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:79`](../../../src/chronaxis/core/state_numpy.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-build_signal_array"></a>
 ## `build_signal_array`
@@ -196,7 +196,7 @@ TypeError为序列；结构/分配异常传播。
 
 返回类型：[SignalArray](chronaxis.core.state_numpy.md#api-SignalArray)。
 
-源码：[`src/chronaxis/core/state_numpy.py:145`](../../../src/chronaxis/core/state_numpy.py#L145)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:145`](../../../src/chronaxis/core/state_numpy.py#L145)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AlignedArray"></a>
 ## `AlignedArray`
@@ -224,7 +224,7 @@ class AlignedArray
 |`sample_indices`|np.ndarray|是|无|(N,) int64，-1为没有历史。|
 |`actual_update`|np.ndarray|是|无|(N,) bool，计时器不伪造更新。|
 
-源码：[`src/chronaxis/core/state_numpy.py:172`](../../../src/chronaxis/core/state_numpy.py#L172)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:172`](../../../src/chronaxis/core/state_numpy.py#L172)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-AlignedArray-__post_init__"></a>
 ### `AlignedArray.__post_init__`
@@ -260,7 +260,7 @@ TypeError/ValueError为内部结果结构或质量矛盾。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:189`](../../../src/chronaxis/core/state_numpy.py#L189)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:189`](../../../src/chronaxis/core/state_numpy.py#L189)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-align_numpy"></a>
 ## `align_numpy`
@@ -305,4 +305,4 @@ TypeError或ValueError: 历史、模式标志、时间列类型、形状或顺�
 
 返回类型：[AlignedArray](chronaxis.core.state_numpy.md#api-AlignedArray)。
 
-源码：[`src/chronaxis/core/state_numpy.py:226`](../../../src/chronaxis/core/state_numpy.py#L226)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/state_numpy.py:226`](../../../src/chronaxis/core/state_numpy.py#L226)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

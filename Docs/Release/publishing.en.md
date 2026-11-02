@@ -12,21 +12,21 @@ Run these commands from the delivery directory. Confirm release information and 
 |`dist/`|Only the wheel and sdist intended for TestPyPI/PyPI|
 |`manual/index.html`, `manual/en/index.html`|Chinese and English offline manuals|
 |`manual/ai-guide/README.md`, `manual/ai-guide/en/README.md`|Directly readable AI guides|
-|`Chronaxis-Source-0.1.0.dev0.zip`|Standalone public source archive|
-|`Chronaxis-Manual-0.1.0.dev0.zip`|Complete bilingual manual and AI material for GitHub Release attachments|
+|`Chronaxis-Source-0.1.0.dev1.zip`|Standalone public source archive|
+|`Chronaxis-Manual-0.1.0.dev1.zip`|Complete bilingual manual and AI material for GitHub Release attachments|
 |`SHA256SUMS.txt`, `delivery.json`|Artifact hashes, source/documentation revisions, verification and outstanding release information|
 
 Publish `source/`, rather than the internal development repository's history, which contains development records and historical business data. Test logs and build staging are stored outside the delivery directory.
 
 ## Before uploading
 
-- The repository is [liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis). Package metadata includes repository, documentation, issue and changelog links. Builds derive the PyPI description from README and convert relative file links to pages under the `v0.1.0.dev0` tag; the source README remains readable locally.
-- Confirm that your PyPI account can publish `chronaxis` and version `0.1.0.dev0`. An HTTP 404 does not prove that the name is available for registration.
+- The repository is [liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis). Package metadata includes repository, documentation, issue and changelog links. Builds derive the PyPI description from README and convert relative file links to pages under the `v0.1.0.dev1` tag; the source README remains readable locally.
+- Confirm that your PyPI account can publish `chronaxis` and version `0.1.0.dev1`. An HTTP 404 does not prove that the name is available for registration.
 - Make the repository accessible before the PyPI release. MIT, author liuyaoze, and work@liuyaoze.com are confirmed.
 - Read the [version policy](versioning.md), [third-party notices](third-party.md), and [known dependency limitation](security.md). Uploaded filenames cannot be replaced; changed artifacts need a new version.
 
 ```powershell
-$Version = '0.1.0.dev0'
+$Version = '0.1.0.dev1'
 $Wheel = "dist/chronaxis-$Version-py3-none-any.whl"
 $Sdist = "dist/chronaxis-$Version.tar.gz"
 py -3.12 -m venv .venv-publish
@@ -56,11 +56,11 @@ git -C source tag -a "v$Version" -m "Chronaxis $Version"
 git -C source push origin "v$Version"
 ```
 
-Create a draft GitHub Release from this tag, titled `Chronaxis 0.1.0.dev0`, and mark it as a prerelease. Use the [release notes](release-notes-0.1.0.dev0.md). Attach the source ZIP, bilingual manual ZIP, wheel, sdist, and SHA256SUMS.txt. Publish the draft after confirming the PyPI release.
+Create a draft GitHub Release from this tag, titled `Chronaxis 0.1.0.dev1`, and mark it as a prerelease. Use the [release notes](release-notes-0.1.0.dev1.md). Attach the source ZIP, bilingual manual ZIP, wheel, sdist, and SHA256SUMS.txt. Publish the draft after confirming the PyPI release.
 
-After pushing, open the repository, `v0.1.0.dev0` tag and metadata documentation link in a signed-out browser before uploading to PyPI. A known URL does not establish public access. Local build checks verify that target files exist; they do not replace this remote check.
+After pushing, open the repository, `v0.1.0.dev1` tag and metadata documentation link in a signed-out browser before uploading to PyPI. A known URL does not establish public access. Local build checks verify that target files exist; they do not replace this remote check.
 
-GitHub Pages is optional and configured separately. If used, publish the static files from `manual/` and select the corresponding Pages source in repository settings. Uploading source alone does not automatically publish the manual; the offline manual and Release attachment remain usable.
+Publish the HTML manual at https://liuyaoze98.github.io/Chronaxis/ with English at https://liuyaoze98.github.io/Chronaxis/en/. Select GitHub Actions in the repository Pages settings, then run pages.yml to download the reviewed manual attachment, verify its SHA256, and deploy it. Before uploading a new PyPI version, check the online pages, language switch, search, and AI guide; a successful HTTP status alone is insufficient.
 
 ## TestPyPI upload and installation
 

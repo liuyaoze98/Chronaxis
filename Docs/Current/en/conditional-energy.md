@@ -14,7 +14,7 @@ On Windows, start in the directory containing the wheel and `examples` directory
 
 ```powershell
 py -3.12 -m venv .venv
-.venv\Scripts\python.exe -m pip install chronaxis-0.1.0.dev0-py3-none-any.whl
+.venv\Scripts\python.exe -m pip install chronaxis-0.1.0.dev1-py3-none-any.whl
 .venv\Scripts\python.exe -m chronaxis validate examples/conditional-energy.yaml --format json
 .venv\Scripts\python.exe -m chronaxis explain examples/conditional-energy.yaml --format json
 .venv\Scripts\python.exe -m chronaxis run examples/conditional-energy.yaml --output result-conditional-energy

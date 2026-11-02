@@ -1,0 +1,49 @@
+name: Publish HTML manual
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chronaxis-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'liuyaoze98/Chronaxis' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Download the reviewed HTML manual
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release download v0.1.0.dev1 --repo "$GITHUB_REPOSITORY" \
+            --pattern Chronaxis-Manual-0.1.0.dev1.zip
+          sha256sum --strict --check - <<'SHA256'
+          ef2612368901022d56faa448f3fcb02b24740245ec229ab34f2e111515c633bd  Chronaxis-Manual-0.1.0.dev1.zip
+          SHA256
+          unzip -q Chronaxis-Manual-0.1.0.dev1.zip -d manual
+          test -f manual/index.html
+          test -f manual/en/index.html
+          test -f manual/ai-guide/README.md
+
+      - name: Upload the static site
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        with:
+          path: manual
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346

@@ -45,4 +45,4 @@ TypeError或ValueError: 输入类型、文本语法、有效数字长度或单�
 
 返回类型：[TimeConversion](TimeConversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:143`](../../../src/chronaxis/timebase/conversion.py#L143)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/timebase/conversion.py:143`](../../../src/chronaxis/timebase/conversion.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

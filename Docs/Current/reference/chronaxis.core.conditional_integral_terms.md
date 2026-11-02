@@ -61,7 +61,7 @@ TypeError/ValueError为结构或不可能范围。
 - `TypeError`：条件积分未知范围需要tuple。
 - `ValueError`：条件积分未知范围必须有序、不重叠且在实际窗口内。
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:20`](../../../src/chronaxis/core/conditional_integral_terms.py#L20)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:20`](../../../src/chronaxis/core/conditional_integral_terms.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ConditionalIntegralFacts"></a>
 ## `ConditionalIntegralFacts`
@@ -96,7 +96,7 @@ class ConditionalIntegralFacts
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 |`ranges_retained`|bool|否|True|仅明确请求时保留未知范围；False不能用于完整明细归约。|
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:39`](../../../src/chronaxis/core/conditional_integral_terms.py#L39)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:39`](../../../src/chronaxis/core/conditional_integral_terms.py#L39)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ConditionalIntegralFacts-__post_init__"></a>
 ### `ConditionalIntegralFacts.__post_init__`
@@ -133,7 +133,7 @@ TypeError/ValueError为类型、覆盖或未知几何错误。
 - `ValueError`：条件积分已知与条件未知未完整划分实际窗口。
 - `TypeError`：条件积分事实需要带有明确类型的质量和完整来源tuple。
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:63`](../../../src/chronaxis/core/conditional_integral_terms.py#L63)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:63`](../../../src/chronaxis/core/conditional_integral_terms.py#L63)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ReferenceConditionalIntegralTerms"></a>
 ## `ReferenceConditionalIntegralTerms`
@@ -152,7 +152,7 @@ class ReferenceConditionalIntegralTerms
 |`valid`|tuple[bool, ...]|是|无|只有TRUE选择且正常面积为True。|
 |`facts`|[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)|是|无|当前块覆盖与完整定位，不是整窗最终状态。|
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:104`](../../../src/chronaxis/core/conditional_integral_terms.py#L104)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:104`](../../../src/chronaxis/core/conditional_integral_terms.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ReferenceConditionalIntegralTerms-__post_init__"></a>
 ### `ReferenceConditionalIntegralTerms.__post_init__`
@@ -183,7 +183,7 @@ TypeError/ValueError为列结构、面积或事实类型。
 - `TypeError`：参考条件积分项需要同长tuple及ConditionalIntegralFacts。
 - `ValueError`：条件积分面积需有限float/bool，无效位置只能存0。
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:111`](../../../src/chronaxis/core/conditional_integral_terms.py#L111)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:111`](../../../src/chronaxis/core/conditional_integral_terms.py#L111)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-require_conditional_integral_terms"></a>
 ## `require_conditional_integral_terms`
@@ -218,4 +218,4 @@ TypeError/ValueError/OverflowError为模型、能力、单位或时间错误。
 - `ValueError`：条件积分只支持数值integral及显式BOOL选择条件。
 - `OverflowError`：条件积分正交集跨度超过int64。
 
-源码：[`src/chronaxis/core/conditional_integral_terms.py:124`](../../../src/chronaxis/core/conditional_integral_terms.py#L124)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/conditional_integral_terms.py:124`](../../../src/chronaxis/core/conditional_integral_terms.py#L124)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

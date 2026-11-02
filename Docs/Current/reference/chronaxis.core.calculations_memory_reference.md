@@ -82,7 +82,7 @@ TypeError: 数值计划或请求模型类型错误。
 
 只合并分析层依赖并检查当前同步声明，不改变旧读取范围或解码调用。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:36`](../../../src/chronaxis/core/calculations_memory_reference.py#L36)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:36`](../../../src/chronaxis/core/calculations_memory_reference.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-build_calculation_series_reference"></a>
 ## `build_calculation_series_reference`
@@ -116,7 +116,7 @@ CalculationSeries。时间为整数纳秒，值与条件共用完整轴；窗口
     条件依赖可增加时间边界，真实样本标志只来自数值依赖。
     保留完整内存历史和新结果，不延长会话观测域，也不额外读取或解码。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:74`](../../../src/chronaxis/core/calculations_memory_reference.py#L74)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:74`](../../../src/chronaxis/core/calculations_memory_reference.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-select_memory_reference"></a>
 ## `select_memory_reference`
@@ -147,7 +147,7 @@ SelectionRow迭代器，不积累全部输出行。
 
 输入和中间历史仍完整物化，不声明生产有界预算；不接旧reader/decoder。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:136`](../../../src/chronaxis/core/calculations_memory_reference.py#L136)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:136`](../../../src/chronaxis/core/calculations_memory_reference.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-compute_memory_reference"></a>
 ## `compute_memory_reference`
@@ -178,4 +178,4 @@ CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆�
 
 先建立CalculationSeries，再独立执行参考指标计算；不修改原行或调用数组后端。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:149`](../../../src/chronaxis/core/calculations_memory_reference.py#L149)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:149`](../../../src/chronaxis/core/calculations_memory_reference.py#L149)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

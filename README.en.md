@@ -31,20 +31,20 @@ The project originated from automotive and battery test analysis. Its intended a
 
 ## Installation and environment
 
-The current version is **0.1.0.dev0**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) for upgrade guidance.
+The current version is **0.1.0.dev1**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) for upgrade guidance.
 
-After obtaining the public source, run these commands at the repository root containing `pyproject.toml`:
+Install from PyPI:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install .
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev1"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-If you have a release wheel, replace the installation command with:
+To install from source, run `python -m pip install .` at the repository root containing `pyproject.toml`. If you have a release wheel, replace the installation command with:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
 ```
 
 Installation automatically includes the dependencies needed for CAN reading, DBC decoding, and other features. For offline installation, prepare the dependency packages in advance; see the [installation guide](Docs/Current/en/installation.md).
@@ -118,7 +118,7 @@ Append these commands to `python -m chronaxis`; add `--help` for their arguments
 | `config resolve` / `config origins` | Inspect expanded configuration / where definitions originate |
 | `guide` | Show the directly readable AI guide path; use `--language en` for English |
 
-- [User manual](Docs/Current/en/index.md): configuration, execution, and result interpretation.
+- [Online HTML manual](https://liuyaoze98.github.io/Chronaxis/en/): configuration, execution, and result interpretation. The [source manual](Docs/Current/en/index.md) is also readable locally.
 - [Configuration guide](Docs/Current/en/configuration.md) and [complete field reference](Docs/Current/en/reference/configuration-schema.md).
 - [Source AI guide](Docs/AI/en/README.md): read directly and find task examples, APIs, and fields without exporting first.
 - [Independent batch tasks](Docs/Current/en/batch.md) and [results](Docs/Current/en/results.md).

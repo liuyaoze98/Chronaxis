@@ -36,7 +36,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/planning/record_execution.py:7`](../../../src/chronaxis/planning/record_execution.py#L7)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/record_execution.py:7`](../../../src/chronaxis/planning/record_execution.py#L7)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-record_execution_errors"></a>
 ## `record_execution_errors`
@@ -61,4 +61,4 @@ record_execution_errors(plan)
 
 非法带有明确类型的对象属性错误传播；不访问文件或修改计划。
 
-源码：[`src/chronaxis/planning/record_execution.py:14`](../../../src/chronaxis/planning/record_execution.py#L14)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/record_execution.py:14`](../../../src/chronaxis/planning/record_execution.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

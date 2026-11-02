@@ -49,7 +49,7 @@ signal_entries(value)
 集中项仅接受声明一套报文定位；子项可覆盖周期、有效期和同一时刻策略，
 不能把另一个报文塞进本组。没有额外组名、引用或运行时对象。
 
-源码：[`src/chronaxis/planning/signal_groups.py:9`](../../../src/chronaxis/planning/signal_groups.py#L9)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/signal_groups.py:9`](../../../src/chronaxis/planning/signal_groups.py#L9)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-declared_signals"></a>
 ## `declared_signals`
@@ -74,4 +74,4 @@ declared_signals(value)
 
 无。
 
-源码：[`src/chronaxis/planning/signal_groups.py:55`](../../../src/chronaxis/planning/signal_groups.py#L55)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/signal_groups.py:55`](../../../src/chronaxis/planning/signal_groups.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

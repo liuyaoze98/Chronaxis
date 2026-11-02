@@ -73,7 +73,7 @@ RawFrameStore(budget, work_dir, source_name, *, max_row_bytes=MAX_WIRE_BYTES, in
 ```
 
 
-源码：[`src/chronaxis/legacy/raw_store.py:30`](../../../src/chronaxis/legacy/raw_store.py#L30)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:30`](../../../src/chronaxis/legacy/raw_store.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-__init__"></a>
 ### `RawFrameStore.__init__`
@@ -108,7 +108,7 @@ building存储。
 - `ValueError`：原始帧行上限需1到MAX_WIRE_BYTES的原生int。
 - `ValueError`：原始帧暂存禁止写入RefProjects。
 
-源码：[`src/chronaxis/legacy/raw_store.py:38`](../../../src/chronaxis/legacy/raw_store.py#L38)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:38`](../../../src/chronaxis/legacy/raw_store.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-closed"></a>
 ### `RawFrameStore.closed`
@@ -136,7 +136,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无；费用/FD未清不能为True。
 
-源码：[`src/chronaxis/legacy/raw_store.py:81`](../../../src/chronaxis/legacy/raw_store.py#L81)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:81`](../../../src/chronaxis/legacy/raw_store.py#L81)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-spool_bytes"></a>
 ### `RawFrameStore.spool_bytes`
@@ -164,7 +164,7 @@ int字节。
 
 无。
 
-源码：[`src/chronaxis/legacy/raw_store.py:86`](../../../src/chronaxis/legacy/raw_store.py#L86)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:86`](../../../src/chronaxis/legacy/raw_store.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-_require"></a>
 ### `RawFrameStore._require`
@@ -193,7 +193,7 @@ ResultClosedError/RuntimeError。
 
 - `ResultClosedError`：原始帧暂存已关闭或正在清理。
 
-源码：[`src/chronaxis/legacy/raw_store.py:90`](../../../src/chronaxis/legacy/raw_store.py#L90)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:90`](../../../src/chronaxis/legacy/raw_store.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-_fail"></a>
 ### `RawFrameStore._fail`
@@ -218,7 +218,7 @@ RawFrameStore._fail(exc)
 
 清理副错只加note，不替换原错或取消对象。
 
-源码：[`src/chronaxis/legacy/raw_store.py:100`](../../../src/chronaxis/legacy/raw_store.py#L100)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:100`](../../../src/chronaxis/legacy/raw_store.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-_reserve_spool"></a>
 ### `RawFrameStore._reserve_spool`
@@ -243,7 +243,7 @@ RawFrameStore._reserve_spool(amount)
 
 原配额/取消；未成功不增加本owner金额。
 
-源码：[`src/chronaxis/legacy/raw_store.py:109`](../../../src/chronaxis/legacy/raw_store.py#L109)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:109`](../../../src/chronaxis/legacy/raw_store.py#L109)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-append"></a>
 ### `RawFrameStore.append`
@@ -276,7 +276,7 @@ RawFrameStore.append(record, time_ns)
 - `ValueError`：原始帧编码行超过max_row_bytes。
 - `OSError`：原始帧写入未推进。
 
-源码：[`src/chronaxis/legacy/raw_store.py:121`](../../../src/chronaxis/legacy/raw_store.py#L121)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:121`](../../../src/chronaxis/legacy/raw_store.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-_close_writer"></a>
 ### `RawFrameStore._close_writer`
@@ -302,7 +302,7 @@ RawFrameStore._close_writer()
 
 原close/取消；close后抛错也据真实closed清槽。
 
-源码：[`src/chronaxis/legacy/raw_store.py:159`](../../../src/chronaxis/legacy/raw_store.py#L159)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:159`](../../../src/chronaxis/legacy/raw_store.py#L159)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-seal"></a>
 ### `RawFrameStore.seal`
@@ -328,7 +328,7 @@ RawFrameStore.seal()
 
 原flush/close/摘要/取消，失败不能读或再次seal。
 
-源码：[`src/chronaxis/legacy/raw_store.py:171`](../../../src/chronaxis/legacy/raw_store.py#L171)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:171`](../../../src/chronaxis/legacy/raw_store.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-iter_frames"></a>
 ### `RawFrameStore.iter_frames`
@@ -355,7 +355,7 @@ RawFrameStore.iter_frames()
 状态/预算/打开/注册/取消；
     未返回reader先在本父槽可达，持续关闭失败从最高raw_frame_store_cleanup_owner恢复。
 
-源码：[`src/chronaxis/legacy/raw_store.py:186`](../../../src/chronaxis/legacy/raw_store.py#L186)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:186`](../../../src/chronaxis/legacy/raw_store.py#L186)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-RawFrameStore-close"></a>
 ### `RawFrameStore.close`
@@ -382,7 +382,7 @@ None，完成后重复调用安全。
 首个实际关闭/抵销错误原样传播，
     其他清理错仅note；未完槽不清，最高恢复owner就是本store，不接管共用的资源用量记录。
 
-源码：[`src/chronaxis/legacy/raw_store.py:201`](../../../src/chronaxis/legacy/raw_store.py#L201)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:201`](../../../src/chronaxis/legacy/raw_store.py#L201)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_RawFrameReader"></a>
 ## `_RawFrameReader`
@@ -397,7 +397,7 @@ _RawFrameReader(owner)
 ```
 
 
-源码：[`src/chronaxis/legacy/raw_store.py:252`](../../../src/chronaxis/legacy/raw_store.py#L252)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:252`](../../../src/chronaxis/legacy/raw_store.py#L252)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_RawFrameReader-__init__"></a>
 ### `_RawFrameReader.__init__`
@@ -423,7 +423,7 @@ _RawFrameReader.__init__(owner)
 原预算/打开/注册/取消；
     本构造不遗失self，由父工厂统一清理并附最高store恢复属性。
 
-源码：[`src/chronaxis/legacy/raw_store.py:259`](../../../src/chronaxis/legacy/raw_store.py#L259)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:259`](../../../src/chronaxis/legacy/raw_store.py#L259)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_RawFrameReader-__iter__"></a>
 ### `_RawFrameReader.__iter__`
@@ -449,7 +449,7 @@ _RawFrameReader.__iter__()
 
 无，不重新打开文件。
 
-源码：[`src/chronaxis/legacy/raw_store.py:278`](../../../src/chronaxis/legacy/raw_store.py#L278)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:278`](../../../src/chronaxis/legacy/raw_store.py#L278)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_RawFrameReader-__next__"></a>
 ### `_RawFrameReader.__next__`
@@ -476,7 +476,7 @@ StoredRawFrame。
 StopIteration仅完整EOF；损坏/预算/关闭/取消
     保原错且poison父，最高raw_frame_store_cleanup_owner可清全部真实资源。
 
-源码：[`src/chronaxis/legacy/raw_store.py:282`](../../../src/chronaxis/legacy/raw_store.py#L282)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:282`](../../../src/chronaxis/legacy/raw_store.py#L282)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_RawFrameReader-close"></a>
 ### `_RawFrameReader.close`
@@ -503,4 +503,4 @@ _RawFrameReader.close()
 原FD/预算/解除登记错误，最高父恢复属性保持同一责任；
     真实FD关闭后抛取消也不重关，已释放费用不重复抵销。
 
-源码：[`src/chronaxis/legacy/raw_store.py:321`](../../../src/chronaxis/legacy/raw_store.py#L321)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/raw_store.py:321`](../../../src/chronaxis/legacy/raw_store.py#L321)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

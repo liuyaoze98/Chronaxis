@@ -70,7 +70,7 @@ class ValidationReport
 |`capability_status`|Mapping[str, str]|是|无|读取各能力名称到状态的映射：implemented已实现，partial部分支持，unavailable不可用，declared仅有声明。结合warnings判断当前计划限制。|
 |`execution_ready`|bool|是|无|读取当前计划是否使用已接入公共执行路径：True可尝试运行，False应先解决errors；不保证文件存在或实际内存足够。|
 
-源码：[`src/chronaxis/planning/reports.py:40`](../../../src/chronaxis/planning/reports.py#L40)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:40`](../../../src/chronaxis/planning/reports.py#L40)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ExplainNode"></a>
 ## `ExplainNode`
@@ -93,7 +93,7 @@ class ExplainNode
 |`unit`|str &#124; None|是|无|读取该节点适用的结果单位；没有单位时为None。|
 |`backend`|str|是|无|读取该节点预计采用的计算方式：reference参考实现、numpy数组实现、state_driver状态计算或unavailable不可执行；尚未运行。|
 
-源码：[`src/chronaxis/planning/reports.py:54`](../../../src/chronaxis/planning/reports.py#L54)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:54`](../../../src/chronaxis/planning/reports.py#L54)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-ExplainReport"></a>
 ## `ExplainReport`
@@ -126,7 +126,7 @@ class ExplainReport
 |`intervals`|[IntervalPlan](chronaxis.planning.intervals.md#api-IntervalPlan) &#124; None|否|None|读取记录间隔声明IntervalPlan；包含配置选择，不包含运行时才取得的DBC周期。|
 |`diagnostics`|[DiagnosticPlan](chronaxis.planning.intervals.md#api-DiagnosticPlan) &#124; None|否|None|读取诊断开关DiagnosticPlan；表示请求哪些诊断，不能证明这些诊断已执行。|
 
-源码：[`src/chronaxis/planning/reports.py:68`](../../../src/chronaxis/planning/reports.py#L68)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:68`](../../../src/chronaxis/planning/reports.py#L68)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_window_available"></a>
 ## `_window_available`
@@ -158,7 +158,7 @@ bool，同一判断供validation和explain节点使用。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/reports.py:91`](../../../src/chronaxis/planning/reports.py#L91)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:91`](../../../src/chronaxis/planning/reports.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_can_source_available"></a>
 ## `_can_source_available`
@@ -189,7 +189,7 @@ bool，供来源、raw输出和能力表共享。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/reports.py:107`](../../../src/chronaxis/planning/reports.py#L107)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:107`](../../../src/chronaxis/planning/reports.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-_static_errors"></a>
 ## `_static_errors`
@@ -220,7 +220,7 @@ _static_errors(plan: AnalysisPlan) -> tuple[str, ...]
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/planning/reports.py:120`](../../../src/chronaxis/planning/reports.py#L120)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:120`](../../../src/chronaxis/planning/reports.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-validate_analysis_plan"></a>
 ## `validate_analysis_plan`
@@ -266,7 +266,7 @@ report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
-源码：[`src/chronaxis/planning/reports.py:231`](../../../src/chronaxis/planning/reports.py#L231)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:231`](../../../src/chronaxis/planning/reports.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-explain_analysis_plan"></a>
 ## `explain_analysis_plan`
@@ -311,4 +311,4 @@ plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
-源码：[`src/chronaxis/planning/reports.py:381`](../../../src/chronaxis/planning/reports.py#L381)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/planning/reports.py:381`](../../../src/chronaxis/planning/reports.py#L381)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

@@ -37,7 +37,7 @@ validate_decode_policy(value)
 
 ValueError。
 
-源码：[`src/chronaxis/legacy/decode_policy.py:8`](../../../src/chronaxis/legacy/decode_policy.py#L8)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/decode_policy.py:8`](../../../src/chronaxis/legacy/decode_policy.py#L8)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-check_decode_length"></a>
 ## `check_decode_length`
@@ -64,4 +64,4 @@ None；partial仅允许载荷短于DBC，不能掩盖DLC与实际字节不一致
 
 ValueError表示结构或所选长度政策不符；属性访问错误原样传播。
 
-源码：[`src/chronaxis/legacy/decode_policy.py:16`](../../../src/chronaxis/legacy/decode_policy.py#L16)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/legacy/decode_policy.py:16`](../../../src/chronaxis/legacy/decode_policy.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

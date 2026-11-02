@@ -54,7 +54,7 @@ class LegacyImportIssue
 |`column`|int &#124; None|否|None|原文本1起始列号；无法确定时为None。|
 |`level`|str|否|'error'|问题等级文本，区分error与warning。|
 
-源码：[`src/chronaxis/migration/models.py:16`](../../../src/chronaxis/migration/models.py#L16)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:16`](../../../src/chronaxis/migration/models.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyImportIssue-to_dict"></a>
 ### `LegacyImportIssue.to_dict`
@@ -82,7 +82,7 @@ JSON对象；
 
 返回类型：dict。
 
-源码：[`src/chronaxis/migration/models.py:27`](../../../src/chronaxis/migration/models.py#L27)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:27`](../../../src/chronaxis/migration/models.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyFieldMapping"></a>
 ## `LegacyFieldMapping`
@@ -106,7 +106,7 @@ class LegacyFieldMapping
 |`status`|str|是|无|本次迁移状态，区分成功、拒绝或该字段的处理去向；不是分析运行成功证明。|
 |`message`|str|是|无|面向使用者的问题或迁移差异说明文本。|
 
-源码：[`src/chronaxis/migration/models.py:34`](../../../src/chronaxis/migration/models.py#L34)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:34`](../../../src/chronaxis/migration/models.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyFieldMapping-to_dict"></a>
 ### `LegacyFieldMapping.to_dict`
@@ -134,7 +134,7 @@ JSON对象；
 
 返回类型：dict。
 
-源码：[`src/chronaxis/migration/models.py:46`](../../../src/chronaxis/migration/models.py#L46)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:46`](../../../src/chronaxis/migration/models.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyImportReport"></a>
 ## `LegacyImportReport`
@@ -159,7 +159,7 @@ class LegacyImportReport
 |`issues`|tuple[[LegacyImportIssue](chronaxis.migration.models.md#api-LegacyImportIssue), ...]|是|无|本次局部问题列表，保留拒绝或明确差异的原因与位置。|
 |`plan_identity`|str &#124; None|是|无|转换成功的计划身份；失败无计划时为None。|
 
-源码：[`src/chronaxis/migration/models.py:53`](../../../src/chronaxis/migration/models.py#L53)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:53`](../../../src/chronaxis/migration/models.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyImportReport-to_dict"></a>
 ### `LegacyImportReport.to_dict`
@@ -191,7 +191,7 @@ dict；
 
 返回类型：dict。
 
-源码：[`src/chronaxis/migration/models.py:66`](../../../src/chronaxis/migration/models.py#L66)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:66`](../../../src/chronaxis/migration/models.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-LegacyImportResult"></a>
 ## `LegacyImportResult`
@@ -210,4 +210,4 @@ class LegacyImportResult
 |`report`|[LegacyImportReport](chronaxis.migration.models.md#api-LegacyImportReport)|是|无|本次LegacyImportReport，包含完整字段映射、问题和转换结果。|
 |`original_ini`|bytes|是|无|不可变的原INI bytes，保原编码、BOM与换行。|
 
-源码：[`src/chronaxis/migration/models.py:78`](../../../src/chronaxis/migration/models.py#L78)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/migration/models.py:78`](../../../src/chronaxis/migration/models.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。

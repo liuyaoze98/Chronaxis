@@ -72,7 +72,7 @@ class SignalCSVSpec
 |`delimiter`|str|否|','|单字符分隔符，不自动sniff。|
 |`missing_values`|tuple[str, ...]|否|('',)|精确匹配原cell，不strip标记。|
 
-源码：[`src/chronaxis/sources/csv_spec.py:28`](../../../src/chronaxis/sources/csv_spec.py#L28)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/csv_spec.py:28`](../../../src/chronaxis/sources/csv_spec.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-SignalCSVSpec-__post_init__"></a>
 ### `SignalCSVSpec.__post_init__`
@@ -104,7 +104,7 @@ TypeError: 路径、时区或声明结构类型错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/csv_spec.py:51`](../../../src/chronaxis/sources/csv_spec.py#L51)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/csv_spec.py:51`](../../../src/chronaxis/sources/csv_spec.py#L51)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CSVSourceRef"></a>
 ## `CSVSourceRef`
@@ -133,7 +133,7 @@ class CSVSourceRef(SourceRef)
 |`value_text`|str|是|无|原字段cell文本，解析异常诊断不丢原文。|
 |`time_quantized`|bool|是|无|时间转换曾按纳秒half-even量化。|
 
-源码：[`src/chronaxis/sources/csv_spec.py:98`](../../../src/chronaxis/sources/csv_spec.py#L98)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/csv_spec.py:98`](../../../src/chronaxis/sources/csv_spec.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
 
 <a id="api-CSVSourceRef-__post_init__"></a>
 ### `CSVSourceRef.__post_init__`
@@ -169,4 +169,4 @@ TypeError或ValueError: 来源名称、字段、路径、正整数行号或附�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/csv_spec.py:114`](../../../src/chronaxis/sources/csv_spec.py#L114)（行号属于 `5c95e101972bbdb1228d6fa8f0afadfc34cb050b`）。
+源码：[`src/chronaxis/sources/csv_spec.py:114`](../../../src/chronaxis/sources/csv_spec.py#L114)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
