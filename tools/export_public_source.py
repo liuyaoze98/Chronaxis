@@ -41,6 +41,8 @@ def included(name):
         return False
     if name in {'README.md', 'README.en.md', 'LICENSE', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes'}:
         return True
+    if name == '.github/workflows/pypi-publish.yml':
+        return True
     if name.startswith(('src/chronaxis/', 'examples/', 'tests/fixtures/',
                         'Docs/Current/', 'Docs/AI/', 'Docs/Schema/', 'Docs/Release/')):
         return True
@@ -57,10 +59,14 @@ def export(destination, revision='HEAD'):
     if destination.exists() or 'RefProjects' in destination.parts:
         raise ValueError('导出目标必须是不存在的独立目录，且不能位于历史项目中')
     revision = subprocess.check_output(['git', 'rev-parse', revision+'^{commit}'], cwd=ROOT, text=True).strip()
-    data = subprocess.check_output(['git', 'archive', '--format=zip', revision,
-                                   'src', 'tests', 'examples', 'tools', 'Docs/Current', 'Docs/AI',
-                                   'Docs/Schema', 'Docs/Release', 'README.md', 'README.en.md', 'LICENSE',
-                                   'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes'], cwd=ROOT)
+    paths = ['src', 'tests', 'examples', 'tools', 'Docs/Current', 'Docs/AI',
+             'Docs/Schema', 'Docs/Release', 'README.md', 'README.en.md', 'LICENSE',
+             'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes']
+    # 旧提交可能尚无发布工作流；只导出该版本实际存在的明确文件。
+    workflow = '.github/workflows/pypi-publish.yml'
+    if subprocess.check_output(['git', 'ls-tree', '--name-only', revision, '--', workflow], cwd=ROOT).strip():
+        paths.append(workflow)
+    data = subprocess.check_output(['git', 'archive', '--format=zip', revision, *paths], cwd=ROOT)
     files = {}
     with ZipFile(BytesIO(data)) as archive:
         for item in archive.infolist():

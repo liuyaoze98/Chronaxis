@@ -2,7 +2,7 @@
 
 [简体中文](publishing.md)
 
-Run these commands from the delivery directory. Confirm release information and local checks before publishing source to GitHub, testing on TestPyPI, and uploading to PyPI. The maintainer runs external upload commands after deciding to publish.
+Run these commands from the delivery directory. Confirm release information and local checks before publishing source to GitHub and packages to PyPI. TestPyPI installation testing is optional. For automatic uploads through GitHub, first complete the one-time [Trusted Publishing setup](trusted-publishing.en.md). This page also retains manual upload commands.
 
 ## Delivery layout
 

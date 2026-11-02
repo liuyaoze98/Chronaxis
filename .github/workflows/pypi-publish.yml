@@ -1,0 +1,61 @@
+name: Publish Chronaxis to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload the verified 0.1.0.dev0 files to PyPI
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chronaxis-pypi-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'liuyaoze98/Chronaxis' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/chronaxis/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download and verify the reviewed release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag_object=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.1.0.dev0" --jq '.object.sha')
+          source_commit=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$tag_object" --jq '.object.sha')
+          test "$source_commit" = 'e146bcff0b05735db65033c66cc7ec37f0b491ad'
+          gh release download v0.1.0.dev0 --repo "$GITHUB_REPOSITORY" --dir dist \
+            --pattern chronaxis-0.1.0.dev0-py3-none-any.whl \
+            --pattern chronaxis-0.1.0.dev0.tar.gz
+          test "$(find dist -maxdepth 1 -type f | wc -l)" -eq 2
+          cd dist
+          sha256sum --strict --check - <<'SHA256'
+          f8fb65a4e02dd585205f4ee1a4ba877e55a76a8ecb0f196b9796bf4bab0756a6  chronaxis-0.1.0.dev0-py3-none-any.whl
+          7da0cce87f3ff9e8eacc3ced5ba3f6d3710854f9a84edb9e7c802dc31eedb916  chronaxis-0.1.0.dev0.tar.gz
+          SHA256
+
+      - name: Publish verified packages using PyPI Trusted Publishing
+        if: inputs.upload
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
+        with:
+          packages-dir: dist/
+          skip-existing: false
+
+      - name: Record verification-only result
+        if: ${{ !inputs.upload }}
+        shell: bash
+        run: |
+          echo 'Both release files match the reviewed SHA256 values. Nothing was uploaded to PyPI.' >> "$GITHUB_STEP_SUMMARY"

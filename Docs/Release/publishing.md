@@ -2,7 +2,7 @@
 
 [English](publishing.en.md)
 
-从本次交付目录执行以下命令。先完成发布信息确认和本地校核，再依次发布GitHub源码、TestPyPI试装和PyPI正式包。外部上传命令由维护者在确认发布后执行。
+从本次交付目录执行以下命令。先完成发布信息确认和本地校核，再发布GitHub源码及PyPI安装包。TestPyPI试装是可选步骤。使用GitHub自动上传时，先按[可信发布设置](trusted-publishing.md)完成一次账号配置；本页同时保留手动上传命令。
 
 ## 交付目录
 
