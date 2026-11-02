@@ -58,7 +58,7 @@ git -C source tag -a "v$Version" -m "Chronaxis $Version"
 git -C source push origin "v$Version"
 ```
 
-在GitHub Releases中基于此标签先创建草稿，标题用`Chronaxis 0.1.0.dev1`，勾选预发行，正文取[本版说明](release-notes-0.1.0.dev1.md)。附件加入源码ZIP、双语手册ZIP、wheel、sdist及SHA256SUMS.txt。PyPI确认后再发布该草稿。
+在GitHub Releases中基于此标签先创建草稿，标题用`Chronaxis 0.1.0.dev1`，勾选预发行，正文取[本版说明](release-notes-0.1.0.dev1.md)。附件加入源码ZIP、双语手册ZIP、wheel、sdist及SHA256SUMS.txt。核对五项附件摘要后公开预发行，以便Pages工作流通过只读权限取得手册；PyPI回读通过后更新发布状态。
 
 推送后用未登录浏览器打开仓库、`v0.1.0.dev1`标签以及包元数据中的手册链接，确认外部可读，再上传PyPI。仓库URL已知不代表目前已公开；本地构建检查只核对链接目标文件存在，不能替代这一步。
 
@@ -96,7 +96,7 @@ $Guide = Split-Path (& $CheckPython -m chronaxis guide)
 & $CheckPython "$Guide/run_analysis.py" "$Guide/examples/conditional-energy.yaml" result-release-check
 ```
 
-预期生成一个61–122秒的事件，能量为`0.06777777777777777 kWh`；`result-release-check`必须是新目录。核对PyPI页面的版本、MIT、维护者邮箱、依赖、README及链接，然后发布GitHub Release草稿，记录两个平台的实际地址和时间。
+预期生成一个61–122秒的事件，能量为`0.06777777777777777 kWh`；`result-release-check`必须是新目录。核对PyPI页面的版本、MIT、维护者邮箱、依赖、README及链接，然后更新GitHub Release中的发布状态，记录两个平台的实际地址和时间。
 
 ## 维护依据
 

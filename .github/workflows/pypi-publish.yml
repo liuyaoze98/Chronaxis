@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       upload:
-        description: Upload the verified 0.1.0.dev0 files to PyPI
+        description: Upload the verified 0.1.0.dev1 files to PyPI
         type: boolean
         required: true
         default: false
@@ -25,8 +25,7 @@ jobs:
       name: pypi
       url: https://pypi.org/project/chronaxis/
     permissions:
-      # GitHub仅向具有推送权限的身份提供未发布草稿及附件。
-      contents: write
+      contents: read
       id-token: write
     steps:
       - name: Download and verify the reviewed release files
@@ -35,17 +34,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag_object=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.1.0.dev0" --jq '.object.sha')
+          tag_object=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.1.0.dev1" --jq '.object.sha')
           source_commit=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$tag_object" --jq '.object.sha')
-          test "$source_commit" = 'e146bcff0b05735db65033c66cc7ec37f0b491ad'
-          gh release download v0.1.0.dev0 --repo "$GITHUB_REPOSITORY" --dir dist \
-            --pattern chronaxis-0.1.0.dev0-py3-none-any.whl \
-            --pattern chronaxis-0.1.0.dev0.tar.gz
+          test "$source_commit" = 'fdae443707748332e0e911cb2a314b4eac9d64c2'
+          gh release download v0.1.0.dev1 --repo "$GITHUB_REPOSITORY" --dir dist \
+            --pattern chronaxis-0.1.0.dev1-py3-none-any.whl \
+            --pattern chronaxis-0.1.0.dev1.tar.gz
           test "$(find dist -maxdepth 1 -type f | wc -l)" -eq 2
           cd dist
           sha256sum --strict --check - <<'SHA256'
-          f8fb65a4e02dd585205f4ee1a4ba877e55a76a8ecb0f196b9796bf4bab0756a6  chronaxis-0.1.0.dev0-py3-none-any.whl
-          7da0cce87f3ff9e8eacc3ced5ba3f6d3710854f9a84edb9e7c802dc31eedb916  chronaxis-0.1.0.dev0.tar.gz
+          4fe83694e2ef21aedd9330bf87cdb3f4d57bc10e61acd89f7f5a3e343b213b9a  chronaxis-0.1.0.dev1-py3-none-any.whl
+          f384ed2ff4a413e93e18b70ba0a208d9c77eec905668997e79b193b0660c4c47  chronaxis-0.1.0.dev1.tar.gz
           SHA256
 
       - name: Publish verified packages using PyPI Trusted Publishing

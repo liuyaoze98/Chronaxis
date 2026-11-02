@@ -56,7 +56,7 @@ git -C source tag -a "v$Version" -m "Chronaxis $Version"
 git -C source push origin "v$Version"
 ```
 
-Create a draft GitHub Release from this tag, titled `Chronaxis 0.1.0.dev1`, and mark it as a prerelease. Use the [release notes](release-notes-0.1.0.dev1.md). Attach the source ZIP, bilingual manual ZIP, wheel, sdist, and SHA256SUMS.txt. Publish the draft after confirming the PyPI release.
+Create a draft GitHub Release from this tag, titled `Chronaxis 0.1.0.dev1`, and mark it as a prerelease. Use the [release notes](release-notes-0.1.0.dev1.md). Attach the source ZIP, bilingual manual ZIP, wheel, sdist, and SHA256SUMS.txt. After verifying all five attachment hashes, publish the prerelease so the Pages workflow can read the manual with read-only repository permissions. Update its publication status after verifying PyPI.
 
 After pushing, open the repository, `v0.1.0.dev1` tag and metadata documentation link in a signed-out browser before uploading to PyPI. A known URL does not establish public access. Local build checks verify that target files exist; they do not replace this remote check.
 
@@ -94,7 +94,7 @@ $Guide = Split-Path (& $CheckPython -m chronaxis guide)
 & $CheckPython "$Guide/run_analysis.py" "$Guide/examples/conditional-energy.yaml" result-release-check
 ```
 
-Expect one event from 61 to 122 seconds and `0.06777777777777777 kWh`. The result directory must be new. Check the PyPI version, MIT license, maintainer email, dependencies, README and links, then publish the GitHub Release draft and record both URLs and times.
+Expect one event from 61 to 122 seconds and `0.06777777777777777 kWh`. The result directory must be new. Check the PyPI version, MIT license, maintainer email, dependencies, README and links, then update the publication status in the GitHub Release and record both URLs and times.
 
 ## References
 

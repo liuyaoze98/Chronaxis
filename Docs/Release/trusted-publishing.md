@@ -24,7 +24,7 @@ Workflow name只填文件名，不带`.github/workflows/`。Environment name与�
 
 1. 不勾选上传选项先运行：只下载两个发行文件，核对源码标签及SHA256，不上传PyPI。
 2. 验证成功且PyPI网页设置完成后，勾选上传选项运行。成功后检查[PyPI项目页](https://pypi.org/project/chronaxis/0.1.0.dev1/)。
-3. 按[发布流程](publishing.md#pypi正式上传与回读)在新环境从PyPI安装，核对依赖、指南及能量示例，再公开GitHub Release草稿。
+3. 按[发布流程](publishing.md#pypi正式上传与回读)在新环境从PyPI安装，核对依赖、指南及能量示例，并更新GitHub Release中的发布状态。
 
 当前工作流固定发布0.1.0.dev1及其已验摘要，不会重建或移动源码标签。下一版本发布前，应完成新包验证，再更新工作流的版本、源码提交及两文件摘要。不要为了绕过上传失败启用skip-existing；先核实远端文件是否与本地一致。
 
