@@ -25,7 +25,8 @@ jobs:
       name: pypi
       url: https://pypi.org/project/chronaxis/
     permissions:
-      contents: read
+      # GitHub仅向具有推送权限的身份提供未发布草稿及附件。
+      contents: write
       id-token: write
     steps:
       - name: Download and verify the reviewed release files
