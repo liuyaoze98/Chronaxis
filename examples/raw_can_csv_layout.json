@@ -1,0 +1,18 @@
+{
+  "layout_version": "raw-can-csv-layout-v1",
+  "encoding": "gbk",
+  "delimiter": ",",
+  "has_header": true,
+  "skip_rows": 0,
+  "fields": {
+    "timestamp": {"column": "时间标识"},
+    "frame_id": {"column": "帧ID"},
+    "payload_length": {"column": "数据长度"},
+    "data": {"column": "数据(HEX)"},
+    "channel": {"fixed": 0},
+    "is_fd": {"fixed": false},
+    "is_rx": {"column": "传输方向", "value_map": {"接收": true, "发送": false}},
+    "is_extended": {"column": "帧类型", "value_map": {"标准帧": false, "扩展帧": true}},
+    "frame_kind": {"column": "帧格式", "value_map": {"数据帧": "data", "远程帧": "remote", "错误帧": "error"}}
+  }
+}

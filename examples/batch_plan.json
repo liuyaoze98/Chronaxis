@@ -1,0 +1,19 @@
+{
+  "batch_version": 1,
+  "max_workers": 2,
+  "fail_fast": false,
+  "jobs": [
+    {
+      "name": "cycles",
+      "plan": "start_end_plan.json"
+    },
+    {
+      "name": "changes",
+      "plan": "window_delta_plan.json"
+    },
+    {
+      "name": "alarm",
+      "plan": "stability_plan.json"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: response_example
+sources:
+  - path: data/command-response.asc
+    dbc_by_channel:
+      '1': data/teaching.dbc
+signals:
+  - name: request
+    field:
+      frame_id: '0x203'
+      signal: Request
+    choices:
+      -   - 0
+          - false
+      -   - 1
+          - true
+  - name: response
+    field:
+      frame_id: '0x203'
+      signal: Response
+    choices:
+      -   - 0
+          - false
+      -   - 1
+          - true
+presets:
+  - name: command
+    role_bindings:
+      request: request
+      response: response
+    parameters:
+      max_delay: 2s
+    preset_type: command_response

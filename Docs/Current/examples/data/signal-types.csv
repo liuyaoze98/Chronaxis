@@ -1,0 +1,5 @@
+time_ms,Current_mA,Enabled,ModeCode
+0,5000,0,0
+100,7000,1,7
+200,5000,1,7
+300,5000,0,0

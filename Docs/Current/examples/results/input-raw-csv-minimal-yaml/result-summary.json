@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "can_asc_example",
+      "entity_id": "can_asc_example",
+      "session_id": "can_asc_example"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "会话结果.csv",
+      "bytes": 84,
+      "sha256": "486baa29cc827d58706c43b18abcfe3856a5074083aaffe2f322d645fd03cac1",
+      "rows": 1
+    }
+  ]
+}

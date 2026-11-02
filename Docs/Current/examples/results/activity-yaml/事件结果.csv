@@ -1,0 +1,2 @@
+﻿区间,规则,开始时间（s）,确认时间（s）,结束时间（s）,区间状态,说明,event_energy（J）,event_energy：状态,event_energy：说明
+1,hot,1,3,6,正常结束,,50.0,完整,

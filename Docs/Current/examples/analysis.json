@@ -1,0 +1,40 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "energy"
+  },
+  "sources": [
+    {
+      "paths": "data/can/quickstart.asc",
+      "dbc_by_channel": {
+        "1": "data/can/teaching.dbc"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "name": "power",
+      "field": {
+        "frame_id": "0x100",
+        "signal": "Power"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "name": "energy",
+      "operation": "integral",
+      "expr": "power"
+    },
+    {
+      "name": "sample_average",
+      "operation": "sample_mean",
+      "expr": "power"
+    },
+    {
+      "name": "time_average",
+      "operation": "time_weighted_mean",
+      "expr": "power"
+    }
+  ]
+}

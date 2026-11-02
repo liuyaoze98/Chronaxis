@@ -1,0 +1,176 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "start_end_demo",
+    "entity": "device",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "16s"
+    }
+  },
+  "sources": [
+    {
+      "name": "input",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "begin": 1,
+            "done": 0,
+            "value": 10
+          }
+        },
+        {
+          "time": "2s",
+          "values": {
+            "begin": 0,
+            "done": 1,
+            "value": 20
+          }
+        },
+        {
+          "time": "3s",
+          "values": {
+            "begin": 0,
+            "done": 0,
+            "value": 30
+          }
+        },
+        {
+          "time": "4s",
+          "values": {
+            "begin": 1,
+            "done": 0,
+            "value": 40
+          }
+        },
+        {
+          "time": "6s",
+          "values": {
+            "begin": 1,
+            "done": 0,
+            "value": 60
+          }
+        },
+        {
+          "time": "9s",
+          "values": {
+            "begin": 1,
+            "done": 0,
+            "value": 90
+          }
+        },
+        {
+          "time": "10s",
+          "values": {
+            "begin": 0,
+            "done": 0,
+            "value": 100
+          }
+        },
+        {
+          "time": "11s",
+          "values": {
+            "begin": 1,
+            "done": 0,
+            "value": 110
+          }
+        },
+        {
+          "time": "14s",
+          "values": {
+            "begin": 0,
+            "done": 1,
+            "value": 140
+          }
+        },
+        {
+          "time": "16s",
+          "values": {
+            "begin": 0,
+            "done": 0,
+            "value": 160
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "begin",
+      "source": "input",
+      "field": "begin",
+      "dtype": "int64",
+      "unit": "1",
+      "valid_for": "20s"
+    },
+    {
+      "name": "done",
+      "source": "input",
+      "field": "done",
+      "dtype": "int64",
+      "unit": "1",
+      "valid_for": "20s"
+    },
+    {
+      "name": "value",
+      "source": "input",
+      "field": "value",
+      "dtype": "int64",
+      "unit": "1",
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [
+    {
+      "name": "cycle",
+      "start_condition": "begin > 0",
+      "end_condition": "done > 0",
+      "timeout": "5s",
+      "rule_type": "start_end"
+    }
+  ],
+  "windows": [
+    {
+      "name": "window",
+      "rule": "cycle",
+      "anchor": "activity",
+      "pre": "0s",
+      "post": "0s"
+    }
+  ],
+  "execution": {
+    "batch_rows": 2,
+    "result_buffer_rows": 1,
+    "memory_budget_bytes": 268435456
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic"
+  },
+  "calculations": [
+    {
+      "name": "event_average",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "rule": "cycle"
+      },
+      "expr": "value"
+    },
+    {
+      "name": "segment_average",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "window": "window"
+      },
+      "expr": "value"
+    }
+  ]
+}

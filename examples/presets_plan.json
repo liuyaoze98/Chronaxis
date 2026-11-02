@@ -1,0 +1,124 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "demo",
+    "entity": "synthetic",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "4s"
+    }
+  },
+  "sources": [
+    {
+      "name": "sensor",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "synthetic"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "raw_mode": 1,
+            "raw_current": 10.0,
+            "raw_voltage": 400.0,
+            "raw_alarm": false
+          }
+        },
+        {
+          "time": "2s",
+          "values": {
+            "raw_current": 0.0,
+            "raw_alarm": true
+          }
+        },
+        {
+          "time": "4s",
+          "values": {
+            "raw_current": 0.0,
+            "raw_alarm": false
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "mode",
+      "source": "sensor",
+      "field": "raw_mode",
+      "dtype": "int64",
+      "unit": "1",
+      "valid_for": "10s"
+    },
+    {
+      "name": "current",
+      "source": "sensor",
+      "field": "raw_current",
+      "dtype": "float64",
+      "unit": "A",
+      "sign_convention": "positive_is_charge",
+      "measurement_location": "pack_terminal",
+      "valid_for": "10s"
+    },
+    {
+      "name": "voltage",
+      "source": "sensor",
+      "field": "raw_voltage",
+      "dtype": "float64",
+      "unit": "V",
+      "measurement_location": "pack_terminal",
+      "valid_for": "10s"
+    },
+    {
+      "name": "alarm",
+      "source": "sensor",
+      "field": "raw_alarm",
+      "dtype": "bool",
+      "unit": "1",
+      "valid_for": "10s"
+    }
+  ],
+  "execution": {
+    "partial_policy": "strict"
+  },
+  "presets": [
+    {
+      "name": "charging",
+      "version": "1",
+      "role_bindings": {
+        "mode": "mode",
+        "current": "current",
+        "voltage": "voltage"
+      },
+      "parameters": {
+        "mode_value": 1,
+        "current_min": 5,
+        "compute_energy": true,
+        "compute_charge": true,
+        "minimum_duration": "1s"
+      },
+      "preset_type": "charge_session"
+    },
+    {
+      "name": "fault",
+      "version": "1",
+      "role_bindings": {
+        "alarm": "alarm"
+      },
+      "parameters": {
+        "pre": "1s",
+        "post": "2s"
+      },
+      "preset_type": "fault_context"
+    }
+  ],
+  "metadata": {
+    "device_label": "work",
+    "synthetic": true,
+    "alarm_meaning": "TRUE表示本合成例的演示报警谓词成立；不代表实际故障"
+  }
+}

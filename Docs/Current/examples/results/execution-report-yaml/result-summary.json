@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 0,
+      "partial": 1,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "partial_energy_report",
+      "entity_id": "partial_energy_report",
+      "session_id": "partial_energy_report"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "会话结果.csv",
+      "bytes": 94,
+      "sha256": "29845db2cd01c08ec6f14c1fc63c1ea90af5c4ac4e52e2963fe78a297a8c3bdf",
+      "rows": 1
+    }
+  ]
+}

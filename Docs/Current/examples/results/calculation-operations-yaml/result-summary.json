@@ -1,0 +1,44 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1,
+    "selections": 3
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 9,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "power_statistics",
+      "entity_id": "power_statistics",
+      "session_id": "power_statistics"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "会话结果.csv",
+      "bytes": 695,
+      "sha256": "b1dc0bc531a3779cf917916a125db77e769ed59d444bef6360801915953e7bef",
+      "rows": 1
+    },
+    {
+      "path": "选择结果.csv",
+      "bytes": 234,
+      "sha256": "55bd081eac9418d120f501585c861a7d8bdea6311d2ba063e3862bec9b01ccad",
+      "rows": 3
+    }
+  ]
+}

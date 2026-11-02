@@ -1,0 +1,14 @@
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+sources:                                 # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - name: bus                            # 给本来源取计划内唯一名称；下方signals.source引用这个名称
+    paths: ../data/can/quickstart.asc    # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                      # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': ../data/can/teaching.dbc      # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                                 # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: power                          # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x100'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Power                      # 填写DBC中的信号名称，大小写须一致
+derived:                                 # 用已定义信号的表达式生成新信号；先定义再在后续功能中引用
+  double_power:                          # 定义名为double_power的派生信号，后面的计算通过此名称引用
+    expr: power * 2                      # 规定派生值如何由已有信号计算；名称必须先在signals或前面的derived中定义

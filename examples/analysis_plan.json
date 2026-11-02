@@ -1,0 +1,177 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "plan_demo",
+    "entity": "synthetic_device",
+    "session": "synthetic_session",
+    "domain": {
+      "start": "0s",
+      "end": "4s"
+    }
+  },
+  "sources": [
+    {
+      "name": "table",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "synthetic_common_clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "raw.current": 6,
+            "voltage": 100,
+            "alarm": 0
+          }
+        },
+        {
+          "time": "1s",
+          "values": {
+            "raw.current": 8,
+            "voltage": 100,
+            "alarm": 1
+          }
+        },
+        {
+          "time": "4s",
+          "values": {
+            "raw.current": 0,
+            "voltage": 100,
+            "alarm": 0
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "current",
+      "source": "table",
+      "field": "raw.current",
+      "dtype": "float64",
+      "unit": "A",
+      "valid_for": "2s"
+    },
+    {
+      "name": "voltage",
+      "source": "table",
+      "field": "voltage",
+      "dtype": "float64",
+      "unit": "V",
+      "valid_for": "2s"
+    },
+    {
+      "name": "alarm",
+      "source": "table",
+      "field": "alarm",
+      "dtype": "bool",
+      "unit": "1",
+      "choices": [
+        [
+          0,
+          false
+        ],
+        [
+          1,
+          true
+        ]
+      ],
+      "valid_for": "2s"
+    }
+  ],
+  "derived": {
+    "power": {
+      "expr": "voltage * current",
+      "unit": "W"
+    }
+  },
+  "rules": [
+    {
+      "name": "active",
+      "condition": "current > 5",
+      "rule_type": "condition_duration",
+      "minimum_duration": "1s"
+    },
+    {
+      "name": "alarm_edge",
+      "condition": "alarm",
+      "emit_initial": false,
+      "rule_type": "rising_edge"
+    },
+    {
+      "name": "pulse",
+      "condition": "alarm",
+      "window_duration": "3s",
+      "rule_type": "start_only"
+    }
+  ],
+  "windows": [
+    {
+      "name": "activity_context",
+      "rule": "active",
+      "anchor": "activity",
+      "pre": "3s",
+      "post": "0s",
+      "merge": "exit_delay",
+      "exit_delay": "1s"
+    },
+    {
+      "name": "pulse_context",
+      "rule": "pulse",
+      "anchor": "point",
+      "pre": "0s",
+      "post": "3s"
+    }
+  ],
+  "metadata": {
+    "sample_kind": "synthetic",
+    "purpose": "static_plan_example",
+    "notes": {
+      "units": [
+        "A",
+        "V"
+      ]
+    }
+  },
+  "calculations": [
+    {
+      "name": "energy",
+      "unit": "Wh",
+      "operation": "integral",
+      "scope": "session",
+      "expr": "power"
+    },
+    {
+      "name": "event_peak",
+      "operation": "sample_maximum",
+      "scope": {
+        "rule": "active"
+      },
+      "expr": "current"
+    },
+    {
+      "name": "context_mean",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "window": "activity_context"
+      },
+      "expr": "power"
+    },
+    {
+      "name": "alarm_duration",
+      "condition": "alarm",
+      "operation": "duration",
+      "scope": "session"
+    },
+    {
+      "name": "selected_rows",
+      "condition": "current > 5",
+      "operation": "select",
+      "scope": "session",
+      "expr": "current"
+    }
+  ]
+}

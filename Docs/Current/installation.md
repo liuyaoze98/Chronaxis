@@ -1,0 +1,57 @@
+# 安装与环境
+
+已有本地 wheel 时无需源码。Python要求>=3.12且<3.13；已验证环境为Windows和Python3.12.4。最终结果发布目前依赖Windows的不覆盖原子目录安装，不能据Python版本声明推定其他平台已受验收。
+
+## 已取得安装包
+
+在自己的 Python 3.12 虚拟环境中，把下列文件名换成实际收到的同版 wheel。普通安装已包含信号表分析、CAN 日志和 DBC 解码的运行依赖，无需添加 `[can]`。离线安装时需事先备齐依赖包。
+
+```powershell
+python -m pip install ".\chronaxis-0.1.0.dev0-py3-none-any.whl"
+python -m chronaxis guide
+```
+
+直接打开命令显示的README路径即可阅读，无需导出或解压；没有运行环境时，可以打开[离线手册附带的指南](ai-guide.md)。手册 ZIP 是说明和教学数据，不是 Python 安装包。以下为拥有源码时的安装路径。
+
+## 创建独立环境
+
+以下为Windows PowerShell命令。显式调用虚拟环境中的Python，无需修改脚本执行策略或依赖终端激活状态。
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e "."
+.\.venv\Scripts\python.exe -m chronaxis --help
+```
+
+`pip install -e "."`安装当前源码目录和CAN依赖，可以直接运行本手册的BLF／ASC示例。它根据pyproject.toml安装NumPy、YAML解析及CAN依赖；首次安装需要可用的软件源或本地安装包。编辑安装仍依赖原源码目录，移动仓库后应在新位置重新安装。
+
+## CAN输入与导出
+
+上面的普通安装已包含BLF、ASC、原始CAN CSV、DBC解码和CAN报文导出的依赖。默认声明并验证 `python-can==4.6.1`、`cantools==39.4.3`、`natsort==8.4.0`，由 wheel 元数据统一约束。旧的 `chronaxis[can]` 安装写法继续兼容，安装内容与普通安装相同。
+
+普通CSV任务不需要DBC；已安装的CAN库只在实际需要时导入。若旧环境缺少依赖，使用当前完整wheel在同一环境重新安装；不要单独安装任意最新版cantools后视为已验证环境。
+
+## 检查安装与首次运行
+
+在仓库根目录执行：
+
+```powershell
+.\.venv\Scripts\python.exe -m chronaxis validate Docs/Current/examples/analysis.yaml
+.\.venv\Scripts\python.exe -m chronaxis run Docs/Current/examples/analysis.yaml --output first-result
+```
+
+first-result必须尚不存在。然后按[BLF／ASC快速开始](quickstart.md)核对会话结果.csv中的38J、6W和38/6W。手册后续使用简写`chronaxis`；虚拟环境未激活时，始终可用`.\.venv\Scripts\python.exe -m chronaxis`替代它。
+
+离线HTML附带的examples目录可整体复制；使用已安装Chronaxis的Python执行其中api_example.py。HTML阅读本身不需要Python，运行分析才需要环境。
+
+## 安装失败时
+
+| 现象 | 检查与处理 |
+|---|---|
+| 找不到py或Python3.12 | 先安装受支持的Python；或用已知Python3.12可执行文件的完整路径替代py -3.12。 |
+| pip无法取得依赖 | 检查软件源/网络，或准备pyproject.toml规定版本的本地安装包；不要把下载失败当作项目已安装。 |
+| No module named chronaxis | 核对当前Python是否为安装所用的解释器，以及编辑安装的源码目录是否仍存在。 |
+| `dependency_missing`／缺少 CAN 读取或解码依赖 | 在运行分析的同一个Python环境重新安装本地 `.whl`；有源码才使用 `-e "."`。这是环境缺项，无需修改信号、通道或DBC。 |
+| 命令能校验但不能发布结果 | 查看原异常链和平台限制；静态校验不执行发布。 |
+
+完整错误处理见[故障排查](troubleshooting.md)。具体版本以仓库pyproject.toml为安装依据；本页不假定存在同名PyPI正式发行版。

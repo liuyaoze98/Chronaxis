@@ -1,0 +1,112 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "sample",
+    "entity": "device",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "12s"
+    }
+  },
+  "sources": [
+    {
+      "name": "input",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "temperature": 85
+          }
+        },
+        {
+          "time": "3s",
+          "values": {
+            "temperature": 77
+          }
+        },
+        {
+          "time": "6s",
+          "values": {
+            "temperature": 77
+          }
+        },
+        {
+          "time": "9s",
+          "values": {
+            "temperature": 75
+          }
+        },
+        {
+          "time": "12s",
+          "values": {
+            "temperature": 70
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "temperature",
+      "source": "input",
+      "field": "temperature",
+      "dtype": "int64",
+      "unit": "degC",
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [
+    {
+      "name": "alarm",
+      "enter_condition": "temperature >= 80",
+      "exit_condition": "temperature <= 75",
+      "rule_type": "hysteresis"
+    }
+  ],
+  "execution": {
+    "batch_rows": 2,
+    "result_buffer_rows": 1,
+    "memory_budget_bytes": 268435456
+  },
+  "outputs": {
+    "tables": "csv"
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic"
+  },
+  "windows": [
+    {
+      "name": "window",
+      "rule": "alarm",
+      "anchor": "activity",
+      "pre": "0s",
+      "post": "0s"
+    }
+  ],
+  "calculations": [
+    {
+      "name": "event_mean",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "rule": "alarm"
+      },
+      "expr": "temperature"
+    },
+    {
+      "name": "segment_mean",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "window": "window"
+      },
+      "expr": "temperature"
+    }
+  ]
+}

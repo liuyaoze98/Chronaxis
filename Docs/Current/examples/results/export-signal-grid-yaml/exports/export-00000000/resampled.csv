@@ -1,0 +1,13 @@
+time_ns,signal,value,unit,status,reason,quality
+0,power,2.0,W,observed,,0
+500000000,power,3.0,W,estimated,,0
+1000000000,power,4.0,W,observed,,0
+1500000000,power,5.0,W,estimated,,0
+2000000000,power,6.0,W,estimated,,0
+2500000000,power,7.0,W,estimated,,0
+3000000000,power,8.0,W,observed,,0
+3500000000,power,9.0,W,estimated,,0
+4000000000,power,10.0,W,observed,,0
+4500000000,power,,W,missing,missing_right,0
+5000000000,power,,W,missing,missing_right,0
+5500000000,power,,W,missing,missing_right,0

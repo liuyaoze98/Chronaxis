@@ -1,0 +1,98 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 1,
+    "segments": 2,
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "high",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "can_asc_example",
+      "entity_id": "can_asc_example",
+      "session_id": "can_asc_example"
+    }
+  },
+  "result_messages": [
+    "high：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "exports/export-00000000/frames.asc",
+      "bytes": 86,
+      "sha256": "61513d799f51d1879e36a100c24e9f1c3cd991cecf764e422f53d43529725e73"
+    },
+    {
+      "path": "exports/export-00000000/manifest.json",
+      "bytes": 550,
+      "sha256": "3fc565abb096aa5c66ffec88b107d8dbb0f58314280e7034881192a1cf802d1d",
+      "frames": 1,
+      "generated": 0,
+      "passthrough": 1,
+      "skipped_grid_points": 0,
+      "format": "asc",
+      "status": "completed"
+    },
+    {
+      "path": "exports/export-00000001/frames.asc",
+      "bytes": 117,
+      "sha256": "b567e5cd9f1dca590f3664d200e9f53070b6ea0bf003f2967f27d002d39cfde6"
+    },
+    {
+      "path": "exports/export-00000001/manifest.json",
+      "bytes": 542,
+      "sha256": "d23ef20606821a7d60d7f59450d6abbfc737e77fdf89c462cc980380e01b66bc",
+      "frames": 2,
+      "generated": 0,
+      "passthrough": 2,
+      "skipped_grid_points": 0,
+      "format": "asc",
+      "status": "completed"
+    },
+    {
+      "path": "exports.jsonl",
+      "bytes": 648,
+      "sha256": "0bfadb699d241e773393959fd28327bd7f3c07a3868de5f11d19e4dc6daabdab"
+    },
+    {
+      "path": "事件结果.csv",
+      "bytes": 126,
+      "sha256": "3bfb2cc4e57cd812fc4f1034e5b3593c10df8c1d403ad0364bc73a749abf3714",
+      "rows": 1
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 84,
+      "sha256": "486baa29cc827d58706c43b18abcfe3856a5074083aaffe2f322d645fd03cac1",
+      "rows": 1
+    },
+    {
+      "path": "窗口结果.csv",
+      "bytes": 148,
+      "sha256": "d3d11e0441a8da7b8bec0438e86fd1017d5c1ebb6538eb1a05df986598a827df",
+      "rows": 2
+    }
+  ]
+}

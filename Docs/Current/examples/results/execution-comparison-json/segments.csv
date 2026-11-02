@@ -1,0 +1,2 @@
+sequence,dataset_id,entity_id,session_id,window_id,segment_id,start_ns,end_ns,status,parent_event_ids,quality
+4,power_demo,power_demo,power_demo,context,037f72ec7584193661f57fb863db6b10563ca85be0d9a094b438548a1726b25d,0,6000000000,complete,"[""14f6ac8f07a98bb61b8c2899e79ef9c11a1cd3bf594f048ca53c648aa030915c"",""b7cb06c6018bfd8076a8996b0bc5b7e6f006019cec1f386bf890aef1b62460e7""]",0

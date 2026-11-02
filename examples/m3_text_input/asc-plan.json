@@ -1,0 +1,116 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "text_demo",
+    "entity": "synthetic",
+    "session": "demo",
+    "domain": {
+      "start": "0s",
+      "end": "3s"
+    }
+  },
+  "sources": [
+    {
+      "name": "bus",
+      "path": "sample.asc",
+      "dbc_by_channel": {
+        "1": "sample.dbc"
+      },
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "synthetic_clock"
+      },
+      "source_type": "can_asc",
+      "reader": {
+        "version": "vector-asc-v1"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "name": "voltage",
+      "source": "bus",
+      "field": {
+        "channel": 1,
+        "signal": "Voltage",
+        "frame_id": 256,
+        "is_extended": false,
+        "is_fd": false
+      },
+      "dtype": "float64",
+      "unit": "V",
+      "same_time_policy": "last_by_sequence",
+      "valid_for": "10s"
+    }
+  ],
+  "rules": [
+    {
+      "name": "active",
+      "condition": "voltage > 5",
+      "rule_type": "condition_duration",
+      "minimum_duration": "0s"
+    }
+  ],
+  "windows": [
+    {
+      "name": "alarm",
+      "rule": "active",
+      "anchor": "activity",
+      "pre": "0s",
+      "post": "0s",
+      "merge": "none"
+    }
+  ],
+  "execution": {
+    "backend": "numpy",
+    "memory_budget_bytes": 268435456,
+    "batch_rows": 64
+  },
+  "outputs": {
+    "signal_csv": {
+      "signals": [
+        "voltage"
+      ],
+      "resampling": {
+        "continuous": [
+          "voltage"
+        ],
+        "period": "250ms",
+        "max_gap": "2s"
+      }
+    },
+    "can_frames": {
+      "source": "bus",
+      "format": "asc",
+      "resampling": {
+        "period": "500ms",
+        "max_gap": "2s",
+        "messages": [
+          {
+            "channel": 1,
+            "frame_id": 256,
+            "is_extended": false,
+            "is_fd": false,
+            "continuous": [
+              "Voltage"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic",
+    "purpose": "M3-INPUT-01 public examples"
+  },
+  "calculations": [
+    {
+      "name": "voltage_area",
+      "operation": "integral",
+      "scope": "session",
+      "expr": "voltage"
+    }
+  ]
+}

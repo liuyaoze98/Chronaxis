@@ -1,0 +1,284 @@
+{
+  "device_label": "home",
+  "updated_at": "2026-11-01T23:39:59+08:00",
+  "objects": [
+    {
+      "name": "AnalysisPlan",
+      "module": "chronaxis.planning.plan",
+      "qualified": "AnalysisPlan",
+      "group": "Loading and checking plans",
+      "kind": "class",
+      "signature": "(config_version: int, dataset: chronaxis.planning.models.DatasetPlan, sources: tuple[chronaxis.planning.models.SourcePlan, ...], signals: tuple[chronaxis.planning.models.SignalPlan, ...], derived: tuple[chronaxis.planning.models.DerivedPlan, ...], rules: tuple[chronaxis.planning.models.RulePlan, ...], windows: tuple[chronaxis.planning.models.WindowPlan, ...], calculations: tuple[chronaxis.planning.models.CalculationPlan, ...], presets: tuple[chronaxis.planning.preset_models.PresetSpec, ...], preset_bindings: tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...], execution: chronaxis.planning.models.ExecutionPlan, outputs: chronaxis.planning.models.OutputPlan, bindings: chronaxis.core.declarations.DeclarationBindings, derived_expressions: tuple[chronaxis.core.expression.StaticExpression, ...], metadata: collections.abc.Mapping, raw_config: collections.abc.Mapping, base_dir: pathlib.Path, identity: str, message_calculations: tuple[chronaxis.planning.models.MessageCalculationPlan, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = (), intervals: 'IntervalPlan | None' = None, diagnostics: 'DiagnosticPlan | None' = None) -> None",
+      "target": "public-api/AnalysisPlan.md#api-AnalysisPlan"
+    },
+    {
+      "name": "load_analysis_plan",
+      "module": "chronaxis.planning.plan",
+      "qualified": "load_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(path: pathlib.Path | str) -> chronaxis.planning.plan.AnalysisPlan",
+      "target": "public-api/load_analysis_plan.md#api-load_analysis_plan"
+    },
+    {
+      "name": "validate_analysis_plan",
+      "module": "chronaxis.planning.reports",
+      "qualified": "validate_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ValidationReport",
+      "target": "public-api/validate_analysis_plan.md#api-validate_analysis_plan"
+    },
+    {
+      "name": "explain_analysis_plan",
+      "module": "chronaxis.planning.reports",
+      "qualified": "explain_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ExplainReport",
+      "target": "public-api/explain_analysis_plan.md#api-explain_analysis_plan"
+    },
+    {
+      "name": "PlanValidationError",
+      "module": "chronaxis.planning.checks",
+      "qualified": "PlanValidationError",
+      "group": "Loading and checking plans",
+      "kind": "class",
+      "signature": "(path: str, message: str, code: str = 'invalid_config', *, hint=None, source=None, location=None, object_name=None, value=None)",
+      "target": "public-api/PlanValidationError.md#api-PlanValidationError"
+    },
+    {
+      "name": "AnalysisRunner",
+      "module": "chronaxis.runner",
+      "qualified": "AnalysisRunner",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(backend=None)",
+      "target": "public-api/AnalysisRunner.md#api-AnalysisRunner"
+    },
+    {
+      "name": "AnalysisResult",
+      "module": "chronaxis.results.result",
+      "qualified": "AnalysisResult",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(spool: chronaxis.results.spool.ResultSpool, metadata: chronaxis.results.manifest.RunMetadata, table_format: str = 'csv', *, artifact_exports=None, owned_work=None)",
+      "target": "public-api/AnalysisResult.md#api-AnalysisResult"
+    },
+    {
+      "name": "OutputManifest",
+      "module": "chronaxis.results.manifest",
+      "qualified": "OutputManifest",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Path, output_files: tuple[pathlib.Path, ...], row_counts: tuple[tuple[str, int], ...], status: str = 'completed') -> None",
+      "target": "public-api/OutputManifest.md#api-OutputManifest"
+    },
+    {
+      "name": "RunMetadata",
+      "module": "chronaxis.results.manifest",
+      "qualified": "RunMetadata",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev0', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None) -> None",
+      "target": "public-api/RunMetadata.md#api-RunMetadata"
+    },
+    {
+      "name": "AnalysisError",
+      "module": "chronaxis.results.errors",
+      "qualified": "AnalysisError",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": null,
+      "target": "public-api/AnalysisError.md#api-AnalysisError"
+    },
+    {
+      "name": "ResultClosedError",
+      "module": "chronaxis.results.errors",
+      "qualified": "ResultClosedError",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": null,
+      "target": "public-api/ResultClosedError.md#api-ResultClosedError"
+    },
+    {
+      "name": "BatchPlan",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchPlan",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int = 1, fail_fast: bool = False, backend: str | None = None) -> None",
+      "target": "public-api/BatchPlan.md#api-BatchPlan"
+    },
+    {
+      "name": "BatchJob",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchJob",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(job_id: str, plan: chronaxis.planning.plan.AnalysisPlan | pathlib.Path) -> None",
+      "target": "public-api/BatchJob.md#api-BatchJob"
+    },
+    {
+      "name": "BatchJobResult",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchJobResult",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(job_id: str, status: str, plan_path: str | None = None, plan_identity: str | None = None, dataset_id: str | None = None, entity_id: str | None = None, session_id: str | None = None, input_identity: str | None = None, run_id: str | None = None, output_dir: pathlib.Path | None = None, error_type: str | None = None, error_message: str | None = None, error_chain: tuple[str, ...] = (), elapsed_seconds: float = 0.0, memory_budget_bytes: int | None = None, worker_pid: int | None = None, recovery: chronaxis.batch.models.CleanupHandle | None = None) -> None",
+      "target": "public-api/BatchJobResult.md#api-BatchJobResult"
+    },
+    {
+      "name": "BatchReport",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchReport",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJobResult, ...], process_count: int, fail_fast: bool, cancel_requested: bool, device_label: str, worker_process_count: int = 0, infrastructure_error: str | None = None) -> None",
+      "target": "public-api/BatchReport.md#api-BatchReport"
+    },
+    {
+      "name": "BatchRunner",
+      "module": "chronaxis.batch.runner",
+      "qualified": "BatchRunner",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(process_count=1, *, fail_fast=False, backend=None)",
+      "target": "public-api/BatchRunner.md#api-BatchRunner"
+    },
+    {
+      "name": "load_batch_plan",
+      "module": "chronaxis.batch.config",
+      "qualified": "load_batch_plan",
+      "group": "Batch tasks",
+      "kind": "function",
+      "signature": "(path: str | pathlib.Path) -> chronaxis.batch.models.BatchPlan",
+      "target": "public-api/load_batch_plan.md#api-load_batch_plan"
+    },
+    {
+      "name": "run_batch",
+      "module": "chronaxis.batch.api",
+      "qualified": "run_batch",
+      "group": "Batch tasks",
+      "kind": "function",
+      "signature": "(plan: chronaxis.batch.models.BatchPlan, output_dir, *, process_count: int | None = None, cancel_event=None, device_label='pending')",
+      "target": "public-api/run_batch.md#api-run_batch"
+    },
+    {
+      "name": "PresetSpec",
+      "module": "chronaxis.planning.preset_models",
+      "qualified": "PresetSpec",
+      "group": "Domain presets",
+      "kind": "class",
+      "signature": "(id: str, preset_type: str, version: str, role_bindings: collections.abc.Mapping, parameters: collections.abc.Mapping) -> None",
+      "target": "public-api/PresetSpec.md#api-PresetSpec"
+    },
+    {
+      "name": "PlanFragment",
+      "module": "chronaxis.planning.preset_models",
+      "qualified": "PlanFragment",
+      "group": "Domain presets",
+      "kind": "class",
+      "signature": "(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = (), rules: tuple[chronaxis.planning.preset_models.PresetRule, ...] = (), windows: tuple[chronaxis.core.windows.WindowSpec, ...] = (), calculations: tuple[chronaxis.planning.preset_models.PresetCalculation, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = ()) -> None",
+      "target": "public-api/PlanFragment.md#api-PlanFragment"
+    },
+    {
+      "name": "build_preset",
+      "module": "chronaxis.presets",
+      "qualified": "build_preset",
+      "group": "Domain presets",
+      "kind": "function",
+      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> chronaxis.planning.preset_models.PlanFragment",
+      "target": "public-api/build_preset.md#api-build_preset"
+    },
+    {
+      "name": "resolve_preset_roles",
+      "module": "chronaxis.presets",
+      "qualified": "resolve_preset_roles",
+      "group": "Domain presets",
+      "kind": "function",
+      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> tuple[chronaxis.planning.preset_models.RoleBinding, ...]",
+      "target": "public-api/resolve_preset_roles.md#api-resolve_preset_roles"
+    },
+    {
+      "name": "TimeConversion",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "TimeConversion",
+      "group": "Time conversion",
+      "kind": "class",
+      "signature": "(time_ns: int, input_representation: str, input_unit: str, input_text: str, quantized: bool, precision_limited: bool = False, rounding: str = 'round_half_even', source_timezone: str | None = None) -> None",
+      "target": "public-api/TimeConversion.md#api-TimeConversion"
+    },
+    {
+      "name": "TimeOverflowError",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "TimeOverflowError",
+      "group": "Time conversion",
+      "kind": "class",
+      "signature": null,
+      "target": "public-api/TimeOverflowError.md#api-TimeOverflowError"
+    },
+    {
+      "name": "checked_add_ns",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "checked_add_ns",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(time_ns: int, offset_ns: int) -> int",
+      "target": "public-api/checked_add_ns.md#api-checked_add_ns"
+    },
+    {
+      "name": "convert_time",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "convert_time",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(value: int | float | str | decimal.Decimal, unit: str) -> chronaxis.timebase.conversion.TimeConversion",
+      "target": "public-api/convert_time.md#api-convert_time"
+    },
+    {
+      "name": "parse_datetime_ns",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "parse_datetime_ns",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(text: str, source_timezone: datetime.tzinfo | None = None) -> chronaxis.timebase.conversion.TimeConversion",
+      "target": "public-api/parse_datetime_ns.md#api-parse_datetime_ns"
+    },
+    {
+      "name": "parse_duration",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "parse_duration",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(text: str) -> chronaxis.timebase.conversion.TimeConversion",
+      "target": "public-api/parse_duration.md#api-parse_duration"
+    },
+    {
+      "name": "shift_times_reference",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "shift_times_reference",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(times: Sequence[int], offset_ns: int) -> tuple[int, ...]",
+      "target": "public-api/shift_times_reference.md#api-shift_times_reference"
+    },
+    {
+      "name": "time_deltas_reference",
+      "module": "chronaxis.timebase.conversion",
+      "qualified": "time_deltas_reference",
+      "group": "Time conversion",
+      "kind": "function",
+      "signature": "(times: Sequence[int]) -> tuple[int, ...]",
+      "target": "public-api/time_deltas_reference.md#api-time_deltas_reference"
+    }
+  ],
+  "cfg_simple_01": {
+    "device_label": "home",
+    "author": "liuyaoze",
+    "checked_signatures": 27,
+    "unchanged": true,
+    "note": "另3个继承内建异常类没有inspect.signature，沿用异常类入口，不捏造签名。"
+  },
+  "language": "en"
+}

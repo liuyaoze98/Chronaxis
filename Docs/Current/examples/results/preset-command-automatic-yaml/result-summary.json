@@ -1,0 +1,62 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 2,
+    "sequences": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "demo_preset_request",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "demo_preset_response",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 0,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "preset_example",
+      "entity_id": "preset_example",
+      "session_id": "preset_example"
+    }
+  },
+  "result_messages": [
+    "demo_preset_request：已找到满足要求的事件（1个）",
+    "demo_preset_response：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 183,
+      "sha256": "f5f6c1962837d9ae2d1963c397c782b330aa192a4b977e3221c031bdbf81c972",
+      "rows": 2
+    },
+    {
+      "path": "配对结果.csv",
+      "bytes": 143,
+      "sha256": "5cf3cd596c62eaa4a622a6efc166c7574cdd5b231f0943f6144d57615c5af911",
+      "rows": 1
+    }
+  ]
+}

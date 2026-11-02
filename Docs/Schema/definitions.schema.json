@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Chronaxis公共定义文件",
+  "description": "只共享来源、信号与派生表达式。没有版本包装，不允许嵌套imports；当前结构随引用它的配置3解释。",
+  "$comment": "公共定义文件结构；由分析配置通过单层imports引用。",
+  "type": "object",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "analysis.schema.json#/properties/sources/items"
+      },
+      "description": "按声明顺序列出数据来源。连续文件放在同一来源的paths中；加载时可按声明枚举文件名，并按缺省信号信息读取DBC；不读取业务记录。"
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "$ref": "analysis.schema.json#/properties/signals/items"
+      },
+      "description": "把来源的原始字段绑定为分析使用的简单信号名，明确类型、单位和有效期。"
+    },
+    "derived": {
+      "$ref": "analysis.schema.json#/properties/derived",
+      "description": "按名称声明派生表达式，与signals共用名称空间；不覆盖先前文件或本文件的同名信号。"
+    }
+  }
+}

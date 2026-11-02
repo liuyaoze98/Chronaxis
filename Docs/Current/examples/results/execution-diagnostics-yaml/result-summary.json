@@ -1,0 +1,44 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1,
+    "input_trace": 3
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "input_diagnostics",
+      "entity_id": "input_diagnostics",
+      "session_id": "input_diagnostics"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "会话结果.csv",
+      "bytes": 64,
+      "sha256": "10ff55478f1fd0eb9eae56aa326fdab059513a0a9937670442b86c3ef90af498",
+      "rows": 1
+    },
+    {
+      "path": "输入追溯.csv",
+      "bytes": 265,
+      "sha256": "9ba594df0758fd79c12434e5d501692bde92fadccefd13dbffb343d07bf70f4a",
+      "rows": 3
+    }
+  ]
+}

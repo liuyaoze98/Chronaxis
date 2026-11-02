@@ -1,0 +1,35 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: stability_example
+sources:
+  - path: data/stability.asc
+    dbc_by_channel:
+      '1': data/teaching.dbc
+signals:
+  - name: temperature
+    field:
+      frame_id: '0x205'
+      signal: Temperature
+rules:
+  - name: hysteresis_alarm
+    rule_type: hysteresis
+    enter_condition: temperature >= 80
+    exit_condition: temperature <= 75
+  - name: debounced_alarm
+    rule_type: debounce
+    condition: temperature >= 80
+    enter_delay: 1s
+    exit_delay: 1s
+calculations:
+  - name: hysteresis_alarm_average
+    scope:
+      rule: hysteresis_alarm
+    operation: time_weighted_mean
+    expr: temperature
+  - name: debounced_alarm_average
+    scope:
+      rule: debounced_alarm
+    operation: time_weighted_mean
+    expr: temperature

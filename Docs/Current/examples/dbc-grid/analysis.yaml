@@ -1,0 +1,39 @@
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+config_version: 3                     # 声明分析文件采用的字段结构版本；当前填写整数3
+dataset:                              # 设置本次分析名称及可选的对象、会话和时间范围
+  name: dbc_grid                      # 命名本次分析数据集；名称写入结果身份字段
+sources:                              # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: grid.asc                   # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                   # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': grid.dbc                   # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                              # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: power                       # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: 256                   # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Power                   # 填写DBC中的信号名称，大小写须一致
+  - name: voltage                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: 257                   # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Voltage                 # 填写DBC中的信号名称，大小写须一致
+outputs:                              # 选择额外导出的数据及格式；默认结果表由运行入口提供
+  signal_csv:                         # 配置额外的信号CSV导出；null表示不启用这项额外输出
+    signals: [power, voltage]         # 选择要导出的分析信号名；来自前面的信号定义
+    resampling:                       # 设置独立信号输出网格；不修改分析时的信号历史和积分
+      continuous: [power, voltage]    # 列出可线性插值的分析信号名；仅选择物理上允许中间值的连续量
+      period:                         # 指定信号导出网格间隔；依据输出采样需求填写
+        mode: dbc                     # 选择信号网格周期的来源；dbc从所选物理报文的DBC周期取得
+        driver: power                 # 选择提供整个信号网格周期的分析信号；多个候选报文时必填
+      max_gap: 2s                     # 限制用于插值的相邻记录间隔；按允许缺测程度选择
+  can_frames:                         # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
+    format: asc                       # 选择输出报文文件格式；asc为文本，blf为二进制
+    resampling:                       # 设置重建CAN帧网格；根据DBC重写选定信号，其他位取基础帧
+      period:                         # 指定重建CAN帧的网格周期；与信号CSV网格独立
+        mode: dbc                     # 选择每条重建报文自己的DBC周期；当前填dbc，不使用信号网格driver
+      max_gap: 2s                     # 限制重建帧使用的记录间隔；超过上限不伪造连续数据
+      messages:                       # 逐报文列出要重建的连续信号和保留字段
+        - frame_id: 256               # 选择要重建的报文ID；从DBC取得
+          continuous: [Power]         # 填写允许线性插值的DBC信号名；不是signals中的分析别名
+        - frame_id: 257               # 选择要重建的报文ID；从DBC取得
+          continuous: [Voltage]       # 填写允许线性插值的DBC信号名；不是signals中的分析别名
+metadata:                             # 保存说明性信息；字段不会自动校准数据或更改计算公式
+  device_label: home                  # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明

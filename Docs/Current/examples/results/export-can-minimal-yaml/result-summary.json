@@ -1,0 +1,58 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "can_asc_example",
+      "entity_id": "can_asc_example",
+      "session_id": "can_asc_example"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "exports/export-00000000/frames.asc",
+      "bytes": 148,
+      "sha256": "84a593059f148b3ef0249222b7650ec2298c5d6cecfe48a4e844e4e5af28c516"
+    },
+    {
+      "path": "exports/export-00000000/manifest.json",
+      "bytes": 542,
+      "sha256": "b2e65620c57ea6e2fe579365f6f2be15ea1545cfe8064257aa074114d5ef1381",
+      "frames": 3,
+      "generated": 0,
+      "passthrough": 3,
+      "skipped_grid_points": 0,
+      "format": "asc",
+      "status": "completed"
+    },
+    {
+      "path": "exports.jsonl",
+      "bytes": 257,
+      "sha256": "23f2f5fd191184fa3ea9efb37d6c9773b91849c6771f4cef7f4db8794a11d7da"
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 84,
+      "sha256": "486baa29cc827d58706c43b18abcfe3856a5074083aaffe2f322d645fd03cac1",
+      "rows": 1
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# 这三份M0原样vendor按字节核验，禁止跨设备检出/暂存时自动转换换行。
+/src/chronaxis/legacy/vendor/sclicer_functions_v1/*.py -text

@@ -1,0 +1,70 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "can_asc_example",
+      "entity_id": "can_asc_example",
+      "session_id": "can_asc_example"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "exports/export-00000000/manifest.json",
+      "bytes": 756,
+      "sha256": "0cb9280a3daf9a8c8b9177295287f00e8088df3b06b1b6ce0ed8f087c397689a",
+      "status": "completed"
+    },
+    {
+      "path": "exports/export-00000000/resampled.csv",
+      "bytes": 513,
+      "sha256": "c9db09ae7afb4d422e70287970bcb0366b28a18a9ba2354824d1c5fcc457237d",
+      "rows": 12
+    },
+    {
+      "path": "exports/export-00000001/frames.asc",
+      "bytes": 210,
+      "sha256": "fc18a9628bab3af920146ccf9946dafdaa0928712d4238289a105c3b779e5ffb"
+    },
+    {
+      "path": "exports/export-00000001/manifest.json",
+      "bytes": 1016,
+      "sha256": "4e3974eafead4adce22d1d1b5210a5a3493bac03f6983c36305089832053e02c",
+      "frames": 5,
+      "generated": 5,
+      "passthrough": 0,
+      "skipped_grid_points": 1,
+      "format": "asc",
+      "status": "completed"
+    },
+    {
+      "path": "exports.jsonl",
+      "bytes": 518,
+      "sha256": "2f7c0aa7f57aa306449b0b00a4b3acfc068e3922aff67f4dc72c0c7d44ce1d44"
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 84,
+      "sha256": "486baa29cc827d58706c43b18abcfe3856a5074083aaffe2f322d645fd03cac1",
+      "rows": 1
+    }
+  ]
+}

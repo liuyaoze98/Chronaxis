@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "title": "Getting started",
+      "pages": [
+        {
+          "path": "index.md",
+          "title": "Manual home"
+        },
+        {
+          "path": "ai-guide.md",
+          "title": "Using AI to create configurations or code"
+        },
+        {
+          "path": "installation.md",
+          "title": "Installation"
+        },
+        {
+          "path": "quickstart.md",
+          "title": "BLF / ASC quick start"
+        },
+        {
+          "path": "activity-tutorial.md",
+          "title": "Events and windows tutorial"
+        },
+        {
+          "path": "api-usage.md",
+          "title": "Python quick start"
+        },
+        {
+          "path": "status.md",
+          "title": "Supported features"
+        }
+      ]
+    },
+    {
+      "title": "Core concepts",
+      "pages": [
+        {
+          "path": "concepts.md",
+          "title": "Time and result quality"
+        },
+        {
+          "path": "terms.md",
+          "title": "Glossary"
+        }
+      ]
+    },
+    {
+      "title": "Inputs and signals",
+      "pages": [
+        {
+          "path": "dataset.md",
+          "title": "Dataset and analysis range"
+        },
+        {
+          "path": "inputs.md",
+          "title": "Data sources"
+        },
+        {
+          "path": "text-inputs.md",
+          "title": "Text CAN inputs"
+        },
+        {
+          "path": "signals.md",
+          "title": "Signal bindings"
+        }
+      ]
+    },
+    {
+      "title": "Analysis",
+      "pages": [
+        {
+          "path": "expressions.md",
+          "title": "Expressions"
+        },
+        {
+          "path": "rules.md",
+          "title": "Event rules"
+        },
+        {
+          "path": "sequences.md",
+          "title": "Request/response pairing"
+        },
+        {
+          "path": "intervals.md",
+          "title": "Calculation intervals"
+        },
+        {
+          "path": "presets.md",
+          "title": "Domain presets"
+        },
+        {
+          "path": "windows.md",
+          "title": "Event windows and segments"
+        },
+        {
+          "path": "calculations.md",
+          "title": "Statistics and integration"
+        },
+        {
+          "path": "message-calculations.md",
+          "title": "Per-message accumulation"
+        }
+      ]
+    },
+    {
+      "title": "Execution and results",
+      "pages": [
+        {
+          "path": "execution.md",
+          "title": "Execution settings"
+        },
+        {
+          "path": "batch.md",
+          "title": "Batch tasks"
+        },
+        {
+          "path": "results.md",
+          "title": "Reading results"
+        },
+        {
+          "path": "exports.md",
+          "title": "Output configuration"
+        },
+        {
+          "path": "signal-exports.md",
+          "title": "Signal CSV export"
+        },
+        {
+          "path": "can-exports.md",
+          "title": "CAN frame export"
+        },
+        {
+          "path": "cli.md",
+          "title": "Command-line reference"
+        },
+        {
+          "path": "troubleshooting.md",
+          "title": "Troubleshooting"
+        }
+      ]
+    },
+    {
+      "title": "Configuration reference",
+      "pages": [
+        {
+          "path": "configuration-language.md",
+          "title": "Configuration syntax"
+        },
+        {
+          "path": "configuration.md",
+          "title": "Configuration structure"
+        },
+        {
+          "path": "configuration-reference.md",
+          "title": "Configuration field reference"
+        },
+        {
+          "path": "imports.md",
+          "title": "Shared definitions"
+        },
+        {
+          "path": "configuration-tools.md",
+          "title": "Configuration tools"
+        },
+        {
+          "path": "reference/configuration-schema.md",
+          "title": "Validation schemas"
+        },
+        {
+          "path": "schema-editor.md",
+          "title": "Editor hints"
+        }
+      ]
+    },
+    {
+      "title": "Python API",
+      "pages": [
+        {
+          "path": "api.md",
+          "title": "Public API index"
+        }
+      ]
+    },
+    {
+      "title": "Examples and imports",
+      "pages": [
+        {
+          "path": "examples.md",
+          "title": "Complete examples"
+        },
+        {
+          "path": "example-results.md",
+          "title": "Example results explained"
+        },
+        {
+          "path": "migration.md",
+          "title": "Legacy INI import"
+        }
+      ]
+    },
+    {
+      "title": "Developer documentation",
+      "pages": [
+        {
+          "path": "architecture.md",
+          "title": "Internal architecture"
+        },
+        {
+          "path": "maintenance.md",
+          "title": "Building the documentation"
+        },
+        {
+          "path": "reference/index.md",
+          "title": "Internal APIs and modules"
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

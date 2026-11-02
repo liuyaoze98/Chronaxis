@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "旧INI的显式映射结构；跨段、原字段、单位和支持范围由导入器及计划模型检查。",
+  "title": "Chronaxis 旧INI显式映射规范",
+  "type": "object",
+  "required": [
+    "mapping_version",
+    "analysis"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "mapping_version": {
+      "const": 1,
+      "description": "旧INI映射文件自身的结构版本，当前固定整数1；不是analysis内部信号映射的业务版本。 固定值：1。"
+    },
+    "path_base": {
+      "const": "mapping_directory",
+      "description": "可省略，默认且仅支持mapping_directory。相对路径按实际声明文件目录解释；公共定义及覆盖遵循各自来源位置。"
+    },
+    "io_policy": {
+      "const": "explicit_mapping",
+      "description": "可省略，默认且仅支持explicit_mapping；输入和输出采用analysis声明，不直接沿用旧INI的INPUT/OUTPUT路径。"
+    },
+    "analysis": {
+      "allOf": [
+        {
+          "$ref": "analysis.schema.json"
+        },
+        {
+          "properties": {
+            "rules": {
+              "maxItems": 0,
+              "description": "识别事件的规则列表。规则name与窗口、计算项和序列共享唯一名称空间。"
+            },
+            "windows": {
+              "maxItems": 0,
+              "description": "由事件生成的取数片段，指定前后扩展及片段合并方式。"
+            },
+            "message_calculations": {
+              "maxItems": 0,
+              "description": "针对指定CAN消息的逐消息累计。每次实际消息独立求值，不施普通信号保持、不额外乘时间差。"
+            },
+            "presets": {
+              "maxItems": 0,
+              "description": "预设把明确绑定的角色和参数展开为普通规则、窗口与计算；不按信号名称猜角色或阈值。"
+            }
+          }
+        }
+      ],
+      "description": "当前config_version=3的分析声明主体；来源、信号和显式分析设置由调用者提供，INI转换生成的节点段必须留空。"
+    },
+    "aliases": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "analysis.schema.json#/properties/signals/items/oneOf/0/properties/name"
+      },
+      "description": "原INI变量到analysis信号name的映射。可省略或部分填写：原字段名仅对应一个信号时自动补齐，明确映射优先，多候选时必须选择。"
+    },
+    "sections": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "name",
+              "window"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/name",
+                "description": "声明的唯一标识。使用非保留的英文字母或下划线开头、后接字母数字下划线的名称；不能重复。"
+              },
+              "window": {
+                "$ref": "#/$defs/name",
+                "description": "由原INI段生成的窗口名称，必须唯一且不与其他节点冲突。"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "name",
+              "source",
+              "unit",
+              "message_policy",
+              "update_message",
+              "parameter_units"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/name",
+                "description": "声明的唯一标识。使用非保留的英文字母或下划线开头、后接字母数字下划线的名称；不能重复。"
+              },
+              "source": {
+                "$ref": "#/$defs/name",
+                "description": "已声明来源的name。引用必须存在，不按同名字段或语义名称自动寻找来源。"
+              },
+              "unit": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "数值所用单位。参与表达式和转换时核对单位；不能从字段名或文件名猜测。"
+              },
+              "message_policy": {
+                "const": "current_message-v1",
+                "description": "逐消息求值政策，当前固定current_message-v1，只使用当前消息的明确字段。 固定值：\"current_message-v1\"。"
+              },
+              "update_message": {
+                "$ref": "analysis.schema.json#/properties/message_calculations/items/properties/update_message",
+                "description": "触发本计算求值的精确CAN消息定位，包含通道、帧ID、标准/扩展及CAN FD标志。"
+              },
+              "parameter_units": {
+                "type": "object",
+                "propertyNames": {
+                  "$ref": "#/$defs/name"
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                "description": "原INI数值参数名到单位的明确映射，不能从名称或示例数值猜量纲。"
+              }
+            }
+          }
+        ]
+      },
+      "description": "原INI段到生成节点及业务参数的映射。显式填写时逐段对应；single/start_only/start_end可整体省略，按顺序生成trigger_N/window_N；legacy_sum和slope仍须提供单位或模式参数。"
+    }
+  },
+  "$defs": {
+    "name": {
+      "$ref": "analysis.schema.json#/properties/signals/items/oneOf/0/properties/name"
+    }
+  },
+  "description": "JSON/YAML共用的INI迁移映射。明确来源与业务参数，唯一原字段可自动对应，CAN元数据可按需从DBC补全；保留原INI，失败不返回部分计划。"
+}

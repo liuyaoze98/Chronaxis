@@ -1,0 +1,27 @@
+VERSION "synthetic-home"
+NS_ :
+BS_:
+BU_: Node
+BO_ 512 PowerFrame: 2 Node
+ SG_ Power : 0|16@1+ (1,0) [0|65535] "W" Node
+BO_ 513 ChargeFrame: 5 Node
+ SG_ Mode : 0|8@1+ (1,0) [0|255] "1" Node
+ SG_ Current : 8|16@1- (0.1,0) [-3276.8|3276.7] "A" Node
+ SG_ Voltage : 24|16@1+ (0.1,0) [0|6553.5] "V" Node
+BO_ 514 AlarmFrame: 1 Node
+ SG_ Alarm : 0|8@1+ (1,0) [0|1] "1" Node
+BO_ 515 CommandFrame: 2 Node
+ SG_ Request : 0|8@1+ (1,0) [0|1] "1" Node
+ SG_ Response : 8|8@1+ (1,0) [0|1] "1" Node
+BO_ 516 TemperatureFrame: 1 Node
+ SG_ Temperature : 0|8@1+ (1,0) [0|255] "degC" Node
+BO_ 517 FastTemperatureFrame: 1 Node
+ SG_ Temperature : 0|8@1+ (1,0) [0|255] "degC" Node
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 65535;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 512 1000;
+BA_ "GenMsgCycleTime" BO_ 513 2000;
+BA_ "GenMsgCycleTime" BO_ 514 2000;
+BA_ "GenMsgCycleTime" BO_ 515 1000;
+BA_ "GenMsgCycleTime" BO_ 516 3000;
+BA_ "GenMsgCycleTime" BO_ 517 1000;

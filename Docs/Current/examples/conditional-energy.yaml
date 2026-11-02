@@ -1,0 +1,36 @@
+# 合成教学示例：两个条件连续超过60秒，再对整个合格区间积分。
+config_version: 3                                     # 当前配置结构版本
+dataset:                                              # 本次分析
+  name: conditional_energy                            # 结果使用这个任务名称
+sources:                                              # 两卷连续文件组成一个来源
+  - paths:                                            # 按下面的先后顺序读取，跨文件保持状态
+      - data/can/conditional-energy/part-1.asc        # 0～89秒
+      - data/can/conditional-energy/part-2.asc        # 90～123秒
+    dbc_by_channel:                                   # 用户通道从1开始；内部编号自动匹配
+      '1': data/can/conditional-energy/signals.dbc    # 相对本配置文件的位置
+signals:                                              # 唯一来源和通道可省略；类型、单位和周期由DBC取得
+  - name: state                                       # 用整数状态直接比较，无需映射成布尔或枚举
+    field:                                            # DBC中的报文与信号
+      frame_id: '0x100'                               # 十六进制报文ID
+      signal: State                                   # DBC中的状态信号
+  - name: current                                     # 电流，DBC单位A
+    field:                                            # 与状态在同一报文中
+      frame_id: '0x100'                               # 相同ID
+      signal: Current                                 # DBC中的电流信号
+  - name: voltage                                     # 电压，DBC单位V
+    field:                                            # 与状态在同一报文中
+      frame_id: '0x100'                               # 相同ID
+      signal: Voltage                                 # DBC中的电压信号
+rules:                                                # 先找合格区间
+  - name: eligible                                    # 积分通过这个名称选择区间
+    rule_type: condition_duration                     # 要求条件连续成立
+    condition: state == 0x2 and current >= 10         # 状态为2且电流至少10A
+    minimum_duration: 60s                             # 持续时长门槛
+    duration_comparison: ">"                          # 严格超过；恰好60秒不合格
+calculations:                                         # 只请求所需的能量结果
+  - name: energy_kwh                                  # 结果表中的计算项名称
+    operation: integral                               # 按实际时间积分
+    expr: current * voltage                           # A×V得到W，乘时间后转为kWh
+    scope:                                            # 选择整个合格事件区间
+      rule: eligible                                  # 默认onset，包含最初60秒
+    unit: kWh                                         # 直接输出kWh，不在外部再换算

@@ -1,0 +1,156 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "sample",
+    "entity": "device",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "12s"
+    }
+  },
+  "sources": [
+    {
+      "name": "input",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "request": false,
+            "response": false
+          }
+        },
+        {
+          "time": "1s",
+          "values": {
+            "request": true,
+            "response": false
+          }
+        },
+        {
+          "time": "2s",
+          "values": {
+            "request": false,
+            "response": false
+          }
+        },
+        {
+          "time": "3s",
+          "values": {
+            "request": false,
+            "response": true
+          }
+        },
+        {
+          "time": "4s",
+          "values": {
+            "request": true,
+            "response": false
+          }
+        },
+        {
+          "time": "5s",
+          "values": {
+            "request": false,
+            "response": null
+          }
+        },
+        {
+          "time": "6s",
+          "values": {
+            "request": false,
+            "response": false
+          }
+        },
+        {
+          "time": "7s",
+          "values": {
+            "request": true,
+            "response": false
+          }
+        },
+        {
+          "time": "8s",
+          "values": {
+            "request": false,
+            "response": false
+          }
+        },
+        {
+          "time": "9s",
+          "values": {
+            "request": false,
+            "response": true
+          }
+        },
+        {
+          "time": "10s",
+          "values": {
+            "request": true,
+            "response": false
+          }
+        },
+        {
+          "time": "12s",
+          "values": {
+            "request": false,
+            "response": false
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "request",
+      "source": "input",
+      "field": "request",
+      "dtype": "bool",
+      "unit": "1",
+      "valid_for": "20s"
+    },
+    {
+      "name": "response",
+      "source": "input",
+      "field": "response",
+      "dtype": "bool",
+      "unit": "1",
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [],
+  "sequences": [],
+  "execution": {
+    "batch_rows": 2,
+    "result_buffer_rows": 1,
+    "memory_budget_bytes": 268435456
+  },
+  "outputs": {
+    "tables": "csv"
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic"
+  },
+  "presets": [
+    {
+      "name": "command",
+      "version": "1",
+      "role_bindings": {
+        "request": "request",
+        "response": "response"
+      },
+      "parameters": {
+        "min_delay": "0s",
+        "max_delay": "2s"
+      },
+      "preset_type": "command_response"
+    }
+  ]
+}

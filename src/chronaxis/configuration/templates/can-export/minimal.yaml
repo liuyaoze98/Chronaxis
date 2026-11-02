@@ -1,0 +1,23 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: can_export_example
+sources:
+  - path: data/sample.asc
+    dbc_by_channel:
+      '1': data/sample.dbc
+signals:
+  - name: voltage
+    field:
+      signal: Voltage
+      frame_id: '0x100'
+calculations:
+  - name: voltage_area
+    expr: voltage
+    operation: integral
+outputs:
+  can_frames:
+    format: asc
+metadata:                       # 当前导出API要求来源标签；普通分析不需要此字段
+  device_label: home            # 示例制作于home；实际使用改为本次设备标签（home/work），不会自动识别

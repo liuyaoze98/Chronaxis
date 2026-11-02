@@ -1,0 +1,290 @@
+{
+  "device_label": "home",
+  "revision": 1,
+  "tasks": [
+    {
+      "id": "CAN",
+      "intent": "BLF / ASC 报文积分",
+      "example": "../Current/examples/analysis.yaml",
+      "requires": "日志、通道、正确DBC、功率单位和时钟。",
+      "check": "核对 J 及实际观测范围。",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations"
+      ],
+      "templates": [
+        "can-blf",
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/analysis.yaml --format json"
+    },
+    {
+      "id": "CONDITION_ENERGY",
+      "intent": "BLF/ASC连续分卷：多条件持续超过门槛，对整个合格区间计算能量积分，输出kWh",
+      "example": "../Current/examples/conditional-energy.yaml",
+      "requires": "原始ASC/BLF与对应DBC，目标信号/编码/单位、比较符、持续时长及积分范围。类型/单位/周期能由DBC取得时不要求重复填写。",
+      "applicable": "自定义状态和数值条件、达到或严格超过时长、从条件开始处积分、可选能量单位。示例为strict >60s、默认onset、实际时间间隔。",
+      "not_applicable": "按每条消息固定周期直接求和时，查询message_calculations字段说明；独立文件批量使用BATCH入口。",
+      "alternative": "charge_session只适用于它的严格电流>、持续>=、Wh/Ah及方向/测点契约，不因为名称包含充电就套用。",
+      "check": "60秒整无事件；跨卷61秒区间为[61,122)，4000W×61s/3600000=0.06777777777777777kWh。以parent_id关联event_id，检查status/reason，不能用60.1秒代替严格比较。",
+      "fields": [
+        "sources",
+        "signals",
+        "rules",
+        "calculations"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/conditional-energy.yaml --format json"
+    },
+    {
+      "id": "CSV",
+      "intent": "功率表、实际时间积分",
+      "example": "../Current/examples/input-csv-minimal.yaml",
+      "requires": "时间列、单位、功率列和有效期。",
+      "check": "手算38 J。",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "CHARGE",
+      "intent": "充电过程、电量与充电能量",
+      "example": "../Current/examples/preset-charge-energy.yaml",
+      "requires": "模式编码、电流正向、端口位置、电压、阈值与持续时间。教学例使用ASC；使用BLF时替换为自己的日志、DBC及绑定。",
+      "check": "核对每个活动起止和Wh/Ah；恰好current_min不参与，恰好minimum_duration合格，起点默认onset。先比对适用条件，不能仅凭充电关键词匹配。",
+      "fields": [
+        "presets",
+        "signals"
+      ],
+      "templates": [
+        "charge-session"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "resolve_preset_roles",
+        "build_preset"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/preset-charge-energy.yaml --format json",
+      "applicable": "模式等于指定整数编码，并且电流严格大于current_min；连续达到minimum_duration后从条件开始处统计；能量输出Wh、电量输出Ah。已确认电流正向为充电及电池包端测点。",
+      "not_applicable": "需要电流>=门槛、严格超过持续时长、直接输出kWh、不同状态组合，或无法确认预设要求的电流方向/测点时，不直接套用charge_session。",
+      "alternative": "转到CONDITION_ENERGY任务及../Current/examples/conditional-energy.yaml，用普通condition_duration规则与事件范围integral；原样保留比较符、持续时间比较和输出单位。普通U×I积分不需额外方向/测点或95%覆盖率。"
+    },
+    {
+      "id": "EVENT",
+      "intent": "持续活动、退出合并、事件关联",
+      "example": "../Current/examples/window-merged.yaml",
+      "requires": "条件、时间单位、窗口及允许间隔。",
+      "check": "事件边界保留；片段的 parent_event_ids 可以有多个。",
+      "fields": [
+        "rules",
+        "windows"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/window-merged.yaml --format json"
+    },
+    {
+      "id": "ALARM",
+      "intent": "报警上下文、上升沿",
+      "example": "../Current/examples/preset-fault-context.yaml",
+      "requires": "明确定义的布尔报警及前后时间。",
+      "check": "点事件与前后文片段分别核对。",
+      "fields": [
+        "presets",
+        "windows"
+      ],
+      "templates": [
+        "fault-window"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/preset-fault-context.yaml --format json"
+    },
+    {
+      "id": "PAIR",
+      "intent": "请求响应、超时、观测不足",
+      "example": "../Current/examples/sequence-outcomes.yaml",
+      "requires": "请求与响应来自可比较时钟，最小和最大延迟明确。",
+      "check": "未知观测不能当作确定未响应。",
+      "fields": [
+        "sequences",
+        "rules"
+      ],
+      "templates": [
+        "command-response"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/sequence-outcomes.yaml --format json"
+    },
+    {
+      "id": "ENCODING",
+      "intent": "布尔、枚举、编码与表达式别名",
+      "example": "../Current/examples/signal-enum-minimal.yaml",
+      "requires": "设备编码表；未定义编码不能按非零为真处理。",
+      "check": "表达式仅引用绑定名，语义标识不是属性路径。",
+      "fields": [
+        "signals",
+        "derived"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/signal-enum-minimal.yaml --format json"
+    },
+    {
+      "id": "UNITS",
+      "intent": "换算、单位、比例",
+      "example": "../Current/examples/signal-number-conversion.yaml",
+      "requires": "输入/输出单位、已有解码缩放和方向声明。",
+      "check": "DBC系数只用一次，单位标签本身不做换算。",
+      "fields": [
+        "signals"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/signal-number-conversion.yaml --format json"
+    },
+    {
+      "id": "QUALITY",
+      "intent": "数据过期、零值、部分结果",
+      "example": "../Current/examples/quality.yaml",
+      "requires": "周期或有效期、所需观测范围、缺失策略。",
+      "check": "同时读status/reason/quality与实际值。",
+      "fields": [
+        "signals",
+        "execution",
+        "calculations"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/quality.yaml --format json"
+    },
+    {
+      "id": "BATCH",
+      "intent": "独立任务批量运行",
+      "example": "../Current/examples/batch-minimal.yaml",
+      "requires": "每个计划独立输入和输出，不能共享任务状态。",
+      "check": "使用batch run；process_count为正整数，默认1，可用--process-count覆盖。查看batch_report的worker_process_count及逐任务worker_pid。连续分卷应在一个任务的paths内。",
+      "fields": [
+        "jobs",
+        "process_count"
+      ],
+      "templates": [
+        "batch"
+      ],
+      "api": [
+        "load_batch_plan",
+        "run_batch",
+        "BatchReport"
+      ],
+      "verify": "python -m chronaxis batch run ../Current/examples/batch-minimal.yaml --output new-batch"
+    },
+    {
+      "id": "IMPORT",
+      "intent": "公共定义、字段来源、相对路径",
+      "example": "../Current/examples/analysis-imports.yaml",
+      "requires": "主配置与被引用公共定义都须提供。",
+      "check": "用 config origins --fields 核对来源。",
+      "fields": [
+        "imports"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/analysis-imports.yaml --format json"
+    },
+    {
+      "id": "EXPORT",
+      "intent": "输出事件附近的原始报文",
+      "example": "../Current/examples/export-can-minimal.yaml",
+      "requires": "受支持的CAN来源、明确窗口和新输出目录。",
+      "check": "核对实际窗口、格式和清单。",
+      "fields": [
+        "outputs",
+        "windows"
+      ],
+      "templates": [
+        "can-export"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/export-can-minimal.yaml --format json"
+    },
+    {
+      "id": "PYTHON",
+      "intent": "Python 加载、写出与关闭",
+      "example": "../Current/examples/input-csv-minimal.yaml",
+      "requires": "已安装对应版本、完整计划及新结果目录。",
+      "check": "运行 run_analysis.py；先检查再执行，逐行读后关闭。",
+      "fields": [
+        "outputs"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "FIX",
+      "intent": "根据诊断修正配置",
+      "example": "../Current/examples/input-csv-minimal.yaml",
+      "requires": "需要用户原意、原文件和真实诊断。",
+      "check": "修字段位置、类型或引用，不删条件或改有效期来消除错误。",
+      "fields": [
+        "config_version"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "validate_analysis_plan",
+        "explain_analysis_plan",
+        "PlanValidationError"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/input-csv-minimal.yaml --format json"
+    }
+  ]
+}

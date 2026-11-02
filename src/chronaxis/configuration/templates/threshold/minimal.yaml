@@ -1,0 +1,22 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: threshold_example
+sources:
+  - path: data/threshold.asc
+    dbc_by_channel:
+      '1': data/teaching.dbc
+signals:
+  - name: temperature
+    field:
+      frame_id: '0x204'
+      signal: Temperature
+presets:
+  - name: hot
+    role_bindings:
+      signal: temperature
+    parameters:
+      enter_threshold: 80
+      exit_threshold: 75
+    preset_type: threshold_excursion

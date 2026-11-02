@@ -1,0 +1,85 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 5,
+    "calculations": 1,
+    "sequences": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "request_edge",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "response_edge",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "hot",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "change",
+        "status": "events_found",
+        "event_count": 2,
+        "has_unknown": true,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "timing",
+      "entity_id": "timing",
+      "session_id": "timing"
+    }
+  },
+  "result_messages": [
+    "request_edge：已找到满足要求的事件（1个）",
+    "response_edge：已找到满足要求的事件（1个）",
+    "hot：已找到满足要求的事件（1个）",
+    "change：已找到满足要求的事件（2个）；其他观测中存在条件未知，不据此否定已输出区间的计算状态"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 256,
+      "sha256": "d932c62a17b85d9c47d5fbd3597260ac9a80fe6a6d1b8d0d47e8bec92b356fa3",
+      "rows": 5
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 81,
+      "sha256": "96e29c36142b1eae75aba6d0add43b5834ffd8c7c74a5b2c99017b5a956c5924",
+      "rows": 1
+    },
+    {
+      "path": "配对结果.csv",
+      "bytes": 131,
+      "sha256": "fcd5ae5be185ebecdf2d110cc2164f4de79938b52ccbe31e220a4f4187ad7c5b",
+      "rows": 1
+    }
+  ]
+}

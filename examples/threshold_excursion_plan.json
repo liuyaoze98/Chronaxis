@@ -1,0 +1,97 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "sample",
+    "entity": "device",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "12s"
+    }
+  },
+  "sources": [
+    {
+      "name": "input",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "temperature": 85
+          }
+        },
+        {
+          "time": "3s",
+          "values": {
+            "temperature": 77
+          }
+        },
+        {
+          "time": "6s",
+          "values": {
+            "temperature": 77
+          }
+        },
+        {
+          "time": "9s",
+          "values": {
+            "temperature": 75
+          }
+        },
+        {
+          "time": "12s",
+          "values": {
+            "temperature": 70
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "temperature",
+      "source": "input",
+      "field": "temperature",
+      "dtype": "int64",
+      "unit": "degC",
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [],
+  "execution": {
+    "batch_rows": 2,
+    "result_buffer_rows": 1,
+    "memory_budget_bytes": 268435456
+  },
+  "outputs": {
+    "tables": "csv"
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic"
+  },
+  "windows": [],
+  "presets": [
+    {
+      "name": "hot",
+      "version": "1",
+      "role_bindings": {
+        "signal": "temperature"
+      },
+      "parameters": {
+        "unit": "degC",
+        "enter_threshold": 80,
+        "exit_threshold": 75,
+        "enter_delay": "0s",
+        "exit_delay": "0s"
+      },
+      "preset_type": "threshold_excursion"
+    }
+  ],
+  "calculations": []
+}

@@ -1,0 +1,2 @@
+﻿duration（s）,duration：状态,duration：说明,energy_Wh（Wh）,energy_Wh：状态,energy_Wh：说明,integral（J）,integral：状态,integral：说明,max_time（W）,max_time：状态,max_time：说明,min_time（W）,min_time：状态,min_time：说明,sample_maximum（W）,sample_maximum：状态,sample_maximum：说明,sample_mean（W）,sample_mean：状态,sample_mean：说明,sample_minimum（W）,sample_minimum：状态,sample_minimum：说明,time_weighted_mean（W）,time_weighted_mean：状态,time_weighted_mean：说明
+3.0,完整,,0.008333333333333333,完整,,30.0,完整,,10.0,完整,,0.0,完整,,10.0,完整,,3.3333333333333335,完整,,0.0,完整,,6.0,完整,

@@ -1,0 +1,62 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 2,
+    "sequences": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "request_edge",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "response_edge",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 0,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "preset_example",
+      "entity_id": "preset_example",
+      "session_id": "preset_example"
+    }
+  },
+  "result_messages": [
+    "request_edge：已找到满足要求的事件（1个）",
+    "response_edge：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 169,
+      "sha256": "7bb2ebbdbc871b13fbaf85b4471522bcdf178a412c156affe646e1066b1f8ae5",
+      "rows": 2
+    },
+    {
+      "path": "配对结果.csv",
+      "bytes": 131,
+      "sha256": "211160d261856cdc4655cb90e6e0b3fd60a205a0e5e7ba108f11f1aa7b6f8813",
+      "rows": 1
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+VERSION "synthetic-home-CFG-SIMPLE-01"
+NS_ :
+BS_:
+BU_: Teaching
+BO_ 256 PowerFrame: 8 Teaching
+ SG_ Power : 0|64@1+ (1,0) [-1e100|1e100] "W" Teaching
+BO_ 257 MilliampCurrentFrame: 4 Teaching
+ SG_ Current_mA : 0|32@1+ (0.5,0) [0|2147483647.5] "mA" Teaching
+BO_ 258 BooleanEnabledFrame: 1 Teaching
+ SG_ Enabled : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 259 ModeCodeFrame: 1 Teaching
+ SG_ ModeCode : 0|8@1+ (1,0) [0|255] "1" Teaching
+SIG_VALTYPE_ 256 Power : 2;
+VAL_ 259 ModeCode 0 "idle" 7 "running";
+CM_ "device_label: home; Synthetic teaching records; times, values and invalid codes are declared by the examples, not vehicle recommendations.";
+BO_ 272 ActiveFrame: 8 Teaching
+ SG_ Active : 0|64@1- (1,0) [-9223372036854775808|9223372036854775807] "1" Teaching
+BO_ 273 AlarmFrame: 1 Teaching
+ SG_ Alarm : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 274 BeginFrame: 8 Teaching
+ SG_ Begin : 0|64@1- (1,0) [-9223372036854775808|9223372036854775807] "1" Teaching
+BO_ 275 ButtonPressedFrame: 1 Teaching
+ SG_ ButtonPressed : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 276 CurrentFrame: 8 Teaching
+ SG_ Current : 0|64@1+ (1,0) [-1e100|1e100] "A" Teaching
+SIG_VALTYPE_ 276 Current : 2;
+BO_ 277 DoneFrame: 8 Teaching
+ SG_ Done : 0|64@1- (1,0) [-9223372036854775808|9223372036854775807] "1" Teaching
+BO_ 278 EnabledFrame: 1 Teaching
+ SG_ Enabled : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 279 EndSignalFrame: 1 Teaching
+ SG_ EndSignal : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 280 ModeFrame: 8 Teaching
+ SG_ Mode : 0|64@1- (1,0) [-9223372036854775808|9223372036854775807] "1" Teaching
+BO_ 281 PFrame: 8 Teaching
+ SG_ P : 0|64@1+ (1,0) [-1e100|1e100] "W" Teaching
+SIG_VALTYPE_ 281 P : 2;
+BO_ 282 RequestFrame: 1 Teaching
+ SG_ Request : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 283 ResponseFrame: 1 Teaching
+ SG_ Response : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 284 StartSignalFrame: 1 Teaching
+ SG_ StartSignal : 0|8@1+ (1,0) [0|255] "1" Teaching
+BO_ 285 TemperatureFrame: 8 Teaching
+ SG_ Temperature : 0|64@1+ (1,0) [-1e100|1e100] "degC" Teaching
+SIG_VALTYPE_ 285 Temperature : 2;
+BO_ 286 ValueFrame: 8 Teaching
+ SG_ Value : 0|64@1- (1,0) [-9223372036854775808|9223372036854775807] "1" Teaching
+BO_ 287 VoltageFrame: 8 Teaching
+ SG_ Voltage : 0|64@1+ (1,0) [-1e100|1e100] "V" Teaching
+SIG_VALTYPE_ 287 Voltage : 2;
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 2147483647;
+BA_ "GenMsgCycleTime" BO_ 256 1000;

@@ -1,0 +1,47 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "eligible",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "conditional_energy",
+      "entity_id": "conditional_energy",
+      "session_id": "conditional_energy"
+    }
+  },
+  "result_messages": [
+    "eligible：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 199,
+      "sha256": "27350aa87bee6f88a798d6750ac71ebb43771b2f468e95301cb0864d9c33bb2b",
+      "rows": 1
+    }
+  ]
+}

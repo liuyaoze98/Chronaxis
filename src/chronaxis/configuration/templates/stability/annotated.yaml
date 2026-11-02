@@ -1,0 +1,35 @@
+%YAML 1.2
+---
+config_version: 3                         # 声明分析文件采用的字段结构版本；当前填写整数3
+dataset:                                  # 设置本次分析名称及可选的对象、会话和时间范围
+  name: stability_example                 # 命名本次分析数据集；名称写入结果身份字段
+sources:                                  # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - path: data/stability.asc              # 指定单个输入文件；相对路径从本配置文件所在目录计算
+    dbc_by_channel:                       # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/teaching.dbc              # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                                  # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: temperature                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                                # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x205'                   # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Temperature                 # 填写DBC中的信号名称，大小写须一致
+rules:                                    # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: hysteresis_alarm                # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    rule_type: hysteresis                 # 选择活动或变化识别算法；本例分别用进入和退出条件判断活动，避免一个阈值附近反复切换
+    enter_condition: temperature >= 80    # 设置进入活动的条件；与退出条件分别判断
+    exit_condition: temperature <= 75     # 设置退出活动的条件；按恢复要求填写
+  - name: debounced_alarm                 # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    rule_type: debounce                   # 选择活动或变化识别算法；本例进入和退出条件各需保持指定时长才确认状态变化
+    condition: temperature >= 80          # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    enter_delay: 1s                       # 设置进入条件需连续成立的等待时间；0s表示不额外等待
+    exit_delay: 1s                        # 设置退出条件需连续成立的等待时间；0s表示不额外等待
+calculations:                             # 列出希望获得的统计或积分结果，每项独立选择范围和算法
+  - name: hysteresis_alarm_average        # 为这项计算结果取唯一名称；结果表用它区分计算项
+    scope:                                # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      rule: hysteresis_alarm              # 按指定规则的每次事件分别计算；填写前面rules中的name
+    operation: time_weighted_mean         # 选择计算方法；本例按有效值持续时长加权求平均
+    expr: temperature                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+  - name: debounced_alarm_average         # 为这项计算结果取唯一名称；结果表用它区分计算项
+    scope:                                # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      rule: debounced_alarm               # 按指定规则的每次事件分别计算；填写前面rules中的name
+    operation: time_weighted_mean         # 选择计算方法；本例按有效值持续时长加权求平均
+    expr: temperature                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号

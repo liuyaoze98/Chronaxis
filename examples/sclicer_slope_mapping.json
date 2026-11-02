@@ -1,0 +1,108 @@
+{
+  "mapping_version": 1,
+  "path_base": "mapping_directory",
+  "io_policy": "explicit_mapping",
+  "analysis": {
+    "config_version": 3,
+    "dataset": {
+      "name": "slope_example",
+      "entity": "synthetic",
+      "session": "sample",
+      "domain": {
+        "start": "0s",
+        "end": "14s"
+      }
+    },
+    "sources": [
+      {
+        "name": "table",
+        "time": {
+          "unit": "s",
+          "time_type": "relative",
+          "clock": "common"
+        },
+        "rows": [
+          {
+            "time": "0s",
+            "values": {
+              "SOC_raw": 0
+            }
+          },
+          {
+            "time": "2s",
+            "values": {
+              "SOC_raw": 0
+            }
+          },
+          {
+            "time": "4s",
+            "values": {
+              "SOC_raw": 5
+            }
+          },
+          {
+            "time": "6s",
+            "values": {
+              "SOC_raw": 5
+            }
+          },
+          {
+            "time": "8s",
+            "values": {
+              "SOC_raw": 0
+            }
+          },
+          {
+            "time": "10s",
+            "values": {
+              "SOC_raw": 0
+            }
+          },
+          {
+            "time": "12s",
+            "values": {
+              "SOC_raw": 5
+            }
+          },
+          {
+            "time": "14s",
+            "values": {
+              "SOC_raw": 5
+            }
+          }
+        ],
+        "source_type": "memory"
+      }
+    ],
+    "signals": [
+      {
+        "name": "soc",
+        "source": "table",
+        "field": "SOC_raw",
+        "dtype": "int64",
+        "unit": "1",
+        "valid_for": "20s"
+      }
+    ],
+    "execution": {
+      "batch_rows": 2,
+      "memory_budget_bytes": 268435456
+    },
+    "metadata": {
+      "device_label": "home",
+      "data_kind": "synthetic"
+    }
+  },
+  "aliases": {
+    "BMS_SOC_raw": "soc"
+  },
+  "sections": {
+    "TRIGGER_test": {
+      "name": "change",
+      "window_id": "around",
+      "coverage_policy": "full",
+      "emit_initial": true,
+      "retrigger": "edge"
+    }
+  }
+}

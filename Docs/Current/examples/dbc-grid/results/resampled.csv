@@ -1,0 +1,5 @@
+time_ns,signal,value,unit,status,reason,quality
+0,power,10,W,observed,,0
+0,voltage,20,V,observed,,0
+1000000000,power,20,W,observed,,0
+1000000000,voltage,30,V,observed,,0

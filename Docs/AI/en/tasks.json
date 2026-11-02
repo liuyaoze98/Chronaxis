@@ -1,0 +1,290 @@
+{
+  "device_label": "home",
+  "revision": 1,
+  "tasks": [
+    {
+      "id": "CAN",
+      "intent": "Integrate power from BLF / ASC messages",
+      "example": "../../Current/examples/analysis.yaml",
+      "requires": "Logs, channel, matching DBC, power unit, and clock.",
+      "check": "Check joules (J) and the actual observed range.",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations"
+      ],
+      "templates": [
+        "can-blf",
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/analysis.yaml --format json"
+    },
+    {
+      "id": "CONDITION_ENERGY",
+      "intent": "Continuous BLF/ASC volumes: require multiple conditions for longer than a threshold, then integrate energy over the full qualifying interval in kWh",
+      "example": "../../Current/examples/conditional-energy.yaml",
+      "requires": "Raw ASC/BLF and matching DBC; target signals, codes, units, comparisons, continuous duration, and integration scope. Do not require types, units, or periods to be repeated when the DBC supplies them.",
+      "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, default onset, and actual elapsed time.",
+      "not_applicable": "For a direct sum using a fixed period per message, consult message_calculations. Use BATCH for independent files.",
+      "alternative": "charge_session applies only to its strict current > comparison, duration >= comparison, Wh/Ah outputs, and direction/measurement-point requirements. Do not choose it merely because a task mentions charging.",
+      "check": "Exactly 60 seconds produces no event. The cross-file 61-second interval is [61,122), giving 4000W*61s/3600000=0.06777777777777777kWh. Link parent_id to event_id and check status/reason. Do not replace strict comparison with 60.1 seconds.",
+      "fields": [
+        "sources",
+        "signals",
+        "rules",
+        "calculations"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/conditional-energy.yaml --format json"
+    },
+    {
+      "id": "CSV",
+      "intent": "Power table integrated using actual elapsed time",
+      "example": "../../Current/examples/input-csv-minimal.yaml",
+      "requires": "Time column, units, power column, and validity period.",
+      "check": "Compare with the hand-calculated 38 J.",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "CHARGE",
+      "intent": "Charging activities, electric charge, and charging energy",
+      "example": "../../Current/examples/preset-charge-energy.yaml",
+      "requires": "Mode codes, positive current direction, terminal measurement point, voltage, thresholds, and duration. The teaching example uses ASC; for BLF replace the logs, DBC, and bindings with your own.",
+      "check": "Check each activity boundary and Wh/Ah result. Current exactly equal to current_min is excluded; duration exactly equal to minimum_duration qualifies. The default start is onset. Check applicability rather than matching only the word charging.",
+      "fields": [
+        "presets",
+        "signals"
+      ],
+      "templates": [
+        "charge-session"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "resolve_preset_roles",
+        "build_preset"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/preset-charge-energy.yaml --format json",
+      "applicable": "Mode equals the specified integer code and current is strictly greater than current_min. After reaching minimum_duration, calculate from condition onset. Outputs are Wh for energy and Ah for electric charge. Positive current means charging, and the measurement point is the battery-pack terminal.",
+      "not_applicable": "Do not directly apply charge_session when the task needs current >= threshold, a strict duration threshold, direct kWh output, another state combination, or unconfirmed preset direction/measurement-point requirements.",
+      "alternative": "Use CONDITION_ENERGY and ../../Current/examples/conditional-energy.yaml with an ordinary condition_duration rule and event-scope integral. Preserve the comparisons, duration comparison, and output unit. Ordinary U*I integration needs no extra direction/measurement-point metadata or 95% coverage threshold."
+    },
+    {
+      "id": "EVENT",
+      "intent": "Sustained activities, exit grouping, and event relationships",
+      "example": "../../Current/examples/window-merged.yaml",
+      "requires": "Condition, time units, window, and allowed gap.",
+      "check": "Preserve event boundaries; a segment may contain multiple parent_event_ids.",
+      "fields": [
+        "rules",
+        "windows"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/window-merged.yaml --format json"
+    },
+    {
+      "id": "ALARM",
+      "intent": "Alarm context and rising edges",
+      "example": "../../Current/examples/preset-fault-context.yaml",
+      "requires": "An explicitly defined Boolean alarm and before/after durations.",
+      "check": "Check point events separately from surrounding segments.",
+      "fields": [
+        "presets",
+        "windows"
+      ],
+      "templates": [
+        "fault-window"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/preset-fault-context.yaml --format json"
+    },
+    {
+      "id": "PAIR",
+      "intent": "Request/response pairs, timeout, and insufficient observation",
+      "example": "../../Current/examples/sequence-outcomes.yaml",
+      "requires": "Comparable request and response clocks, with explicit minimum and maximum delays.",
+      "check": "Unknown observations must not become a definite no-response outcome.",
+      "fields": [
+        "sequences",
+        "rules"
+      ],
+      "templates": [
+        "command-response"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/sequence-outcomes.yaml --format json"
+    },
+    {
+      "id": "ENCODING",
+      "intent": "Boolean and enumeration codes, and expression aliases",
+      "example": "../../Current/examples/signal-enum-minimal.yaml",
+      "requires": "Equipment code definitions; undefined codes must not use nonzero=true.",
+      "check": "Expressions reference bound names. Semantic IDs are not attribute paths.",
+      "fields": [
+        "signals",
+        "derived"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/signal-enum-minimal.yaml --format json"
+    },
+    {
+      "id": "UNITS",
+      "intent": "Conversions, units, and scales",
+      "example": "../../Current/examples/signal-number-conversion.yaml",
+      "requires": "Input/output units, existing decoder scaling, and direction declarations.",
+      "check": "Apply DBC scaling once. Unit labels alone do not convert values.",
+      "fields": [
+        "signals"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/signal-number-conversion.yaml --format json"
+    },
+    {
+      "id": "QUALITY",
+      "intent": "Expired data, zero values, and partial results",
+      "example": "../../Current/examples/quality.yaml",
+      "requires": "Period or validity, required observation range, and missing-data policy.",
+      "check": "Read status/reason/quality together with the value.",
+      "fields": [
+        "signals",
+        "execution",
+        "calculations"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/quality.yaml --format json"
+    },
+    {
+      "id": "BATCH",
+      "intent": "Run independent tasks in a batch",
+      "example": "../../Current/examples/batch-minimal.yaml",
+      "requires": "Independent input and output for each plan, without shared task state.",
+      "check": "Use batch run. process_count is a positive integer, default 1, overridable with --process-count. Inspect worker_process_count and each task worker_pid in batch_report. Continuous volumes belong in one task's paths.",
+      "fields": [
+        "jobs",
+        "process_count"
+      ],
+      "templates": [
+        "batch"
+      ],
+      "api": [
+        "load_batch_plan",
+        "run_batch",
+        "BatchReport"
+      ],
+      "verify": "python -m chronaxis batch run ../../Current/examples/batch-minimal.yaml --output new-batch"
+    },
+    {
+      "id": "IMPORT",
+      "intent": "Shared definitions, field origins, and relative paths",
+      "example": "../../Current/examples/analysis-imports.yaml",
+      "requires": "Both the main configuration and referenced shared-definition files.",
+      "check": "Use config origins --fields to inspect declaration origins.",
+      "fields": [
+        "imports"
+      ],
+      "templates": [],
+      "api": [
+        "load_analysis_plan"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/analysis-imports.yaml --format json"
+    },
+    {
+      "id": "EXPORT",
+      "intent": "Export raw messages around events",
+      "example": "../../Current/examples/export-can-minimal.yaml",
+      "requires": "A supported CAN source, explicit window, and new output directory.",
+      "check": "Check actual windows, output format, and manifest.",
+      "fields": [
+        "outputs",
+        "windows"
+      ],
+      "templates": [
+        "can-export"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/export-can-minimal.yaml --format json"
+    },
+    {
+      "id": "PYTHON",
+      "intent": "Load, publish, and close results in Python",
+      "example": "../../Current/examples/input-csv-minimal.yaml",
+      "requires": "The matching installed version, complete plan, and new result directory.",
+      "check": "Run ../run_analysis.py. Validate before execution, read rows, and close resources.",
+      "fields": [
+        "outputs"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "FIX",
+      "intent": "Correct configuration using diagnostics",
+      "example": "../../Current/examples/input-csv-minimal.yaml",
+      "requires": "The user's original intent, original files, and actual diagnostics.",
+      "check": "Fix field placement, types, or references. Do not remove conditions or change validity to suppress errors.",
+      "fields": [
+        "config_version"
+      ],
+      "templates": [
+        "signal-csv"
+      ],
+      "api": [
+        "validate_analysis_plan",
+        "explain_analysis_plan",
+        "PlanValidationError"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+    }
+  ]
+}

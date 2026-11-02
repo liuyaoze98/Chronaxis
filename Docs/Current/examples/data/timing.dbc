@@ -1,0 +1,11 @@
+VERSION "synthetic-home"
+NS_ :
+BS_:
+BU_: Node
+BO_ 256 State: 4 Node
+ SG_ Request : 0|8@1+ (1,0) [0|1] "" Node
+ SG_ Response : 8|8@1+ (1,0) [0|1] "" Node
+ SG_ Temperature : 16|8@1+ (1,0) [0|255] "degC" Node
+ SG_ Voltage : 24|8@1+ (1,0) [0|255] "V" Node
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 65535;
+BA_ "GenMsgCycleTime" BO_ 256 1000;

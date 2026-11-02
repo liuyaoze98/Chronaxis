@@ -1,0 +1,18 @@
+%YAML 1.2
+---
+config_version: 3               # 配置格式版本，不是业务参数
+dataset:                        # 只保留本次任务名称；省略domain表示读取完整输入
+  name: batch_energy_example    # 为此分析对象取名称，供表达式、规则或结果引用
+sources:                        # 输入报文路径与对应DBC；格式按扩展名识别
+  - path: data/power.asc        # 相对本配置所在目录的输入路径
+    dbc_by_channel:             # 把日志通道对应到实际DBC；不能靠名称猜测
+      '1': data/teaching.dbc
+signals:                        # 只声明本次分析使用的信号
+  - name: power                 # 为此分析对象取名称，供表达式、规则或结果引用
+    field:                      # 按报文ID和DBC信号名定位
+      frame_id: '0x200'         # 0x为十六进制；无前缀为十进制
+      signal: Power             # DBC里的原信号名
+calculations:                   # 需要输出的计算结果
+  - name: energy                # 为此分析对象取名称，供表达式、规则或结果引用
+    operation: integral         # 选择统计或积分方法
+    expr: power                 # 使用分析信号名或白名单表达式

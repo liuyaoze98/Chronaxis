@@ -1,0 +1,13 @@
+time_ns,signal,value,unit,status,reason,quality
+0,voltage,3.0,V,observed,,0
+250000000,voltage,4.0,V,estimated,,0
+500000000,voltage,5.0,V,estimated,,0
+750000000,voltage,6.0,V,estimated,,0
+1000000000,voltage,7.0,V,observed,,0
+1250000000,voltage,6.0,V,estimated,,0
+1500000000,voltage,5.0,V,estimated,,0
+1750000000,voltage,4.0,V,estimated,,0
+2000000000,voltage,3.0,V,observed,,0
+2250000000,voltage,,V,missing,missing_right,0
+2500000000,voltage,,V,missing,missing_right,0
+2750000000,voltage,,V,missing,missing_right,0

@@ -1,0 +1,51 @@
+# 使用src布局；实际支持平台在README中说明。
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chronaxis"
+version = "0.1.0.dev0"
+description = "Declarative analysis of multi-source time series"
+dynamic = ["readme"]
+authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+requires-python = ">=3.12,<3.13"
+# 当前运行依赖锁定为实测版本；实际矩阵目前仅Windows/Python3.12.4。
+dependencies = [
+    "numpy==1.26.3",
+    "ruamel.yaml==0.19.1",
+    "python-can==4.6.1",
+    "cantools==39.4.3",
+    "natsort==8.4.0",
+]
+
+[project.urls]
+Repository = "https://github.com/liuyaoze98/Chronaxis"
+Documentation = "https://github.com/liuyaoze98/Chronaxis/blob/v0.1.0.dev0/Docs/Current/index.md"
+Issues = "https://github.com/liuyaoze98/Chronaxis/issues"
+Changelog = "https://github.com/liuyaoze98/Chronaxis/blob/v0.1.0.dev0/Docs/Release/release-notes-0.1.0.dev0.md"
+
+# 命令行入口与Python API共享计划加载和执行逻辑。
+[project.scripts]
+chronaxis = "chronaxis.cli:main"
+
+# 标准schema验证只用于开发验收，不作为库运行时依赖。
+[project.optional-dependencies]
+test = ["jsonschema==4.25.1"]
+# 兼容已有的chronaxis[can]安装命令；CAN库已由默认依赖安装。
+can = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# 初始化与场景验收读取同一套小型合成资源；不携带真实日志或历史快照。
+[tool.setuptools.package-data]
+"chronaxis.configuration" = ["templates/catalog.json", "templates/*/*.yaml", "templates/shared/*"]

@@ -1,0 +1,27 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: csv_example
+sources:
+  - source_type: signal_csv
+    path: data/signals.csv
+    time_column: time
+    time:
+      unit: s
+signals:
+  - name: power
+    field: power
+    dtype: float64
+    unit: W
+    valid_for: 3s
+calculations:
+  - name: energy
+    operation: integral
+    expr: power
+  - name: sample_average
+    operation: sample_mean
+    expr: power
+  - name: time_average
+    operation: time_weighted_mean
+    expr: power

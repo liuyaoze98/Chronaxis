@@ -1,0 +1,24 @@
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+config_version: 3                                   # 声明分析文件采用的字段结构版本；当前填写整数3
+dataset:                                            # 设置本次分析名称及可选的对象、会话和时间范围
+  name: preset_example                              # 命名本次分析数据集；名称写入结果身份字段
+sources:                                            # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/can/preset-threshold-partial.asc    # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                                 # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/can/teaching.dbc                    # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                                            # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - field:                                          # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x11d'                             # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Temperature                           # 填写DBC中的信号名称，大小写须一致
+    name: temperature                               # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 20s                                  # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+presets:                                            # 选择预先组合好的规则与计算，并提供角色信号和业务参数
+  - name: demo_preset                               # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
+    parameters:                                     # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
+      enter_threshold: 80                           # 设置进入报警的高阈值；必须大于恢复阈值
+      exit_threshold: 75                            # 设置恢复的低阈值；按业务允许恢复范围填写
+      unit: degC                                    # 声明阈值数值的单位；须与所选信号的单位要求一致
+    preset_type: threshold_excursion                # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+    role_bindings:                                  # 明确指定哪条已有信号担任每个角色；角色名由预设定义
+      signal: temperature                           # 为signal角色选择上方已定义的分析信号名；仍须符合该角色要求
+    version: '1'                                    # 选择预设定义版本；当前填写字符串"1"，与config_version的整数3分别使用

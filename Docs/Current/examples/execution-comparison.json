@@ -1,0 +1,85 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "power_demo",
+    "domain": {
+      "start": "0s",
+      "end": "12s"
+    }
+  },
+  "sources": [
+    {
+      "paths": "data/can/execution-comparison.asc",
+      "dbc_by_channel": {
+        "1": "data/can/teaching.dbc"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "name": "power",
+      "field": {
+        "frame_id": "0x100",
+        "signal": "Power"
+      },
+      "valid_for": "20s"
+    },
+    {
+      "name": "active",
+      "field": {
+        "frame_id": "0x110",
+        "signal": "Active"
+      },
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [
+    {
+      "condition": "active > 0",
+      "rule_type": "condition_duration",
+      "minimum_duration": "0s",
+      "name": "working"
+    }
+  ],
+  "windows": [
+    {
+      "pre": "0s",
+      "post": "0s",
+      "merge": "exit_delay",
+      "exit_delay": "3s",
+      "name": "context",
+      "rule": "working"
+    }
+  ],
+  "execution": {
+    "backend": "numpy",
+    "batch_rows": 1,
+    "result_buffer_rows": 1
+  },
+  "outputs": {
+    "tables": "csv"
+  },
+  "calculations": [
+    {
+      "operation": "integral",
+      "name": "session_energy",
+      "expr": "power"
+    },
+    {
+      "operation": "integral",
+      "scope": {
+        "rule": "working"
+      },
+      "name": "event_energy",
+      "expr": "power"
+    },
+    {
+      "operation": "integral",
+      "scope": {
+        "window": "context"
+      },
+      "name": "segment_energy",
+      "expr": "power"
+    }
+  ]
+}

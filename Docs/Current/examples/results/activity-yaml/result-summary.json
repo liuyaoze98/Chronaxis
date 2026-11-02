@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 1,
+    "segments": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "hot",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 2,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "activity_example",
+      "entity_id": "activity_example",
+      "session_id": "activity_example"
+    }
+  },
+  "result_messages": [
+    "hot：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 202,
+      "sha256": "99ffac7ddfe77fa8e8fa357b92c91c57823668be11a8253910abf1321206ac54",
+      "rows": 1
+    },
+    {
+      "path": "窗口结果.csv",
+      "bytes": 212,
+      "sha256": "feb49999c8c54830f03d9d07c75fdc24754d4eb9c67be5ac194bb99e2e55f336",
+      "rows": 1
+    }
+  ]
+}

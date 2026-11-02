@@ -1,0 +1,47 @@
+{
+  "status": "completed",
+  "table_format": "csv",
+  "row_counts": {
+    "calculations": 4,
+    "events": 2,
+    "segments": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "calculations": {
+      "complete": 3,
+      "indeterminate": 0,
+      "no_observation": 0,
+      "partial": 1
+    },
+    "rules": [
+      {
+        "event_count": 2,
+        "has_unknown": false,
+        "rule_id": "working",
+        "status": "events_found",
+        "unobserved_signals": []
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "calculations.csv",
+      "bytes": 683,
+      "sha256": "edf0459c5e5baad90981b74d3dd4c44825214fe0d547d5c6bcc428fc9a1d374e",
+      "rows": 4
+    },
+    {
+      "path": "events.csv",
+      "bytes": 433,
+      "sha256": "9c14c83dd322ead9944f7fb9440cd8f18dfbca5f3f68430870be7ec1c2a2a38b",
+      "rows": 2
+    },
+    {
+      "path": "segments.csv",
+      "bytes": 386,
+      "sha256": "23181b45fce66d434e16bc6ba03491c022e9616fc63a6dd1a502dcec37e65f0b",
+      "rows": 1
+    }
+  ]
+}

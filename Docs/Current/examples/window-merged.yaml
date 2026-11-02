@@ -1,0 +1,28 @@
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+config_version: 3                                   # 声明分析文件采用的字段结构版本；当前填写整数3
+dataset:                                            # 设置本次分析名称及可选的对象、会话和时间范围
+  name: rule_example                                # 命名本次分析数据集；名称写入结果身份字段
+sources:                                            # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/can/rule-start_only-extended.asc    # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                                 # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/can/teaching.dbc                    # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                                            # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - field:                                          # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x113'                             # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: ButtonPressed                         # 填写DBC中的信号名称，大小写须一致
+    name: button_pressed                            # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 20s                                  # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                                        # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+      - [0, false]
+      - [1, true]
+rules:                                              # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - condition: button_pressed                       # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    name: pressed                                   # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    rule_type: rising_edge                          # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+windows:                                            # 围绕已定义规则的事件选取时间片段，供计算或导出使用
+  - anchor: point                                   # 选择以事件点还是活动区间为基础；point围绕点，activity围绕活动
+    rule: pressed                                   # 选择生成窗口的事件规则；填写前面rules中的name
+    name: context                                   # 为窗口定义取唯一名称；计算或导出通过此名选择产生的片段
+    merge: overlap_and_adjacent                     # 选择片段合并规则；none分别输出，overlap合并重叠，overlap_and_adjacent也合并相邻，exit_delay等待下一活动
+    post: 3s                                        # 设置结束点之后保留多久上下文；0s表示不延长
+    pre: 0s                                         # 设置起点之前保留多久上下文；0s表示不提前

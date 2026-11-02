@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "title": "开始使用",
+      "pages": [
+        {
+          "path": "index.md",
+          "title": "手册首页"
+        },
+        {
+          "path": "ai-guide.md",
+          "title": "用 AI 生成配置或代码"
+        },
+        {
+          "path": "installation.md",
+          "title": "安装与环境"
+        },
+        {
+          "path": "quickstart.md",
+          "title": "BLF／ASC快速开始"
+        },
+        {
+          "path": "activity-tutorial.md",
+          "title": "事件与窗口完整任务"
+        },
+        {
+          "path": "api-usage.md",
+          "title": "Python快速开始"
+        },
+        {
+          "path": "status.md",
+          "title": "支持范围与限制"
+        }
+      ]
+    },
+    {
+      "title": "核心概念",
+      "pages": [
+        {
+          "path": "concepts.md",
+          "title": "时间与结果质量"
+        },
+        {
+          "path": "terms.md",
+          "title": "术语表"
+        }
+      ]
+    },
+    {
+      "title": "输入与信号",
+      "pages": [
+        {
+          "path": "dataset.md",
+          "title": "数据集与分析范围"
+        },
+        {
+          "path": "inputs.md",
+          "title": "数据来源"
+        },
+        {
+          "path": "text-inputs.md",
+          "title": "CAN文本输入"
+        },
+        {
+          "path": "signals.md",
+          "title": "信号绑定"
+        }
+      ]
+    },
+    {
+      "title": "分析功能",
+      "pages": [
+        {
+          "path": "expressions.md",
+          "title": "表达式"
+        },
+        {
+          "path": "rules.md",
+          "title": "事件检测规则"
+        },
+        {
+          "path": "sequences.md",
+          "title": "请求响应配对"
+        },
+        {
+          "path": "intervals.md",
+          "title": "计算间隔"
+        },
+        {
+          "path": "presets.md",
+          "title": "业务预设"
+        },
+        {
+          "path": "windows.md",
+          "title": "事件窗口与片段"
+        },
+        {
+          "path": "calculations.md",
+          "title": "统计与积分"
+        },
+        {
+          "path": "message-calculations.md",
+          "title": "逐消息累计"
+        }
+      ]
+    },
+    {
+      "title": "执行与结果",
+      "pages": [
+        {
+          "path": "execution.md",
+          "title": "执行配置"
+        },
+        {
+          "path": "batch.md",
+          "title": "批量任务"
+        },
+        {
+          "path": "results.md",
+          "title": "读取结果"
+        },
+        {
+          "path": "exports.md",
+          "title": "信号与报文导出"
+        },
+        {
+          "path": "signal-exports.md",
+          "title": "信号CSV导出"
+        },
+        {
+          "path": "can-exports.md",
+          "title": "CAN报文导出"
+        },
+        {
+          "path": "cli.md",
+          "title": "命令行参考"
+        },
+        {
+          "path": "troubleshooting.md",
+          "title": "故障排查"
+        }
+      ]
+    },
+    {
+      "title": "配置参考",
+      "pages": [
+        {
+          "path": "configuration-language.md",
+          "title": "配置文件语法"
+        },
+        {
+          "path": "configuration.md",
+          "title": "配置结构"
+        },
+        {
+          "path": "configuration-reference.md",
+          "title": "配置字段参考"
+        },
+        {
+          "path": "imports.md",
+          "title": "公共定义"
+        },
+        {
+          "path": "configuration-tools.md",
+          "title": "配置工具"
+        },
+        {
+          "path": "reference/configuration-schema.md",
+          "title": "机器校验规范"
+        },
+        {
+          "path": "schema-editor.md",
+          "title": "编辑器字段提示"
+        }
+      ]
+    },
+    {
+      "title": "Python API",
+      "pages": [
+        {
+          "path": "api.md",
+          "title": "公开API索引"
+        }
+      ]
+    },
+    {
+      "title": "示例与导入",
+      "pages": [
+        {
+          "path": "examples.md",
+          "title": "完整任务示例"
+        },
+        {
+          "path": "example-results.md",
+          "title": "示例运行结果与解析"
+        },
+        {
+          "path": "migration.md",
+          "title": "旧INI导入"
+        }
+      ]
+    },
+    {
+      "title": "开发者文档",
+      "pages": [
+        {
+          "path": "architecture.md",
+          "title": "内部架构"
+        },
+        {
+          "path": "maintenance.md",
+          "title": "文档构建"
+        },
+        {
+          "path": "reference/index.md",
+          "title": "内部API与模块"
+        }
+      ]
+    }
+  ]
+}

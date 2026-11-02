@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Chronaxis 独立批量任务配置版本1",
+  "description": "独立批量任务声明。jobs在各任务启动时加载计划；template在加载批量配置时展开文件集合并编译独立计划，必要时读取DBC，不扫描业务记录。同会话连续文件仍放在同一分析计划。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch_version"
+  ],
+  "properties": {
+    "batch_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "独立批量清单的结构版本，当前固定为整数1；与单个分析计划config_version独立。 固定值：1。"
+    },
+    "process_count": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "分析工作进程数量上限，正整数，默认1；不含调度主进程和CAN读取子进程。每个任务独立预算。"
+    },
+    "fail_fast": {
+      "type": "boolean",
+      "default": false,
+      "description": "观察到失败后是否停止派发新任务，默认false；已启动任务完成必要关闭。"
+    },
+    "backend": {
+      "enum": [
+        null,
+        "reference",
+        "numpy"
+      ],
+      "default": null,
+      "description": "数值计算实现选择。两后端服从相同业务语义，不表示所有规则都会数组化。可选值：null：沿用每个分析计划的后端；\"reference\"：采用独立参考实现；\"numpy\"：采用NumPy数值实现。"
+    },
+    "jobs": {
+      "type": "array",
+      "description": "独立任务列表。按实际启动时读取子计划，坏任务按fail_fast政策隔离；同会话连续文件不拆成独立任务。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+            "description": "任务名称，可省略并按列表位置生成job_1、job_2等；名称必须唯一，忽略大小写后的重复也拒绝。"
+          },
+          "plan": {
+            "type": "string",
+            "minLength": 1,
+            "description": "子分析计划的YAML或JSON路径，相对于批量清单目录；启动该任务时才加载。"
+          }
+        }
+      }
+    },
+    "template": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用于每个输入文件的分析模板路径，每个文件生成独立任务，不能与jobs同时填写。"
+    },
+    "inputs": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "description": "文件、目录或通配符路径。"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "description": "本项文件、目录或通配符路径。"
+            },
+            "offset": {
+              "type": "string",
+              "minLength": 1,
+              "description": "该文件的带单位时间偏移，与来源总偏移相加。"
+            }
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "description": "文件、目录或通配符路径。"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "本项文件、目录或通配符路径。"
+                  },
+                  "offset": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "该文件的带单位时间偏移，与来源总偏移相加。"
+                  }
+                }
+              }
+            ],
+            "description": "路径文字，或带自身offset的文件声明。"
+          },
+          "description": "保持声明顺序的路径列表；各目录匹配集合内部自然排序。"
+        }
+      ],
+      "description": "每个输入文件形成独立任务。可填文件、目录、通配符或列表；显式列表保持声明顺序，各匹配集合按自然顺序排列；目录不递归，明确**通配符才递归。"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "模板中被替换输入路径的来源名称；模板只有一个来源时可以省略。"
+    }
+  },
+  "$comment": "独立批量任务结构；相对引用只指向随包规范。",
+  "oneOf": [
+    {
+      "required": [
+        "jobs"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "template"
+            ]
+          },
+          {
+            "required": [
+              "inputs"
+            ]
+          },
+          {
+            "required": [
+              "source"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "required": [
+        "template",
+        "inputs"
+      ],
+      "not": {
+        "required": [
+          "jobs"
+        ]
+      }
+    }
+  ]
+}

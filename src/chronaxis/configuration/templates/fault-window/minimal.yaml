@@ -1,0 +1,27 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: fault_example
+sources:
+  - path: data/fault-window.asc
+    dbc_by_channel:
+      '1': data/teaching.dbc
+signals:
+  - name: alarm
+    field:
+      frame_id: '0x202'
+      signal: Alarm
+    choices:
+      -   - 0
+          - false
+      -   - 1
+          - true
+presets:
+  - name: fault
+    role_bindings:
+      alarm: alarm
+    parameters:
+      pre: 1s
+      post: 2s
+    preset_type: fault_context

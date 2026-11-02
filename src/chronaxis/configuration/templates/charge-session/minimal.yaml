@@ -1,0 +1,38 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: charge_example
+sources:
+  - path: data/charge-session.asc
+    dbc_by_channel:
+      '1': data/teaching.dbc
+signals:
+  - name: mode
+    field:
+      frame_id: '0x201'
+      signal: Mode
+  - name: current
+    field:
+      frame_id: '0x201'
+      signal: Current
+    sign_convention: positive_is_charge
+    measurement_location: pack_terminal
+  - name: voltage
+    field:
+      frame_id: '0x201'
+      signal: Voltage
+    measurement_location: pack_terminal
+presets:
+  - name: charging
+    role_bindings:
+      mode: mode
+      current: current
+      voltage: voltage
+    parameters:
+      mode_value: 1
+      current_min: 5
+      compute_energy: true
+      compute_charge: true
+      minimum_duration: 1s
+    preset_type: charge_session

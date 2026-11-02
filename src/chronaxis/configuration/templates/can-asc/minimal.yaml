@@ -1,0 +1,18 @@
+%YAML 1.2
+---
+config_version: 3
+dataset:
+  name: can_asc_example
+sources:
+  - path: data/sample.asc
+    dbc_by_channel:
+      '1': data/sample.dbc
+signals:
+  - name: voltage
+    field:
+      signal: Voltage
+      frame_id: '0x100'
+calculations:
+  - name: voltage_area
+    expr: voltage
+    operation: integral

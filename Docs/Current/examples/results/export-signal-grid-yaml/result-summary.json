@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "resampled_power_export",
+      "entity_id": "resampled_power_export",
+      "session_id": "resampled_power_export"
+    }
+  },
+  "result_messages": [],
+  "files": [
+    {
+      "path": "exports/export-00000000/manifest.json",
+      "bytes": 748,
+      "sha256": "921d1378f4137972cdcb69893574ca2c70102b0d115a3a02cbfd76068382e599",
+      "status": "completed"
+    },
+    {
+      "path": "exports/export-00000000/resampled.csv",
+      "bytes": 491,
+      "sha256": "4eb52f87b8dc488f2546ec8de62b34cad4e2b47f2a8639723ba581ba698a6295",
+      "rows": 12
+    },
+    {
+      "path": "exports.jsonl",
+      "bytes": 260,
+      "sha256": "348620f1a0ddae4b3531173198c328183e78916f4ca15d02d5550c51691f50c7"
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 64,
+      "sha256": "322bb4cd66c4a81aa95d323c365cfd1200b135d7835cc346b9b941ec41297bc8",
+      "rows": 1
+    }
+  ]
+}

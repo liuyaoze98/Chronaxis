@@ -1,0 +1,1 @@
+{"device_label": "home", "export_type": "signal_csv", "export_version": 1, "files": [{"bytes": 126, "name": "original.csv"}], "invalid": 0, "observed": 4, "range_ns": [0, 6000000000], "resampling": false, "row_format": "compact-v2", "rows": 4, "signals": ["power"], "status": "completed"}

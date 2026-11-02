@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 3,
+    "segments": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "pressed",
+        "status": "events_found",
+        "event_count": 3,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 0,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "rule_example",
+      "entity_id": "rule_example",
+      "session_id": "rule_example"
+    }
+  },
+  "result_messages": [
+    "pressed：已找到满足要求的事件（3个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 191,
+      "sha256": "cfd3176b45270e4b3d3450e28f91c0f72901f8889db76a7775df03c565f9fd48",
+      "rows": 3
+    },
+    {
+      "path": "窗口结果.csv",
+      "bytes": 133,
+      "sha256": "63c8b6363d2e01a9337020963c8980c6bc3445160a62f91e279666751c7a2379",
+      "rows": 1
+    }
+  ]
+}

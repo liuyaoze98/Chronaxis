@@ -1,0 +1,128 @@
+{
+  "config_version": 3,
+  "dataset": {
+    "name": "sample",
+    "entity": "device",
+    "session": "session",
+    "domain": {
+      "start": "0s",
+      "end": "14s"
+    }
+  },
+  "sources": [
+    {
+      "name": "input",
+      "time": {
+        "unit": "s",
+        "time_type": "relative",
+        "clock": "clock"
+      },
+      "rows": [
+        {
+          "time": "0s",
+          "values": {
+            "voltage": 0
+          }
+        },
+        {
+          "time": "2s",
+          "values": {
+            "voltage": 0
+          }
+        },
+        {
+          "time": "4s",
+          "values": {
+            "voltage": 5
+          }
+        },
+        {
+          "time": "6s",
+          "values": {
+            "voltage": 5
+          }
+        },
+        {
+          "time": "8s",
+          "values": {
+            "voltage": 0
+          }
+        },
+        {
+          "time": "10s",
+          "values": {
+            "voltage": 0
+          }
+        },
+        {
+          "time": "12s",
+          "values": {
+            "voltage": 5
+          }
+        },
+        {
+          "time": "14s",
+          "values": {
+            "voltage": 5
+          }
+        }
+      ],
+      "source_type": "memory"
+    }
+  ],
+  "signals": [
+    {
+      "name": "voltage",
+      "source": "input",
+      "field": "voltage",
+      "dtype": "float64",
+      "unit": "V",
+      "valid_for": "20s"
+    }
+  ],
+  "rules": [
+    {
+      "name": "change",
+      "signal": "voltage",
+      "window": "4s",
+      "direction": "rise",
+      "threshold": 5,
+      "monotonic": true,
+      "coverage_policy": "full",
+      "emit_initial": true,
+      "retrigger": "edge",
+      "rule_type": "window_delta"
+    }
+  ],
+  "windows": [
+    {
+      "name": "around",
+      "rule": "change",
+      "anchor": "point",
+      "pre": "1s",
+      "post": "1s"
+    }
+  ],
+  "execution": {
+    "batch_rows": 2,
+    "result_buffer_rows": 1,
+    "memory_budget_bytes": 268435456
+  },
+  "outputs": {
+    "tables": "csv"
+  },
+  "metadata": {
+    "device_label": "home",
+    "data_kind": "synthetic"
+  },
+  "calculations": [
+    {
+      "name": "average",
+      "operation": "time_weighted_mean",
+      "scope": {
+        "window": "around"
+      },
+      "expr": "voltage"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+config_version: 3                     # 声明分析文件采用的字段结构版本；当前填写整数3
+dataset:                              # 设置本次分析名称及可选的对象、会话和时间范围
+  name: pack                          # 命名本次分析数据集；名称写入结果身份字段
+sources:                              # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: pack.asc                   # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                   # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': pack.dbc                   # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                              # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - frame_id: '0x120'                 # 选择本组所属报文；从DBC取得ID，所有子信号须属于该报文
+    signals:                          # 列出本报文需要的子信号；继承组级定位，可覆盖周期、有效期和同刻策略
+      - name: voltage                 # 给分析信号取名称；后续表达式和计算通过此名称引用它
+        signal: PackVoltage           # 填写本组报文内的DBC信号名称；大小写须一致
+      - name: state                   # 给分析信号取名称；后续表达式和计算通过此名称引用它
+        signal: ChargeState           # 填写本组报文内的DBC信号名称；大小写须一致
+        dtype: enum                   # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+        valid_for: 200ms              # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+rules:                                # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: charging                    # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    rule_type: rising_edge            # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+    condition: state == "charging"    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+calculations:                         # 列出希望获得的统计或积分结果，每项独立选择范围和算法
+  - name: peak_voltage                # 为这项计算结果取唯一名称；结果表用它区分计算项
+    operation: sample_maximum         # 选择计算方法；本例取范围内有效真实样本的最大值
+    expr: voltage                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号

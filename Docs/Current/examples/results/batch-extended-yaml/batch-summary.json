@@ -1,0 +1,14 @@
+{
+  "device_label": "home",
+  "status": "completed",
+  "jobs": [
+    {
+      "job_id": "job_1",
+      "status": "completed"
+    },
+    {
+      "job_id": "job_2",
+      "status": "completed"
+    }
+  ]
+}

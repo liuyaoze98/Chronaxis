@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 3,
+    "segments": 3
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "cycle",
+        "status": "events_found",
+        "event_count": 3,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 3,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "cycles",
+      "entity_id": "cycles",
+      "session_id": "cycles"
+    }
+  },
+  "result_messages": [
+    "cycle：已找到满足要求的事件（3个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 286,
+      "sha256": "4672814e8c423aa89002e9cd928951a2a53707830d4337468b44a45ba112220d",
+      "rows": 3
+    },
+    {
+      "path": "窗口结果.csv",
+      "bytes": 192,
+      "sha256": "3d390f5e426018314c96978d13d35199fd5315d0349c37c77628ecb3d3ce767f",
+      "rows": 3
+    }
+  ]
+}
