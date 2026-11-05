@@ -34,7 +34,21 @@ jobs:
           sha256sum --strict --check - <<'SHA256'
           99df96937dc848a517be619c04bfd54d45205cf4b876bcda37e5b7d096e281d8  Chronaxis-Manual-0.1.0.dev2.zip
           SHA256
-          unzip -q Chronaxis-Manual-0.1.0.dev2.zip -d manual
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          target = Path("manual").resolve()
+          with ZipFile("Chronaxis-Manual-0.1.0.dev2.zip") as archive:
+              for item in archive.infolist():
+                  if not (target / item.filename).resolve().is_relative_to(target):
+                      raise ValueError("Archive member escapes the manual directory")
+              archive.extractall(target)
+              files = [item for item in archive.infolist() if not item.is_dir()]
+              for item in files:
+                  if (target / item.filename).read_bytes() != archive.read(item):
+                      raise ValueError("Extracted manual differs: " + item.filename)
+              print(f"Verified {len(files)} extracted files, including UTF-8 filenames")
+          PY
           test -f manual/index.html
           test -f manual/en/index.html
           test -f manual/ai-guide/README.md
