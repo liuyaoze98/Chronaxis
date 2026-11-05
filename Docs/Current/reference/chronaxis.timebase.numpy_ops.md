@@ -1,4 +1,4 @@
-# chronaxis.timebase.numpy_ops
+# `chronaxis.timebase.numpy_ops`
 
 对一列纳秒时间执行固定偏移或计算相邻时间差，返回独立的新数组。
 
@@ -62,7 +62,7 @@ TypeError: 非ndarray、MaskedArray或dtype不为原生int64。
 
 返回类型：None。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:18`](../../../src/chronaxis/timebase/numpy_ops.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:18`](../../../src/chronaxis/timebase/numpy_ops.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-shift_times_numpy"></a>
 ## `shift_times_numpy`
@@ -95,7 +95,7 @@ TypeError或ValueError: 输入类型、数据类型或形状不符合要求。
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:39`](../../../src/chronaxis/timebase/numpy_ops.py#L39)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:39`](../../../src/chronaxis/timebase/numpy_ops.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-time_deltas_numpy"></a>
 ## `time_deltas_numpy`
@@ -132,4 +132,4 @@ TypeError或ValueError: 输入类型、数据类型或形状错误，或者时�
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:69`](../../../src/chronaxis/timebase/numpy_ops.py#L69)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:69`](../../../src/chronaxis/timebase/numpy_ops.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

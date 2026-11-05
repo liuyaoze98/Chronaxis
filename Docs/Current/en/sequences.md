@@ -1,7 +1,9 @@
 <a id="请求响应配对"></a>
 # Request/response pairing
 
-A request occurs at 1 s and permits a response within 0–2 s. A response at 3 s succeeds with a 2 s delay. Without a response, distinguish a fully observed two-second wait from missing response data that prevents a conclusion. Root-level `sequences` makes this distinction.
+Use request/response pairing to determine whether each request receives a response within a permitted delay, and to distinguish a confirmed timeout from insufficient observation. The result records both event times and the delay.
+
+Fields below are relative to `sequences[]`, not the configuration root. The fragment assumes bool signals `request` and `response`, unit `1`, sharing an aligned clock. In [teaching-base.yaml](../examples/teaching-base.yaml), replace or add the root `rules` and `sequences` lists. Do not nest the parent keys inside existing list items.
 
 First create request and response point events with `rules`, then refer to their rule names in `start` and `response`. These fields do not accept signal names or expressions.
 
@@ -19,21 +21,21 @@ Both files run with `chronaxis run filename.yaml --output new-result`. The first
 <a id="配置片段"></a>
 ## Configuration fragment
 
-Fields below are relative to `sequences[]`, not the configuration root. The fragment assumes bool signals `request` and `response`, unit `1`, sharing an aligned clock. In [teaching-base.yaml](../examples/teaching-base.yaml), replace or add the root `rules` and `sequences` lists. Do not nest the parent keys inside existing list items.
+A request occurs at 1 s and permits a response within 0–2 s. A response at 3 s succeeds with a 2 s delay. Without a response, distinguish a fully observed two-second wait from missing response data that prevents a conclusion. Root-level `sequences` makes this distinction.
 
 ```yaml
-rules:                       # Point events used for pairing
-  - name: request_edge       # Request rule name
-    condition: request       # Existing bool signal
-    rule_type: rising_edge   # False-to-true transition
-  - name: response_edge      # Response rule name
-    condition: response      # Existing bool signal
-    rule_type: rising_edge   # False-to-true transition
-sequences:                   # Pair requests with permitted responses
-  - name: pair               # Unique pairing name
-    start: request_edge      # Request rule, not signal name
-    response: response_edge  # Response rule, not signal name
-    max_delay: 2s            # Maximum permitted response delay
+rules:                         # Point events used for pairing
+  - name: request_edge         # Request rule name
+    condition: request         # Existing bool signal
+    rule_type: rising_edge     # False-to-true transition
+  - name: response_edge        # Response rule name
+    condition: response        # Existing bool signal
+    rule_type: rising_edge     # False-to-true transition
+sequences:                     # Pair requests with permitted responses
+  - name: pair                 # Unique pairing name
+    start: request_edge        # Request rule, not signal name
+    response: response_edge    # Response rule, not signal name
+    max_delay: 2s              # Maximum permitted response delay
 ```
 
 | Field | Type | Required/default | Meaning |

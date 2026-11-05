@@ -6,7 +6,7 @@ Return to the [public API index](../api.md). Linked parameter types lead to thei
 
 ## Members
 
-- [OutputManifest](#api-OutputManifest)
+- [`OutputManifest`](#api-OutputManifest)
 
 <a id="api-OutputManifest"></a>
 ## `OutputManifest`
@@ -21,11 +21,13 @@ OutputManifest(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Pat
 
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
-|`run_id`|str|Yes|None|Unique run identity, associated with the published manifest and resource records.|
-|`output_dir`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|None|Absolute Path of the successfully published result directory.|
-|`manifest_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|None|Absolute Path of the published run_manifest.json.|
-|`output_files`|tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), ...]|Yes|None|Tuple of file paths actually published in this operation.|
-|`row_counts`|tuple[tuple[str, int], ...]|Yes|None|Actual row counts for each supported result table.|
+|`run_id`|str|Yes|No default|Unique run identity, associated with the published manifest and resource records.|
+|`output_dir`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|No default|Absolute Path of the successfully published result directory.|
+|`manifest_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|No default|Absolute Path of this publication's timestamped run manifest.|
+|`output_files`|tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), ...]|Yes|No default|Tuple of file paths actually published in this operation.|
+|`row_counts`|tuple[tuple[str, int], ...]|Yes|No default|Actual row counts for each supported result table.|
 |`status`|str|No|'completed'|Publication status; successful publication is completed.|
 
-Source: [`src/chronaxis/results/manifest.py:320`](../../../../src/chronaxis/results/manifest.py#L320) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
+## Source locations
+
+- [`src/chronaxis/results/manifest.py:332`](../../../../src/chronaxis/results/manifest.py#L332) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

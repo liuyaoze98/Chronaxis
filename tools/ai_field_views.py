@@ -1,4 +1,4 @@
-"""从随包四份完整规范生成可查字段视图；不实现第二个配置验证器。
+"""从随包三份完整规范生成可查字段视图；不实现第二个配置验证器。
 
 读取同一输入映射里的本地JSON Schema，记录精确指针、父级必填及变体条件。
 遇到坏引用直接构建失败，跨规范引用保留目标文档身份；不访问网络。
@@ -7,7 +7,7 @@ import json
 from pathlib import PurePosixPath
 
 DOCS = {"analysis.schema.json":"analysis", "batch-v1.schema.json":"batch",
-        "definitions.schema.json":"definitions", "legacy-import-v1.schema.json":"mapping"}
+        "definitions.schema.json":"definitions"}
 KEYS = ("type","const","enum","default","description","examples","minimum","exclusiveMinimum",
         "maximum","exclusiveMaximum","minLength","maxLength","minItems","maxItems","pattern","$ref")
 COMBINE = ("oneOf","anyOf","allOf","if","then","else","not","dependentRequired","dependentSchemas")
@@ -38,7 +38,8 @@ def fields_for(schemas, doc, pointer, node, path, required, conditions=(), visit
             target = target[int(key)] if isinstance(target,list) else target[key]
         yield from fields_for(schemas,name,ref,target,path,required,guards,seen)
     for key, child in node.get("properties",{}).items():
-        yield from fields_for(schemas,doc,pointer+"/properties/"+escape(key),child,path+"."+key,
+        child_path = path+"."+key if path else key
+        yield from fields_for(schemas,doc,pointer+"/properties/"+escape(key),child,child_path,
                               key in node.get("required",()),guards,seen)
     # 列表、字典自定义键及条件分支可在同一逻辑路径给出不同约束；保留全部结果。
     for key in ("items","additionalProperties"):
@@ -47,6 +48,10 @@ def fields_for(schemas, doc, pointer, node, path, required, conditions=(), visit
                                   None,guards,seen)
     for key, child in node.get("patternProperties",{}).items():
         yield from fields_for(schemas,doc,pointer+"/patternProperties/"+escape(key),child,path+".*",None,guards,seen)
+    # dependentSchemas 约束的仍是当前对象；键名是触发字段，不是新增的配置层级。
+    for key, child in node.get("dependentSchemas",{}).items():
+        suffix = "/dependentSchemas/" + escape(key)
+        yield from fields_for(schemas,doc,pointer+suffix,child,path,required,(*guards,identity+suffix),seen)
     for key in ("oneOf","anyOf","allOf"):
         for i, child in enumerate(node.get(key,[])):
             yield from fields_for(schemas,doc,f"{pointer}/{key}/{i}",child,path,required,guards,seen)
@@ -61,6 +66,12 @@ def views(files, encode, label):
     shards = []
     for doc, kind in DOCS.items():
         schema = schemas[doc]
+        # 根级条件属于当前规范自身，不依赖另一份规范是否恰好通过 $ref 引用它。
+        root_guards = {key: schema[key] for key in COMBINE if key in schema}
+        conditional = {}
+        for row in fields_for(schemas,doc,"",root_guards,"",None):
+            if row["path"]:
+                conditional.setdefault(row["path"].split(".",1)[0],[]).append(row)
         for topic,node in schema["properties"].items():
             base = "/properties/"+escape(topic)
             choices = node.get("items",{}).get("oneOf",[])
@@ -73,12 +84,23 @@ def views(files, encode, label):
                     label_key = next((k for k in ("source_type","rule_type","preset_type") if k in properties),None)
                     tag = properties[label_key].get("const") if label_key else None
                     selections.append((f"{base}/items/oneOf/{i}", child, tag or f"variant-{i+1}"))
+            groups = []
+            if choices:
+                # 变体只描述每个元素；数组自身的类型、长度和父级必填仍须可独立查询。
+                container = next(fields_for(schemas, doc, base, node, topic,
+                                            topic in schema.get("required", ())))
+                groups.append(("common", [container]))
             for pointer,child,branch in selections:
                 guards = ["schemas/"+doc+"#/"+key for key in COMBINE if key in schema]
                 if choices:
                     guards.extend(["schemas/"+doc+"#"+base,"schemas/"+doc+"#"+base+"/items/oneOf"])
                 records = list(fields_for(schemas,doc,pointer,child,topic,
                                           topic in schema.get("required",()),guards))
+                groups.append((branch,records))
+            # 独立标记来自根条件的记录，避免把某一条件错误归属其他来源或规则变体。
+            if topic in conditional:
+                groups.append(("conditions",conditional[topic]))
+            for branch,records in groups:
                 # 用字节而不是条目数限制阅读量；优先保留同一参数的每个适用分支。
                 pages = [[]]
                 size = 0

@@ -2,7 +2,7 @@
 
 
 
-根级`outputs`选择结果文件格式、逐消息贡献及额外数据导出。`AnalysisRunner.run()`先执行分析并准备暂存，`result.write(新目录)`发布文件；CLI run会完成这两步。
+根级`outputs`选择结果文件格式、逐消息贡献及额外数据导出。`AnalysisRunner.run()`先执行分析并准备暂存，`result.write(结果目录)`发布文件；CLI run会完成这两步。
 
 分析表回答“发生了什么、算出多少”；信号CSV保存时间和值；ASC/BLF保存CAN报文字节。三者用途不同，可以一起输出。输入是ASC也可以输出BLF，不要求输入、输出格式相同。
 
@@ -48,11 +48,13 @@ BLF、ASC和原始报文CSV的报文导出均配置在`outputs.can_frames`中，
 
 ## 输出文件位置
 
+直接调用Python的export_signal_csv或export_can_frames时，返回ExportManifest，包含output_dir、manifest_path和output_files。目录可复用，实际文件带时间后缀；使用返回属性，不再把返回对象当Path。普通配置导出由运行清单的exports记录定位。
+
 调用run时先在工作目录准备导出文件；调用 `result.write()` 后，它们才与分析表一起出现在指定的最终输出目录。
 
-在最终目录中查看 `exports.jsonl`，可以找到每次导出的时间范围、数据来源和文件路径。实际文件放在 `exports/export-XXXXXXXX/` 子目录；仅在`diagnostics.integrity: true`时保存文件内容摘要；默认检查必要文件身份和大小。
+从本次运行清单的exports.index_file找到带时间后缀的导出索引，可以找到每次导出的时间范围、数据来源和文件路径。实际文件放在 `exports_<时间后缀>/export-XXXXXXXX/` 子目录；仅在`diagnostics.integrity: true`时保存文件内容摘要；默认检查必要文件身份和大小。
 
-同一个result再次write到另一个新目录，会检查并复制已经生成的文件，不再读取或解码原日志。
+同一个result再次write到同一或另一个结果目录，会检查并复制已经生成的文件，不再读取或解码原日志。
 
 配套例子把3、7、3V分别保持1秒，积分仍为13V·s；大于5V的活动为`[1,2)`。同时请求250ms信号网格和500ms报文网格，不改变这两个分析结果。运行方式见[示例](examples.md)。所有导出类、函数和参数见[signal_exports](reference/chronaxis.results.signal_exports.md)、[signal_grid](reference/chronaxis.results.signal_grid.md)、[frame_exports](reference/chronaxis.results.frame_exports.md)、[frame_rebuild](reference/chronaxis.results.frame_rebuild.md)。
 

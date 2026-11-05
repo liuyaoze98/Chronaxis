@@ -23,9 +23,10 @@ This reads: interval (`区间`) 1 for rule (`规则`) `eligible` starts at 61 se
 | Windows and window-scoped statistics | `窗口结果.csv` | Window results: `父事件区间` refers to interval numbers in the event table; several numbers mean several parent events. |
 | Request/response pairing | `配对结果.csv` | Pairing results: request/response numbers refer to the event table. Decision times and delays use seconds. |
 | `select` details | `选择结果.csv` | Selection results: each update's value, unit, validity, and true/unknown selection state. |
+| v4 result aggregations | `聚合结果.csv` | One row per group, with value, unit, candidate and included counts, and exclusions. Published filenames carry the run timestamp. |
 | Explicitly requested contributions or input trace | `贡献明细.csv`, `输入追溯.csv` | Contribution details and input trace: requested locations and reasons. Ordinary runs do not produce them. |
 
-Shared dataset, entity, and session names are stored once in `run_manifest.json` under `presentation.common_identity`. Identity columns are added to tables only when several values occur. Interval numbers are local to this output and cannot join separate runs. Signal CSV and ASC/BLF exports retain their own data formats rather than these Chinese result-table layouts.
+Shared dataset, entity, and session names are stored once in the publication manifest under `presentation.common_identity`. Identity columns are added to tables only when several values occur. Interval numbers are local to this output and cannot join separate runs. Signal CSV and ASC/BLF exports retain their own data formats rather than these Chinese result-table layouts.
 
 Time columns use exact decimal seconds, such as `922.346858001`, preserving nanosecond precision. They retain the analysis origin instead of resetting at the first result or inventing a date/timezone. Absolute coordinates also retain their actual numerical meaning; a timestamp lacking a date cannot be interpreted as a clock time on an assumed day.
 
@@ -33,13 +34,21 @@ Read each metric's own status. `完整` means complete, `部分有效` means onl
 
 When no event exists, the output keeps an empty table and a manifest `result_messages` entry, for example `条件曾成立，但持续时间不满足要求` (“the condition occurred, but did not meet the duration requirement”). It does not fabricate a zero-energy row. A rule may encounter unknown periods while still producing a complete calculation for a particular event. One missing metric does not change the status of the others.
 
-<a id="为程序选择交换格式"></a>
+<a id="v4-aggregations"></a>
+## Read aggregation results
+
+See [result aggregation](aggregations.md) for configuration, sources, and grouping. The readable aggregation table lists name, group, value, unit, status, reason, and candidate/included/excluded counts. Candidates equal included plus definition-excluded plus quality-excluded rows. These counts do not measure time coverage.
+
+included_partial_count counts the included partial values. Pairing counters matched_count, timeout_count, insufficient_observation_count, and pending_count distinguish successful, confirmed-timeout, insufficient-observation, and unresolved requests. discovery_complete states whether observation can establish that all candidates were discovered; it does not merely mean the available numbers are complete.
+
+Read status, reason, and quality together. In the power example, load_mean_p95 is 19.5 W with two candidates and two included values. See [the actual output](example-results.md#power-statistics-yaml).
+
 ## Choose an exchange format for other software
 
 The default is `readable_csv`; it need not be written. If another program requires the original flat fields, add this root fragment. If `outputs` already exists, add `tables` inside it instead of adding another root block.
 
 ```yaml
-outputs:
+outputs:         # Additional result files to publish
   tables: csv    # Original flat fields with integer nanosecond times.
 ```
 
@@ -65,15 +74,21 @@ Unless stated otherwise, timing examples below use default `actual` intervals. W
 | `input_trace` / `iter_input_trace` | Input location and record kind when detailed tracing was requested. |
 | `contributions` / `iter_contributions` | Per-message contribution or skip reason when `outputs.contributions=full`. |
 
-Calculations return `SummaryCalculationRow` or `SummaryCoverageCalculationRow` with `coverage_status`, according to the operation. Ordinary `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum`, and `sample_mean` include `coverage_status` when `minimum_coverage > 0`. `sufficient` means the required observation, valid-value, and known-condition ranges meet the threshold; `indeterminate` means they do not, or cannot be determined. This is not a numerical coverage ratio and does not turn sample statistics into time-weighted statistics. Select details and per-message sums are outside this scalar group. An explicit zero or omitted threshold does not add the field.
+Calculations return `SummaryCalculationRow` or `SummaryCoverageCalculationRow` with `coverage_status`, according to the operation. Ordinary `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum`, `sample_mean`, and v4 sample counts, variance, standard deviation, RMS and sample quantiles include `coverage_status` when `minimum_coverage > 0`. `sufficient` means the required observation, valid-value, and known-condition ranges meet the threshold; `indeterminate` means they do not, or cannot be determined. This is not a numerical coverage ratio and does not turn sample statistics into time-weighted statistics. Select details and per-message sums are outside this scalar group. An explicit zero or omitted threshold does not add the field.
 
-Full fields are listed in [Summary row models](../reference/chronaxis.results.summary.md) (Chinese implementation reference). Matching CSV and JSONL fields represent the same facts. Exchange CSV includes `run_manifest.json`; JSONL rows include a version and row object. The manifest records the run and tables actually written. Readable `row_counts` count rows after presentation joins. A configuration hash is not an input-content hash and cannot prove two runs used identical data.
+Full fields are listed in [Summary row models](../reference/chronaxis.results.summary.md) (Chinese implementation reference). Matching CSV and JSONL fields represent the same facts. Exchange CSV includes a timestamped run manifest; JSONL rows include a version and row object. The manifest records the run and tables actually written. Readable `row_counts` count rows after presentation joins. A configuration hash is not an input-content hash and cannot prove two runs used identical data.
 
 <a id="result-publication"></a>
 <a id="结果怎样发布"></a>
 ## How results are published
 
-The program creates a temporary directory beside the destination, writes all requested tables, exports, and the manifest, confirms files have closed, then renames the whole directory to the destination. A failure before publication does not present half a result set as completed. Existing destinations are not overwritten. Directory publication is currently validated on Windows. Publication covers the whole result directory, not separate file-by-file commits.
+The output directory can be reused. Every publication uses one local-time suffix, such as `20261103_091500_123456`, for its tables, manifest and requested export directory. A numeric suffix resolves same-time or concurrent collisions. This naming time does not change message times, interval boundaries or energy values. Existing files are never overwritten, and unrequested outputs are not created.
+
+Files are written and closed in temporary storage, then published individually; the completion manifest is published last. Treat a set as complete only when its manifest exists and reports `completed`. Normal failure cleanup touches only files owned by this publication. An abrupt process termination or power loss may leave files without a completion manifest; they are not completed outputs and subsequent runs do not scan or delete them. The result-publication procedure on this page has been verified on Windows; equivalent verification on other platforms is still pending.
+
+Use `manifest` in the CLI summary or `OutputManifest.manifest_path` from Python, then read the manifest's `outputs` list. Do not construct a fixed `run_manifest.json` path or pick an arbitrary/latest CSV from a shared directory. An open `AnalysisResult` can be published again to the same or another directory without rereading input. An explicit `work_dir` must still be new.
+
+Names such as `事件结果.csv` and `会话结果.csv` in this chapter describe file purposes; actual publications insert the suffix before the extension. Saved teaching results retain their original filenames, so their download links do not imply fixed filenames for new runs.
 
 <a id="缺失不是零"></a>
 ## Missing is not zero
@@ -208,7 +223,7 @@ For large results, use a database or bounded index keyed by full IDs rather than
 <a id="独立导出"></a>
 ## Additional exports
 
-Signal CSV and CAN frame exports are explicitly requested through `outputs`, indexed by `exports.jsonl`, and stored under `exports/`. Original and interpolated signal values use separate files. Reconstructed CAN frames are distinguished from original input frames. Export grids do not change integration intervals; see [Outputs](exports.md).
+Signal CSV and CAN frame exports are explicitly requested through `outputs`, with their actual timestamped index and directory recorded in this run’s manifest as `exports.index_file` and `exports.directory`. Original and interpolated signal values use separate files. Reconstructed CAN frames are distinguished from original input frames. Export grids do not change integration intervals; see [Outputs](exports.md).
 
 <a id="metadata-output"></a>
 <a id="运行清单的摘要与详细字段"></a>

@@ -187,7 +187,7 @@ class ExpressionTests(unittest.TestCase):
             # 明示手算值不依赖被测数组。
             self.assertEqual(reference[0].value.value, value)
         # 已知不同单位或不支持组合必须显式处理。
-        for text in ('current+voltage', 'current>voltage', 'voltage*voltage'):
+        for text in ('current+voltage', 'current>voltage'):
             # 不猜工程量纲或隐藏转换。
             with self.assertRaises(ValueError):
                 # 未校验结果unit字段不能改数值。
@@ -196,10 +196,10 @@ class ExpressionTests(unittest.TestCase):
         definitions = (SignalDefinition('a', 'sensor', 'x', D.FLOAT64, 'A', 2), SignalDefinition('b', 'sensor', 'y', D.FLOAT64, 'mA', 2))
         # 原a=1A、b=1000mA不是标签相同。
         mismatch = _bindings(({'x': 1., 'y': 1000.},), definitions)
-        # 必须先归一化b再运算。
-        with self.assertRaises(ValueError):
-            # 相同量纲不足以隐藏倍率。
-            compile_expression('a==b', mismatch)
+        # 当前单位目录把1000mA换成1A，两后端均判相等。
+        self.assertTrue(self._compare(compile_expression('a==b', mismatch))[0][0].value.value)
+        squared = compile_expression('voltage*voltage', bindings)
+        self.assertEqual(squared.root.unit, 'V^2')
 
     def test_t53_chain_enum_and_three_value_table(self):
         """链式比较为三值and；枚举域和完整逻辑表保留依赖诊断。
@@ -318,10 +318,9 @@ class ExpressionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             # 阶段配置不能藏非法函数到unused节点。
             compile_expression('current>5', bindings, derived=(replace(derived[0], expr='signal("x")'), derived[1]))
-        # 派生单位声明不同不能偷偷只改标签。
-        with self.assertRaises(ValueError):
-            # V*A输出W，不能自动缩放成kW。
-            compile_expression('twice>1000', bindings, derived=(replace(derived[0], unit='kW'), derived[1]))
+        # 目标单位同时转换数值；power以kW输出后twice仍明确换回W。
+        converted = compile_expression('twice', bindings, derived=(replace(derived[0], unit='kW'), derived[1]))
+        self.assertEqual(self._compare(converted)[0][0].value.value, 4800.)
 
     def test_t42_actual_mapping_ttl_and_point_cache_isolation(self):
         """同别名重映射/有效期改变不继承旧值、转换或计划身份。
@@ -397,9 +396,9 @@ class ExpressionTests(unittest.TestCase):
             # 真实两后端得到精确手算大整数。
             self.assertEqual(self._compare(plan)[0][0].value.value, 2 ** 63 + 1)
         # abs(min)/neg(min)通过完整memory→AST运行而非只数值单测。
-        min_binding = _bindings(({'raw': -(2 ** 63)},), (SignalDefinition('minimum', 'sensor', 'raw', D.INT64, '1', 2),))
+        min_binding = _bindings(({'raw': -(2 ** 63)},), (SignalDefinition('lowest', 'sensor', 'raw', D.INT64, '1', 2),))
         # 两种单目正常值都超signed范围。
-        for text in ('abs(minimum)', '-minimum'):
+        for text in ('abs(lowest)', '-lowest'):
             # 编译允许，实际数值失败返回质量。
             self.assertEqual(self._compare(compile_expression(text, min_binding))[0][0].value.quality, Q.OVERFLOW)
 

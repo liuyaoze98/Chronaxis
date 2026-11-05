@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-config_version: 3
+config_version: 4
 dataset:
   name: stability_example
 sources:
@@ -28,8 +28,10 @@ calculations:
       rule: hysteresis_alarm
     operation: time_weighted_mean
     expr: temperature
+    unit: degC
   - name: debounced_alarm_average
     scope:
       rule: debounced_alarm
     operation: time_weighted_mean
     expr: temperature
+    unit: degC

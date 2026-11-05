@@ -1,4 +1,4 @@
-"""独立标准验证器离线读取四规范，检查字段说明、引用及实际缺省行为的一致性。"""
+"""独立标准验证器离线读取三规范，检查字段说明、引用及实际缺省行为的一致性。"""
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -8,7 +8,6 @@ from jsonschema import Draft202012Validator
 from referencing import Registry,Resource
 from chronaxis import AnalysisPlan,load_analysis_plan
 from test_analysis_plan import config_fixture
-from test_legacy_import_sclicer import mapping_fixture
 
 ROOT=Path(__file__).resolve().parents[2]
 SCHEMAS=ROOT/'Docs'/'Schema'
@@ -24,13 +23,13 @@ def nodes(value):
 
 
 class ConfigurationSchemaTests(unittest.TestCase):
-    """只注册四个当前本地文件，未知引用即失败；不能靠网络或旧版本补齐。"""
+    """只注册三个当前本地文件，未知引用即失败；不能靠网络或旧版本补齐。"""
 
     @classmethod
     def setUpClass(cls):
-        """读四规范并建立离线注册表。参数: 无。返回: None。异常: 标准验证或文件错误。"""
+        """读三规范并建立离线注册表。参数: 无。返回: None。异常: 标准验证或文件错误。"""
         cls.documents={name:json.loads((SCHEMAS/name).read_text(encoding='utf-8')) for name in
-            ('analysis.schema.json','batch-v1.schema.json','legacy-import-v1.schema.json','definitions.schema.json')}
+            ('analysis.schema.json','batch-v1.schema.json','definitions.schema.json')}
         registry=Registry()
         for name,value in cls.documents.items():
             Draft202012Validator.check_schema(value)
@@ -50,11 +49,11 @@ class ConfigurationSchemaTests(unittest.TestCase):
                     self.assertTrue(node.get('description'),(name,node))
                 if '$ref' in node:
                     self.assertFalse(node['$ref'].startswith(('urn:','http:','https:')),node['$ref'])
-        # 原657项加严格持续比较、ASC及混合ASC/BLF的input_check共3项；逐项说明仍必验。
-        self.assertEqual(count,660)
+        # 当前三份规范共732项；移除旧INI及版本3专用分支后，仍逐项检查说明。
+        self.assertEqual(count,732)
 
     def test_current_analysis_examples_and_all_three_local_references_validate(self):
-        """有效分析、批量、INI映射都能离线标准校验；被引用的当前结构确实生效。参数: 无。返回: None。异常: 断言/引用错误。"""
+        """有效分析、批量和共享定义都能离线标准校验；被引用的当前结构确实生效。参数: 无。返回: None。异常: 断言/引用错误。"""
         analysis=self.validators['analysis.schema.json']
         analysis.validate(config_fixture())
         names=('analysis_plan.json','command_response_plan.json','presets_plan.json','stability_plan.json',
@@ -66,14 +65,6 @@ class ConfigurationSchemaTests(unittest.TestCase):
                 analysis.validate(json.loads(path.read_text(encoding='utf-8')))
                 load_analysis_plan(path)
         self.validators['batch-v1.schema.json'].validate(dict(batch_version=1,jobs=[dict(name='task',plan='analysis.yml')]))
-        mapping=self.validators['legacy-import-v1.schema.json']
-        raw=mapping_fixture();mapping.validate(raw)
-        wrong=deepcopy(raw);wrong['analysis']['config_version']=1
-        self.assertFalse(mapping.is_valid(wrong))
-        wrong=deepcopy(raw);wrong['analysis']['signals'][0]['valid_for']=500
-        self.assertFalse(mapping.is_valid(wrong))
-        wrong=deepcopy(raw);wrong['aliases']['OBC_OpMod']='not-a-simple-name'
-        self.assertFalse(mapping.is_valid(wrong))
 
     def test_annotations_do_not_write_defaults_and_match_actual_plan_defaults(self):
         """default是说明而非回填，核已实现的资源/输出/信号及规则缺省。参数: 无。返回: None。异常: 断言。"""
@@ -87,12 +78,15 @@ class ConfigurationSchemaTests(unittest.TestCase):
         for key in ('tables','manifest','contributions','signal_csv','can_frames'):
             self.assertEqual(props['outputs']['properties'][key]['default'],getattr(plan.outputs,key))
         signal=plan.signals[0].definition
-        for key in ('scale','offset','sample_policy','same_time_policy'):
+        for key in ('sample_policy','same_time_policy'):
             self.assertEqual((props['signals']['items']['oneOf'][0]['properties']['conversion']['properties'] if key in ('scale','offset') else props['signals']['items']['oneOf'][0]['properties'])[key]['default'],getattr(signal,key))
         by_rule={r['properties']['rule_type']['const']:r['properties'] for r in props['rules']['items']['oneOf']}
         self.assertTrue(by_rule['start_end']['emit_initial']['default'])
         self.assertFalse(by_rule['rising_edge']['emit_initial']['default'])
         self.assertNotIn('emit_initial',by_rule['condition_duration'])
+        # 系数由源/目标单位推导，不能用schema默认值提前填成显式恒等转换。
+        for key in ('scale','offset'):
+            self.assertNotIn('default',props['signals']['items']['oneOf'][0]['properties']['conversion']['properties'][key])
         # 条件继承不能伪装成统一固定默认值；input_unit省略也不应填写null。
         self.assertNotIn('default',props['calculations']['items']['properties']['partial_policy'])
         self.assertNotIn('default',props['signals']['items']['oneOf'][0]['properties']['conversion']['properties']['input_unit'])

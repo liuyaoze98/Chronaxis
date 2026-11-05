@@ -1,7 +1,20 @@
 <a id="安装与环境"></a>
 # Installation and environment
 
-A local wheel can be installed without the source repository. Python must be >=3.12 and <3.13; the verified environment is Windows with Python 3.12.4. Use Windows for writing final result directories: the current implementation publishes a complete directory atomically without overwriting an existing target. Other operating systems have not been validated for this operation.
+A local wheel can be installed without the source repository. Python must be >=3.12 and <3.13; the verified environment is Windows with Python 3.12.4. Use Windows for writing final result directories: the current implementation publishes timestamped files without overwriting existing files, and publishes the completion manifest last. Other operating systems have not been validated for this operation.
+
+<a id="从-pypi-安装"></a>
+## Install from PyPI
+
+Create an isolated environment in Windows PowerShell and install the version covered by this manual:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m chronaxis guide --language en
+```
+
+Use the Python executable from this environment for subsequent commands.
 
 <a id="已取得安装包"></a>
 ## Install a wheel
@@ -9,7 +22,7 @@ A local wheel can be installed without the source repository. Python must be >=3
 In your Python 3.12 virtual environment, replace the filename below with the wheel you received. A normal installation includes the dependencies for signal tables, CAN logs and DBC decoding. Prepare the dependency packages in advance for offline installation.
 
 ```powershell
-python -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
+python -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
 python -m chronaxis guide --language en
 ```
 
@@ -31,7 +44,7 @@ py -3.12 -m venv .venv
 <a id="can输入与导出"></a>
 ## CAN input and export
 
-A normal installation includes dependencies for BLF, ASC, raw CAN CSV, DBC decoding and CAN message export. The declared and verified versions are `python-can==4.6.1`, `cantools==39.4.3` and `natsort==8.4.0`, constrained by wheel metadata. The older `chronaxis[can]` spelling remains compatible and installs the same dependencies.
+A normal installation includes dependencies for BLF, ASC, raw CAN CSV, DBC decoding and CAN message export. The declared and verified versions are `python-can==4.6.1`, `cantools==39.4.3` and `natsort==8.4.0`, constrained by wheel metadata.
 
 Decoded CSV tasks do not need a DBC. CAN libraries are imported only when required. If an older environment lacks dependencies, reinstall the complete current wheel in that environment rather than installing an arbitrary latest cantools version.
 
@@ -45,7 +58,7 @@ From the repository root:
 .\.venv\Scripts\python.exe -m chronaxis run Docs/Current/examples/analysis.yaml --output first-result
 ```
 
-`first-result` must not already exist. Follow the [BLF/ASC quick start](quickstart.md) to check 38 J, 6 W and 38/6 W in `会话结果.csv` (session results). Later examples abbreviate the command to `chronaxis`; without activating the environment, use `.\.venv\Scripts\python.exe -m chronaxis` instead.
+`first-result` can be reused; result filenames receive a timestamp suffix. Follow the [BLF/ASC quick start](quickstart.md) to check 38 J, 6 W and 38/6 W in `会话结果_<run timestamp>.csv` (session results). Later examples abbreviate the command to `chronaxis`; without activating the environment, use `.\.venv\Scripts\python.exe -m chronaxis` instead.
 
 You can copy the offline HTML manual's complete `examples` directory elsewhere. Run its `api_example.py` with a Python environment containing Chronaxis. Reading HTML itself requires neither Python nor Node.js.
 

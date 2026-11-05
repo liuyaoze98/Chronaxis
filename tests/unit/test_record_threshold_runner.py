@@ -17,7 +17,7 @@ class RecordThresholdRunnerTests(unittest.TestCase):
     def run_config(self,mode,backend,*,ttl='1s',rows=None,domain=None):
         """构造独立预设输入。参数: 模式/后端/有效期/可选样本。返回: 结果。异常: 原公开错误。"""
         raw=config()
-        raw.update(config_version=3)
+        raw.update(config_version=4)
         raw['dataset']['domain']=domain or dict(start='0s',end='1s')
         raw['intervals']=dict(default=dict(mode=mode))
         if mode=='fixed':

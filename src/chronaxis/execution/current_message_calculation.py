@@ -12,6 +12,9 @@ from ..core.models import Interval
 from ..core.numeric import to_float_reference
 from ..core.numeric_numpy import to_float_numpy
 from ..core.types import QualityFlag as Q
+from ..core.where_updates import contains_where, numpy_active, reference_active
+from ..core.enum_codes import code_dependencies
+from dataclasses import replace
 from ..legacy.sum import LegacySumAccumulator, LegacySumContribution, LegacySkipReason
 from ..legacy.updates import LegacyDecodedUpdate
 from ..planning.message_calculations import require_message_calculation
@@ -21,6 +24,7 @@ from ..sources.can_spec import can_field_from_key
 from ..sources.packing import pack_message_values
 from .calculation_values import scalar_from_column, direction_bucket_state, direction_skip_reason
 from .history import _metadata_bytes
+from ..core.lookup import pack_requested_lookups
 
 
 class CurrentMessageCalculation:
@@ -56,11 +60,18 @@ class CurrentMessageCalculation:
             # 配置仅保存一次；批内列空间另按当前实际条数预约，不保逐条原文或证明。
             _reserve_owned_ram(self, 65536 + 32 * _metadata_bytes(calculation), '_fixed_cost')
             self._compiled = validate_expression(calculation.expr.text, calculation.expr.bindings, unit=calculation.unit)
+            self._has_where = contains_where(self._compiled.root)
             if (self._compiled.normalized_ast != calculation.expr.normalized_ast
                     or repr(self._compiled.root) != repr(calculation.expr.root)):
                 raise ValueError('当前消息公式与已校验声明不同')
+            if backend == 'numpy':
+                self._compiled = pack_requested_lookups(self._compiled)
             self._fields = tuple((name, bindings.resolve(name), can_field_from_key(bindings.resolve(name).field))
                                  for name in self._compiled.dependencies)
+            requested_codes = code_dependencies(self._compiled.root)
+            if requested_codes:
+                self._fields = tuple((name, replace(item, capture_code=True) if name in requested_codes else item, field)
+                                     for name, item, field in self._fields)
             # 树只在初始化数一次；运行批次不为计费重新遍历或编码公式。
             pending, node_count = [self._compiled.root], 0
             while pending:
@@ -129,7 +140,7 @@ class CurrentMessageCalculation:
         异常: 输入/数值/预算/回调/取消错误原样传播；失败后只能close。
         """
         self._require_open()
-        selected = columns = context = arrays = floats = contributions = qualities = None
+        selected = columns = context = arrays = floats = missing = nonfinite = contributions = qualities = None
         primary = None
         try:
             if type(updates) is not tuple or len(updates) > self._batch_rows:
@@ -147,6 +158,11 @@ class CurrentMessageCalculation:
             if self._backend == 'numpy':
                 arrays = expression_numpy._evaluate(self._compiled.root, columns, len(selected), {})
                 floats = to_float_numpy(arrays.value)
+                if self._has_where and not floats.valid.all():
+                    # 输入错误与算术错误必须分开；只看每条消息实际选到的输入。
+                    missing, nonfinite = (numpy_active(self._compiled.root, columns,
+                        {name: (col.quality & int(flag)) != 0 for name, col in columns.items()},
+                        len(selected)) for flag in (Q.MISSING, Q.NONFINITE))
             contributions = []
             qualities = [] if self._consumer is not None else None
             for index, update in enumerate(selected):
@@ -158,9 +174,18 @@ class CurrentMessageCalculation:
                 # 保旧原因优先级，缺值明确跳过，不能恢复上一条有效值。
                 reason = None
                 if not value.valid:
-                    flags = [int(column.quality[index]) for column in columns.values()]
-                    reason = (LegacySkipReason.MISSING_INPUT if any(flag & int(Q.MISSING) for flag in flags)
-                              else LegacySkipReason.NONFINITE_INPUT if any(flag & int(Q.NONFINITE) for flag in flags)
+                    if self._has_where and self._backend == 'reference':
+                        has_missing, has_nonfinite = (reference_active(self._compiled.root, context,
+                            {name: bool(item.quality & flag) for name, item in context.items()})
+                            for flag in (Q.MISSING, Q.NONFINITE))
+                    elif self._has_where:
+                        has_missing, has_nonfinite = missing[index], nonfinite[index]
+                    else:
+                        flags = [int(column.quality[index]) for column in columns.values()]
+                        has_missing = any(flag & int(Q.MISSING) for flag in flags)
+                        has_nonfinite = any(flag & int(Q.NONFINITE) for flag in flags)
+                    reason = (LegacySkipReason.MISSING_INPUT if has_missing
+                              else LegacySkipReason.NONFINITE_INPUT if has_nonfinite
                               else LegacySkipReason.EVALUATION_ERROR)
                 contribution_quality = update.quality | value.quality
                 if self._direction is not None:
@@ -186,7 +211,7 @@ class CurrentMessageCalculation:
             raise
         finally:
             # 清理先断当前有限列；释放失败仍保owner费用，不能继续累计或返回快照。
-            selected = columns = context = arrays = floats = contributions = qualities = None
+            selected = columns = context = arrays = floats = missing = nonfinite = contributions = qualities = None
             try:
                 _release_owned_ram(self, self._batch_cost, '_batch_cost')
             except BaseException as cleanup:

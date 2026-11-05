@@ -17,22 +17,14 @@ from ..planning import load_analysis_plan
 from ..planning.plan import AnalysisPlan
 from ..runner import AnalysisRunner
 from ..results.spool import _cleanup_owner
+from .._batch_worker import _diagnostics
 from .models import BatchJob, BatchJobResult, BatchReport, CleanupHandle
 
 
 def _new_root(value) -> Path:
-    """检查批量新目录。参数: value为str/Path。返回: 绝对Path。异常: 类型/已有/只读路径错误。"""
-    if not isinstance(value, (str, Path)):
-        raise TypeError('批量输出需要str或Path')
-    path = Path(value).absolute()
-    # 检查词法和实际路径；悬空链接也按已存在拒绝，不能跟随到其目标。
-    if any(p.casefold() == 'refprojects' for p in (*path.parts, *path.resolve().parts)):
-        raise ValueError('批量输出不能位于RefProjects')
-    try:
-        path.lstat()
-    except FileNotFoundError:
-        return path
-    raise FileExistsError('批量输出已存在：' + str(path))
+    """检查可复用批量目录。参数: value为str/Path。返回: 绝对Path。异常: 类型/已有/只读路径错误。"""
+    from ..results.publication import output_root
+    return output_root(value)
 
 
 def _facts(job, plan=None) -> dict:
@@ -44,17 +36,6 @@ def _facts(job, plan=None) -> dict:
                       entity_id=loaded.dataset.entity, session_id=loaded.dataset.session_id,
                       memory_budget_bytes=loaded.execution.memory_budget_bytes)
     return result
-
-
-def _diagnostics(error) -> tuple[str, ...]:
-    """保留有限异常链而不持有栈。参数: error原异常。返回: 文本tuple。异常: 原异常格式错误。"""
-    seen, details = set(), []
-    while error is not None and id(error) not in seen:
-        seen.add(id(error))
-        details.append(type(error).__name__ + ': ' + str(error))
-        details.extend(getattr(error, '__notes__', ()))
-        error = error.__cause__
-    return tuple(details)
 
 
 def _cancelled(job, reason) -> BatchJobResult:
@@ -91,10 +72,14 @@ def _run_job(job, directory, backend, stop, cancel) -> BatchJobResult:
         metadata.update(input_identity=result.metadata.input_identity, run_id=result.metadata.run_id)
         manifest = result.write(directory / 'output')
         metadata['output_dir'] = manifest.output_dir
+        metadata['manifest_path'] = manifest.manifest_path
         result.close()
         return BatchJobResult(**_facts(job, plan), **metadata, status='completed',
                               elapsed_seconds=perf_counter() - started)
     except BaseException as error:
+        completed = getattr(error, 'completed_manifest', None)
+        if completed is not None:
+            metadata.update(output_dir=completed.output_dir, manifest_path=completed.manifest_path)
         # 结果已经返回后由本层负责close；未返回的运行恢复owner继续沿AnalysisRunner原协议。
         if result is not None:
             _cleanup_owner(result, error, 'batch_cleanup_owner', '批量任务结果')
@@ -132,17 +117,22 @@ class BatchRunner:
             raise ValueError('process_count需要正原生int')
         if type(fail_fast) is not bool:
             raise TypeError('fail_fast需要bool')
-        AnalysisRunner(backend)
+        if backend is not None:
+            AnalysisRunner(backend)
         self.process_count, self.fail_fast, self.backend = process_count, fail_fast, backend
 
     def run(self, jobs, output_dir, *, cancel_event=None, device_label='pending') -> BatchReport:
         """运行独立任务，原声明顺序返回报告。
 
-        参数: jobs为BatchJob tuple；output_dir全新目录；cancel_event可选threading.Event；
+        参数: jobs为BatchJob tuple；output_dir可复用目录；cancel_event可选threading.Event；
             device_label为报告来源标签。返回: BatchReport，close可重试子进程内失败清理。
         异常: 声明和路径错误在启动前拒绝；调度基础设施错误携带batch_report。
         副作用: 启动最多process_count个工作进程，每任务独立发布；取消只阻止未派发任务。
         """
+        return self._run(jobs, output_dir, cancel_event=cancel_event, device_label=device_label)
+
+    def _run(self, jobs, output_dir, *, cancel_event, device_label, fast_specs=None, fast_rows=None):
+        """共享派发/清理循环；fast_specs 仅由 fast 校验入口构造，可选 fast_rows 接收汇总所需小行。"""
         from .process_transport import ProcessWorker
         if type(jobs) is not tuple or any(not isinstance(j, BatchJob) for j in jobs):
             raise TypeError('批量任务需要BatchJob tuple')
@@ -153,7 +143,8 @@ class BatchRunner:
         if type(device_label) is not str or not device_label.strip():
             raise ValueError('device_label需要非空文本')
         root = _new_root(output_dir)
-        root.mkdir(parents=True, exist_ok=False)
+        from ..results.publication import PublicationNames
+        publication = PublicationNames(root, (*[j.job_id for j in jobs], 'batch_report.json'))
         cancel = Event() if cancel_event is None else cancel_event
         workers, free, active, last_job = [], [], {}, {}
         results = [None] * len(jobs)
@@ -165,9 +156,16 @@ class BatchRunner:
                 # 先收齐本轮已完成结果再派发，避免观察到失败后继续启动下一任务。
                 for worker, index in list(active.items()):
                     try:
-                        if not worker.ready():
+                        if worker.ready():
+                            outcome = worker.receive()
+                            if fast_rows is not None and outcome.status == 'completed':
+                                fast_rows[jobs[index].job_id] = worker.fast_rows
+                        elif (fast_specs is not None and (cancel.is_set() or interrupted or infrastructure is not None)
+                              and worker.cancel_fast()):
+                            outcome = replace(_cancelled(jobs[index], '取消后工作进程未及时退出，已回收'),
+                                              worker_pid=worker.pid,error_type='cancel_timeout')
+                        else:
                             continue
-                        outcome = worker.receive()
                     except Exception as error:
                         outcome = BatchJobResult(**_facts(jobs[index]), status='failed',
                             worker_pid=worker.pid, error_type=type(error).__name__,
@@ -189,13 +187,17 @@ class BatchRunner:
                     if free:
                         worker = free.pop()
                     elif len(workers) < min(self.process_count, len(jobs)):
-                        worker = ProcessWorker()
+                        worker = ProcessWorker() if fast_specs is None else ProcessWorker(fast=True)
                         workers.append(worker)
                     else:
                         break
                     index = next_job
                     try:
-                        worker.submit(jobs[index], root / jobs[index].job_id, self.backend)
+                        directory = root / publication.names[jobs[index].job_id]
+                        if fast_specs is None:
+                            worker.submit(jobs[index], directory, self.backend)
+                        else:
+                            worker.submit_fast(jobs[index], directory, fast_specs[jobs[index].job_id], fast_rows is not None)
                     except Exception as error:
                         results[index] = BatchJobResult(**_facts(jobs[index]), status='failed',
                             worker_pid=worker.pid, error_type=type(error).__name__, error_message=str(error))
@@ -228,7 +230,7 @@ class BatchRunner:
         reason = '用户取消，尚未启动' if cancel.is_set() or interrupted else '失败或未完成清理后停止派发'
         report = _report(root, jobs, results, self.process_count, self.fail_fast,
                          cancel.is_set() or interrupted, device_label, reason)
-        report = replace(report, worker_process_count=len(workers))
+        report = replace(report, worker_process_count=len(workers), _publication=publication)
         if infrastructure is not None:
             report = replace(report, infrastructure_error=type(infrastructure).__name__ + ': ' + str(infrastructure))
             infrastructure.batch_report = report

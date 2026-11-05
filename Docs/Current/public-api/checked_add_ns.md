@@ -1,12 +1,12 @@
 # chronaxis.checked_add_ns
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
+使用`from chronaxis import checked_add_ns`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [checked_add_ns](#api-checked_add_ns)
+- [`checked_add_ns`](#api-checked_add_ns)
 
 <a id="api-checked_add_ns"></a>
 ## `checked_add_ns`
@@ -35,4 +35,4 @@ TypeError: 任一输入不是非布尔整数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/timebase/conversion.py:301`](../../../src/chronaxis/timebase/conversion.py#L301)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/conversion.py:301`](../../../src/chronaxis/timebase/conversion.py#L301)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

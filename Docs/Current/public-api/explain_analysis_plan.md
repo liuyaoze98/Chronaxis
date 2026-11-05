@@ -1,12 +1,12 @@
 # chronaxis.explain_analysis_plan
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.reports.md)。
+使用`from chronaxis import explain_analysis_plan`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.reports.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [explain_analysis_plan](#api-explain_analysis_plan)
+- [`explain_analysis_plan`](#api-explain_analysis_plan)
 
 <a id="api-explain_analysis_plan"></a>
 ## `explain_analysis_plan`
@@ -51,4 +51,4 @@ plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
-源码：[`src/chronaxis/planning/reports.py:381`](../../../src/chronaxis/planning/reports.py#L381)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/reports.py:431`](../../../src/chronaxis/planning/reports.py#L431)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

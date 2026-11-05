@@ -1,4 +1,4 @@
-# chronaxis.execution.hold
+# `chronaxis.execution.hold`
 
 在完整组之间查询最新信号的有限保持，独立计算参考与NumPy有效性。
 
@@ -82,7 +82,7 @@ class HoldContext
 |`descriptions`|tuple[[SourceDescription](chronaxis.sources.models.md#api-SourceDescription), ...]|是|无|各个来源的SourceDescription组成的元组，记录来源名称和已知的观测起止时间；来源名称不能重复。|
 |`completions`|tuple[[HistoryProgress](chronaxis.execution.history_records.md#api-HistoryProgress), ...]|是|无|各个来源读完后保存的HistoryProgress组成的元组，与descriptions一一对应。每项的source_eof必须为True，表示已读到该来源末尾；observed_end_ns记录实际观测终点。|
 
-源码：[`src/chronaxis/execution/hold.py:32`](../../../src/chronaxis/execution/hold.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:32`](../../../src/chronaxis/execution/hold.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldContext-__post_init__"></a>
 ### `HoldContext.__post_init__`
@@ -116,7 +116,7 @@ TypeError/ValueError为协议不一致。
 - `ValueError`：EOF终点与原描述不一致。
 - `ValueError`：EOF终点早于原来源起点。
 
-源码：[`src/chronaxis/execution/hold.py:43`](../../../src/chronaxis/execution/hold.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:43`](../../../src/chronaxis/execution/hold.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldPoint"></a>
 ## `HoldPoint`
@@ -138,7 +138,7 @@ class HoldPoint
 |`sample`|[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; None|是|无|提供这个保持值的原始历史样本，用于回查位置；无历史样本时为None。|
 |`actual_update`|bool|是|无|查询点是否存在真实样本更新；保持值或TTL边界不冒充真实更新。|
 
-源码：[`src/chronaxis/execution/hold.py:71`](../../../src/chronaxis/execution/hold.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:71`](../../../src/chronaxis/execution/hold.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_HeldArrays"></a>
 ## `_HeldArrays`
@@ -165,7 +165,7 @@ class _HeldArrays
 |`labels`|tuple[str, ...]|是|无|枚举数组使用的标签域，整数编码只能在该域中解释。|
 |`sample`|[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; None|是|无|本次保持查询所依据的最近原始样本，保留原值及诊断；没有历史时为None。|
 
-源码：[`src/chronaxis/execution/hold.py:83`](../../../src/chronaxis/execution/hold.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:83`](../../../src/chronaxis/execution/hold.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult"></a>
 ## `HoldResult`
@@ -177,7 +177,7 @@ HoldResult(owner, cost, definition, sample, payload)
 ```
 
 
-源码：[`src/chronaxis/execution/hold.py:100`](../../../src/chronaxis/execution/hold.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:100`](../../../src/chronaxis/execution/hold.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-__init__"></a>
 ### `HoldResult.__init__`
@@ -206,7 +206,7 @@ None；初始化实例状态。
 
 分配错误传播给owner抵销申请。
 
-源码：[`src/chronaxis/execution/hold.py:103`](../../../src/chronaxis/execution/hold.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:103`](../../../src/chronaxis/execution/hold.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-_ensure_open"></a>
 ### `HoldResult._ensure_open`
@@ -236,7 +236,7 @@ ResultClosedError。
 
 - `ResultClosedError`：保持查询结果已关闭。
 
-源码：[`src/chronaxis/execution/hold.py:112`](../../../src/chronaxis/execution/hold.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:112`](../../../src/chronaxis/execution/hold.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-closed"></a>
 ### `HoldResult.closed`
@@ -264,7 +264,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/hold.py:118`](../../../src/chronaxis/execution/hold.py#L118)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:118`](../../../src/chronaxis/execution/hold.py#L118)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-definition"></a>
 ### `HoldResult.definition`
@@ -292,7 +292,7 @@ SignalDefinition。
 
 对象处于下列状态时抛ResultClosedError：保持查询结果已关闭。
 
-源码：[`src/chronaxis/execution/hold.py:123`](../../../src/chronaxis/execution/hold.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:123`](../../../src/chronaxis/execution/hold.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-sample"></a>
 ### `HoldResult.sample`
@@ -320,7 +320,7 @@ HistorySample或None。
 
 对象处于下列状态时抛ResultClosedError：保持查询结果已关闭。
 
-源码：[`src/chronaxis/execution/hold.py:129`](../../../src/chronaxis/execution/hold.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:129`](../../../src/chronaxis/execution/hold.py#L129)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-rows"></a>
 ### `HoldResult.rows`
@@ -352,7 +352,7 @@ tuple[HoldPoint]。
 
 - `TypeError`：NumPy查询请读取arrays。
 
-源码：[`src/chronaxis/execution/hold.py:135`](../../../src/chronaxis/execution/hold.py#L135)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:135`](../../../src/chronaxis/execution/hold.py#L135)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-arrays"></a>
 ### `HoldResult.arrays`
@@ -384,7 +384,7 @@ _HeldArrays。
 
 - `TypeError`：参考查询请读取rows。
 
-源码：[`src/chronaxis/execution/hold.py:143`](../../../src/chronaxis/execution/hold.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:143`](../../../src/chronaxis/execution/hold.py#L143)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-close"></a>
 ### `HoldResult.close`
@@ -410,7 +410,7 @@ HoldResult.close()
 
 内部账本一致性错误。
 
-源码：[`src/chronaxis/execution/hold.py:150`](../../../src/chronaxis/execution/hold.py#L150)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:150`](../../../src/chronaxis/execution/hold.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldResult-_discard"></a>
 ### `HoldResult._discard`
@@ -436,7 +436,7 @@ None，结果关闭。
 
 登记容器错误传播，finally仍标记关闭避免再次扣账。
 
-源码：[`src/chronaxis/execution/hold.py:169`](../../../src/chronaxis/execution/hold.py#L169)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:169`](../../../src/chronaxis/execution/hold.py#L169)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries"></a>
 ## `HoldQueries`
@@ -448,7 +448,7 @@ HoldQueries(state: LatestSignalState, context: HoldContext)
 ```
 
 
-源码：[`src/chronaxis/execution/hold.py:184`](../../../src/chronaxis/execution/hold.py#L184)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:184`](../../../src/chronaxis/execution/hold.py#L184)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-__init__"></a>
 ### `HoldQueries.__init__`
@@ -475,7 +475,7 @@ HoldQueries.__init__(state: LatestSignalState, context: HoldContext)
 绑定/预算/构造错误，保留原异常并清理固定申请。
     持续清理失败时，原异常的hold_queries_cleanup_owner提供本次查询owner的恢复close入口。
 
-源码：[`src/chronaxis/execution/hold.py:187`](../../../src/chronaxis/execution/hold.py#L187)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:187`](../../../src/chronaxis/execution/hold.py#L187)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-closed"></a>
 ### `HoldQueries.closed`
@@ -503,7 +503,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/hold.py:246`](../../../src/chronaxis/execution/hold.py#L246)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:246`](../../../src/chronaxis/execution/hold.py#L246)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-_ensure_open"></a>
 ### `HoldQueries._ensure_open`
@@ -533,7 +533,7 @@ ResultClosedError。
 
 - `ResultClosedError`：保持查询owner已关闭。
 
-源码：[`src/chronaxis/execution/hold.py:250`](../../../src/chronaxis/execution/hold.py#L250)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:250`](../../../src/chronaxis/execution/hold.py#L250)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-_capture"></a>
 ### `HoldQueries._capture`
@@ -565,7 +565,7 @@ definition/sample/(start,end)。
 - `ValueError`：非空状态缺少来源观测终点，不能证明保持范围。
 - `ValueError`：当前样本超出来源观测事实。
 
-源码：[`src/chronaxis/execution/hold.py:256`](../../../src/chronaxis/execution/hold.py#L256)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:256`](../../../src/chronaxis/execution/hold.py#L256)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-_cost"></a>
 ### `HoldQueries._cost`
@@ -591,7 +591,7 @@ int bytes。
 
 记录估算错误。
 
-源码：[`src/chronaxis/execution/hold.py:275`](../../../src/chronaxis/execution/hold.py#L275)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:275`](../../../src/chronaxis/execution/hold.py#L275)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-_register"></a>
 ### `HoldQueries._register`
@@ -619,7 +619,7 @@ HoldResult。
 
 构造错误传播；不在本方法内安装，返回取消由查询抵销申请。
 
-源码：[`src/chronaxis/execution/hold.py:283`](../../../src/chronaxis/execution/hold.py#L283)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:283`](../../../src/chronaxis/execution/hold.py#L283)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-query_reference"></a>
 ### `HoldQueries.query_reference`
@@ -652,7 +652,7 @@ HoldResult；使用后close。
 - `ValueError`：保持查询轴回退。
 - `ValueError`：最新状态不能回溯已经提交的过去。
 
-源码：[`src/chronaxis/execution/hold.py:292`](../../../src/chronaxis/execution/hold.py#L292)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:292`](../../../src/chronaxis/execution/hold.py#L292)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-query_numpy"></a>
 ### `HoldQueries.query_numpy`
@@ -685,7 +685,7 @@ HoldResult.arrays只读自有列；无效物理占位不替代sample逻辑诊断
 - `ValueError`：保持查询轴回退。
 - `ValueError`：最新状态不能回溯已经提交的过去。
 
-源码：[`src/chronaxis/execution/hold.py:341`](../../../src/chronaxis/execution/hold.py#L341)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:341`](../../../src/chronaxis/execution/hold.py#L341)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-next_expiry"></a>
 ### `HoldQueries.next_expiry`
@@ -715,7 +715,7 @@ int ns或None，严格晚于after。
 
 - `ValueError`：TTL查询不能回退已提交时间。
 
-源码：[`src/chronaxis/execution/hold.py:401`](../../../src/chronaxis/execution/hold.py#L401)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:401`](../../../src/chronaxis/execution/hold.py#L401)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-close"></a>
 ### `HoldQueries.close`
@@ -741,7 +741,7 @@ HoldQueries.close()
 
 内部账本一致性错误。
 
-源码：[`src/chronaxis/execution/hold.py:417`](../../../src/chronaxis/execution/hold.py#L417)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:417`](../../../src/chronaxis/execution/hold.py#L417)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HoldQueries-_finish_close"></a>
 ### `HoldQueries._finish_close`
@@ -767,4 +767,4 @@ None，owner关闭。
 
 无主动异常；仅供已完成释放的正常或取消收尾使用。
 
-源码：[`src/chronaxis/execution/hold.py:440`](../../../src/chronaxis/execution/hold.py#L440)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/hold.py:440`](../../../src/chronaxis/execution/hold.py#L440)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

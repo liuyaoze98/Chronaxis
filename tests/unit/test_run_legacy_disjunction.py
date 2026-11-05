@@ -4,6 +4,8 @@
 DBC不能表达的值只在真实解码后的update边界注入，不修改输入、帧或EOF事实。
 平坦贡献通过来源和原序关联input_trace，真实快照独立核累计次数与未舍入总和。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -215,8 +217,8 @@ class RunLegacyDisjunctionTests(unittest.TestCase):
                 first, second = result.write(work/'published1'), result.write(work/'published2')
             self.assertEqual(first.row_counts, second.row_counts)
             for table in ('calculations', 'contributions', 'input_trace'):
-                self.assertEqual((work/'published1'/f'{table}.{tables}').read_bytes(),
-                                 (work/'published2'/f'{table}.{tables}').read_bytes())
+                self.assertEqual((published_file(first,f'{table}.{tables}')).read_bytes(),
+                                 (published_file(second,f'{table}.{tables}')).read_bytes())
             budget = result.spool.budget
             result.close()
             self.assertEqual(budget.ram_bytes, 0)

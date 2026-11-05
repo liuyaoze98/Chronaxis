@@ -1,12 +1,12 @@
 # chronaxis.build_preset
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.presets.md)。
+使用`from chronaxis import build_preset`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.presets.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [build_preset](#api-build_preset)
+- [`build_preset`](#api-build_preset)
 
 <a id="api-build_preset"></a>
 ## `build_preset`
@@ -41,4 +41,4 @@ PlanValidationError为参数/角色契约、模式编码范围及生成ID与信�
 
 返回类型：[PlanFragment](PlanFragment.md#api-PlanFragment)。
 
-源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

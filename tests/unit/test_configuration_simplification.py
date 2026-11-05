@@ -125,7 +125,7 @@ class ConfigurationSimplificationTests(unittest.TestCase):
 
     def test_minimal_memory_integral_both_backends(self):
         """参数: 无。返回: None。异常: 断言失败；两后端实际算出10W×2s=20J。"""
-        config = dict(config_version=3, dataset=dict(name='energy', domain=dict(start='0s', end='2s')),
+        config = dict(config_version=4, dataset=dict(name='energy', domain=dict(start='0s', end='2s')),
                       sources=[dict(source_type='memory', rows=[dict(time='0s', values={'power': 10}),
                                                                 dict(time='2s', values={'power': 10})])],
                       signals=[dict(name='power', field='power', dtype='float64', unit='W', valid_for='3s')],

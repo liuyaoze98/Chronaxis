@@ -3,6 +3,8 @@
 合成三帧4000/4800/8000W，固定或DBC的两个0.1秒周期应为880J。
 默认不保历史或贡献；旧入口另由既有回归核验。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -33,10 +35,10 @@ class RecordRunnerTests(unittest.TestCase):
         raw.pop('message_calculations')
         raw['dataset']['domain'] = dict(start='0s', end='0.3s')
         signal = raw['signals'][0]
-        signal.update(name='voltage', unit='V', valid_for='1s')
+        signal.update(name='voltage', unit='V', conversion={'input_unit':'V'}, valid_for='1s')
         signal['field']['signal'] = 'Voltage'
         current = deepcopy(signal)
-        current.update(name='current', unit='A')
+        current.update(name='current', unit='A', conversion={'input_unit':'A'})
         current['field']['signal'] = 'Current'
         raw['signals'].append(current)
         raw['derived'] = dict(power=dict(expr='voltage * current', unit='W'))
@@ -115,8 +117,8 @@ class RecordRunnerTests(unittest.TestCase):
                 self.assertEqual(decode_row(encode_row(energy,1048576),1048576),energy)
                 output=self.root/uuid4().hex
                 result.table_format = 'csv'  # 验收显式交换格式。
-                result.write(output)
-                manifest=json.loads((output/'run_manifest.json').read_text(encoding='utf-8'))
+                published=result.write(output)
+                manifest=json.loads((published_file(published,'run_manifest.json')).read_text(encoding='utf-8'))
                 self.assertEqual(manifest['row_schema_versions']['calculations'],[7,10])
 
     def test_raw_clock_only_skips_value_normalization(self):
@@ -165,7 +167,7 @@ class RecordRunnerTests(unittest.TestCase):
         def edit(raw):
             """加入独立时钟与无关来源。参数: 配置。返回: None。异常: 夹具错误。"""
             clock = deepcopy(raw['signals'][0])
-            clock.update(name='clock', unit='1')
+            clock.update(name='clock', unit='1', conversion={'input_unit':'1'})
             clock['field'].update(signal='Tick', frame_id=257)
             raw['signals'].append(clock)
             raw['intervals']['default']['driver'] = 'clock'
@@ -220,10 +222,10 @@ class RecordRunnerTests(unittest.TestCase):
                 self.assertFalse((root/'published').exists())
             output = (self.root/uuid4().hex).resolve()
             result.table_format = 'csv'  # 验收显式交换格式。
-            result.write(output)
+            published=result.write(output)
             result.close()
             self.assertEqual(root.exists(), retain)
-            self.assertTrue((output/'calculations.csv').is_file())
+            self.assertTrue((published_file(published,'calculations.csv')).is_file())
 
     def test_metadata_preparation_does_not_read_input_or_reload_dbc(self):
         """文本初始化可重复且不碰缺失原始文件，第一次读取才报路径错误。"""
@@ -257,7 +259,7 @@ class RecordRunnerTests(unittest.TestCase):
             raw['signals'][0]['valid_for'] = '0.15s'
         plan = self.plan('can_asc', paths['can_asc'], mode='actual', edit=edit)
         old = json_value(plan.raw_config)
-        old.update(config_version=3)
+        old.update(config_version=4)
         old.pop('intervals')
         for backend in ('reference', 'numpy'):
             with AnalysisRunner(backend).run(plan, self.root/uuid4().hex) as new_result:

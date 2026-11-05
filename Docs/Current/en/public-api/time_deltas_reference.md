@@ -11,9 +11,9 @@ Calculate adjacent spans in a nondecreasing integer timeline. Separate samples m
 time_deltas_reference(times: Sequence[int]) -> tuple[int, ...]
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `times` | Sequence[int] | Required | Positional or keyword. Int64 nanosecond coordinates in source order; duplicates are allowed. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`times`|Sequence[int]|Yes|No default|Positional or keyword. Int64 nanosecond coordinates in source order; duplicates are allowed.|
 
 Returns `tuple[int, ...]` of nonnegative int64 spans with length `max(N-1, 0)`.
 
@@ -23,4 +23,4 @@ No side effects: the Python-integer reference calls no NumPy kernel and neither 
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:338`](../../../../src/chronaxis/timebase/conversion.py#L338) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/timebase/conversion.py:338`](../../../../src/chronaxis/timebase/conversion.py#L338) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 基线66a66ec751da79d6562f341e646dd7f47c726f68；device_label: home。
+> 基线e65c920526335247bcc1ed25852bcc967f55f2fd；device_label: home。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 
@@ -9,9 +9,9 @@
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "分析配置格式3；本地相对引用。字段结构由本规范检查，展开后的跨字段约束由计划模型检查。",
+  "$comment": "分析配置格式4；本地相对引用。字段结构由本规范检查，展开后的跨字段约束由计划模型检查。",
   "title": "Chronaxis 当前分析配置",
-  "description": "配置版本3。默认采用真实记录间隔、关闭贡献明细和额外诊断。引用、单位、驱动和纳秒范围由AnalysisPlan继续检查。",
+  "description": "当前分析配置版本4，兼容单位自动换算。默认采用真实记录间隔，按请求生成结果；引用、单位、驱动与时间范围由AnalysisPlan检查。",
   "type": "object",
   "required": [
     "config_version",
@@ -26,7 +26,57 @@
 }
 ```
 
-## `$.allOf[0]`
+## `$.allOf[0].properties.signals`
+
+```json
+{
+  "description": "约束当前版本可以使用的信号声明字段。"
+}
+```
+
+## `$.allOf[0].properties.signals.items`
+
+```json
+{
+  "dependentSchemas": {
+    "code_dtype": {
+      "properties": {
+        "dtype": {
+          "const": "enum",
+          "description": "信号值的类型，决定该信号可用的附加字段。"
+        }
+      }
+    }
+  }
+}
+```
+
+## `$.allOf[0].properties.signals.items.properties.signals`
+
+```json
+{
+  "description": "约束当前版本可以使用的信号声明字段。"
+}
+```
+
+## `$.allOf[0].properties.signals.items.properties.signals.items`
+
+```json
+{
+  "dependentSchemas": {
+    "code_dtype": {
+      "properties": {
+        "dtype": {
+          "const": "enum",
+          "description": "信号值的类型，决定该信号可用的附加字段。"
+        }
+      }
+    }
+  }
+}
+```
+
+## `$.allOf[1]`
 
 ```json
 {
@@ -34,7 +84,7 @@
 }
 ```
 
-## `$.allOf[1]`
+## `$.allOf[2]`
 
 ```json
 {
@@ -92,7 +142,7 @@
 }
 ```
 
-## `$.allOf[2]`
+## `$.allOf[3]`
 
 ```json
 {
@@ -232,9 +282,714 @@
 
 ```json
 {
-  "const": 3,
   "type": "integer",
-  "description": "分析配置结构编号。当前只接受整数3；不接受旧版本或独立的semantic_version。 固定值：3。"
+  "description": "分析配置结构编号，只接受整数4；旧版本、缺失和错误类型均拒绝，不自动转换。",
+  "const": 4
+}
+```
+
+## `$.properties.transforms`
+
+```json
+{
+  "type": "array",
+  "maxItems": 64,
+  "description": "版本4在原记录或指定输出时刻计算滚动数值和变化率。"
+}
+```
+
+## `$.properties.transforms.items`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "name",
+    "operation",
+    "expr"
+  ],
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "adjacent_rate",
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "max_gap"
+    ],
+    "properties": {
+      "window": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 window。"
+      },
+      "step": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 step。"
+      },
+      "origin": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 origin。"
+      },
+      "partial_policy": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 partial_policy。"
+      },
+      "minimum_coverage": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
+      }
+    }
+  },
+  "else": {
+    "required": [
+      "window",
+      "step"
+    ],
+    "properties": {
+      "max_gap": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 max_gap。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.transforms.items.properties.name`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "用户给这一项起的名称，后续通过此名称引用它。"
+}
+```
+
+## `$.properties.transforms.items.properties.operation`
+
+```json
+{
+  "enum": [
+    "rolling_time_mean",
+    "rolling_minimum",
+    "rolling_maximum",
+    "rolling_integral",
+    "adjacent_rate",
+    "window_rate",
+    "sample_fit_slope"
+  ],
+  "description": "选择这项计算执行的具名操作。"
+}
+```
+
+## `$.properties.transforms.items.properties.expr`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "从已绑定的信号或派生量计算此项的输入。"
+}
+```
+
+## `$.properties.transforms.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "希望结果采用的单位，必须与计算量兼容。"
+}
+```
+
+## `$.properties.transforms.items.properties.window`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "选择窗口范围；变换中的时长必须为正。"
+}
+```
+
+## `$.properties.transforms.items.properties.step`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "两次定时输出之间的实际时间距离，必须为正。"
+}
+```
+
+## `$.properties.transforms.items.properties.origin`
+
+```json
+{
+  "type": "string",
+  "description": "用来对齐输出网格的实际时刻，使用本来源的时间坐标。"
+}
+```
+
+## `$.properties.transforms.items.properties.max_gap`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "相邻两次实际更新允许相隔的最长时间。"
+}
+```
+
+## `$.properties.transforms.items.properties.partial_policy`
+
+```json
+{
+  "enum": [
+    "strict",
+    "report"
+  ],
+  "description": "部分数据可用时，决定保留数值还是返回空值。"
+}
+```
+
+## `$.properties.transforms.items.properties.minimum_coverage`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "有效数据占所请求窗口的最低比例。"
+}
+```
+
+## `$.properties.transforms.items.properties.interval`
+
+```json
+{
+  "$ref": "#/properties/calculations/items/properties/interval",
+  "description": "选择以实测、固定或原始报文DBC周期计算间隔。"
+}
+```
+
+## `$.properties.aggregations`
+
+```json
+{
+  "type": "array",
+  "description": "按需汇总单次运行中的计算、配对、事件或窗口结果。"
+}
+```
+
+## `$.properties.aggregations.items`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "name",
+    "source",
+    "operation"
+  ],
+  "additionalProperties": false
+}
+```
+
+## `$.properties.aggregations.items.allOf[0]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "quantile",
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "q"
+    ]
+  },
+  "else": {
+    "properties": {
+      "q": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 q。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[1]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "variance",
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "ddof": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 ddof。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[2]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "count",
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "field": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 field。"
+      },
+      "unit": {
+        "const": "1",
+        "description": "希望结果采用的单位，必须与计算量兼容。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[3]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "source": {
+        "required": [
+          "sequence"
+        ],
+        "description": "指定聚合所用的一种结果及其名称。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "group_by": {
+        "items": {
+          "enum": [
+            "dataset_id",
+            "entity_id",
+            "session_id",
+            "sequence_id"
+          ],
+          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+        },
+        "description": "用选定来源已有的标识对结果行分组。"
+      },
+      "field": {
+        "const": "delay_ns",
+        "description": "指定这项统计从结果行读取的数值列。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[4]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "source": {
+        "required": [
+          "calculation"
+        ],
+        "description": "指定聚合所用的一种结果及其名称。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "group_by": {
+        "items": {
+          "enum": [
+            "dataset_id",
+            "entity_id",
+            "session_id",
+            "calculation_id",
+            "parent_id"
+          ],
+          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+        },
+        "description": "用选定来源已有的标识对结果行分组。"
+      },
+      "field": {
+        "const": "value",
+        "description": "指定这项统计从结果行读取的数值列。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[5]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "source": {
+        "required": [
+          "rule"
+        ],
+        "description": "指定聚合所用的一种结果及其名称。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "group_by": {
+        "items": {
+          "enum": [
+            "dataset_id",
+            "entity_id",
+            "session_id",
+            "rule_id"
+          ],
+          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+        },
+        "description": "用选定来源已有的标识对结果行分组。"
+      },
+      "operation": {
+        "const": "count",
+        "description": "选择这项计算执行的具名操作。"
+      },
+      "field": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 field。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.allOf[6]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "source": {
+        "required": [
+          "window"
+        ],
+        "description": "指定聚合所用的一种结果及其名称。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "group_by": {
+        "items": {
+          "enum": [
+            "dataset_id",
+            "entity_id",
+            "session_id",
+            "window_id"
+          ],
+          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+        },
+        "description": "用选定来源已有的标识对结果行分组。"
+      },
+      "operation": {
+        "const": "count",
+        "description": "选择这项计算执行的具名操作。"
+      },
+      "field": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 field。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.aggregations.items.properties.name`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "用户给这一项起的名称，后续通过此名称引用它。"
+}
+```
+
+## `$.properties.aggregations.items.properties.source`
+
+```json
+{
+  "type": "object",
+  "description": "选择本次运行要汇总的结果。只引用一个计算、配对、规则或窗口。",
+  "minProperties": 1,
+  "maxProperties": 1,
+  "additionalProperties": false
+}
+```
+
+## `$.properties.aggregations.items.properties.source.properties.calculation`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "引用要汇总的标量计算项的名称。"
+}
+```
+
+## `$.properties.aggregations.items.properties.source.properties.sequence`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "引用产生请求和响应结果的配对规则名称。"
+}
+```
+
+## `$.properties.aggregations.items.properties.source.properties.rule`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "引用产生待计数事件的已声明规则。"
+}
+```
+
+## `$.properties.aggregations.items.properties.source.properties.window`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "引用生成待统计片段的窗口名称。"
+}
+```
+
+## `$.properties.aggregations.items.properties.operation`
+
+```json
+{
+  "enum": [
+    "count",
+    "sum",
+    "mean",
+    "variance",
+    "quantile",
+    "median"
+  ],
+  "description": "对引用的结果行执行的聚合。成功响应的延迟均值和P95只使用已成功配对的延迟。"
+}
+```
+
+## `$.properties.aggregations.items.properties.field`
+
+```json
+{
+  "enum": [
+    "value",
+    "delay_ns"
+  ],
+  "description": "可选数值字段；计算结果默认value，配对默认delay_ns。计数不需要数值字段。"
+}
+```
+
+## `$.properties.aggregations.items.properties.group_by`
+
+```json
+{
+  "type": "array",
+  "uniqueItems": true,
+  "description": "按这些稳定字段分组。省略时将本次引用结果合为一组。"
+}
+```
+
+## `$.properties.aggregations.items.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "calculation_id",
+    "parent_id",
+    "sequence_id",
+    "rule_id",
+    "window_id"
+  ],
+  "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+}
+```
+
+## `$.properties.aggregations.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "汇总结果的显示单位。计数为1；配对延迟可用ms或s。"
+}
+```
+
+## `$.properties.aggregations.items.properties.include_partial`
+
+```json
+{
+  "type": "boolean",
+  "description": "是否允许已有的部分数值参与。即使允许，汇总仍保留部分状态。"
+}
+```
+
+## `$.properties.aggregations.items.properties.partial_policy`
+
+```json
+{
+  "enum": [
+    "report",
+    "strict"
+  ],
+  "description": "总体不完整时，report可给出已知部分，strict不给出数值。"
+}
+```
+
+## `$.properties.aggregations.items.properties.q`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "分位数位置，quantile必填。median固定取0.5，不填写q。"
+}
+```
+
+## `$.properties.aggregations.items.properties.ddof`
+
+```json
+{
+  "type": "integer",
+  "enum": [
+    0,
+    1
+  ],
+  "description": "方差的自由度修正，省略为0。"
+}
+```
+
+## `$.properties.lookups`
+
+```json
+{
+  "type": "array",
+  "maxItems": 64,
+  "description": "版本4的一维标定表，供lookup函数按名称引用。输入轴在其声明单位中严格递增，步骤模式保留表值的定宽类型。"
+}
+```
+
+## `$.properties.lookups.items`
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "points",
+    "input_unit",
+    "unit"
+  ]
+}
+```
+
+## `$.properties.lookups.items.properties.name`
+
+```json
+{
+  "$ref": "#/properties/dataset/properties/name",
+  "description": "表达式引用的唯一表名。"
+}
+```
+
+## `$.properties.lookups.items.properties.input_unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 256,
+  "description": "标定轴单位，兼容的查询输入按此单位换算。"
+}
+```
+
+## `$.properties.lookups.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 256,
+  "description": "希望结果采用的单位，必须与计算量兼容。"
+}
+```
+
+## `$.properties.lookups.items.properties.points`
+
+```json
+{
+  "type": "array",
+  "minItems": 2,
+  "maxItems": 4096,
+  "description": "按输入从小到大排列的[输入,输出]数值对。有限轴、定宽整数和精度由加载器核验。"
+}
+```
+
+## `$.properties.lookups.items.properties.points.items`
+
+```json
+{
+  "type": "array",
+  "minItems": 2,
+  "maxItems": 2
+}
+```
+
+## `$.properties.lookups.items.properties.points.items.items`
+
+```json
+{
+  "type": "number"
 }
 ```
 
@@ -6071,6 +6826,18 @@
 }
 ```
 
+## `$.properties.signals.items.oneOf[0].properties.code_dtype`
+
+```json
+{
+  "enum": [
+    "int64",
+    "uint64"
+  ],
+  "description": "v4 枚举的原始整数类型。enum_code 使用；CAN 可由无缩放整数 DBC 确定。"
+}
+```
+
 ## `$.properties.signals.items.oneOf[0].properties.choices`
 
 ```json
@@ -6247,7 +7014,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "description": "本信号数值换算参数；省略时保持原值，DBC本身的缩放不会在此重复执行。"
+  "description": "额外单位换算。scale和offset均省略时按输入与目标单位自动推导；显式填写任一项则校验完整系数，不重复应用DBC缩放。"
 }
 ```
 
@@ -6255,13 +7022,10 @@
 
 ```json
 {
-  "type": [
-    "string",
-    "null"
-  ],
+  "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "读取器解析或DBC解码后的输入单位；省略或null时沿用unit，非null必须为非空文本。声明单位不会自动换算数值。"
+  "description": "读取或DBC解码后的单位。原始CAN报文省略时从DBC取得；已解析信号CSV和内存省略时沿用目标unit。显式null无效，请省略字段。"
 }
 ```
 
@@ -6270,8 +7034,7 @@
 ```json
 {
   "type": "number",
-  "description": "已解码数值的额外乘数，默认1；与offset共同构成明确数值转换。",
-  "default": 1
+  "description": "乘法系数。两系数均省略时自动推导；只有offset显式填写时本项取1。显式系数须符合单位关系。"
 }
 ```
 
@@ -6280,8 +7043,7 @@
 ```json
 {
   "type": "number",
-  "description": "已解码数值的额外加数，默认0；规范值由原值乘scale后加此offset，再按明确方向/单位契约处理。",
-  "default": 0
+  "description": "乘法之后加上的数值，单位为目标unit。两系数均省略时自动推导；只有scale显式填写时本项取0。"
 }
 ```
 
@@ -6681,6 +7443,18 @@
 }
 ```
 
+## `$.properties.signals.items.oneOf[1].properties.signals.items.properties.code_dtype`
+
+```json
+{
+  "enum": [
+    "int64",
+    "uint64"
+  ],
+  "description": "v4 枚举映射前的整数类型，enum_code 按需读取。"
+}
+```
+
 ## `$.properties.signals.items.oneOf[1].properties.signals.items.properties.choices`
 
 ```json
@@ -6867,7 +7641,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "description": "本信号数值换算参数；省略时保持原值，DBC本身的缩放不会在此重复执行。"
+  "description": "额外单位换算。scale和offset均省略时按输入与目标单位自动推导；显式填写任一项则校验完整系数，不重复应用DBC缩放。"
 }
 ```
 
@@ -6875,13 +7649,10 @@
 
 ```json
 {
-  "type": [
-    "string",
-    "null"
-  ],
+  "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "读取器解析或DBC解码后的输入单位；省略或null时沿用unit，非null必须为非空文本。声明单位不会自动换算数值。"
+  "description": "读取或DBC解码后的单位。原始CAN报文省略时从DBC取得；已解析信号CSV和内存省略时沿用目标unit。显式null无效，请省略字段。"
 }
 ```
 
@@ -6890,8 +7661,7 @@
 ```json
 {
   "type": "number",
-  "description": "已解码数值的额外乘数，默认1；与offset共同构成明确数值转换。",
-  "default": 1
+  "description": "乘法系数。两系数均省略时自动推导；只有offset显式填写时本项取1。显式系数须符合单位关系。"
 }
 ```
 
@@ -6900,8 +7670,7 @@
 ```json
 {
   "type": "number",
-  "description": "已解码数值的额外加数，默认0；规范值由原值乘scale后加此offset，再按明确方向/单位契约处理。",
-  "default": 0
+  "description": "乘法之后加上的数值，单位为目标unit。两系数均省略时自动推导；只有scale显式填写时本项取0。"
 }
 ```
 
@@ -9169,9 +9938,23 @@
     ]
   },
   "else": {
-    "required": [
-      "expr"
-    ]
+    "if": {
+      "properties": {
+        "operation": {
+          "enum": [
+            "point_event_count",
+            "activity_count",
+            "segment_count"
+          ],
+          "description": "选择这项计算执行的具名操作。"
+        }
+      }
+    },
+    "else": {
+      "required": [
+        "expr"
+      ]
+    }
   }
 }
 ```
@@ -9193,6 +9976,224 @@
       "required": [
         "method"
       ]
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[2]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "point_event_count",
+          "activity_count"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "rule"
+    ]
+  },
+  "else": {
+    "properties": {
+      "rule": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 rule。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[3]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "segment_count"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "window"
+    ]
+  },
+  "else": {
+    "properties": {
+      "window": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 window。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[4]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "sample_count",
+          "point_event_count",
+          "activity_count",
+          "segment_count"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "unit": {
+        "const": "1",
+        "description": "希望结果采用的单位，必须与计算量兼容。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[5]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "point_event_count",
+          "activity_count",
+          "segment_count"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "scope": {
+        "const": "session",
+        "description": "选择本次计算所用的会话、事件或窗口范围。"
+      },
+      "expr": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 expr。"
+      },
+      "condition": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 condition。"
+      },
+      "method": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 method。"
+      },
+      "minimum_coverage": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
+      },
+      "interval": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 interval。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[6]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "sample_variance",
+          "sample_stddev",
+          "time_variance",
+          "time_stddev"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "ddof": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 ddof。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[7]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "enum": [
+          "time_variance",
+          "time_stddev"
+        ],
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "ddof": {
+        "const": 0,
+        "description": "方差或标准差分母使用的自由度修正。"
+      }
+    }
+  }
+}
+```
+
+## `$.properties.calculations.items.allOf[8]`
+
+```json
+{
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "sample_quantile",
+        "description": "选择这项计算执行的具名操作。"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "q"
+    ]
+  },
+  "else": {
+    "properties": {
+      "q": {
+        "not": {},
+        "description": "在当前版本或操作下不能填写字段 q。"
+      }
     }
   }
 }
@@ -9324,9 +10325,21 @@
     "max_time",
     "time_weighted_mean",
     "duration",
-    "integral"
+    "integral",
+    "sample_count",
+    "point_event_count",
+    "activity_count",
+    "segment_count",
+    "sample_variance",
+    "sample_stddev",
+    "time_variance",
+    "time_stddev",
+    "sample_rms",
+    "time_rms",
+    "sample_quantile",
+    "sample_median"
   ],
-  "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。可选值：\"select\"：选择符合条件的记录；\"sample_minimum\"：有效样本最小值；\"sample_maximum\"：有效样本最大值；\"sample_mean\"：有效样本等权均值；\"min_time\"：有效持续区间内的最小值；\"max_time\"：有效持续区间内的最大值；\"time_weighted_mean\"：按有效持续时间加权的均值；\"duration\"：条件为真的累计时长；\"integral\"：按前值保持计算积分。"
+  "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。可选值：\"select\"：选择符合条件的记录；\"sample_minimum\"：有效样本最小值；\"sample_maximum\"：有效样本最大值；\"sample_mean\"：有效样本等权均值；\"min_time\"：有效持续区间内的最小值；\"max_time\"：有效持续区间内的最大值；\"time_weighted_mean\"：按有效持续时间加权的均值；\"duration\"：条件为真的累计时长；\"integral\"：按前值保持计算积分。 版本4另支持计数：sample_count计有效样本，point_event_count计点事件，activity_count计活动，segment_count计最终片段。"
 }
 ```
 
@@ -9497,6 +10510,50 @@
 }
 ```
 
+## `$.properties.calculations.items.properties.rule`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "要计数的点事件或活动规则名称，仅用于对象计数。"
+}
+```
+
+## `$.properties.calculations.items.properties.window`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "要计数的最终片段来自哪个窗口，仅用于segment_count。"
+}
+```
+
+## `$.properties.calculations.items.properties.ddof`
+
+```json
+{
+  "type": "integer",
+  "enum": [
+    0,
+    1
+  ],
+  "description": "样本方差和标准差的自由度修正：0表示总体，1表示按N−1计算；时间加权只允许0。"
+}
+```
+
+## `$.properties.calculations.items.properties.q`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "精确分位数的位置，0表示最小值、1最大值、0.95表示P95。仅sample_quantile填写。"
+}
+```
+
 ## `$.properties.presets`
 
 ```json
@@ -9578,7 +10635,7 @@
 ```json
 {
   "const": "1",
-  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=3分别控制不同对象。"
+  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=4分别控制不同对象。"
 }
 ```
 
@@ -9917,7 +10974,7 @@
 ```json
 {
   "const": "1",
-  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=3分别控制不同对象。"
+  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=4分别控制不同对象。"
 }
 ```
 
@@ -10104,7 +11161,7 @@
 ```json
 {
   "const": "1",
-  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=3分别控制不同对象。"
+  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=4分别控制不同对象。"
 }
 ```
 
@@ -10357,7 +11414,7 @@
 ```json
 {
   "const": "1",
-  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=3分别控制不同对象。"
+  "description": "预设契约版本，可省略，默认字符串1；与分析文件的整数config_version=4分别控制不同对象。"
 }
 ```
 
@@ -11045,7 +12102,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "description": "分析结果表和可选信号/CAN导出设置。输出在实际运行后发布到新目录。",
+  "description": "结果表及可选信号/CAN导出。正式结果目录可复用，每次使用独立时间文件名，并由本次完成清单定位。",
   "default": {}
 }
 ```

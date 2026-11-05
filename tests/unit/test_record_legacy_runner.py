@@ -1,4 +1,6 @@
 """公开入口核三格式逐消息累计：三帧含同刻两帧，仍各算一次，不建普通历史。"""
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -165,8 +167,8 @@ class RecordLegacyRunnerTests(unittest.TestCase):
                     self.assertEqual(sum(row.value for row in selected if row.value is not None),calculation.value)
                     self.assertEqual(len({row.original_sequence for row in selected}),3)
                 output=self.root/uuid4().hex
-                result.write(output)
-                target=output/('contributions.'+fmt)
+                publication=result.write(output)
+                target=published_file(publication,'contributions.'+fmt)
                 if fmt=='csv':
                     with target.open(encoding='utf-8',newline='') as handle:
                         published=list(csv.DictReader(handle))
@@ -258,19 +260,3 @@ class RecordLegacyRunnerTests(unittest.TestCase):
         self.assertTrue(budgets)
         self.assertEqual(budgets[0].ram_bytes,0)
         self.assertFalse(root.exists())
-
-    def test_ini_conversion_runs_same_formula_for_all_formats(self):
-        """原INI的power×period迁移后真实运行，三格式各600J；不再额外乘间隔。"""
-        from chronaxis.migration import import_legacy_ini
-        from test_legacy_import_sum import legacy_mapping_fixture, legacy_ini
-        for kind,path in self.fixtures().items():
-            raw=self.plan(kind,path)
-            raw.pop('message_calculations')
-            mapping=legacy_mapping_fixture()
-            mapping['analysis']=raw
-            imported=import_legacy_ini(legacy_ini(),mapping,mode='legacy_sum',base_dir=self.root,device_label='home')
-            self.assertIsNotNone(imported.plan)
-            result=AnalysisRunner().run(imported.plan,self.root/uuid4().hex)
-            self.addCleanup(result.close)
-            self.assertEqual(next(result.iter_calculations()).value,600.)
-            result.close()

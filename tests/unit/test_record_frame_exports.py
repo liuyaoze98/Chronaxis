@@ -1,6 +1,7 @@
 """公开AnalysisRunner原帧导出三格式对照、窗口范围、重复发布与取消清理。"""
 
 from configuration_fixtures import current_fixture
+from published_paths import published_file, export_root
 import json
 from uuid import uuid4
 import unittest
@@ -51,10 +52,10 @@ class RecordFrameExportTests(unittest.TestCase):
                 self.assertEqual(len(scans),1)
                 self.addCleanup(result.close)
                 for unused in range(2):
-                    destination=self.root/uuid4().hex;result.write(destination)
-                    inventory=[json.loads(line) for line in (destination/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+                    destination=self.root/uuid4().hex;published=result.write(destination)
+                    inventory=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
                     self.assertEqual(len(inventory),1)
-                    output=destination/'exports'/inventory[0]['directory']
+                    output=export_root(published)/inventory[0]['directory']
                     self.assertEqual({f.name for f in output.iterdir()},{'frames.asc','manifest.json'})
                     budget=ResourceBudget()
                     with ASCRead(ASCSpec(output/'frames.asc'),budget) as reader: rows=list(reader)
@@ -70,8 +71,8 @@ class RecordFrameExportTests(unittest.TestCase):
                 self.export_option(raw);raw['calculations']=[];raw['intervals']={'default':{'mode':'actual'}}
             with AnalysisRunner().run(self.plan('can_asc',path,'actual',edit),self.root/uuid4().hex) as result:
                 self.assertEqual(result.spool.tables,())
-                output=self.root/uuid4().hex;result.write(output)
-                self.assertTrue((output/'exports.jsonl').is_file())
+                output=self.root/uuid4().hex;published=result.write(output)
+                self.assertTrue((published_file(published,'exports.jsonl')).is_file())
 
     def test_cancel_after_actual_export_cleans_all(self):
         """已生成真实文件后取消也不返回成功前缀，全部owner关闭并释放。"""
@@ -98,9 +99,9 @@ class RecordFrameExportTests(unittest.TestCase):
                     with self.subTest(kind=kind,backend=backend,period=period):
                         result=AnalysisRunner(backend).run(self.plan(kind,path,'actual',edit),self.root/uuid4().hex)
                         self.addCleanup(result.close)
-                        out=self.root/uuid4().hex;result.write(out)
-                        inventory=json.loads((out/'exports.jsonl').read_text(encoding='utf-8').strip())
-                        directory=out/'exports'/inventory['directory']
+                        out=self.root/uuid4().hex;published=result.write(out)
+                        inventory=json.loads((published_file(published,'exports.jsonl')).read_text(encoding='utf-8').strip())
+                        directory=export_root(published)/inventory['directory']
                         budget=ResourceBudget()
                         with ASCRead(ASCSpec(directory/'frames.asc'),budget) as reader:rows=list(reader)
                         self.assertEqual([r.time_ns for r in rows],[0,100000000])
@@ -176,7 +177,7 @@ class RecordFrameExportTests(unittest.TestCase):
         for count in (0,1,2):
             configs=[]
             def edit(raw):
-                raw.update(config_version=3);raw.pop('intervals',None)
+                raw.update(config_version=4);raw.pop('intervals',None)
                 raw['calculations']=[]
                 raw['rules']=[dict(name='edge',rule_type='rising_edge',condition='current >= 12')]
                 raw['windows']=[dict(name=f'w{i}',rule='edge',anchor='point',pre='0.1s',post='0.1s') for i in range(count)]
@@ -188,12 +189,12 @@ class RecordFrameExportTests(unittest.TestCase):
             self.assertIsNone(plan.outputs.can_frames.window)
             self.assertEqual(plan.outputs.can_frames.spec.source_time_reference,'epoch')
             with AnalysisRunner().run(plan,self.root/uuid4().hex) as result:
-                dest=self.root/uuid4().hex;result.write(dest)
-                index=dest/'exports.jsonl'
+                dest=self.root/uuid4().hex;published=result.write(dest)
+                index=published_file(published,'exports.jsonl')
                 rows=[json.loads(line) for line in index.read_text(encoding='utf-8').splitlines()]
                 self.assertEqual(len(rows),count)
                 for row in rows:
-                    with can.BLFReader(dest/'exports'/row['directory']/'frames.blf') as reader:frames=list(reader)
+                    with can.BLFReader(export_root(published)/row['directory']/'frames.blf') as reader:frames=list(reader)
                     self.assertEqual(len(frames),1)
                     self.assertAlmostEqual(frames[0].timestamp,1700000000.12,places=5)
                     self.assertEqual(frames[0].data,bytes([200,12]))
@@ -215,8 +216,8 @@ class RecordFrameExportTests(unittest.TestCase):
                     stack.enter_context(patch(target,side_effect=AssertionError('未请求内容完整性诊断')))
                 with AnalysisRunner().run(self.plan(kind,path,'fixed',edit),self.root/uuid4().hex) as result:
                     self.assertAlmostEqual(next(result.iter_calculations()).value,880,places=3)
-                    output=self.root/uuid4().hex;result.write(output)
-                    self.assertTrue((output/'exports.jsonl').exists())
+                    output=self.root/uuid4().hex;published=result.write(output)
+                    self.assertTrue((published_file(published,'exports.jsonl')).exists())
 
     def test_plain_internal_sort_still_rejects_truncated_end(self):
         """关闭MAC不关闭结构/结尾验证；完整末行缺失不能当成功EOF。"""

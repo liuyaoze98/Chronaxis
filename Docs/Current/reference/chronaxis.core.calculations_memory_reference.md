@@ -1,4 +1,4 @@
-# chronaxis.core.calculations_memory_reference
+# `chronaxis.core.calculations_memory_reference`
 
 从现有内存信号计算表达式，接入参考统计、TRUE时长或选择行流。
 
@@ -26,6 +26,7 @@ SelectionRow迭代器，其输入和中间历史仍完整物化，不能据此�
 
 |对象|用途|
 |---|---|
+|[`_scalar_context`](#api-_scalar_context)|把同一时刻各信号的保持值整理为标量表达式输入。|
 |[`require_calculation_plan`](#api-require_calculation_plan)|检查指标表达式类型及可选条件是否属于同一真实输入。|
 |[`build_calculation_series_reference`](#api-build_calculation_series_reference)|从当前原行生成完整指标时间轴、值、条件和真实更新标志。|
 |[`select_memory_reference`](#api-select_memory_reference)|从现有内存信号独立对齐求值，返回真实更新选择行流。|
@@ -34,17 +35,46 @@ SelectionRow迭代器，其输入和中间历史仍完整物化，不能据此�
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .enum_codes import memory_histories, aligned_scalar
 from .expression import CompiledExpression
 from .expression_reference import evaluate_reference
-from .calculations import CalculationSeries, CalculationDefinition
+from .calculations import CalculationSeries, CalculationDefinition, calculation_conversion
 from .calculations_reference import compute_reference, select_reference
 from .models import Interval
 from .numeric import ScalarValue, memory_series_reference
 from .state import align_reference, common_timeline
 from .types import SignalDType as D
+from .where_updates import contains_where, reference_updates
 ```
 
 </details>
+
+<a id="api-_scalar_context"></a>
+## `_scalar_context`
+
+把同一时刻各信号的保持值整理为标量表达式输入。
+
+```python
+_scalar_context(bindings, aligned, index)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`bindings`|SignalBindings|是|无|位置或关键字。内存信号绑定，通过别名查找对应类型、枚举标签与原码设置。|
+|`aligned`|Mapping[str, Sequence[StateValue]]|是|无|位置或关键字。别名到已按共同时间轴对齐的保持结果序列，保留有效性和质量。|
+|`index`|int|是|无|位置或关键字。当前时刻在公共时间轴上的零基位置，从各序列取该位置的保持结果。|
+
+### 返回说明
+
+保留类型、有效性及枚举域的标量映射。
+
+### 异常说明
+
+无效绑定或位置直接报错。
+
+源码：[`src/chronaxis/core/calculations_memory_reference.py:38`](../../../src/chronaxis/core/calculations_memory_reference.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_calculation_plan"></a>
 ## `require_calculation_plan`
@@ -82,7 +112,7 @@ TypeError: 数值计划或请求模型类型错误。
 
 只合并分析层依赖并检查当前同步声明，不改变旧读取范围或解码调用。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:36`](../../../src/chronaxis/core/calculations_memory_reference.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:52`](../../../src/chronaxis/core/calculations_memory_reference.py#L52)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-build_calculation_series_reference"></a>
 ## `build_calculation_series_reference`
@@ -116,7 +146,7 @@ CalculationSeries。时间为整数纳秒，值与条件共用完整轴；窗口
     条件依赖可增加时间边界，真实样本标志只来自数值依赖。
     保留完整内存历史和新结果，不延长会话观测域，也不额外读取或解码。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:74`](../../../src/chronaxis/core/calculations_memory_reference.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:93`](../../../src/chronaxis/core/calculations_memory_reference.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-select_memory_reference"></a>
 ## `select_memory_reference`
@@ -147,7 +177,7 @@ SelectionRow迭代器，不积累全部输出行。
 
 输入和中间历史仍完整物化，不声明生产有界预算；不接旧reader/decoder。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:136`](../../../src/chronaxis/core/calculations_memory_reference.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:161`](../../../src/chronaxis/core/calculations_memory_reference.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-compute_memory_reference"></a>
 ## `compute_memory_reference`
@@ -155,7 +185,7 @@ SelectionRow迭代器，不积累全部输出行。
 从已有内存行执行参考表达式和指标计算，返回完整指标结果。
 
 ```python
-compute_memory_reference(compiled, spec, *, condition=None)
+compute_memory_reference(compiled, spec, *, condition=None, budget=None)
 ```
 
 ### 参数
@@ -165,6 +195,7 @@ compute_memory_reference(compiled, spec, *, condition=None)
 |`compiled`|[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)|是|无|位置或关键字。当前表达式；spec为数值统计或BOOL duration的CalculationDefinition。|
 |`spec`|[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)|是|无|位置或关键字。spec为数值统计或BOOL duration的CalculationDefinition。     condition: 可选且关联同一真实输入的BOOL表达式。|
 |`condition`|[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression) &#124; None|否|None|仅关键字。可选且关联同一真实输入的BOOL表达式。|
+|`budget`|ResourceBudget &#124; None|否|None|仅关键字。可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。|
 
 ### 返回说明
 
@@ -178,4 +209,4 @@ CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆�
 
 先建立CalculationSeries，再独立执行参考指标计算；不修改原行或调用数组后端。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:149`](../../../src/chronaxis/core/calculations_memory_reference.py#L149)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:174`](../../../src/chronaxis/core/calculations_memory_reference.py#L174)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

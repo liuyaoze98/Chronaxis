@@ -41,13 +41,13 @@ def legacy_config():
     """
     field = dict(channel=1, frame_id=256, is_extended=False, is_fd=False,
                   signal='Power.raw')
-    return public_configuration(dict(config_version=3,
+    return public_configuration(dict(config_version=4,
         dataset=dict(name='legacy_static', entity='synthetic', session='session',
                      domain=dict(start='0s', end='12s')),
         sources=[dict(name='bus', source_type='can_blf', path='work/legacy-static-missing.blf',
             legacy_profile=PROFILE_ID, dbc_by_channel={'1': 'work/legacy-static-missing.dbc'},
             time=dict(time_type='relative', unit='s', origin='synthetic_origin'))],
-        signals=[dict(name='power', source='bus', field=field, dtype='int64', unit='W',
+        signals=[dict(name='power', source='bus', field=field, dtype='int64', input_unit='W', unit='W',
                       valid_for='1ns', same_time_policy='last_by_sequence')],
         message_calculations=[dict(name='energy', source='bus', profile=PROFILE_ID, operation='legacy_sum',
             update_message=dict(channel=1, frame_id=256, is_extended=False, is_fd=False),
@@ -88,6 +88,9 @@ class MessageCalculationPlanningTests(unittest.TestCase):
         schema = json.loads((ROOT / 'Docs' / 'Schema' / 'analysis.schema.json').read_text(encoding='utf-8'))
         Draft202012Validator.check_schema(schema)
         cls.validator = Draft202012Validator(schema)
+        # 内部结构规范先加载；下方禁止业务来源I/O的探针仍完整保留。
+        from chronaxis.planning.diagnostic_collection import schema_validator
+        schema_validator('analysis.schema.json')
 
     def guard_static(self):
         """阻断来源文件和运行依赖动作，返回可恢复的探针上下文。

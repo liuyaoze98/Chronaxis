@@ -10,6 +10,7 @@
 完整声明的语法、单位、名称和循环校验不由此替代。
 """
 
+from ..core.counts_v4 import OBJECT_COUNTS
 from dataclasses import dataclass
 
 from ..sources.can_spec import LegacyCANSpec, can_field_from_key
@@ -57,6 +58,7 @@ class InputRequirements:
 
     analysis_sample_aliases: tuple[str, ...] = ()  # 普通计算所需值，不含纯导出列。
     constant_observation: bool = False  # 无信号常量规则/统计需要会话观测范围。
+    transform_names: tuple[str, ...] = ()  # 按拓扑序实际消费的离散序列；不属于reader投影。
 
     def for_source(self, name: str) -> SourceInputRequirements:
         """按来源名称取得本计划的需求，不创建新副本。
@@ -109,6 +111,7 @@ def collect_input_requirements(plan) -> InputRequirements:
         raise TypeError('输入需求需要AnalysisPlan')
     definitions = tuple(item.definition for item in plan.signals)
     names = {item.name for item in definitions}
+    virtual = {t.name for t in plan.transforms}
     ordinary, messages = set(), set()
     rules = {item.rule_id: item for item in plan.rules}
     windows = {item.window_id: item for item in plan.windows}
@@ -124,7 +127,7 @@ def collect_input_requirements(plan) -> InputRequirements:
         dependencies = expression.dependencies
         if type(dependencies) is not tuple or any(type(name) is not str for name in dependencies):
             raise TypeError('表达式依赖必须为原生str tuple')
-        if not set(dependencies) <= names:
+        if not set(dependencies) <= (names if destination is messages else names|virtual):
             raise ValueError('表达式依赖包含未声明信号')
         destination.update(dependencies)
 
@@ -168,11 +171,14 @@ def collect_input_requirements(plan) -> InputRequirements:
             raise ValueError('逐消息选择器需要本计划CAN来源')
         selectors[calculation.source].append(calculation.update_message.frame_id)
 
+    from .transforms import active_transforms, physical_dependencies
+    transforms = active_transforms(plan,ordinary)
+    ordinary = set(physical_dependencies(plan,ordinary))
     analysis = set(ordinary)
     choices = dict(() if plan.intervals is None else plan.intervals.resolved)
     constant_observation = (any(not rule.dependencies and
         (rule.rule_id not in choices or choices[rule.rule_id].driver is None) for rule in plan.rules) or any(
-        calculation.scope=='session' and (calculation.calculation_id not in choices or choices[calculation.calculation_id].driver is None) and
+        calculation.scope=='session' and calculation.operation not in OBJECT_COUNTS and (calculation.calculation_id not in choices or choices[calculation.calculation_id].driver is None) and
         not any(e.dependencies for e in (calculation.signal,calculation.condition) if e is not None) for calculation in plan.calculations))
     # 导出是实际消费者：原始信号表所需字段进入普通历史，不依赖表达式恰好引用它。
     if plan.outputs.signal_csv is not None:
@@ -180,8 +186,10 @@ def collect_input_requirements(plan) -> InputRequirements:
         if not exported<=names:
             raise ValueError('信号导出引用未定义别名')
         ordinary.update(exported)
-    clocks = {choice.driver for _, choice in (() if plan.intervals is None else plan.intervals.resolved)
-              if choice.driver is not None}
+    active = {t.name for t in transforms}
+    clocks = {choice.driver for name, choice in (() if plan.intervals is None else plan.intervals.resolved)
+              if choice.driver is not None and (name not in virtual or name in active)}
+    constant_observation |= any(not t.physical for t in transforms)
     if not clocks <= names:
         raise ValueError('间隔驱动引用未声明信号')
     required = ordinary | messages | clocks
@@ -247,4 +255,5 @@ def collect_input_requirements(plan) -> InputRequirements:
         tuple(item.name for item in definitions if item.name in required),
         tuple(entries), tuple(item.source for item in entries if item.time_scope == 'source'),
         (() if plan.outputs.can_frames is None else (plan.outputs.can_frames.source,)),
-        tuple(item.name for item in definitions if item.name in analysis), constant_observation)
+        tuple(item.name for item in definitions if item.name in analysis), constant_observation,
+        tuple(t.name for t in transforms))

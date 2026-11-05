@@ -11,10 +11,10 @@ Apply an offset independently to each coordinate as an integer reference for arr
 shift_times_reference(times: Sequence[int], offset_ns: int) -> tuple[int, ...]
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `times` | Sequence[int] | Required | Positional or keyword. Coordinates already expressed in nanoseconds; sorting is not required. |
-| `offset_ns` | int | Required | Positional or keyword. Valid int64 offset. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`times`|Sequence[int]|Yes|No default|Positional or keyword. Coordinates already expressed in nanoseconds; sorting is not required.|
+|`offset_ns`|int|Yes|No default|Positional or keyword. Valid int64 offset.|
 
 Returns a new `tuple[int, ...]`; empty input returns an empty tuple. Raises `TypeError` or `TimeOverflowError` for invalid argument types or any out-of-range input/result.
 
@@ -22,4 +22,4 @@ No side effects: it does not import or call NumPy implementations or modify the 
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:319`](../../../../src/chronaxis/timebase/conversion.py#L319) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/timebase/conversion.py:319`](../../../../src/chronaxis/timebase/conversion.py#L319) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -1,4 +1,4 @@
-# chronaxis.sources.text_can_ref
+# `chronaxis.sources.text_can_ref`
 
 保存新文本CAN样本的精确原行引用，供信号历史和结果白名单编码。
 
@@ -58,7 +58,7 @@ class CANTextSourceRef(SourceRef)
 |`raw_time`|str &#124; None|是|无|文本原文字；BLF没有时间文字，不构造副本。|
 |`time_quantized`|bool|是|无|源文字转纳秒时是否实际量化。|
 
-源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANTextSourceRef-__post_init__"></a>
 ### `CANTextSourceRef.__post_init__`
@@ -88,4 +88,4 @@ CANTextSourceRef.__post_init__()
 
 - `TypeError`：文本CAN量化标志需要bool。
 
-源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

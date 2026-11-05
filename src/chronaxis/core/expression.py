@@ -19,7 +19,7 @@ MessageDeclarations，只产生不可执行的StaticExpression。
 # AST只用于解析与规范身份，不用动态执行。
 import ast
 # 冻结节点和纯常量上下文重建，没有全局执行绑定缓存。
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 # SHA关联实际输入绑定和编译语义版本。
 from hashlib import sha256
 # 数字字面量必须有限，不允许非有限容差。
@@ -29,6 +29,7 @@ from types import MappingProxyType
 
 # 使用当前已校验绑定、类型及静态数值协议。
 from .binding import SignalBindings, _identity
+from .lookup import PreparedLookup
 # 静态配置声明独立于真实输入；只由专用validate入口接收。
 from .declarations import DeclarationBindings
 # 已解码运行绑定不保存伪造memory行，仍与不可执行声明类型分开。
@@ -40,7 +41,7 @@ from .numeric import INTEGER_BOUNDS, result_dtype
 # 类型与质量模型显式，不用字符串冒充dtype。
 from .types import SignalDType
 # 已知单位表仅检查当前显式标签，不猜物理工程含义。
-from .units import UNIT_TABLE
+from .unit_registry import resolve_unit
 # 文本与标识符保留安全名称和大小写。
 from .validation import require_identifier, require_text
 
@@ -98,12 +99,16 @@ class ExprNode:
     unit: str  # 结果单位标签。
     unit_status: str  # verified或unverified，不能借未知标签过预设。
     args: tuple = ()  # 子节点，isclose含四节点。
-    value: int | float | bool | str | None = None  # 纯常量或精确比较边界。
+    value: int | float | bool | str | tuple[int | float, int | float] | PreparedLookup | None = None  # 常量或编译参数。
     name: str | None = None  # name仅简单已绑定别名。
     labels: tuple[str, ...] = ()  # enum逻辑域。
     aliases: tuple[str, ...] = ()  # 原信号依赖，不包含派生占位。
     constant: bool = False  # 纯常量静态上下文标志。
     allow_float_literal: bool = False  # 由本编译器证明的浮点字面量路径。
+    conversion_promoted: bool = field(default=False, repr=False, compare=False)  # 编译时类型提升依据，不影响最终数值节点等价。
+    unit_explicit: bool = field(default=False, repr=False, compare=False)  # 编译时目标尺度；运行身份由实际转换节点确定。
+    typed_constant: bool = field(default=False, repr=False, compare=False)  # 带单位纯常量只适配dtype，不继承别的单位。
+    host_function: object = field(default=None, repr=False, compare=False)  # 仅宿主逐点调用持有已验证的不可变FunctionSpec。
 
 
 @dataclass(frozen=True)
@@ -140,6 +145,22 @@ class StaticExpression:
     identity: str  # 独立静态版本前缀的SHA。
 
 
+def contains_host_call(root):
+    """判定子树是否含宿主运行回调，以隔离静态常量参数检查。
+
+    参数: root为冻结表达式节点。返回: bool。异常: 内部不合法树传播属性错误。
+    """
+    seen, pending = set(), [root]
+    while pending:
+        node = pending.pop()
+        if node.operator == 'host_function':
+            return True
+        if id(node) not in seen:
+            seen.add(id(node))
+            pending.extend(node.args)
+    return False
+
+
 def _node(operator, dtype, unit, args=(), **kwargs) -> ExprNode:
     """从已验证子节点汇总局部依赖及单位状态。
 
@@ -150,12 +171,15 @@ def _node(operator, dtype, unit, args=(), **kwargs) -> ExprNode:
     # 当前表达式所有真实依赖，不继承全局绑定。
     aliases = tuple(sorted({name for arg in args for name in arg.aliases}))
     # 任何未知关系都保留unverified，不能仅看输出单位是已知标签。
-    status = 'verified' if unit in UNIT_TABLE and all(arg.unit_status == 'verified' for arg in args) else 'unverified'
+    status = 'verified' if resolve_unit(unit) is not None and all(arg.unit_status == 'verified' for arg in args) else 'unverified'
     # 所有参数均由编译器产生，执行器不接用户自由operator。
-    return ExprNode(operator, dtype, unit, status, args, aliases=aliases, constant=all(arg.constant for arg in args), **kwargs)
+    return ExprNode(operator, dtype, unit, status, args, aliases=aliases,
+                    constant=all(arg.constant for arg in args),
+                    typed_constant=any(arg.typed_constant for arg in args) and all(arg.constant or arg.typed_constant for arg in args),
+                    conversion_promoted=any(arg.conversion_promoted for arg in args), **kwargs)
 
 
-class _Compiler:
+class _SyntaxCompiler:
     """在一次编译中检查名称、语法、单位与派生依赖。
 
     signals和derived来自当前绑定，不读取数据来源。消息域另有显式参数表，
@@ -179,6 +203,8 @@ class _Compiler:
             raise TypeError('解析需要typed真实/声明绑定及tuple DerivedDefinition')
         # bindings已校验signals唯一/安全别名。
         self.bindings = bindings
+        # 版本由绑定定义决定；公开入口另检查显式版本不能重解释旧绑定。
+        self.config_version = getattr(bindings, 'config_version', 4)
         # 当前真实信号声明，不读取原日志。
         self.signals = {item.name: item for item in bindings.signals}
         # 只有消息域具有显式配置参数；原普通表达式不增加名称或混合dtype权限。
@@ -236,11 +262,21 @@ class _Compiler:
             # 超大比较边界已通过特殊节点实现，正常输出不放行。
             self._error(tree.body, '整数字面量超出结果dtype')
         # 有单位结果不能靠unit字段自动做隐式转换。
-        if unit is not None and root.unit != unit:
-            # mA→A需要绑定显式转换，而非只改输出标签。
-            self._error(tree.body, f'结果单位{root.unit}与声明{unit}不一致，须显式转换')
+        root = self._final_unit(root, unit, tree.body)
         # AST仅作为身份结构，不作为运行时eval输入。
         return root, ast.dump(tree, annotate_fields=True, include_attributes=False)
+
+    def _final_unit(self, root, unit, node):
+        """执行当前版本的根结果单位要求。
+
+        参数: root为已编译节点，unit为可选目标标签，node用于定位错误。
+        返回: 已核对未知单位标签的原节点。
+        异常: ValueError为结果与声明单位不一致。
+        """
+        # 已知单位由单位编译器换算；此共享接点只核对无法推导的结果标签。
+        if unit is not None and root.unit != unit:
+            self._error(node, f'结果单位{root.unit}与声明{unit}不一致，须显式转换')
+        return root
 
     def _name(self, node):
         """解析真实别名、消息参数或本计划派生，并拒绝环/未知名称。
@@ -367,14 +403,8 @@ class _Compiler:
         if operator == 'div' and (left.unit == right.unit or right.unit == '1'):
             # 无额外值换算。
             return left, right, '1' if left.unit == right.unit else left.unit
-        # 固定支持乘法组合，避免完整量纲猜测。
-        products = {frozenset(('V', 'A')): 'W', frozenset(('W', 's')): 'J', frozenset(('A', 's')): 'A·s'}
-        # 仅当前已确认单位关系可以verified输出。
-        if operator == 'mul' and frozenset((left.unit, right.unit)) in products:
-            # 已知单位的显式规范化必须先于这里。
-            return left, right, products[frozenset((left.unit, right.unit))]
         # 普通分析可显式声明未知组合，但不得假称已知量纲验证。
-        if declared_unit is not None and (left.unit not in UNIT_TABLE or right.unit not in UNIT_TABLE):
+        if declared_unit is not None and (resolve_unit(left.unit) is None or resolve_unit(right.unit) is None):
             # 任意结果标签仍unverified，即使用户标成W。
             return replace(left, unit_status='unverified'), right, declared_unit
         # 已知未支持组合不能用标签覆盖当证明。
@@ -413,6 +443,11 @@ class _Compiler:
         right = self._context(right, left, node, arithmetic=operator not in CMP.values())
         # 先保持原普通规则：只有float纯常量证明允许混合，不能放行任意信号。
         float_literal = left.dtype is not right.dtype and ((left.constant and left.dtype is SignalDType.FLOAT64) or (right.constant and right.dtype is SignalDType.FLOAT64))
+        # 只有单位转换确已要求float时才补齐另一侧的精确提升；不放开普通混合信号。
+        if left.dtype is not right.dtype:
+            float_literal |= any(item.dtype is SignalDType.FLOAT64 and item.conversion_promoted for item in (left, right))
+            # quantity的数值仍为字面量，只是单位不可继承；保留原浮点字面量精度政策。
+            float_literal |= any(item.dtype is SignalDType.FLOAT64 and item.typed_constant for item in (left, right))
         # 消息域的无信号依赖配置子树是显式FLOAT64值；仍由现数值核检查整数精度。
         if self.message_domain and left.dtype is not right.dtype:
             float_literal |= ((left.dtype is SignalDType.FLOAT64 and not left.aliases)
@@ -568,13 +603,14 @@ class _Compiler:
         self._error(node, f'禁止语法{type(node).__name__}')
 
 
-def compile_expression(text: str, bindings: SignalBindings | DecodedBindings | MessageBindings, *, derived: tuple[DerivedDefinition, ...] = (), unit: str | None = None) -> CompiledExpression:
+def compile_expression(text: str, bindings: SignalBindings | DecodedBindings | MessageBindings, *, derived: tuple[DerivedDefinition, ...] = (), unit: str | None = None, config_version: int | None = None, extensions=None) -> CompiledExpression:
     """检查表达式及全部派生声明，关联当前真实输入绑定。
 
     参数:
         text: 非空文本；bindings为真实SignalBindings、DecodedBindings或MessageBindings。
         derived: 完整且不可变的DerivedDefinition元组，需与已登记名称一致。
-        unit: 可选的显式结果单位；不执行自动单位换算。
+        unit: 可选结果单位；兼容登记单位同时转换数值。config_version省略时继承绑定。
+        extensions: 可选的宿主ExtensionRegistry，省略时使用绑定已经关联的注册。
     返回:
         CompiledExpression，保存表达式树、实际依赖别名和完整绑定身份。
     异常:
@@ -589,7 +625,7 @@ def compile_expression(text: str, bindings: SignalBindings | DecodedBindings | M
         # 静态声明必须走validate_expression，不能生成可执行树。
         raise TypeError('可执行编译需要真实SignalBindings、DecodedBindings或MessageBindings')
     # 每次使用全新编译状态，隔离绑定和派生节点。
-    compiler = _Compiler(bindings, derived)
+    compiler = _create_compiler(bindings, derived, config_version=config_version, extensions=extensions)
     # 即使派生未被当前根使用也检查配置循环/未知名称。
     for definition in derived:
         # Name只作为内部解析入口，位置未提供时错误默认行1列1。
@@ -599,19 +635,18 @@ def compile_expression(text: str, bindings: SignalBindings | DecodedBindings | M
     # 多源只有当前根实际共同依赖才需要同步依据。
     bindings.require_synchronized(root.aliases)
     # 身份包含来源、显式转换、值有效期、质量政策、全部派生定义和编译版本。
-    payload = ('expression-v1', 'reference+numpy-v1', bindings.identity, normalized, repr(root), tuple((item.name, item.expr, item.unit) for item in derived))
-    # 不仅以语法文本/semantic声明作为执行缓存证明。
-    identity = sha256(_identity(payload).encode('utf-8')).hexdigest()
+    identity = expression_identity(bindings, root, normalized, derived, extensions=extensions)
     # 返回编译后的表达式及其依赖。
     return CompiledExpression(text, bindings, root, root.aliases, normalized, identity)
 
 
-def validate_expression(text: str, bindings: DeclarationBindings | MessageDeclarations, *, derived: tuple[DerivedDefinition, ...] = (), unit: str | None = None) -> StaticExpression:
+def validate_expression(text: str, bindings: DeclarationBindings | MessageDeclarations, *, derived: tuple[DerivedDefinition, ...] = (), unit: str | None = None, config_version: int | None = None, extensions=None) -> StaticExpression:
     """只根据来源声明检查表达式，不读取真实输入。
 
     参数:
         text: 非空表达式文本；bindings为DeclarationBindings或MessageDeclarations。
         derived: 完整DerivedDefinition元组；unit为可选显式结果单位。
+        config_version: 省略时继承绑定；extensions为可选宿主注册，不运行回调。
     返回:
         StaticExpression，说明名称、语法、类型、单位和同步声明已检查。
         该类型不能交给数值解释器执行，也不证明实际字段或数据内容已核实。
@@ -625,7 +660,7 @@ def validate_expression(text: str, bindings: DeclarationBindings | MessageDeclar
         # 避免调用侧误把声明身份当执行缓存身份。
         raise TypeError('静态校验需要DeclarationBindings或MessageDeclarations')
     # 白名单及类型政策共用编译器，不复制另一套宽松DSL。
-    compiler = _Compiler(bindings, derived)
+    compiler = _create_compiler(bindings, derived, config_version=config_version, extensions=extensions)
     # 未被根引用的派生也要检查环和单位。
     for definition in derived:
         # 只用受限内部Name入口，无动态属性访问。
@@ -635,8 +670,50 @@ def validate_expression(text: str, bindings: DeclarationBindings | MessageDeclar
     # 声明联合依赖必须已有明确同步条件。
     bindings.require_synchronized(root.aliases)
     # 独立版本前缀确保不能与真实可执行身份混用。
-    payload = ('static-expression-v1', bindings.identity, normalized, repr(root), tuple((item.name, item.expr, item.unit) for item in derived))
-    # SHA只包含受控typed树，不读取文件内容或旧DBC。
-    identity = sha256(_identity(payload).encode('utf-8')).hexdigest()
+    identity = expression_identity(bindings, root, normalized, derived, static=True, extensions=extensions)
     # 返回类型与CompiledExpression分开，解释器结构门槛仍然有效。
     return StaticExpression(text, bindings, root, root.aliases, normalized, identity)
+
+
+def _create_compiler(bindings, derived, *, config_version=None, extensions=None):
+    """构造当前编译器，拒绝用参数重解释绑定版本。
+
+    参数: bindings/derived为已校验声明，config_version可省略，extensions为可选v4宿主注册。
+    返回: 当前任务独享的编译器实例。
+    异常: TypeError/ValueError为版本类型、冲突或尚未支持的扩展对象。
+    """
+    # 版本是计划身份的一部分，不使用模块级可变开关。
+    version = getattr(bindings, 'config_version', 4)
+    from .unit_conversion import require_config_version
+    require_config_version(version)
+    if config_version is not None and (type(config_version) is not int or config_version != version):
+        raise ValueError('表达式config_version必须与绑定版本一致')
+    bound = getattr(bindings,'extensions',None)
+    if extensions is not None and bound is not None and extensions is not bound:
+        raise ValueError('表达式与绑定必须使用同一个宿主ExtensionRegistry')
+    registry = bound if extensions is None else extensions
+    if registry is not None:
+        from ..extensions import ExtensionRegistry
+        if type(registry) is not ExtensionRegistry or version != 4:
+            raise ValueError('宿主扩展需要版本4和显式ExtensionRegistry')
+    # 延迟导入仅解决类型定义依赖，不导入用户配置指定的模块。
+    from .expression_v4 import UnitCompiler
+    return UnitCompiler(bindings, derived, registry)
+
+
+def expression_identity(bindings, root, normalized, derived, *, static=False, extensions=None):
+    """共用公开与按需重编译的身份公式，防止版本接线遗漏。
+
+    参数: bindings为对应绑定，root为已编译树，normalized为AST，derived为声明；static区分静态域。
+    返回: SHA256文本，包含当前单位和函数规则版本。
+    异常: 内部类型错误直接传播，不读取文件。
+    """
+    # 计划身份显式包含当前单位与函数规则版本。
+    prefix = ('static-expression-v1',) if static else ('expression-v1', 'reference+numpy-v1')
+    from .unit_registry import REGISTRY_VERSION
+    prefix += (4, REGISTRY_VERSION, 'functions-v4-b6')
+    registry = extensions if extensions is not None else getattr(bindings,'extensions',None)
+    if registry is not None:
+        prefix += ('host-v1',registry.identity)
+    payload = (*prefix, bindings.identity, normalized, repr(root), tuple((item.name, item.expr, item.unit) for item in derived))
+    return sha256(_identity(payload).encode('utf-8')).hexdigest()

@@ -1,4 +1,4 @@
-# chronaxis.core.types
+# `chronaxis.core.types`
 
 定义信号类型、时间坐标、三值条件和质量原因，供模型及计算层共用。
 
@@ -52,7 +52,7 @@ class Truth(Enum)
 |`FALSE`|枚举成员|类成员，不作为构造参数填写|'false'|已知且条件不成立。|
 |`UNKNOWN`|枚举成员|类成员，不作为构造参数填写|'unknown'|缺失、过期或无法有效求值。|
 
-源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-Truth-__bool__"></a>
 ### `Truth.__bool__`
@@ -84,7 +84,7 @@ TypeError；三值逻辑尚未由普通Python bool表达。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-QualityFlag"></a>
 ## `QualityFlag`
@@ -116,7 +116,7 @@ class QualityFlag(IntFlag)
 |`PRECISION_LOSS`|枚举成员|类成员，不作为构造参数填写|128|不能精确表示的数值转换。|
 |`DOMAIN_ERROR`|枚举成员|类成员，不作为构造参数填写|256|除零等值域错误。|
 
-源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-QualityFlag-_missing_"></a>
 ### `QualityFlag._missing_`
@@ -147,7 +147,7 @@ ValueError: 候选值为负数、包含未知位或不能构造为合法质量�
 
 - `ValueError`：quality mask必须非负。
 
-源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalDType"></a>
 ## `SignalDType`
@@ -173,7 +173,7 @@ class SignalDType(Enum)
 |`BOOL`|枚举成员|类成员，不作为构造参数填写|'bool'|明确布尔值，不按任意数值的Python真值判断。|
 |`ENUM`|枚举成员|类成员，不作为构造参数填写|'enum'|显式枚举标签，不参与一般数值运算。|
 
-源码：[`src/chronaxis/core/types.py:74`](../../../src/chronaxis/core/types.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:78`](../../../src/chronaxis/core/types.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-TimeType"></a>
 ## `TimeType`
@@ -195,7 +195,7 @@ class TimeType(Enum)
 |`RELATIVE`|枚举成员|类成员，不作为构造参数填写|'relative'|需要来源声明origin。|
 |`ABSOLUTE`|枚举成员|类成员，不作为构造参数填写|'absolute'|已规范化UTC epoch纳秒。|
 
-源码：[`src/chronaxis/core/types.py:88`](../../../src/chronaxis/core/types.py#L88)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:92`](../../../src/chronaxis/core/types.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SourceType"></a>
 ## `SourceType`
@@ -217,4 +217,4 @@ class SourceType(Enum)
 |---|---|---|---|---|
 |`MEMORY`|枚举成员|类成员，不作为构造参数填写|'memory'|已声明纳秒的内存行，不执行旧读写或解码。|
 
-源码：[`src/chronaxis/core/types.py:98`](../../../src/chronaxis/core/types.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/types.py:102`](../../../src/chronaxis/core/types.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

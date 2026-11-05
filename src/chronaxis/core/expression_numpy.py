@@ -19,6 +19,7 @@ from dataclasses import dataclass
 # 数组依赖显式，不污染标准库core导入。
 import numpy as np
 # 当前静态树是共享已校验协议，不共享样本数值内核。
+from .enum_codes import memory_histories, aligned_column
 from .expression import CompiledExpression
 # 真实绑定参与执行身份检查。
 from .binding import SignalBindings
@@ -31,6 +32,14 @@ from .numeric import INTEGER_BOUNDS
 # 数组真实数值入口与布局模型。
 from .numeric_numpy import (COMPARE_UFUNCS, DTYPES, NumericArray, _output, _readonly,
                             binary_numpy, to_float_numpy, unary_numpy)
+# 批量单位转换独立于标量数值核。
+from .affine_numpy import affine_numpy
+from .expression_math_v4 import MATH_KERNELS
+from .expression_math_numpy import math_numpy
+from .expression_integer_v4 import INTEGER_KERNELS
+from .expression_integer_numpy import integer_numpy
+from .lookup_numpy import lookup_numpy
+from .enum_codes import enum_code_numpy
 # 此函数只校验身份与列映射，没有参考数值运算。
 from .expression_reference import require_context
 # 原行批量适配独立于参考转换。
@@ -151,6 +160,43 @@ def _literal_compare(node, value):
     return _output(D.BOOL, result, value.quality.copy())
 
 
+def _where(node, context, size, cache):
+    """按有效条件拆成真、假两个活动子批，再按原行序还原输出。
+
+    参数: node为已统一分支类型/单位的where，context各列均为(size,)；
+        cache仅对应当前批次的坐标系。
+    返回: ArrayEvaluation；条件未知的行保留条件原因，其他行仅并入所选分支诊断。
+    异常: 模型、数组布局或分配异常原样传播；不以逐行解释器代替掩码计算。
+    """
+    # 未知条件不进入任一子批；初值保留其实际质量，数值占位不作为观测。
+    condition = _evaluate(node.args[0], context, size, cache)
+    values = np.zeros(size, dtype=DTYPES[node.dtype])
+    quality = condition.value.quality.copy()
+    diagnostic = condition.dependency_quality.copy()
+    for truth, branch in ((True, node.args[1]), (False, node.args[2])):
+        # 即使分支包含除零或定宽溢出，也只运算确实选到该分支的行。
+        keep = condition.value.valid & (condition.value.values if truth else ~condition.value.values)
+        count = int(np.count_nonzero(keep))
+        if count == 0:
+            continue
+        if count == size:
+            # 全批选择一致时保持同一坐标系，公共子树仍使用原缓存。
+            selected = _evaluate(branch, context, size, cache)
+        else:
+            # 子批只复制此分支静态所需的列；嵌套where会在子批内再次按条件选行。
+            # 新缓存防止原坐标系的整列结果误用在不同长度/行序的子批上。
+            subset = {}
+            for name in branch.aliases:
+                column = context[name]
+                subset[name] = column.take(keep)
+            selected = _evaluate(branch, subset, count, {})
+        # 按分支位置写回结果及该路径诊断；未选独有依赖不产生原因。
+        values[keep] = selected.value.values
+        quality[keep] = selected.value.quality
+        diagnostic[keep] |= selected.dependency_quality
+    return ArrayEvaluation(_output(node.dtype, values, quality), diagnostic)
+
+
 def _evaluate(node, context, size, cache):
     """按静态节点结构调用真实批量数值/逻辑内核。
 
@@ -167,6 +213,14 @@ def _evaluate(node, context, size, cache):
         # shape与所有信号相同。
         value = _constant(node, size)
         # 常量没有原依赖异常。
+        result = ArrayEvaluation(value, value.quality)
+    # where按活动行递归，不能使用普通节点先计算全部操作数的策略。
+    elif node.operator == 'where':
+        result = _where(node, context, size, cache)
+    elif node.operator == 'enum_code':
+        # 读取与标签独立的原码质量；未映射标签不能屏蔽有效的整数代码。
+        operand = _evaluate(node.args[0], context, size, cache).value
+        value = enum_code_numpy(node, operand)
         result = ArrayEvaluation(value, value.quality)
     # Name只取当前显式context已解码列。
     elif node.operator == 'name':
@@ -197,6 +251,20 @@ def _evaluate(node, context, size, cache):
         elif node.operator == 'to_float':
             # 大整数不默默变近似float。
             value = to_float_numpy(values[0])
+        elif node.operator == 'unit_convert':
+            # 整批应用已编译系数，数组核检查定宽和质量，不逐行构造单位对象。
+            value = affine_numpy(values[0], *node.value, node.dtype)
+        elif node.operator == 'lookup':
+            value = lookup_numpy(node.value, values[0])
+        elif node.operator == 'host_function':
+            from ..extension_runtime import point_call
+            value = point_call(node.host_function,'numpy',values)
+        elif node.operator in MATH_KERNELS:
+            # 同一时间行跨列求值，逐行无效原因与dtype保留。
+            value = math_numpy(node.operator, values)
+        elif node.operator in INTEGER_KERNELS:
+            # 位、定宽取余和精确类型转换都按整列有效位置计算。
+            value = integer_numpy(node, values)
         # 常量大边界不能塞进定宽列后wrap。
         elif node.operator.startswith('int_literal_'):
             # 独立静态端点判定及正常整数ufunc。
@@ -303,12 +371,10 @@ def evaluate_memory_numpy(compiled: CompiledExpression, times: np.ndarray, *, po
     # 局部context只材料化实际依赖列。
     context = {}
     # 循环维度是依赖列，列内对齐/计算实际数组化。
-    for name in compiled.dependencies:
-        # 原输出→独立NumPy额外转换，不重复DBC factor。
-        history = memory_series_numpy(compiled.bindings, name)
+    for name, history in memory_histories(compiled, compiled.dependencies, memory_series_numpy).items():
         # 用searchsorted定位最近观测，并结合有效期与质量掩码决定哪些保持值可用。
         aligned = align_numpy(build_signal_array(history), times, point=point)
         # 原valid/质量保留，包括最新invalid覆盖，enum代码域来自历史。
-        context[name] = NumericArray(history.bindings.resolve(name).dtype, aligned.values, aligned.valid, aligned.quality, aligned.history.labels)
+        context[name] = aligned_column(aligned)
     # 精确行数还覆盖无依赖/空查询情况。
     return evaluate_numpy(compiled, context, compiled.bindings, size=len(times))

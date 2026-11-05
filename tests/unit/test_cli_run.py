@@ -76,6 +76,7 @@ def actual_write(owner, destination):
     manifest = write(owner, destination)
     if owner is target:
         facts['published'] = True
+        facts['manifest_path'] = str(manifest.manifest_path)
         if mode == 'cancel_after_write':
             raise cancel
     return manifest
@@ -162,7 +163,7 @@ class CLIRunTests(unittest.TestCase):
         directory.mkdir()
         source, path = directory / 'signal.csv', directory / 'analysis.json'
         source.write_text('t,Power\n0,0\n1,2\n2,0\n3,0\n', encoding='utf-8')
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='cli_run', entity='synthetic', session='trial', domain=dict(start='0s', end='4s')),
             sources=[dict(name='table', source_type='signal_csv', path='signal.csv', time_column='t',
                 time=dict(time_type='relative', unit='s', origin='cli_clock'))],
@@ -222,7 +223,9 @@ class CLIRunTests(unittest.TestCase):
         self.assertEqual(set(value), {'status', 'run_id', 'plan_identity', 'backend', 'output', 'manifest', 'row_counts', 'device_label', 'analysis_outcome'})
         self.assertEqual((value['status'], value['plan_identity'], value['backend'], value['device_label']),
             ('completed', plan.identity, backend, 'home'))
-        self.assertEqual((value['output'], value['manifest']), (str(output), str(output / 'run_manifest.json')))
+        self.assertEqual(value['output'], str(output))
+        self.assertEqual(Path(value['manifest']).parent, output)
+        self.assertRegex(Path(value['manifest']).name, r'^run_manifest_\d{8}_\d{6}_\d{6}(?:_\d+)?\.json$')
         self.assertTrue(Path(value['output']).is_absolute())
         manifest = json.loads(Path(value['manifest']).read_text(encoding='utf-8'))
         self.assertEqual(manifest['status'], 'completed')
@@ -299,8 +302,11 @@ class CLIRunTests(unittest.TestCase):
                         self.assertEqual(result.metadata.plan_hash, manifest['run']['plan_hash'])
                         self.assertEqual(result.metadata.backend, backend)
                         for table in ('events', 'segments', 'calculations'):
-                            self.assertEqual((output / (table + '.' + tables)).read_bytes(),
-                                (api_manifest.output_dir / (table + '.' + tables)).read_bytes())
+                            cli_name = next(item['name'] for item in manifest['outputs']
+                                if item['name'].startswith(table + '_') and item['name'].endswith('.' + tables))
+                            api_path = next(path for path in api_manifest.output_files
+                                if path.name.startswith(table + '_') and path.suffix == '.' + tables)
+                            self.assertEqual((output / cli_name).read_bytes(), api_path.read_bytes())
                         budget = result.spool.budget
                     self.assertEqual(budget.ram_bytes, 0)
                     self.assertEqual(path.read_bytes(), original_bytes)
@@ -361,12 +367,14 @@ class CLIRunTests(unittest.TestCase):
         self.assertFalse(output.exists())
 
     def test_existing_file_and_directory_are_rejected_before_runner_or_source(self):
-        """output/work任一已有文件或目录均拒覆盖，真实CSV迭代计数为0。
+        """拒绝output已有文件以及work已有文件或目录，真实CSV迭代计数为0。
 
         参数: 无。返回: None。异常: 预检次序、sentinel bytes或目录内容改变即失败。
         """
         for position in ('output', 'work'):
             for kind in ('file', 'directory'):
+                if position == 'output' and kind == 'directory':
+                    continue
                 with self.subTest(position=position, kind=kind):
                     directory, path, _ = self.fixture(suffix=position + '-' + kind)
                     output, work_dir = directory / 'output', directory / 'work'
@@ -385,6 +393,19 @@ class CLIRunTests(unittest.TestCase):
                     self.assertEqual(completed.stdout, '')
                     if kind == 'directory':
                         self.assertEqual(set(existing.iterdir()), {sentinel})
+
+    def test_existing_output_directory_preserves_files_and_publishes_another_run(self):
+        """复用输出目录保留已有文件。参数: 无。返回: None。异常: 分析、发布或内容断言失败。"""
+        directory, path, _ = self.fixture()
+        output = directory / 'output'
+        output.mkdir()
+        sentinel = output / 'keep.bin'
+        sentinel.write_bytes(b'preexisting\x00\r\n')
+        completed, facts = self.invoke(self.arguments(path, output, directory / 'work'), observe='preflight')
+        self.summary(completed, load_analysis_plan(path), output, 'numpy')
+        self.assertEqual(facts['runner_calls'], 1)
+        self.assertGreater(facts['source_calls'], 0)
+        self.assertEqual(sentinel.read_bytes(), b'preexisting\x00\r\n')
 
     def test_actual_dangling_link_is_rejected_without_scanning_or_replacing(self):
         """output/work实际悬空目录链接即使exists为False仍须预拒，不用假lstat代替。
@@ -458,7 +479,8 @@ class CLIRunTests(unittest.TestCase):
         self.assertIn('publish_install_controlled', completed.stderr)
         self.assertTrue(facts['install_reached'])
         self.assert_cli_closed(facts)
-        self.assertFalse(output.exists())
+        self.assertTrue(output.is_dir())
+        self.assertEqual(tuple(output.iterdir()), ())
         markers = tuple(directory.glob('.output.incomplete-*/run_manifest.json'))
         self.assertTrue(markers)
         for marker in markers:
@@ -482,10 +504,10 @@ class CLIRunTests(unittest.TestCase):
                     self.assertFalse(output.exists())
                 else:
                     self.assertTrue(facts['published'])
-                    self.assertEqual(json.loads((output / 'run_manifest.json').read_text(encoding='utf-8'))['status'], 'completed')
+                    self.assertEqual(json.loads(Path(facts['manifest_path']).read_text(encoding='utf-8'))['status'], 'completed')
 
     def test_close_error_after_real_close_never_prints_success_or_claims_output_rollback(self):
-        """真实发布及原close已完成后抛错仍退出1，保已安装目录并明确提示可能已发布。
+        """真实发布及原close已完成后抛错仍退出1，保留成果并明确指出已发布清单。
 
         参数: 无。返回: None。异常: stdout误报成功、错误路径/cause不可见或账本不为0即失败。
         """
@@ -498,9 +520,9 @@ class CLIRunTests(unittest.TestCase):
         self.assertTrue(facts['published'] and facts['close_fault_injected'])
         self.assert_cli_closed(facts)
         self.assertIn('close_after_install_controlled', completed.stderr)
-        self.assertIn('可能已发布', completed.stderr)
-        self.assertIn(str(output), completed.stderr)
-        self.assertEqual(json.loads((output / 'run_manifest.json').read_text(encoding='utf-8'))['status'], 'completed')
+        self.assertIn('结果已发布，清单：', completed.stderr)
+        self.assertIn(facts['manifest_path'], completed.stderr)
+        self.assertEqual(json.loads(Path(facts['manifest_path']).read_text(encoding='utf-8'))['status'], 'completed')
 
 
 if __name__ == '__main__':

@@ -31,7 +31,7 @@ def synthetic_message_plan(root, *, backend, disjunction, constant, unicode_text
                                          value_policy='raw_decoded-v1')
         calculations.append(calculation)
     name = '声明输入-中文' if unicode_text else 'declared-input'
-    config = dict(config_version=3,
+    config = dict(config_version=4,
         dataset=dict(name='synthetic_nested', entity='synthetic', session='session',
                      domain=dict(start='0ns', end='100ns')),
         sources=[dict(name='bus', source_type='can_blf', path=str(root / (name + '.blf')),
@@ -71,7 +71,7 @@ def make_scan_fixture(*, backend='numpy'):
         for second, frame_id, payload in ((0, 256, b'\xa0\x0f'), (1, 256, b'\xa0\x0f'), (2, 257, b'x')):
             writer.on_message_received(can.Message(timestamp=1700000000.0 + second,
                 arbitration_id=frame_id, is_extended_id=False, channel=0, data=payload))
-    config = dict(config_version=3,
+    config = dict(config_version=4,
         dataset=dict(name='legacy_only', entity='synthetic', session='session', domain=dict(start='0s', end='3s')),
         sources=[dict(name='bus', source_type='can_blf', path=str(blf.resolve()), legacy_profile='sclicer-functions-v1',
             dbc_by_channel={'1':str(dbc.resolve())}, time=dict(time_type='relative', unit='s', origin='clock', offset='-1700000000s'))],

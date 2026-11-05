@@ -6,7 +6,7 @@ For a typical CAN task, Chronaxis decodes messages, detects activities, calculat
 A *binding* connects an input field to a signal name used in expressions. A *backend* supplies the calculation implementation. Temporary working files support bounded-memory processing and result publication. See [terms](terms.md) for the terminology used in this guide.
 
 <a id="从输入记录到计算结果"></a>
-## 1. From input records to results
+## 1. General analysis from input records to results
 
 ```text
 CLI or Python API
@@ -31,10 +31,12 @@ CLI or Python API
   → ResultSpool: budgeted storage and ordered results
   → AnalysisResult: row iterators
   → write: tables, requested exports, input issues, and manifest
-      Publish to a new output directory
+      Publish timestamped output files
 ```
 
-Per-message calculations use a separate path: match a required message, use its current decoded values, evaluate, and accumulate. Summary-only tasks can accumulate directly when no other requested feature needs history. This differs from historical ChrgInfo profiles that may cache a previous value: a missing value in the current message is skipped, not carried forward. A configured per-message period must not also be multiplied by actual elapsed time. See [migration](migration.md).
+In the general entry, per-message calculations use a separate path: match a required message, use its current decoded values, evaluate, and accumulate. Summary-only tasks can accumulate directly when no other requested feature needs history. This differs from historical ChrgInfo profiles that may cache a previous value: a missing value in the current message is skipped, not carried forward. A configured per-message period must not also be multiplied by actual elapsed time. See [per-message calculations](message-calculations.md).
+
+The explicit fast entry processes independent ASC/BLF files. Each file worker reads the messages and accumulates same-frame formulas. A target frame missing a required formula value, or a formula evaluation error, fails that file. See [High-performance integrator](fast-energy.md) for complete inputs, configuration and results.
 
 <a id="每一层解决什么问题"></a>
 ## 2. What each layer does
@@ -49,7 +51,6 @@ Per-message calculations use a separate path: match a required message, use its 
 | `core` | Signals and conditions become events, windows, values, and quality states. It does not open CAN files. | Analysis semantics and calculation algorithms. |
 | `execution` | Plans and batches become result rows while retaining state across batches and managing history and cleanup. | End-to-end execution and resource handling. |
 | `legacy` | Frozen reader/decoder interfaces become decoded messages or requested raw-message exports. | CAN adapters, per-message execution, and process transport. |
-| `migration` | An INI file and explicit mappings become a plan or a rejection report. It does not run an analysis. | Importing historical configuration. |
 | `results` | Computed rows become temporary storage and final output directories. | Ordering, iterators, publication, and failure handling. |
 
 The [module index](../reference/index.md) is a Chinese implementation reference. For example, `execution.record_session_calculations` and `execution.record_scope_calculations` implement different calculation scopes, but the runner calls them as needed. Users normally call the [public API](api.md).
@@ -73,7 +74,7 @@ Python still controls input files, rule state, budgets, and cleanup. A node show
 <a id="与历史项目的关系"></a>
 ## 5. Relationship to the historical projects
 
-Three vendored Sclicer files provide the frozen read/write and decoding implementation. New outer layers provide plans, rules, budgets, and publication. This does not expose every historical CSVConvert, Filter, or ChrgInfo entry point as a public API; see [migration](migration.md).
+Three vendored Sclicer files provide the frozen read/write and decoding implementation. New outer layers provide plans, rules, budgets, and publication. This does not expose every historical CSVConvert, Filter, or ChrgInfo entry point as a public API; see [per-message calculations](message-calculations.md).
 
 Demand-driven decoding and field selection use plan dependencies. `explain` reports their scope. The frozen decoder implementation and the choice of fields requested from it are separate responsibilities.
 

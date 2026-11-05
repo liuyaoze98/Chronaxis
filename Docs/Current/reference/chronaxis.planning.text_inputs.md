@@ -1,4 +1,4 @@
-# chronaxis.planning.text_inputs
+# `chronaxis.planning.text_inputs`
 
 把ASC或原始报文CSV来源配置转换成读取规格，明确文件顺序、时间格式、偏移和DBC通道；不会自动猜日期或格式。见[文本输入](../text-inputs.md)。
 
@@ -56,4 +56,4 @@ SourcePlan。
 
 PlanValidationError定位配置问题；不发生原始输入I/O。
 
-源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

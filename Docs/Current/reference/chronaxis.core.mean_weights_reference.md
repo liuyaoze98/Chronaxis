@@ -1,4 +1,4 @@
-# chronaxis.core.mean_weights_reference
+# `chronaxis.core.mean_weights_reference`
 
 复用标量均值的先归一化再相乘规则，避免先求面积导致溢出。
 
@@ -48,4 +48,4 @@ normalized_mean_terms(values, weights, denominator)
 
 结构或分配错误传播；非有限/下溢标质量。
 
-源码：[`src/chronaxis/core/mean_weights_reference.py:7`](../../../src/chronaxis/core/mean_weights_reference.py#L7)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/mean_weights_reference.py:7`](../../../src/chronaxis/core/mean_weights_reference.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

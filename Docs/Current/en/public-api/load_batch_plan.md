@@ -11,9 +11,9 @@ Read a batch YAML/JSON file and construct its independent tasks and scheduling s
 load_batch_plan(path: str | Path) -> BatchPlan
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `path` | str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) | Required | Positional or keyword. Batch JSON/YAML path. Child plans, templates, and input paths are relative to this file. `jobs` plans load when each task starts; `template` expands and compiles independent plans during this call. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|No default|Positional or keyword. Batch JSON/YAML path. Child plans, templates, and input paths are relative to this file. `jobs` plans load when each task starts; `template` expands and compiles independent plans during this call.|
 
 Returns an immutable [BatchPlan](BatchPlan.md#api-BatchPlan) with checked batch structure. Templates are expanded, while jobs retain paths. Neither reads business-input records at this stage.
 
@@ -29,4 +29,4 @@ plan = load_batch_plan("batch.yaml")
 
 ## Source locations
 
-- [`src/chronaxis/batch/config.py:14`](../../../../src/chronaxis/batch/config.py#L14) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/config.py:14`](../../../../src/chronaxis/batch/config.py#L14) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

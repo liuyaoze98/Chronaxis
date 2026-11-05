@@ -1,4 +1,4 @@
-# chronaxis.core.expression_numpy
+# `chronaxis.core.expression_numpy`
 
 在同长度信号列上批量求值表达式，并逐位置保留质量诊断。
 
@@ -30,6 +30,7 @@ evaluate_memory_numpy从已有内存行归一化信号，用searchsorted找到�
 |[`_logic`](#api-_logic)|独立以整列掩码实现and/or/not三值真值表。|
 |[`_constant`](#api-_constant)|把表达式中的一个常量重复成与输入同样长的一维数组。例如常量2对应3个输入时间，就生成3项值为2的数组；数据类型和枚举标签按已经检查过的表达式保存。|
 |[`_literal_compare`](#api-_literal_compare)|在整数域比较原列与任意精确Python整数常量边界。|
+|[`_where`](#api-_where)|按有效条件拆成真、假两个活动子批，再按原行序还原输出。|
 |[`_evaluate`](#api-_evaluate)|按静态节点结构调用真实批量数值/逻辑内核。|
 |[`evaluate_numpy`](#api-evaluate_numpy)|检查绑定、依赖列与行数后，批量计算一个表达式。|
 |[`evaluate_memory_numpy`](#api-evaluate_memory_numpy)|从已有内存信号批量对齐到查询时间，再计算表达式。|
@@ -38,12 +39,20 @@ evaluate_memory_numpy从已有内存行归一化信号，用searchsorted找到�
 
 ```python
 from dataclasses import dataclass
+from .enum_codes import memory_histories, aligned_column
 from .expression import CompiledExpression
 from .binding import SignalBindings
 from .decoded_binding import DecodedBindings
 from .message_binding import MessageBindings
 from .numeric import INTEGER_BOUNDS
 from .numeric_numpy import COMPARE_UFUNCS, DTYPES, NumericArray, _output, _readonly, binary_numpy, to_float_numpy, unary_numpy
+from .affine_numpy import affine_numpy
+from .expression_math_v4 import MATH_KERNELS
+from .expression_math_numpy import math_numpy
+from .expression_integer_v4 import INTEGER_KERNELS
+from .expression_integer_numpy import integer_numpy
+from .lookup_numpy import lookup_numpy
+from .enum_codes import enum_code_numpy
 from .expression_reference import require_context
 from .normalize_numpy import memory_series_numpy
 from .state_numpy import align_numpy, build_signal_array, _require_axis
@@ -73,7 +82,7 @@ class ArrayEvaluation
 |`value`|[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|真实逻辑结果列。|
 |`dependency_quality`|np.ndarray|是|无|同长uint16原因并集。|
 
-源码：[`src/chronaxis/core/expression_numpy.py:45`](../../../src/chronaxis/core/expression_numpy.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:54`](../../../src/chronaxis/core/expression_numpy.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ArrayEvaluation-__post_init__"></a>
 ### `ArrayEvaluation.__post_init__`
@@ -104,7 +113,7 @@ TypeError/ValueError为结构/长度/未知位。
 - `TypeError`：ArrayEvaluation诊断需1维uint16列。
 - `ValueError`：ArrayEvaluation诊断长度/原因不合法。
 
-源码：[`src/chronaxis/core/expression_numpy.py:57`](../../../src/chronaxis/core/expression_numpy.py#L57)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:66`](../../../src/chronaxis/core/expression_numpy.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_logic"></a>
 ## `_logic`
@@ -130,7 +139,7 @@ NumericArray，known决定时质量NONE，否则UNKNOWN原因并集。
 
 调用者保证static BOOL及shape，分配错误传播。
 
-源码：[`src/chronaxis/core/expression_numpy.py:76`](../../../src/chronaxis/core/expression_numpy.py#L76)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:85`](../../../src/chronaxis/core/expression_numpy.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_constant"></a>
 ## `_constant`
@@ -156,7 +165,7 @@ _constant(node, size)
 
 模型/分配错误传播，不自动promotion。
 
-源码：[`src/chronaxis/core/expression_numpy.py:111`](../../../src/chronaxis/core/expression_numpy.py#L111)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:120`](../../../src/chronaxis/core/expression_numpy.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_literal_compare"></a>
 ## `_literal_compare`
@@ -182,7 +191,35 @@ BOOL列，invalid保持原原因，不转float或cast越界常量。
 
 编译器保证类型与注册比较，分配错误传播。
 
-源码：[`src/chronaxis/core/expression_numpy.py:126`](../../../src/chronaxis/core/expression_numpy.py#L126)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:135`](../../../src/chronaxis/core/expression_numpy.py#L135)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-_where"></a>
+## `_where`
+
+按有效条件拆成真、假两个活动子批，再按原行序还原输出。
+
+```python
+_where(node, context, size, cache)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`node`|ExprNode|是|无|位置或关键字。已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。|
+|`context`|Mapping[str, [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)]|是|无|位置或关键字。当前批按别名取得的输入列，分支只在被选中的行上求值。|
+|`size`|int|是|无|位置或关键字。整个当前批的行数，划分子批并恢复原行序时使用。|
+|`cache`|dict[ExprNode, [ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)]|是|无|位置或关键字。仅限当前批行坐标的求值结果缓存，不能把其他子批的数组当作对应行。|
+
+### 返回说明
+
+ArrayEvaluation；条件未知的行保留条件原因，其他行仅并入所选分支诊断。
+
+### 异常说明
+
+模型、数组布局或分配发生异常时直接交给调用者处理；不以逐行解释器代替掩码计算。
+
+源码：[`src/chronaxis/core/expression_numpy.py:163`](../../../src/chronaxis/core/expression_numpy.py#L163)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_evaluate"></a>
 ## `_evaluate`
@@ -210,7 +247,7 @@ ArrayEvaluation，完整诊断不因known逻辑结果丢失。
 
 静态/输入模型问题传播，不调用reference/eval/逐样本Python。
 
-源码：[`src/chronaxis/core/expression_numpy.py:154`](../../../src/chronaxis/core/expression_numpy.py#L154)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:200`](../../../src/chronaxis/core/expression_numpy.py#L200)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-evaluate_numpy"></a>
 ## `evaluate_numpy`
@@ -253,7 +290,7 @@ TypeError、ValueError: 模型、绑定身份、依赖键、类型、枚举域�
 
 返回类型：[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)。
 
-源码：[`src/chronaxis/core/expression_numpy.py:229`](../../../src/chronaxis/core/expression_numpy.py#L229)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:297`](../../../src/chronaxis/core/expression_numpy.py#L297)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-evaluate_memory_numpy"></a>
 ## `evaluate_memory_numpy`
@@ -292,4 +329,4 @@ TypeError: 非memory绑定，包括DecodedBindings；其他时间/归属/形状�
 
 返回类型：[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)。
 
-源码：[`src/chronaxis/core/expression_numpy.py:280`](../../../src/chronaxis/core/expression_numpy.py#L280)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression_numpy.py:348`](../../../src/chronaxis/core/expression_numpy.py#L348)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

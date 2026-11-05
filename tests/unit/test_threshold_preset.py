@@ -4,6 +4,8 @@
 覆盖初始未知、缺口、确认等待、无观测、两后端、发布和资源清理。
 所有运行写work专用目录，原项目只读；不把合成参数当车辆标定。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -252,10 +254,10 @@ class ThresholdPresetTests(unittest.TestCase):
         (self.work/'cli.json').write_text(json.dumps(current_fixture(dict(device_label='home',returncode=cli.returncode,
             stdout=cli.stdout,stderr=cli.stderr)),ensure_ascii=False,indent=2),encoding='utf-8')
         self.assertEqual(cli.returncode,0,cli.stderr)
-        manifest=json.loads((self.work/'cli-output'/'run_manifest.json').read_text(encoding='utf-8'))
+        manifest=json.loads(Path(json.loads(cli.stdout)['manifest']).read_text(encoding='utf-8'))
         self.assertEqual(manifest['run']['threshold_durations'],[expected])
         for table in ('events','segments','calculations','sequences'):
-            self.assertEqual((api.output_dir/(table+'.csv')).read_bytes(),(self.work/'cli-output'/(table+'.csv')).read_bytes())
+            self.assertEqual((published_file(api,table+'.csv')).read_bytes(),(self.work/'cli-output'/next(f['name'] for f in manifest['outputs'] if f['name'].startswith(table+'_') and f['name'].endswith('.csv'))).read_bytes())
 
 
 if __name__=='__main__':

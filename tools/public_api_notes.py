@@ -1,0 +1,101 @@
+"""新增公开子模块的双语用法说明；签名和参数默认值另取自固定产品基线。
+
+说明集中于真实用途、输入、返回和失败政策，不代替接口反射，也不增加根包导出。
+"""
+
+COMMON = {
+    'name': ('在本次注册中唯一、且不与内置操作重名的表达式标识符。', 'Expression identifier, unique in the registry and distinct from built-in operations.'),
+    'version': ('非空的实现版本；实现行为变化时由宿主递增。', 'Nonempty implementation version; the host must change it when implementation behavior changes.'),
+    'input': ('一个ValueSpec端口，声明数值dtype与已登记单位；不接受BOOL或ENUM。', 'One ValueSpec numeric port with a registered unit; BOOL and ENUM are not accepted.'),
+    'inputs': ('非空ValueSpec元组，按函数的位置参数顺序声明dtype与单位。BOOL端口单位为1，ENUM需先取编码。', 'Nonempty tuple of ValueSpec ports in positional argument order. BOOL uses unit 1; extract enum codes before calling.'),
+    'output': ('输出ValueSpec端口；声明回调结果的dtype与单位。', 'Output ValueSpec port declaring the callback result dtype and unit.'),
+    'state_bytes': ('状态预留费用，非负整数，单位byte；宿主按实际状态需求声明。', 'Nonnegative integer state reservation in bytes, declared by the host for actual state needs.'),
+    'mergeable': ('True要求状态实现merge(other)，False不承诺可合并。', 'True requires state.merge(other); False makes no mergeability promise.'),
+    'history_ns': ('必须显式填写正int64回看宽度；单位ns，按所选实际或周期口径计量。默认0不是有效声明。', 'Explicit positive int64 lookback width in ns, measured using the selected actual or periodic interval mode. The default 0 is not a valid declaration.'),
+    'interval_modes': ('本实现支持的actual/fixed/dbc非空、无重复元组；不要声明尚未正确实现的权重口径。', 'Nonempty unique tuple drawn from actual/fixed/dbc. Declare only the weighting modes implemented correctly.'),
+}
+
+NOTES = {
+ 'fast.run': {
+  'summary': ('高性能积分器：读取一个ASC或BLF文件，对同帧公式逐报文累计，成功后发布结果。不是按真实帧间隔积分。', 'High-performance integrator: read one ASC or BLF file, accumulate same-frame formulas per message, and publish results on success. This is not integration over actual inter-frame time.'),
+  'parameters': {
+   'config': ('str或Path：单文件YAML/JSON配置路径。只接受fast支持的同帧逐报文累计配置；DBC与报文路径相对声明它们的配置文件。', 'str or Path to a single-file YAML/JSON configuration in the fast subset. DBC and input paths are relative to the declaring configuration file.'),
+   'output': ('str或Path：结果目录，可已存在；使用本次时间标记文件，不覆盖既有结果。', 'str or Path to the result directory, which may already exist. This run uses timestamped filenames and does not overwrite existing results.')},
+  'returns': ('pathlib.Path：本次run_manifest完成清单；从outputs取得实际结果文件名。没有目标帧时结果为空且保留原因，不伪造零。', 'pathlib.Path to this run manifest. Read outputs for actual filenames. A file with no target frames has a null result and a reason, not a fabricated zero.'),
+  'raises': ('无效配置抛PlanValidationError；读取、解码或公式错误传播对应异常，本文件不发布正常累计结果。输出I/O失败传播OSError。此单文件入口没有cancel_event参数。', 'PlanValidationError for invalid configuration; read, decode, and formula errors propagate and prevent a normal result for the file. Output I/O failures propagate OSError. This single-file API has no cancel_event parameter.'),
+  'behavior': ('读取配置/DBC/输入，创建并发布结果文件，最后发布完成清单。支持范围与完整配置见高性能积分器教程。', 'Reads configuration, DBC, and input; writes result files and publishes the completion manifest last. See the high-performance integrator tutorial for supported capabilities and complete configurations.')},
+ 'fast.batch.run_batch': {
+  'summary': ('并行执行相互独立的高性能积分任务；连续来源paths不能借此拆成独立文件。', 'Run independent high-performance integration jobs in parallel. Do not use this to split paths that belong to one continuous source.'),
+  'parameters': {
+   'plan_path': ('str或Path：batch_version为1的jobs或template批量配置路径。每个任务都需满足fast能力范围。', 'str or Path to a batch_version 1 jobs or template plan. Every job must satisfy the fast capability subset.'),
+   'output': ('str或Path：批量输出目录，可以复用；任务输出与批量报告使用本次独占名称。', 'str or Path to a reusable batch output directory. Job outputs and batch reports use names allocated exclusively for this run.'),
+   'process_count': ('正整数或None。None沿用批量配置；显式正整数覆盖进程上限。布尔值不是合法计数。', 'Positive integer or None. None uses the batch plan setting; an integer overrides its process limit. Boolean values are not valid counts.'),
+   'cancel_event': ('`threading.Event`或`None`。调用`set()`请求取消：停止派发尚未启动的任务，并通知在途fast任务停止；协作退出超过5秒时启动进程回收。已完成任务可保留completed状态，其他任务以报告中的status、error_type和error_message为准。只有is_set()方法的其他对象不被接受。', '`threading.Event` or `None`. Call `set()` to stop pending dispatch and request running fast jobs to stop. After a five-second cooperative grace period, process cleanup begins. Already finished jobs may remain completed; inspect each job\'s status, error_type and error_message. Other objects merely providing is_set() are not accepted.'),
+   'total': ('布尔值，True请求同模板且定义一致的全批总量；按计算项完整性判定，不把缺失值当0。默认不额外汇总。', 'Boolean. True requests totals for a same-template batch with matching definitions. Completeness is checked per calculation; missing values are not zero. No extra total is computed by default.')},
+  'returns': ('pathlib.Path：本次批量报告路径。报告可包含失败或未启动任务；返回路径不代表每个任务成功，须检查报告。', 'pathlib.Path to the batch report. It can contain failed or unstarted jobs; returning a path does not mean every job succeeded. Inspect the report.'),
+  'raises': ('配置错误抛PlanValidationError；非法total抛TypeError。基础设施异常继续传播，可能通过异常的batch_report附带已保存报告。任务失败按计划fail_fast政策记录。', 'PlanValidationError for invalid plans and TypeError for an invalid total argument. Infrastructure errors propagate and may carry a saved batch_report. Job failures follow the plan fail_fast policy.'),
+  'behavior': ('创建工作进程、读取每个任务输入并写报告；内部关闭批量资源。Windows脚本必须在`if __name__ == "__main__":`保护内调用。', 'Starts worker processes, reads job inputs, writes reports, and closes batch resources internally. On Windows, call inside an `if __name__ == "__main__":` guard.')},
+ 'ExtensionRegistry': {
+  'summary': ('构造不可变宿主扩展注册表；创建计划与执行计划须传同一个注册实例。配置只引用已注册名称，不自动导入Python模块。', 'Construct an immutable host-extension registry. Pass the same instance when building and running the plan. Configuration references registered names; it does not import Python modules.'),
+  'parameters': {
+   'functions': ('FunctionSpec元组；省略为空，表示没有自定义逐点函数。', 'Tuple of FunctionSpec declarations; empty means no custom pointwise functions.'),
+   'reductions': ('ReductionSpec元组；省略为空，表示没有自定义样本归约。', 'Tuple of ReductionSpec declarations; empty means no custom sample reductions.'),
+   'transforms': ('TransformSpec元组；省略为空，表示没有自定义时序变换。', 'Tuple of TransformSpec declarations; empty means no custom temporal transforms.')},
+  'returns': ('新ExtensionRegistry。functions/reductions/transforms为只读名称映射；identity是声明及实现版本的摘要。', 'New ExtensionRegistry. Its functions/reductions/transforms are read-only name mappings; identity is a digest of declarations and implementation versions.'),
+  'raises': ('容器不是tuple或条目类型错误时抛TypeError；三类之间名称重复时抛ValueError。', 'TypeError for non-tuple containers or incorrectly typed entries; ValueError for duplicate names across categories.'),
+  'behavior': ('只登记声明，不执行回调或创建运行状态；同次运行不能替换注册表。', 'Registers declarations without executing callbacks or creating runtime state. Do not replace the registry within a run.')},
+ 'FunctionSpec': {
+  'summary': ('声明无历史的逐点函数，回调impl(args, resources)返回同形状ScalarValue或NumericArray。', 'Declare a stateless pointwise function. impl(args, resources) returns ScalarValue or NumericArray with the matching shape.'),
+  'parameters': {**{key: COMMON[key] for key in ('name','version','inputs','output')},
+   'reference': ('逐点实现`impl(args, resources)`。args按inputs声明顺序提供ScalarValue元组，返回一个符合output的ScalarValue；resources用于申请/释放临时内存。None表示不支持此后端；两个后端至少提供一个，不自动回退。', 'Point implementation `impl(args, resources)`. args is a tuple of ScalarValue objects in inputs order; return one ScalarValue matching output. resources reserves/releases temporary memory. None disables this backend; provide at least one backend, with no automatic fallback.'),
+   'numpy': ('数组逐点实现`impl(args, resources)`。args是按inputs排列的NumericArray元组，返回同长度、符合output的NumericArray；只接收到全部必要输入有效的行。None表示不支持numpy，不以reference替代。', 'Array point implementation `impl(args, resources)`. args is a tuple of NumericArray objects in inputs order; return a NumericArray of matching length and output type. Only rows with all required inputs valid are passed. None disables numpy; reference is not substituted.')},
+  'returns': ('不可变FunctionSpec声明。', 'Immutable FunctionSpec declaration.'),
+  'raises': ('名称、端口、版本或回调声明不合法时拒绝构造；ValueError或TypeError保留具体原因。', 'Invalid names, ports, versions, or implementations reject construction with ValueError or TypeError and a specific reason.'),
+  'behavior': ('必要输入无效时传播无效；未选where分支不执行。注册只检查声明，不调用计算实现。', 'Invalid required inputs propagate invalidity; an unselected where branch is not executed. Registration checks declarations without calling the implementation.')},
+ 'ReductionSpec': {
+  'summary': ('声明对真实样本归约的工厂factory(resources)。每个统计范围独立创建状态。', 'Declare a sample-reduction factory, factory(resources). Each statistical scope gets its own state.'),
+  'parameters': {**{key: COMMON[key] for key in ('name','version','input','output','state_bytes','mergeable')},
+   'reference': ('状态工厂`factory(resources)`，每个统计范围创建一个对象。对象必须提供consume(values)、finalize()、cancel()和close()；values是有效ScalarValue元组，finalize返回符合output的ScalarValue。mergeable=True还须merge(other)。None表示不支持reference，两个后端至少提供一个。', 'State factory `factory(resources)`, creating one object per reduction scope. It must provide consume(values), finalize(), cancel() and close(); values is a tuple of valid ScalarValue objects and finalize returns a ScalarValue matching output. mergeable=True also requires merge(other). None disables reference; provide at least one backend.'),
+   'numpy': ('状态工厂`factory(resources)`，必需方法与reference相同；consume(values)接收有效NumericArray，finalize()仍返回ScalarValue。None表示不支持numpy，不自动使用reference工厂。', 'State factory `factory(resources)`, with the same required methods as reference. consume(values) receives a valid NumericArray; finalize() still returns ScalarValue. None disables numpy; no reference factory fallback is used.')},
+  'returns': ('不可变ReductionSpec声明。', 'Immutable ReductionSpec declaration.'),
+  'raises': ('非法端口、后端、state_bytes或mergeable抛ValueError/TypeError；输入与输出均须为数值。', 'ValueError/TypeError for invalid ports, backends, state_bytes, or mergeable. Both input and output must be numeric.'),
+  'behavior': ('状态consume接收选定真实样本，finalize返回ScalarValue；cancel和close均为必需方法，分别处理取消与资源释放。mergeable=True须实现merge(other)。', 'State.consume receives selected real samples and finalize returns ScalarValue. Both cancel and close are required, for cancellation and resource release respectively. mergeable=True requires merge(other).')},
+ 'TransformSpec': {
+  'summary': ('声明有状态网格变换工厂factory(resources)，advance(time_ns, window_ns, values, weights_ns)计算窗口值。', 'Declare a stateful grid-transform factory, factory(resources). advance(time_ns, window_ns, values, weights_ns) calculates each window value.'),
+  'parameters': {**{key: COMMON[key] for key in ('name','version','input','output','state_bytes','history_ns','interval_modes')},
+   'reference': ('状态工厂`factory(resources)`，每会话创建对象，必须提供advance(time_ns, window_ns, values, weights_ns)、cancel()、close()。advance接收实际输出时刻、窗口计量宽度、有效ScalarValue元组及对应时长权重，返回符合output的ScalarValue；时间数值单位ns。None表示不支持reference，两个后端至少提供一个。', 'State factory `factory(resources)`, creating one object per session with required advance(time_ns, window_ns, values, weights_ns), cancel() and close(). advance receives the actual output time, measured window width, valid ScalarValue tuple and corresponding duration weights, returning a ScalarValue matching output. Time values use ns. None disables reference; provide at least one backend.'),
+   'numpy': ('状态工厂`factory(resources)`，必需方法与reference相同；advance中的values为有效NumericArray，weights_ns为对应时长数组，返回ScalarValue。None表示不支持numpy，不自动使用reference工厂。', 'State factory `factory(resources)`, with the same required methods as reference. advance receives a valid NumericArray as values and a matching duration array as weights_ns, and returns ScalarValue. None disables numpy; no reference factory fallback is used.')},
+  'returns': ('不可变TransformSpec声明。', 'Immutable TransformSpec declaration.'),
+  'raises': ('非法端口、资源、历史宽度、重复或未知interval_modes抛ValueError/TypeError。输入与输出均须为数值。', 'ValueError/TypeError for invalid ports, resources, history width, or duplicate/unknown interval_modes. Both ports must be numeric.'),
+  'behavior': ('每会话创建状态，advance仅接收有效ZOH区间及权重，返回网格时刻ScalarValue；按所声明历史及状态费用使用共享预算，关闭时释放资源。', 'Creates state per session. advance receives valid zero-order-hold spans and weights and returns a ScalarValue at the grid time. History and state use the shared budget; close releases resources.')},
+}
+
+
+def render_note(item, source_page, language):
+    """渲染双语说明和共享参数事实。源码定位由调用方从基线页保留。"""
+    import re
+    index = 1 if language == 'en' else 0
+    notes = NOTES[item['name']]
+    module, symbol = item['import_module'], item['import_name']
+    out = [f'# {module}.{symbol}\n\n`from {module} import {symbol}`\n\n',
+           f'<a id="api-{item["qualified"].replace(".", "-")}"></a>\n## `{symbol}`\n\n',
+           notes['summary'][index]+'\n\n', f'```python\n{symbol}{item["signature"]}\n```\n\n',
+           '| Name | Type | Required | Default | Purpose |\n|---|---|---|---|---|\n' if index else '|名称|类型|必填|默认值|用途|\n|---|---|---|---|---|\n']
+    if set(notes['parameters']) != {p['name'] for p in item['parameters']}:
+        raise ValueError('公开API参数说明与当前签名不一致：'+item['name'])
+    for parameter in item['parameters']:
+        name = parameter['name']
+        required = ('Yes' if parameter['required'] else 'No') if index else ('是' if parameter['required'] else '否')
+        default = parameter['default'] if parameter['default'] is not None else ('No default' if index else '无默认值')
+        typename = parameter['type'] or ('See purpose' if index else '见用途')
+        values = (f'`{name}`', typename, required, default, notes['parameters'][name][index])
+        out.append('|'+ '|'.join(v.replace('|', '&#124;') for v in values)+'|\n')
+    for key, labels in (('returns',('返回','Returns')),('raises',('异常','Raises')),('behavior',('执行与资源','Execution and resources'))):
+        out.append(f'\n### {labels[index]}\n\n{notes[key][index]}\n')
+    if item['name'] in ('FunctionSpec','ReductionSpec','TransformSpec'):
+        out.append('\n'+('Declare ports with `from chronaxis.extensions import ValueSpec` and `from chronaxis.core.types import SignalDType`. For example, `ValueSpec(SignalDType.FLOAT64, "A")` declares a numeric current port.\n' if index else '端口通过`from chronaxis.extensions import ValueSpec`与`from chronaxis.core.types import SignalDType`声明。例如`ValueSpec(SignalDType.FLOAT64, "A")`表示浮点电流端口。\n'))
+        out.append(f'\n### `require_backend`\n\n```python\n{symbol}.require_backend(backend)\n```\n\n')
+        out.append(('Inherited method: backend is required and must be reference or numpy. Returns that registered callback/factory; raises ValueError for an unknown or unsupported backend.\n' if index else '继承的公开方法：必填backend只能为reference或numpy。返回对应已登记回调或工厂；未知后端或缺少该后端实现抛ValueError。\n'))
+    out.append('\n'+('[Worked host example](../host-extensions.md)' if index else '[完整宿主示例](../host-extensions.md)')+'\n' if item['name'] not in ('fast.run','fast.batch.run_batch') else '\n'+('[High-performance integrator tutorial](../fast-energy.md)' if index else '[高性能积分器教程](../fast-energy.md)')+'\n')
+    out.extend('\n'+m.group(0)+'\n' for m in re.finditer(r'(?m)^源码：.*$',source_page))
+    return ''.join(out)

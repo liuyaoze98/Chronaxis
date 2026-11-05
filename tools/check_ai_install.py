@@ -79,9 +79,12 @@ def check(wheel, guide, deps, report, device):
     # 极少数内置异常没有可反射签名；必须和参考页同样明确为空，而非伪造(*args)。
     check_api = """import inspect,json,chronaxis
 rows=json.load(open('api/index.json',encoding='utf8'))['objects']
-assert sorted(x['name'] for x in rows)==sorted(chronaxis.__all__)
+assert sorted(x['name'] for x in rows if x.get('import_module','chronaxis')=='chronaxis')==sorted(chronaxis.__all__)
+import importlib
+for item in rows:
+    assert hasattr(importlib.import_module(item.get('import_module','chronaxis')),item.get('import_name',item['name']))
 for row in rows:
-    obj=getattr(chronaxis,row['name'])
+    obj=getattr(importlib.import_module(row.get('import_module','chronaxis')),row.get('import_name',row['name']))
     try: actual=str(inspect.signature(obj))
     except (TypeError,ValueError): actual=None
     assert actual==row['signature'],(row['name'],actual,row['signature'])
@@ -101,35 +104,130 @@ print(len(rows))
         found = json.loads(command("english-lookup-" + kind,
             [python, "-I", "../lookup.py", "--language", "en", kind, term], direct / "en"))
         assert found, (kind, term)
+    # 从真正查询结果继续阅读完整参考；不能只检验索引或示例可运行。
+    summary['task_reading'] = []
+    for language, terms in (('zh', ('结果聚合', '逐消息累计')), ('en', ('result aggregation', 'per-message accumulation'))):
+        base = direct / ('en' if language == 'en' else '')
+        for term, expected in zip(terms, ('POWER_STATISTICS', 'MESSAGE_ENERGY')):
+            rows = json.loads(command('reading-' + language + '-' + expected,
+                [python, '-X', 'utf8', '-I', direct / 'lookup.py', 'task', term, '--language', language], base))
+            task, = [item for item in rows if item['id'] == expected]
+            opened = []
+            for reference in task['references']:
+                filename, _, pointer = reference['path'].partition('#')
+                target = (base / filename).resolve()
+                assert target.is_relative_to(direct), target
+                text = target.read_text(encoding='utf8')
+                if pointer:
+                    node = json.loads(text)
+                    for part in pointer.split('/')[1:]:
+                        key = part.replace('~1', '/').replace('~0', '~')
+                        node = node[int(key)] if isinstance(node, list) else node[key]
+                    assert node['items']['properties'], reference
+                else:
+                    required = ('group_by', 'include_partial', 'partial_policy', 'discovery_complete') if expected == 'POWER_STATISTICS' else ('parameters', 'message_policy', 'split_by_sign')
+                    assert all(word in text for word in required), reference
+                opened.append(reference['path'])
+            # 示例也必须由这次查询给出，随后下方任务循环实际运行同一份文件。
+            example = (base / task['example']).resolve()
+            assert example.is_relative_to(direct) and example.read_text(encoding='utf8').strip(), example
+            summary['task_reading'].append(dict(language=language, task=expected, references=opened, example=task['example']))
+    save()
     # 按英文README的相对路径，从en目录真正执行同一跨卷例子并核对能量。
     en_task = next(t for t in json.loads((direct / "en/tasks.json").read_bytes())["tasks"] if t["id"] == "CONDITION_ENERGY")
-    command("english-run", [python, "-I", "../run_analysis.py", en_task["example"], user / "out-english"], direct / "en")
-    with (user / "out-english/事件结果.csv").open(encoding="utf-8-sig", newline="") as stream:
+    english_output=command("english-run", [python, "-I", "../run_analysis.py", en_task["example"], user / "out-english"], direct / "en")
+    english_manifest=Path(english_output.strip().splitlines()[-1])
+    english_info=json.loads(english_manifest.read_bytes())
+    english_table=next(english_manifest.parent/item["name"] for item in english_info["outputs"] if item["name"].startswith("事件结果_"))
+    with english_table.open(encoding="utf-8-sig", newline="") as stream:
         en_events = list(csv.DictReader(stream))
     assert len(en_events) == 1 and (en_events[0]["开始时间（s）"], en_events[0]["结束时间（s）"]) == ("61", "122")
     summary["english_energy_kwh"] = float(en_events[0]["energy_kwh（kWh）"])
     assert abs(summary["english_energy_kwh"] - 4000*61/3600000) < 1e-12
     for task in plan_index["tasks"]:
         slug,plan=task["id"],str((direct / task["example"]).resolve())
+        if slug == "FAST_MESSAGE_ENERGY":
+            folder = Path(plan).parent
+            explained = json.loads(cli("explain-fast-energy", "fast", "explain", plan, cwd=user))
+            assert explained["engine"] == "base_hpc_v1" and len(explained["metrics"]) == 1, explained
+            manifests = []
+            for source in (Path(plan), folder / "analysis-blf.yaml"):
+                valid = json.loads(cli("validate-" + source.stem, "fast", "validate", source, cwd=user))
+                assert valid["valid"], valid
+                output = user / ("out-" + slug)
+                publication = json.loads(cli("run-" + source.stem, "fast", "run", source, "--output", output, cwd=user))
+                manifest = Path(publication["manifest_path"])
+                manifests.append(manifest)
+                item, = json.loads(manifest.read_bytes())["outputs"]
+                with (manifest.parent / item["name"]).open(encoding="utf-8-sig", newline="") as stream:
+                    row, = csv.DictReader(stream)
+                assert (row["计算项"], float(row["结果"]), row["单位"], row["状态"]) == ("energy", 800., "J", "完整"), row
+            assert len(set(manifests)) == 2 and all(path.is_file() for path in manifests), manifests
+            invalid = folder / "unsupported.yaml"
+            command("reject-fast-full", [python, "-I", "-B", "-m", "chronaxis", "fast", "validate", invalid], user, 2)
+            errors = json.loads((area / "reject-fast-full.stderr").read_bytes())["errors"]
+            assert any(item["path"] == "$.outputs.contributions" for item in errors), errors
+            summary["cases"][slug] = "ASC and BLF each 800 J"
+            save()
+            continue
+        if slug == "FAST_TEMPLATE_TOTAL":
+            run = json.loads(cli("run-" + slug, "fast", "batch", plan, "--output", "out-" + slug, "--total", cwd=user))
+            report_data = json.loads(Path(run["report_path"]).read_bytes())
+            total, = report_data["totals"]
+            assert run["status"] == "completed" and total["value"] == 1200 and total["unit"] == "J" and total["status"] == "complete", report_data
+            summary["cases"][slug] = "800 J + 400 J = 1200 J"
+            save()
+            continue
+        if slug=="HOST_EXTENSION":
+            # 此例的配置只引用已登记名称；普通 CLI 不能替用户加载 Python。
+            program = Path(plan).with_name("host_extensions.py")
+            for backend in ("reference","numpy"):
+                # 参考端核对脚本同目录的缺省配置，数组端按任务声明显式选择配置。
+                plan_args = ["--plan", plan] if backend == "numpy" else []
+                text = command("host-"+backend,[python,"-X","utf8","-I",program,"--backend",backend,
+                               *plan_args,"--work-dir",user/("host-"+backend)],user)
+                peaks = [line.split() for line in text.splitlines() if line.startswith("peak ")]
+                assert len(peaks)==1 and float(peaks[0][1])==80 and peaks[0][2:]==["A","complete"],text
+            summary["cases"][slug]="both host backends: 80 A"
+            save()
+            continue
         if slug=="BATCH":
-            cli("run-"+slug,"batch","run",plan,"--output","out-"+slug,cwd=user)
-            batch=json.loads((user/("out-"+slug)/"batch_report.json").read_bytes())
+            batch_summary=json.loads(cli("run-"+slug,"batch","run",plan,"--output","out-"+slug,cwd=user))
+            batch=json.loads(Path(batch_summary["report"]).read_bytes())
             assert batch["jobs"] and all(job["status"]=="completed" for job in batch["jobs"]),batch["counts"]
         else:
             valid=json.loads(cli("validate-"+slug,"validate",plan,"--format","json",cwd=user))
             assert valid["valid"] and valid["execution_ready"],(slug,valid)
             published=json.loads(cli("run-"+slug,"run",plan,"--output","out-"+slug,cwd=user))
             assert published["status"]=="completed",published
+            manifest_path=Path(published["manifest"])
+            manifest=json.loads(manifest_path.read_bytes())
+            if slug=="MESSAGE_ENERGY":
+                # 通用逐消息任务走普通run；独立手算两条4000W×0.1s贡献合计800J。
+                table = next(manifest_path.parent / item["name"] for item in manifest["outputs"]
+                             if item["name"].startswith("会话结果_"))
+                with table.open(encoding="utf-8-sig", newline="") as stream:
+                    rows = list(csv.DictReader(stream))
+                assert len(rows) == 1 and float(rows[0]["energy（J）"]) == 800, rows
+                assert rows[0]["energy：状态"] == "完整", rows
+                summary["message_energy_j"] = 800
             if slug=="CHARGE":
-                with (user/"out-CHARGE/事件结果.csv").open(encoding="utf-8-sig",newline="") as stream:
+                with next(manifest_path.parent/item["name"] for item in manifest["outputs"] if item["name"].startswith("事件结果_")).open(encoding="utf-8-sig",newline="") as stream:
                     row=next(csv.DictReader(stream))
                     values={key.rsplit("（",1)[1][:-1]:float(value) for key,value in row.items()
                             if key.endswith(("（Wh）","（Ah）"))}
                 assert abs(values["Wh"] - 8000/3600)<1e-12 and abs(values["Ah"]-20/3600)<1e-12,values
                 summary["charge"]=values
+            if slug=="CALIBRATION":
+                table = next(manifest_path.parent / item["name"] for item in manifest["outputs"]
+                             if item["name"].startswith("会话结果_"))
+                with table.open(encoding="utf-8-sig", newline="") as stream:
+                    value = float(next(csv.DictReader(stream))["rated_power（W）"])
+                assert abs(value - 50/3) < 1e-12, value
+                summary["calibration_mean_w"] = value
             if slug=="CONDITION_ENERGY":
                 # 发布环境实际运行跨卷严格门槛例子，不能仅用completed判定业务正确。
-                with (user/"out-CONDITION_ENERGY/事件结果.csv").open(encoding="utf-8-sig",newline="") as stream:
+                with next(manifest_path.parent/item["name"] for item in manifest["outputs"] if item["name"].startswith("事件结果_")).open(encoding="utf-8-sig",newline="") as stream:
                     events=list(csv.DictReader(stream))
                 assert len(events)==1,events
                 row=events[0]
@@ -139,6 +237,11 @@ print(len(rows))
                 summary["conditional_energy_kwh"]=float(row["energy_kwh（kWh）"])
         summary["cases"][slug]="published"
         save()
+    # 专题附带的脚本按用户普通调用方式运行；它会从自身目录导入同包辅助文件。
+    summary['topic_examples'] = json.loads(command('topic-readability',
+        [python, '-X', 'utf8', '-B', direct / 'examples/readability_examples.py',
+         '--output-root', user, '--device-label', device], user))
+    assert summary['topic_examples']['status'] == 'passed'
     # 测试驱动器从维护区复制，输入始终是已安装包和发布资料，不提供源码检出。
     verify = area/"verify"
     verify.mkdir()

@@ -26,7 +26,7 @@ def cli(*args, code=0):
 def memory(values):
     """参数: values为每秒一个原始功率值，可为None。返回: 有明确观测范围与单位的内存配置。异常: 无。"""
     # 最后一个更新确定真实终点，避免把EOF之外的保持算进积分。
-    return dict(config_version=3, dataset=dict(name="demo",domain=dict(start="0s",end=f"{len(values)-1}s")),
+    return dict(config_version=4, dataset=dict(name="demo",domain=dict(start="0s",end=f"{len(values)-1}s")),
                 sources=[dict(source_type="memory",time=dict(unit="s"),rows=[
                     dict(time=f"{i}s",values={"raw":v}) for i,v in enumerate(values)])],
                 signals=[dict(name="power",field="raw",dtype="float64",unit="W",valid_for="3s")],
@@ -62,7 +62,10 @@ def check(guide):
     # 指南自带脚本只用公开接口，数值手算38 J；输出必须真实发布。
     proc = subprocess.run([sys.executable,"-B",str(guide/"run_analysis.py"),str(csv),"csv-out"],
                           check=True, capture_output=True, encoding="utf8")
-    assert "38.0 J complete" in proc.stdout and Path("csv-out/run_manifest.json").is_file()
+    manifest = Path(proc.stdout.strip().splitlines()[-1])
+    assert "38.0 J complete" in proc.stdout and manifest.is_file()
+    assert manifest.parent.resolve() == Path("csv-out").resolve()
+    assert json.loads(manifest.read_bytes())["status"] == "completed"
     answer["API/CSV"] = "38 J / complete"
     for backend in ("reference","numpy"):
         # 充分观测且全假：积分为0，样本选择统计均为空。
@@ -107,12 +110,14 @@ def check(guide):
         assert len(events)==1 and events[0].start_ns==10**9 and events[0].end_ns==2*10**9
         assert events[0].status=="interrupted", events[0]
         answer[backend] = "zero, empty, unknown, two parents, TTL 1.2 J, conversion 2 A, code 2 active / 3 unknown"
-    # 文件级真实诊断保留单一error；修复只替换版本类型，不改变条件和期望值。
-    conf = memory([2,2,2]); conf["config_version"] = "3"
+    # 文件级真实诊断使用errors列表；修复只替换版本类型，不改变条件和期望值。
+    conf = memory([2,2,2]); conf["config_version"] = "4"
     bad = Path("repair.json"); bad.write_text(json.dumps(conf),encoding="utf8")
-    err = json.loads(cli("validate",bad,"--format","json",code=2))["error"]
+    errors = json.loads(cli("validate",bad,"--format","json",code=2))["errors"]
+    assert len(errors) == 1, errors
+    err = errors[0]
     assert "config_version" in err["path"] and err["code"] and err["message"]
-    conf["config_version"] = 3
+    conf["config_version"] = 4
     bad.write_text(json.dumps(conf),encoding="utf8")
     assert json.loads(cli("validate",bad,"--format","json"))["execution_ready"]
     assert snapshot(conf)[0][0].value == 4

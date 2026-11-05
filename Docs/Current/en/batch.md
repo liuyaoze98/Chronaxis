@@ -16,11 +16,11 @@ Fields such as `batch_version`, `jobs`, and `process_count` belong at the batch 
 [batch-minimal.yaml](../examples/batch-minimal.yaml) references the main ASC example `analysis.yaml`, uses an automatic job name and sequential execution, and produces 38 J. [batch-extended.yaml](../examples/batch-extended.yaml) adds an independent ASC voltage analysis and runs at most two jobs at once. Results are 38 J and 13 V·s; the recordings are not concatenated. Keep the batch file beside the referenced configurations.
 
 ```yaml
-batch_version: 1
-jobs:
-  - plan: analysis.yaml
-  - plan: input-asc-minimal.yaml
-process_count: 2
+batch_version: 1                    # Independent batch configuration version
+jobs:                               # Independent analysis tasks
+  - plan: analysis.yaml             # Analysis configuration path for this job
+  - plan: input-asc-minimal.yaml    # Analysis configuration path for this job
+process_count: 2                    # Maximum number of analysis worker processes
 ```
 
 Omit job names, `fail_fast`, and backend settings unless you need to change their defaults. Use `jobs[].name` to customize output-directory names.
@@ -45,10 +45,10 @@ Input paths inside a child analysis remain relative to **that analysis file**: `
 If each input file is an independent trial with the same signals and analysis, reuse one configuration. `template`, `inputs`, and optional `source` are root fields and replace the `jobs` form.
 
 ```yaml
-batch_version: 1
-template: analysis.yaml
-inputs: data/can/quickstart*.asc
-process_count: 2
+batch_version: 1                    # Independent batch configuration version
+template: analysis.yaml             # Analysis template applied independently to each input
+inputs: data/can/quickstart*.asc    # Files or file pattern expanded into independent tasks
+process_count: 2                    # Maximum number of analysis worker processes
 ```
 
 Change the directory or pattern to your BLF files, or supply a directory containing mixed supported formats.
@@ -68,7 +68,7 @@ Names are `job_1`, `job_2`, etc. Only the selected source's paths change; other 
 python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 2
 ```
 
-The override is optional: CLI/API override → batch file → default 1. Batch CLI has no `--backend`; set it in the batch file. Single-analysis `run` has that option. The output directory must not already exist.
+The override is optional: CLI/API override → batch file → default 1. Batch CLI has no `--backend`; set it in the batch file. Single-analysis `run` has that option. The output directory can be reused. Job directories and the batch report use this batch's timestamp suffix.
 
 ```python
 from chronaxis import load_batch_plan, run_batch
@@ -90,7 +90,7 @@ Omitting API `process_count`, or passing `None`, uses the plan. A positive integ
 
 With `jobs`, `load_batch_plan` reads the batch file; each child's plan and input are read when it starts. With `template`, loading reads the template, expands inputs, and compiles independent plans; DBC metadata may be read to infer signal definitions, but business frames are not scanned yet.
 
-`run_batch` writes `batch_report.json`. Lower-level `BatchRunner.run()` returns an object; call `write_batch_report()` explicitly when using that entry. Detailed signatures: [batch API](../reference/chronaxis.batch.api.md), [BatchRunner](../reference/chronaxis.batch.runner.md), [models](../reference/chronaxis.batch.models.md) (Chinese implementation reference).
+`run_batch` writes a timestamped batch report; its actual path is `report.report_path`. Lower-level `BatchRunner.run()` returns an object; call `write_batch_report()` explicitly when using that entry. Detailed signatures: [batch API](../reference/chronaxis.batch.api.md), [BatchRunner](../reference/chronaxis.batch.runner.md), [models](../reference/chronaxis.batch.models.md) (Chinese implementation reference).
 
 Windows starts workers with `spawn`, which imports the script again. Keep startup inside `if __name__ == "__main__":` and run a saved `.py` file so workers do not dispatch the batch again. The process mode has been validated on Windows / Python 3.12.
 
@@ -111,9 +111,9 @@ Python does not automatically read this variable: pass `run_batch(plan, "batch-o
 
 | Path | Contents |
 |---|---|
-| `batch-output/job_1/work/` | Temporary calculations and diagnostics. |
-| `batch-output/job_1/output/` | Published analysis results. |
-| `batch-output/batch_report.json` | Status, errors, and available paths for each job in declaration order. |
+| `batch-output/job_1_<batch-timestamp>/work/` | Temporary calculations and diagnostics. |
+| `batch-output/job_1_<batch-timestamp>/output/` | Published analysis results. |
+| `batch-output/batch_report_<timestamp>.json` | Status, errors, and available paths for each job in declaration order. |
 
 `output_dir` is populated only after results are written. If writing succeeds but closing fails, the job is still `failed`, with its output path retained.
 
@@ -123,7 +123,7 @@ Ordinary task failures follow `fail_fast`. Unexpected worker exit is a schedulin
 
 If cleanup continues failing, that worker stops accepting jobs and the report marks `cleanup_pending=true`. Resources remain owned by that process. Correct the file-use/environment problem and call `report.close()` to retry remotely. If every worker is waiting for cleanup, unstarted jobs become `cancelled`, not completed. Published JSON records the state when written; the live report's `to_dict()` reflects later cleanup retries.
 
-Exit codes: 0 for all successful, 1 for job or file-operation failure (including an existing output directory), 2 for invalid batch configuration/arguments, and 130 for cancellation. Failure takes precedence over cancellation and returns 1.
+Exit codes: 0 for all successful, 1 for job or file-operation failure (such as a non-directory or unwritable output path), 2 for invalid batch configuration/arguments, and 130 for cancellation. Failure takes precedence over cancellation and returns 1.
 
 Each job has its own analysis memory/disk limits. Two jobs allowing 256 MiB each do not impose a 256 MiB total-process limit; Python and decoders add overhead. First verify one job, then choose `process_count` using actual resources and measurements.
 

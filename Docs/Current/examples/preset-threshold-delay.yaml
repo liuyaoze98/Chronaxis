@@ -1,5 +1,5 @@
 # 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
-config_version: 3                                 # 声明分析文件采用的字段结构版本；当前填写整数3
+config_version: 4                                 # 声明分析文件采用的字段结构版本；当前填写整数4
 dataset:                                          # 设置本次分析名称及可选的对象、会话和时间范围
   name: preset_example                            # 命名本次分析数据集；名称写入结果身份字段
 sources:                                          # 列出输入来源；每项规定数据位置、格式和时间解释方式
@@ -23,4 +23,4 @@ presets:                                          # 选择预先组合好的规�
     preset_type: threshold_excursion              # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
     role_bindings:                                # 明确指定哪条已有信号担任每个角色；角色名由预设定义
       signal: temperature                         # 为signal角色选择上方已定义的分析信号名；仍须符合该角色要求
-    version: '1'                                  # 选择预设定义版本；当前填写字符串"1"，与config_version的整数3分别使用
+    version: '1'                                  # 选择预设定义版本；当前填写字符串"1"，与分析配置结构版本相互独立

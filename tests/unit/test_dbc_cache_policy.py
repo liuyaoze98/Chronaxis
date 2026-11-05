@@ -27,7 +27,12 @@ class DBCCachePolicyTests(unittest.TestCase):
                         calls.append(path.relative_to(package).as_posix())
                         self.assertEqual(len(node.args), 1, str(path))
                         self.assertFalse(node.keywords, str(path))
-        self.assertEqual(len(calls), 5)
+        # 按文件核对所有已审入口，既能发现新调用，也能发现已知入口改写后漏检。
+        self.assertCountEqual(calls, [
+            'execution/frame_capture.py', 'fast/can_io.py', 'fast/worker.py',
+            'legacy/batch_worker.py', 'legacy/worker.py', 'sources/text_can_decode.py',
+            'planning/dbc_defaults.py', 'planning/dbc_defaults.py',
+        ])
 
     @unittest.skipUnless(importlib.util.find_spec('cantools'), '未安装可选CAN依赖')
     def test_default_dbc_load_never_constructs_diskcache(self):

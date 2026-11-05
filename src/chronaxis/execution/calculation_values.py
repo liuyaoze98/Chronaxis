@@ -23,7 +23,9 @@ def scalar_from_column(column, index):
         # 纯消息NumericArray没有展示用原值列；无效性由掩码及原因表达，不读占位。
         originals=getattr(column,'original_values',None)
         value = originals[index] if originals is not None else None
-    return ScalarValue(value, column.dtype, valid, quality, column.labels)
+    code = getattr(column, 'code', None)
+    return ScalarValue(value, column.dtype, valid, quality, column.labels,
+                       None if code is None else scalar_from_column(code, index))
 
 def direction_bucket_state(raw, bucket):
     """按同条原值判桶，既不转换单位也不把缺值或非有限当正常零。

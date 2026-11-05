@@ -41,7 +41,7 @@ class ResultSpool:
     _closing拒绝半关闭继续构建；_closed只有全部自有费用实际释放后才成立。
     """
 
-    def __init__(self, budget: ResourceBudget, work_dir=None, result_buffer_rows: int = 4096, *, enable_sequences: bool = False, requested_tables=None, failure_diagnostics=True, enable_contributions=False, enable_trace=False,enable_selections=False):
+    def __init__(self, budget: ResourceBudget, work_dir=None, result_buffer_rows: int = 4096, *, enable_sequences: bool = False, requested_tables=None, failure_diagnostics=True, enable_contributions=False, enable_trace=False,enable_selections=False,enable_aggregations=False):
         """创建唯一工作目录并预留固定状态成本。
 
         参数: budget为共享账本；work_dir为全新目录或None；result_buffer_rows为行上限；
@@ -56,11 +56,11 @@ class ResultSpool:
             raise TypeError('enable_sequences需要原生bool')
         if type(failure_diagnostics) is not bool:
             raise TypeError('失败诊断开关需要bool')
-        if type(enable_contributions) is not bool or type(enable_trace) is not bool or type(enable_selections) is not bool:
+        if any(type(flag) is not bool for flag in (enable_contributions,enable_trace,enable_selections,enable_aggregations)):
             raise TypeError('精简贡献/输入追溯开关需要bool')
         available = (TABLES + (('sequences',) if enable_sequences else ())
                      + (('contributions',) if enable_contributions else ()) + (('input_trace',) if enable_trace else ())
-                     + (('selections',) if enable_selections else ()))
+                     + (('selections',) if enable_selections else ()) + (('aggregations',) if enable_aggregations else ()))
         if requested_tables is not None and (type(requested_tables) is not tuple
                 or any(type(table) is not str or table not in available for table in requested_tables)
                 or len(set(requested_tables)) != len(requested_tables)):

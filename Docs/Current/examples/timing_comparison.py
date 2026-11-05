@@ -9,7 +9,7 @@ from chronaxis import AnalysisPlan, AnalysisRunner
 
 def config():
     """参数: 无。返回: 相对本脚本data路径的完整分析字典。异常: 无。"""
-    return dict(config_version=3,dataset=dict(name='timing'),
+    return dict(config_version=4,dataset=dict(name='timing'),
         sources=[dict(paths='data/timing.asc',dbc_by_channel={'1':'data/timing.dbc'})],
         signals=[dict(name=name,field=dict(frame_id='0x100',signal=field),dtype=dtype,unit=unit,valid_for='10s',**({'choices':[[0,False],[1,True]]} if dtype=='bool' else {}))
             for name,field,dtype,unit in [('request','Request','bool','1'),('response','Response','bool','1'),('temperature','Temperature','float64','degC'),('voltage','Voltage','float64','V')]],

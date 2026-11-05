@@ -6,6 +6,8 @@
 故障注入只包新计算流的真实边界，不修改旧解码、冻结源码或测试真值。
 所有资源、配置与发布均留在work；result/恢复owner关闭后账本必须归零。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -54,7 +56,7 @@ class RunMessageCalculationTests(unittest.TestCase):
                     arbitration_id=frame_id, is_extended_id=False, channel=0, data=payload))
         finally:
             writer.stop()
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='legacy_demo', entity='synthetic', session='session',
                 domain=dict(start=domain[0], end=domain[1])),
             sources=[dict(name='bus', source_type='can_blf', path=str(blf),
@@ -200,7 +202,7 @@ class RunMessageCalculationTests(unittest.TestCase):
                 first, second = result.write(work/'published1'), result.write(work/'published2')
             self.assertEqual(first.row_counts, second.row_counts)
             for name in ('calculations', 'contributions', 'input_trace'):
-                left, right = work/'published1'/(name+'.'+tables), work/'published2'/(name+'.'+tables)
+                left, right = published_file(first,name+'.'+tables), published_file(second,name+'.'+tables)
                 self.assertEqual(left.read_bytes(), right.read_bytes())
                 self.assertGreater(left.stat().st_size, 0)
 

@@ -1,4 +1,4 @@
-# chronaxis.results.rows
+# `chronaxis.results.rows`
 
 为当前平坦结果确定所属表和稳定排序键，不构造额外结果包装。
 
@@ -9,7 +9,7 @@
 
 ## 相关类型
 
-[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[SummaryContributionRow](chronaxis.results.summary.md#api-SummaryContributionRow)、[SummaryCoverageCalculationRow](chronaxis.results.summary.md#api-SummaryCoverageCalculationRow)、[SummaryEventRow](chronaxis.results.summary.md#api-SummaryEventRow)、[SummaryInputRow](chronaxis.results.summary.md#api-SummaryInputRow)、[SummarySegmentRow](chronaxis.results.summary.md#api-SummarySegmentRow)、[SummarySelectionRow](chronaxis.results.summary.md#api-SummarySelectionRow)、[SummarySequenceRow](chronaxis.results.summary.md#api-SummarySequenceRow)
+[SummaryAggregationRow](chronaxis.results.aggregation_row.md#api-SummaryAggregationRow)、[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[SummaryContributionRow](chronaxis.results.summary.md#api-SummaryContributionRow)、[SummaryCoverageCalculationRow](chronaxis.results.summary.md#api-SummaryCoverageCalculationRow)、[SummaryEventRow](chronaxis.results.summary.md#api-SummaryEventRow)、[SummaryHostedCalculationRow](chronaxis.results.summary.md#api-SummaryHostedCalculationRow)、[SummaryInputRow](chronaxis.results.summary.md#api-SummaryInputRow)、[SummarySegmentRow](chronaxis.results.summary.md#api-SummarySegmentRow)、[SummarySelectionRow](chronaxis.results.summary.md#api-SummarySelectionRow)、[SummarySequenceRow](chronaxis.results.summary.md#api-SummarySequenceRow)
 
 ## 对象导航
 
@@ -21,7 +21,8 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from .summary import SummaryCalculationRow, SummaryCoverageCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummaryInputRow, SummarySelectionRow, SUMMARY_MODELS
+from .summary import SummaryCalculationRow, SummaryCoverageCalculationRow, SummaryHostedCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummaryInputRow, SummarySelectionRow, SUMMARY_MODELS
+from .aggregation_row import SummaryAggregationRow
 ```
 
 </details>
@@ -55,7 +56,7 @@ TypeError为未注册类型。
 
 返回类型：str。
 
-源码：[`src/chronaxis/results/rows.py:12`](../../../src/chronaxis/results/rows.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/rows.py:13`](../../../src/chronaxis/results/rows.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-row_sort_key"></a>
 ## `row_sort_key`
@@ -82,4 +83,4 @@ TypeError为非法行；不在这里排序或重复原数据读取。
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/results/rows.py:28`](../../../src/chronaxis/results/rows.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/rows.py:29`](../../../src/chronaxis/results/rows.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

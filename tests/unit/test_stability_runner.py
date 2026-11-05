@@ -3,6 +3,8 @@
 输入为明确声明的合成温度或两条件信号；所有CSV与结果写work专用目录。
 对照手算活动时间和两独立数值后端，结果关闭后检查预算，不接触RefProjects。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -26,7 +28,7 @@ WORK = ROOT / 'work/m3-stability-home-20261022/tests'
 
 def stable_config():
     """给出85→77跨文件后77→70的温度合成例。参数: 无。返回: dict。异常: 无。"""
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='sample', entity='device', session='session', domain=dict(start='0ns', end='12ns')),
         sources=[dict(name='input', source_type='memory', time=dict(time_type='relative', unit='ns', origin='clock'),
             rows=[dict(time=f'{t}ns', values={'temperature':v}) for t,v in [(0,85),(3,77),(6,77),(9,75),(12,70)]])],
@@ -134,7 +136,7 @@ class StabilityRunnerTests(unittest.TestCase):
             rows=[dict(time=f'{t}ns',values={'reset':v}) for t,v in [(0,False),(9,True),(12,True)]]))
         raw['signals'].append(dict(name='reset',source='reset_source',field='reset',dtype='bool',unit='1',valid_for='20ns'))
         raw['rules'][0]['exit_condition']='reset'
-        raw['calculations']=[dict(name='mean',scope='event:alarm',operation='time_weighted_mean',expr='temperature')]
+        raw['calculations']=[dict(name='mean',scope='event:alarm',operation='time_weighted_mean',expr='temperature',unit='degC')]
         self.assertEqual(self.intervals(self.run_config(raw)),[(0,9,'closed')])
         raw['sources'][1]['time']['origin']='other_clock'
         with self.assertRaises(PlanValidationError):
@@ -144,8 +146,8 @@ class StabilityRunnerTests(unittest.TestCase):
         """报警0—9平均(85+77+77)/3，片段同范围；结果可发布及往返解码。参数: 无。返回: None。异常: 断言失败。"""
         raw=stable_config()
         raw['windows']=[dict(name='window',rule='alarm',anchor='activity',pre='0ns',post='0ns')]
-        raw['calculations']=[dict(name='event_mean',scope='event:alarm',operation='time_weighted_mean',expr='temperature'),
-                        dict(name='segment_mean',scope='segment:window',operation='time_weighted_mean',expr='temperature')]
+        raw['calculations']=[dict(name='event_mean',scope='event:alarm',operation='time_weighted_mean',expr='temperature',unit='degC'),
+                        dict(name='segment_mean',scope='segment:window',operation='time_weighted_mean',expr='temperature',unit='degC')]
         for backend in ('reference','numpy'):
             raw['execution']['backend']=backend;result=self.run_config(raw)
             values=[row.value for row in result.iter_calculations()]
@@ -156,8 +158,8 @@ class StabilityRunnerTests(unittest.TestCase):
             for row in result.iter_events():
                 self.assertEqual(decode_row(encode_row(row, max_bytes=2**20), max_bytes=2**20),row)
             target=WORK/uuid4().hex
-            result.write(target)
-            self.assertTrue((target/'run_manifest.json').exists())
+            published=result.write(target)
+            self.assertTrue((published_file(published,'run_manifest.json')).exists())
 
     def test_overlap_fails_and_closes_budget(self):
         """进出条件同真时明确失败，不猜优先级，也不泄漏RAM。参数: 无。返回: None。异常: 断言失败。"""

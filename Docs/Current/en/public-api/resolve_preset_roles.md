@@ -11,10 +11,10 @@ Resolve actual roles, preferring explicit mappings. Otherwise find exactly one c
 resolve_preset_roles(spec: PresetSpec, signals: tuple[SignalDefinition, ...]) -> tuple[RoleBinding, ...]
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `spec` | [PresetSpec](PresetSpec.md#api-PresetSpec) | Required | Positional or keyword. Create through PresetSpec.from_dict with required name/preset_type/parameters and optional version/role_bindings. |
-| `signals` | tuple[[SignalDefinition](../../reference/chronaxis.core.binding.md#api-SignalDefinition), ...] | Required | Positional or keyword. Definitions for this plan, such as `tuple(item.definition for item in plan.signals)` after load_analysis_plan. Roles refer to definition names, not CSV column names. Type link is a Chinese implementation reference. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`spec`|[PresetSpec](PresetSpec.md#api-PresetSpec)|Yes|No default|Positional or keyword. Create through PresetSpec.from_dict with required name/preset_type/parameters and optional version/role_bindings.|
+|`signals`|tuple[[SignalDefinition](../../reference/chronaxis.core.binding.md#api-SignalDefinition), ...]|Yes|No default|Positional or keyword. Definitions for this plan, such as `tuple(item.definition for item in plan.signals)` after load_analysis_plan. Roles refer to definition names, not CSV column names. Type link is a Chinese implementation reference.|
 
 Returns a tuple of [RoleBinding](../../reference/chronaxis.planning.preset_models.md#api-RoleBinding) (Chinese implementation reference), preserving original definitions and the `explicit` / `semantic_unique` resolution path.
 
@@ -24,4 +24,4 @@ Explicit aliases do not require semantic_id, but type, unit, direction, location
 
 ## Source locations
 
-- [`src/chronaxis/presets.py:104`](../../../../src/chronaxis/presets.py#L104) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/presets.py:104`](../../../../src/chronaxis/presets.py#L104) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -93,7 +93,7 @@ class DecodedBindingRecoveryTests(unittest.TestCase):
             path = work / 'input.csv'
             path.write_text('ns,v\n0,2\n5,4\n', encoding='utf-8', newline='')
             source.update(path=path.name, time_column='ns')
-        plan = AnalysisPlan.from_dict(current_fixture(dict(config_version=3,
+        plan = AnalysisPlan.from_dict(current_fixture(dict(config_version=4,
             dataset=dict(name='recovery', entity='synthetic', session='session', domain=dict(start='0ns', end='8ns')),
             sources=[source], signals=[dict(name='value', source='table', field='v', dtype='float64', unit='1', valid_for='10ns')],
             metadata=dict(device_label='home', data_kind='synthetic'))), base_dir=work)

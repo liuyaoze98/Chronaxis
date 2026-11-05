@@ -26,7 +26,7 @@ class ConfigurationMixedCANTests(unittest.TestCase):
             writer.on_message_received(can.Message(timestamp=self.epoch+1.,channel=0,arbitration_id=256,
                 is_extended_id=False,data=b'\x00\x00'))
         self.dbc=Path(__file__).parents[2]/'src/chronaxis/configuration/templates/shared/sample.dbc'
-        self.raw=dict(config_version=3,dataset=dict(name='mixed',domain=dict(start='0s',end='2s')),
+        self.raw=dict(config_version=4,dataset=dict(name='mixed',domain=dict(start='0s',end='2s')),
             metadata={'device_label':'home'},
             sources=[dict(path=str(self.inputs),time=dict(offset='-1700000000s'),dbc_by_channel={'1':str(self.dbc)})],
             signals=[dict(name='voltage',field=dict(frame_id=256,signal='Voltage'),dtype='float64',unit='V',valid_for='3s')],

@@ -8,12 +8,13 @@ Import this object from `chronaxis`. This page covers its directly public member
 Load JSON/YAML and explicit shared definitions, apply supported overrides, and compile a plan. Input-directory declarations expand filenames. Missing signal type, unit, or enum choices can require DBC metadata, but business-message records are not scanned.
 
 ```python
-load_analysis_plan(path: Path | str) -> AnalysisPlan
+load_analysis_plan(path: Path | str, *, extensions=None) -> AnalysisPlan
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `path` | [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str | Required | Positional or keyword. Configuration file path, not a directory to scan or an arbitrary path object. Read as UTF-8, allowing an initial BOM. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|Yes|No default|Positional or keyword. Configuration file path, not a directory to scan or an arbitrary path object. Read as UTF-8, allowing an initial BOM.|
+|`extensions`|ExtensionRegistry &#124; None|No|None|Keyword-only trusted registry supplied by Python. The ordinary command line provides only built-in operations.|
 
 Returns a checked and compiled [AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan). It loads the main configuration/shared definitions, expands declared file sets, and reads DBC metadata as needed; it does not read business-message or CSV records.
 
@@ -26,6 +27,10 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 ```
 
+## Host-registered operations
+
+Register trusted callbacks in Python and pass the same immutable registry when loading and running a v4 plan. See the [worked host example](../host-extensions.md).
+
 ## Source locations
 
-- [`src/chronaxis/planning/plan.py:258`](../../../../src/chronaxis/planning/plan.py#L258) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/plan.py:368`](../../../../src/chronaxis/planning/plan.py#L368) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

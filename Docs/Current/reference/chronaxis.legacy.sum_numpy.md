@@ -1,4 +1,4 @@
-# chronaxis.legacy.sum_numpy
+# `chronaxis.legacy.sum_numpy`
 
 用NumPy按输入顺序累计一块逐消息贡献值，保留与旧逐次加法相同的先后关系。它不改变每条消息的公式，也不把数据重新排序后求和。
 
@@ -41,4 +41,4 @@ OverflowError为任何中间累计非有限；NumPy分配、导入或取消原�
 
 返回类型：float。
 
-源码：[`src/chronaxis/legacy/sum_numpy.py:17`](../../../src/chronaxis/legacy/sum_numpy.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/sum_numpy.py:17`](../../../src/chronaxis/legacy/sum_numpy.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

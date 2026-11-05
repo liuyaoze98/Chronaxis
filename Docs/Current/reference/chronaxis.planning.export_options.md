@@ -1,4 +1,4 @@
-# chronaxis.planning.export_options
+# `chronaxis.planning.export_options`
 
 把JSON中的signal_csv/can_frames选项转换成输出规格，检查信号、来源和窗口引用；只检查配置，不读日志或DBC。全部填写方式见[导出](../exports.md)。
 
@@ -59,7 +59,7 @@ class SignalCSVOutput
 |`window`|str &#124; None|否|None|已有窗口的id，例如 `"context"`。scope为session时省略或填null，不填写窗口名。|
 |`period_driver`|str &#124; None|否|None|仅DBC信号网格，已解析的原始报文别名。|
 
-源码：[`src/chronaxis/planning/export_options.py:21`](../../../src/chronaxis/planning/export_options.py#L21)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:21`](../../../src/chronaxis/planning/export_options.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalCSVOutput-__post_init__"></a>
 ### `SignalCSVOutput.__post_init__`
@@ -89,7 +89,7 @@ SignalCSVOutput.__post_init__()
 
 - `TypeError`：signal_csv需要SignalCSVExportSpec。
 
-源码：[`src/chronaxis/planning/export_options.py:29`](../../../src/chronaxis/planning/export_options.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:29`](../../../src/chronaxis/planning/export_options.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANFramesOutput"></a>
 ## `CANFramesOutput`
@@ -111,7 +111,7 @@ class CANFramesOutput
 |`resampling`|[FrameGridSpec](chronaxis.results.frame_rebuild.md#api-FrameGridSpec) &#124; None|否|None|可选FrameGridSpec；None保留原始采样，不创建网格帧。|
 |`rules`|tuple[[FrameRebuildRule](chronaxis.results.frame_patch.md#api-FrameRebuildRule), ...]|否|()|FrameRebuildRule元组；每项声明报文身份、连续字段和禁止修改的字段。|
 
-源码：[`src/chronaxis/planning/export_options.py:42`](../../../src/chronaxis/planning/export_options.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:42`](../../../src/chronaxis/planning/export_options.py#L42)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANFramesOutput-__post_init__"></a>
 ### `CANFramesOutput.__post_init__`
@@ -144,7 +144,7 @@ CANFramesOutput.__post_init__()
 - `ValueError`：未启用重采样不能配置重建规则。
 - `ValueError`：重建规则重复或没有可执行规则。
 
-源码：[`src/chronaxis/planning/export_options.py:52`](../../../src/chronaxis/planning/export_options.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:52`](../../../src/chronaxis/planning/export_options.py#L52)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_typed_scope"></a>
 ## `_typed_scope`
@@ -175,7 +175,7 @@ _typed_scope(scope, window, *, allow_all=False)
 
 - `ValueError`：导出范围错误。
 
-源码：[`src/chronaxis/planning/export_options.py:67`](../../../src/chronaxis/planning/export_options.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:67`](../../../src/chronaxis/planning/export_options.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_export_options"></a>
 ## `require_export_options`
@@ -208,7 +208,7 @@ require_export_options(plan)
 - `ValueError`：报文导出需要本计划CAN来源。
 - `ValueError`：重建报文通道与来源不同。
 
-源码：[`src/chronaxis/planning/export_options.py:76`](../../../src/chronaxis/planning/export_options.py#L76)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:76`](../../../src/chronaxis/planning/export_options.py#L76)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_scope"></a>
 ## `_scope`
@@ -236,7 +236,7 @@ _scope(raw, path, windows, *, allow_all=False)
 
 配置错。
 
-源码：[`src/chronaxis/planning/export_options.py:106`](../../../src/chronaxis/planning/export_options.py#L106)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:106`](../../../src/chronaxis/planning/export_options.py#L106)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_grid"></a>
 ## `_grid`
@@ -262,7 +262,7 @@ period/origin/max_gap整数ns。
 
 时间错。
 
-源码：[`src/chronaxis/planning/export_options.py:120`](../../../src/chronaxis/planning/export_options.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:120`](../../../src/chronaxis/planning/export_options.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_signal_grid_driver"></a>
 ## `_signal_grid_driver`
@@ -291,7 +291,7 @@ _signal_grid_driver(definitions, sources, continuous, driver, path)
 
 类型/格式/歧义。
 
-源码：[`src/chronaxis/planning/export_options.py:127`](../../../src/chronaxis/planning/export_options.py#L127)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:127`](../../../src/chronaxis/planning/export_options.py#L127)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_signal_output"></a>
 ## `parse_signal_output`
@@ -319,7 +319,7 @@ SignalCSVOutput或None。
 
 定位配置错。
 
-源码：[`src/chronaxis/planning/export_options.py:150`](../../../src/chronaxis/planning/export_options.py#L150)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:150`](../../../src/chronaxis/planning/export_options.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_require_frame_direction"></a>
 ## `_require_frame_direction`
@@ -336,7 +336,7 @@ _require_frame_direction(source)
 |---|---|---|---|---|
 |`source`|SourcePlan|是|无|位置或关键字。选定原帧导出来源，检查原始CSV是否提供报文方向所需声明。|
 
-源码：[`src/chronaxis/planning/export_options.py:185`](../../../src/chronaxis/planning/export_options.py#L185)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:185`](../../../src/chronaxis/planning/export_options.py#L185)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_frame_output"></a>
 ## `parse_frame_output`
@@ -363,4 +363,4 @@ CANFramesOutput或None。
 
 定位配置错。
 
-源码：[`src/chronaxis/planning/export_options.py:193`](../../../src/chronaxis/planning/export_options.py#L193)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/export_options.py:193`](../../../src/chronaxis/planning/export_options.py#L193)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

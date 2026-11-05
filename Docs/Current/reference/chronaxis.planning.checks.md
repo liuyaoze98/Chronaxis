@@ -1,4 +1,4 @@
-# chronaxis.planning.checks
+# `chronaxis.planning.checks`
 
 检查JSON/YAML解析后的配置值，并在错误中保存具体字段位置。
 
@@ -18,10 +18,12 @@
 
 |对象|用途|
 |---|---|
-|[`PlanValidationError`](#api-PlanValidationError)|保存配置字段路径、原因、机器错误码及可选的原文定位和修正建议。|
+|[`PlanValidationError`](#api-PlanValidationError)|保存配置字段路径、原因和可选原文定位。diagnostics提供全部独立错误，单错也为一项；blocked_checks列出因上游声明无效而尚未执行的检查，其元素含path和reason，不是额外确认错误。|
 |[`PlanValidationError.__init__`](#api-PlanValidationError-__init__)|建立明确路径错误，保留原异常链供load_analysis_plan诊断。|
 |[`PlanValidationError.refresh_text`](#api-PlanValidationError-refresh_text)|重建人读消息。|
 |[`PlanValidationError.to_dict`](#api-PlanValidationError-to_dict)|返回稳定机器诊断。|
+|[`PlanValidationError.diagnostics`](#api-PlanValidationError-diagnostics)|返回各项独立诊断。|
+|[`PlanValidationError.from_diagnostics`](#api-PlanValidationError-from_diagnostics)|合并错误并保留原类型兼容。|
 |[`configuration_error`](#api-configuration_error)|把共享语法错误交给计划API的异常类型。|
 |[`object_at`](#api-object_at)|检查JSON对象的类型、必填项和允许字段。|
 |[`array_at`](#api-array_at)|要求明确JSON数组，不把文本或tuple当自由迭代器。|
@@ -58,9 +60,7 @@ from ..timebase import convert_time, parse_duration, parse_datetime_ns
 <a id="api-PlanValidationError"></a>
 ## `PlanValidationError`
 
-保存配置字段路径、原因、机器错误码及可选的原文定位和修正建议。
-
-不吞执行异常或数据读取失败；code区分无效配置与尚未接入可运行流程能力。
+保存配置字段路径、原因和可选原文定位。diagnostics提供全部独立错误，单错也为一项；blocked_checks列出因上游声明无效而尚未执行的检查，其元素含path和reason，不是额外确认错误。
 
 ```python
 PlanValidationError(path: str, message: str, code: str = 'invalid_config', *, hint=None, source=None, location=None, object_name=None, value=None)
@@ -69,7 +69,7 @@ PlanValidationError(path: str, message: str, code: str = 'invalid_config', *, hi
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PlanValidationError-__init__"></a>
 ### `PlanValidationError.__init__`
@@ -101,7 +101,7 @@ None；异常文本含路径和原因。
 
 无；参数由校验器内部构造。
 
-源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PlanValidationError-refresh_text"></a>
 ### `PlanValidationError.refresh_text`
@@ -127,7 +127,7 @@ None。
 
 无；附加定位后调用。
 
-源码：[`src/chronaxis/planning/checks.py:56`](../../../src/chronaxis/planning/checks.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:58`](../../../src/chronaxis/planning/checks.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PlanValidationError-to_dict"></a>
 ### `PlanValidationError.to_dict`
@@ -147,13 +147,69 @@ PlanValidationError.to_dict()
 
 #### 返回说明
 
-原生dict。
+当前单项的原生dict；聚合异常的本方法只描述第一项。获取全部诊断时使用[item.to_dict() for item in error.diagnostics]。
 
 #### 异常说明
 
 无。
 
-源码：[`src/chronaxis/planning/checks.py:70`](../../../src/chronaxis/planning/checks.py#L70)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:78`](../../../src/chronaxis/planning/checks.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-PlanValidationError-diagnostics"></a>
+### `PlanValidationError.diagnostics`
+
+返回各项独立诊断。
+
+```python
+PlanValidationError.diagnostics
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+tuple；单错也为一项。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/planning/checks.py:86`](../../../src/chronaxis/planning/checks.py#L86)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-PlanValidationError-from_diagnostics"></a>
+### `PlanValidationError.from_diagnostics`
+
+合并错误并保留原类型兼容。
+
+```python
+PlanValidationError.from_diagnostics(errors, blocked=())
+```
+
+装饰器：`classmethod`。
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`errors`|Sequence[[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)]|是|无|位置或关键字。非空PlanValidationError序列；单项且没有阻断说明时原样返回。|
+|`blocked`|Iterable[dict]|否|()|位置或关键字。可选阻断说明序列，每项是含path和reason的字典；默认空元组。|
+
+#### 返回说明
+
+异常。
+
+#### 异常说明
+
+空序列ValueError。
+
+源码：[`src/chronaxis/planning/checks.py:91`](../../../src/chronaxis/planning/checks.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-configuration_error"></a>
 ## `configuration_error`
@@ -176,7 +232,7 @@ PlanValidationError。
 
 维持文件路径与具体语法代码，文本补实际字段和可靠行列；不读取或重解析配置。
 
-源码：[`src/chronaxis/planning/checks.py:78`](../../../src/chronaxis/planning/checks.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:105`](../../../src/chronaxis/planning/checks.py#L105)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-object_at"></a>
 ## `object_at`
@@ -206,7 +262,7 @@ PlanValidationError: 对象类型错误、缺少必填项或含未知键。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/planning/checks.py:94`](../../../src/chronaxis/planning/checks.py#L94)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:121`](../../../src/chronaxis/planning/checks.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-array_at"></a>
 ## `array_at`
@@ -234,7 +290,7 @@ PlanValidationError为类型错误。
 
 返回类型：list。
 
-源码：[`src/chronaxis/planning/checks.py:130`](../../../src/chronaxis/planning/checks.py#L130)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:157`](../../../src/chronaxis/planning/checks.py#L157)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-text_at"></a>
 ## `text_at`
@@ -263,7 +319,7 @@ PlanValidationError为类型/名称错误。
 
 返回类型：str。
 
-源码：[`src/chronaxis/planning/checks.py:145`](../../../src/chronaxis/planning/checks.py#L145)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:172`](../../../src/chronaxis/planning/checks.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-choice_at"></a>
 ## `choice_at`
@@ -290,7 +346,7 @@ choice_at(value, choices: tuple, path: str)
 
 PlanValidationError为未知值/类型。
 
-源码：[`src/chronaxis/planning/checks.py:162`](../../../src/chronaxis/planning/checks.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:189`](../../../src/chronaxis/planning/checks.py#L189)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-number_at"></a>
 ## `number_at`
@@ -319,7 +375,7 @@ int或float。保持原类型和位值，不截断或转成浮点。
 
 PlanValidationError: 类型错误、非有限浮点或超出范围。
 
-源码：[`src/chronaxis/planning/checks.py:178`](../../../src/chronaxis/planning/checks.py#L178)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:205`](../../../src/chronaxis/planning/checks.py#L205)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-duration_at"></a>
 ## `duration_at`
@@ -348,7 +404,7 @@ PlanValidationError: 语法、单位、范围错误，或正时长量化后为0�
 
 返回类型：int。
 
-源码：[`src/chronaxis/planning/checks.py:204`](../../../src/chronaxis/planning/checks.py#L204)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:231`](../../../src/chronaxis/planning/checks.py#L231)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-coordinate_at"></a>
 ## `coordinate_at`
@@ -382,7 +438,7 @@ PlanValidationError: 文本、单位、时区、日期或数值范围错误。
 
 返回类型：int。
 
-源码：[`src/chronaxis/planning/checks.py:232`](../../../src/chronaxis/planning/checks.py#L232)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:259`](../../../src/chronaxis/planning/checks.py#L259)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-timezone_at"></a>
 ## `timezone_at`
@@ -408,7 +464,7 @@ tzinfo或None，仅IANA可能读取系统时区数据库，不读数据输入。
 
 PlanValidationError为非法offset/未知时区或依赖缺失。
 
-源码：[`src/chronaxis/planning/checks.py:267`](../../../src/chronaxis/planning/checks.py#L267)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:294`](../../../src/chronaxis/planning/checks.py#L294)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-metadata_at"></a>
 ## `metadata_at`
@@ -434,7 +490,7 @@ metadata_at(value, path: str)
 
 PlanValidationError为非JSON/非有限/键类型错误。
 
-源码：[`src/chronaxis/planning/checks.py:306`](../../../src/chronaxis/planning/checks.py#L306)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:333`](../../../src/chronaxis/planning/checks.py#L333)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_json_value"></a>
 ## `require_json_value`
@@ -468,7 +524,7 @@ PlanValidationError: 非JSON对象、非文本对象键、非有限浮点或循�
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/checks.py:327`](../../../src/chronaxis/planning/checks.py#L327)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:354`](../../../src/chronaxis/planning/checks.py#L354)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-json_value"></a>
 ## `json_value`
@@ -493,7 +549,7 @@ json_value(value)
 
 无；调用者保证已校验JSON类型。
 
-源码：[`src/chronaxis/planning/checks.py:373`](../../../src/chronaxis/planning/checks.py#L373)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:400`](../../../src/chronaxis/planning/checks.py#L400)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-canonical"></a>
 ## `canonical`
@@ -520,7 +576,7 @@ TypeError/ValueError为内部非JSON结构。
 
 返回类型：str。
 
-源码：[`src/chronaxis/planning/checks.py:392`](../../../src/chronaxis/planning/checks.py#L392)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:419`](../../../src/chronaxis/planning/checks.py#L419)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-absolute_path"></a>
 ## `absolute_path`
@@ -550,7 +606,7 @@ PlanValidationError: 路径文本非法或含NUL。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/planning/checks.py:403`](../../../src/chronaxis/planning/checks.py#L403)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:430`](../../../src/chronaxis/planning/checks.py#L430)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-model_at"></a>
 ## `model_at`
@@ -579,4 +635,4 @@ model_at(factory, path: str, *args, **kwargs)
 PlanValidationError: 包装TypeError、ValueError、OverflowError或LookupError，
         保留原异常链；其他发生异常时直接交给调用者处理。
 
-源码：[`src/chronaxis/planning/checks.py:426`](../../../src/chronaxis/planning/checks.py#L426)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/checks.py:453`](../../../src/chronaxis/planning/checks.py#L453)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

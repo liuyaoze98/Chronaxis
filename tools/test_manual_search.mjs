@@ -27,4 +27,15 @@ for(const query of ['hysteresis','valid_for','energy','frame_id']){
   const found=searchEntries(english,query);assert.ok(found.length,query);assert.ok(found.every(x=>x.url.startsWith('en/')));
 }
 assert.ok(searchEntries(english,'AnalysisResult.iter_events','api').length);
-console.log(JSON.stringify({indexEntries:entries.length,englishEntries:english.length,checks:17,status:'passed'}));
+// 正式名称、英文名称和配置/API拼写应能找到同一功能的使用章节。
+const capabilities=[
+  ['时序变换','temporal-transforms.html'],['temporal transforms','en/temporal-transforms.html'],
+  ['transforms','temporal-transforms.html'],['宿主扩展','host-extensions.html'],
+  ['host extensions','en/host-extensions.html'],['ExtensionRegistry','host-extensions.html'],
+  ['统计','aggregations.html'],['aggregations','en/aggregations.html'],
+  ['window_delta','temporal-transforms.html'],
+];
+for(const [query,page] of capabilities){
+  assert.ok(searchEntries(entries,query).some(hit=>hit.url.split('#')[0]===page),`${query} → ${page}`);
+}
+console.log(JSON.stringify({indexEntries:entries.length,englishEntries:english.length,checks:17+capabilities.length,status:'passed'}));

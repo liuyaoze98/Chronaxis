@@ -5,20 +5,20 @@
 
 三条功率记录出现在0、0.12、0.30秒，都是4000W。按实际间隔累计，能量为4000×(0.12+0.18)=1200J；按固定100ms累计，能量为4000×(0.1+0.1)=800J。若对应报文的DBC周期为100ms，结果也是800J。三条记录形成两个间隔，第一条只建立起点。
 
-配置时长可以写`"0.1s"`或`"100ms"`。内部和结果时间字段使用整数纳秒，例如100ms等于100000000ns。输入日志是秒，不需要先手工转换成纳秒。
+配置时长可以写`"0.1s"`或`"100ms"`。内部及API／交换格式中以`_ns`结尾的时间字段使用整数纳秒，例如100ms等于100000000ns；默认可读结果表使用秒。输入日志是秒，不需要先手工转换成纳秒。
 
 ## 完整最小例与单项覆盖扩展
 
-[interval-actual.yaml](examples/interval-actual.yaml)省略intervals，得到1200J。[interval-fixed.yaml](examples/interval-fixed.yaml)省略全局intervals，仅对energy计算增加fixed=100ms，得到800J；power在同一文件中先定义。两者使用相同0、0.12、0.30秒三条记录，可直接运行`chronaxis run 文件名.yaml --output 新目录`。
+[interval-actual.yaml](examples/interval-actual.yaml)省略intervals，得到1200J。[interval-fixed.yaml](examples/interval-fixed.yaml)省略全局intervals，仅对energy计算增加fixed=100ms，得到800J；power在同一文件中先定义。两者使用相同0、0.12、0.30秒三条记录，可直接运行`chronaxis run 文件名.yaml --output 结果目录`。
 
 ## 一个完整的最小例子
 
 以下是合成数据，功率和预期能量均可手算。把它保存为`energy.yaml`：
 
-完整文件：保存为本节指定的文件名，包含根级字段，不需要再套父键；重复运行时使用新的输出目录。
+完整文件：保存为本节指定的文件名，包含根级字段，不需要再套父键；结果目录可以重复使用，每次生成带时间后缀的结果文件。
 
 ```yaml
-config_version: 3          # 声明分析文件采用的字段结构版本；当前填写整数3
+config_version: 4          # 当前分析配置版本
 dataset:                   # 设置本次分析名称及可选的对象、会话和时间范围
   name: demo               # 命名本次分析数据集；名称写入结果身份字段
 sources:                   # 列出输入来源；每项规定数据位置、格式和时间解释方式
@@ -37,7 +37,7 @@ signals:                   # 把输入字段定义为有名称、类型、单位
   - name: power            # 给分析信号取名称；后续表达式和计算通过此名称引用它
     field: p               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
     dtype: float64         # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-    unit: W                # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；仅标签不执行换算
+    unit: W                # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；未填scale/offset时按已登记的兼容单位换算
     valid_for: 1s          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
 calculations:              # 列出希望获得的统计或积分结果，每项独立选择范围和算法
   - name: energy           # 为这项计算结果取唯一名称；结果表用它区分计算项
@@ -49,17 +49,17 @@ intervals:                 # 选择时间计算使用实际间隔还是指定周
     value: 100ms           # 给fixed模式提供固定周期；从采集设置或业务规则取得
 ```
 
-运行`python -m chronaxis run energy.yaml --output work/energy-v2-result`，输出目录必须不存在。`会话结果.csv`中的energy（J）应为800。删除整个intervals即可改用实际间隔，应为1200J。原始CAN来源才能将mode设为dbc并删除value；上述memory例子选择dbc会报错，不会假装使用固定周期。
+运行`python -m chronaxis run energy.yaml --output work/energy-v2-result`，结果目录可以重复使用。`会话结果_<运行时间>.csv`中的energy（J）应为800。删除整个intervals即可改用实际间隔，应为1200J。原始CAN来源才能将mode设为dbc并删除value；上述memory来源不支持DBC周期，选择dbc会在配置校验时报错。
 
 ## intervals的全部字段
 
-intervals是可选对象，只包含default，省略时采用actual。单独设置写在规则、配对、窗口或计算项自己的interval对象中，不再使用按名称索引的overrides。它选择计算依据，不控制读取批次，也不自动开启导出重采样。
+intervals是可选对象，只包含default，省略时采用actual。单独设置写在规则、配对、窗口、计算项或时序变换自己的interval对象中，不再使用按名称索引的overrides。它选择计算依据，不控制读取批次，也不自动开启导出重采样。
 
 |字段|类型|必填|省略行为|含义|
 |---|---|---|---|---|
-|default|对象|否|mode为actual|设置全任务的默认时间依据，供下文列出的时间消费者使用。按希望使用真实时间还是记录周期选择。|
+|default|对象|否|mode为actual|设置全任务的默认时间依据，供下文列出的规则、窗口、配对、积分和时序变换使用。按希望使用真实时间还是记录周期选择。|
 
-表中的mode、value和driver属于一个间隔对象：全局完整路径为`intervals.default.mode/value/driver`；节点则为`rules[].interval`、`windows[].interval`、`sequences[].interval`或`calculations[].interval`中的同名字段，不能直接写成intervals.mode。
+表中的mode、value和driver属于一个间隔对象：全局完整路径为`intervals.default.mode/value/driver`；节点则为`rules[].interval`、`windows[].interval`、`sequences[].interval`、`calculations[].interval`或`transforms[].interval`中的同名字段，不能直接写成intervals.mode。
 
 |字段（相对于上述间隔对象）|类型|必填|省略行为|含义|
 |---|---|---|---|---|
@@ -81,7 +81,9 @@ calculations:              # 列出希望获得的统计或积分结果，每项
       value: 100ms         # 给fixed模式提供固定周期；从采集设置或业务规则取得
 ```
 
-这里只有power一个候选，所以省略driver；有多个候选时才填写driver明确选用哪一个。这里power就是上方signals中定义的功率信号。它也可以是专门用于推进的独立时钟信号，但与表达式依赖必须有可比较的时间基准。两个别名来自同一条物理报文时只算一个候选。其他被公式使用的信号仍需更新和检查是否有效，不会因为没有选作driver而被丢弃。样本最小值、样本最大值、样本均值、select、纯上升/下降沿不使用间隔；给它们单独设置覆盖会报错。旧legacy_sum的表达式已含period，不再额外乘intervals。
+这里只有power一个候选，所以省略driver；有多个候选时才填写driver明确选用哪一个。这里power就是上方signals中定义的功率信号。它也可以是专门用于推进的独立时钟信号，但与表达式依赖必须有可比较的时间基准。两个别名来自同一条物理报文时只算一个候选。其他被公式使用的信号仍需更新和检查是否有效，不会因为没有选作driver而被丢弃。样本最小值、样本最大值、样本均值、select、纯上升/下降沿不使用间隔；给它们单独设置覆盖会报错。
+
+逐消息累计（`legacy_sum`）直接相加每条目标消息的 `expr` 结果，不使用 `intervals` 指定的时长。若用功率计算每条消息的能量，应在 `expr` 中乘以时间参数，例如 `power * period`，并在 `parameters` 中定义该参数。`period` 是此例采用的参数名，可以另行命名；若输入已经是每条消息的能量贡献，则直接累计，不再乘时间。见[逐消息累计完整字段参考](message-calculations.md#message-fields)。
 
 ## 实际起止时刻不改，累计采用选定的周期
 

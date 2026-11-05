@@ -159,10 +159,13 @@ class PreparedConditionEvidence:
             self._point = query(compiled, self._axis, point=True)
             actual = bool(self._point.actual_update[0])
             # 样本本身invalid才是实际无效；TTL失效不能冒充真实新更新。
-            invalid = any(sample.time_ns == self._time and not sample.value.valid for sample in self._point.samples)
+            invalid = self._point._where_invalid
+            if invalid is None:
+                invalid = any(sample.time_ns == self._time and not sample.value.valid for sample in self._point.samples)
             holds = owner._queries._holds
-            source_end = any(holds._bounds[holds._definitions[name].source][1] == self._time
-                             for name in compiled.dependencies)
+            source_end = (self._time in self._point._where_ends if self._point._where_ends is not None else
+                          any(holds._bounds[holds._definitions[name].source][1] == self._time
+                              for name in compiled.dependencies))
             terminal = self._time == owner._end
             # 深成本包含CSV子类完整文件/物理行位置，先计账再建立refs tuple。
             ref_cost = sum(1024 + 16 * _metadata_bytes(sample.source_ref) for sample in self._point.samples)

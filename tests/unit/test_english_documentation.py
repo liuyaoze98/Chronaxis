@@ -55,16 +55,26 @@ class SchemaTranslationTests(unittest.TestCase):
         card = run_path(str(ROOT / "tools/build_ai_guide.py"))["public_card"]
         for path in (ROOT / "Docs/Current/en/public-api").glob("*.md"):
             source = path.read_text(encoding="utf8")
+            chinese = (ROOT / "Docs/Current/public-api" / path.name).read_text(encoding="utf8")
+            members = re.findall(r'<a id="(api-[^"]+)"', source)
+            self.assertCountEqual(members, re.findall(r'<a id="(api-[^"]+)"', chinese), path.name)
             output = card(source)
-            self.assertEqual(re.findall(r'<a id="(api-[^"]+)"', source),
-                             re.findall(r'<a id="(api-[^"]+)"', output), path.name)
+            self.assertEqual(members, re.findall(r'<a id="(api-[^"]+)"', output), path.name)
             self.assertNotIn("src/chronaxis/", output, path.name)
 
     def test_changed_source_or_translation_requires_review(self):
         """在临时副本真正改动正文；旧审阅清单必须拒绝两种漂移。"""
+        current, ai = ROOT / "Docs/Current", ROOT / "Docs/AI"
+        manuals = {*current.glob("*.md"), *(current / "public-api").glob("*.md")}
+        expected = {(page, current / "en" / page.relative_to(current)) for page in manuals}
+        expected.update((ai / name, ai / "en" / name)
+                        for name in ("README.md", "workflow.md", "semantics.md", "tasks.json"))
+        for name in ("calculations.md", "public-api/AnalysisPlan.md", "temporal-transforms.md", "host-extensions.md"):
+            self.assertIn((current / name, current / "en" / name), expected)
+        self.assertCountEqual(HELPER["translation_pairs"](), expected)
         with tempfile.TemporaryDirectory(prefix="chronaxis-en-review-") as directory:
             target = Path(directory)
-            paths = {p for pair in HELPER["translation_pairs"]() for p in pair}
+            paths = {p for pair in expected for p in pair}
             paths.update(ROOT / "Docs/Schema" / name for name in HELPER["SCHEMAS"])
             paths.update(ROOT / name for name in ("Docs/Current/navigation.json",
                 "Docs/Current/en/navigation.json", "Docs/Current/en/schema-translations.json",
@@ -75,7 +85,7 @@ class SchemaTranslationTests(unittest.TestCase):
                 shutil.copyfile(source, dest)
             namespace = HELPER["check_reviewed"].__globals__
             with patch.dict(namespace, ROOT=target, CURRENT=target / "Docs/Current", ENGLISH=target / "Docs/Current/en"):
-                self.assertEqual(HELPER["check_reviewed"](), 77)
+                self.assertEqual(HELPER["check_reviewed"](), len(expected))
                 for relative in ("Docs/Current/calculations.md", "Docs/Current/en/calculations.md"):
                     path = target / relative
                     original = path.read_bytes()
@@ -83,7 +93,7 @@ class SchemaTranslationTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "sources changed"):
                         HELPER["check_reviewed"]()
                     path.write_bytes(original)
-                self.assertEqual(HELPER["check_reviewed"](), 77)
+                self.assertEqual(HELPER["check_reviewed"](), len(expected))
 
 
 class EnglishGuideTests(unittest.TestCase):

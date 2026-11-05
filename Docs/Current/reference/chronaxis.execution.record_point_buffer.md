@@ -1,4 +1,4 @@
-# chronaxis.execution.record_point_buffer
+# `chronaxis.execution.record_point_buffer`
 
 共享有限驱动点的接收与失效处理，不执行数值统计或创建历史。
 
@@ -41,7 +41,7 @@ class RecordPointBuffer
 ```
 
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordPointBuffer-_require_open"></a>
 ### `RecordPointBuffer._require_open`
@@ -67,7 +67,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordPointBuffer-consume"></a>
 ### `RecordPointBuffer.consume`
@@ -99,7 +99,7 @@ None。
 
 上游处理同一时刻、条件及TTL；无效值必须传入，不能跳过后连接有效值。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordPointBuffer-expire_at"></a>
 ### `RecordPointBuffer.expire_at`
@@ -125,4 +125,4 @@ None。
 
 非法/回退时间或对象关闭失败；调用方必须在下一驱动点进入前通知。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,6 +1,6 @@
 """核对审查发现的Schema与公开配置入口差异，不修改解析器行为。
 
-输入为当前四份规范及小型配置副本；输出unittest断言。通过本地标准验证器
+输入为当前三份规范及小型配置副本；输出unittest断言。通过本地标准验证器
 与AnalysisPlan/ColumnMapping分别检查可空和边界，不读取CAN数据或写工作目录。
 """
 
@@ -32,7 +32,7 @@ class ManualSchemaContractTests(unittest.TestCase):
         # 默认省略的合法配置必须保持可用；逐字段null不应被编辑器误报。
         fields=('input_unit','semantic_id','semantic_contract_version','mapping_version','sign_convention','measurement_location')
         for name in fields:
-            for value,valid in ((None,True),('',False)):
+            for value,valid in ((None,name != 'input_unit'),('',False)):
                 with self.subTest(field=name,value=value):
                     config=config_fixture();config['signals'][0][name]=value
                     self.assertEqual(self.validators['analysis.schema.json'].is_valid(current_fixture(config)),valid)

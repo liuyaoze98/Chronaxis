@@ -1,4 +1,4 @@
-# chronaxis.core.normalize_numpy
+# `chronaxis.core.normalize_numpy`
 
 按信号声明转换一列原字段值，并保留有效性、质量和原来源身份。
 
@@ -68,7 +68,7 @@ _affine_integer(raw, selected, dtype, scale, offset)
 
 调用侧校验类型，分配错误传播；不逐样本用Python算数。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:34`](../../../src/chronaxis/core/normalize_numpy.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:34`](../../../src/chronaxis/core/normalize_numpy.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_float_limit"></a>
 ## `_float_limit`
@@ -94,7 +94,7 @@ float端点，大到不可表示的整数按方向得到Inf/最大有限值。
 
 配置类型已校验；数值转换溢出仅表示不可达端点。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:146`](../../../src/chronaxis/core/normalize_numpy.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:146`](../../../src/chronaxis/core/normalize_numpy.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-normalize_numpy"></a>
 ## `normalize_numpy`
@@ -130,7 +130,7 @@ TypeError或ValueError: 输入布局、质量位或声明结构不合法。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:168`](../../../src/chronaxis/core/normalize_numpy.py#L168)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:168`](../../../src/chronaxis/core/normalize_numpy.py#L168)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-memory_series_numpy"></a>
 ## `memory_series_numpy`
@@ -138,7 +138,7 @@ TypeError或ValueError: 输入布局、质量位或声明结构不合法。
 按原字段类型分组装箱，批量转换后恢复原行顺序和来源身份。
 
 ```python
-memory_series_numpy(bindings: SignalBindings, name: str) -> SignalSeries
+memory_series_numpy(bindings: SignalBindings, name: str, *, capture_code=False) -> SignalSeries
 ```
 
 ### 参数
@@ -147,6 +147,7 @@ memory_series_numpy(bindings: SignalBindings, name: str) -> SignalSeries
 |---|---|---|---|---|
 |`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)|是|无|位置或关键字。当前会话的已校验绑定。|
 |`name`|str|是|无|位置或关键字。已绑定的原信号别名。|
+|`capture_code`|bool|否|False|仅关键字。本次表达式需要 enum_code 时才保留映射前的整数。|
 
 ### 返回说明
 
@@ -165,4 +166,4 @@ TypeError、ValueError或OverflowError: 定义、布局、同时间冲突、原�
 
 返回类型：[SignalSeries](chronaxis.core.state.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:331`](../../../src/chronaxis/core/normalize_numpy.py#L331)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:331`](../../../src/chronaxis/core/normalize_numpy.py#L331)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

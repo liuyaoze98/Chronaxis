@@ -260,8 +260,8 @@ class ConditionalTimeReductionTests(unittest.TestCase):
             self.assertEqual((number.value, number.unit, facts.quality), (4000.0, 'W', Q.STALE))
             self.assertIs(facts.source_refs, series.source_refs)
             self.assertIs(facts.source_refs[0], ref)
-            # 不精确大整数要求换单位、或1e308最终乘1000，数值失败但原dtype极值覆盖完整。
-            for dtype, value, quality in ((D.UINT64, 2**53+1, Q.PRECISION_LOSS), (D.FLOAT64, 1e308, Q.NONFINITE)):
+            # 整数换单位后超出uint64范围、或1e308最终乘1000，数值失败但原dtype极值覆盖完整。
+            for dtype, value, quality in ((D.UINT64, 2**64-1, Q.OVERFLOW), (D.FLOAT64, 1e308, Q.NONFINITE)):
                 bad = self.series(values=(value, value), dtype=dtype, unit='kW')
                 reducer = self.reducer(bad, 'max_time', backend, spec=replace(spec, window=bad.observation))
                 facts, number = reducer.push(bad), reducer.finish()

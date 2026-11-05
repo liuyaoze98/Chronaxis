@@ -15,17 +15,17 @@
 | [part-2.asc](examples/data/can/conditional-energy/part-2.asc) | 第2卷，90～123秒；延续上一卷的条件状态。|
 | [signals.dbc](examples/data/can/conditional-energy/signals.dbc) | 合成报文0x100的状态、电流、电压及1000ms周期。|
 
-在Windows PowerShell中，从包含wheel和`examples`的工作目录执行；把wheel文件名替换为实际收到的版本。普通安装会自动安装这个发布包声明的CAN依赖，无需额外指定依赖组；不要随意更换cantools版本。离线机器需要事先准备这些依赖的wheel，见[安装](installation.md)。
+在 Windows PowerShell 中，从包含 `examples` 的工作目录执行。普通安装会自动安装本版声明的 CAN 依赖，无需额外指定依赖组；不要随意更换 cantools 版本。本地 wheel 和离线依赖安装方法见[安装说明](installation.md)。
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
 .\.venv\Scripts\python.exe -m chronaxis validate examples/conditional-energy.yaml --format json
 .\.venv\Scripts\python.exe -m chronaxis explain examples/conditional-energy.yaml --format json
 .\.venv\Scripts\python.exe -m chronaxis run examples/conditional-energy.yaml --output result-conditional-energy
 ```
 
-命令里的配置和输出路径相对**命令运行目录**。配置内部的ASC和DBC路径相对**配置文件所在目录**，因此不必把工作目录切换到数据目录。输出目录必须是新的；再次运行时换一个目录名，避免覆盖已生成的结果。
+命令里的配置和输出路径相对**命令运行目录**。配置内部的ASC和DBC路径相对**配置文件所在目录**，因此不必把工作目录切换到数据目录。输出目录可重复使用；每次结果文件自动带时间后缀，旧结果保留。
 
 两卷在同一个来源的`paths`中，按所列顺序连续读取，信号保持和条件计时会跨卷延续。不能把这两卷当成两个独立批量任务；那样90秒处会重新开始状态。不同试验的文件则应使用[独立批量任务](batch.md)。
 
@@ -35,7 +35,7 @@ py -3.12 -m venv .venv
 
 ```yaml
 # 合成教学示例：两个条件连续超过60秒，再对整个合格区间积分。
-config_version: 3                                     # 当前配置结构版本
+config_version: 4                                     # 当前配置结构版本
 dataset:                                              # 本次分析
   name: conditional_energy                            # 结果使用这个任务名称
 sources:                                              # 两卷连续文件组成一个来源
@@ -106,20 +106,26 @@ ASC/BLF格式自动识别；唯一来源及通道不用在每条信号中重复�
 ```python
 """读取已发布的合格区间能量，不扫描ASC或重复计算。"""
 import csv
+import json
+import sys
 from pathlib import Path
 
 # 一行已经包含本区间的实际起止、能量及状态。
-path = Path("result-conditional-energy") / "事件结果.csv"
+manifest_path = Path(sys.argv[1])
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+path = next(manifest_path.parent / item["name"]
+            for item in manifest["outputs"]
+            if item["name"].startswith("事件结果_"))
 with path.open(encoding="utf-8-sig", newline="") as stream:
     for row in csv.DictReader(stream):
         print(row["开始时间（s）"], row["结束时间（s）"],
               row["energy_kwh（kWh）"], "kWh", row["energy_kwh：状态"])
 ```
 
-从本例工作目录执行python show_energy.py，输出为61 122 0.06777777777777777 kWh 完整。这里逐行读结果，不把全部区间装入内存。已有程序依赖原events.csv/calculations.csv时，显式选择outputs.tables: csv，详见[交换格式](results.md#为程序选择交换格式)。
+从本例工作目录执行`python show_energy.py "CLI摘要中的manifest路径"`，输出为61 122 0.06777777777777777 kWh 完整。这里逐行读结果，不把全部区间装入内存。已有程序依赖原events.csv/calculations.csv时，显式选择outputs.tables: csv，详见[交换格式](results.md#为程序选择交换格式)。
 
 ## 换成自己的ASC或BLF
 
 替换`paths`、DBC路径和三条信号的ID/名称，保留你要的比较符、持续时长及kWh。需要严格超过60秒就继续使用`>`；不能改为60.1秒，也不能为了跑通而修改日志时间。普通ASC分析会检查所需通道和报文的时间顺序，无关帧只在确有需要时参与来源范围；显式完整检查或原帧导出仍要求全量顺序。目标报文回退应报告原位置，不自动排序或清洗。
 
-本例证明这份合成输入的跨文件连续判断和能量计算，不能证明任意私人日志、设备编码或业务方向正确。独立核验也应保留同样的有效期、先后顺序和边界；自行排序后的脚本即使总量相同，也不能声称验证了全部这些规则。
+替换为自己的日志后，核对DBC中的信号位置、单位和电流方向，确认两卷文件属于同一次连续记录，并用一段已知起止时间的数据复核能量。独立核验也应保留同样的有效期、先后顺序和边界；自行排序后的脚本即使总量相同，也不能声称验证了全部这些规则。

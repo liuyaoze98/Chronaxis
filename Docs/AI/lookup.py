@@ -40,7 +40,8 @@ def read(path, language="zh"):
         if path == "api/index.json":
             folder = "Current/en" if language == "en" else "Current"
             public = json.loads((ROOT.parent / folder / "public-api.json").read_bytes())
-            return dict(objects=[dict(name=row["name"], group=row["group"], signature=row["signature"],
+            return dict(objects=[dict(name=row["name"], import_module=row.get("import_module", "chronaxis"),
+                                      import_name=row.get("import_name", row["name"]), group=row["group"], signature=row["signature"],
                                       file=("../../Current/en/" if language == "en" else "../Current/") + row["target"])
                                  for row in public["objects"]])
         if path.startswith("fields/"):
@@ -54,7 +55,7 @@ def query(kind, term, schema=None, branch=None, language="zh"):
     if kind == "task":
         # 只查询意图、场景与相关字段，不用答案关键词误匹配别的任务。
         return [row for row in read("tasks.json", language)["tasks"] if term in
-                " ".join([row["id"],row["intent"],*row["fields"]]).casefold()]
+                " ".join([row["id"],row["intent"],*row.get("aliases", []),*row["fields"]]).casefold()]
     if kind == "api":
         return [row for row in read("api/index.json", language)["objects"] if term in row["name"].casefold()]
     hits = []

@@ -1,4 +1,4 @@
-# chronaxis.execution.conditional_integral_reduction
+# `chronaxis.execution.conditional_integral_reduction`
 
 把条件积分的面积求和与覆盖统计放在同一个可关闭对象中管理。push接收下一块结果，finish返回最终数值和统计，close归还资源额度。发生错误后保留清理所需对象，便于重试关闭。
 
@@ -53,7 +53,7 @@ ConditionalIntegralReduction(budget: ResourceBudget, spec: CalculationDefinition
 ```
 
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:23`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:23`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-__init__"></a>
 ### `ConditionalIntegralReduction.__init__`
@@ -86,7 +86,7 @@ None，初始化新 owner。
 配置、预算、分配、取消原样传播。
 持续清理失败时原异常.conditional_integral_reduction_cleanup_owner 可用于重试 close。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:31`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:31`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-closed"></a>
 ### `ConditionalIntegralReduction.closed`
@@ -116,7 +116,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:83`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:83`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-failed"></a>
 ### `ConditionalIntegralReduction.failed`
@@ -146,7 +146,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:88`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L88)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:88`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L88)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-result"></a>
 ### `ConditionalIntegralReduction.result`
@@ -176,7 +176,7 @@ ConditionalIntegralReduction.result: IntegralSumResult
 
 返回类型：[IntegralSumResult](chronaxis.core.integral_sum.md#api-IntegralSumResult)。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:93`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L93)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:93`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-facts"></a>
 ### `ConditionalIntegralReduction.facts`
@@ -206,7 +206,7 @@ ConditionalIntegralReduction.facts: ConditionalIntegralFacts
 
 返回类型：[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:102`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L102)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:102`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-_require_open"></a>
 ### `ConditionalIntegralReduction._require_open`
@@ -238,7 +238,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:110`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:110`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L110)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-_require_finished"></a>
 ### `ConditionalIntegralReduction._require_finished`
@@ -270,7 +270,7 @@ ConditionalIntegralReduction._require_finished() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:115`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:115`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-_reserve"></a>
 ### `ConditionalIntegralReduction._reserve`
@@ -297,7 +297,7 @@ ConditionalIntegralReduction._reserve(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:121`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:121`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-_release"></a>
 ### `ConditionalIntegralReduction._release`
@@ -324,7 +324,7 @@ ConditionalIntegralReduction._release(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:134`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:134`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-push"></a>
 ### `ConditionalIntegralReduction.push`
@@ -356,7 +356,7 @@ ConditionalIntegralReduction.push(terms: ReferenceConditionalIntegralTerms | Num
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:147`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:147`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L147)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-finish"></a>
 ### `ConditionalIntegralReduction.finish`
@@ -388,7 +388,7 @@ None，重复成功完成无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:175`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L175)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:175`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L175)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalIntegralReduction-close"></a>
 ### `ConditionalIntegralReduction.close`
@@ -416,4 +416,4 @@ None，重复成功关闭无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_reduction.py:196`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L196)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/conditional_integral_reduction.py:196`](../../../src/chronaxis/execution/conditional_integral_reduction.py#L196)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

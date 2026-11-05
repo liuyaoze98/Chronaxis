@@ -201,13 +201,13 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
         """当前必要清单不默认展开完整CAN模型，all内部模型计费保持。参数: 无。返回: None。异常: 断言。"""
         source=static_source()
         explicit=static_source(decode_scope='all',decode_frame_ids=())
-        run=RunMetadata('run','input','plan','reference',3,'synthetic seconds',
+        run=RunMetadata('run','input','plan','reference',4,'synthetic seconds',
             (('session',0,1),),'2026-10-19T00:00:00+08:00',device_label='home',can_sources=(source,))
         actual=run.to_dict()
         self.assertNotIn('can_sources',actual)
         self.assertNotIn('semantic_version',actual)
         self.assertNotIn('input_diagnostics',actual)
-        self.assertEqual(actual['config_version'],3)
+        self.assertEqual(actual['config_version'],4)
         self.assertEqual(actual,replace(run,can_sources=(explicit,)).to_dict())
         self.assertEqual(_metadata_size(source),old_metadata_size(source))
         self.assertEqual(run.estimated_bytes(),replace(run,can_sources=(explicit,)).estimated_bytes())
@@ -324,6 +324,7 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
             self.assertEqual(observations[0]['ready'][0]['version'],1)
             # 未用声明仍静态保存，错误单位不应强制读取该值或冒称已核实。
             selected['signals'][1]['unit']='A'
+            selected['signals'][1]['conversion']={'input_unit':'A'}
             rows,metadata,_=self.execute(AnalysisPlan.from_dict(current_fixture(selected),base_dir=root),root/'unused-unit')
             self.assertEqual(tuple(row.value for row in rows),(700.,-200.))
             self.assertEqual(metadata.input_diagnostics[0].aliases,('power',))
@@ -437,7 +438,7 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
             with self.subTest(contributions=mode):
                 root,config,_=self.fixture(contributions=mode)
                 unused=deepcopy(config['signals'][0])
-                unused.update(name='unused',unit='V')
+                unused.update(name='unused',unit='V',conversion={'input_unit':'V'})
                 unused['field'].update(signal='Unused',frame_id=258)
                 config['signals'].append(unused)
                 config['derived']={'unused_twice':{'expr':'unused * 2','unit':'V'}}

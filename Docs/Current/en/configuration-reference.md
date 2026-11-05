@@ -23,6 +23,9 @@ See [Dotted paths and YAML](configuration-language.md#field-paths) and [Analyze 
 | `sources` | [Inputs](inputs.md), [Text inputs](text-inputs.md) | Source type, paths, DBC, reader settings, and source time. |
 | `signals` | [Signals](signals.md) | Binding, type, unit, period, validity, choices, and conversion. |
 | `derived` | [Expressions](expressions.md) | Named expressions and units. |
+|lookups|[One-dimensional lookup and interpolation](expressions.md#lookup-reference)|
+| `transforms` | [Time-series transforms](temporal-transforms.md) | Version 4 rolling statistics and rates. |
+|aggregations|[Result aggregation](aggregations.md): fields, operations, grouping and completeness|
 | `rules` | [Event rules](rules.md) | Conditions and event generation. |
 | `windows` | [Windows](windows.md) | Ranges around events. |
 | `sequences` | [Sequences](sequences.md) | Pairing and latency. |

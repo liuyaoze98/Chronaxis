@@ -50,7 +50,7 @@ class HistoricalMathFixture(unittest.TestCase):
             path.write_text('ns,raw.a\n' + ''.join(str(time) + ',' + ('' if value is None else str(value)) + '\n'
                                                   for time, value in rows), encoding='utf-8', newline='')
             source.update(path='source.csv', time_column='ns')
-        config = {'config_version': 3,
+        config = {'config_version': 4,
                   'dataset': {'name': 'event_dataset', 'entity': 'event_device', 'session': 'event_session',
                               'domain': {'start': str(domain[0]) + 'ns', 'end': str(domain[1]) + 'ns'}},
                   'sources': [source], 'signals': [{'name': 'a', 'source': 'table', 'field': 'raw.a',

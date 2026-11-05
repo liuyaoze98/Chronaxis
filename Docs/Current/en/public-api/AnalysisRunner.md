@@ -6,12 +6,12 @@ Return to the [public API index](../api.md). Linked parameter types lead to thei
 
 ## Members
 
-- [AnalysisRunner](#api-AnalysisRunner)
-- [AnalysisRunner.__init__](#api-AnalysisRunner-__init__)
-- [AnalysisRunner.backend](#api-AnalysisRunner-backend)
-- [AnalysisRunner.validate](#api-AnalysisRunner-validate)
-- [AnalysisRunner.explain](#api-AnalysisRunner-explain)
-- [AnalysisRunner.run](#api-AnalysisRunner-run)
+- [`AnalysisRunner`](#api-AnalysisRunner)
+- [`AnalysisRunner.__init__`](#api-AnalysisRunner-__init__)
+- [`AnalysisRunner.backend`](#api-AnalysisRunner-backend)
+- [`AnalysisRunner.validate`](#api-AnalysisRunner-validate)
+- [`AnalysisRunner.explain`](#api-AnalysisRunner-explain)
+- [`AnalysisRunner.run`](#api-AnalysisRunner-run)
 
 <a id="api-AnalysisRunner"></a>
 ## `AnalysisRunner`
@@ -19,11 +19,8 @@ Return to the [public API index](../api.md). Linked parameter types lead to thei
 Configures execution of one analysis. backend can override the plan; run creates independent resources and returns an AnalysisResult that must be closed. A runner can normally be reused while each result is managed separately.
 
 ```python
-AnalysisRunner(backend=None)
+AnalysisRunner(backend=None, *, extensions=None)
 ```
-
-
-Source: [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -31,7 +28,7 @@ Source: [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) 
 Selects an optional plan-backend override without reading source or configuration files.
 
 ```python
-AnalysisRunner.__init__(backend=None)
+AnalysisRunner.__init__(backend=None, *, extensions=None)
 ```
 
 #### Parameters
@@ -39,6 +36,7 @@ AnalysisRunner.__init__(backend=None)
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
 |`backend`|str &#124; None|No|None|Positional or keyword. "reference" selects independent reference calculations; "numpy" selects NumPy array calculations. None uses the plan setting.|
+|`extensions`|[ExtensionRegistry](ExtensionRegistry.md#api-ExtensionRegistry) &#124; None|No|None|Keyword-only host registry. Supply the same instance used for the plan. Each requested extension must implement the selected backend.|
 
 #### Returns
 
@@ -52,8 +50,6 @@ Exact diagnostics reported directly by this function (Chinese text is retained):
 
 - `TypeError`: `AnalysisRunner backend需要reference、numpy或None。` — backend must be reference, numpy, or None.
 - `ValueError`: `AnalysisRunner仅支持reference与numpy后端。` — only reference and numpy are supported.
-
-Source: [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -81,8 +77,6 @@ None/reference/numpy.
 
 None.
 
-Source: [`src/chronaxis/runner.py:45`](../../../../src/chronaxis/runner.py#L45) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
-
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
 
@@ -96,7 +90,7 @@ AnalysisRunner.validate(plan)
 
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
-|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|None|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
+|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
 
 #### Returns
 
@@ -109,8 +103,6 @@ TypeError if plan is not AnalysisPlan or its execution model is invalid. Ordinar
 #### Side effects
 
 No source I/O or directory creation.
-
-Source: [`src/chronaxis/runner.py:65`](../../../../src/chronaxis/runner.py#L65) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -125,7 +117,7 @@ AnalysisRunner.explain(plan)
 
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
-|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|None|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
+|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
 
 #### Returns
 
@@ -138,8 +130,6 @@ TypeError for an invalid plan or execution type. Manually corrupted typed refere
 #### Side effects
 
 Does not read CSV/DBC or measure actual resource use.
-
-Source: [`src/chronaxis/runner.py:75`](../../../../src/chronaxis/runner.py#L75) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -154,7 +144,7 @@ AnalysisRunner.run(plan, work_dir=None)
 
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
-|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|None|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
+|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
 |`work_dir`|str &#124; Path &#124; None|No|None|Positional or keyword. Exclusive intermediate-work directory for this run. An explicit path must not exist; old directories are not overwritten. None creates a unique directory automatically.|
 
 #### Returns
@@ -183,7 +173,7 @@ def main():
     """Validate, run, and close cursors/results. Return None; preserve error chains."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')
-    parser.add_argument('--output', type=Path, help='New output directory; omit to print results only')
+    parser.add_argument('--output', type=Path, help='Reusable result directory; omit to print results only')
     args = parser.parse_args()
     plan = load_analysis_plan(args.plan)
     report = validate_analysis_plan(plan)
@@ -206,4 +196,15 @@ if __name__ == '__main__':
 
 ```
 
-Source: [`src/chronaxis/runner.py:86`](../../../../src/chronaxis/runner.py#L86) (line numbers refer to `66a66ec751da79d6562f341e646dd7f47c726f68`).
+## Host-registered operations
+
+Register trusted callbacks in Python and pass the same immutable registry when loading and running a v4 plan. See the [worked host example](../host-extensions.md).
+
+## Source locations
+
+- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/runner.py:51`](../../../../src/chronaxis/runner.py#L51) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/runner.py:73`](../../../../src/chronaxis/runner.py#L73) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/runner.py:83`](../../../../src/chronaxis/runner.py#L83) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/runner.py:94`](../../../../src/chronaxis/runner.py#L94) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

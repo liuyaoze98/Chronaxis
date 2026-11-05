@@ -20,7 +20,7 @@ from .readable_format import STATES, REASONS, seconds, explanation, quality_text
 IDENTITY = ('dataset_id', 'entity_id', 'session_id')
 LABELS = ('数据集', '对象', '会话')
 FILES = {'events': '事件结果.csv', 'segments': '窗口结果.csv', 'calculations': '会话结果.csv',
-         'sequences': '配对结果.csv', 'selections': '选择结果.csv',
+         'sequences': '配对结果.csv', 'selections': '选择结果.csv', 'aggregations':'聚合结果.csv',
          'contributions': '贡献明细.csv', 'input_trace': '输入追溯.csv'}
 
 
@@ -280,6 +280,8 @@ class ReadableWriter:
             paths.append(self._write(table, [LABELS[i] for i in self.varying] + columns[table], self._main_rows(table)))
         # 明细无需重排或宽表聚合，直接从原暂存逐行写出，不进入SQLite索引。
         detail_columns = {
+            'aggregations': ['聚合项','分组','结果','单位','状态','原因','候选数','参与数','定义排除数','质量排除数',
+                             '参与的部分值','匹配','确认超时','观测不足','未决','已完整发现总体','质量说明'],
             'selections': ['计算项', '统计范围', '所属区间', '时间（s）', '值', '单位', '数值状态', '选择状态', '说明'],
             'contributions': ['计算项', '来源', '原记录序号', '求值序号', '贡献值', '说明'],
             'input_trace': ['来源', '原记录序号', '时间（s）', '记录类型', '输入位置', '字段值', '说明'],
@@ -295,7 +297,15 @@ class ReadableWriter:
         参数: table为明细表。返回: 有界CSV行。异常: 缺失父对象或原读取错误。
         """
         for row in self._rows(table):
-            if table == 'selections':
+            if table == 'aggregations':
+                values=[row['aggregation_id'],_json(dict(zip(row['group_keys'],row['group_values']))),
+                        row['value'],row['unit'],{'complete':'完整','partial':'部分','indeterminate':'不能确定','empty':'确定为空'}[row['status']],
+                        {'ok':'正常','partial_population':'总体不完整','no_observation':'无观测','insufficient_data':'观测不足',
+                         'empty_population':'无参与值','insufficient_count':'样本数不足','numeric_error':'数值不能确定'}[row['reason']],
+                        row['candidate_count'],row['included_count'],row['definition_excluded_count'],row['quality_excluded_count'],
+                        row['included_partial_count'],row['matched_count'],row['timeout_count'],row['insufficient_observation_count'],
+                        row['pending_count'],'是' if row['discovery_complete'] else '否',quality_text(row['quality'])]
+            elif table == 'selections':
                 scope = row['scope']
                 parent = '' if scope == 'session' else self._number(
                     'events' if scope == 'event' else 'segments', row, row['parent_id'])

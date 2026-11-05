@@ -9,9 +9,9 @@
 from .errors import (AnalysisError, BudgetExceededError, ResultClosedError, ResultFormatError,
                      ContributionsUnavailableError)
 from .budget import ResourceBudget
-from .manifest import RunMetadata, OutputManifest
+from .manifest import RunMetadata, OutputManifest, ExportManifest
 
-__all__ = ['AnalysisError', 'BudgetExceededError', 'ResultClosedError', 'ResultFormatError', 'ContributionsUnavailableError', 'SummaryCalculationRow', 'SummaryCoverageCalculationRow', 'SummaryEventRow', 'SummarySequenceRow', 'SummarySegmentRow', 'SummaryContributionRow', 'SummaryInputRow', 'SummarySelectionRow', 'ResultRow', 'ResourceBudget', 'ResultSpool', 'RunMetadata', 'OutputManifest', 'AnalysisResult']
+__all__ = ['AnalysisError', 'BudgetExceededError', 'ResultClosedError', 'ResultFormatError', 'ContributionsUnavailableError', 'SummaryCalculationRow', 'SummaryCoverageCalculationRow', 'SummaryEventRow', 'SummarySequenceRow', 'SummarySegmentRow', 'SummaryContributionRow', 'SummaryInputRow', 'SummarySelectionRow', 'SummaryAggregationRow', 'SummaryHostedCalculationRow', 'ResultRow', 'ResourceBudget', 'ResultSpool', 'RunMetadata', 'OutputManifest', 'ExportManifest', 'AnalysisResult']
 
 
 def __getattr__(name):
@@ -22,7 +22,7 @@ def __getattr__(name):
     副作用: 访问对应类才加载实现及其依赖，不读取输入或启动分析。
     """
     # 延迟加载结果模型，纯预算消费者导入时不建立执行层依赖。
-    if name in ('SummaryCalculationRow', 'SummaryCoverageCalculationRow', 'SummaryEventRow', 'SummarySequenceRow', 'SummarySegmentRow', 'SummaryContributionRow', 'SummaryInputRow', 'SummarySelectionRow', 'ResultRow'):
+    if name in ('SummaryCalculationRow', 'SummaryCoverageCalculationRow', 'SummaryEventRow', 'SummarySequenceRow', 'SummarySegmentRow', 'SummaryContributionRow', 'SummaryInputRow', 'SummarySelectionRow', 'SummaryAggregationRow', 'SummaryHostedCalculationRow', 'ResultRow'):
         from . import rows
         return getattr(rows, name)
     if name == 'ResultSpool':

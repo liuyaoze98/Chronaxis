@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 import posixpath
 import re
 from zipfile import ZipFile
+from jsonschema import Draft202012Validator
 
 
 def follow(docs, target):
@@ -22,6 +23,62 @@ def follow(docs, target):
     return value
 
 
+def task_references(z, language, tasks):
+    """只用ZIP实际内容打开任务后续参考，并核对JSON片段和核心专题的完整段落。"""
+    opened = []
+    for task in tasks:
+        assert not re.search(r"\S+\.(?:md|html|json|ya?ml|py)(?:\b|#)", task["requires"]), (language, task["id"], 'requires contains a file path')
+        for reference in task.get("references", []):
+            assert set(reference) == {"path", "description"} and all(reference.values())
+            target, _, pointer = reference['path'].partition('#')
+            target = posixpath.normpath(language + target)
+            body = z.read(target).decode('utf8')
+            if pointer:
+                assert target.endswith('.json') and pointer.startswith('/')
+                node = follow({target: json.loads(body)}, target + '#' + pointer)
+                assert isinstance(node, dict) and node, (target, pointer)
+            if target.endswith('topics/aggregations.md'):
+                for term in ('group_by', 'include_partial', 'partial_policy', 'discovery_complete', 'candidate_count'):
+                    assert term in body, (target, term)
+            if target.endswith('topics/message-calculations.md'):
+                for term in ('parameters', 'message_policy', 'split_by_sign', 'outputs.contributions'):
+                    assert term in body, (target, term)
+            opened.append(target + ('#' + pointer if pointer else ''))
+        if task['id'] in ('POWER_STATISTICS', 'MESSAGE_ENERGY'):
+            assert len(task.get('references', [])) >= 2, task['id']
+    return opened
+
+
+def check_result_summaries(z, names):
+    """从最终ZIP独立核对每份结果摘要，不借用构建器的检查结果。
+
+    参数: z为已打开的ZipFile，names为包内实际路径集合。
+    返回: 摘要数量与被引用结果文件数量。
+    异常: AssertionError，路径、文件大小或哈希不符；缺失文件读取错误传播。
+    """
+    summaries = count = 0
+    for name in sorted(names):
+        if not name.startswith('examples/results/') or not name.endswith('/result-summary.json'):
+            continue
+        summaries += 1
+        records = json.loads(z.read(name))['files']
+        assert isinstance(records, list), name
+        seen = set()
+        for record in records:
+            relative = record['path']
+            assert isinstance(relative, str) and relative and '\\' not in relative and ':' not in relative, name
+            path = PurePosixPath(relative)
+            assert not path.is_absolute() and '..' not in path.parts, (name, relative)
+            target = str(PurePosixPath(name).parent / path)
+            assert target in names and target not in seen, (name, target)
+            seen.add(target)
+            data = z.read(target)
+            assert type(record['bytes']) is int and len(data) == record['bytes'], (target, 'bytes')
+            assert sha256(data).hexdigest() == record['sha256'], (target, 'sha256')
+            count += 1
+    return dict(result_summaries=summaries, result_files=count)
+
+
 def check(file):
     """参数: file为待验ZIP。返回: 摘要。异常: 发行内容、字段或链接与清单不符。"""
     with ZipFile(file) as z:
@@ -32,8 +89,20 @@ def check(file):
         for name,expected in manifest["sha256"].items():
             assert not PurePosixPath(name).is_absolute() and ".." not in PurePosixPath(name).parts
             assert sha256(z.read(name)).hexdigest()==expected, name
+        result_counts = check_result_summaries(z, names)
         schemas = {n:json.loads(z.read(n)) for n in names if n.startswith("schemas/")}
-        assert len(schemas)==4 and schemas["schemas/analysis.schema.json"]["properties"]["config_version"]["const"]==manifest["config_version"]
+        assert len(schemas)==3
+        analysis_version = schemas["schemas/analysis.schema.json"]["properties"]["config_version"]
+        batch_version = schemas["schemas/batch-v1.schema.json"]["properties"]["batch_version"]
+        assert manifest["config_version"] == 4 and manifest["supported_config_versions"] == [4]
+        assert analysis_version["type"] == "integer" and analysis_version["const"] == 4
+        assert batch_version["type"] == "integer" and batch_version["const"] == 1
+        # 分别用发行包里的实际约束判定版本。独立批量清单不沿用分析计划的编号。
+        for declaration, supported in ((analysis_version, (4,)), (batch_version, (1,))):
+            validator = Draft202012Validator(declaration)
+            for candidate in (0, 1, 2, 3, 4, 5, 3.5, "3", True, None):
+                expected = type(candidate) is int and candidate in supported
+                assert validator.is_valid(candidate) == expected, (declaration, candidate)
         # 逐条反查原字段，校验所有约束值及条件指针；单独测量分片的实际字节量。
         shards=json.loads(z.read("fields/index.json"))["shards"]
         size,records=0,0
@@ -80,8 +149,12 @@ def check(file):
         assert [t["id"] for t in tasks] == [t["id"] for t in en_tasks]
         for left, right in zip(tasks, en_tasks):
             assert posixpath.normpath("en/" + right["example"]) == left["example"]
+            assert all(task["example"] in task["verify"] for task in (left, right)), left["id"]
             for key in ("api", "fields", "templates"):
                 assert left[key] == right[key], (left["id"], key)
+        zh_references = task_references(z, '', tasks)
+        en_references = task_references(z, 'en/', en_tasks)
+        assert zh_references == [target.removeprefix('en/') for target in en_references]
         def without_prose(value):
             """比较全部机器约束，递归排除已翻译的说明文字。"""
             if isinstance(value, dict):
@@ -105,10 +178,10 @@ def check(file):
                     follow(schemas, guard.removeprefix("../"))
                 en_records += 1
         assert en_visited == visited and en_records == records and en_size <= 24_576
-        return dict(files=len(names),tasks=len(tasks),public_objects=len(api),shards=len(shards),
+        return dict(**result_counts, files=len(names),tasks=len(tasks),public_objects=len(api),shards=len(shards),
                     field_records=records,defined_properties=len(defined),max_shard_bytes=size,
                     english_tasks=len(en_tasks), english_objects=len(en_api), english_field_records=en_records,
-                    english_max_shard_bytes=en_size)
+                    english_max_shard_bytes=en_size, task_references=len(zh_references)+len(en_references))
 
 
 if __name__=="__main__":

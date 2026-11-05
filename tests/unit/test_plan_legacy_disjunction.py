@@ -26,7 +26,7 @@ def bucket_config():
     """
     config = legacy_config()
     direction = deepcopy(config['signals'][0])
-    direction.update(name='direction', dtype='float64', unit='1')
+    direction.update(name='direction', dtype='float64', unit='1', conversion={'input_unit':'1'})
     direction['field']['signal'] = 'Direction.raw'
     config['signals'].append(direction)
     config['message_calculations'][0]['split_by_sign'] = dict(

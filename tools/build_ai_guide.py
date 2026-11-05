@@ -10,6 +10,7 @@ from io import BytesIO
 import json
 import os
 from pathlib import Path
+import posixpath
 import re
 from runpy import run_path
 import tomllib
@@ -17,6 +18,9 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 reading_text = run_path(str(ROOT / "tools/public_docs.py"))["reading_text"]
+_resource_helpers = run_path(str(ROOT / "tools/ai_resource_bytes.py"))
+resource_bytes = _resource_helpers["resource_bytes"]
+validate_result_summaries = _resource_helpers["validate_result_summaries"]
 AUTHOR = ROOT / "Docs/AI"
 CURRENT = ROOT / "Docs/Current"
 
@@ -30,10 +34,8 @@ def json_bytes(value):
 def source_bytes(path):
     """参数: path为锁定资料。返回: 规范换行的文本或原始二进制。异常: 读取失败传播。"""
     data = path.read_bytes()
-    # 只规范明确的文本格式；BLF等二进制必须逐字节保持。
-    if path.suffix.lower() in {".json", ".yaml", ".md", ".csv", ".asc", ".dbc", ".ini", ".py"}:
-        data = data.replace(b"\r\n", b"\n")
-    return data
+    # 锁定和分发共用规则；结果CSV已有大小/哈希，不能按普通说明文本转换。
+    return resource_bytes(path.relative_to(ROOT).as_posix(), data)
 
 
 def public_card(page):
@@ -48,7 +50,8 @@ def public_card(page):
     body = re.sub(r"(?ms)^#{2,5} (?:调用示例|Call examples?)\s*\n.*?(?=^<a id=|^#{1,5} |\Z)", "", body)
     body = body.replace("Docs/Current/examples/", "examples/").replace("从仓库根目录运行", "从资料解压目录运行")
     # 内容保留类型名称；本资料中的API文件与Current网页的相对目录不同。
-    return re.sub(r"\[([^\]\n]+)\]\([^\)\n]+\)", r"\1", body).strip()
+    # 只取不含方括号的叶级链接；外层tuple/list的括号必须原样保留。
+    return re.sub(r"\[([^\[\]\n]+)\]\([^\)\n]+\)", r"\1", body).strip()
 
 
 def add_english(files, sources, meta):
@@ -59,6 +62,8 @@ def add_english(files, sources, meta):
         if name.endswith(".md"):
             text = reading_text(text)
         for source, target in (
+            ("../../Current/en/aggregations.md", "topics/aggregations.md"),
+            ("../../Current/en/message-calculations.md", "topics/message-calculations.md"),
             ("../../Current/examples/", "../examples/"),
             ("../../Current/documentation.json", "../manifest.json"),
             ("../../Current/en/public-api.json", "api/index.json"),
@@ -85,8 +90,9 @@ def add_english(files, sources, meta):
         card = card.replace("Run from the repository root", "Run from the guide's en directory")
         # public_card已将源码示例改成examples/，英文页面位于en下。
         card = re.sub(r"(?<![./])examples/", "../examples/", card)
-        files[f"en/api/{name}.md"] = (f"# {name}\n\nImport: `from chronaxis import {name}`\n\n{card}\n").encode("utf8")
-        api.append(dict(name=name, group=item["group"], signature=item["signature"], file=f"api/{name}.md"))
+        module, symbol = item.get("import_module", "chronaxis"), item.get("import_name", name)
+        files[f"en/api/{name}.md"] = (f"# {name}\n\nImport: `from {module} import {symbol}`\n\n{card}\n").encode("utf8")
+        api.append(dict(name=name, import_module=module, import_name=symbol, group=item["group"], signature=item["signature"], file=f"api/{name}.md"))
     files["en/api/index.json"] = json_bytes(dict(language="en", objects=api))
     helper = run_path(str(ROOT / "tools/english_docs.py"))
     translations = json.loads(sources["Docs/Current/en/schema-translations.json"])["translations"]
@@ -104,6 +110,148 @@ def add_english(files, sources, meta):
                 row["source"] = row["source"].replace("schemas/", "../schemas/", 1)
                 row["conditions"] = [x.replace("schemas/", "../schemas/", 1) for x in row["conditions"]]
         files["en/" + name] = json_bytes(value)
+
+
+def reading_section(text, heading):
+    """提取一个完整功能小节，保留子标题，排除下一同级章节。
+
+    参数: text为已去除开发履历的Markdown，heading为包含#的完整标题行。
+    返回: 从标题到下一同级或更高级标题之前的正文，不包含其他节的锚点。
+    异常: ValueError表示指定标题缺失；不猜测替代章节。
+    """
+    lines = text.splitlines(keepends=True)
+    start = next((i for i, line in enumerate(lines) if line.strip() == heading), None)
+    if start is None:
+        raise ValueError("专题所需章节不存在：" + heading)
+    level = len(heading) - len(heading.lstrip('#'))
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        match = re.match(r"^(#{1,6}) ", lines[index])
+        if match and len(match[1]) <= level:
+            end = index
+            break
+    # 下一节可能在标题前带HTML锚点；它不属于当前章节。
+    while end > start and (not lines[end - 1].strip() or lines[end - 1].lstrip().startswith('<a id=')):
+        end -= 1
+    return ''.join(lines[start:end]).rstrip() + '\n'
+
+
+def add_task_topics(files, sources):
+    """从锁定的双语专题生成完整阅读页；只调整分发路径，不删字段或语义正文。"""
+    for language in ("", "en/"):
+        en = bool(language)
+        root = "../../" if en else "../"
+        destinations = {
+            "fast-energy.md": "fast-energy.md",
+            "expressions.md": "expressions.md",
+            "inputs.md#can-field": root + "schemas/analysis.schema.json#/properties/signals",
+            "dataset.md": root + "schemas/analysis.schema.json#/properties/dataset/properties/domain",
+            "examples.md#message-energy": "message-example.md",
+            "example-results.md#power-statistics-yaml": "power-statistics-results.md",
+            "results.md#v4-aggregations": "aggregation-results.md",
+            "concepts.md": "../semantics.md",
+            "aggregations.md": "aggregations.md",
+            "intervals.md": root + "schemas/analysis.schema.json#/properties/intervals",
+            "calculations.md#integrators": "integrators.md",
+            "calculations.md#v4-power-statistics": "power-statistics.md",
+            "execution.md": root + "schemas/analysis.schema.json#/properties/execution",
+            "configuration-language.md": "#yaml-values",
+        }
+        pages = {name: reading_text(sources[f"Docs/Current/{language}{name}.md"].decode("utf8"))
+                 for name in ("aggregations", "message-calculations", "expressions")}
+        # 原标签承诺的内容必须随包提供：结果链接不能仅跳到配置，选型不能仅跳到API。
+        sections = (
+            ("aggregation-results", "results", "## Read aggregation results" if en else "## 聚合结果怎样读"),
+            ("power-statistics-results", "example-results", "## power-statistics.yaml"),
+            ("message-example", "examples", "### Contributions and skipped CAN messages" if en else "### 每条CAN消息的贡献与跳过"),
+            ("integrators", "calculations", "## Choose an integrator" if en else "## 积分器的选择"),
+            ("power-statistics", "calculations", "## Count readings or loads, and measure power over time" if en else "## 同一次功率试验，按报文、时长或加载次数统计"),
+        )
+        for name, source, heading in sections:
+            page = reading_text(sources[f"Docs/Current/{language}{source}.md"].decode("utf8"))
+            pages[name] = reading_section(page, heading)
+        fast = reading_text(sources[f"Docs/Current/{language}fast-energy.md"].decode("utf8"))
+        pages["fast-energy"] = fast.split('\n## ', 1)[0] + '\n\n' + reading_section(
+            fast, "## Check a rejected request" if en else "## 配置被拒绝时")
+        for topic, body in pages.items():
+            if topic == "expressions":
+                # 保留整套运算/函数/单位/类型说明；准备输入和派生信号教程由任务示例承担。
+                start = "## Literals, names, and parentheses" if en else "## 数字、名字和括号"
+                if start not in body:
+                    raise ValueError("表达式完整参考章节未找到：" + language)
+                body = ("# Expression operators and types\n\n" if en else "# 表达式运算和类型参考\n\n") + body[body.index(start):]
+                syntax = reading_text(sources[f"Docs/Current/{language}configuration-language.md"].decode("utf8"))
+                section = "## Values, quotation marks, and expressions" if en else "## 值、引号与表达式"
+                if section not in syntax:
+                    raise ValueError("YAML值说明章节未找到：" + language)
+                excerpt = syntax[syntax.index(section):].split('\n## ', 1)[0]
+                body += '\n\n<a id="yaml-values"></a>\n' + excerpt
+
+            def replace(match):
+                """只改阅读链接的地址，保留原句中的字段、动作和条件。
+
+                参数: match为正文中的Markdown链接。
+                返回: 使用已登记分发地址、保留原标签的Markdown链接。
+                异常: ValueError表示目标未登记或示例附件缺失。
+                """
+                label, target = match.groups()
+                if target.startswith('#'):
+                    return match[0]
+                if target.startswith(("examples/", "../examples/")):
+                    relative = target.removeprefix("../")
+                    if relative not in files:
+                        raise ValueError("专题示例缺少发行附件：" + relative)
+                    return f"[{label}]({root}{relative})"
+                if target not in destinations:
+                    raise ValueError("专题新增未登记的后续阅读链接：" + target)
+                # 链接文字可能是句子的一部分，例如“省略dataset.domain”；
+                # 目标页面标题不能替换它，否则文件可达但条件含义已经改变。
+                return f"[{label}]({destinations[target]})"
+
+            body = re.sub(r"\[([^\]\n]+)\]\(([^)\n]+)\)", replace, body)
+            directory = root + "examples/"
+            note = (f"Other tasks: [task index](../tasks.json). Run example commands from the referenced configuration's directory under `{directory}`, not from this reading page's directory.\n\n"
+                    if en else f"其他任务见上方入口[任务索引](../tasks.json)。下方示例命令在所引用配置文件所在目录执行；示例位于 `{directory}`，不在本阅读页目录执行。\n\n")
+            body = body.replace('\n\n', '\n\n' + note, 1)
+            files[f"{language}topics/{topic}.md"] = (body + "\n").encode("utf8")
+
+
+def validate_task_references(files):
+    """校核所有任务的结构化后续阅读文件/JSON指针，并拒绝requires中的裸文件地址。"""
+    checked = 0
+    normalized = {}
+    for language in ("", "en/"):
+        tasks = json.loads(files[language + "tasks.json"])["tasks"]
+        for task in tasks:
+            if re.search(r"\S+\.(?:md|html|json|ya?ml|py)(?:\b|#)", task["requires"]):
+                raise ValueError("后续资料路径须放入references：" + language + task["id"])
+            references = task.get("references", [])
+            if not isinstance(references, list):
+                raise ValueError("references必须为列表：" + task["id"])
+            targets = []
+            for item in references:
+                if set(item) != {"path", "description"} or not all(isinstance(v, str) and v for v in item.values()):
+                    raise ValueError("references需要非空path和description：" + task["id"])
+                relative, _, pointer = item["path"].partition("#")
+                destination = posixpath.normpath(language + relative)
+                if destination not in files:
+                    raise ValueError("任务后续资料缺失：" + destination)
+                if pointer:
+                    if not destination.endswith(".json") or not pointer.startswith("/"):
+                        raise ValueError("任务片段只接受完整JSON指针：" + item["path"])
+                    node = json.loads(files[destination])
+                    for part in pointer.split("/")[1:]:
+                        key = part.replace("~1", "/").replace("~0", "~")
+                        node = node[int(key)] if isinstance(node, list) else node[key]
+                    if not isinstance(node, dict):
+                        raise ValueError("任务规范指针须指向定义对象：" + item["path"])
+                targets.append(destination.removeprefix("en/") + ("#" + pointer if pointer else ""))
+                checked += 1
+            normalized[(language, task["id"])] = targets
+    for (language, name), targets in normalized.items():
+        if not language and normalized[("en/", name)] != targets:
+            raise ValueError("双语任务引用目标不一致：" + name)
+    return checked
 
 
 def check_runtime(lock):
@@ -143,7 +291,7 @@ def build_files(*, verify_runtime=True):
     exports = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
                    and any(isinstance(t, ast.Name) and t.id == "__all__" for t in n.targets))
     public = json.loads(sources["Docs/Current/public-api.json"])["objects"]
-    if sorted(exports) != sorted(row["name"] for row in public):
+    if sorted(exports) != sorted(row["name"] for row in public if row.get("import_module", "chronaxis") == "chronaxis"):
         raise ValueError("公开导出与资料清单不一致")
     files = {name: source_bytes(AUTHOR / name) for name in
              ("README.md", "tasks.json", "run_analysis.py", "semantics.md", "lookup.py", "workflow.md")}
@@ -155,6 +303,8 @@ def build_files(*, verify_runtime=True):
                 text = reading_text(text)
             # 源码入口直接引用已有资料；独立包只改路径，正文和任务定义保持同一来源。
             for source, target in (
+                ("../Current/aggregations.md", "topics/aggregations.md"),
+                ("../Current/message-calculations.md", "topics/message-calculations.md"),
                 ("../Current/examples/", "examples/"),
                 ("../Current/documentation.json", "manifest.json"),
                 ("../Current/public-api.json", "api/index.json"),
@@ -169,8 +319,9 @@ def build_files(*, verify_runtime=True):
         name = item["name"]
         rel = f"api/{name}.md"
         card = public_card(sources[f"Docs/Current/public-api/{name}.md"].decode())
-        files[rel] = (f"# {name}\n\n推荐导入：`from chronaxis import {name}`\n\n{card}\n").encode()
-        api.append(dict(name=name, group=item["group"], signature=item["signature"], file=rel))
+        module, symbol = item.get("import_module", "chronaxis"), item.get("import_name", name)
+        files[rel] = (f"# {name}\n\n推荐导入：`from {module} import {symbol}`\n\n{card}\n").encode()
+        api.append(dict(name=name, import_module=module, import_name=symbol, group=item["group"], signature=item["signature"], file=rel))
     files["api/index.json"] = json_bytes(dict(device_label=meta["device_label"], objects=api))
     # 保持示例相对路径；配置规范原样附带，任何阅读索引都不替代完整校验器。
     for path, data in sources.items():
@@ -183,7 +334,7 @@ def build_files(*, verify_runtime=True):
         raise ValueError("任务重复或范例缺失")
     catalog = json.loads((ROOT / "src/chronaxis/configuration/templates/catalog.json").read_bytes())
     templates = {entry["name"] for entry in catalog["templates"]}
-    if any(set(t["api"])-set(exports) or set(t["templates"])-templates for t in tasks):
+    if any(set(t["api"])-{row["name"] for row in public} or set(t["templates"])-templates for t in tasks):
         raise ValueError("任务引用的API或初始化模板不属于本发行")
     # 生成字段说明后校验每条路由引用的主题，防止过期卡片指向不存在的配置键。
     run_path(str(ROOT / "tools/ai_field_views.py"))["views"](files, json_bytes, meta["device_label"])
@@ -196,9 +347,12 @@ def build_files(*, verify_runtime=True):
             if linked not in files:
                 raise ValueError("公开接口例子缺附件：" + linked)
     add_english(files, sources, meta)
+    add_task_topics(files, sources)
+    validate_task_references(files)
+    validate_result_summaries(files)
     files["manifest.json"] = json_bytes(dict(package="chronaxis", package_version=version,
         guide_revision=3, languages={"zh": "README.md", "en": "en/README.md"},
-        config_version=3, product_baseline=meta["baseline"], manual_revision=lock["manual_revision"],
+        config_version=4, supported_config_versions=[4], product_baseline=meta["baseline"], manual_revision=lock["manual_revision"],
         runtime_revision=lock["runtime_revision"], runtime_sha256=lock["runtime_sha256"],
         device_label=meta["device_label"], entry="README.md", tested_platform="Windows / Python 3.12",
         evidence="公开契约与合成教学资料；不代表真实业务日志或其他平台验收。",

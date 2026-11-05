@@ -5,11 +5,14 @@
 本模型只校验结果字段，不读取输入或执行指标计算。
 """
 
+from ..core.moments import MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 import json
 from math import isfinite
 
 from ..core.types import QualityFlag as Q
+from ..core.counts_v4 import COUNT_OPERATIONS, OBJECT_COUNTS
 from ..core.validation import require_identifier, require_text
 from ..timebase.conversion import require_int64_ns
 
@@ -44,9 +47,15 @@ class SummaryCalculationRow:
             raise ValueError('精简指标序号需要非负原生int')
         for name in ('dataset_id', 'entity_id', 'session_id', 'calculation_id'):
             require_identifier(getattr(self, name), 'summary.'+name)
-        if self.operation not in ('integral', 'duration', 'min_time', 'max_time', 'time_weighted_mean',
-                           'sample_minimum', 'sample_maximum', 'sample_mean', 'legacy_sum'):
+        if type(self) is not SummaryHostedCalculationRow and self.operation not in ('integral', 'duration', 'min_time', 'max_time', 'time_weighted_mean',
+                           'sample_minimum', 'sample_maximum', 'sample_mean', 'legacy_sum', *COUNT_OPERATIONS, *MOMENTS, *SAMPLE_QUANTILES):
             raise ValueError('精简指标不支持该算子')
+        # 即使外部重新读取结果行，计数也必须是无量纲定宽整数，且对象归属整次会话。
+        if self.operation in COUNT_OPERATIONS and (self.unit != '1' or self.value is not None
+                and (type(self.value) is not int or not 0 <= self.value < 1 << 64)):
+            raise ValueError('计数结果需要单位1及可用的uint64整数或None')
+        if self.operation in OBJECT_COUNTS and self.scope != 'session':
+            raise ValueError('对象计数结果必须属于session')
         if self.scope not in ('session', 'event', 'segment'):
             raise ValueError('精简指标scope无效')
         if self.scope == 'session':
@@ -69,6 +78,22 @@ class SummaryCalculationRow:
 
 SUMMARY_FIELDS = ('sequence', 'dataset_id', 'entity_id', 'session_id', 'calculation_id', 'operation',
                   'scope', 'parent_id', 'value', 'unit', 'status', 'reason', 'quality')
+
+
+@dataclass(frozen=True)
+class SummaryHostedCalculationRow(SummaryCalculationRow):
+    """宿主归约产生的纯数据行；读取版本和标识不允许动态执行插件。"""
+
+    extension_version: str
+    coverage_status: str | None = None
+
+    def __post_init__(self):
+        """验证固定行协议和清晰的宿主身份。参数: 无。返回: None。异常: 身份或覆盖状态错误。"""
+        super().__post_init__()
+        require_identifier(self.operation,'summary.hosted_operation')
+        require_text(self.extension_version,'summary.extension_version')
+        if self.coverage_status not in (None,'sufficient','indeterminate'):
+            raise ValueError('宿主归约覆盖判定无效')
 
 
 @dataclass(frozen=True)
@@ -331,8 +356,11 @@ class SummarySelectionRow:
 
 SUMMARY_MODELS[SummarySelectionRow]=('selections',('sequence','dataset_id','entity_id','session_id','calculation_id',
     'scope','parent_id','time_ns','value','dtype','unit','valid','selection','quality'),14)
+from .aggregation_row import SummaryAggregationRow, AGGREGATION_FIELDS
+SUMMARY_MODELS[SummaryAggregationRow] = ('aggregations',AGGREGATION_FIELDS,15)
 SUMMARY_COLUMNS = {table: names for table,names,_ in SUMMARY_MODELS.values()}
 SUMMARY_MODELS[SummaryCoverageCalculationRow] = ('calculations',SUMMARY_FIELDS+('coverage_status',),10)
+SUMMARY_MODELS[SummaryHostedCalculationRow] = ('calculations',SUMMARY_FIELDS+('extension_version','coverage_status'),16)
 
 
 def summary_fields(row):

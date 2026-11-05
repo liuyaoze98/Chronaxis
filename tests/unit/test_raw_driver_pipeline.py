@@ -41,10 +41,10 @@ class RawDriverPipelineTests(unittest.TestCase):
         """声明一个Frame中的电压电流及功率公式。参数: 格式。返回: AnalysisPlan。异常: 模型错误。"""
         raw = config(kind)
         voltage = raw['signals'][0]
-        voltage.update(name='voltage', unit='V', valid_for='1s')
+        voltage.update(name='voltage', unit='V', conversion={'input_unit':'V'}, valid_for='1s')
         voltage['field']['signal'] = 'Voltage'
         current = deepcopy(voltage)
-        current.update(name='current', unit='A')
+        current.update(name='current', unit='A', conversion={'input_unit':'A'})
         current['field']['signal'] = 'Current'
         raw['signals'].append(current)
         raw['message_calculations'][0]['expr'] = 'voltage * current * period * factor'

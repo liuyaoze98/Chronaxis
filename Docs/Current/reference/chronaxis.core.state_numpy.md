@@ -1,4 +1,4 @@
-# chronaxis.core.state_numpy
+# `chronaxis.core.state_numpy`
 
 用二分索引和质量掩码查询信号的最新观测，按有效期判断能否使用。
 
@@ -69,7 +69,7 @@ TypeError为类型/dtype/masked数组；ValueError为形状/回退。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:30`](../../../src/chronaxis/core/state_numpy.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:30`](../../../src/chronaxis/core/state_numpy.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_readonly"></a>
 ## `_readonly`
@@ -96,7 +96,7 @@ NumPy分配错误传播；不宣称整体执行器内存有界。
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/core/state_numpy.py:47`](../../../src/chronaxis/core/state_numpy.py#L47)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:47`](../../../src/chronaxis/core/state_numpy.py#L47)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalArray"></a>
 ## `SignalArray`
@@ -123,7 +123,7 @@ class SignalArray
 |`quality`|np.ndarray|是|无|(Ni,) uint16，最高质量位256。|
 |`labels`|tuple[str, ...]|否|()|enum代码对应标签，其他dtype为空。|
 
-源码：[`src/chronaxis/core/state_numpy.py:63`](../../../src/chronaxis/core/state_numpy.py#L63)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:63`](../../../src/chronaxis/core/state_numpy.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalArray-__post_init__"></a>
 ### `SignalArray.__post_init__`
@@ -165,7 +165,7 @@ TypeError/ValueError为dtype/形状/质量矛盾或不匹配历史。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:79`](../../../src/chronaxis/core/state_numpy.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:79`](../../../src/chronaxis/core/state_numpy.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-build_signal_array"></a>
 ## `build_signal_array`
@@ -196,7 +196,7 @@ TypeError为序列；结构/分配异常传播。
 
 返回类型：[SignalArray](chronaxis.core.state_numpy.md#api-SignalArray)。
 
-源码：[`src/chronaxis/core/state_numpy.py:145`](../../../src/chronaxis/core/state_numpy.py#L145)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:145`](../../../src/chronaxis/core/state_numpy.py#L145)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AlignedArray"></a>
 ## `AlignedArray`
@@ -224,7 +224,7 @@ class AlignedArray
 |`sample_indices`|np.ndarray|是|无|(N,) int64，-1为没有历史。|
 |`actual_update`|np.ndarray|是|无|(N,) bool，计时器不伪造更新。|
 
-源码：[`src/chronaxis/core/state_numpy.py:172`](../../../src/chronaxis/core/state_numpy.py#L172)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:172`](../../../src/chronaxis/core/state_numpy.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AlignedArray-__post_init__"></a>
 ### `AlignedArray.__post_init__`
@@ -260,7 +260,7 @@ TypeError/ValueError为内部结果结构或质量矛盾。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state_numpy.py:189`](../../../src/chronaxis/core/state_numpy.py#L189)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:189`](../../../src/chronaxis/core/state_numpy.py#L189)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-align_numpy"></a>
 ## `align_numpy`
@@ -268,7 +268,7 @@ TypeError/ValueError为内部结果结构或质量矛盾。
 批量取最新样本，结合整数有效期及观测范围计算保持结果。
 
 ```python
-align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool=False, strict_before: bool=False) -> AlignedArray
+align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool=False, strict_before: bool=False, left_limit: bool=False) -> AlignedArray
 ```
 
 ### 参数
@@ -279,6 +279,7 @@ align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool=False, st
 |`times_ns`|np.ndarray|是|无|位置或关键字。非递减整数纳秒查询轴。|
 |`point`|bool|否|False|仅关键字。默认False，连续范围左闭右开；True包含真实观测末端。|
 |`strict_before`|bool|否|False|仅关键字。默认False；True只取sample_time < t的样本， 在当前t检查有效期和来源范围，不计算可能溢出的t-1。|
+|`left_limit`|bool|否|False|仅关键字。仅可用于 strict_before，检查 t 的左侧保持；到期恰为 t 时 旧值仍覆盖左邻域。不会改变普通查询的有效期和来源端点。|
 
 ### 返回说明
 
@@ -297,7 +298,7 @@ TypeError或ValueError: 历史、模式标志、时间列类型、形状或顺�
 ### 处理流程说明
 
 用searchsorted查最新更新，先排除会话外索引，再按整数差计算有效期，
-    最后叠加来源缺失原因。有效期始终要求age < valid_for_ns。
+    最后叠加来源缺失原因；点/右侧保持要求 age < valid_for_ns。
 
 ### 副作用说明
 
@@ -305,4 +306,4 @@ TypeError或ValueError: 历史、模式标志、时间列类型、形状或顺�
 
 返回类型：[AlignedArray](chronaxis.core.state_numpy.md#api-AlignedArray)。
 
-源码：[`src/chronaxis/core/state_numpy.py:226`](../../../src/chronaxis/core/state_numpy.py#L226)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state_numpy.py:226`](../../../src/chronaxis/core/state_numpy.py#L226)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,4 +1,4 @@
-# chronaxis.planning.config_groups
+# `chronaxis.planning.config_groups`
 
 把当前配置的就地分组送入既有解析器，不改变时间或数值规则。
 
@@ -27,6 +27,7 @@ interval跟随实际消费者，scope对象明确引用规则或窗口。仅复�
 ```python
 from copy import deepcopy
 from functools import wraps
+from .diagnostic_collection import usable_node, collect_node_error, current_collection
 from .checks import object_at, array_at, text_at, timezone_at, PlanValidationError
 ```
 
@@ -57,7 +58,7 @@ public_errors(function)
 
 不改变错误代码和原因，不读取或保存输入；结构阶段对旧名的拒绝保留旧名位置。
 
-源码：[`src/chronaxis/planning/config_groups.py:17`](../../../src/chronaxis/planning/config_groups.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/config_groups.py:18`](../../../src/chronaxis/planning/config_groups.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-public_errors-checked"></a>
 ### `public_errors.checked`
@@ -78,7 +79,7 @@ public_errors.checked(config, *args, **kwargs)
 |`args`|tuple[object, ...]|否|()|可变位置。原样传给被包装方法的位置实参；本包装器不解析或修改它们。|
 |`kwargs`|dict[str, object]|否|{}|可变关键字。原样传给被包装方法的关键字实参，例如base_dir；是否接受由原方法决定。|
 
-源码：[`src/chronaxis/planning/config_groups.py:23`](../../../src/chronaxis/planning/config_groups.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/config_groups.py:24`](../../../src/chronaxis/planning/config_groups.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_leaves"></a>
 ## `_leaves`
@@ -104,7 +105,7 @@ _leaves(signals, path='$.signals')
 
 错误数组/对象。
 
-源码：[`src/chronaxis/planning/config_groups.py:52`](../../../src/chronaxis/planning/config_groups.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/config_groups.py:57`](../../../src/chronaxis/planning/config_groups.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-normalize_configuration"></a>
 ## `normalize_configuration`
@@ -132,7 +133,7 @@ normalize_configuration(config)
 只接受当前拼写，旧扁平参数明确拒绝；内部parser/reader_options等仅供既有
 解析器消费，不作为第二套用户配置入口。调用应在预设展开之前。
 
-源码：[`src/chronaxis/planning/config_groups.py:64`](../../../src/chronaxis/planning/config_groups.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/config_groups.py:69`](../../../src/chronaxis/planning/config_groups.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-public_configuration"></a>
 ## `public_configuration`
@@ -158,6 +159,6 @@ public_configuration(config)
 结构错误。
 
 不读取文件，不改变自由metadata或业务值；已使用新分组的内容原样保留。
-用于预设展开、INI导入和resolve，不能用作接受旧用户配置的兼容入口。
+用于预设展开和resolve，把内部字段还原为当前公开配置结构。
 
-源码：[`src/chronaxis/planning/config_groups.py:164`](../../../src/chronaxis/planning/config_groups.py#L164)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/config_groups.py:180`](../../../src/chronaxis/planning/config_groups.py#L180)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,4 +1,4 @@
-# chronaxis.core.conditional_time_reduction
+# `chronaxis.core.conditional_time_reduction`
 
 定义带筛选条件的时间统计结果：时间最小值、时间最大值、时间加权平均和条件成立时长。数值有效时间与筛选条件已知时间分别记录。例如筛选条件已知为假，是“没有选中”，不属于“无法判断”。本模块定义数据和检查规则，不执行统计。
 
@@ -59,7 +59,7 @@ TypeError/ValueError为类型、重叠、反序或越界。
 - `TypeError`：条件时间未知范围需要tuple。
 - `ValueError`：条件时间未知范围必须有序、不重叠且在实际窗口内。
 
-源码：[`src/chronaxis/core/conditional_time_reduction.py:19`](../../../src/chronaxis/core/conditional_time_reduction.py#L19)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction.py:19`](../../../src/chronaxis/core/conditional_time_reduction.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalTimeCalculationFacts"></a>
 ## `ConditionalTimeCalculationFacts`
@@ -96,7 +96,7 @@ class ConditionalTimeCalculationFacts
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 |`ranges_retained`|bool|否|True|False只留分类所需计数，不构造未知范围。|
 
-源码：[`src/chronaxis/core/conditional_time_reduction.py:38`](../../../src/chronaxis/core/conditional_time_reduction.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction.py:38`](../../../src/chronaxis/core/conditional_time_reduction.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionalTimeCalculationFacts-__post_init__"></a>
 ### `ConditionalTimeCalculationFacts.__post_init__`
@@ -132,7 +132,7 @@ TypeError/ValueError为配置、几何或交集矛盾。
 - `ValueError`：条件时间已知与外条件未知未完整划分实际窗口。
 - `TypeError`：条件时间需要带有明确类型的质量和完整来源tuple。
 
-源码：[`src/chronaxis/core/conditional_time_reduction.py:64`](../../../src/chronaxis/core/conditional_time_reduction.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction.py:64`](../../../src/chronaxis/core/conditional_time_reduction.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_conditional_time_series"></a>
 ## `require_conditional_time_series`
@@ -166,4 +166,4 @@ TypeError/ValueError/OverflowError。
 - `ValueError`：条件时间归约需要同单位同dtype及显式BOOL条件。
 - `OverflowError`：条件时间正交集跨度超过int64。
 
-源码：[`src/chronaxis/core/conditional_time_reduction.py:104`](../../../src/chronaxis/core/conditional_time_reduction.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction.py:104`](../../../src/chronaxis/core/conditional_time_reduction.py#L104)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

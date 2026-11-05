@@ -1,12 +1,12 @@
 # chronaxis.validate_analysis_plan
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.reports.md)。
+使用`from chronaxis import validate_analysis_plan`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.reports.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [validate_analysis_plan](#api-validate_analysis_plan)
+- [`validate_analysis_plan`](#api-validate_analysis_plan)
 
 <a id="api-validate_analysis_plan"></a>
 ## `validate_analysis_plan`
@@ -52,4 +52,4 @@ report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
-源码：[`src/chronaxis/planning/reports.py:231`](../../../src/chronaxis/planning/reports.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/reports.py:281`](../../../src/chronaxis/planning/reports.py#L281)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

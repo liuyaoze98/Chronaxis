@@ -18,6 +18,7 @@ from pathlib import Path
 from sys import getsizeof
 import tempfile
 import unittest
+from publication_fixtures import published_path
 import weakref
 from typing import get_type_hints
 from unittest.mock import patch
@@ -50,7 +51,7 @@ def run_metadata():
 
     参数: 无。返回: RunMetadata。异常: 元数据校验错误直接传播。
     """
-    return RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 3,
+    return RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 4,
                        'relative nanoseconds; origin=0', (('session', 0, 100),),
                        '2026-10-09T12:40:00+08:00', limitations=('AnalysisRunner not connected; synthetic data only',), device_label='work')
 
@@ -350,15 +351,15 @@ class ResultLifecycleTests(unittest.TestCase):
                 self.assertEqual(completed['status'], 'completed')
                 self.assertEqual(completed['row_counts'], {'events': 2, 'segments': 0, 'selections': 1})
                 self.assertEqual(completed['run']['device_label'], 'work')
-                with (manifest.output_dir / 'selections.csv').open(encoding='utf-8', newline='') as handle:
+                with published_path(manifest.output_dir / 'selections.csv').open(encoding='utf-8', newline='') as handle:
                     rows = list(csv.DictReader(handle))
                 self.assertEqual(rows[0]['value'], str(2**63+17))
                 self.assertEqual(rows[0]['selection'], 'unknown')
                 self.assertNotIn('row_json', rows[0])
                 self.assertEqual(int(rows[0]['quality']), int(Q.MISSING))
-                self.assertTrue((manifest.output_dir / 'quality.jsonl').exists())
+                self.assertTrue(published_path(manifest.output_dir / 'quality.jsonl').exists())
                 second = result.write(Path(root) / 'second')
-                self.assertEqual((manifest.output_dir / 'events.csv').read_bytes(), (second.output_dir / 'events.csv').read_bytes())
+                self.assertEqual(published_path(manifest.output_dir / 'events.csv').read_bytes(), published_path(second.output_dir / 'events.csv').read_bytes())
                 self.assertFalse(tuple(Path(root).glob('.*.incomplete-*')))
             self.assertTrue(manifest.manifest_path.exists())
 
@@ -370,13 +371,13 @@ class ResultLifecycleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             with result_fixture(Path(root) / 'spool', 'jsonl') as result:
                 manifest = result.write(Path(root) / 'output')
-                with (manifest.output_dir / 'events.jsonl').open('rb') as handle:
+                with published_path(manifest.output_dir / 'events.jsonl').open('rb') as handle:
                     rows = [decode_row(line, 4096) for line in handle]
                 self.assertEqual([row.sequence for row in rows], [1, 0])
-                self.assertEqual((manifest.output_dir / 'segments.jsonl').stat().st_size, 0)
+                self.assertEqual(published_path(manifest.output_dir / 'segments.jsonl').stat().st_size, 0)
 
     def test_existing_target_is_preserved_and_result_can_retry(self):
-        """已有目录和用户文件不覆盖，失败后可写另一全新目录。
+        """复用已有目录时保留用户文件，并支持再次发布到其他目录。
 
         参数: 无。返回: None。异常: 断言失败表示已有数据受损或状态不准确。
         """
@@ -386,12 +387,11 @@ class ResultLifecycleTests(unittest.TestCase):
             marker = destination / 'user.txt'
             marker.write_text('user data', encoding='utf-8')
             with result_fixture(Path(root) / 'spool') as result:
-                with self.assertRaises(AnalysisError) as raised:
-                    result.write(destination)
-                self.assertIsInstance(raised.exception.__cause__, FileExistsError)
-                self.assertEqual(result.status, 'output_failed')
+                published = result.write(destination)
+                self.assertEqual(published.status, 'completed')
+                self.assertEqual(result.status, 'analysis_complete')
                 self.assertEqual(marker.read_text('utf-8'), 'user data')
-                self.assertFalse((destination / 'run_manifest.json').exists())
+                self.assertTrue(published.manifest_path.is_file())
                 self.assertEqual(result.write(Path(root) / 'new').status, 'completed')
 
     def test_writer_and_install_failure_publish_no_completed(self):
@@ -407,7 +407,7 @@ class ResultLifecycleTests(unittest.TestCase):
                     with patch.object(AnalysisResult, method, side_effect=OSError('injected failure')):
                         with self.assertRaises(AnalysisError):
                             result.write(target)
-                    self.assertFalse(target.exists())
+                    self.assertFalse(tuple(target.iterdir()) if target.exists() else ())
                     self.assertFalse(result._iterators)
                     self.assertEqual(result.status, 'output_failed')
                     temporary = next(Path(root).glob('.output.incomplete-*'))

@@ -67,6 +67,17 @@ class NumericArray:
     valid: np.ndarray  # bool有效位置，禁止maskless运算。
     quality: np.ndarray  # uint16足够容纳九种质量位。
     labels: tuple[str, ...] = ()  # enum顺序域，其他dtype为空。
+    code: 'NumericArray | None' = None  # 仅请求 enum_code 时附带独立整数列。
+
+    def take(self, indices):
+        """按活动行切出标签及所需原码，保持同一坐标系。
+
+        参数: indices 为行号或布尔掩码。返回: 对应行的独立 NumericArray。
+        异常: 索引或布局不合法时传播数组错误。
+        """
+        return NumericArray(self.dtype, self.values[indices], self.valid[indices],
+                            self.quality[indices], self.labels,
+                            None if self.code is None else self.code.take(indices))
 
     def __post_init__(self) -> None:
         """验证布局、基础质量、有限性及enum域后冻结独立副本。
@@ -89,6 +100,9 @@ class NumericArray:
         if not (len(self.values) == len(self.valid) == len(self.quality)):
             # 不截断或重复最后一行。
             raise ValueError('数值/valid/quality长度不同')
+        if self.code is not None and (self.dtype is not SignalDType.ENUM or not isinstance(self.code, NumericArray)
+                or self.code.dtype not in (SignalDType.INT64, SignalDType.UINT64) or len(self.code.values) != len(self.values)):
+            raise ValueError('只有枚举可附带等长整数原码列')
         # 仅非负已知原因位；valid严格等于基础无质量。
         if np.any(self.quality > 511) or not np.array_equal(self.valid, self.quality == 0):
             # invalid不能无原因，ESTIMATED也不能默认当正常。

@@ -69,7 +69,7 @@ class RunnerReportTests(unittest.TestCase):
             dict(name='segment_area', scope='segment:context', operation='integral', expr='a', condition='b > 0'),
             dict(name='event_mean', scope='event:active', operation='time_weighted_mean', expr='a')]
         # pre=3ns大于TTL=2ns，手算a/b历史需求应为3；未用c无运行历史需求，仍保单位未核实。
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='reports_dataset', entity='reports_entity', session='reports_session',
                 domain=dict(start='0ns', end='10ns')), sources=[source],
             signals=[dict(name=name, source='table', field='raw.'+name, dtype='float64',
@@ -230,7 +230,9 @@ class RunnerReportTests(unittest.TestCase):
             replace(original, calculations=(replace(original.calculations[0], scope='segment:missing'),) + original.calculations[1:]),
             replace(original, outputs=replace(original.outputs, tables='xlsx')),
             replace(original, outputs=replace(original.outputs, can_frames=('unavailable',))),
-            replace(original, config_version=2)]
+            ]
+        with self.assertRaises(ValueError):
+            replace(original, config_version=2)
         # 每种替换都保原raw_config；重解析原配置会丢掉负例并被I/O/重构探针拒绝。
         for plan in cases:
             with self.subTest(errors_for=(plan.sources[0].source_type, plan.execution.backend, plan.rules[0].rule_type,

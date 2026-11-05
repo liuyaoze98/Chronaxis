@@ -1,4 +1,4 @@
-# chronaxis.core.sample_reduction
+# `chronaxis.core.sample_reduction`
 
 定义按真实样本计算最小值、最大值和算术平均值时使用的数据对象。样本数来自实际更新，不把一个值保持了多少时间段当成多个样本。数值与筛选条件的缺失时间分别保存；本模块只检查数据，不执行统计。
 
@@ -23,10 +23,12 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .moments import SAMPLE_MOMENTS
+from .quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 from math import isfinite
 from .integral_sum import require_partial_limit
-from .calculations import CalculationSeries, CalculationDefinition, calculation_unit
+from .calculations import CalculationSeries, CalculationDefinition, calculation_conversion
 from .models import Interval, SourceRef
 from .types import QualityFlag as Q, SignalDType as D
 from .validation import require_text
@@ -63,7 +65,7 @@ TypeError/ValueError为类型、反序、重叠或越界。
 - `TypeError`：样本事实未知范围需要tuple。
 - `ValueError`：样本未知范围必须有序、不重叠且在实际窗口内。
 
-源码：[`src/chronaxis/core/sample_reduction.py:20`](../../../src/chronaxis/core/sample_reduction.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:22`](../../../src/chronaxis/core/sample_reduction.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SampleCalculationFacts"></a>
 ## `SampleCalculationFacts`
@@ -97,7 +99,7 @@ class SampleCalculationFacts
 |`binding_identity`|str|是|无|产生这份数值输入的信号绑定标识。调用方用它检查各块是否来自同一次配置和输入，不能把不同绑定的块混在一起累计。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 
-源码：[`src/chronaxis/core/sample_reduction.py:39`](../../../src/chronaxis/core/sample_reduction.py#L39)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:41`](../../../src/chronaxis/core/sample_reduction.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SampleCalculationFacts-__post_init__"></a>
 ### `SampleCalculationFacts.__post_init__`
@@ -132,7 +134,7 @@ TypeError/ValueError为配置、覆盖、类型或几何矛盾。
 - `ValueError`：样本条件已知与未知未完整划分实际窗口。
 - `TypeError`：样本事实需要带有明确类型的质量和完整来源tuple。
 
-源码：[`src/chronaxis/core/sample_reduction.py:62`](../../../src/chronaxis/core/sample_reduction.py#L62)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:64`](../../../src/chronaxis/core/sample_reduction.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SampleReductionResult"></a>
 ## `SampleReductionResult`
@@ -155,8 +157,9 @@ class SampleReductionResult
 |`calculation_failed`|bool|是|无|原序和、除法或最终转换失败。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|仅数值故障，输入原因另存facts。|
 |`valid_sample_count`|int|是|无|实际参与候选的有效真实样本数。|
+|`insufficient_samples`|bool|否|False|单个样本无法定义ddof=1的离散度。|
 
-源码：[`src/chronaxis/core/sample_reduction.py:97`](../../../src/chronaxis/core/sample_reduction.py#L97)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:99`](../../../src/chronaxis/core/sample_reduction.py#L99)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SampleReductionResult-__post_init__"></a>
 ### `SampleReductionResult.__post_init__`
@@ -189,7 +192,7 @@ TypeError/ValueError为字段类型或不可能数值状态。
 - `ValueError`：样本数值失败需要有效样本、None与明确原因。
 - `ValueError`：样本成功结果数值、计数或质量矛盾。
 
-源码：[`src/chronaxis/core/sample_reduction.py:110`](../../../src/chronaxis/core/sample_reduction.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:113`](../../../src/chronaxis/core/sample_reduction.py#L113)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_sample_config"></a>
 ## `require_sample_config`
@@ -211,7 +214,7 @@ require_sample_config(spec, input_unit, dtype, partial_limit)
 
 ### 返回说明
 
-(output_unit, factor)。
+CalculationConversion。
 
 ### 异常说明
 
@@ -222,7 +225,7 @@ TypeError/ValueError为类型、能力、单位或容量。
 - `TypeError`：样本归约仅支持sample_minimum/sample_maximum/sample_mean。
 - `ValueError`：样本统计只接受数值dtype。
 
-源码：[`src/chronaxis/core/sample_reduction.py:131`](../../../src/chronaxis/core/sample_reduction.py#L131)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:139`](../../../src/chronaxis/core/sample_reduction.py#L139)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_sample_series"></a>
 ## `require_sample_series`
@@ -256,4 +259,4 @@ TypeError/ValueError/OverflowError。
 - `ValueError`：样本归约只接受同unit及同dtype输入。
 - `OverflowError`：样本正交集跨度超过int64。
 
-源码：[`src/chronaxis/core/sample_reduction.py:147`](../../../src/chronaxis/core/sample_reduction.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sample_reduction.py:155`](../../../src/chronaxis/core/sample_reduction.py#L155)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

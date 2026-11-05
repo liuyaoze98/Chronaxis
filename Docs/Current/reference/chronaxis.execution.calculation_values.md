@@ -1,4 +1,4 @@
-# chronaxis.execution.calculation_values
+# `chronaxis.execution.calculation_values`
 
 读取计算列中的有效标量，并按当前消息原值决定方向桶及跳过原因。
 
@@ -54,7 +54,7 @@ ScalarValue。
 
 原类型/布局错误；不做第二次数值转换。
 
-源码：[`src/chronaxis/execution/calculation_values.py:12`](../../../src/chronaxis/execution/calculation_values.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/calculation_values.py:12`](../../../src/chronaxis/execution/calculation_values.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-direction_bucket_state"></a>
 ## `direction_bucket_state`
@@ -80,7 +80,7 @@ direction_bucket_state(raw, bucket)
 
 TypeError为非原生数值，不接受NumPy标量。
 
-源码：[`src/chronaxis/execution/calculation_values.py:28`](../../../src/chronaxis/execution/calculation_values.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/calculation_values.py:30`](../../../src/chronaxis/execution/calculation_values.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-direction_skip_reason"></a>
 ## `direction_skip_reason`
@@ -108,4 +108,4 @@ direction_skip_reason(value, reason, direction_quality, selected)
 
 无主动异常；不修改累计器或原质量。
 
-源码：[`src/chronaxis/execution/calculation_values.py:42`](../../../src/chronaxis/execution/calculation_values.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/calculation_values.py:44`](../../../src/chronaxis/execution/calculation_values.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

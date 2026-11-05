@@ -7,11 +7,12 @@ interval跟随实际消费者，scope对象明确引用规则或窗口。仅复�
 from copy import deepcopy
 from functools import wraps
 import re
+from .diagnostic_collection import usable_node, collect_node_error, current_collection
 from .checks import object_at, array_at, text_at, timezone_at, PlanValidationError
 
 CONVERSION = ('input_unit', 'scale', 'offset')
 READER_FLAT = ('encoding', 'delimiter', 'missing_values', 'decode_scope', 'input_check')
-NODES = ('rules', 'windows', 'calculations', 'sequences')
+NODES = ('rules', 'windows', 'calculations', 'sequences', 'transforms')
 
 
 def public_errors(function):
@@ -25,26 +26,30 @@ def public_errors(function):
         try:
             return function(cls, config, *args, **kwargs)
         except PlanValidationError as error:
-            if error.code == 'unknown_field' or type(config) is not dict:
-                raise
-            path = error.path
-            path = re.sub(r'(\$\.sources\[\d+\])\.(?:parser|reader_options)(?=\.|$)', r'\1.reader', path)
-            path = re.sub(r'(\$\.sources\[\d+\])\.(encoding|delimiter|missing_values|decode_scope|input_check)(?=\.|$)', r'\1.reader.\2', path)
-            path = re.sub(r'(\$\.signals\[\d+\](?:\.signals\[\d+\])?)\.(input_unit|scale|offset)(?=\.|$)', r'\1.conversion.\2', path)
-            path = re.sub(r'(\.time)\.origin(?=\.|$)', r'\1.clock', path)
-            path = re.sub(r'(\.resampling)\.origin(?=\.|$)', r'\1.start', path)
-            path = path.replace('$.outputs.can_frames.timezone_offset_minutes', '$.outputs.can_frames.timezone')
-            path = re.sub(r'(\$\.outputs\.(?:can_frames|signal_csv))\.window(?=\.|$)', r'\1.scope.window', path)
-            match = re.match(r'^\$\.intervals\.overrides\.([^\.]+)(.*)$', path)
-            if match:
-                for section in NODES:
-                    nodes = config.get(section, [])
-                    if type(nodes) is not list: continue
-                    for index, node in enumerate(nodes):
-                        if type(node) is dict and node.get('name') == match[1] and 'interval' in node:
-                            path = f'$.{section}[{index}].interval' + match[2]
-            error.path = path
-            error.refresh_text()
+            combined = error
+            for error in combined.diagnostics:
+                if error.code == 'unknown_field' or type(config) is not dict:
+                    continue
+                path = error.path
+                path = re.sub(r'(\$\.sources\[\d+\])\.(?:parser|reader_options)(?=\.|$)', r'\1.reader', path)
+                path = re.sub(r'(\$\.sources\[\d+\])\.(encoding|delimiter|missing_values|decode_scope|input_check)(?=\.|$)', r'\1.reader.\2', path)
+                path = re.sub(r'(\$\.signals\[\d+\](?:\.signals\[\d+\])?)\.(input_unit|scale|offset)(?=\.|$)', r'\1.conversion.\2', path)
+                path = re.sub(r'(\.time)\.origin(?=\.|$)', r'\1.clock', path)
+                path = re.sub(r'(\.resampling)\.origin(?=\.|$)', r'\1.start', path)
+                path = path.replace('$.outputs.can_frames.timezone_offset_minutes', '$.outputs.can_frames.timezone')
+                path = re.sub(r'(\$\.outputs\.(?:can_frames|signal_csv))\.window(?=\.|$)', r'\1.scope.window', path)
+                match = re.match(r'^\$\.intervals\.overrides\.([^\.]+)(.*)$', path)
+                if match:
+                    for section in NODES:
+                        nodes = config.get(section, [])
+                        if type(nodes) is not list: continue
+                        for index, node in enumerate(nodes):
+                            if type(node) is dict and node.get('name') == match[1] and 'interval' in node:
+                                path = f'$.{section}[{index}].interval' + match[2]
+                error.path = path
+                error.refresh_text()
+            combined.path = combined.diagnostics[0].path
+            combined.refresh_text()
             raise
     return checked
 
@@ -70,38 +75,49 @@ def normalize_configuration(config):
     root = deepcopy(config)
     for index, source in enumerate(array_at(root['sources'], '$.sources')):
         path = f'$.sources[{index}]'
-        if type(source) is not dict:
-            raise PlanValidationError(path, '来源必须为对象')
-        for key in ('parser', 'reader_options', *READER_FLAT):
-            if key in source:
-                raise PlanValidationError(path + '.' + key, '读取参数请放在reader对象内', 'unknown_field')
-        if 'reader' in source:
-            reader = dict(object_at(source.pop('reader'), path + '.reader', (),
-                (*READER_FLAT, 'decode_policy', 'version', 'layout', 'time_format', 'id_base',
-                 'length_base', 'channel_origin', 'payload_style', 'rollover_min_drop')))
-            # 信号表读取参数和CAN解码参数分别交给各自的原校验器。
-            for key in ('decode_scope', 'input_check'):
-                if key in reader: source[key] = reader.pop(key)
-            if 'decode_policy' in reader:
-                source['reader_options'] = {'decode_policy': reader.pop('decode_policy')}
-            if source.get('source_type') == 'signal_csv':
-                source.update(reader)
-            elif reader:
-                source['parser'] = reader
-        clock = source.get('time')
-        if type(clock) is dict and 'origin' in clock:
-            raise PlanValidationError(path + '.time.origin', '来源时间基准名称请使用clock', 'unknown_field')
-        if type(clock) is dict and 'clock' in clock:
-            clock['origin'] = clock.pop('clock')
-        if type(clock) is dict and 'timezone_offset_minutes' in clock:
-            raise PlanValidationError(path + '.time.timezone_offset_minutes',
-                '时区统一使用timezone，例如+08:00', 'unknown_field')
+        if not usable_node(path, source):
+            continue
+        try:
+            path = f'$.sources[{index}]'
+            if type(source) is not dict:
+                raise PlanValidationError(path, '来源必须为对象')
+            for key in ('parser', 'reader_options', *READER_FLAT):
+                if key in source:
+                    raise PlanValidationError(path + '.' + key, '读取参数请放在reader对象内', 'unknown_field')
+            if 'reader' in source:
+                reader = dict(object_at(source.pop('reader'), path + '.reader', (),
+                    (*READER_FLAT, 'decode_policy', 'version', 'layout', 'time_format', 'id_base',
+                     'length_base', 'channel_origin', 'payload_style', 'rollover_min_drop')))
+                # 信号表读取参数和CAN解码参数分别交给各自的原校验器。
+                for key in ('decode_scope', 'input_check'):
+                    if key in reader: source[key] = reader.pop(key)
+                if 'decode_policy' in reader:
+                    source['reader_options'] = {'decode_policy': reader.pop('decode_policy')}
+                if source.get('source_type') == 'signal_csv':
+                    source.update(reader)
+                elif reader:
+                    source['parser'] = reader
+            clock = source.get('time')
+            if type(clock) is dict and 'origin' in clock:
+                raise PlanValidationError(path + '.time.origin', '来源时间基准名称请使用clock', 'unknown_field')
+            if type(clock) is dict and 'clock' in clock:
+                clock['origin'] = clock.pop('clock')
+            if type(clock) is dict and 'timezone_offset_minutes' in clock:
+                raise PlanValidationError(path + '.time.timezone_offset_minutes',
+                    '时区统一使用timezone，例如+08:00', 'unknown_field')
+        except PlanValidationError as error:
+            collect_node_error(error, path, source)
     for signal, path in _leaves(root['signals']):
-        for key in CONVERSION:
-            if key in signal:
-                raise PlanValidationError(path + '.' + key, '信号换算请放在conversion对象内', 'unknown_field')
-        if 'conversion' in signal:
-            signal.update(object_at(signal.pop('conversion'), path + '.conversion', (), CONVERSION))
+        if not usable_node(path, signal):
+            continue
+        try:
+            for key in CONVERSION:
+                if key in signal:
+                    raise PlanValidationError(path + '.' + key, '信号换算请放在conversion对象内', 'unknown_field')
+            if 'conversion' in signal:
+                signal.update(object_at(signal.pop('conversion'), path + '.conversion', (), CONVERSION))
+        except PlanValidationError as error:
+            collect_node_error(error, path, signal)
     intervals = dict(object_at(root.get('intervals', {}), '$.intervals', (), ('default',)))
     overrides = {}
     for section in NODES:
@@ -165,7 +181,7 @@ def public_configuration(config):
     """把生成器内部结构转成当前公共配置。参数: 配置字典。返回: 独立字典。异常: 结构错误。
 
     不读取文件，不改变自由metadata或业务值；已使用新分组的内容原样保留。
-    用于预设展开、INI导入和resolve，不能用作接受旧用户配置的兼容入口。
+    用于预设展开和resolve，把内部字段还原为当前公开配置结构。
     """
     root = deepcopy(config)
     for source in root.get('sources', []):

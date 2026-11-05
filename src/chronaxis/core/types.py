@@ -71,6 +71,10 @@ class QualityFlag(IntFlag, boundary=FlagBoundary.STRICT):
         return super()._missing_(value)
 
 
+# 普通信号的基础策略固定拒绝全部九种非零质量位；不通过计划身份元组传递策略。
+BASE_FORBIDDEN_QUALITY = int(QualityFlag(511))
+
+
 class SignalDType(Enum):
     """声明信号值的逻辑类型，供模型和数值运算检查使用。
 

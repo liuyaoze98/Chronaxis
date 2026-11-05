@@ -1,4 +1,4 @@
-# chronaxis.core.conditional_time_reduction_numpy
+# `chronaxis.core.conditional_time_reduction_numpy`
 
 用NumPy计算带筛选条件的时间统计。最小值和最大值保留原数值类型；duration累计主条件和筛选条件同时为真的时长；time_weighted_mean先统计有效且选中的总时长，再按各段所占比例计算平均值。最终输出单位在finish时换算一次。
 
@@ -6,7 +6,7 @@
 
 ## 相关类型
 
-[ConditionalTimeCalculationFacts](chronaxis.core.conditional_time_reduction.md#api-ConditionalTimeCalculationFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
+[ConditionalTimeCalculationFacts](chronaxis.core.conditional_time_reduction.md#api-ConditionalTimeCalculationFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[NumpyMoments](chronaxis.core.moments_numpy.md#api-NumpyMoments)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
 
 ## 对象导航
 
@@ -23,8 +23,11 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .calculation_output_numpy import convert_result_numpy
 from .conditional_time_reduction import ConditionalTimeCalculationFacts, require_conditional_time_series
 from .integral_sum_numpy import NumpyIntegralSum
+from .moments import TIME_MOMENTS
+from .moments_numpy import NumpyMoments
 from .calculations import merge_ranges
 from .models import Interval
 from .numeric_numpy import DTYPES, NumericArray, to_float_numpy
@@ -47,7 +50,7 @@ NumpyConditionalTimeReduction(spec, input_unit, dtype, *, selected_duration_ns=N
 ```
 
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:25`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:28`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L28)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-__init__"></a>
 ### `NumpyConditionalTimeReduction.__init__`
@@ -78,7 +81,7 @@ NumpyConditionalTimeReduction.__init__(spec, input_unit, dtype, *, selected_dura
 
 配置、数组分配错误传播。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:28`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:31`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-selected_weight_seconds"></a>
 ### `NumpyConditionalTimeReduction.selected_weight_seconds`
@@ -106,7 +109,7 @@ float或不适用None。
 
 权重求和故障。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:49`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:54`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-selected_duration_ns"></a>
 ### `NumpyConditionalTimeReduction.selected_duration_ns`
@@ -134,7 +137,7 @@ NumpyConditionalTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:59`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:64`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-value_valid_duration_ns"></a>
 ### `NumpyConditionalTimeReduction.value_valid_duration_ns`
@@ -162,7 +165,7 @@ NumpyConditionalTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:64`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:69`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-push"></a>
 ### `NumpyConditionalTimeReduction.push`
@@ -196,7 +199,7 @@ ConditionalTimeCalculationFacts；权重故障仅改变数值失败状态，不�
 
 - `ValueError`：条件时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:68`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L68)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:73`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L73)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-NumpyConditionalTimeReduction-finish"></a>
 ### `NumpyConditionalTimeReduction.finish`
@@ -228,4 +231,4 @@ mean首遍RuntimeError、次遍分母不符ValueError；
 - `RuntimeError`：条件时间均值首遍只收事实，不能生成数值。
 - `ValueError`：条件均值次遍选择时长与全窗分母不同。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:185`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L185)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_numpy.py:194`](../../../src/chronaxis/core/conditional_time_reduction_numpy.py#L194)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

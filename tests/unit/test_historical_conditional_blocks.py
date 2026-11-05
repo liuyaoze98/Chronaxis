@@ -194,7 +194,7 @@ class HistoricalConditionalBlocksTests(unittest.TestCase):
                 self.assertTrue(all(series.conditions is not None for series, _ in result))
 
     def test_bad_capability_joint_identity_and_sync_reject_before_read(self):
-        """拒绝select输出单位转换、非BOOL、旧绑定及缺同步，不先打开历史。
+        """拒绝select不兼容单位转换、非BOOL、旧绑定及缺同步，不先打开历史。
 
         参数: 无。返回: None。异常: 错误计划误支持、漏账或过早读取。
         """
@@ -206,7 +206,7 @@ class HistoricalConditionalBlocksTests(unittest.TestCase):
         with patch.object(fixture.history, 'iter_groups', side_effect=AssertionError('invalid-plan-read')) as opened:
             for operation in ('select',):
                 with self.assertRaises((TypeError, ValueError)):
-                    self.owner(fixture, CalculationDefinition('bad', operation, fixture.domain, output_unit='kW'))
+                    self.owner(fixture, CalculationDefinition('bad', operation, fixture.domain, output_unit='V'))
             with self.assertRaises((TypeError, ValueError)):
                 self.owner(fixture, condition=fixture.compiled[0])
             with self.assertRaises((TypeError, ValueError)):

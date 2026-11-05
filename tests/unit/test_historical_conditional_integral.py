@@ -280,9 +280,12 @@ class HistoricalConditionalIntegralTests(unittest.TestCase):
             for values, unit, output, quality in cases:
                 fixture, blocks, owner, baseline = self.energy_fixture(backend, values, unit=unit, output=output)
                 result = self.consume(owner)
-                self.assertEqual((result.value, result.status, result.reason), (None, 'indeterminate', 'calculation_failed'))
+                reason = 'no_valid_selected_data' if unit == 'kW' else 'calculation_failed'
+                coverage = 0. if unit == 'kW' else 1.
+                # kW输入先规范为W；此处溢出属于输入表达式无效，不能冒称值覆盖完整。
+                self.assertEqual((result.value, result.status, result.reason), (None, 'indeterminate', reason))
                 self.assertTrue(result.quality & quality)
-                self.assertEqual((result.value_coverage, result.condition_coverage, result.requested_coverage), (1., 1., 1.))
+                self.assertEqual((result.value_coverage, result.condition_coverage, result.requested_coverage), (coverage, 1., 1.))
                 self.close_and_check(fixture, blocks, owner, baseline)
 
     def test_final_charge_grows_with_all_unknown_ranges_and_complete_csv_refs(self):

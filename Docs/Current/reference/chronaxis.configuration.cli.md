@@ -1,4 +1,4 @@
-# chronaxis.configuration.cli
+# `chronaxis.configuration.cli`
 
 配置辅助命令；复用同一模板及配置入口，不执行分析。
 
@@ -44,4 +44,4 @@ run_configuration_cli(arguments)
 
 初始化显示实际入口与合成预期；可运行不代表适合真实设备。
 
-源码：[`src/chronaxis/configuration/cli.py:6`](../../../src/chronaxis/configuration/cli.py#L6)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/cli.py:6`](../../../src/chronaxis/configuration/cli.py#L6)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

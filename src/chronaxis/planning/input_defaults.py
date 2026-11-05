@@ -52,6 +52,11 @@ def source_reference(raw, sources, path, *, can_only=False):
         can_only限定原始CAN来源。返回: 来源名称字符串。
     异常: PlanValidationError表示无候选、多候选或非法显式名称。
     """
+    from .diagnostic_collection import current_collection
+    active = current_collection()
+    if active is not None and active.invalid_sources:
+        if 'source' not in raw or (type(raw.get('source')) is str and raw['source'] in active.invalid_sources):
+            raise PlanValidationError(path + '.source', '候选来源声明无效，修复后再确定信号来源', 'blocked_dependency')
     if 'source' in raw:
         # 显式null/空串不表示自动，原名称检查仍生效。
         return text_at(raw['source'], path + '.source', identifier=True)

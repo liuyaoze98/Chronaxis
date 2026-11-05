@@ -2,11 +2,11 @@
 
 > 本页使用随册合成数据，结果由实际运行产生；不能作为其他日志的预期值。
 
-本页覆盖72份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
+本页覆盖74份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
 
-命令以`examples`为当前目录，输出目录必须不存在。普通例默认中文可读CSV，时间列为精确秒、同区间指标合并，各指标分别显示状态和说明。显式csv/jsonl交换格式及原帧/信号导出仍采用各自约定；空单元格不是零。
+命令以`examples`为当前目录，结果目录可复用，每次输出增加时间文件名。普通例默认中文可读CSV，时间列为精确秒、同区间指标合并，各指标分别显示状态和说明。显式csv/jsonl交换格式及原帧/信号导出仍采用各自约定；空单元格不是零。
 
-每例的`result-summary.json`从真实运行清单摘取状态、表行数、适用的业务概况和阈值预设摘要；完整运行会另生成`run_manifest.json`。教程结果不复制其中的随机运行编号、绝对路径或资源峰值。明确请求贡献、追溯或导出的例子保留相应小文件，普通例不额外开启这些功能。
+每例的`result-summary.json`从真实运行清单摘取状态、表行数、适用的业务概况和阈值预设摘要；完整运行会另生成`run_manifest_<时间后缀>.json`。教学快照去掉命名时间，保留稳定下载名；这不代表新运行使用固定文件名。教程结果不复制其中的随机运行编号、绝对路径或资源峰值。明确请求贡献、追溯或导出的例子保留相应小文件，普通例不额外开启这些功能。
 
 ## 按文件查找
 
@@ -43,9 +43,11 @@
 |[input-raw-csv-minimal.yaml](examples/input-raw-csv-minimal.yaml)|原始报文读取和DBC解码|[查看表和解释](#input-raw-csv-minimal-yaml)|
 |[interval-actual.yaml](examples/interval-actual.yaml)|按真实时间间隔积分|[查看表和解释](#interval-actual-yaml)|
 |[interval-fixed.yaml](examples/interval-fixed.yaml)|按固定周期积分|[查看表和解释](#interval-fixed-yaml)|
+|[lookup-power.yaml](examples/lookup-power.yaml)|电压查表后的平均功率|[查看表和解释](#lookup-power-yaml)|
 |[message-directions.yaml](examples/message-directions.yaml)|按方向分别累计消息|[查看表和解释](#message-directions-yaml)|
 |[message-energy.yaml](examples/message-energy.yaml)|每条消息累计|[查看表和解释](#message-energy-yaml)|
 |[message-minimal.yaml](examples/message-minimal.yaml)|每条消息累计|[查看表和解释](#message-minimal-yaml)|
+|[power-statistics.yaml](examples/power-statistics.yaml)|功率波动与加载均值的P95|[查看表和解释](#power-statistics-yaml)|
 |[preset-charge-energy.yaml](examples/preset-charge-energy.yaml)|充电活动与累计量|[查看表和解释](#preset-charge-energy-yaml)|
 |[preset-charge-minimal.yaml](examples/preset-charge-minimal.yaml)|充电活动检测|[查看表和解释](#preset-charge-minimal-yaml)|
 |[preset-command-automatic.yaml](examples/preset-command-automatic.yaml)|请求响应配对|[查看表和解释](#preset-command-automatic-yaml)|
@@ -917,6 +919,28 @@ chronaxis run interval-fixed.yaml --output result-interval-fixed-yaml
 本次没有事件、窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
 
+<a id="lookup-power-yaml"></a>
+## lookup-power.yaml
+
+用途：电压查表后的平均功率。配置：[下载](examples/lookup-power.yaml)；功能说明：[阅读指南](expressions.md)。
+
+```powershell
+chronaxis run lookup-power.yaml --output result-lookup-power-yaml
+```
+
+为什么得到这些结果：三次电压读数为3、7、3V。标定表中3V对应10W、11V对应50W，7V在线性插值后为30W。因此样本平均功率为(10＋30＋10)/3＝50/3W，约16.67W。
+
+[本次状态与表清单](examples/results/lookup-power-yaml/result-summary.json)：`completed`。
+
+**会话结果：[下载完整 会话结果.csv](examples/results/lookup-power-yaml/会话结果.csv)（1行）**
+
+| rated_power（W） | rated_power：状态 | rated_power：说明 |
+| --- | --- | --- |
+| 16.666666666666668 | 完整 | — |
+
+本次没有事件、窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
+
+
 <a id="message-directions-yaml"></a>
 ## message-directions.yaml
 
@@ -1000,6 +1024,49 @@ chronaxis run message-minimal.yaml --output result-message-minimal-yaml
 | 800.0 | 完整 | — |
 
 本次没有事件、窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
+
+
+<a id="power-statistics-yaml"></a>
+## power-statistics.yaml
+
+用途：功率波动与加载均值的P95。配置：[下载](examples/power-statistics.yaml)；功能说明：[阅读指南](calculations.md#v4-power-statistics)。
+
+```powershell
+chronaxis run power-statistics.yaml --output result-power-statistics-yaml
+```
+
+为什么得到这些结果：五条读数为0、10、0、20、0W，均值6W，离均差平方和320W²；样本方差除以4得80W²，总体标准差为8W。0、10、20W分别保持4、3、2秒，时间均方根为√(1100/9)W。读数排序后P95为18W；两段加载[1,4)、[5,7)秒的均值为10、20W，它们的P95为19.5W，候选及参与均为2。其余计数、方差和中位数的手算见统计指南。
+
+[本次状态与表清单](examples/results/power-statistics-yaml/result-summary.json)：`completed`。
+
+**事件结果：[下载完整 事件结果.csv](examples/results/power-statistics-yaml/事件结果.csv)（4行）**
+
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — |
+| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — |
+| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — |
+| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — |
+
+**会话结果：[下载完整 会话结果.csv](examples/results/power-statistics-yaml/会话结果.csv)（1行）**
+
+| cycles（1） | cycles：状态 | cycles：说明 | held_rms（W） | held_rms：状态 | held_rms：说明 | held_spread（W） | held_spread：状态 | held_spread：说明 | held_variance（V^2*A^2） | held_variance：状态 | held_variance：说明 | loads（1） | loads：状态 | loads：说明 | reading_median（W） | reading_median：状态 | reading_median：说明 | reading_p95（W） | reading_p95：状态 | reading_p95：说明 | reading_rms（W） | reading_rms：状态 | reading_rms：说明 | reading_spread（W） | reading_spread：状态 | reading_spread：说明 | reading_variance（V^2*A^2） | reading_variance：状态 | reading_variance：说明 | readings（1） | readings：状态 | readings：说明 | starts（1） | starts：状态 | starts：说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 完整 | — | 11.055415967851332 | 完整 | — | 7.85674201318386 | 完整 | — | 61.72839506172837 | 完整 | — | 2 | 完整 | — | 0.0 | 完整 | — | 18.0 | 完整 | — | 10.0 | 完整 | — | 8.000000000000002 | 完整 | — | 80.00000000000004 | 完整 | — | 5 | 完整 | — | 2 | 完整 | — |
+
+**窗口结果：[下载完整 窗口结果.csv](examples/results/power-statistics-yaml/窗口结果.csv)（1行）**
+
+| 窗口编号 | 窗口 | 开始时间（s） | 结束时间（s） | 窗口状态 | 父事件区间 | 说明 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | test_cycle | 1 | 8.5 | 完整 | 3、4 | — |
+
+**聚合结果：[下载完整 聚合结果.csv](examples/results/power-statistics-yaml/聚合结果.csv)（1行）**
+
+| 聚合项 | 分组 | 结果 | 单位 | 状态 | 原因 | 候选数 | 参与数 | 定义排除数 | 质量排除数 | 参与的部分值 | 匹配 | 确认超时 | 观测不足 | 未决 | 已完整发现总体 | 质量说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| load_mean_p95 | {"session_id":"power_bench"} | 19.5 | W | 完整 | 正常 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 是 | — |
+
+本次没有请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
 
 <a id="preset-charge-energy-yaml"></a>
@@ -1733,7 +1800,7 @@ chronaxis run signal-bool-minimal.yaml --output result-signal-bool-minimal-yaml
 chronaxis run signal-enum-minimal.yaml --output result-signal-enum-minimal-yaml
 ```
 
-为什么得到这些结果：ModeCode在100ms从0变7，DBC枚举表给出idle/running；state == "running"由假变真，产生上升沿。
+为什么得到这些结果：ModeCode在100ms从0变7，DBC枚举表给出idle/running；mode == "running"由假变真，产生上升沿。
 
 [本次状态与表清单](examples/results/signal-enum-minimal-yaml/result-summary.json)：`completed`。
 
@@ -1755,7 +1822,7 @@ chronaxis run signal-enum-minimal.yaml --output result-signal-enum-minimal-yaml
 chronaxis run signal-number-conversion.yaml --output result-signal-number-conversion-yaml
 ```
 
-为什么得到这些结果：DBC解码得到5000、7000、5000、5000mA，再按conversion.scale=0.001换为A，最大值7A；没有命中本例声明的异常码。
+为什么得到这些结果：DBC解码得到5000、7000、5000、5000mA，再按mA到A的单位关系自动乘0.001换为A，最大值7A；没有命中本例声明的异常码。
 
 [本次状态与表清单](examples/results/signal-number-conversion-yaml/result-summary.json)：`completed`。
 
@@ -1777,7 +1844,7 @@ chronaxis run signal-number-conversion.yaml --output result-signal-number-conver
 chronaxis run signal-number-minimal.yaml --output result-signal-number-minimal-yaml
 ```
 
-为什么得到这些结果：DBC解码值5000、7000、5000、5000mA，sample_maximum取7000mA。本例没有额外换算。
+为什么得到这些结果：DBC解码值5000、7000、5000、5000mA，sample_maximum取最大值，并按计算项指定的mA输出7000mA。
 
 [本次状态与表清单](examples/results/signal-number-minimal-yaml/result-summary.json)：`completed`。
 
@@ -2067,6 +2134,6 @@ python tools/build_example_results.py --work work/manual-results-new --publish
 python tools/build_example_results.py --check
 ```
 
-生成时先执行72份YAML的独立数学断言，再执行两份JSON及规则、时间、窗口等已有脚本的明确预期；解释文字单独维护，不由实测倒推。`--check`核对配置解析值、输入和结果文件摘要：配置注释/缩进不影响摘要，输入和结果按实际字节检查；它只证明文件一致性，不替代重新执行。
+生成时先执行74份YAML并核对案例对应的独立数学断言，再执行2份JSON及规则、时间、窗口等已有脚本的明确预期；解释文字单独维护，不由实测倒推。`--check`核对配置解析值、输入和结果文件摘要：配置注释/缩进不影响摘要，输入和结果按实际字节检查；它只证明文件一致性，不替代重新执行。
 
 生成来源标签可用`--device-label home`或`--device-label work`按实际设备填写；省略时读取CHRONAXIS_DEVICE_LABEL，未知则记pending。它只标注本次结果文件，不修改原教学输入的来源。

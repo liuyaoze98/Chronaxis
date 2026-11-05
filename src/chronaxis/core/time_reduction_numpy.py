@@ -12,7 +12,10 @@ min/max保留原dtype；duration用TRUE掩码精确累计纳秒；mean先独立�
 
 # 本后端只复用数组原序核与静态模型，数值不委托参考实现。
 import numpy as np
+from .calculation_output_numpy import convert_result_numpy
 from .integral_sum_numpy import NumpyIntegralSum
+from .moments import TIME_MOMENTS
+from .moments_numpy import NumpyMoments
 from .models import Interval
 from .numeric_numpy import NumericArray, DTYPES, to_float_numpy
 from .types import QualityFlag as Q
@@ -38,8 +41,10 @@ class NumpyTimeReduction:
             partial_limit为误差容量；step_ns可选周期，周期均值第二遍改用
             selected_weight_seconds。返回: None。异常: 配置、数组分配错误传播。
         """
-        self._unit, self._factor = require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_limit,
+        self._conversion = require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_limit,
             step_ns=step_ns, selected_weight_seconds=selected_weight_seconds)
+        self._unit, self._factor = self._conversion.unit, self._conversion.factor
+        self._moments = NumpyMoments(spec.operation) if spec.operation in TIME_MOMENTS else None
         self._spec, self._input_unit, self._dtype = spec, input_unit, dtype
         self._step_ns = step_ns
         self._denominator = selected_duration_ns if step_ns is None else selected_weight_seconds
@@ -92,7 +97,7 @@ class NumpyTimeReduction:
                               np.array([value.value if value.valid else 0 for value in series.values], dtype=DTYPES[self._dtype]),
                               np.array([value.valid for value in series.values], dtype=bool),
                               np.array([int(value.quality) for value in series.values], dtype=np.uint16))
-        values = to_float_numpy(column) if self._spec.operation == 'time_weighted_mean' else column
+        values = to_float_numpy(column) if self._spec.operation == 'time_weighted_mean' or self._moments is not None else column
         times = np.array(series.times_ns, dtype=np.int64)
         start, end = (actual.start_ns, actual.end_ns) if actual is not None else (0, 0)
         # 先裁剪整数端点，仅在正交集做差，避免域外反序减法wrap。
@@ -110,7 +115,7 @@ class NumpyTimeReduction:
         value_duration = int(np.sum(durations[usable], dtype=np.int64))
         selected_duration = int(np.sum(durations[selected], dtype=np.int64))
         seconds = None
-        if self._weight_sum is not None:
+        if self._weight_sum is not None or (self._step_ns is not None and self._moments is not None):
             # 只计算当前有限块；求和后列只读，后续归一化另生成数值结果。
             seconds = durations[selected].astype(np.float64)
             seconds /= np.diff(times)[selected]
@@ -118,7 +123,8 @@ class NumpyTimeReduction:
             weight_valid = np.ones(len(seconds), dtype=bool)
             seconds.setflags(write=False)
             weight_valid.setflags(write=False)
-            self._weight_sum.push_values(seconds, weight_valid)
+            if self._weight_sum is not None:
+                self._weight_sum.push_values(seconds, weight_valid)
         terms = int(np.count_nonzero(usable))
         samples = (times >= start) & (times < end) & np.array(series.actual_value_updates, dtype=bool) & values.valid
         if deadlines is not None:
@@ -140,6 +146,9 @@ class NumpyTimeReduction:
                 previous = DTYPES[self._dtype].type(self._candidate)
                 candidate = (np.minimum if self._spec.operation == 'min_time' else np.maximum)(previous, candidate)
             self._candidate = candidate.item()
+        elif self._moments is not None:
+            measures = durations[usable] if self._step_ns is None else seconds
+            self._moments.push(values.values[:-1][usable], measures)
         elif self._spec.operation == 'time_weighted_mean' and self._denominator is not None:
             chosen = values.values[:-1][usable]
             measures = durations[usable].astype(np.float64) if self._step_ns is None else seconds
@@ -170,6 +179,9 @@ class NumpyTimeReduction:
         异常: RuntimeError为mean第一遍；ValueError为有效时长与全窗分母不符；
             分配或取消传播，数值溢出与非零下溢写成计算失败。
         """
+        if self._moments is not None:
+            value, quality = self._moments.finish(self._spec.ddof, self._conversion.factor)
+            return TimeReductionResult(value, self._unit, quality != Q.NONE, quality, self._terms)
         if self._spec.operation == 'time_weighted_mean':
             if self._denominator is None:
                 raise RuntimeError('时间均值第一遍只收事实，不能生成数值')
@@ -179,8 +191,12 @@ class NumpyTimeReduction:
             if self._numeric_quality != Q.NONE:
                 return TimeReductionResult(None, self._unit, True, self._numeric_quality, self._terms)
             # 数组原序核直接执行一次输出转换；映射冻结结果不再次做数值处理。
-            number = self._sum.finish(self._unit, self._factor)
-            return TimeReductionResult(number.value, number.unit, number.calculation_failed, number.quality, self._terms)
+            number = self._sum.finish(self._input_unit,
+                                      1.0)
+            if not number.calculation_failed:
+                value, quality = convert_result_numpy(number.value, self._dtype, self._conversion)
+                return TimeReductionResult(value, self._unit, quality != Q.NONE, quality, self._terms)
+            return TimeReductionResult(number.value, self._unit, number.calculation_failed, number.quality, self._terms)
         if self._terms == 0:
             return TimeReductionResult(None, self._unit, False, Q.NONE, 0)
         # BOOL时长先保持精确整数纳秒，再最终换成秒；极值保持原native dtype。
@@ -188,18 +204,8 @@ class NumpyTimeReduction:
                   if self._step_ns is None else self.selected_weight_seconds)
                  if self._spec.operation == 'duration' else self._candidate)
         quality = Q.NONE
-        if self._factor != 1 and type(value) is int:
-            converted = to_float_numpy(NumericArray(self._dtype,
-                np.array([value], dtype=DTYPES[self._dtype]), np.array([True]), np.array([0], dtype=np.uint16)))
-            if not converted.valid[0]:
-                quality |= Q(int(converted.quality[0]))
-            else:
-                value = converted.values[0].item()
-        if quality == Q.NONE and self._factor != 1:
-            original = value
-            with np.errstate(over='ignore', under='ignore', invalid='ignore'):
-                value = np.multiply(np.float64(value), np.float64(self._factor)).item()
-            if not np.isfinite(value) or value == 0 and original != 0:
-                quality |= Q.NONFINITE if not np.isfinite(value) else Q.PRECISION_LOSS
+        # v4换算包含偏移；输入/归约故障不能被正常单位结果覆盖。
+        if quality == Q.NONE:
+            value, quality = convert_result_numpy(value, self._dtype, self._conversion)
         return TimeReductionResult(None if quality != Q.NONE else value, self._unit,
                                    quality != Q.NONE, quality, self._terms)

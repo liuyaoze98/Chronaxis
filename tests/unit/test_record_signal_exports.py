@@ -3,6 +3,7 @@
 from configuration_fixtures import current_fixture
 import csv,json
 from pathlib import Path
+from published_paths import published_file, export_root
 from uuid import uuid4
 import unittest
 from unittest.mock import patch
@@ -21,10 +22,10 @@ class RecordSignalExportTests(unittest.TestCase):
 
     def rows(self,result):
         """发布一次并读有限信号表。参数: 完成结果。返回: 文件行字典。异常: 原I/O错。"""
-        path=self.root/uuid4().hex;result.write(path)
-        records=[json.loads(line) for line in (path/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+        path=self.root/uuid4().hex;published=result.write(path)
+        records=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
         output=next(r for r in records if r['export_type']=='signal_csv')
-        root=path/'exports'/output['directory']
+        root=export_root(published)/output['directory']
         data={}
         for name in ('original.csv','resampled.csv'):
             if (root/name).exists():
@@ -53,7 +54,7 @@ class RecordSignalExportTests(unittest.TestCase):
         def inspect(owner,group):
             result=original(owner,group);max_pending.append(len(owner._pending));return result
         for backend in ('reference','numpy'):
-            raw=delta_config();raw.update(config_version=3)
+            raw=delta_config();raw.update(config_version=4)
             raw['rules']=[];raw['outputs']['signal_csv']={'signals':['voltage'],'resampling':{'continuous':['voltage'],'period':'1ns','max_gap':'3ns'}}
             with patch.object(RecordSignalExport,'observe',inspect),patch('chronaxis.execution.record_session_calculations.LatestSignalState',side_effect=AssertionError('纯导出不需要最新值仓')):
                 with AnalysisRunner(backend).run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex) as result:
@@ -70,11 +71,11 @@ class RecordSignalExportTests(unittest.TestCase):
         """空/单点不补范围；实际写出后取消必须回收费用。"""
         from chronaxis.results.signal_exports import SignalCSVWriter
         for rows in ([],[{'time':'0ns','values':{'voltage':3}}]):
-            raw=delta_config();raw.update(config_version=3);raw['rules']=[]
+            raw=delta_config();raw.update(config_version=4);raw['rules']=[]
             raw['sources'][0]['rows']=rows;raw['outputs']['signal_csv']={'signals':['voltage']}
             with AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex) as result:
                 data,_=self.rows(result);self.assertEqual(data['original.csv'],[])
-        raw=delta_config();raw.update(config_version=3);raw['outputs']['signal_csv']={'signals':['voltage']}
+        raw=delta_config();raw.update(config_version=4);raw['outputs']['signal_csv']={'signals':['voltage']}
         original=SignalCSVWriter.push;budgets=[]
         def cancel(owner,sample):
             budgets.append(owner._budget);original(owner,sample);raise KeyboardInterrupt('synthetic signal write cancel')
@@ -149,7 +150,7 @@ class RecordSignalExportTests(unittest.TestCase):
     def test_parsed_dbc_and_explicit_null_driver_rejected(self):
         """已解析数据不借其他DBC装成原帧；显式null不是自动选择。"""
         from chronaxis import PlanValidationError
-        raw=delta_config();raw.update(config_version=3)
+        raw=delta_config();raw.update(config_version=4)
         raw['outputs']['signal_csv']={'signals':['voltage'],'resampling':{'continuous':['voltage'],'period':{'mode':'dbc'},'max_gap':'10ns'}}
         with self.assertRaises(PlanValidationError):AnalysisPlan.from_dict(current_fixture(raw))
         path=self.fixtures()['can_asc']

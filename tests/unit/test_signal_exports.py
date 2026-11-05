@@ -9,6 +9,7 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+from published_paths import published_file
 import unittest
 from unittest.mock import Mock, patch
 from uuid import uuid4
@@ -52,7 +53,7 @@ class SignalExportTests(unittest.TestCase):
     def rows(self, path):
         """读取有限输出夹具。参数: path发布目录。返回: dict行列表。异常: I/O/CSV错。
         """
-        with (path/'original.csv').open(encoding='utf-8',newline='') as stream:
+        with (published_file(path,'original.csv')).open(encoding='utf-8',newline='') as stream:
             return list(csv.DictReader(stream))
 
     def test_original_async_samples_same_time_and_large_int_time(self):
@@ -68,10 +69,10 @@ class SignalExportTests(unittest.TestCase):
         self.assertEqual([r['value'] for r in rows],['3.0','True','7.0','9.0'])
         self.assertEqual([int(r['sequence']) for r in rows],[0,1,2,3])
         self.assertEqual(_unpack(json.loads(rows[0]['source_ref_json'])),records[0].source_ref)
-        manifest=json.loads((path/'manifest.json').read_text(encoding='utf-8'))
+        manifest=json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))
         self.assertEqual((manifest['rows'],manifest['observed'],manifest['invalid']),(4,4,0))
         self.assertFalse(manifest['resampling'])
-        self.assertEqual(manifest['files'][0]['sha256'],hashlib.sha256((path/'original.csv').read_bytes()).hexdigest())
+        self.assertEqual(manifest['files'][0]['sha256'],hashlib.sha256((published_file(path,'original.csv')).read_bytes()).hexdigest())
         self.assertEqual(self.budget.ram_bytes,0)
 
     def test_invalid_nan_and_missing_are_blank_with_reason(self):
@@ -125,7 +126,7 @@ class SignalExportTests(unittest.TestCase):
         self.assertEqual(closed,[True])
         self.assertFalse((self.root/'output').exists())
         self.assertEqual(self.budget.ram_bytes,0)
-        self.assertTrue(list(self.root.glob('*.incomplete')))
+        self.assertFalse(list(self.root.glob('*.incomplete')))
 
     def test_cancel_preserves_other_owner_budget(self):
         """取消关闭本次文件，但不抵销其他费用。参数: 无。返回: None。异常: 断言失败。
@@ -157,22 +158,15 @@ class SignalExportTests(unittest.TestCase):
         self.assertEqual(self.budget.ram_bytes,0)
 
     def test_existing_and_racing_targets_are_not_overwritten(self):
-        """预存或发布瞬间创建的目录都保留用户内容。参数: 无。返回: None。异常: 断言失败。
+        """已有目录重复导出保留用户内容及上次完整结果；竞争覆盖由发布专项验证。参数: 无。返回: None。异常: 断言失败。
         """
-        destination=self.root/'output'
-        original=Path.rename
-        def raced(path,target):
-            """在真实rename前制造竞争目录。参数: path/target。返回: 原rename结果。异常: FileExistsError。
-            """
-            Path(target).mkdir()
-            (Path(target)/'sentinel').write_text('keep',encoding='utf-8')
-            return original(path,target)
-        with patch.object(Path,'rename',autospec=True,side_effect=raced):
-            with self.assertRaises(FileExistsError):
-                self.run_export([sample(1,3.0)])
-        self.assertEqual((destination/'sentinel').read_text(encoding='utf-8'),'keep')
-        with self.assertRaises(FileExistsError):
-            self.run_export([])
+        destination=self.root/'output'; destination.mkdir()
+        (destination/'sentinel').write_text('keep',encoding='utf-8')
+        first=self.run_export([sample(1,3.0)])
+        before={p:p.read_bytes() for p in destination.iterdir()}
+        second=self.run_export([])
+        self.assertNotEqual(first.manifest_path,second.manifest_path)
+        for path,content in before.items(): self.assertEqual(path.read_bytes(),content)
         self.assertEqual(self.budget.ram_bytes,0)
 
     def test_protected_output_precedes_any_write(self):

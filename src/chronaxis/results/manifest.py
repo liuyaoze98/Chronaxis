@@ -51,7 +51,7 @@ class RunMetadata:
     worker_config: str = 'single-thread'
     dependency_versions: tuple[tuple[str, str], ...] = ()
     limitations: tuple[str, ...] = ()
-    software_version: str = '0.1.0.dev1'
+    software_version: str = '0.1.0.dev2'
     device_label: str = 'pending'
     signal_bindings: tuple[SignalDefinition, ...] = ()  # 本次实际完整定义，不含样本或输入行。
     preset_bindings: tuple[PresetBindingMetadata, ...] = ()  # 原预设版本及最终角色。
@@ -67,6 +67,7 @@ class RunMetadata:
     frame_format_notices: tuple[tuple[str, CANFrameFormatNotice], ...] = ()  # 同次已核差异始终提示，独立于可选诊断。
 
     analysis_outcome: AnalysisOutcome | None = None  # 同次推进的轻量业务结果概况，非逐条追溯。
+    aggregation_definitions: tuple = ()  # 本次组级总体、单位及排除政策，每项只登记一次。
 
     def __post_init__(self) -> None:
         """验证清单文本与明确会话范围，不访问外部输入。
@@ -75,12 +76,16 @@ class RunMetadata:
         """
         if self.analysis_outcome is not None and type(self.analysis_outcome) is not AnalysisOutcome:
             raise TypeError('分析结果概况需要AnalysisOutcome或None')
+        if self.aggregation_definitions:
+            from ..planning.aggregations import AggregationPlan
+            if type(self.aggregation_definitions) is not tuple or any(type(a) is not AggregationPlan for a in self.aggregation_definitions):
+                raise TypeError('聚合清单需要已冻结的聚合定义')
         # 必填文本不能用空字符串表示已经取得的运行身份。
         for name in ('run_id', 'plan_hash', 'source_time_interpretation',
                      'parsing_policy', 'worker_config', 'software_version', 'device_label'):
             require_text(getattr(self, name), name)
-        if self.backend not in ('reference', 'numpy') or type(self.config_version) is not int or self.config_version != 3:
-            raise ValueError('结果清单需实际reference/numpy及配置版本3')
+        if self.backend not in ('reference', 'numpy') or type(self.config_version) is not int or self.config_version != 4:
+            raise ValueError('结果清单需实际reference/numpy及配置版本4')
         if (self.input_identity is not None):
             require_text(self.input_identity, 'input_identity')
         if type(self.detailed_diagnostics) is not bool or type(self.retain_work) is not bool:
@@ -204,7 +209,7 @@ class RunMetadata:
         # 文本/tuple结构只读遍历，转换副本成本以16倍和固定余量保守覆盖。
         # 空默认新字段不增加旧金额；非空定义/角色/CAN事实在asdict复制前递归覆盖。
         return 8192 + 16 * sum(_metadata_size(getattr(self, field.name)) + 256 for field in fields(self)
-            if field.name not in ('signal_bindings', 'preset_bindings', 'can_sources', 'session_ids','text_can_sources','threshold_durations','detailed_diagnostics','retain_work','input_diagnostics','trace_requested','integrity_diagnostics','frame_format_notices','analysis_outcome')
+            if field.name not in ('signal_bindings', 'preset_bindings', 'can_sources', 'session_ids','text_can_sources','threshold_durations','detailed_diagnostics','retain_work','input_diagnostics','trace_requested','integrity_diagnostics','frame_format_notices','analysis_outcome','aggregation_definitions')
             or getattr(self, field.name))
 
     def to_dict(self) -> dict:
@@ -235,8 +240,12 @@ class RunMetadata:
                 result['frame_format_notices']=[dict(source=source, **asdict(notice)) for source, notice in self.frame_format_notices]
             if self.analysis_outcome is not None:
                 result['analysis_outcome']=self.analysis_outcome.to_dict()
+            if self.aggregation_definitions:
+                result['aggregation_definitions']=[asdict(a) for a in self.aggregation_definitions]
             return result
         result = asdict(self)
+        if not self.aggregation_definitions:
+            result.pop('aggregation_definitions')
         if self.analysis_outcome is None:
             result.pop('analysis_outcome')
         else:
@@ -299,6 +308,9 @@ def _metadata_size(value) -> int:
     参数: value为元数据字段。返回: 基础bytes估算。异常: 无。
     """
     # 仅遍历已验证的有限模型，不泛化为raw_config或任意dataclass序列化。
+    from ..planning.aggregations import AggregationPlan
+    if type(value) is AggregationPlan:
+        return getsizeof(value)+sum(_metadata_size(getattr(value,key)) for key in value.__dataclass_fields__)
     if type(value) in (SignalDefinition, PresetBindingMetadata, PresetRoleMetadata,
                       CANSourceMetadata, CANUnitCheck, CANFrameFormatNotice,TextCANSourceMetadata,InputDiagnostic,
                       AnalysisOutcome, RuleOutcome):
@@ -338,6 +350,24 @@ class OutputManifest:
         if type(self.output_files) is not tuple or any(not isinstance(path, Path) for path in self.output_files):
             raise TypeError('输出路径需tuple Path')
         if type(self.row_counts) is not tuple or any(type(item) is not tuple or len(item) != 2
-                or item[0] not in ('events', 'segments', 'calculations', 'message_calculations', 'legacy_contributions', 'sequences','contributions','input_trace','selections')
+                or item[0] not in ('events', 'segments', 'calculations', 'message_calculations', 'legacy_contributions', 'sequences','contributions','input_trace','selections','aggregations')
                 or type(item[1]) is not int or item[1] < 0 for item in self.row_counts):
             raise ValueError('输出行数需固定表及非负原生int')
+
+
+@dataclass(frozen=True)
+class ExportManifest:
+    """独立信号或原帧导出的实际输出路径；调用者无需猜测时间文件名。"""
+
+    output_dir: Path
+    manifest_path: Path
+    output_files: tuple[Path, ...]
+
+    def __post_init__(self):
+        """核对实际路径类型和所属目录。参数: 无。返回: None。异常: 类型或路径错，不访问文件。"""
+        if not isinstance(self.output_dir, Path) or not isinstance(self.manifest_path, Path):
+            raise TypeError('导出返回目录和清单必须为Path')
+        if type(self.output_files) is not tuple or any(not isinstance(p, Path) for p in self.output_files):
+            raise TypeError('导出文件必须为Path tuple')
+        if any(p.parent != self.output_dir for p in (self.manifest_path, *self.output_files)):
+            raise ValueError('导出返回路径必须属于本次输出根')

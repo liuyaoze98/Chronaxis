@@ -1,4 +1,4 @@
-# chronaxis.configuration.json_parser
+# `chronaxis.configuration.json_parser`
 
 标准库负责JSON语法和数值；轻量第二遍只定位字段，不再构造第二份配置树。
 
@@ -43,7 +43,7 @@ class _DuplicateKey(ValueError)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/configuration/json_parser.py:13`](../../../src/chronaxis/configuration/json_parser.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:13`](../../../src/chronaxis/configuration/json_parser.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_unique_pairs"></a>
 ## `_unique_pairs`
@@ -68,7 +68,7 @@ dict。
 
 重复键。
 
-源码：[`src/chronaxis/configuration/json_parser.py:17`](../../../src/chronaxis/configuration/json_parser.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:17`](../../../src/chronaxis/configuration/json_parser.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_Locations"></a>
 ## `_Locations`
@@ -80,7 +80,7 @@ _Locations(text, source)
 ```
 
 
-源码：[`src/chronaxis/configuration/json_parser.py:27`](../../../src/chronaxis/configuration/json_parser.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:27`](../../../src/chronaxis/configuration/json_parser.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_Locations-__init__"></a>
 ### `_Locations.__init__`
@@ -106,7 +106,7 @@ owner。
 
 分配失败。
 
-源码：[`src/chronaxis/configuration/json_parser.py:30`](../../../src/chronaxis/configuration/json_parser.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:30`](../../../src/chronaxis/configuration/json_parser.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_Locations-location"></a>
 ### `_Locations.location`
@@ -131,7 +131,7 @@ _Locations.location(offset)
 
 无。
 
-源码：[`src/chronaxis/configuration/json_parser.py:37`](../../../src/chronaxis/configuration/json_parser.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:37`](../../../src/chronaxis/configuration/json_parser.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_Locations-scan"></a>
 ### `_Locations.scan`
@@ -158,7 +158,7 @@ _Locations.scan(offset=0, path=(), depth=0)
 
 重复键/过深/语法错误。
 
-源码：[`src/chronaxis/configuration/json_parser.py:43`](../../../src/chronaxis/configuration/json_parser.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:43`](../../../src/chronaxis/configuration/json_parser.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_finite_values"></a>
 ## `_finite_values`
@@ -186,7 +186,7 @@ None。
 
 定位到实际值。
 
-源码：[`src/chronaxis/configuration/json_parser.py:82`](../../../src/chronaxis/configuration/json_parser.py#L82)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:82`](../../../src/chronaxis/configuration/json_parser.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_json"></a>
 ## `parse_json`
@@ -212,4 +212,4 @@ parse_json(text, source)
 
 ConfigurationError。
 
-源码：[`src/chronaxis/configuration/json_parser.py:92`](../../../src/chronaxis/configuration/json_parser.py#L92)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/json_parser.py:92`](../../../src/chronaxis/configuration/json_parser.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

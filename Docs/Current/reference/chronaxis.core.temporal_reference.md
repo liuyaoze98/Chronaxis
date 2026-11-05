@@ -1,4 +1,4 @@
-# chronaxis.core.temporal_reference
+# `chronaxis.core.temporal_reference`
 
 逐时间组检测持续条件和真实边沿，输出已经确认的活动或点事件。
 
@@ -76,7 +76,7 @@ TypeError/ValueError为错类型/回退/中途terminal/边界不符。
 - `ValueError`：条件组重复/回退/超domain。
 - `ValueError`：terminal与真实domain end不符。
 
-源码：[`src/chronaxis/core/temporal_reference.py:20`](../../../src/chronaxis/core/temporal_reference.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:20`](../../../src/chronaxis/core/temporal_reference.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_detector"></a>
 ## `require_detector`
@@ -109,7 +109,7 @@ TypeError/ValueError/OverflowError为配置或来源冲突。
 - `TypeError`：检测需要TemporalRule及tuple refs。
 - `ValueError`：检测来源session不一致。
 
-源码：[`src/chronaxis/core/temporal_reference.py:53`](../../../src/chronaxis/core/temporal_reference.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:53`](../../../src/chronaxis/core/temporal_reference.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector"></a>
 ## `ReferenceTemporalDetector`
@@ -128,7 +128,7 @@ ReferenceTemporalDetector(rule, start_ns, end_ns, source_refs=(), *, record_cloc
 ```
 
 
-源码：[`src/chronaxis/core/temporal_reference.py:74`](../../../src/chronaxis/core/temporal_reference.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:74`](../../../src/chronaxis/core/temporal_reference.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-__init__"></a>
 ### `ReferenceTemporalDetector.__init__`
@@ -161,7 +161,7 @@ TypeError、ValueError或OverflowError: 规则、时间范围或来源归属不�
 
 初始化本实例状态，没有全局缓存或文件操作。
 
-源码：[`src/chronaxis/core/temporal_reference.py:85`](../../../src/chronaxis/core/temporal_reference.py#L85)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:85`](../../../src/chronaxis/core/temporal_reference.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-next_deadline_ns"></a>
 ### `ReferenceTemporalDetector.next_deadline_ns`
@@ -189,7 +189,7 @@ int ns或None；超domain门槛永不误cast/wrap。
 
 无主动异常；状态局部。
 
-源码：[`src/chronaxis/core/temporal_reference.py:120`](../../../src/chronaxis/core/temporal_reference.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:120`](../../../src/chronaxis/core/temporal_reference.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-_consume"></a>
 ### `ReferenceTemporalDetector._consume`
@@ -220,7 +220,7 @@ TypeError、ValueError或OverflowError: 构造事件时模型检查失败，错�
 阈值恰好等于当前结束时间仍可确认；真实FALSE优先闭合，真实无效更新
     优先中断。单纯观测结束截断活动；会话终点不创建新持续候选。
 
-源码：[`src/chronaxis/core/temporal_reference.py:136`](../../../src/chronaxis/core/temporal_reference.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:136`](../../../src/chronaxis/core/temporal_reference.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-push"></a>
 ### `ReferenceTemporalDetector.push`
@@ -250,7 +250,7 @@ ValueError为finish后/回退/边界错，带有明确类型的协议异常传�
 
 - `ValueError`：检测器已finish。
 
-源码：[`src/chronaxis/core/temporal_reference.py:231`](../../../src/chronaxis/core/temporal_reference.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:231`](../../../src/chronaxis/core/temporal_reference.py#L231)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-drain_events"></a>
 ### `ReferenceTemporalDetector.drain_events`
@@ -280,7 +280,7 @@ MemoryError为tuple构造失败，此时原输出保持未排空。
 
 成功后只清空events，候选/确认/前态/初始化/抑制及生命周期均保持。
 
-源码：[`src/chronaxis/core/temporal_reference.py:256`](../../../src/chronaxis/core/temporal_reference.py#L256)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:256`](../../../src/chronaxis/core/temporal_reference.py#L256)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ReferenceTemporalDetector-finish"></a>
 ### `ReferenceTemporalDetector.finish`
@@ -310,7 +310,7 @@ ValueError为缺terminal或重复finish。
 
 - `ValueError`：finish需已消费真正terminal且不能重复。
 
-源码：[`src/chronaxis/core/temporal_reference.py:269`](../../../src/chronaxis/core/temporal_reference.py#L269)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:269`](../../../src/chronaxis/core/temporal_reference.py#L269)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-detect_reference"></a>
 ## `detect_reference`
@@ -341,4 +341,4 @@ TypeError/ValueError为模型/批大小，检测协议错误传播。
 
 - `TypeError`：detect需ConditionTimeline及正int batch_rows。
 
-源码：[`src/chronaxis/core/temporal_reference.py:286`](../../../src/chronaxis/core/temporal_reference.py#L286)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_reference.py:286`](../../../src/chronaxis/core/temporal_reference.py#L286)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

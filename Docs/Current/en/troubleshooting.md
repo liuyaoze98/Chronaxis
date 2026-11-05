@@ -9,14 +9,16 @@ First identify the failing step: installation, configuration loading, input read
 <a id="python调用-按失败阶段处理"></a>
 ## Handle Python failures at the right stage
 
-`PlanValidationError` contains `path`, `message`, and `code`. `path` is a configuration field location; `source` is a file path. Printing only `$.batch_version` does not explain the problem. Keep the actual constraint in `message`, the machine code, and available source positions and hints.
+`PlanValidationError.diagnostics` contains the errors currently detectable, even for a single error; `blocked_checks` explains checks prevented by invalid dependencies. Each diagnostic contains `path`, `message`, and `code`. `path` is a configuration field location; `source` is a file path. Printing only `$.batch_version` does not explain the problem. Keep the actual constraint in `message`, the machine code, and available source positions and hints.
 
 ```python
 from chronaxis import load_analysis_plan, PlanValidationError
 try:
     plan = load_analysis_plan("analysis.yaml")
 except PlanValidationError as error:
-    print(error.source, error.path, error.code, error.message, error.hint)
+    for item in error.diagnostics:
+        print(item.source, item.path, item.code, item.message, item.hint)
+    print(error.blocked_checks)
     raise  # Preserve the exception chain; a failed load is not an empty plan.
 ```
 
@@ -26,7 +28,7 @@ except PlanValidationError as error:
 | Static checking | `ValidationReport.errors` or `execution_ready=False` | Resolve the report; validation does not imply business inputs have been read. |
 | Run | `AnalysisError`, possibly caused by `SourceReadError`, `BudgetExceededError`, `ValueError`, etc. | Preserve the chain and correct the read/resource/expression cause; do not turn the failure into “no events.” |
 | Stream results | `ResultClosedError`, `ContributionsUnavailableError`, or staging read failure | Read while the result is open. Missing contributions require another run with `full`. |
-| Publish | `AnalysisError` and its cause, e.g. existing target or write failure | Choose a new directory and fix the environment. An open result can be published again without rereading input. |
+| Publish | `AnalysisError` and its cause, e.g. a non-directory path or write failure | Check output permissions and fix the environment. An open result can be published again without rereading input. |
 | Batch | A normal report can contain failed jobs; an infrastructure exception may carry `batch_report` | Inspect job `error_type`, `error_message`, and `error_chain`. Preserve completed results; close `cleanup_pending` resources. |
 | Close | Actual file/resource-close error | Keep the cleanup object supplied by the result or exception, release the obstruction, and retry `close`. |
 
@@ -40,7 +42,7 @@ except PlanValidationError as error:
 | `No module named chronaxis` | The active interpreter lacks the package, or an editable source directory moved. | Use the installation interpreter and reinstall the current directory as described in [Installation](installation.md). |
 | Missing NumPy, `ruamel.yaml`, or CAN modules | Dependencies are absent or installed in a different environment. | Install using the same Python environment. CAN dependencies are included in the ordinary installation. |
 | `PlanValidationError` at e.g. `$.signals[0].source` | Missing field, wrong type, or unknown reference. | Check source/line/column/path; `source` names `sources[].name`, not a file. |
-| Duplicate key, unknown field, or old-version error | Structure does not match the current format. | Merge duplicate mappings and check spelling/case. `config_version` is integer `3`. |
+| Duplicate key, unknown field, or old-version error | Structure does not match the current format. | Merge duplicate mappings and check spelling/case. Analysis configurations accept only integer `4`. Migrate older configurations to the current fields and unit rules; changing the version number alone is insufficient. See [Configuration](configuration.md). |
 | Rejected YAML anchor/alias/tag | Unsupported YAML feature. | Use ordinary mappings/lists and [imports](imports.md) for shared definitions. |
 | Rejected `unit: 1` | YAML parsed `1` as a number, but units require text. | Write dimensionless `unit: '1'`. An explicit preset version is also `version: '1'`, though it is normally omitted. |
 | Invalid expression | Raw column name, arbitrary Python function, or forbidden attribute access. | Bind a signal `name` and use [Expression syntax](expressions.md). YAML `true` and expression `True` belong to different languages. |
@@ -53,7 +55,7 @@ except PlanValidationError as error:
 |---|---|---|
 | Validation succeeds but run cannot find a file/column | Static validation does not read business files. Relative paths start at the declaring file. | Use `config origins` and check actual `path`, `time_column`, and `field` spelling. |
 | Time goes backward across files | A later file restarts at zero, or `paths` are ordered incorrectly. | Put only continuous recordings in one source. Use known origins to set `offset`/`offsets`; do not invent shifts to hide a regression. |
-| Two sources cannot be analyzed together | Time type, shared clock, unit, or offset does not establish a common instant. | Configure `time.type`, `time.clock`, and alignment from real synchronization evidence; see [Inputs](inputs.md). |
+| Two sources cannot be analyzed together | Time type, shared clock, unit, or offset does not establish a common instant. | Configure `time.time_type`, `time.clock`, and alignment from real synchronization evidence; see [Inputs](inputs.md). |
 | CAN cannot be decoded | Channel, standard/extended type, FD flag, ID, or DBC differs. | Check `field.channel`, `frame_id`, `signal`, and DBC mapping. Types are normally detected; add `is_extended`/`is_fd` only when ambiguity is reported. Check actual frame length too. |
 | ASC/raw CSV format error | `reader.version`, column mapping, delimiter, or time format differs from the file. | See [Text CAN inputs](text-inputs.md). A partial decoding policy does not excuse structural corruption. |
 
@@ -77,11 +79,11 @@ except PlanValidationError as error:
 | Error | Cause and handling |
 |---|---|
 | `BudgetExceededError` | Identify the resource named by the error: memory, result buffering, or spool disk. Reduce `batch_rows`/`result_buffer_rows`, or increase the corresponding quota after checking available resources. Required state memory may not shrink with batch size. |
-| Output target exists | Select a new directory. Even an existing empty directory is not a new target. |
+| Output path is unusable | Existing directories can be reused. Select a writable directory if the path names a file or protected location. Timestamp suffixes prevent overwriting previous files. |
 | Output is inside the owned work directory | Default close cleans that work directory; place final output outside it. |
 | Publication fails on non-Windows | The safe publication path is currently validated on Windows; see [Support status](status.md). |
 | Standalone signal/CAN export label failure | These paths currently restrict `metadata.device_label` to `home`/`work`; see [Output limitations](exports.md). Ordinary analysis can omit these exports. |
 | Corrupt staged format or read `OSError` | Stop using that result, preserve the exception and necessary evidence, and check disk/access. Do not treat the failure as an empty table. |
-| Batch report includes failed jobs | Inspect each job's status, error, and output path in `batch_report.json`. Fix and rerun failed jobs independently without overwriting completed directories. |
+| Batch report includes failed jobs | Inspect each job's status, error, and output path in the actual CLI `report` path. Fix and rerun failed jobs independently without overwriting completed directories. |
 
 If reproducing a problem requires retaining staged files, set `diagnostics.retain_work: true` for the next run. Enable trace separately when input positions are needed. Keep the configuration, command, exception chain, manifest, and a shareable minimal synthetic input for reproduction.

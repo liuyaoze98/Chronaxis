@@ -2,7 +2,7 @@
 
 按目标选择完整任务。所有随附数据都是可手工复算的合成数据；换成真实日志时应重新确认单位、有效期、方向、同步与业务阈值。
 
-[逐配置实际结果与解释](example-results.md)提供74份可运行YAML/JSON和批量配置的运行命令、实际结果表、手算过程及CSV下载。先选配置，再按文件名查结果；不需要翻开发日志。两份基础配置和shared/definitions公共定义只用于组合，不作为独立分析成功案例。
+[逐配置实际结果与解释](example-results.md)提供按实际清单列出的可运行YAML、JSON和批量配置的运行命令、实际结果表、手算过程及CSV下载。先选配置，再按文件名查结果。两份基础配置和shared/definitions公共定义只用于组合，不作为独立分析成功案例。
 
 常用结果：[能量与均值](example-results.md#analysis-yaml)、[事件与窗口](example-results.md#activity-yaml)、[无效值与过期](example-results.md#quality-yaml)、[实际间隔](example-results.md#interval-actual-yaml)／[固定间隔](example-results.md#interval-fixed-yaml)、[状态映射](example-results.md#signal-state-combined-yaml)。
 
@@ -10,20 +10,25 @@
 
 | 任务 | 输入与完整配置 | 运行与预期 |
 |---|---|---|
+| 台架功率的波动及每次加载的 P95 | [配置](examples/power-statistics.yaml)、[ASC](examples/data/can/power-statistics.asc)、[DBC](examples/data/can/teaching.dbc) | 5 条读数的 P95 为 18 W，2 段加载均值的 P95 为 19.5 W。[计算过程与命令](calculations.md#v4-power-statistics) |
 | ASC／BLF能量与均值 | [quickstart.asc](examples/data/can/quickstart.asc)、[DBC](examples/data/can/teaching.dbc)、[analysis.yaml](examples/analysis.yaml) | [入门教程](quickstart.md)：38J、6W、38/6W |
 | 事件→窗口→能量 | [activity.asc](examples/data/can/activity.asc)、[activity.yaml](examples/activity.yaml) | [完整任务](activity-tutorial.md)：活动50J、窗口70J；confirmed时30J/70J |
 | 公共来源与派生定义 | [analysis-imports.yaml](examples/analysis-imports.yaml)、[definitions.yaml](examples/shared/definitions.yaml)、quickstart.asc与teaching.dbc | [公共定义](imports.md)：38J、6W、38/6W和双倍功率76J |
-| Python逐行读取 | [api_example.py](examples/api_example.py) | 默认运行同目录analysis.yaml；可传入自己的配置及--output新目录 |
+| Python逐行读取 | [api_example.py](examples/api_example.py) | 默认运行同目录analysis.yaml；可传入自己的配置及--output结果目录 |
+|按实际时间计算滚动平均|[时序变换](temporal-transforms.md)|最小例在0.2秒得到18A；DBC周期另有扩展示例。|
+|自定义函数、统计与时序算法|[自定义分析算子](host-extensions.md)|峰值80A。|
+|按标定表查值与插值|[一维查表与插值](expressions.md#lookup-reference)|按声明单位使用标定表。|
+|对已有事件或窗口结果再统计|[结果聚合](aggregations.md)|指定来源计算项和统计操作。|
+|高性能积分器|[同帧逐报文累计](fast-energy.md)|单文件800J；独立文件总量1200J。|
 
-## 集中绑定、周期导出和INI迁移专题
+## 集中绑定与周期导出
 
-以下专题各自提供完整输入、配置和实际结果；与上方74例结果索引分别列出。
+以下专题各自提供完整输入、配置和实际结果；与上方结果索引分别列出。
 
 |任务|完整材料与说明|核对结果|
 |---|---|---|
 |同一报文的多个信号集中绑定|[配置](examples/grouped/analysis.yaml)、[ASC](examples/grouped/pack.asc)、[DBC](examples/grouped/pack.dbc)；[信号指南](signals.md)|[最大电压42V](examples/grouped/results/会话结果.csv)、[0.1秒边沿](examples/grouped/results/事件结果.csv)|
 |按DBC周期导出两种网格|[配置](examples/dbc-grid/analysis.yaml)、[ASC](examples/dbc-grid/grid.asc)、[DBC](examples/dbc-grid/grid.dbc)；[信号导出](signal-exports.md)、[CAN导出](can-exports.md)|[信号4行](examples/dbc-grid/results/resampled.csv)、[CAN 5帧](examples/dbc-grid/results/frames.asc)|
-|迁移INI逐消息累计|[旧INI](examples/migration-sum/energy.ini)、[映射](examples/migration-sum/mapping.yaml)；输入及两步命令见[迁移指南](migration.md)|[累计800J](examples/migration-sum/results/会话结果.csv)|
 
 ## 按功能选择最小配置与扩展示例
 
@@ -79,22 +84,14 @@ chronaxis run fault-demo/plan.yaml --output fault-result
 |signal-export|信号导出与独立插值网格|plan.yaml|分析积分仍为38J。原采样与500ms线性网格分别导出；网格0到5.5s共12点，前3点为2/3/4W。|
 |can-export|CAN原帧导出|plan.yaml|分析积分13V·s；请求范围内原帧按原顺序导出，不重采样。|
 |batch|两个独立任务的批量清单|batch.yaml|两个任务各自读取同一合成输入，均完成且各得38J；它们不是同会话时间切片。|
-|ini-mapping|旧INI原文与显式YAML映射|mapping.yaml|以sclicer_single导入source.ini，原文保持；Power>3的活动为[1s,6s)，窗口相同；会话积分仍38J。|
 
-普通分析模板用`chronaxis run 目录/plan.yaml --output 新目录`；batch模板用`chronaxis batch run 目录/batch.yaml --output 新目录`。ini-mapping模板保存旧INI及YAML映射，先用下面的legacy import命令转换，再运行生成计划；其字段见[INI导入](migration.md)。CAN类模板所需CAN依赖随正常安装提供。导出模板中的设备标签反映[当前实现限制](exports.md)，不能当作任意设备的通用标识。
+普通分析模板用`chronaxis run 目录/plan.yaml --output 结果目录`；batch模板用`chronaxis batch run 目录/batch.yaml --output 结果目录`。CAN类模板所需CAN依赖随正常安装提供。导出模板中的设备标签反映[当前实现限制](exports.md)，不能当作任意设备的通用标识。
 
-```powershell
-chronaxis config init ini-mapping --output ini-demo
-chronaxis legacy import ini-demo/source.ini --mode sclicer_single --mapping ini-demo/mapping.yaml --output converted.json
-chronaxis config convert converted.json --output converted.yaml
-chronaxis run converted.yaml --output imported-result
-```
 
-INI导入器当前发布JSON计划，因此示例显式转换为YAML；普通分析不要求JSON。所有目标路径须尚不存在。
 
 ## 下载完整案例并运行
 
-以下配置和data文件都随离线包提供。从examples目录运行；每条命令的输出目录须尚不存在。CAN案例所需CAN依赖随正常安装提供。它们使用合成输入，不代表真实设备阈值。
+以下配置和data文件都随离线包提供。从examples目录运行；分析命令的结果目录可重复使用，文件名自动增加时间后缀。CAN案例所需CAN依赖随正常安装提供。它们使用合成输入，不代表真实设备阈值。
 
 <a id="can-joint-analysis"></a>
 ### CAN电压与CSV电流联合分析
@@ -108,7 +105,7 @@ chronaxis run can-joint-analysis.yaml --output joint-result
 <a id="start-end-case"></a>
 ### start_end活动与超时
 
-[start-end.yaml](examples/start-end.yaml)使用随附[start-end.asc](examples/data/can/start-end.asc)和教学DBC，不需要CSV。begin>0开始，done>0结束，最长5秒：事件结果.csv应有[0,2)、[4,9)、[11,14)三次活动，第二次显示“超时结束”。同一表的cycle_mean（1）分别为10、52、110；第二段为(40×2+60×3)/5=52。时间列单位是秒。
+[start-end.yaml](examples/start-end.yaml)使用随附[start-end.asc](examples/data/can/start-end.asc)和教学DBC，不需要CSV。begin>0开始，done>0结束，最长5秒：[教学事件结果CSV](examples/results/start-end-yaml/事件结果.csv)有[0,2)、[4,9)、[11,14)三次活动，第二次显示“超时结束”。同一表的cycle_mean（1）分别为10、52、110；第二段为(40×2+60×3)/5=52。时间列单位是秒。自行运行时，从本次manifest的outputs读取带时间后缀的事件结果文件路径。
 
 ```powershell
 chronaxis run start-end.yaml --output cycle-result
@@ -117,7 +114,7 @@ chronaxis run start-end.yaml --output cycle-result
 <a id="message-energy"></a>
 ### 每条CAN消息的贡献与跳过
 
-[message-energy.yaml](examples/message-energy.yaml)读取[power.blf](examples/data/power.blf)和[power.dbc](examples/data/power.dbc)。两条同刻4000W消息各乘明确参数0.1s，合计800J；第三条目标消息没有完整数据，贡献表记录missing_input；无关ID不算尝试。查看contributions.csv的三行，而不是在汇总行寻找不存在的尝试次数字段。这里显式选择legacy解码策略以观察不完整消息，不应据此默认放宽自己数据的检查。
+[message-energy.yaml](examples/message-energy.yaml)读取[power.blf](examples/data/power.blf)和[power.dbc](examples/data/power.dbc)。两条同刻4000W消息各乘明确参数0.1s，合计800J；第三条目标消息没有完整数据，贡献表记录missing_input；无关ID不算尝试。从本轮清单定位贡献表，查看其中的三行，而不是在汇总行寻找不存在的尝试次数字段。这里显式选择legacy解码策略以观察不完整消息，不应据此默认放宽自己数据的检查。
 
 ```powershell
 chronaxis run message-energy.yaml --output message-result
@@ -132,7 +129,7 @@ chronaxis run message-energy.yaml --output message-result
 chronaxis run dual-grid.yaml --output grid-result
 ```
 
-分析voltage_area仍为13V·s。信号网格为0～2.75秒的12个点，起始值为3、4、5、6、7V；CAN网格请求0～2.5秒的6个位置，实际生成0～2秒的5帧，2.5秒被跳过。请求范围右端3秒不包含在可插值记录中，因此信号最后3点为missing/missing_right，CAN清单skipped_grid_points=1。时间网格不改变分析积分；CAN字段编码会按DBC量化，例如估计5V可以精确编码，估计4V位于两个码值中间，按nearest_even-v1取整。通过exports.jsonl定位两份导出的文件，不猜目录编号。
+分析voltage_area仍为13V·s。信号网格为0～2.75秒的12个点，起始值为3、4、5、6、7V；CAN网格请求0～2.5秒的6个位置，实际生成0～2秒的5帧，2.5秒被跳过。请求范围右端3秒不包含在可插值记录中，因此信号最后3点为missing/missing_right，CAN清单skipped_grid_points=1。时间网格不改变分析积分；CAN字段编码会按DBC量化，例如估计5V可以精确编码，估计4V位于两个码值中间，按nearest_even-v1取整。通过本轮清单的 `exports.index_file` 指向的导出索引定位两份文件，不猜目录编号。
 
 ## 仅用于组合教学片段的基础文件
 

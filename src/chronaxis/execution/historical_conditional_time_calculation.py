@@ -11,9 +11,10 @@ None兼容原domain及预算，不证明实际观测，不修改原context、绑
 """
 
 # 仅组合新历史、独立纯核和既有结果政策，不改变旧来源读取或解码行为。
+from ..core.moments import TIME_MOMENTS
 from ..core.decoded_binding import DecodedBindings
 from ..core.expression import CompiledExpression
-from ..core.calculations import CalculationDefinition, calculation_unit, make_calculation_result
+from ..core.calculations import CalculationDefinition, calculation_conversion, make_calculation_result
 from ..core.models import Interval
 from ..core.time_reduction import TimeReductionResult
 from ..core.conditional_time_reduction import ConditionalTimeCalculationFacts
@@ -67,7 +68,7 @@ class HistoricalConditionalTimeCalculation:
                 or not isinstance(bindings, DecodedBindings) or not isinstance(compiled, CompiledExpression)
                 or not isinstance(spec, CalculationDefinition) or not isinstance(condition, CompiledExpression)):
             raise TypeError('历史时间指标需真实历史、保持上下文、运行绑定、表达式和CalculationDefinition')
-        if spec.operation not in ('min_time', 'max_time', 'time_weighted_mean', 'duration'):
+        if spec.operation not in ('min_time', 'max_time', 'time_weighted_mean', 'duration', *TIME_MOMENTS):
             raise ValueError('当前条件时间归约只接时间极值、均值及BOOL时长')
         if (backend not in ('reference', 'numpy') or type(batch_intervals) is not int
                 or batch_intervals < 1 or type(partial_limit) is not int or partial_limit < 1):
@@ -297,7 +298,7 @@ class HistoricalConditionalTimeCalculation:
             raise ValueError('两遍时间均值的真实覆盖或来源不同')
         if self._spec.operation == 'time_weighted_mean' and not self._second_pass:
             # 全未知或无观测不构造空归约正常0，也不调用第一遍禁止的数值finish。
-            unit, _ = calculation_unit(self._spec, facts.input_unit)
+            unit = calculation_conversion(self._spec, facts.input_unit).unit
             number = TimeReductionResult(None, unit, False, Q.NONE, 0)
         else:
             number = self._reducer.finish()

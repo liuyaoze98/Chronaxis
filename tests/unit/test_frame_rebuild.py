@@ -7,6 +7,7 @@ DBC及报文为声明合成样例；未知位用固定非零模式检验，不�
 from dataclasses import replace
 import json
 from pathlib import Path
+from published_paths import published_file
 import struct
 import unittest
 from unittest.mock import patch
@@ -181,14 +182,14 @@ class FrameRebuildTests(unittest.TestCase):
             samples=[self.sample(10,0,10),self.sample(120,1,120)]
             owner=self.rebuild(samples,backend=backend)
             target=export_can_frames(owner,FrameExportSpec('asc'),Interval(0,131),self.root/backend,self.budget,source='bus',device_label='home')
-            with ASCRead(ASCSpec(target/'frames.asc'),self.budget) as reader:
+            with ASCRead(ASCSpec(published_file(target,'frames.asc')),self.budget) as reader:
                 frames=list(reader)
             actual={r.time_ns:r.frame.data for r in frames}
             self.assertEqual(actual[100],bytes((100,1,0xa5,0x7e,0x12,0x34,0x56,0x78)))
             self.assertEqual(actual[40][1:],samples[0].record.frame.data[1:])
             self.assertEqual(actual[10],samples[0].record.frame.data)
             self.assertEqual(actual[120],samples[1].record.frame.data)
-            missing=[json.loads(x) for x in (target/'skipped_frames.jsonl').read_text(encoding='utf-8').splitlines()]
+            missing=[json.loads(x) for x in (published_file(target,'skipped_frames.jsonl')).read_text(encoding='utf-8').splitlines()]
             self.assertEqual([(r['time_ns'],r['reason']) for r in missing],[(0,'missing_left'),(130,'missing_right')])
             results.append(actual)
         self.assertEqual(*results)
@@ -331,7 +332,7 @@ class FrameRebuildTests(unittest.TestCase):
         owner=self.rebuild(samples,grid=FrameGridSpec(10*10**6,0,110*10**6),interval=Interval(0,130*10**6),rules=((rule,message),))
         path=export_can_frames(owner,FrameExportSpec('blf',capture_date='2023-11-15',timezone_offset_minutes=480),
             Interval(0,130*10**6),self.root/'blf',self.budget,source='bus',device_label='home')
-        reader=can.BLFReader(path/'frames.blf')
+        reader=can.BLFReader(published_file(path,'frames.blf'))
         try:
             rows=list(reader)
         finally:
@@ -340,7 +341,7 @@ class FrameRebuildTests(unittest.TestCase):
         self.assertEqual(bytes(row.data),b'dABCDEFGHIJK')
         self.assertTrue(row.is_fd and row.bitrate_switch)
         self.assertFalse(row.is_rx)
-        info=json.loads((path/'manifest.json').read_text(encoding='utf-8'))
+        info=json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))
         self.assertEqual(info['reconstruction']['period_ns'],10*10**6)
         self.assertEqual(info['reconstruction']['quantization'],'nearest_even-v1')
         self.assertEqual(info['generated'],12)

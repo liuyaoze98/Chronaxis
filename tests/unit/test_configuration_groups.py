@@ -14,10 +14,10 @@ from chronaxis.planning.config_groups import normalize_configuration, public_con
 
 def config():
     """0/1/2秒功率1/2/3W；前值保持总面积3J，输入kW换算为W后为3000J。"""
-    return dict(config_version=3,dataset=dict(name='groups',domain=dict(start='0s',end='2s')),
+    return dict(config_version=4,dataset=dict(name='groups',domain=dict(start='0s',end='2s')),
         sources=[dict(source_type='memory',rows=[dict(time='0s',values={'p':1.}),
             dict(time='1s',values={'p':2.}),dict(time='2s',values={'p':3.})])],
-        signals=[dict(name='power',field='p',dtype='float64',unit='W',valid_for='3s')],
+        signals=[dict(name='power',field='p',dtype='float64',unit='W',conversion={'input_unit':'W'},valid_for='3s')],
         calculations=[dict(name='energy',operation='integral',expr='power')])
 
 
@@ -125,7 +125,7 @@ class ConfigurationGroupsTests(unittest.TestCase):
         """公开片段直接合入计划；不能要求用户再把内部event串改成scope对象。"""
         from chronaxis.presets import PresetSpec,build_preset
         raw=config();raw.pop('calculations')
-        raw['signals'][0]['unit']='degC';raw['signals'][0]['name']='temperature'
+        raw['signals'][0]['unit']='degC';raw['signals'][0]['conversion']={'input_unit':'degC'};raw['signals'][0]['name']='temperature'
         raw['sources'][0]['rows']=[dict(time='0s',values={'p':85.}),
             dict(time='1s',values={'p':77.}),dict(time='2s',values={'p':70.})]
         base=AnalysisPlan.from_dict(raw)

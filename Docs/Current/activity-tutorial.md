@@ -70,7 +70,7 @@ calculations:                        # 列出希望获得的统计或积分结�
 
 ## 运行并核对
 
-从仓库根运行；离线包examples目录中则把配置路径改为activity.yaml。activity-result须不存在。
+从仓库根运行；离线包examples目录中则把配置路径改为activity.yaml。activity-result可重复使用，每次输出自动增加时间后缀。
 
 ```powershell
 chronaxis validate Docs/Current/examples/activity.yaml

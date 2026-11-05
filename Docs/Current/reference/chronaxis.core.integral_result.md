@@ -1,4 +1,4 @@
-# chronaxis.core.integral_result
+# `chronaxis.core.integral_result`
 
 将积分数值和同一次计算的有效时长、缺失区间组合成CalculationResult。根据report或strict以及最低覆盖要求确定是否保留数值。这里不重新计算面积，也不再次转换单位；调用方应把同一个积分器返回的两部分一起传入。
 
@@ -63,4 +63,4 @@ TypeError/ValueError 为模型、单位、范围或计数矛盾；分配错误�
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/core/integral_result.py:16`](../../../src/chronaxis/core/integral_result.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/integral_result.py:16`](../../../src/chronaxis/core/integral_result.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

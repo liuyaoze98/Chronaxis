@@ -11,9 +11,9 @@ List plan dependencies, node calculation methods, history requirements, and decl
 explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `plan` | [AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan) | Required | Positional or keyword. A checked plan from `load_analysis_plan("analysis.yaml")` or `AnalysisPlan.from_dict(config)`, not a YAML filename string. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. A checked plan from `load_analysis_plan("analysis.yaml")` or `AnalysisPlan.from_dict(config)`, not a YAML filename string.|
 
 Returns [ExplainReport](../../reference/chronaxis.planning.reports.md#api-ExplainReport) (Chinese implementation reference), including the same validation limits, dependency nodes, `history_ns`, and a read-only budget mapping. Existing numeric kernels and unsupported nodes are identified separately; the whole plan should not be assumed to execute as one array operation.
 
@@ -31,4 +31,4 @@ print(explain_analysis_plan(plan))
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:381`](../../../../src/chronaxis/planning/reports.py#L381) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/reports.py:431`](../../../../src/chronaxis/planning/reports.py#L431) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

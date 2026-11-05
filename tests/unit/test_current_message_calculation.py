@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from chronaxis import AnalysisPlan, validate_analysis_plan, AnalysisRunner
 from chronaxis.core.models import SourceRef, Interval
+from chronaxis.core.types import QualityFlag as Q
 from chronaxis.execution.current_message_calculation import CurrentMessageCalculation
 from chronaxis.execution.can_reader import BudgetedLegacyCANSourceAdapter
 from chronaxis.execution.text_can_reader import BudgetedTextCANSourceAdapter
@@ -25,7 +26,7 @@ import test_raw_can_continuous as files
 def config(kind='can_blf'):
     """同一个功率×周期公式仅改变输入格式。参数: kind。返回: schema2字典。异常: 无。"""
     raw = legacy_config()
-    raw.update(config_version=3)
+    raw.update(config_version=4)
     raw['outputs'] = {'contributions': 'none'}
     raw['signals'][0]['dtype'] = 'float64'
     raw['signals'][0]['field'].update(signal='Power')
@@ -64,6 +65,35 @@ class CurrentMessageCalculationTests(unittest.TestCase):
             'session', self.budget, backend=backend, **options)
         self.addCleanup(owner.close)
         return plan, owner
+
+    def test_where_skip_reason_uses_only_current_message_active_inputs(self):
+        """活动分支除零时未选输入缺失不改累计原因，切换后区分缺失与非有限。
+
+        参数: 无。返回: None。异常: 任一后端的当前帧贡献、原因或质量与手算不符。
+        """
+        raw = config()
+        raw['config_version'] = 4
+        power = raw['signals'][0]
+        power['conversion'] = {'input_unit': 'W'}
+        alternate = deepcopy(power)
+        alternate.update(name='other')
+        alternate['field']['signal'] = 'Other'
+        raw['signals'].append(alternate)
+        raw['message_calculations'][0].update(expr='where(power > 0, power / 0, other)', unit='W')
+        # 同批不同分支，并覆盖所选值正常时的无跳过记录。
+        samples = ((2., None), (2., float('inf')), (0., None), (0., float('inf')), (0., 4.))
+        updates = tuple(replace(update(value, i, time=i), values={'Power': value, 'Other': other})
+                        for i, (value, other) in enumerate(samples))
+        expected = [(LegacySkipReason.EVALUATION_ERROR, Q.DOMAIN_ERROR)] * 2 + [
+            (LegacySkipReason.MISSING_INPUT, Q.MISSING), (LegacySkipReason.NONFINITE_INPUT, Q.NONFINITE),
+            (None, Q.NONE)]
+        for backend in ('reference', 'numpy'):
+            details = []
+            _, owner = self.owner(raw, backend, contribution_consumer=lambda row, quality:
+                                  details.append((row.skip_reason, quality)))
+            owner.consume(updates)
+            self.assertEqual(details, expected)
+            self.assertEqual(owner.snapshot().value, 4.)
 
     def test_formula_same_time_invalid_and_batch_boundaries(self):
         """三条4000W加一条缺值：每条乘0.1s，1200J；同刻和分批不丢贡献。"""
@@ -190,36 +220,20 @@ class CurrentMessageCalculationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 AnalysisPlan.from_dict(current_fixture(raw))
 
-    def test_schema_and_ini_conversion_preserve_formula(self):
-        """新schema接受真实profile；INI只改来源声明，不改period或公式，接已支持公共路径。"""
+    def test_schema_preserves_current_formula_for_all_formats(self):
+        """三种原帧格式使用同一公开配置，当前入口不依赖INI转换。"""
         import json
         from jsonschema import Draft202012Validator
-        from referencing import Registry, Resource
-        from chronaxis.migration.ini import parse_ini
-        from chronaxis.migration.legacy_sum import convert_legacy_sum
-        from chronaxis.migration import import_legacy_ini
-        from test_legacy_import_sum import legacy_mapping_fixture, legacy_ini
         schema = json.loads(Path('Docs/Schema/analysis.schema.json').read_text(encoding='utf-8'))
         validator = Draft202012Validator(schema)
         for kind in ('can_blf', 'can_asc', 'raw_can_csv'):
             raw = config(kind)
             validator.validate(raw)
-            mapping = legacy_mapping_fixture()
-            mapping['analysis'] = deepcopy(raw)
-            mapping['analysis'].pop('message_calculations')
-            content = legacy_ini()
-            fields, issues = [], []
-            parser, headers = parse_ini(content.decode('utf-8'), fields, preserve_case=True)
-            analysis = deepcopy(raw)
-            convert_legacy_sum(parser, headers, mapping, analysis, fields, issues)
-            plan = AnalysisPlan.from_dict(current_fixture(analysis))
-            self.assertEqual(plan.message_calculations[0].expr.text, 'power * period')
-            self.assertEqual(plan.message_calculations[0].parameters[0].value, .1)
+            plan = AnalysisPlan.from_dict(current_fixture(raw))
+            self.assertEqual(plan.message_calculations[0].expr.text, 'power * period * factor')
+            self.assertEqual(dict((p.name,p.value) for p in plan.message_calculations[0].parameters)['period'], .1)
             self.assertEqual(plan.message_calculations[0].profile,
                              'sclicer-functions-v1' if kind == 'can_blf' else 'can-text-v1')
-            result = import_legacy_ini(content, mapping, mode='legacy_sum', base_dir=Path.cwd(), device_label='home')
-            self.assertIsNotNone(result.plan)
-            self.assertFalse(any(item.code == 'plan_unavailable' for item in result.report.issues))
 
     def test_combined_failure_and_empty_trigger_contract(self):
         """保消费者原错和释放副错；无值触发须有完整定位和实际消费者。"""

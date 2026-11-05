@@ -1,0 +1,27 @@
+config_version: 4                    # 本示例使用标定表，需要版本4
+dataset:                             # 这次分析的名称和时间范围
+  name: calibrated_power             # 在结果中标识这次分析
+  domain:                            # 取 0 秒起、不含 3 秒的区间
+    start: 0s                        # 开始时刻
+    end: 3s                          # 结束时刻不计入
+sources:                             # 原始报文及其解码文件
+  - paths: data/joint.asc            # 示例 ASC 路径相对本配置
+    dbc_by_channel:                  # 指定解码这一通道的 DBC
+      '1': data/joint.dbc            # 通道 1 对应的示例 DBC
+signals:                             # 选择报文里的电压
+  - name: voltage                    # 表达式中引用的电压名称
+    field:                           # 按报文编号找到 DBC 信号
+      frame_id: 0x100                # 十六进制报文编号
+      signal: Voltage                # DBC 中的信号名
+    valid_for: 2s                    # 每条读数最多有效 2 秒
+lookups:                             # 用电压查对应功率
+  - name: curve                      # 表达式引用的表名
+    input_unit: V                    # 第一列为伏特
+    unit: W                          # 第二列为瓦特
+    points:                          # 点按电压递增
+      - [3, 10]                      # 3 V 对应 10 W
+      - [11, 50]                     # 11 V 对应 50 W
+calculations:                        # 输出一次会话统计
+  - name: rated_power                # 结果表中的列名
+    operation: sample_mean           # 每个实际电压读数计一次
+    expr: lookup(voltage,'curve')    # 在两个点之间线性插值

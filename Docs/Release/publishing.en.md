@@ -2,100 +2,130 @@
 
 [简体中文](publishing.md)
 
-Run these commands from the delivery directory. Confirm release information and local checks before publishing source to GitHub and packages to PyPI. TestPyPI installation testing is optional. For automatic uploads through GitHub, first complete the one-time [Trusted Publishing setup](trusted-publishing.en.md). This page also retains manual upload commands.
+This page records the workflow used to publish `0.1.0.dev1` on 2026-11-02 and makes it reusable for the next release. That version is already published. Choose a new version using the [version policy](versioning.md); preserve existing files and tags.
 
-## Delivery layout
+The order is: **local build and verification → public source and release assets → HTML deployment → PyPI verification-only run → PyPI upload → fresh installation checks → record the outcome**. This release used GitHub Trusted Publishing. It did not use TestPyPI or a local Twine upload.
 
-|Location|Purpose|
+## One-time setup
+
+|Item|Established setting|
 |---|---|
-|`source/`|Reviewed public source; initialize a new public Git history here|
-|`dist/`|Only the wheel and sdist intended for TestPyPI/PyPI|
-|`manual/index.html`, `manual/en/index.html`|Chinese and English offline manuals|
-|`manual/ai-guide/README.md`, `manual/ai-guide/en/README.md`|Directly readable AI guides|
-|`Chronaxis-Source-0.1.0.dev1.zip`|Standalone public source archive|
-|`Chronaxis-Manual-0.1.0.dev1.zip`|Complete bilingual manual and AI material for GitHub Release attachments|
-|`SHA256SUMS.txt`, `delivery.json`|Artifact hashes, source/documentation revisions, verification and outstanding release information|
+|Public source|[liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis)|
+|PyPI|Project `chronaxis`; authorize GitHub through [Trusted Publishing](trusted-publishing.en.md)|
+|Publisher identity|Owner=`liuyaoze98`, Repository=`Chronaxis`, Workflow=`pypi-publish.yml`, Environment=`pypi`|
+|GitHub Pages|Repository Settings → Pages → Source: GitHub Actions|
+|HTML URLs|[Chinese](https://liuyaoze98.github.io/Chronaxis/) and [English](https://liuyaoze98.github.io/Chronaxis/en/)|
+|Maintainer and license|`liuyaoze <work@liuyaoze.com>`, MIT|
 
-Publish `source/`, rather than the internal development repository's history, which contains development records and historical business data. Test logs and build staging are stored outside the delivery directory.
+PyPI accepts short-lived GitHub identity credentials; no password or token needs to be shared with an AI. The existing publisher supports later releases. Recheck the binding if the repository, workflow filename, or environment changes. Both workflows are manually triggered; pushing source does not automatically deploy the site or publish packages.
 
-## Before uploading
+## 1. Build and verify locally
 
-- The repository is [liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis). Package metadata includes repository, documentation, issue and changelog links. Builds derive the PyPI description from README and convert relative file links to pages under the `v0.1.0.dev1` tag; the source README remains readable locally.
-- Confirm that your PyPI account can publish `chronaxis` and version `0.1.0.dev1`. An HTTP 404 does not prove that the name is available for registration.
-- Make the repository accessible before the PyPI release. MIT, author liuyaoze, and work@liuyaoze.com are confirmed.
-- Read the [version policy](versioning.md), [third-party notices](third-party.md), and [known dependency limitation](security.md). Uploaded filenames cannot be replaced; changed artifacts need a new version.
+Synchronize the version in `pyproject.toml`, both READMEs, Chinese and English installation instructions, AI guides, and release notes. Also update `RunMetadata.software_version` and the wheel filename in the missing-dependency hint. `Documentation` points to the online HTML manual; `Changelog` points to this version's notes. The build converts relative README file links to URLs under the public version tag.
 
-```powershell
-$Version = '0.1.0.dev1'
-$Wheel = "dist/chronaxis-$Version-py3-none-any.whl"
-$Sdist = "dist/chronaxis-$Version.tar.gz"
-py -3.12 -m venv .venv-publish
-$Python = '.venv-publish/Scripts/python.exe'
-& $Python -m pip install --upgrade twine
-& $Python -m twine check $Wheel $Sdist
-Get-FileHash -Algorithm SHA256 $Wheel, $Sdist
-```
+Verify and commit in the internal repository, then export a specific commit. The following tools formed the actual build chain. Any revision passed to a tool must have been reviewed.
 
-Both packages must pass and match SHA256SUMS.txt. Upload these two explicit files, not the documentation or source ZIP.
+|Tool or check|Purpose and acceptance condition|
+|---|---|
+|`tools/build_m2_docs.py --edition Current`|Generate references from the source revision in `Docs/Current/documentation.json`; public signatures must match the actual interfaces|
+|`tools/english_docs.py --record-reviewed`|Review affected translations before recording source hashes; refreshing hashes alone does not resolve a failed check|
+|`tools/lock_ai_inputs.py <manual-commit> --runtime <runtime-commit> --device-label <home-or-work>`|Lock the matching guide inputs after committing the corresponding material|
+|`tools/export_public_source.py <new-directory> --revision <commit>`|Export the public allowlist and `PUBLIC-SOURCE.json`, excluding internal Git history, management records, real data, and uncommitted files|
+|`tools/verify_ai_distribution.py <new-build-directory> --public-source <public-export>`|Build an sdist from clean source without Git, build its wheel, and compare the installed guide with the optional ZIP|
+|`node tools/render_current_docs.mjs`|Generate bilingual HTML and directly readable AI material|
+|`tools/check_current_html.py`, `node tools/test_manual_search.mjs`, `tools/package_current_docs.py`|Check pages, assets, search, copyable code, and the packaged manual after relocation|
+|`tools/check_ai_install.py <wheel> <AI-ZIP> <prepared-dependencies-directory> <report-path> --device-label <home-or-work>`|Check guides, public signatures, and bundled tasks in isolation|
+|`python -m twine check <wheel> <sdist>`|Validate package formatting and the README without uploading|
 
-## GitHub source and release assets
+Run the Python tools with `python -B`. See [documentation maintenance](../Current/en/maintenance.md) for build dependencies and documentation tooling. Rebuild affected material after source changes and compare the AI guides in HTML and the wheel at delivery. Investigate failures instead of changing hashes or skipping assertions to claim success.
 
-Create an empty GitHub repository without generated README or license files. If the target already contains commits, review them before proceeding; these first-release commands do not merge an existing history.
+Prepare five GitHub Release assets and record SHA256 values: wheel, sdist, `Chronaxis-Source-<version>.zip`, `Chronaxis-Manual-<version>.zip`, and `SHA256SUMS.txt`. The checksum file lists the other four assets; verify all five assets themselves after upload. Keep `delivery.json` and verification logs in the local delivery workspace. Filenames must match the workflows. Only wheel and sdist are uploaded to PyPI.
 
-```powershell
-$Repository = 'https://github.com/liuyaoze98/Chronaxis.git'
-git -C source init -b main
-git -C source config user.name liuyaoze
-git -C source config user.email work@liuyaoze.com
-git -C source add -- src tests examples tools Docs README.md README.en.md LICENSE pyproject.toml setup.py MANIFEST.in .gitattributes .gitignore PUBLIC-SOURCE.json
-git -C source diff --cached --stat
-git -C source commit -m "Release Chronaxis $Version"
-git -C source remote add origin $Repository
-git -C source push -u origin main
-git -C source tag -a "v$Version" -m "Chronaxis $Version"
-git -C source push origin "v$Version"
-```
+## 2. GitHub source and release assets
 
-Create a draft GitHub Release from this tag, titled `Chronaxis 0.1.0.dev1`, and mark it as a prerelease. Use the [release notes](release-notes-0.1.0.dev1.md). Attach the source ZIP, bilingual manual ZIP, wheel, sdist, and SHA256SUMS.txt. After verifying all five attachment hashes, publish the prerelease so the Pages workflow can read the manual with read-only repository permissions. Update its publication status after verifying PyPI.
+The internal and public repositories have separate histories. Initialize the public repository only for its first release. Later releases reuse the public checkout: inspect its working tree, fetch and fast-forward `main`, then synchronize the reviewed public export. Review the exact changes before committing and pushing. Do not push the internal repository's complete history to the public remote.
 
-After pushing, open the repository, `v0.1.0.dev1` tag and metadata documentation link in a signed-out browser before uploading to PyPI. A known URL does not establish public access. Local build checks verify that target files exist; they do not replace this remote check.
-
-Publish the HTML manual at https://liuyaoze98.github.io/Chronaxis/ with English at https://liuyaoze98.github.io/Chronaxis/en/. Select GitHub Actions in the repository Pages settings, then run pages.yml to download the reviewed manual attachment, verify its SHA256, and deploy it. Before uploading a new PyPI version, check the online pages, language switch, search, and AI guide; a successful HTTP status alone is insufficient.
-
-## TestPyPI upload and installation
-
-TestPyPI and PyPI use separate accounts and tokens. Enter the appropriate token at Twine's interactive prompt; keep tokens out of project files.
+Use these commands after synchronizing the public source. `$PublicRepo` must be the public checkout, not the internal repository; `$Version` must be an unpublished new version.
 
 ```powershell
-$env:TWINE_USERNAME = '__token__'
-& $Python -m twine upload --repository testpypi $Wheel $Sdist
-py -3.12 -m venv .venv-testpypi
-$TestPython = '.venv-testpypi/Scripts/python.exe'
-& $TestPython -m pip install $Wheel
-& $TestPython -m pip install --force-reinstall --no-deps --index-url https://test.pypi.org/simple/ "chronaxis==$Version"
-& $TestPython -m pip check
-& $TestPython -m chronaxis guide
-& $TestPython -m chronaxis guide --language en
+$PublicRepo = Read-Host 'Public repository checkout path'
+$Version = Read-Host 'New release version'
+git -C $PublicRepo status --short
+git -C $PublicRepo push origin main
+git -C $PublicRepo tag -a "v$Version" -m "Chronaxis $Version"
+git -C $PublicRepo push origin "v$Version"
 ```
 
-The local wheel installation obtains dependencies from the normal index. The second command replaces Chronaxis itself from TestPyPI, which need not host all dependencies. Both guide paths must point to existing README files in this new environment.
+The current PyPI workflow resolves an **annotated tag**, so use `git tag -a`. The tag identifies the verified public source commit. Compare the public files with `PUBLIC-SOURCE.json`; an internal commit SHA is not the public commit SHA.
+
+Create a draft GitHub Release for that tag and upload the five assets. Verify their names, sizes, and SHA256 values. Mark development previews as prereleases. Once the assets are verified, publish the prerelease with an accurate note that PyPI upload is pending. Public assets are required for the subsequent workflows' read-only repository access.
+
+## 3. Update the release workflows
+
+The workflows do not infer new versions or rebuild files. **Changing the local `$Version` variable is insufficient.** Check the following settings for every release and commit them to public `main`.
+
+|File|Update for each release|Current permissions|
+|---|---|---|
+|`.github/workflows/pages.yml`|Release tag, manual ZIP filename, and SHA256|`contents: read`, `pages: write`, `id-token: write`|
+|`.github/workflows/pypi-publish.yml`|Version description, Release tag, public source SHA resolved by that tag, wheel/sdist filenames, and both SHA256 values|`contents: read`, `id-token: write`|
+
+Both workflows are restricted to this repository and `main`, with official Actions pinned to commits. After freezing the source tag, make a separate workflow commit on `main` if necessary; do not move the tag to fill in its source SHA. This is the sequence used for `dev1`. The committed workflows currently remain pinned to `0.1.0.dev1` and must be updated before releasing another version.
+
+## 4. Deploy HTML
+
+```powershell
+gh workflow run pages.yml --repo liuyaoze98/Chronaxis --ref main
+```
+
+Wait for this run to succeed in Actions. It downloads the public manual asset, checks SHA256, extracts it, and deploys it. It does not regenerate documentation in the cloud.
+
+Check the public Chinese and English homepages, language-switch targets, styles, scripts, search data, a real tutorial, and AI guides. Compare the response content with the verified manual and confirm that pages are HTML. HTTP 200 alone may represent an error page or access challenge. The online site serves the current release; earlier manuals remain available from their corresponding Release assets.
 
 ## PyPI upload and verification
 
-Use the same two verified files after making the repository public and resolving all missing release information in delivery.json:
+First run without uploading:
 
 ```powershell
-& $Python -m twine upload --repository pypi $Wheel $Sdist
+gh workflow run pypi-publish.yml --repo liuyaoze98/Chronaxis --ref main -f upload=false
+```
+
+Confirm that **this run** succeeded: the source tag resolves correctly, both asset hashes match, and the upload step was skipped. Only then run the upload:
+
+```powershell
+gh workflow run pypi-publish.yml --repo liuyaoze98/Chronaxis --ref main -f upload=true
+```
+
+Publishing uses PyPI Trusted Publishing and retains publication signing. After success, inspect `https://pypi.org/pypi/chronaxis/<version>/json`: both filenames and SHA256 values, version, Python and dependency requirements, MIT, maintainer email, README, and project links. Also check that the default project version's `Documentation` points to HTML.
+
+Create a fresh environment from the production PyPI index and run the bundled example:
+
+```powershell
 py -3.12 -m venv .venv-pypi
 $CheckPython = '.venv-pypi/Scripts/python.exe'
 & $CheckPython -m pip install --no-cache-dir --index-url https://pypi.org/simple/ "chronaxis==$Version"
 & $CheckPython -m pip check
+& $CheckPython -m chronaxis guide --language en
 $Guide = Split-Path (& $CheckPython -m chronaxis guide)
 & $CheckPython "$Guide/run_analysis.py" "$Guide/examples/conditional-energy.yaml" result-release-check
 ```
 
-Expect one event from 61 to 122 seconds and `0.06777777777777777 kWh`. The result directory must be new. Check the PyPI version, MIT license, maintainer email, dependencies, README and links, then update the publication status in the GitHub Release and record both URLs and times.
+Use new directories for the environment and `result-release-check`. Expect one event from 61 to 122 seconds, `0.06777777777777777 kWh`, and status `完整` (complete). Both guide languages must be directly locatable, and running the example must leave guide files unchanged. Windows/Python 3.12 was the environment actually verified; this does not establish support for additional platforms.
 
-## References
+Finally update the GitHub Release text to remove temporary wording such as “PyPI upload pending”. Record URLs, source/tag identities, hashes, workflow runs, and installation results, then update internal plans, issues, and handover memory. A successful workflow alone does not establish a successful installation.
 
-Commands follow the [PyPA packaging tutorial](https://packaging.python.org/en/latest/tutorials/packaging-projects/), [GitHub import instructions](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github), and [PyPI filename policy](https://pypi.org/help/#file-name-reuse). Maintainer: liuyaoze.
+## Problems encountered and their handling
+
+|Symptom|Actual handling and next-release guidance|
+|---|---|
+|The dev0 PyPI Documentation link opened GitHub Markdown|Deploy HTML and release dev1 with corrected metadata. Editing the repository README does not replace metadata already uploaded for a version|
+|Reading a draft asset returned `release not found`|Drafts are not visible to read-only workflow identities. Verify and publish assets before Pages/PyPI. The maintainer queried the release ID to inspect the draft|
+|Automatic approval rejected Pages `contents:write`|Use public assets and `contents:read`, retaining only the Pages/OIDC permissions needed for deployment|
+|Git HTTPS transfers reset|Use GitHub's Git Data API for the same reviewed content, fast-forwarding only the checked parent. Then fetch and fast-forward the local public mirror. No force push or history rewrite was used|
+|Sigstore/Rekor returned HTTP 502|Check the failure stage and PyPI files first. This release retried the original workflow after confirming that dev1 had no files. If partial files already exist, inspect hashes and status before proceeding; do not blindly retry, enable `skip-existing`, or disable signing|
+|The system temporary directory was not writable|Set `TEMP`/`TMP` to the dedicated task workspace and repeat the affected verification|
+|An old manual validator required Chinese history text in English pages|Use applicable bilingual source, HTML, and guide checks while retaining the failure record; do not call an inapplicable assertion a repaired product defect|
+|PyPI HTML returned `Client Challenge`|Verify metadata through the official JSON API and independently verify the target HTML; record that browser interaction was not tested|
+
+Historical `dev1` evidence: [successful second Pages attempt](https://github.com/liuyaoze98/Chronaxis/actions/runs/41463321957), [PyPI verification-only run](https://github.com/liuyaoze98/Chronaxis/actions/runs/41464499414), [successful second PyPI attempt](https://github.com/liuyaoze98/Chronaxis/actions/runs/41464970458), and [GitHub prerelease](https://github.com/liuyaoze98/Chronaxis/releases/tag/v0.1.0.dev1). These records do not establish that a later version has passed the same checks.
+
+Maintainer: liuyaoze. See [distribution scope](distribution.md) and [dependency security notes](security.md).

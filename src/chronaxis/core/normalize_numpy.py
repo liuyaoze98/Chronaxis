@@ -328,7 +328,7 @@ def normalize_numpy(definition: SignalDefinition, raw: np.ndarray, quality: np.n
     return _output(definition.dtype, values, reasons)
 
 
-def memory_series_numpy(bindings: SignalBindings, name: str) -> SignalSeries:
+def memory_series_numpy(bindings: SignalBindings, name: str, *, capture_code=False) -> SignalSeries:
     """按原字段类型分组装箱，批量转换后恢复原行顺序和来源身份。
 
     参数:
@@ -390,7 +390,9 @@ def memory_series_numpy(bindings: SignalBindings, name: str) -> SignalSeries:
             # 保存值/有效性/完整质量，原诊断稍后按行恢复。
             results[index] = (value, bool(normalized.valid[position]), QualityFlag(int(normalized.quality[position])))
     # 输出按原行顺序恢复，原时间offset明确且安全。
-    samples = tuple(SignalSample(name, checked_add_ns(row.time_ns, source.offset_ns), value if valid else row.values[definition.field], valid, quality, bindings.source_ref(name), row.sequence)
+    from .enum_codes import original_code
+    samples = tuple(SignalSample(name, checked_add_ns(row.time_ns, source.offset_ns), value if valid else row.values[definition.field], valid, quality, bindings.source_ref(name), row.sequence,
+                    original_code(definition, row.values[definition.field]) if capture_code else None)
                     for row, (value, valid, quality) in zip(rows, results))
     # 同时间及来源约束由SignalSeries检查，不改变原来源消息数量。
     return SignalSeries(bindings, name, samples)

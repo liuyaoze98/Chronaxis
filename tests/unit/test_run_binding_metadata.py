@@ -7,6 +7,8 @@
 独立typed元数据测试显式请求详细输出，核冻结容器、方向及预算先于JSON复制。
 所有文件只写work，设备home；没有真实业务验收或物理语义认证。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -84,7 +86,7 @@ class RunBindingMetadataTests(unittest.TestCase):
         if not semantics:
             # 无语义时完整显式角色仍可通过，不能为可追溯性补造semantic_id。
             role_bindings['voltage'] = 'voltage'
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='binding_demo', entity='synthetic_device', session='binding_session',
                 domain=dict(start='0s', end='4s')), sources=[source], signals=signals,
             presets=[dict(name='charging', preset_type='charge_session', version='1', role_bindings=role_bindings,
@@ -161,7 +163,7 @@ class RunBindingMetadataTests(unittest.TestCase):
         """
         # 明确夹具既含非空可选tuple，也保空默认值；不能靠只比较字段数量漏掉变化。
         expected = dict(run_id='legacy-home', input_identity='synthetic-input', plan_hash='synthetic-plan',
-            backend='reference', config_version=3, source_time_interpretation='relative ns; explicit origin',
+            backend='reference', config_version=4, source_time_interpretation='relative ns; explicit origin',
             session_boundaries=(('session', 0, 100),), started_at='2026-10-16T01:00:00+08:00',
             mapping_hashes=('declared-binding',), dbc_hashes=(), parsing_policy='decoded-results',
             worker_config='single-thread', dependency_versions=(('numpy', '1.26.3'),), limitations=('synthetic only',),
@@ -200,7 +202,7 @@ class RunBindingMetadataTests(unittest.TestCase):
                     self.assertEqual(published['status'], 'completed')
                     self.assertEqual(published['run'], json.loads(json.dumps(current_fixture(run))))
                     for table, expected_rows in tables.items():
-                        path = manifest.output_dir / (table+'.'+data.plan.outputs.tables)
+                        path = published_file(manifest,table+'.'+data.plan.outputs.tables)
                         if data.plan.outputs.tables == 'csv':
                             with path.open(encoding='utf-8', newline='') as handle:
                                 rows = tuple(csv.DictReader(handle))

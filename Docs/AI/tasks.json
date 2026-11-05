@@ -3,6 +3,74 @@
   "revision": 1,
   "tasks": [
     {
+      "id": "TEMPORAL_CURRENT",
+      "intent": "对不等间隔CAN报文计算滚动电流或变化率",
+      "example": "../Current/examples/temporal/analysis.yaml",
+      "requires": "电流字段、单位、有效期、actual/fixed/DBC口径及驱动、回看窗口和输出步长。",
+      "check": "0.20秒时按100ms DBC周期均值为130/9 A，换实际时间则为18 A。",
+      "fields": [
+        "sources",
+        "signals",
+        "transforms",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/temporal/analysis.yaml --format json",
+      "aliases": [
+        "时序变换",
+        "滚动统计",
+        "变化率",
+        "temporal transforms",
+        "rolling statistics"
+      ]
+    },
+    {
+      "id": "HOST_EXTENSION",
+      "intent": "在受信任Python宿主中注册逐点函数、样本归约或有状态网格操作",
+      "example": "../Current/examples/temporal/host-analysis.yaml",
+      "requires": "配套宿主程序、ASC、DBC以及版本、端口、后端和资源约定。",
+      "check": "运行宿主程序并传入同一注册，峰值80 A，四次网格有效值为10/20/30/30 A。",
+      "fields": [
+        "signals",
+        "transforms",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "ExtensionRegistry",
+        "FunctionSpec",
+        "ReductionSpec",
+        "TransformSpec"
+      ],
+      "verify": "python ../Current/examples/temporal/host_extensions.py --plan ../Current/examples/temporal/host-analysis.yaml --backend numpy --work-dir host-check",
+      "aliases": [
+        "宿主扩展",
+        "插件",
+        "host extensions",
+        "ExtensionRegistry",
+        "自定义分析算子",
+        "自定义算子",
+        "custom analysis operators",
+        "custom operators"
+      ],
+      "references": [
+        {
+          "path": "../Current/examples/temporal/host_extensions.py",
+          "description": "宿主实现、注册与执行程序。"
+        }
+      ]
+    },
+    {
       "id": "CAN",
       "intent": "BLF / ASC 报文积分",
       "example": "../Current/examples/analysis.yaml",
@@ -29,7 +97,7 @@
       "example": "../Current/examples/conditional-energy.yaml",
       "requires": "原始ASC/BLF与对应DBC，目标信号/编码/单位、比较符、持续时长及积分范围。类型/单位/周期能由DBC取得时不要求重复填写。",
       "applicable": "自定义状态和数值条件、达到或严格超过时长、从条件开始处积分、可选能量单位。示例为strict >60s、默认onset、实际时间间隔。",
-      "not_applicable": "按每条消息固定周期直接求和时，查询message_calculations字段说明；独立文件批量使用BATCH入口。",
+      "not_applicable": "逐消息贡献查询MESSAGE_ENERGY；满足独立文件等限制时再选FAST_MESSAGE_ENERGY。独立任务使用BATCH，同模板fast总计查询FAST_TEMPLATE_TOTAL。",
       "alternative": "charge_session只适用于它的严格电流>、持续>=、Wh/Ah及方向/测点契约，不因为名称包含充电就套用。",
       "check": "60秒整无事件；跨卷61秒区间为[61,122)，4000W×61s/3600000=0.06777777777777777kWh。以parent_id关联event_id，检查status/reason，不能用60.1秒代替严格比较。",
       "fields": [
@@ -164,8 +232,8 @@
       "id": "UNITS",
       "intent": "换算、单位、比例",
       "example": "../Current/examples/signal-number-conversion.yaml",
-      "requires": "输入/输出单位、已有解码缩放和方向声明。",
-      "check": "DBC系数只用一次，单位标签本身不做换算。",
+      "requires": "输入/目标单位及已有DBC换算；仅任务需要方向解释时补充方向依据。",
+      "check": "省略scale和offset时按输入与目标单位自动换算，2000 mA得到2 A；DBC系数只执行一次。",
       "fields": [
         "signals"
       ],
@@ -233,7 +301,7 @@
       "id": "EXPORT",
       "intent": "输出事件附近的原始报文",
       "example": "../Current/examples/export-can-minimal.yaml",
-      "requires": "受支持的CAN来源、明确窗口和新输出目录。",
+      "requires": "受支持的CAN来源、明确窗口和可写输出目录；目录可以已有结果。",
       "check": "核对实际窗口、格式和清单。",
       "fields": [
         "outputs",
@@ -252,7 +320,7 @@
       "id": "PYTHON",
       "intent": "Python 加载、写出与关闭",
       "example": "../Current/examples/input-csv-minimal.yaml",
-      "requires": "已安装对应版本、完整计划及新结果目录。",
+      "requires": "已安装对应版本、完整计划及可写结果目录；使用write返回的实际清单路径。",
       "check": "运行 run_analysis.py；先检查再执行，逐行读后关闭。",
       "fields": [
         "outputs"
@@ -285,6 +353,167 @@
         "PlanValidationError"
       ],
       "verify": "python -m chronaxis validate ../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "CALIBRATION",
+      "intent": "ASC / DBC 电压查标定表，计算平均功率",
+      "example": "../Current/examples/lookup-power.yaml",
+      "requires": "输入单位、表的点对及输出单位。",
+      "check": "3、7、3 V → 10、30、10 W；平均约 16.67 W。",
+      "fields": [
+        "signals",
+        "lookups",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/lookup-power.yaml --format json",
+      "aliases": [
+        "一维查表",
+        "标定查表",
+        "one-dimensional lookup",
+        "lookup table"
+      ]
+    },
+    {
+      "id": "POWER_STATISTICS",
+      "intent": "功率样本与时间加权统计；对标量计算结果、配对延迟、事件或最终片段进行结果聚合",
+      "example": "../Current/examples/power-statistics.yaml",
+      "requires": "确定结果总体、已命名来源、操作和分组；确认是否纳入部分数值及总体不完整时如何报告。本例求逐事件均值的P95；references包含计算、配对、事件和窗口来源的完整规则。",
+      "check": "5 条读数，2 个起点，2 段加载，1 个合并片段。读数 P95 为 18 W，按活动均值求 P95 为 19.5 W，候选/参与均为 2。时间 RMS 约 11.05542 W。",
+      "fields": [
+        "rules",
+        "windows",
+        "calculations",
+        "aggregations",
+        "sequences"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/power-statistics.yaml --format json",
+      "aliases": [
+        "统计",
+        "统计分析",
+        "statistics",
+        "variance",
+        "quantile",
+        "结果聚合",
+        "聚合统计",
+        "result aggregation",
+        "result aggregations"
+      ],
+      "references": [
+        {
+          "path": "../Current/aggregations.md",
+          "description": "完整字段、组合限制、示例与结果语义。"
+        },
+        {
+          "path": "../Schema/analysis.schema.json#/properties/aggregations",
+          "description": "完整规范子树，包括条件约束。"
+        }
+      ]
+    },
+    {
+      "id": "MESSAGE_ENERGY",
+      "intent": "使用通用分析入口按每条目标CAN消息计算贡献并累计",
+      "example": "../Current/examples/message-minimal.yaml",
+      "requires": "确认目标通道/报文、DBC、单位及expr计算的每条贡献。由功率求能量时确认时间因子；输入已是能量贡献时不再乘时间。完整字段及限制见references。",
+      "check": "两条同刻4000W消息各按0.1秒贡献400J，合计800J；1秒记录不在[0,1)范围。",
+      "fields": [
+        "sources",
+        "signals",
+        "message_calculations",
+        "outputs"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../Current/examples/message-minimal.yaml --format json",
+      "applicable": "使用通用run处理CAN逐消息累计，包括连续来源文件或需要贡献明细的任务；输入值来自当条目标报文。",
+      "not_applicable": "不用于实际时间积分或跨报文缓存取值。单一ASC/BLF独立文件、全部输入在目标帧内时，可对照FAST_MESSAGE_ENERGY限制选择高性能入口。",
+      "aliases": [
+        "逐消息累计",
+        "逐消息计算",
+        "逐报文累计",
+        "per-message accumulation",
+        "per-message calculations",
+        "message_calculations"
+      ],
+      "references": [
+        {
+          "path": "../Current/message-calculations.md",
+          "description": "完整字段、组合限制、示例与结果语义。"
+        },
+        {
+          "path": "../Schema/analysis.schema.json#/properties/message_calculations",
+          "description": "完整规范子树，包括条件约束。"
+        }
+      ]
+    },
+    {
+      "id": "FAST_MESSAGE_ENERGY",
+      "intent": "对一个 ASC/BLF 按当条报文的真实解码值和固定贡献时间累计能量",
+      "example": "../Current/examples/fast/analysis.yaml",
+      "requires": "确认测量单位、每条贡献的周期、frame_id、DBC、通道及需要的方向桶。",
+      "check": "打开本轮manifest_path指向的清单，再找到其中CSV；同刻两条各400J，合计800J。没有目标帧为null；有有效目标但方向桶未选中为0，须同时读status/reason。",
+      "fields": [
+        "sources",
+        "signals",
+        "message_calculations",
+        "outputs"
+      ],
+      "templates": [],
+      "api": [
+        "fast.run"
+      ],
+      "verify": "python -m chronaxis fast validate ../Current/examples/fast/analysis.yaml",
+      "applicable": "每文件独立、单一ASC/BLF来源，公式输入全部来自当条匹配报文，数值单位可验证。",
+      "not_applicable": "连续分卷状态、实际时间积分、跨ID保持值、持续条件、原始CSV、multiplex/container报文或逐帧贡献明细，不能套用fast。",
+      "aliases": [
+        "高性能积分器",
+        "同帧逐报文累计",
+        "high-performance integrator",
+        "fast"
+      ]
+    },
+    {
+      "id": "FAST_TEMPLATE_TOTAL",
+      "intent": "对同一分析模板的独立文件求逐项总量",
+      "example": "../Current/examples/fast/batch.yaml",
+      "requires": "确认各文件是独立试验、模板一致，inputs 只选本次要统计的文件。",
+      "check": "读report_path，两个成员800和400 J，总计1200 J complete。总计须显式--total；逐项检查所有成员，该项缺值不能当0补齐。",
+      "fields": [
+        "template",
+        "inputs",
+        "process_count"
+      ],
+      "templates": [],
+      "api": [
+        "fast.batch.run_batch"
+      ],
+      "verify": "python -m chronaxis fast batch ../Current/examples/fast/batch.yaml --output result-fast-batch --total",
+      "aliases": [
+        "高性能积分器",
+        "同帧逐报文累计",
+        "high-performance integrator",
+        "fast"
+      ]
     }
   ]
 }

@@ -390,7 +390,7 @@ class RefMetadataBudgetTests(unittest.TestCase):
         for backend in ('reference', 'numpy'):
             for batch in (1, 2, 7):
                 # 全配置只使用公开模型；无CAN/DBC或额外数据扫描。
-                config = dict(config_version=3,
+                config = dict(config_version=4,
                     dataset=dict(name='d', entity='entity', session='session', domain=dict(start='0s', end='4s')),
                     sources=[dict(name='table', source_type='signal_csv', path=str(path), time_column='ns',
                         time=dict(time_type='relative', unit='ns', origin='explicit'))],

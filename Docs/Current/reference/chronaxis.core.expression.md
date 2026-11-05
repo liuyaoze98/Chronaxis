@@ -1,4 +1,4 @@
-# chronaxis.core.expression
+# `chronaxis.core.expression`
 
 检查表达式中每个名称、运算、函数、类型和单位。例如voltage * current可以算功率，而battery.current这种属性访问不允许。检查成功后生成执行器可用的表达式对象；不会打开数据文件或运行任意Python代码。全部语法见表达式完整说明。
 
@@ -6,7 +6,7 @@
 
 ## 相关类型
 
-[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)、[MessageDeclarations](chronaxis.core.message_binding.md#api-MessageDeclarations)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)、[SignalDType](chronaxis.core.types.md#api-SignalDType)
+[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry)、[MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)、[MessageDeclarations](chronaxis.core.message_binding.md#api-MessageDeclarations)、[PreparedLookup](chronaxis.core.lookup.md#api-PreparedLookup)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)、[SignalDType](chronaxis.core.types.md#api-SignalDType)
 
 ## 对象导航
 
@@ -17,33 +17,38 @@
 |[`ExprNode`](#api-ExprNode)|保存表达式编译器已检查的一个内部节点。|
 |[`CompiledExpression`](#api-CompiledExpression)|保存可供求值器使用的表达式树及其真实输入绑定。|
 |[`StaticExpression`](#api-StaticExpression)|表达式通过配置检查后得到的对象。它保存语法、类型、单位和依赖名称，但尚未核实实际数据，不能直接交给数值求值器。运行时需要根据实际输入生成CompiledExpression。|
+|[`contains_host_call`](#api-contains_host_call)|判定子树是否含宿主运行回调，以隔离静态常量参数检查。|
 |[`_node`](#api-_node)|从已验证子节点汇总局部依赖及单位状态。|
-|[`_Compiler`](#api-_Compiler)|在一次编译中检查名称、语法、单位与派生依赖。|
-|[`_Compiler.__init__`](#api-_Compiler-__init__)|建立当前声明表并校验完整派生输入。|
-|[`_Compiler._error`](#api-_Compiler-_error)|给出语法位置、拒绝原因与可用别名。|
-|[`_Compiler.parse`](#api-_Compiler-parse)|解析一个表达式并验证根结果单位/枚举域。|
-|[`_Compiler._name`](#api-_Compiler-_name)|解析真实别名、消息参数或本计划派生，并拒绝环/未知名称。|
-|[`_Compiler._context`](#api-_Compiler-_context)|把纯数字/enum常量按另一侧明确类型及单位校验。|
-|[`_Compiler._units`](#api-_Compiler-_units)|按首版表推断单位，裸常量加减/比较采用对方单位。|
-|[`_Compiler._binary`](#api-_Compiler-_binary)|静态编译数值/比较，整数常量比较保留精确边界。|
-|[`_Compiler.visit`](#api-_Compiler-visit)|逐AST节点执行首版白名单，不递归放行未知语法。|
+|[`_SyntaxCompiler`](#api-_SyntaxCompiler)|在一次编译中检查名称、语法、单位与派生依赖。|
+|[`_SyntaxCompiler.__init__`](#api-_SyntaxCompiler-__init__)|建立当前声明表并校验完整派生输入。|
+|[`_SyntaxCompiler._error`](#api-_SyntaxCompiler-_error)|给出语法位置、拒绝原因与可用别名。|
+|[`_SyntaxCompiler.parse`](#api-_SyntaxCompiler-parse)|解析一个表达式并验证根结果单位/枚举域。|
+|[`_SyntaxCompiler._final_unit`](#api-_SyntaxCompiler-_final_unit)|执行当前版本的根结果单位要求。|
+|[`_SyntaxCompiler._name`](#api-_SyntaxCompiler-_name)|解析真实别名、消息参数或本计划派生，并拒绝环/未知名称。|
+|[`_SyntaxCompiler._context`](#api-_SyntaxCompiler-_context)|把纯数字/enum常量按另一侧明确类型及单位校验。|
+|[`_SyntaxCompiler._units`](#api-_SyntaxCompiler-_units)|按首版表推断单位，裸常量加减/比较采用对方单位。|
+|[`_SyntaxCompiler._binary`](#api-_SyntaxCompiler-_binary)|静态编译数值/比较，整数常量比较保留精确边界。|
+|[`_SyntaxCompiler.visit`](#api-_SyntaxCompiler-visit)|逐AST节点执行首版白名单，不递归放行未知语法。|
 |[`compile_expression`](#api-compile_expression)|检查表达式及全部派生声明，关联当前真实输入绑定。|
 |[`validate_expression`](#api-validate_expression)|只根据来源声明检查表达式，不读取真实输入。|
+|[`_create_compiler`](#api-_create_compiler)|构造当前编译器，拒绝用参数重解释绑定版本。|
+|[`expression_identity`](#api-expression_identity)|共用公开与按需重编译的身份公式，防止版本接线遗漏。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from hashlib import sha256
 from math import isfinite
 from types import MappingProxyType
 from .binding import SignalBindings, _identity
+from .lookup import PreparedLookup
 from .declarations import DeclarationBindings
 from .decoded_binding import DecodedBindings
 from .message_binding import MessageBindings, MessageDeclarations
 from .numeric import INTEGER_BOUNDS, result_dtype
 from .types import SignalDType
-from .units import UNIT_TABLE
+from .unit_registry import resolve_unit
 from .validation import require_identifier, require_text
 ```
 
@@ -71,7 +76,7 @@ class DerivedDefinition
 |`expr`|str|是|无|白名单DSL文本，不是任意Python。|
 |`unit`|str &#124; None|否|None|缺省使用表达式已支持的单位关系。|
 
-源码：[`src/chronaxis/core/expression.py:56`](../../../src/chronaxis/core/expression.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:57`](../../../src/chronaxis/core/expression.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DerivedDefinition-__post_init__"></a>
 ### `DerivedDefinition.__post_init__`
@@ -99,7 +104,7 @@ TypeError/ValueError为标识符/空文本问题。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/expression.py:69`](../../../src/chronaxis/core/expression.py#L69)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:70`](../../../src/chronaxis/core/expression.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExprNode"></a>
 ## `ExprNode`
@@ -125,14 +130,18 @@ class ExprNode
 |`unit`|str|是|无|结果单位标签。|
 |`unit_status`|str|是|无|`"verified"`表示单位及换算关系已通过程序的单位表检查；`"unverified"`表示使用未登记的单位文字，程序未验证其物理换算关系。|
 |`args`|tuple|否|()|参与本操作的子节点元组。const和name没有子节点；abs、neg、not、to_float及int_literal_*有一个；算术和普通比较有两个；and/or可有多个；isclose按a、b、atol、rtol顺序有四个。|
-|`value`|int &#124; float &#124; bool &#124; str &#124; None|否|None|纯常量或精确比较边界。 None用于非恒定值节点；实际常量保存在此字段。|
+|`value`|int &#124; float &#124; bool &#124; str &#124; tuple[int &#124; float, int &#124; float] &#124; [PreparedLookup](chronaxis.core.lookup.md#api-PreparedLookup) &#124; None|否|None|纯常量或精确比较边界。 None用于非恒定值节点；实际常量保存在此字段。|
 |`name`|str &#124; None|否|None|name仅简单已绑定别名。 None用于不是信号引用的节点；信号节点保存简单别名。|
 |`labels`|tuple[str, ...]|否|()|enum逻辑域。|
 |`aliases`|tuple[str, ...]|否|()|本节点实际依赖的原信号别名元组；派生信号会展开到它依赖的原信号。没有信号依赖时为空元组。|
 |`constant`|bool|否|False|纯常量静态上下文标志。|
 |`allow_float_literal`|bool|否|False|编译器已检查是否可以让浮点字面量参与当前运算。True表示可以，False表示不能走这条转换路径；普通用户不通过修改此字段放宽类型检查。|
+|`conversion_promoted`|bool|否|False|编译时类型提升依据，不影响最终数值节点等价。|
+|`unit_explicit`|bool|否|False|编译时目标尺度；运行身份由实际转换节点确定。|
+|`typed_constant`|bool|否|False|带单位纯常量只适配dtype，不继承别的单位。|
+|`host_function`|FunctionSpec &#124; None|否|None|宿主逐点调用编译出的函数契约，保存输出规范、回调及实现身份。普通表达式节点省略。|
 
-源码：[`src/chronaxis/core/expression.py:86`](../../../src/chronaxis/core/expression.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:87`](../../../src/chronaxis/core/expression.py#L87)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CompiledExpression"></a>
 ## `CompiledExpression`
@@ -159,7 +168,7 @@ class CompiledExpression
 |`normalized_ast`|str|是|无|不含位置的AST规范结构。|
 |`identity`|str|是|无|完整执行身份SHA。|
 
-源码：[`src/chronaxis/core/expression.py:110`](../../../src/chronaxis/core/expression.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:115`](../../../src/chronaxis/core/expression.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-StaticExpression"></a>
 ## `StaticExpression`
@@ -181,7 +190,32 @@ class StaticExpression
 |`normalized_ast`|str|是|无|规范语法，仅供静态身份。|
 |`identity`|str|是|无|独立静态版本前缀的SHA。|
 
-源码：[`src/chronaxis/core/expression.py:128`](../../../src/chronaxis/core/expression.py#L128)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:133`](../../../src/chronaxis/core/expression.py#L133)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-contains_host_call"></a>
+## `contains_host_call`
+
+判定子树是否含宿主运行回调，以隔离静态常量参数检查。
+
+```python
+contains_host_call(root)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`root`|[ExprNode](chronaxis.core.expression.md#api-ExprNode)|是|无|位置或关键字。静态常量参数的候选子树；若含宿主调用，不在编译阶段运行该回调。|
+
+### 返回说明
+
+bool。
+
+### 异常说明
+
+内部不合法树传播属性错误。
+
+源码：[`src/chronaxis/core/expression.py:148`](../../../src/chronaxis/core/expression.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_node"></a>
 ## `_node`
@@ -212,10 +246,10 @@ _node(operator, dtype, unit, args=(), **kwargs) -> ExprNode
 
 返回类型：[ExprNode](chronaxis.core.expression.md#api-ExprNode)。
 
-源码：[`src/chronaxis/core/expression.py:143`](../../../src/chronaxis/core/expression.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:164`](../../../src/chronaxis/core/expression.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler"></a>
-## `_Compiler`
+<a id="api-_SyntaxCompiler"></a>
+## `_SyntaxCompiler`
 
 在一次编译中检查名称、语法、单位与派生依赖。
 
@@ -226,19 +260,19 @@ signals和derived来自当前绑定，不读取数据来源。消息域另有显
 状态不跨编译调用共享，不缓存信号值，也不扩大受限表达式语法。
 
 ```python
-_Compiler(bindings, derived)
+_SyntaxCompiler(bindings, derived)
 ```
 
 
-源码：[`src/chronaxis/core/expression.py:158`](../../../src/chronaxis/core/expression.py#L158)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:182`](../../../src/chronaxis/core/expression.py#L182)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-__init__"></a>
-### `_Compiler.__init__`
+<a id="api-_SyntaxCompiler-__init__"></a>
+### `_SyntaxCompiler.__init__`
 
 建立当前声明表并校验完整派生输入。
 
 ```python
-_Compiler.__init__(bindings, derived)
+_SyntaxCompiler.__init__(bindings, derived)
 ```
 
 #### 参数
@@ -261,15 +295,15 @@ TypeError/ValueError为类型/缺项/重复/名称空间不一致。
 - `TypeError`：解析需要带有明确类型的真实/声明绑定及tuple DerivedDefinition。
 - `ValueError`：derived声明与bindings名称不一致或重复。
 
-源码：[`src/chronaxis/core/expression.py:168`](../../../src/chronaxis/core/expression.py#L168)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:192`](../../../src/chronaxis/core/expression.py#L192)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-_error"></a>
-### `_Compiler._error`
+<a id="api-_SyntaxCompiler-_error"></a>
+### `_SyntaxCompiler._error`
 
 给出语法位置、拒绝原因与可用别名。
 
 ```python
-_Compiler._error(node, message)
+_SyntaxCompiler._error(node, message)
 ```
 
 #### 参数
@@ -287,15 +321,15 @@ _Compiler._error(node, message)
 
 ValueError定位行/列，不自动点号改名。
 
-源码：[`src/chronaxis/core/expression.py:198`](../../../src/chronaxis/core/expression.py#L198)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:224`](../../../src/chronaxis/core/expression.py#L224)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-parse"></a>
-### `_Compiler.parse`
+<a id="api-_SyntaxCompiler-parse"></a>
+### `_SyntaxCompiler.parse`
 
 解析一个表达式并验证根结果单位/枚举域。
 
 ```python
-_Compiler.parse(text, unit=None)
+_SyntaxCompiler.parse(text, unit=None)
 ```
 
 #### 参数
@@ -313,15 +347,42 @@ _Compiler.parse(text, unit=None)
 
 ValueError为语法/白名单/类型/单位/环；不吞I/O异常。
 
-源码：[`src/chronaxis/core/expression.py:208`](../../../src/chronaxis/core/expression.py#L208)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:234`](../../../src/chronaxis/core/expression.py#L234)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-_name"></a>
-### `_Compiler._name`
+<a id="api-_SyntaxCompiler-_final_unit"></a>
+### `_SyntaxCompiler._final_unit`
+
+执行当前版本的根结果单位要求。
+
+```python
+_SyntaxCompiler._final_unit(root, unit, node)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`root`|[ExprNode](chronaxis.core.expression.md#api-ExprNode)|是|无|位置或关键字。当前已编译表达式子树的根，包含静态类型、操作和依赖。|
+|`unit`|str &#124; None|是|无|位置或关键字。用户明确要求的输出单位标签，省略时沿用此版本的默认表达式单位规则。|
+|`node`|ast.AST|是|无|位置或关键字。原配置的表达式语法位置，用于报告当前步骤发现的编译错误。|
+
+#### 返回说明
+
+已核对未知单位标签的原节点。
+
+#### 异常说明
+
+ValueError为结果与声明单位不一致。
+
+源码：[`src/chronaxis/core/expression.py:269`](../../../src/chronaxis/core/expression.py#L269)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-_SyntaxCompiler-_name"></a>
+### `_SyntaxCompiler._name`
 
 解析真实别名、消息参数或本计划派生，并拒绝环/未知名称。
 
 ```python
-_Compiler._name(node)
+_SyntaxCompiler._name(node)
 ```
 
 #### 参数
@@ -338,15 +399,15 @@ _Compiler._name(node)
 
 ValueError为未知别名/环/派生表达式错误。
 
-源码：[`src/chronaxis/core/expression.py:245`](../../../src/chronaxis/core/expression.py#L245)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:281`](../../../src/chronaxis/core/expression.py#L281)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-_context"></a>
-### `_Compiler._context`
+<a id="api-_SyntaxCompiler-_context"></a>
+### `_SyntaxCompiler._context`
 
 把纯数字/enum常量按另一侧明确类型及单位校验。
 
 ```python
-_Compiler._context(literal, other, node, *, arithmetic)
+_SyntaxCompiler._context(literal, other, node, *, arithmetic)
 ```
 
 #### 参数
@@ -366,15 +427,15 @@ _Compiler._context(literal, other, node, *, arithmetic)
 
 ValueError为字面量类型/定宽/枚举域冲突。
 
-源码：[`src/chronaxis/core/expression.py:290`](../../../src/chronaxis/core/expression.py#L290)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:326`](../../../src/chronaxis/core/expression.py#L326)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-_units"></a>
-### `_Compiler._units`
+<a id="api-_SyntaxCompiler-_units"></a>
+### `_SyntaxCompiler._units`
 
 按首版表推断单位，裸常量加减/比较采用对方单位。
 
 ```python
-_Compiler._units(operator, left, right, node, declared_unit=None)
+_SyntaxCompiler._units(operator, left, right, node, declared_unit=None)
 ```
 
 #### 参数
@@ -395,15 +456,15 @@ _Compiler._units(operator, left, right, node, declared_unit=None)
 
 ValueError为未转换单位或未支持组合。
 
-源码：[`src/chronaxis/core/expression.py:339`](../../../src/chronaxis/core/expression.py#L339)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:375`](../../../src/chronaxis/core/expression.py#L375)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-_binary"></a>
-### `_Compiler._binary`
+<a id="api-_SyntaxCompiler-_binary"></a>
+### `_SyntaxCompiler._binary`
 
 静态编译数值/比较，整数常量比较保留精确边界。
 
 ```python
-_Compiler._binary(operator, left, right, node, declared_unit=None)
+_SyntaxCompiler._binary(operator, left, right, node, declared_unit=None)
 ```
 
 #### 参数
@@ -424,15 +485,15 @@ _Compiler._binary(operator, left, right, node, declared_unit=None)
 
 ValueError为单位/类型/常量配置错误。
 
-源码：[`src/chronaxis/core/expression.py:383`](../../../src/chronaxis/core/expression.py#L383)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:413`](../../../src/chronaxis/core/expression.py#L413)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
-<a id="api-_Compiler-visit"></a>
-### `_Compiler.visit`
+<a id="api-_SyntaxCompiler-visit"></a>
+### `_SyntaxCompiler.visit`
 
 逐AST节点执行首版白名单，不递归放行未知语法。
 
 ```python
-_Compiler.visit(node, declared_unit=None)
+_SyntaxCompiler.visit(node, declared_unit=None)
 ```
 
 #### 参数
@@ -450,7 +511,7 @@ _Compiler.visit(node, declared_unit=None)
 
 ValueError定位未注册语法/函数/类型/单位。
 
-源码：[`src/chronaxis/core/expression.py:440`](../../../src/chronaxis/core/expression.py#L440)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:475`](../../../src/chronaxis/core/expression.py#L475)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-compile_expression"></a>
 ## `compile_expression`
@@ -458,7 +519,7 @@ ValueError定位未注册语法/函数/类型/单位。
 检查表达式及全部派生声明，关联当前真实输入绑定。
 
 ```python
-compile_expression(text: str, bindings: SignalBindings | DecodedBindings | MessageBindings, *, derived: tuple[DerivedDefinition, ...]=(), unit: str | None=None) -> CompiledExpression
+compile_expression(text: str, bindings: SignalBindings | DecodedBindings | MessageBindings, *, derived: tuple[DerivedDefinition, ...]=(), unit: str | None=None, config_version: int | None=None, extensions=None) -> CompiledExpression
 ```
 
 ### 参数
@@ -466,9 +527,11 @@ compile_expression(text: str, bindings: SignalBindings | DecodedBindings | Messa
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`text`|str|是|无|位置或关键字。非空文本；bindings为真实SignalBindings、DecodedBindings或MessageBindings。|
-|`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings) &#124; [DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings) &#124; [MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)|是|无|位置或关键字。bindings为真实SignalBindings、DecodedBindings或MessageBindings。     derived: 完整且不可变的DerivedDefinition元组，需与已登记名称一致。     unit: 可选的显式结果单位|
+|`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings) &#124; [DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings) &#124; [MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)|是|无|位置或关键字。bindings为真实SignalBindings、DecodedBindings或MessageBindings。     derived: 完整且不可变的DerivedDefinition元组，需与已登记名称一致。     unit: 可选结果单位|
 |`derived`|tuple[[DerivedDefinition](chronaxis.core.expression.md#api-DerivedDefinition), ...]|否|()|仅关键字。完整且不可变的DerivedDefinition元组，需与已登记名称一致。|
-|`unit`|str &#124; None|否|None|仅关键字。可选的显式结果单位；不执行自动单位换算。|
+|`unit`|str &#124; None|否|None|仅关键字。可选结果单位；兼容登记单位同时转换数值。config_version省略时继承绑定。|
+|`config_version`|int &#124; None|否|None|仅关键字。兼容登记单位同时转换数值。config_version省略时继承绑定。     extensions: 可选的宿主ExtensionRegistry，省略时使用绑定已经关联的注册。|
+|`extensions`|None|否|None|仅关键字。此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。|
 
 ### 返回说明
 
@@ -490,7 +553,7 @@ TypeError、ValueError: 输入结构、语法、名称、类型、单位、循�
 
 返回类型：[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)。
 
-源码：[`src/chronaxis/core/expression.py:571`](../../../src/chronaxis/core/expression.py#L571)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:606`](../../../src/chronaxis/core/expression.py#L606)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-validate_expression"></a>
 ## `validate_expression`
@@ -498,7 +561,7 @@ TypeError、ValueError: 输入结构、语法、名称、类型、单位、循�
 只根据来源声明检查表达式，不读取真实输入。
 
 ```python
-validate_expression(text: str, bindings: DeclarationBindings | MessageDeclarations, *, derived: tuple[DerivedDefinition, ...]=(), unit: str | None=None) -> StaticExpression
+validate_expression(text: str, bindings: DeclarationBindings | MessageDeclarations, *, derived: tuple[DerivedDefinition, ...]=(), unit: str | None=None, config_version: int | None=None, extensions=None) -> StaticExpression
 ```
 
 ### 参数
@@ -508,7 +571,9 @@ validate_expression(text: str, bindings: DeclarationBindings | MessageDeclaratio
 |`text`|str|是|无|位置或关键字。非空表达式文本；bindings为DeclarationBindings或MessageDeclarations。|
 |`bindings`|[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings) &#124; [MessageDeclarations](chronaxis.core.message_binding.md#api-MessageDeclarations)|是|无|位置或关键字。bindings为DeclarationBindings或MessageDeclarations。     derived: 完整DerivedDefinition元组|
 |`derived`|tuple[[DerivedDefinition](chronaxis.core.expression.md#api-DerivedDefinition), ...]|否|()|仅关键字。完整DerivedDefinition元组；unit为可选显式结果单位。|
-|`unit`|str &#124; None|否|None|仅关键字。unit为可选显式结果单位。|
+|`unit`|str &#124; None|否|None|仅关键字。unit为可选显式结果单位。     config_version: 省略时继承绑定|
+|`config_version`|int &#124; None|否|None|仅关键字。省略时继承绑定；extensions为可选宿主注册，不运行回调。|
+|`extensions`|None|否|None|仅关键字。此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。|
 
 ### 返回说明
 
@@ -529,4 +594,62 @@ TypeError、ValueError: 声明结构、语法、名称、单位、循环依赖�
 
 返回类型：[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)。
 
-源码：[`src/chronaxis/core/expression.py:609`](../../../src/chronaxis/core/expression.py#L609)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/expression.py:643`](../../../src/chronaxis/core/expression.py#L643)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-_create_compiler"></a>
+## `_create_compiler`
+
+构造当前编译器，拒绝用参数重解释绑定版本。
+
+```python
+_create_compiler(bindings, derived, *, config_version=None, extensions=None)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings) &#124; [DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings) &#124; [MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings) &#124; [DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings) &#124; [MessageDeclarations](chronaxis.core.message_binding.md#api-MessageDeclarations)|是|无|位置或关键字。本次编译所用绑定容器，提供名称、输入类型与单位。运行绑定和纯声明保持各自身份。|
+|`derived`|tuple[[DerivedDefinition](chronaxis.core.expression.md#api-DerivedDefinition), ...]|是|无|位置或关键字。参与本次编译的派生定义，包含名称、表达式和可选输出单位。|
+|`config_version`|int &#124; None|否|None|仅关键字。显式版本必须与绑定一致；省略时使用绑定记录的版本。|
+|`extensions`|None|否|None|仅关键字。此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。|
+
+### 返回说明
+
+当前任务独享的编译器实例。
+
+### 异常说明
+
+TypeError/ValueError为版本类型、冲突或尚未支持的扩展对象。
+
+源码：[`src/chronaxis/core/expression.py:678`](../../../src/chronaxis/core/expression.py#L678)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-expression_identity"></a>
+## `expression_identity`
+
+共用公开与按需重编译的身份公式，防止版本接线遗漏。
+
+```python
+expression_identity(bindings, root, normalized, derived, *, static=False, extensions=None)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings) &#124; [DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings) &#124; [MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings) &#124; [DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings) &#124; [MessageDeclarations](chronaxis.core.message_binding.md#api-MessageDeclarations)|是|无|位置或关键字。本次编译所用绑定容器，提供名称、输入类型与单位。运行绑定和纯声明保持各自身份。|
+|`root`|[ExprNode](chronaxis.core.expression.md#api-ExprNode)|是|无|位置或关键字。当前已编译表达式子树的根，包含静态类型、操作和依赖。|
+|`normalized`|str|是|无|位置或关键字。解析后的规范 AST 文本，用于生成可复现的表达式身份。|
+|`derived`|tuple[[DerivedDefinition](chronaxis.core.expression.md#api-DerivedDefinition), ...]|是|无|位置或关键字。参与本次编译的派生定义，包含名称、表达式和可选输出单位。|
+|`static`|bool|否|False|仅关键字。static区分静态域。|
+|`extensions`|[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry) &#124; None|否|None|仅关键字。可执行或静态表达式所用的宿主注册；注册的名称、版本、端口和后端能力摘要参与身份计算。|
+
+### 返回说明
+
+SHA256文本，包含当前单位和函数规则版本。
+
+### 异常说明
+
+内部类型错误直接传播，不读取文件。
+
+源码：[`src/chronaxis/core/expression.py:704`](../../../src/chronaxis/core/expression.py#L704)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

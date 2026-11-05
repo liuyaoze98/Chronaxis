@@ -47,44 +47,44 @@ The complete [teaching-base.yaml](../examples/teaching-base.yaml) references syn
 There is one CAN source, so individual signal definitions need no repeated `source`. IDs and signal names come from the included DBC; types and units are inferred. The explicit 20 s validity keeps sparse teaching records valid between updates and is not a recommended setting for a real device.
 
 ```yaml
-signals:                     # Signals used by the rule examples.
-  - name: temperature        # Name referenced in expressions.
-    field:                   # Original CAN signal.
-      frame_id: '0x11d'      # Message ID from the DBC.
-      signal: Temperature    # Case-sensitive DBC signal name.
-    valid_for: 20s           # Validity for these sparse teaching records.
-  - name: power              # Power alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x100'      # Message ID from the DBC.
-      signal: Power          # DBC signal name.
-    valid_for: 20s           # Validity for this example.
-  - name: voltage            # Voltage alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x11f'      # Message ID from the DBC.
-      signal: Voltage        # DBC signal name.
-    valid_for: 20s           # Validity for this example.
-  - name: button_pressed     # Boolean button state.
-    field:                   # Original CAN signal.
-      frame_id: '0x113'      # Message ID from the DBC.
-      signal: ButtonPressed  # DBC signal name.
-    valid_for: 20s           # Validity for this example.
-    choices:                 # Input code to analysis value.
+signals:                       # Signals used by the rule examples.
+  - name: temperature          # Name referenced in expressions.
+    field:                     # Original CAN signal.
+      frame_id: '0x11d'        # Message ID from the DBC.
+      signal: Temperature      # Case-sensitive DBC signal name.
+    valid_for: 20s             # Validity for these sparse teaching records.
+  - name: power                # Power alias.
+    field:                     # Original CAN signal.
+      frame_id: '0x100'        # Message ID from the DBC.
+      signal: Power            # DBC signal name.
+    valid_for: 20s             # Validity for this example.
+  - name: voltage              # Voltage alias.
+    field:                     # Original CAN signal.
+      frame_id: '0x11f'        # Message ID from the DBC.
+      signal: Voltage          # DBC signal name.
+    valid_for: 20s             # Validity for this example.
+  - name: button_pressed       # Boolean button state.
+    field:                     # Original CAN signal.
+      frame_id: '0x113'        # Message ID from the DBC.
+      signal: ButtonPressed    # DBC signal name.
+    valid_for: 20s             # Validity for this example.
+    choices:                   # Input code to analysis value.
       - [0, false]
       - [1, true]
-  - name: start_signal       # Boolean start state.
-    field:                   # Original CAN signal.
-      frame_id: '0x11c'      # Message ID from the DBC.
-      signal: StartSignal    # DBC signal name.
-    valid_for: 20s           # Validity for this example.
-    choices:                 # Input code to analysis value.
+  - name: start_signal         # Boolean start state.
+    field:                     # Original CAN signal.
+      frame_id: '0x11c'        # Message ID from the DBC.
+      signal: StartSignal      # DBC signal name.
+    valid_for: 20s             # Validity for this example.
+    choices:                   # Input code to analysis value.
       - [0, false]
       - [1, true]
-  - name: end_signal         # Boolean end state.
-    field:                   # Original CAN signal.
-      frame_id: '0x117'      # Message ID from the DBC.
-      signal: EndSignal      # DBC signal name.
-    valid_for: 20s           # Validity for this example.
-    choices:                 # Input code to analysis value.
+  - name: end_signal           # Boolean end state.
+    field:                     # Original CAN signal.
+      frame_id: '0x117'        # Message ID from the DBC.
+      signal: EndSignal        # DBC signal name.
+    valid_for: 20s             # Validity for this example.
+    choices:                   # Input code to analysis value.
       - [0, false]
       - [1, true]
 ```
@@ -116,11 +116,11 @@ Durations are strings using `ns`, `us`, `ms`, or `s`, such as `500ms` or `2s`. A
 To record temperature remaining at least 80 for 2 s, add or replace the root `rules` section in [teaching-base.yaml](../examples/teaching-base.yaml):
 
 ```yaml
-rules:                             # Event detection rules.
-  - name: hot                      # Name used by windows and calculations.
-    condition: temperature >= 80   # Condition that must remain true.
-    minimum_duration: 2s           # Required continuous duration.
-    rule_type: condition_duration  # Sustained-condition detector.
+rules:                               # Event detection rules.
+  - name: hot                        # Name used by windows and calculations.
+    condition: temperature >= 80     # Condition that must remain true.
+    minimum_duration: 2s             # Required continuous duration.
+    rule_type: condition_duration    # Sustained-condition detector.
 ```
 
 | Field | Type | Required / default | Meaning and allowed values |
@@ -132,6 +132,13 @@ rules:                             # Event detection rules.
 
 <a id="selection_origin事件计算的起点"></a>
 <a id="selection_origin-事件计算的起点"></a>
+### Strictly longer than a duration
+
+`minimum_duration: 60s` with `duration_comparison: ">"` requires strictly more than 60 continuous seconds. The default `selection_origin: onset` still integrates the entire qualifying activity; only explicit `confirmed` starts at confirmation.
+
+With 1 ns time precision, actual mode confirms at the first representable instant after 60 s. Fixed/DBC mode advances only on selected messages: exactly 60 s does not qualify, and confirmation waits for the record that takes accumulation beyond 60 s. Continuous file boundaries do not reset the candidate, but invalid updates and expired validity still interrupt continuity.
+
+
 ### `selection_origin`: where an event calculation starts
 
 Suppose temperature reaches 80 at 1 s, remains at or above 80 through 3 s, and falls below 80 at 6 s. The activity meets its 2 s requirement at 3 s, its **confirmation time**.
@@ -146,18 +153,18 @@ Write `selection_origin: confirmed` to change the calculation start. It does not
 Replace the root `rules` and `calculations` sections of the teaching base with:
 
 ```yaml
-rules:                             # Detection rules.
-  - name: hot                      # Rule selected by the calculation below.
-    condition: temperature >= 80   # Required condition.
-    selection_origin: confirmed    # Exclude the confirmation wait from calculations.
-    minimum_duration: 2s           # Require two continuous seconds.
-    rule_type: condition_duration  # Sustained-condition detector.
-calculations:                      # Requested results.
-  - name: hot_energy               # Calculation name.
-    expr: power                    # Previously defined power signal in W.
-    operation: integral            # Accumulate energy in J.
-    scope:                         # Calculate once for each activity.
-      rule: hot                    # Select activities from this rule.
+rules:                               # Detection rules.
+  - name: hot                        # Rule selected by the calculation below.
+    condition: temperature >= 80     # Required condition.
+    selection_origin: confirmed      # Exclude the confirmation wait from calculations.
+    minimum_duration: 2s             # Require two continuous seconds.
+    rule_type: condition_duration    # Sustained-condition detector.
+calculations:                        # Requested results.
+  - name: hot_energy                 # Calculation name.
+    expr: power                      # Previously defined power signal in W.
+    operation: integral              # Accumulate energy in J.
+    scope:                           # Calculate once for each activity.
+      rule: hot                      # Select activities from this rule.
 ```
 
 For the timeline above, this returns 30 J; changing `confirmed` to `onset` returns 50 J. Both use the same 2 s qualification requirement.
@@ -175,10 +182,10 @@ A confirmed activity closes normally when the condition becomes false. Missing o
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                         # Detection rules.
-  - name: pressed              # Point-event rule name.
-    condition: button_pressed  # Previously defined boolean signal.
-    rule_type: rising_edge     # Detect false-to-true transitions.
+rules:                           # Detection rules.
+  - name: pressed                # Point-event rule name.
+    condition: button_pressed    # Previously defined boolean signal.
+    rule_type: rising_edge       # Detect false-to-true transitions.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -195,10 +202,10 @@ For false at 0 s, true at 1 and 2 s, false at 3 s, and true at 4 s, the points a
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                         # Detection rules.
-  - name: released             # Point-event rule name.
-    condition: button_pressed  # Previously defined boolean signal.
-    rule_type: falling_edge    # Detect true-to-false transitions.
+rules:                           # Detection rules.
+  - name: released               # Point-event rule name.
+    condition: button_pressed    # Previously defined boolean signal.
+    rule_type: falling_edge      # Detect true-to-false transitions.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -215,11 +222,11 @@ The preceding 0–4 s button timeline emits only at 3 s. Unknown → false is no
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                         # Detection rules.
-  - name: capture              # Name referenced by the capture window.
-    condition: button_pressed  # Trigger on false-to-true transitions.
-    window_duration: 5s        # Suppress further triggers for this duration.
-    rule_type: start_only      # Start-point detector with suppression.
+rules:                           # Detection rules.
+  - name: capture                # Name referenced by the capture window.
+    condition: button_pressed    # Trigger on false-to-true transitions.
+    window_duration: 5s          # Suppress further triggers for this duration.
+    rule_type: start_only        # Start-point detector with suppression.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -233,9 +240,9 @@ False → true transitions at 1, 3, and 6 s produce points at 1 and 6 s. The sup
 The rule outputs points. To select the associated time ranges, retain that rule and add or replace the root `windows` section:
 
 ```yaml
-windows:                # Windows selected from rule events.
-  - name: capture_data  # Window name for calculations or exports.
-    rule: capture       # Previously defined start_only rule.
+windows:                  # Windows selected from rule events.
+  - name: capture_data    # Window name for calculations or exports.
+    rule: capture         # Previously defined start_only rule.
 ```
 
 Omitted `post` inherits `window_duration`; an explicit `post` must equal it. This yields [1,6) and [6,11). Set `pre` separately to include earlier data. See [window fields](windows.md#window-fields).
@@ -247,12 +254,12 @@ Omitted `post` inherits `window_duration`; an explicit `post` must equal it. Thi
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                         # Detection rules.
-  - name: stable_pressed       # Activity rule name.
-    condition: button_pressed  # True enters; false exits.
-    enter_delay: 2s            # Require stable true before entering.
-    exit_delay: 3s             # Require stable false before exiting.
-    rule_type: debounce        # Ignore shorter fluctuations.
+rules:                           # Detection rules.
+  - name: stable_pressed         # Activity rule name.
+    condition: button_pressed    # True enters; false exits.
+    enter_delay: 2s              # Require stable true before entering.
+    exit_delay: 3s               # Require stable false before exiting.
+    rule_type: debounce          # Ignore shorter fluctuations.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -281,11 +288,11 @@ Using 80 for both alarm entry and exit can repeatedly switch the alarm around th
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                                  # Detection rules.
-  - name: alarm                         # Activity rule name.
-    enter_condition: temperature >= 80  # Enter at the upper threshold.
-    exit_condition: temperature <= 75   # Clear at the lower threshold.
-    rule_type: hysteresis               # Retain known state between thresholds.
+rules:                                    # Detection rules.
+  - name: alarm                           # Activity rule name.
+    enter_condition: temperature >= 80    # Enter at the upper threshold.
+    exit_condition: temperature <= 75     # Clear at the lower threshold.
+    rule_type: hysteresis                 # Retain known state between thresholds.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -307,7 +314,7 @@ This produces [0,9), lasting 9 s. The square bracket includes 0 s; the parenthes
 
 If the first record is 77, the preceding state is unknown. Missing or expired data interrupts an active alarm; recovery at 77 does not prove it should resume. Both conditions true is an error, not a priority choice. If either condition cannot be evaluated, state becomes unknown.
 
-`debounce` is the corresponding stable-wait rule with entry `condition` and exit `not condition`. Neither debounce nor hysteresis accepts `duration` or `emit_initial`. Here `degC` is an explicit unit label; this release does not automatically convert it to K.
+`debounce` is the corresponding stable-wait rule with entry `condition` and exit `not condition`. Neither debounce nor hysteresis accepts `duration` or `emit_initial`. Here the temperature uses `degC`, so bare thresholds 80 and 75 mean degrees Celsius. Version 4 supports compatible unit conversion; see [expression units](expressions.md).
 
 <a id="rule-start-end"></a>
 <a id="开始结束活动检测-start_end"></a>
@@ -316,12 +323,12 @@ If the first record is 77, the preceding state is unknown. Missing or expired da
 Replace the teaching base's root `rules` with:
 
 ```yaml
-rules:                             # Detection rules.
-  - name: cycle                    # Activity rule name.
-    start_condition: start_signal  # Start on the selected condition.
-    end_condition: end_signal      # End when this condition is true.
-    timeout: 5s                    # Maximum duration from activity start.
-    rule_type: start_end           # Start/end detector.
+rules:                               # Detection rules.
+  - name: cycle                      # Activity rule name.
+    start_condition: start_signal    # Start on the selected condition.
+    end_condition: end_signal        # End when this condition is true.
+    timeout: 5s                      # Maximum duration from activity start.
+    rule_type: start_end             # Start/end detector.
 ```
 
 | Field | Type | Required / default | Meaning |
@@ -337,7 +344,7 @@ Start signals arriving during an activity are not queued. After it ends, a fresh
 
 Once active, missing start data does not directly terminate the activity. Missing end data interrupts it because its end can no longer be determined. A supplied timeout must be positive.
 
-The [runnable example](examples.md#start-end-case) produces normal [0,2), timed-out [4,9), and normal [11,14) activities, with respective signal means 10, 52, and 110. Legacy Sclicer's `start_end` has a different meaning; read [migration](migration.md) before conversion.
+The [runnable example](examples.md#start-end-case) produces normal [0,2), timed-out [4,9), and normal [11,14) activities, with respective signal means 10, 52, and 110. Legacy Sclicer's `start_end` has a different meaning; read [per-message calculations](message-calculations.md) before conversion.
 
 <a id="rule-window-delta"></a>
 <a id="滑动窗口变化量检测-window_delta"></a>
@@ -346,27 +353,27 @@ The [runnable example](examples.md#start-end-case) produces normal [0,2), timed-
 Replace the teaching base's root `rules` with this minimal rule:
 
 ```yaml
-rules:                       # Detection rules.
-  - name: change             # Point-event rule name.
-    signal: voltage          # Numeric signal or expression to compare.
-    window: 4s               # History length used for the change.
-    direction: rise          # Detect an increase.
-    threshold: 5             # Required change, in the signal's unit.
-    rule_type: window_delta  # Sliding-window change detector.
+rules:                         # Detection rules.
+  - name: change               # Point-event rule name.
+    signal: voltage            # Numeric signal or expression to compare.
+    window: 4s                 # History length used for the change.
+    direction: rise            # Detect an increase.
+    threshold: 5               # Required change, in the signal's unit.
+    rule_type: window_delta    # Sliding-window change detector.
 ```
 
 To require monotonic movement and permit an initially matching complete window, replace the same section with:
 
 ```yaml
-rules:                       # Detection rules.
-  - name: change             # Point-event rule name.
-    signal: voltage          # Numeric value to compare.
-    window: 4s               # History length.
-    direction: rise          # Detect an increase.
-    threshold: 5             # Required change in V.
-    monotonic: true          # Reject reversals within the window.
-    emit_initial: true       # Emit for the first complete matching window.
-    rule_type: window_delta  # Sliding-window change detector.
+rules:                         # Detection rules.
+  - name: change               # Point-event rule name.
+    signal: voltage            # Numeric value to compare.
+    window: 4s                 # History length.
+    direction: rise            # Detect an increase.
+    threshold: 5               # Required change in V.
+    monotonic: true            # Reject reversals within the window.
+    emit_initial: true         # Emit for the first complete matching window.
+    rule_type: window_delta    # Sliding-window change detector.
 ```
 
 | Field | Type | Required / default | Meaning and allowed values |
@@ -400,17 +407,17 @@ This rule outputs points showing when its change condition becomes satisfied. De
 Activity rules use an activity anchor; point rules use a point anchor. The appropriate default is inferred from the rule. To include 2 s before and after the earlier `alarm` activity, keep that hysteresis rule and add or replace these root sections in the teaching base:
 
 ```yaml
-windows:                           # Selected context around events.
-  - name: context                  # Window name.
-    rule: alarm                    # Previously defined hysteresis rule.
-    pre: 2s                        # Include two seconds before activity start.
-    post: 2s                       # Include two seconds after activity end.
-calculations:                      # Requested results.
-  - name: mean_temperature         # Calculation name.
-    expr: temperature              # Previously defined signal.
-    operation: time_weighted_mean  # Weight each valid value by duration.
-    scope:                         # Calculate for each selected window.
-      window: context              # Window definition above.
+windows:                             # Selected context around events.
+  - name: context                    # Window name.
+    rule: alarm                      # Previously defined hysteresis rule.
+    pre: 2s                          # Include two seconds before activity start.
+    post: 2s                         # Include two seconds after activity end.
+calculations:                        # Requested results.
+  - name: mean_temperature           # Calculation name.
+    expr: temperature                # Previously defined signal.
+    operation: time_weighted_mean    # Weight each valid value by duration.
+    scope:                           # Calculate for each selected window.
+      window: context                # Window definition above.
 ```
 
 This calculates the mean from 2 s before alarm entry to 2 s after exit. Use `scope: {rule: alarm}` for the alarm activity alone. Unobserved context remains missing; temperatures are not invented to fill it.
@@ -418,8 +425,3 @@ This calculates the mean from 2 s before alarm entry to 2 s after exit. Use `sco
 See [window configuration](windows.md#window-fields) for merging windows from multiple alarms and [sequences](sequences.md) for request/response pairing. Lower-level parameters are described in [stability](../reference/chronaxis.core.stability.md), [window_delta](../reference/chronaxis.core.window_delta.md), and [rule parsing](../reference/chronaxis.planning.nodes.md) (Chinese implementation references).
 
 <a id="严格超过指定时长"></a>
-### Strictly longer than a duration
-
-`minimum_duration: 60s` with `duration_comparison: ">"` requires strictly more than 60 continuous seconds. The default `selection_origin: onset` still integrates the entire qualifying activity; only explicit `confirmed` starts at confirmation.
-
-With 1 ns time precision, actual mode confirms at the first representable instant after 60 s. Fixed/DBC mode advances only on selected messages: exactly 60 s does not qualify, and confirmation waits for the record that takes accumulation beyond 60 s. Continuous file boundaries do not reset the candidate, but invalid updates and expired validity still interrupt continuity.

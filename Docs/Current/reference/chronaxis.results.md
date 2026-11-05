@@ -1,4 +1,4 @@
-# chronaxis.results
+# `chronaxis.results`
 
 提供带有明确类型的结果行、共享预算、有限暂存、流式读取与发布协议。
 
@@ -10,7 +10,7 @@
 
 ## 相关类型
 
-[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[AnalysisResult](chronaxis.results.result.md#api-AnalysisResult)、[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[ContributionsUnavailableError](chronaxis.results.errors.md#api-ContributionsUnavailableError)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ResultSpool](chronaxis.results.spool.md#api-ResultSpool)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)
+[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[AnalysisResult](chronaxis.results.result.md#api-AnalysisResult)、[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[ContributionsUnavailableError](chronaxis.results.errors.md#api-ContributionsUnavailableError)、[ExportManifest](chronaxis.results.manifest.md#api-ExportManifest)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ResultSpool](chronaxis.results.spool.md#api-ResultSpool)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)
 
 ## 对象导航
 
@@ -20,7 +20,7 @@
 
 ## 导出名称
 
-`AnalysisError`, `BudgetExceededError`, `ResultClosedError`, `ResultFormatError`, `ContributionsUnavailableError`, `SummaryCalculationRow`, `SummaryCoverageCalculationRow`, `SummaryEventRow`, `SummarySequenceRow`, `SummarySegmentRow`, `SummaryContributionRow`, `SummaryInputRow`, `SummarySelectionRow`, `ResultRow`, `ResourceBudget`, `ResultSpool`, `RunMetadata`, `OutputManifest`, `AnalysisResult`
+`AnalysisError`, `BudgetExceededError`, `ResultClosedError`, `ResultFormatError`, `ContributionsUnavailableError`, `SummaryCalculationRow`, `SummaryCoverageCalculationRow`, `SummaryEventRow`, `SummarySequenceRow`, `SummarySegmentRow`, `SummaryContributionRow`, `SummaryInputRow`, `SummarySelectionRow`, `SummaryAggregationRow`, `SummaryHostedCalculationRow`, `ResultRow`, `ResourceBudget`, `ResultSpool`, `RunMetadata`, `OutputManifest`, `ExportManifest`, `AnalysisResult`
 
 重导出保持定义位置的签名；按上级[总索引](index.md)查找对象名。
 
@@ -31,7 +31,7 @@
 ```python
 from .errors import AnalysisError, BudgetExceededError, ResultClosedError, ResultFormatError, ContributionsUnavailableError
 from .budget import ResourceBudget
-from .manifest import RunMetadata, OutputManifest
+from .manifest import RunMetadata, OutputManifest, ExportManifest
 ```
 
 </details>
@@ -63,4 +63,4 @@ AttributeError为未知名称；实际模块导入错误原样传播。
 
 访问对应类才加载实现及其依赖，不读取输入或启动分析。
 
-源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

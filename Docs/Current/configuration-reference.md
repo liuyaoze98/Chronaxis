@@ -19,6 +19,9 @@
 |sources|[数据来源](inputs.md)、[CAN文本输入](text-inputs.md)|
 |signals|[信号绑定](signals.md)|
 |derived|[表达式](expressions.md)|
+|lookups|[一维查表与插值](expressions.md#lookup-reference)|
+|transforms|[时序变换](temporal-transforms.md)：版本4滚动统计和变化率|
+|aggregations|[结果聚合](aggregations.md)：字段、统计操作、分组和完整性|
 |rules|[事件检测规则](rules.md)|
 |windows|[事件窗口与片段](windows.md)|
 |sequences|[请求响应配对](sequences.md)|

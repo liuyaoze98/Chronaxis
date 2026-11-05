@@ -1,4 +1,4 @@
-# chronaxis.execution.required_expression
+# `chronaxis.execution.required_expression`
 
 在真实部分投影上编译结果需要的表达式，保留完整静态声明检查。
 
@@ -13,7 +13,7 @@
 
 ## 相关类型
 
-[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)、[_Compiler](chronaxis.core.expression.md#api-_Compiler)
+[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)
 
 ## 对象导航
 
@@ -24,9 +24,8 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from hashlib import sha256
 from ..core.decoded_binding import DecodedBindings
-from ..core.expression import CompiledExpression, StaticExpression, _Compiler, _identity, validate_expression
+from ..core.expression import CompiledExpression, StaticExpression, _create_compiler, expression_identity, validate_expression
 ```
 
 </details>
@@ -63,4 +62,4 @@ TypeError 为对象域不符；ValueError 为静态内容被替换、未知名�
 未使用派生仍接受语法和单位检查，但不要求其原字段已读取。当前根需要
     的字段必须有真实投影证明。预算由调用阶段在本函数执行前承担。
 
-源码：[`src/chronaxis/execution/required_expression.py:18`](../../../src/chronaxis/execution/required_expression.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/required_expression.py:16`](../../../src/chronaxis/execution/required_expression.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

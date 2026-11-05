@@ -1,4 +1,4 @@
-# chronaxis.execution.record_diagnostics
+# `chronaxis.execution.record_diagnostics`
 
 仅在请求追溯或完整性诊断时观察同次输入，不增加来源扫描。
 
@@ -44,7 +44,7 @@ RecordDiagnostics(plan, requirements, budget, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/record_diagnostics.py:16`](../../../src/chronaxis/execution/record_diagnostics.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_diagnostics.py:16`](../../../src/chronaxis/execution/record_diagnostics.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordDiagnostics-__init__"></a>
 ### `RecordDiagnostics.__init__`
@@ -72,7 +72,7 @@ owner。
 
 预算错误。
 
-源码：[`src/chronaxis/execution/record_diagnostics.py:18`](../../../src/chronaxis/execution/record_diagnostics.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_diagnostics.py:18`](../../../src/chronaxis/execution/record_diagnostics.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordDiagnostics-consume"></a>
 ### `RecordDiagnostics.consume`
@@ -103,7 +103,7 @@ None。
 
 编码/预算/取消。
 
-源码：[`src/chronaxis/execution/record_diagnostics.py:43`](../../../src/chronaxis/execution/record_diagnostics.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_diagnostics.py:43`](../../../src/chronaxis/execution/record_diagnostics.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordDiagnostics-summaries"></a>
 ### `RecordDiagnostics.summaries`
@@ -128,7 +128,7 @@ InputDiagnostic tuple。
 
 不完整来源。
 
-源码：[`src/chronaxis/execution/record_diagnostics.py:65`](../../../src/chronaxis/execution/record_diagnostics.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_diagnostics.py:65`](../../../src/chronaxis/execution/record_diagnostics.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordDiagnostics-close"></a>
 ### `RecordDiagnostics.close`
@@ -154,4 +154,4 @@ None。
 
 预算释放错误。
 
-源码：[`src/chronaxis/execution/record_diagnostics.py:81`](../../../src/chronaxis/execution/record_diagnostics.py#L81)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_diagnostics.py:81`](../../../src/chronaxis/execution/record_diagnostics.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

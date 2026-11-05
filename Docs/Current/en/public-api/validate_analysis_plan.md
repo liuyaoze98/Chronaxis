@@ -11,9 +11,9 @@ Report static configuration validity and the currently supported reading, execut
 validate_analysis_plan(plan: AnalysisPlan) -> ValidationReport
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `plan` | [AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan) | Required | Positional or keyword. A checked plan from `load_analysis_plan("analysis.yaml")` or `AnalysisPlan.from_dict(config)`, not a YAML filename string. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. A checked plan from `load_analysis_plan("analysis.yaml")` or `AnalysisPlan.from_dict(config)`, not a YAML filename string.|
 
 Returns [ValidationReport](../../reference/chronaxis.planning.reports.md#api-ValidationReport) (Chinese implementation reference). A valid, supported plan has `valid=True` and empty `errors`. `warnings` retains unverified fields, observation ranges, and unit status; `capability_status` describes available execution support. `execution_ready` reflects static capability errors, not proof of data being read or adequate real RAM.
 
@@ -30,4 +30,4 @@ print(report.valid, report.execution_ready)
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:231`](../../../../src/chronaxis/planning/reports.py#L231) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/reports.py:281`](../../../../src/chronaxis/planning/reports.py#L281) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -8,6 +8,8 @@
 调用者必须先确认来源EOF及关闭成功再finish，本对象不替代公共AnalysisRunner发布。
 """
 
+from ..core.moments import SAMPLE_MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 from pathlib import Path
 from struct import Struct
@@ -33,6 +35,8 @@ from ..results.errors import BudgetExceededError
 from .history import _metadata_bytes
 from .record_point_buffer import RecordPointBuffer
 from ..core.sample_reduction import require_sample_config
+from ..core.calculation_output_reference import convert_result_reference
+from ..core.calculation_output_numpy import convert_result_numpy
 from ..core.sample_reduction_reference import ReferenceSampleReduction
 from ..core.sample_reduction_numpy import NumpySampleReduction
 from .record_sample_series import sample_series
@@ -54,7 +58,7 @@ class RecordTimeCalculation(RecordPointBuffer):
     """拥有一份点缓冲、数值状态及可选均值临时文件，失败后只能清理。"""
 
     def __init__(self, budget, spec, input_unit, dtype, step_ns, *, backend='numpy',
-                 batch_intervals=64, partial_limit=4096, conditioned=False, work_dir=None):
+                 batch_intervals=64, partial_limit=4096, conditioned=False, work_dir=None,hosted=None):
         """预付有限状态，均值的文件延迟到首批有效项才创建。
 
         参数: 共享budget、时间统计spec、已求值类型/单位；step_ns为None实际差或正周期；
@@ -68,12 +72,21 @@ class RecordTimeCalculation(RecordPointBuffer):
             raise ValueError('时间统计需要明确后端及bool条件开关')
         if type(batch_intervals) is not int or not 1 <= batch_intervals <= 4096:
             raise ValueError('记录批上限需要1到4096')
-        self._samples=spec.operation in ('sample_minimum','sample_maximum','sample_mean')
-        if self._samples:
+        self._samples=spec.operation in ('sample_count','sample_minimum','sample_maximum','sample_mean', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES)
+        if hosted is not None:
+            from ..core.calculations import calculation_conversion
+            from ..core.unit_registry import resolve_unit,conversion
+            scale,shift=conversion(resolve_unit(input_unit),resolve_unit(hosted.input.unit))
+            if (not self._samples or step_ns is not None or dtype is not hosted.input.dtype or
+                    scale.factor!=1 or scale.pi_power or shift):
+                raise ValueError('宿主样本归约需要声明的输入dtype/单位和真实更新')
+            self._conversion=calculation_conversion(spec,hosted.output.unit)
+        elif self._samples:
             if step_ns is not None:raise ValueError('样本统计不使用固定或DBC周期')
-            self._unit,self._factor=require_sample_config(spec,input_unit,dtype,partial_limit)
+            self._conversion=require_sample_config(spec,input_unit,dtype,partial_limit)
         else:
-            self._unit, self._factor = require_time_config(spec, input_unit, dtype, None, partial_limit, step_ns=step_ns)
+            self._conversion = require_time_config(spec, input_unit, dtype, None, partial_limit, step_ns=step_ns)
+        self._unit,self._factor=self._conversion.unit,self._conversion.factor
         self._work_dir = None
         if spec.operation == 'time_weighted_mean':
             if work_dir is None or not Path(work_dir).is_dir():
@@ -88,6 +101,7 @@ class RecordTimeCalculation(RecordPointBuffer):
         self._last_time = None
         self._covered_ns = self._known_ns = self._selected_ns = self._selected_unknown_ns = self._false_ns = 0
         self._quality = Q.NONE
+        self._transform_partial = False
         self._coverage_value_ns=0 if spec.minimum_coverage>0 else None
         self._record_count = 0
         self._codec = Struct('>dq' if step_ns is None else '>dd')  # 仅值/权重，实际纳秒不降为浮点。
@@ -97,10 +111,15 @@ class RecordTimeCalculation(RecordPointBuffer):
             self._rows = []
             kernel = ((ReferenceConditionalTimeReduction if backend == 'reference' else NumpyConditionalTimeReduction)
                       if conditioned else (ReferenceTimeReduction if backend == 'reference' else NumpyTimeReduction))
-            self._reduction = ((ReferenceSampleReduction if backend=='reference' else NumpySampleReduction)
-                (spec,input_unit,dtype,partial_limit=partial_limit) if self._samples else
-                kernel(spec, input_unit, dtype, step_ns=step_ns, partial_limit=partial_limit))
+            if hosted is not None:
+                from .hosted_sample_reduction import HostedSampleReduction
+                self._reduction=HostedSampleReduction(spec,input_unit,dtype,hosted,self._conversion,backend,budget,partial_limit)
+            else:
+                self._reduction = ((ReferenceSampleReduction if backend=='reference' else NumpySampleReduction)
+                    (spec,input_unit,dtype,partial_limit=partial_limit,quantile_budget=budget) if self._samples else
+                    kernel(spec, input_unit, dtype, step_ns=step_ns, partial_limit=partial_limit))
         except BaseException as exc:
+            self._reduction=getattr(exc,'hosted_sample_cleanup_owner',self._reduction)
             _cleanup_owner(self, exc, 'record_time_cleanup_owner', '记录时间统计')
             raise
 
@@ -191,6 +210,9 @@ class RecordTimeCalculation(RecordPointBuffer):
                 self._reduction.push(series, valid_until_ns=deadlines,
                     retain_unknown_ranges=False, retain_mean_terms=mean, **options))
             facts = block.facts if mean else block
+            from .transform_partial import partial_in_block
+            if partial_in_block(self._rows,self._spec.window,samples=self._samples):
+                self._transform_partial=True
             if self._coverage_value_ns is not None:
                 self._coverage_value_ns+=facts.value_valid_duration_ns
             if mean:
@@ -256,8 +278,14 @@ class RecordTimeCalculation(RecordPointBuffer):
                 raise ValueError('均值必要暂存含未登记数据')
             if quality != Q.NONE:
                 return TimeReductionResult(None, self._unit, True, quality, self._record_count)
-            number = self._mean_sum.finish(self._unit, self._factor)
-            return TimeReductionResult(number.value, number.unit, number.calculation_failed, number.quality, self._record_count)
+            # v4先完成原量纲均值，再由所选后端一次换单位；偏移不能随块数重复。
+            number = self._mean_sum.finish(self._input_unit,
+                                          1.0)
+            if not number.calculation_failed:
+                convert = convert_result_reference if self._backend == 'reference' else convert_result_numpy
+                value, quality = convert(number.value, self._dtype, self._conversion)
+                return TimeReductionResult(value, self._unit, quality != Q.NONE, quality, self._record_count)
+            return TimeReductionResult(number.value, self._unit, number.calculation_failed, number.quality, self._record_count)
         finally:
             payload = pairs = values = weights = terms = keep = None
 
@@ -278,13 +306,17 @@ class RecordTimeCalculation(RecordPointBuffer):
             value, status, reason = classify_calculation_value(self._spec, number.value, self._covered_ns,
                 self._known_ns, self._selected_ns, self._selected_unknown_ns,
                 all_false=self._conditioned and self._covered_ns>0 and self._false_ns==self._covered_ns,
-                calculation_failed=number.calculation_failed)
+                calculation_failed=number.calculation_failed,
+                sample_count=number.valid_sample_count if self._samples else 0)
             if self._file is not None:
                 self._file.close()
                 self._file = None
             coverage=None if self._coverage_value_ns is None else classify_coverage(
                 self._spec,self._covered_ns,self._coverage_value_ns,self._known_ns)
             self._result = RecordTimeResult(value, self._unit, status, reason, self._quality | number.quality,coverage)
+            if self._transform_partial or getattr(self._reduction,'partial',False):
+                from .transform_partial import partial_result
+                self._result=partial_result(self._result,self._spec.partial_policy)
             self._finished = True
             return self._result
         except BaseException as exc:
@@ -313,6 +345,8 @@ class RecordTimeCalculation(RecordPointBuffer):
         if self._closed:
             return
         self._closing = True
+        if self._samples and self._reduction is not None:
+            self._reduction.close()
         self._rows = self._reduction = self._mean_sum = self._result = None
         if self._file is not None:
             self._file.close()

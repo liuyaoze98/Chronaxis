@@ -19,7 +19,7 @@ compute_reference接收CalculationSeries和CalculationDefinition，先裁剪观�
 # 独立标量有限性/稳定求和，不调用数组归约。
 from math import fsum, isfinite
 # 共享模型、单位与条件始终为FALSE时的空选择规则，不共享数值计算。
-from .calculations import CalculationSeries, CalculationDefinition, make_calculation_result, calculation_unit
+from .calculations import CalculationSeries, CalculationDefinition, make_calculation_result, calculation_conversion
 # 诊断区间与请求都保持精确纳秒。
 from .models import Interval
 # 独立参考定宽到float转换先检查精度。
@@ -27,8 +27,12 @@ from .numeric import ScalarValue, to_float_reference
 # 未知/计算质量与正常零严格分开。
 from .types import QualityFlag as Q, SignalDType as D, Truth
 # 选择只共享冻结协议，标量筛选独立于NumPy掩码。
-from .selection import SelectionRow, require_selection
+from .selection import SelectionRow, require_selection, partial_selection
 from .record_intervals import clipped_record_seconds, require_record_step
+from .calculation_output_reference import convert_result_reference
+from .affine import affine_reference
+from .moments import MOMENTS, TIME_MOMENTS, compute_moment_series
+from .quantiles import SAMPLE_QUANTILES, compute_quantile_series
 
 
 def require_calculation(series, spec, *, step_ns=None):
@@ -50,7 +54,7 @@ def require_calculation(series, spec, *, step_ns=None):
     allowed = (D.BOOL,) if spec.operation == 'duration' else (D.INT64, D.UINT64, D.FLOAT64)
     if series.values[0].dtype not in allowed:
         raise ValueError('指标算子与输入dtype不匹配')
-    if step_ns is not None and spec.operation not in ('integral', 'duration', 'time_weighted_mean', 'min_time', 'max_time'):
+    if step_ns is not None and spec.operation not in ('integral', 'duration', 'time_weighted_mean', 'min_time', 'max_time', *TIME_MOMENTS):
         raise ValueError('样本统计不接受记录对周期')
     require_record_step(step_ns, series.actual_value_updates)
 
@@ -66,6 +70,7 @@ def select_reference(series, spec):
     """
     # 生成器检查发生在消费时；只共享输入门槛。
     require_selection(series, spec)
+    conversion = calculation_conversion(spec, series.unit)
     start = max(spec.window.start_ns, series.observation.start_ns)
     end = min(spec.window.end_ns, series.observation.end_ns)
     # 输入已经完整物化，输出每次只创建当前行。
@@ -80,11 +85,17 @@ def select_reference(series, spec):
             continue
         # 原值保持dtype/质量/标签与绑定，UNKNOWN不是自动选择成功。
         value = series.values[index]
-        yield SelectionRow(time, value, selection, series.diagnostics[index] | value.quality | condition.quality,
-                           series.binding_identity, series.source_refs, series.unit)
+        # 当前输出只保留换算后的一份值；原样本及实际时间不改写。
+        if conversion is not None and (conversion.factor != 1 or conversion.offset != 0):
+            value = affine_reference(value, conversion.factor, conversion.offset, conversion.dtype(value.dtype))
+        quality=series.diagnostics[index] | value.quality | condition.quality
+        if series.values[index].partial or condition.partial:
+            value,quality=partial_selection(value,quality,spec)
+        yield SelectionRow(time, value, selection, quality,
+                           series.binding_identity, series.source_refs, series.unit if conversion is None else conversion.unit)
 
 
-def compute_reference(series, spec, *, step_ns=None):
+def compute_reference(series, spec, *, step_ns=None, budget=None):
     """独立计算请求窗口内的积分、样本/时间统计或BOOL TRUE时长。
 
     参数:
@@ -92,6 +103,7 @@ def compute_reference(series, spec, *, step_ns=None):
         spec: CalculationDefinition，给出左闭右开纳秒窗口、算子、输出单位和部分结果政策。
         step_ns: 可选固定/DBC周期，仅用于所选驱动的真实记录对；按交集比例
             计算面积、时长和均值权重，不改变实际坐标或输出第二套时间。
+        budget为精确分位数的可选共享RAM账本，省略时采用项目默认配额。
     返回:
         CalculationResult。未换单位的整数极值可保持精确整数；积分和样本平均
         返回浮点值；时间平均先规范化时长权重，duration输出秒。无法核实时
@@ -106,8 +118,18 @@ def compute_reference(series, spec, *, step_ns=None):
     """
     # 配置错误不能吞成未知数据。
     require_calculation(series, spec, step_ns=step_ns)
+    if spec.operation in SAMPLE_QUANTILES:
+        from .sample_reduction_reference import ReferenceSampleReduction
+        return compute_quantile_series(series, spec, ReferenceSampleReduction, budget)
+    if spec.operation in MOMENTS:
+        from .sample_reduction_reference import ReferenceSampleReduction
+        from .time_reduction_reference import ReferenceTimeReduction
+        from .conditional_time_reduction_reference import ReferenceConditionalTimeReduction
+        return compute_moment_series(series, spec, ReferenceSampleReduction, ReferenceTimeReduction,
+                                     ReferenceConditionalTimeReduction, step_ns)
     # 仅显式已知维度转换，保留有符号面积。
-    unit, factor = calculation_unit(spec, series.unit)
+    conversion = calculation_conversion(spec, series.unit)
+    unit, factor = conversion.unit, conversion.factor
     # 先求真实观测与请求交集，不外推末点/EOF。
     start = max(spec.window.start_ns, series.observation.start_ns)
     # 半开窗口右端实际观测不足必须裁剪。
@@ -205,6 +227,7 @@ def compute_reference(series, spec, *, step_ns=None):
             condition_unknown.append(Interval(left, right))
     # 样本口径只计真实原依赖更新，不计TTL/裁剪合成边界。
     selected_samples = []
+    sample_count = 0
     # 参考逐原完整时间组统计当前值/条件，不跨域复制末点。
     for index, time in enumerate(series.times_ns):
         # 半开实际窗口内真实更新，末点排除。
@@ -220,7 +243,9 @@ def compute_reference(series, spec, *, step_ns=None):
         # 不将无效原数据存储占位0当正常样本。
         if value.valid and condition.valid and condition.value and (spec.operation != 'duration' or value.value):
             # 仅恢复当前原生逻辑数值，未改原输入。
-            selected_samples.append(value.value)
+            sample_count += 1
+            if spec.operation != 'sample_count':
+                selected_samples.append(value.value)
     # 空归约保持None；仅明确all_false时按空选择规则处理。
     result, failed = None, False
     # 已选可核实面积或样本才计算正常值。
@@ -230,6 +255,8 @@ def compute_reference(series, spec, *, step_ns=None):
             # fsum减少标量累计舍入，但不替代NumPy归约。
             result = fsum(areas)
         # 精确整数极值无需浮点转换。
+        elif spec.operation == 'sample_count':
+            result = sample_count
         elif selected_samples and spec.operation == 'sample_minimum':
             # 窗口裁剪不增加边界合成样本。
             result = min(selected_samples)
@@ -263,32 +290,14 @@ def compute_reference(series, spec, *, step_ns=None):
     except OverflowError:
         # 无法核实总值不报正常Inf。
         failed, quality = True, quality | Q.NONFINITE
-    # 输出转换仅一次；未转换整数极值保持整数。
-    if result is not None and not failed:
-        # 非单位1倍率转换整数前仍检查精度。
-        if factor != 1 and type(result) is int:
-            # 静态单位不会授权无声丢大整数精度。
-            converted = to_float_reference(ScalarValue(result, series.values[0].dtype))
-            # 失败输出null且原覆盖/来源诊断保留。
-            if not converted.valid:
-                # 明确PRECISION_LOSS，不截断原整数。
-                failed, quality = True, quality | converted.quality
-            else:
-                # 仅已证明正常整数才浮点换单位。
-                result = converted.value
-        # 不把失败结果继续乘因子。
-        if not failed:
-            # factor1保留整数，避免无必要cast。
-            original = result
-            # 数学单位转换，不改变符号方向。
-            result = result * factor if factor != 1 else result
-            # 非有限和非零下溢都不能报正常0。
-            if type(result) is float and (not isfinite(result) or result == 0 and original != 0):
-                # 明确归约/转换失败；不修改coverage来伪造通过。
-                failed, quality = True, quality | (Q.NONFINITE if not isfinite(result) else Q.PRECISION_LOSS)
+    # 归约后应用一次完整仿射转换，并检查目标数值精度。
+    if result is not None and not failed and spec.operation != 'sample_count':
+        result, conversion_quality = convert_result_reference(result, series.values[0].dtype, conversion)
+        failed = conversion_quality != Q.NONE
+        quality |= conversion_quality
     # 完整全FALSE证明需要非零实际域，最后政策还检查请求充分覆盖。
     all_false = series.conditions is not None and actual is not None and end > start and false_duration == end-start
     # 共同政策仅包装各独立内核已计算的事实。
     return make_calculation_result(spec, series, result, unit, actual, value_duration, known_duration, selected_duration,
-                              selected_unknown, len(selected_samples), value_unknown, condition_unknown, quality,
+                              selected_unknown, sample_count, value_unknown, condition_unknown, quality,
                               all_false=all_false, calculation_failed=failed)

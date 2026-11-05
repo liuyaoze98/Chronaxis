@@ -27,7 +27,7 @@ def start_end_config():
     """构造两次正常结束和一次超时。参数: 无。返回: dict。异常: 无。"""
     points=[(0,1,0,10),(2,0,1,20),(3,0,0,30),(4,1,0,40),(6,1,0,60),
             (9,1,0,90),(10,0,0,100),(11,1,0,110),(14,0,1,140),(16,0,0,160)]
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='example',entity='device',session='session',domain=dict(start='0ns',end='16ns')),
         sources=[dict(name='input',source_type='memory',time=dict(time_type='relative',unit='ns',origin='clock'),
             rows=[dict(time=f'{t}ns',values=dict(begin=b,done=e,value=v)) for t,b,e,v in points])],
@@ -165,8 +165,9 @@ class StartEndRunnerTests(unittest.TestCase):
         self.assertEqual(len(scans),1)
         self.assertEqual({r.rule_id for r in result.iter_events()},{'cycle','old'})
         output=ROOT/'work/m3-migrate-home-20261022/published'/uuid4().hex
-        result.write(output)
-        self.assertIn('超时结束',(output/'事件结果.csv').read_text(encoding='utf-8'))
+        publication = result.write(output)
+        events = next(path for path in publication.output_files if path.name.startswith('事件结果_'))
+        self.assertIn('超时结束', events.read_text(encoding='utf-8'))
         events = {row.event_id: row for row in result.iter_events()}
         self.assertTrue(any(events[parent].status == 'timeout'
                             for row in result.iter_segments() for parent in row.parent_event_ids))

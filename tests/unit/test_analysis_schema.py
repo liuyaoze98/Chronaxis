@@ -148,7 +148,7 @@ class AnalysisSchemaTests(unittest.TestCase):
         异常: 公共入口依赖schema而省略语义校验使测试失败。
         """
         # 标准JSON Schema把整数值浮点1.0视为integer，API另要求原生int。
-        cases = [(('config_version',), 3.0), (('signals', 0, 'valid_for'), '0s'),
+        cases = [(('config_version',), 4.0), (('signals', 0, 'valid_for'), '0s'),
                  (('signals', 0, 'source'), 'missing'), (('derived', 'power', 'unit'), 'A'),
                  (('dataset', 'domain', 'end'), '-1s'), (('windows', 1, 'post'), '2s'),
                  (('calculations', 0, 'scope'), {'rule':'missing'}), (('calculations', 0, 'unit'), 'V'),

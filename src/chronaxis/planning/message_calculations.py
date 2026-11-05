@@ -20,6 +20,7 @@ from ..legacy.disjunction import LegacyDisjunction
 from ..core.types import SignalDType
 from ..sources.can_spec import LegacyCANSpec, can_field_from_key
 from ..sources.text_can_spec import CANTextSpec
+from .diagnostic_collection import usable_node, collect_node_error
 from .checks import PlanValidationError, array_at, choice_at, model_at, object_at, text_at
 from .models import LegacyMessageSelector, MessageCalculationPlan
 from .nodes import expression_at, register_id
@@ -106,66 +107,74 @@ def parse_message_calculations(value, sources, bindings, ids) -> tuple[MessageCa
     result = []
     for index, raw in enumerate(array_at(value, '$.message_calculations')):
         path = f'$.message_calculations[{index}]'
-        # 旧配置即使尚无新policy字段，也先说明旧完整cache模式为何不能运行。
-        if type(raw) is dict and 'cache_policy' in raw:
-            raise PlanValidationError(path + '.cache_policy',
-                '旧profile完整触发/cache模式尚未接线；current_message-v1仅用本条消息，不接受cache_policy',
-                'capability_unavailable')
-        raw = object_at(raw, path, ('name', 'update_message', 'expr', 'unit'),
-                        ('parameters', 'split_by_sign', 'source', 'profile', 'operation', 'message_policy'))
-        calculation_id = register_id(raw['name'], path + '.name', ids)
-        from .input_defaults import source_reference
-        source_name = source_reference(raw, sources, path, can_only=True)
-        source = next((item for item in sources if item.name == source_name), None)
-        if source is None:
-            raise PlanValidationError(path + '.source', '逐消息指标来源不存在')
-        text_source = ((source.source_type in ('can_asc', 'asc_or_blf', 'raw_can_csv')) and (isinstance(source.config, CANTextSpec)))
-        if not text_source and (source.source_type != 'can_blf' or not isinstance(source.config, LegacyCANSpec)):
-            raise PlanValidationError(path + '.source', '逐消息计算需要can_blf、can_asc或raw_can_csv来源', 'capability_unavailable')
-        expected_profile = 'can-text-v1' if text_source else source.config.legacy_profile
-        profile = choice_at(raw.get('profile', expected_profile), (expected_profile,), path + '.profile')
-        if profile != expected_profile:
-            raise PlanValidationError(path + '.profile', 'profile必须等于来源legacy_profile')
-        # 当前只有一种逐消息累计策略；省略采用它，显式未知策略仍拒绝。
-        operation = choice_at(raw.get('operation', 'legacy_sum'), ('legacy_sum',), path + '.operation')
-        policy = choice_at(raw.get('message_policy', 'current_message-v1'), ('current_message-v1',), path + '.message_policy')
-        selector_raw = object_at(raw['update_message'], path + '.update_message',
-                                 ('frame_id',), ('channel', 'is_extended', 'is_fd'))
-        for flag in ('is_extended', 'is_fd'):
-            if flag in selector_raw and type(selector_raw[flag]) is not bool:
-                raise PlanValidationError(path + '.update_message.' + flag, '填写时需要bool，不能为null')
-        from .channels import channel_index
-        channel = (channel_index(selector_raw['channel'], path + '.update_message.channel')
-                   if 'channel' in selector_raw else source.config.channel)
-        selector = model_at(LegacyMessageSelector, path + '.update_message',
-            channel, selector_raw['frame_id'], selector_raw.get('is_extended'), selector_raw.get('is_fd'))
-        if selector.channel != source.config.channel:
-            raise PlanValidationError(path + '.update_message.channel', '选择器channel必须等于来源通道')
-        parameters_raw = raw.get('parameters', {})
-        # 参数名称可由用户声明，但容器及每个value/unit对象仍严格校验。
-        parameters_raw = object_at(parameters_raw, path + '.parameters', (),
-                                   tuple(parameters_raw) if type(parameters_raw) is dict else ())
-        parameters = []
-        for name, item in parameters_raw.items():
-            parameter_path = path + '.parameters.' + name
-            item = object_at(item, parameter_path, ('value', 'unit'))
-            parameters.append(model_at(ExpressionParameter, parameter_path, name, item['value'], item['unit']))
-        parameters = tuple(parameters)
-        # 不接普通全局派生；当前表达式仅原别名与本指标显式参数，没有保持语义。
-        declaration = model_at(MessageDeclarations, path + '.parameters', bindings, source_name, parameters,
-                               message_policy=policy)
-        unit = text_at(raw['unit'], path + '.unit')
-        expression = expression_at(raw['expr'], path + '.expr', declaration, (), unit=unit)
-        # 三字段显式选择原值政策，不把配置缺失、null或自由条件当作分桶。
-        disjunction = None
-        if 'split_by_sign' in raw:
-            item = object_at(raw['split_by_sign'], path + '.split_by_sign', ('signal', 'bucket'), ('value_policy',))
-            disjunction = model_at(LegacyDisjunction, path + '.split_by_sign',
-                item['signal'], item['bucket'], item.get('value_policy', 'raw_decoded-v1'))
-            model_at(bindings.resolve, path + '.split_by_sign.signal', disjunction.signal)
-        calculation = model_at(MessageCalculationPlan, path, calculation_id, source_name, profile, operation,
-                          selector, expression, unit, parameters, policy, disjunction)
-        # 校验共享于validate/explain，typed替换不能绕过跨对象完整定位关系。
-        model_at(require_message_calculation, path + '.expr', calculation, sources, bindings)
-        result.append(calculation)
+        if not usable_node(path, raw):
+            continue
+        try:
+            path = f'$.message_calculations[{index}]'
+            # 旧配置即使尚无新policy字段，也先说明旧完整cache模式为何不能运行。
+            if type(raw) is dict and 'cache_policy' in raw:
+                raise PlanValidationError(path + '.cache_policy',
+                    '旧profile完整触发/cache模式尚未接线；current_message-v1仅用本条消息，不接受cache_policy',
+                    'capability_unavailable')
+            raw = object_at(raw, path, ('name', 'update_message', 'expr', 'unit'),
+                            ('parameters', 'split_by_sign', 'source', 'profile', 'operation', 'message_policy'))
+            calculation_id = register_id(raw['name'], path + '.name', ids)
+            from .input_defaults import source_reference
+            source_name = source_reference(raw, sources, path, can_only=True)
+            source = next((item for item in sources if item.name == source_name), None)
+            if source is None:
+                raise PlanValidationError(path + '.source', '逐消息指标来源不存在')
+            text_source = ((source.source_type in ('can_asc', 'asc_or_blf', 'raw_can_csv')) and (isinstance(source.config, CANTextSpec)))
+            if not text_source and (source.source_type != 'can_blf' or not isinstance(source.config, LegacyCANSpec)):
+                raise PlanValidationError(path + '.source', '逐消息计算需要can_blf、can_asc或raw_can_csv来源', 'capability_unavailable')
+            expected_profile = 'can-text-v1' if text_source else source.config.legacy_profile
+            profile = choice_at(raw.get('profile', expected_profile), (expected_profile,), path + '.profile')
+            if profile != expected_profile:
+                raise PlanValidationError(path + '.profile', 'profile必须等于来源legacy_profile')
+            # 当前只有一种逐消息累计策略；省略采用它，显式未知策略仍拒绝。
+            operation = choice_at(raw.get('operation', 'legacy_sum'), ('legacy_sum',), path + '.operation')
+            policy = choice_at(raw.get('message_policy', 'current_message-v1'), ('current_message-v1',), path + '.message_policy')
+            selector_raw = object_at(raw['update_message'], path + '.update_message',
+                                     ('frame_id',), ('channel', 'is_extended', 'is_fd'))
+            for flag in ('is_extended', 'is_fd'):
+                if flag in selector_raw and type(selector_raw[flag]) is not bool:
+                    raise PlanValidationError(path + '.update_message.' + flag, '填写时需要bool，不能为null')
+            from .channels import channel_index
+            channel = (channel_index(selector_raw['channel'], path + '.update_message.channel')
+                       if 'channel' in selector_raw else source.config.channel)
+            selector = model_at(LegacyMessageSelector, path + '.update_message',
+                channel, selector_raw['frame_id'], selector_raw.get('is_extended'), selector_raw.get('is_fd'))
+            if selector.channel != source.config.channel:
+                raise PlanValidationError(path + '.update_message.channel', '选择器channel必须等于来源通道')
+            parameters_raw = raw.get('parameters', {})
+            # 参数名称可由用户声明，但容器及每个value/unit对象仍严格校验。
+            parameters_raw = object_at(parameters_raw, path + '.parameters', (),
+                                       tuple(parameters_raw) if type(parameters_raw) is dict else ())
+            parameters = []
+            for name, item in parameters_raw.items():
+                parameter_path = path + '.parameters.' + name
+                item = object_at(item, parameter_path, ('value', 'unit'))
+                # 参数使用当前分析版本的单位规则，空信号消息域也不能退回旧版本。
+                parameters.append(model_at(ExpressionParameter, parameter_path, name, item['value'], item['unit'],
+                                           config_version=bindings.config_version))
+            parameters = tuple(parameters)
+            # 不接普通全局派生；当前表达式仅原别名与本指标显式参数，没有保持语义。
+            declaration = model_at(MessageDeclarations, path + '.parameters', bindings, source_name, parameters,
+                                   message_policy=policy)
+            unit = text_at(raw['unit'], path + '.unit')
+            expression = expression_at(raw['expr'], path + '.expr', declaration, (), unit=unit)
+            # 三字段显式选择原值政策，不把配置缺失、null或自由条件当作分桶。
+            disjunction = None
+            if 'split_by_sign' in raw:
+                item = object_at(raw['split_by_sign'], path + '.split_by_sign', ('signal', 'bucket'), ('value_policy',))
+                disjunction = model_at(LegacyDisjunction, path + '.split_by_sign',
+                    item['signal'], item['bucket'], item.get('value_policy', 'raw_decoded-v1'))
+                model_at(bindings.resolve, path + '.split_by_sign.signal', disjunction.signal)
+            calculation = model_at(MessageCalculationPlan, path, calculation_id, source_name, profile, operation,
+                              selector, expression, unit, parameters, policy, disjunction)
+            # 校验共享于validate/explain，typed替换不能绕过跨对象完整定位关系。
+            model_at(require_message_calculation, path + '.expr', calculation, sources, bindings)
+            result.append(calculation)
+        except PlanValidationError as error:
+            collect_node_error(error, path, raw)
     return tuple(result)

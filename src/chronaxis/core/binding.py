@@ -14,8 +14,11 @@ from hashlib import sha256
 
 # 共享已校验模型和精确时间协议，不依赖被保护的旧链。
 from .models import SessionSpec, SourceRef, SourceSpec, TimebaseSpec
-from .types import QualityFlag, SignalDType, TimeType
-from .units import require_number, validate_conversion
+from .types import BASE_FORBIDDEN_QUALITY, SignalDType, TimeType
+from .units import require_number
+from .unit_conversion import binding_version, converted_dtype, require_config_version, validate_conversion_v4
+from .unit_registry import REGISTRY_VERSION
+from .lookup import LookupTablePlan, validate_lookups
 from .validation import require_identifier, require_scalar, require_text
 from ..timebase.conversion import require_int64_ns
 
@@ -108,6 +111,10 @@ class SignalDefinition:
     measurement_location: str | None = None  # 可选测量位置，不从名称猜测。
     input_sign_convention: str | None = None  # 转换前方向证据，core typed元数据。
     direction_factor: int = 1  # 方向不变1，显式反转-1。
+    config_version: int = dataclass_field(default=4, kw_only=True)  # 规则版本；低层系数已确定，不按省略推导。
+    input_dtype: SignalDType | None = dataclass_field(default=None, kw_only=True)  # 配置推导前类型；不新增用户字段。
+    code_dtype: SignalDType | None = dataclass_field(default=None, kw_only=True)  # 仅 v4 枚举的原始整数类型。
+    capture_code: bool = dataclass_field(default=False, kw_only=True, compare=False, repr=False)  # 当前执行投影要求。
     unit_status: str = dataclass_field(init=False)  # 构造校验所得单位状态。
 
     def __post_init__(self) -> None:
@@ -118,6 +125,15 @@ class SignalDefinition:
         异常: TypeError为字段结构；ValueError为缺项/策略/映射/转换冲突；
             TimeOverflowError为有效期超界。数值样本失败由数值层生成质量原因。
         """
+        # 配置版本决定单位规则，不能因新增目录改变旧声明。
+        require_config_version(self.config_version)
+        if self.code_dtype is not None:
+            from .enum_codes import validate_code_dtype
+            if self.config_version != 4 or self.dtype is not SignalDType.ENUM:
+                raise ValueError('code_dtype 仅适用于 v4 枚举信号')
+            validate_code_dtype(self.code_dtype, self.choices)
+        if type(self.capture_code) is not bool or self.capture_code and self.code_dtype is None:
+            raise ValueError('保留原始枚举码需声明 code_dtype')
         # 别名和来源都服从简单名称，不接受属性路径。
         require_identifier(self.name, "signal.name")
         # 当前会话显式定位来源，不能继承上次任务。
@@ -128,6 +144,12 @@ class SignalDefinition:
         if not isinstance(self.dtype, SignalDType):
             # 未解析的配置不能冒充typed定义。
             raise TypeError("signal.dtype必须为SignalDType")
+        # 原始声明类型仅用于证明单位换算引起的提升，低层调用不猜缺省来源类型。
+        if self.input_dtype is not None:
+            if not isinstance(self.input_dtype, SignalDType):
+                raise TypeError("input_dtype必须为SignalDType或None")
+            if self.config_version != 4 or converted_dtype(self.input_dtype, self.scale, self.offset) is not self.dtype:
+                raise ValueError("input_dtype与已确定的单位转换类型不一致")
         # 目标单位必填，未知标签可以显式未校验。
         require_text(self.unit, "signal.unit")
         # 默认表示没有额外单位变化，不补DBC信息。
@@ -236,7 +258,13 @@ class SignalDefinition:
                 # 声明冲突须执行前拒绝。
                 raise ValueError("valid_range上限必须不小于下限")
         # 已知单位校验关系，未知单位明确保留状态。
-        status = validate_conversion(input_unit, self.unit, self.scale, self.offset, self.direction_factor)
+        status = validate_conversion_v4(input_unit, self.unit, self.scale, self.offset, self.direction_factor)
+        # v4整数转换中的1.0等整数系数规范为int，保留安全定宽整数计算路径。
+        if self.dtype in (SignalDType.INT64, SignalDType.UINT64):
+            for coefficient in ('scale', 'offset'):
+                value = getattr(self, coefficient)
+                if type(value) is float and value.is_integer():
+                    object.__setattr__(self, coefficient, int(value))
         # 冻结缺省输入单位，后续身份与转换都读取同一事实。
         object.__setattr__(self, "input_unit", input_unit)
         # 规范有效期为Python整数纳秒，不改变数值。
@@ -252,12 +280,31 @@ class SignalDefinition:
         异常: 无主动异常；不使用全局缓存或当前样本值。
         """
         # 全部影响绑定/质量/单位的字段进入身份，基础质量固定九位全禁。
-        return (self.name, self.source, self.field, self.dtype.value, self.unit, self.valid_for_ns,
+        payload = (self.name, self.source, self.field, self.dtype.value, self.unit, self.valid_for_ns,
                 self.input_unit, self.scale, self.offset, self.choices, self.valid_range,
                 self.invalid_values, self.sample_policy, self.same_time_policy, self.semantic_id,
                 self.semantic_contract_version, self.mapping_version, self.sign_convention,
                 self.measurement_location, self.input_sign_convention, self.direction_factor,
-                self.unit_status, int(QualityFlag(511)))
+                self.unit_status)
+        # 身份包含固定单位规则，避免不同规则的结果复用。
+        if self.code_dtype is not None:
+            payload += ('code_dtype', self.code_dtype.value)
+        # 预设核对真实身份的末项质量策略；版本和原码类型不能占据该位置。
+        return (*payload, self.config_version, REGISTRY_VERSION,
+                None if self.input_dtype is None else self.input_dtype.value, BASE_FORBIDDEN_QUALITY)
+
+    @property
+    def unit_conversion_promoted(self) -> bool:
+        """说明浮点类型是否由已知整数输入的单位换算引起。
+
+        参数: 无。
+        返回: 仅有整数输入证据且实际提升时为True。
+        异常: 无；不依据样本数值猜类型。
+        """
+        # 显式FLOAT64但没有原输入声明时不能冒称整数提升。
+        return (self.dtype is SignalDType.FLOAT64
+                and self.input_dtype in (SignalDType.INT64, SignalDType.UINT64)
+                and converted_dtype(self.input_dtype, self.scale, self.offset) is SignalDType.FLOAT64)
 
 
 @dataclass(frozen=True)
@@ -304,6 +351,9 @@ class SignalBindings:
     signals: tuple[SignalDefinition, ...]  # 已声明原字段到别名的关联。
     derived_names: tuple[str, ...] = ()  # 实际派生定义由表达式层提供，此处只检查名称冲突。
     synchronization: tuple[SynchronizationEvidence, ...] = ()  # 明示固定offset依据。
+    config_version: int | None = dataclass_field(default=None, kw_only=True)  # 缺省继承定义；空绑定默认4。
+    extensions: object = dataclass_field(default=None, kw_only=True, repr=False)  # 仅接收宿主传入的不可变注册。
+    lookups: tuple[LookupTablePlan, ...] = dataclass_field(default=(), kw_only=True)  # 数值标定表声明。
     identity: str = dataclass_field(init=False)  # 实际校验所得完整绑定SHA。
 
     def __post_init__(self) -> None:
@@ -345,6 +395,13 @@ class SignalBindings:
             if not any(definition.field in row.values for row in sources[definition.source].rows):
                 # 空来源没有已声明字段schema，不能声称字段可解析。
                 raise ValueError(f"{definition.name}原字段不存在：{definition.field}")
+        # 所有定义属于同一不可变版本；空绑定也可显式选择4。
+        object.__setattr__(self, "config_version", binding_version(self.signals, self.config_version))
+        validate_lookups(self.lookups, self.config_version)
+        if self.extensions is not None:
+            from ..extensions import ExtensionRegistry
+            if type(self.extensions) is not ExtensionRegistry or self.config_version != 4:
+                raise ValueError('extensions需要版本4及宿主ExtensionRegistry')
         # 派生声明也遵守同一简单别名规则。
         for name in self.derived_names:
             # 包括关键字及首版函数名冲突。
@@ -380,6 +437,12 @@ class SignalBindings:
                    tuple(definition.identity() for definition in self.signals), self.derived_names,
                    tuple((item.source, item.analysis_timebase.timebase_id, item.analysis_timebase.time_type.value,
                           item.analysis_timebase.origin, item.evidence) for item in self.synchronization))
+        # 即使没有信号，v4绑定也不能与旧空绑定共享身份。
+        payload += (self.config_version, REGISTRY_VERSION)
+        if self.extensions is not None:
+            payload += ('host-extensions-v1', self.extensions.identity)
+        if self.lookups:
+            payload += ('lookup-table-v1', tuple(t.identity for t in self.lookups))
         # 身份由全部校验事实生成，不允许调用者提供假SHA。
         object.__setattr__(self, "identity", sha256(_identity(payload).encode("utf-8")).hexdigest())
 

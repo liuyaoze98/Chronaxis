@@ -77,7 +77,7 @@ class HistoricalObservationScopesTests(unittest.TestCase):
                 signal_configs.append(dict(name=source['alias'], source=source['name'], field=field,
                     dtype='float64', unit='1', valid_for='20ns'))
             absolute_domain = sources[0].get('absolute', False)
-            config = dict(config_version=3,
+            config = dict(config_version=4,
                 dataset=dict(name='scope_dataset', entity='scope_entity', session='scope_session',
                     domain=dict(start=self.time_text(domain[0], absolute_domain), end=self.time_text(domain[1], absolute_domain))),
                 sources=source_configs, signals=signal_configs, rules=[], calculations=[],

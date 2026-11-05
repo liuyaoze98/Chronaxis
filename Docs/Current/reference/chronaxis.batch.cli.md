@@ -1,4 +1,4 @@
-# chronaxis.batch.cli
+# `chronaxis.batch.cli`
 
 从严格批量配置调用公共API，打印精简计数并保留完整逐任务报告。
 
@@ -43,7 +43,7 @@ run_batch_cli(arguments) -> int
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../migration.md)生成，通常直接使用命令行入口。|
+|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。|
 
 ### 返回说明
 
@@ -59,4 +59,4 @@ run_batch_cli(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

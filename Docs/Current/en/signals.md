@@ -17,26 +17,28 @@ Use [signal-types.asc](../examples/data/can/signal-types.asc) and [teaching.dbc]
 | 200 ms | 5000 | 1 | 7 |
 | 300 ms | 5000 | 0 | 0 |
 
-The complete [signal-number-minimal.yaml](../examples/signal-number-minimal.yaml) reads only current and calculates its maximum. Type and unit come from the DBC. The 200 ms validity is an explicit choice for this example; no additional settings need to be copied.
+The complete [signal-number-minimal.yaml](../examples/signal-number-minimal.yaml) reads only current and calculates its maximum. Type and unit come from the DBC. See [conversion](#signal-conversion) for automatic unit conversion. To display the maximum as mA, the calculation explicitly sets `unit: mA`; omitting that output setting gives the inferred unit A (7 A here). The 200 ms validity is an explicit choice for this example; no additional settings need to be copied.
 
 ```yaml
-config_version: 3                         # Integer configuration version
-dataset:
-  name: signal_example                    # Name of this analysis
-sources:
-  - paths: data/can/signal-types.asc       # Relative to this configuration
-    dbc_by_channel:
-      '1': data/can/teaching.dbc           # Channel keys are strings, starting at 1
-signals:
-  - field:
-      frame_id: '0x101'                   # Message ID from the DBC
-      signal: Current_mA                  # Exact, case-sensitive DBC name
-    name: current                         # Name used in expressions
-    valid_for: 200ms                      # Maximum age of the latest update
-calculations:
-  - name: maximum_current
-    operation: sample_maximum             # Maximum of valid actual samples
-    expr: current
+# Synthetic teaching configuration; use the bundled inputs to reproduce this example.
+config_version: 4                       # Current analysis configuration version
+dataset:                                # Analysis identity and optional input range
+  name: signal_example                  # Name used to identify and reference this object
+sources:                                # Input sources used by this analysis
+  - paths: data/can/signal-types.asc    # File, continuous file list or directory; relative to this configuration
+    dbc_by_channel:                     # DBC files indexed by user-facing CAN channel
+      '1': data/can/teaching.dbc        # DBC for channel 1; channel keys are strings
+signals:                                # Signals available to expressions
+  - field:                              # Locate the original input field
+      frame_id: '0x101'                 # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Current_mA                # Exact signal name defined in the DBC
+    name: current                       # Name used to identify and reference this object
+    valid_for: 200ms                    # Maximum time for retaining the latest valid reading
+calculations:                           # Requested statistics or selected rows
+  - name: maximum_current               # Name used to identify and reference this object
+    operation: sample_maximum           # Calculation to apply to the expression
+    expr: current                       # Formula using the declared signal or derived names
+    unit: mA                            # Output unit; display the maximum current in milliamperes
 ```
 
 From the examples directory, run `chronaxis run signal-number-minimal.yaml --output out-number`. `maximum_current` should be 7000 mA. For BLF, change the log path without changing the signal structure. An ordinary maximum needs no `conversion`, `scope`, or `session` declaration.
@@ -44,24 +46,32 @@ From the examples directory, run `chronaxis run signal-number-minimal.yaml --out
 <a id="扩展换算成安培并识别无效值"></a>
 ### Extension: convert to amperes and recognize invalid values
 
-[signal-number-conversion.yaml](../examples/signal-number-conversion.yaml) uses the same log with additional conversion and quality requirements. Replace the previous `signals` section with:
+[signal-number-conversion.yaml](../examples/signal-number-conversion.yaml) uses the same log with additional conversion and quality requirements. First replace the previous `signals` section with:
 
 ```yaml
-signals:
-  - field:
-      frame_id: '0x101'
-      signal: Current_mA
-    invalid_values: [65535.0]              # Decoded invalid value, before extra conversion
-    name: current
-    valid_for: 200ms
-    valid_range: [-100, 100]               # Inclusive range after conversion, in A
-    conversion:
-      input_unit: mA                      # DBC-decoded unit
-      scale: 0.001                        # Additional mA-to-A conversion
-    unit: A
+signals:                         # Signals available to expressions
+  - field:                       # Locate the original input field
+      frame_id: '0x101'          # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Current_mA         # Exact signal name defined in the DBC
+    invalid_values: [65535.0]    # Decoded invalid value, before extra conversion
+    name: current                # Name used to identify and reference this object
+    valid_for: 200ms             # Maximum time for retaining the latest valid reading
+    valid_range: [-100, 100]     # Inclusive range after conversion, in A
+    conversion:                  # Optional unit conversion after decoding
+      input_unit: mA             # DBC-decoded unit
+    unit: A                      # Target analysis unit; compatible registered units convert when scale/offset are omitted
 ```
 
-5000 mA becomes 5 A and the maximum becomes 7 A. These extra fields demonstrate conversion and invalid codes; ordinary calculations do not need them. The DBC scales `Current_mA` by 0.5 and returns a float, so the sentinel is the decoded float `65535.0`. `valid_range` is checked in amperes: 101 A is invalid, while 100 A is valid. The example has no invalid values, so the maximum remains 7 A.
+Then remove `unit: mA` from the previous calculation. The complete `calculations` section is:
+
+```yaml
+calculations:                    # Results requested by this example
+  - name: maximum_current        # Identify the maximum-current result
+    operation: sample_maximum    # Maximum of valid observed samples
+    expr: current                # Current converted to A above; omit output unit
+```
+
+The signal converts 5000 mA to 5 A, and the calculation displays 7 A using its default output unit. Keeping `unit: mA` on the calculation would still display 7000 mA. These extra fields demonstrate conversion and invalid codes; ordinary calculations do not need them. The DBC scales `Current_mA` by 0.5 and returns a float, so the sentinel is the decoded float `65535.0`. `valid_range` is checked in amperes: 101 A is invalid, while 100 A is valid. The example has no invalid values, so the maximum remains 7 A.
 
 <a id="完整字段参考"></a>
 ## Complete field reference
@@ -76,20 +86,21 @@ Omitted optional fields use their defaults. Except for metadata explicitly allow
 | `source` | String; optional for a unique source | Select an existing `sources[].name`, such as `meter`, not a CSV path. |
 | `field` | Required string or mapping | CSV: exact header such as `Current_mA`; memory: a `rows[].values` key; CAN: channel, frame ID, and DBC signal name as described in [CAN fields](inputs.md#can-field). Names are case-sensitive. |
 | `dtype` | String; optional for CAN | `float64`: finite fractional values; `int64`: integers from -2^63 to 2^63-1; `uint64`: integers from 0 to 2^64-1; `bool`: true/false; `enum`: named states. For CAN without explicit `choices`, infer numeric type from the DBC physical range. All-Boolean or all-string explicit mapping targets can imply bool/enum. A DBC enumeration alone does not automatically select enum: `state == 1` remains valid. CSV/memory need an explicit type. |
-| `unit` | Nonempty string; optional for CAN | Analysis unit used for compatibility checks, such as `A` or `V`. Quote dimensionless `"1"`. CAN uses the DBC unit; missing DBC units become `unknown`, while bool/enum use `"1"`. A label alone does not convert values. |
+| `unit` | Nonempty string; optional for CAN | Target analysis unit such as `A` or `V`; quote dimensionless `"1"`. CAN defaults to the DBC unit; missing DBC units become `unknown`, while bool/enum use `"1"`. Version 4 converts compatible known units when both scale and offset are omitted. |
 | `valid_for` | Optional positive duration | Maximum time an update can be held, such as `200ms`, chosen from sampling and tolerated age. Zero, negative, null, and infinite durations are invalid. Default: three times `period` or the DBC message period. Missing required period information causes a configuration error. |
 | `period` | Optional positive duration | Normal update period, used to derive omitted validity. Use acquisition settings or message specifications, such as `100ms`. Overrides the DBC message period; never inferred from adjacent timestamps. Omission can use DBC; zero/null are invalid. Does not create samples. |
-| `conversion` | Optional object | Additional conversion after reading: `input_unit`, multiplier `scale`, and additive `offset`. Omission or `{}` uses child defaults; null is invalid. This does not configure raw-bit DBC decoding. |
-| `conversion.input_unit` | Nonempty string or null; default null | Unit after CSV parsing/DBC decoding, before additional conversion. For 5000 mA → 5 A, use `mA`, `unit: A`, and `scale: 0.001`. Omission/null inherits `unit`. A nonempty DBC unit must match this declaration exactly. An omitted unit can come from the DBC, but extra conversion must still be explicit. |
-| `conversion.scale` | Finite number; default 1 | Formula: input × scale + offset. For mA → A, use 0.001. Known units require their valid conversion ratio. Bool/enum require 1. YAML true/false are not numeric multipliers. |
-| `conversion.offset` | Finite number; default 0 | Added after multiplication, in the target unit. Use a real calibration formula only when unit compatibility is unverified, such as unknown `sensor_raw` → `sensor_value` with +2. Both-known units and bool/enum require 0. This is not a time offset; Booleans are invalid. |
+| `conversion` | Optional object | Conversion after decoding. Version 4 infers the complete conversion only when both scale and offset are omitted, including in `{}`. If either coefficient is explicit, the other defaults to scale 1 or offset 0, and the complete pair is validated without an additional automatic conversion. Null is invalid. |
+| `conversion.input_unit` | Optional nonempty string | Physical unit before extra conversion. In version 4, CAN omission reads it from the DBC; CSV/memory omission inherits `unit`, so supply the input unit when conversion is needed. Omit the field instead of using null: version 4 automatic conversion requires unit text. A nonempty DBC unit must exactly match the resulting input unit. |
+| `conversion.scale` | Optional finite number | Formula: input × scale + offset. Version 4 infers the multiplier when both coefficients are omitted, for example 0.001 for mA → A. Otherwise omitted scale is 1. An explicit multiplier must match known units. Bool/enum require 1; Boolean literals cannot be coefficients. |
+| `conversion.offset` | Optional finite number | Added after multiplication, in the target unit. Version 4 infers it when both coefficients are omitted, for example 273.15 for degC → K. Otherwise omitted offset is 0. An explicit offset must match known units. Bool/enum require zero. This is not a time offset; Boolean literals are invalid. |
+| `code_dtype` | Optional string; version 4 enums only | Original integer type used by enum_code: int64 or uint64. The DBC can supply it for an unscaled integer CAN signal; otherwise declare it when it cannot be inferred. Omit it for label-only comparisons. It must match actual code type and range. |
 | `choices` | List of two-item lists; CAN enum may use DBC; otherwise default `[]` | Map `[input code, analysis value]` using equipment definitions. Bool: `[[0,false],[1,true]]`; enum: `[[0,idle],[7,running]]`. Codes may be integers, Booleans, or strings, matched by type. Bool targets must be Boolean; enum targets nonempty text. CAN `dtype: enum` with omitted choices uses the DBC enumeration. Supply a manual table if needed; it replaces rather than merges the DBC table. Float decoded codes, including 0.5 or 1.0, cannot be mapped this way: retain numeric dtype and numeric conditions, without truncating or rescaling again. CSV/memory enums need a manual table. Omitted bool mapping accepts only native Booleans. Numeric signals do not use this field. |
 | `valid_range` | Optional two-number list | Inclusive bounds after conversion, such as `[-100,100]` A; lower must not exceed upper. 101 A becomes `OUT_OF_RANGE`, not 100 or zero. Omission adds no physical-range restriction; type and missing-value checks still apply. `[]`/null are invalid. Not applicable to bool/enum. |
 | `invalid_values` | Scalar list; default `[]` | Invalid sentinels matched by type and value before extra conversion. Check the parsed/decoded value: integer 65535 uses `[65535]`, not a converted 65.535. Omission/`[]` adds no sentinels; null is invalid. |
 | `sample_policy` | String; default `backward_hold` | Only `backward_hold` is supported: retain the latest update within validity, without linear interpolation. Usually omit it. |
 | `same_time_policy` | String; default `error` | `error` rejects conflicting same-time values, types, validity, or quality; identical updates may merge. `last_by_sequence` selects the largest stable source sequence. Choose from duplicate-record requirements, not magnitude or filename. |
 | `semantic_id` | Nonempty string or null; default null | Business meaning for preset role lookup or requested tracing. Ordinary calculations can omit it. For auto lookup, use the [role table](presets.md#preset-role-requirements), such as `battery.current`, not a guessed name. Expressions use `name`, not the dotted ID. |
-| `semantic_contract_version` | Nonempty string or null; default null | Version of the `semantic_id` meaning. Auto role lookup needs string `"1"` plus `semantic_id`, with matching units and role requirements. Ordinary signals can record other nonempty versions, which do not satisfy auto lookup. It is not `config_version` and does not become 3 because configuration version is 3. |
+| `semantic_contract_version` | Nonempty string or null; default null | Version of the `semantic_id` meaning. Auto role lookup needs string `"1"` plus `semantic_id`, with matching units and role requirements. Ordinary signals can record other nonempty versions, which do not satisfy auto lookup. This is an independent business-role contract version. Automatic role lookup uses string `"1"`; it does not follow the integer analysis `config_version`. |
 | `mapping_version` | Nonempty string or null; default null | Optional version of the input-to-signal mapping, such as `"meter-map-2026-01"`, assigned by the project maintainer. Update according to project practice when columns/DBC mappings change. Omission neither affects ordinary calculation nor generates a version. |
 | `sign_convention` | Nonempty string or null; default null | Physical direction of positive/negative values, established from equipment and data. Charging-preset current requires `positive_is_charge`. Ordinary signals may omit it or use agreed text. It does not negate or calibrate input; incompatible direction requires explicit input handling. |
 | `measurement_location` | Nonempty string or null; default null | Actual measurement point from wiring/sensor documentation. `pack_terminal` means the battery-pack terminal. Charging current/voltage roles require it, including explicit bindings. Ordinary signals may omit it or record agreed text. Names do not infer or alter the measurement point. |
@@ -110,15 +121,15 @@ Signals from one message can share location and period. This example uses separa
 The following section is already in the complete configuration. The DBC period of 100 ms gives voltage a default validity of 300 ms; state overrides it to 200 ms.
 
 ```yaml
-signals:
-  - frame_id: 0x120                       # Shared message location
-    signals:
-      - name: voltage
-        signal: PackVoltage
-      - name: state
-        signal: ChargeState
-        dtype: enum                       # Use the DBC enumeration
-        valid_for: 200ms                   # Override only this signal's validity
+signals:                       # Signals available to expressions
+  - frame_id: 0x120            # Shared message location
+    signals:                   # Signals available to expressions
+      - name: voltage          # Name used to identify and reference this object
+        signal: PackVoltage    # Exact signal name defined in the DBC
+      - name: state            # Name used to identify and reference this object
+        signal: ChargeState    # Exact signal name defined in the DBC
+        dtype: enum            # Use the DBC enumeration
+        valid_for: 200ms       # Override only this signal's validity
 ```
 
 Actual outputs: [session results](../examples/grouped/results/会话结果.csv) and [event results](../examples/grouped/results/事件结果.csv). From their input/configuration directory run `chronaxis run analysis.yaml --output pack-result`. Voltage is 40, 42, and 41 V at 0, 0.1, and 0.2 seconds; `peak_voltage` is 42 V. State is idle, charging, idle, producing a charging rising edge at 0.1 seconds. An unrelated message at 0.4 seconds only establishes the source endpoint.
@@ -162,8 +173,8 @@ First establish what CSV parsing or DBC decoding produces. These six settings ad
 
 | Field | When and how to choose it | Example and omission |
 |---|---|---|
-| `conversion.input_unit` | Use the CSV column or decoded DBC physical unit, not raw bits. `unit` is the target. | 5000 mA → 5 A: input mA, target A, scale 0.001. Omission inherits target unit; it cannot guess mA. See [conversion](#signal-conversion). |
-| `conversion.scale` | Use only a valid ratio between reader and target units. Boolean true is not numeric 1. | mA → A: 0.001. A → A: default 1, not -1 or 2 for sign/calibration. |
+| `conversion.input_unit` | Use the CSV column or DBC-decoded physical unit; `unit` is the target. | Version 4 can obtain mA from CAN's DBC: target A converts 5000 to 5. CSV/memory need an explicit input mA. See [conversion](#signal-conversion). |
+| `conversion.scale` | Usually omit in version 4 to infer a known unit conversion. | mA → A uses 0.001; A → A uses 1. Explicit -1 or 2 does not match A → A and is rejected. |
 | `choices` | Map actual parsed codes using equipment definitions. | Bool integers need explicit mapping; CAN enum can use its DBC table. Other enum sources require mapping. See [encoding](#signal-choices). |
 | `valid_range` | Use sensor limits or confirmed business limits in converted units; do not enlarge them to force success. | 5 A is within [-100,100]; 101 A becomes `OUT_OF_RANGE` until another valid update. Omission adds no range limit. |
 | `invalid_values` | Use invalid sentinels from the specification, confirming decoded type and value. | CSV `65535.0` parses as an integer, so use `[65535]`. Default `[]` adds no sentinels. It does not intercept arbitrary parsing failures. See [original types](#signal-invalid-values). |
@@ -182,28 +193,28 @@ The Boolean example maps `Enabled` integer 0 to false and 1 to true: `condition:
 [signal-state-combined.yaml](../examples/signal-state-combined.yaml) binds both signals and produces one `enabled_running` event at 100 ms. Replace the numeric example's signals, remove its calculations, and use the rule below. Both fields exist in this page's log/DBC. Manual choices demonstrate overriding DBC mapping; the ordinary minimal enum example omits them.
 
 ```yaml
-signals:
-  - choices:
-      - [0, false]                        # Input integer → Boolean
+signals:                                        # Signals available to expressions
+  - choices:                                    # Map input codes to Boolean or enum analysis values
+      - [0, false]                              # Input integer → Boolean
       - [1, true]
-    field:
-      frame_id: '0x102'
-      signal: Enabled
-    name: enabled
-    valid_for: 200ms
-  - choices:
-      - [0, idle]                         # Input integer → state label
+    field:                                      # Locate the original input field
+      frame_id: '0x102'                         # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Enabled                           # Exact signal name defined in the DBC
+    name: enabled                               # Name used to identify and reference this object
+    valid_for: 200ms                            # Maximum time for retaining the latest valid reading
+  - choices:                                    # Map input codes to Boolean or enum analysis values
+      - [0, idle]                               # Input integer → state label
       - [7, running]
-    field:
-      frame_id: '0x103'
-      signal: ModeCode
-    name: mode
-    valid_for: 200ms
-    dtype: enum
-rules:
-  - condition: enabled and mode == "running"
-    name: enabled_running
-    rule_type: rising_edge
+    field:                                      # Locate the original input field
+      frame_id: '0x103'                         # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: ModeCode                          # Exact signal name defined in the DBC
+    name: mode                                  # Name used to identify and reference this object
+    valid_for: 200ms                            # Maximum time for retaining the latest valid reading
+    dtype: enum                                 # Analysis value type
+rules:                                          # Conditions or transitions that produce events
+  - condition: enabled and mode == "running"    # Boolean expression used to select an activity
+    name: enabled_running                       # Name used to identify and reference this object
+    rule_type: rising_edge                      # Event detection algorithm
 ```
 
 Each choice has exactly two values: input code and analysis value. `[7,running]` does not mean column 7; `field` selects the column. Bool targets must be YAML Booleans, not string `"true"`; enum targets must be nonempty text. A parseable but unmapped code becomes an invalid update and replaces the old state.
@@ -218,13 +229,16 @@ A CAN reader extracts bit-encoded values, then applies the DBC factor and offset
 
 | Reader output and target | Signal declaration | Result or check |
 |---|---|---|
-| Decoded 5000 mA, target A | `input_unit: mA`, `unit: A`, `scale: 0.001`, default offset 0 | 5 A |
-| DBC already outputs 5 A, target A | Input A, target A; omit scale/offset | Remains 5 A |
+| Decoded 5000 mA, target A | Version 4: set unit A, omit scale/offset; CAN obtains mA from the DBC, while CSV/memory need conversion.input_unit mA. | 5 A |
+| DBC already outputs 5 A, target A | Omit unit and conversion to use the DBC unit. | Remains 5 A |
+| Decoded 25 degC, target K | Version 4: set unit K and omit scale/offset; CAN obtains degC from the DBC, while CSV/memory need conversion.input_unit degC. | 298.15 K |
 | Known A → A with scale 2 or offset -2 | Rejected by the public entry point | Not an arbitrary calibration interface. |
 | Known A → A with scale -1 | Rejected by the public entry point | `sign_convention` declares direction without changing values. |
 | Either unit is outside the supported unit table | Finite scale/offset are applied as declared; compatibility is `unverified` | An unchecked unit relationship is not a verified conversion. |
 
-Known units include `1`, V/mV, A/mA, W/kW, J/Wh/kWh, s/ms, and Ah/A·s. Both-known units must describe the same physical quantity, use the correct ratio, and have offset zero. Public signals have no `direction_factor`. Unknown labels such as temperature units do not gain verified conversion; do not rename units to bypass checks.
+Registered units include electrical units, time, temperature, temperature differences, angle, rotation speed, pressure, and compound units. See [expression unit rules](expressions.md) for the full scope. For example, degC → K permits offset 273.15; absolute temperatures and temperature differences are distinct.
+
+Version 4 infers a conversion only when both scale and offset are omitted. Supplying either means a complete user-specified conversion, with the other defaulting to 1 or 0 respectively. Different unknown units need explicit, justified coefficients and remain `unverified`. An integer signal is promoted to float64 when its conversion multiplier or offset has a fractional part; an integer that cannot be represented exactly is marked `PRECISION_LOSS`. Public signals have no `direction_factor` field.
 
 If calibration or direction reversal is required, explicitly preprocess input before Chronaxis—for example, multiply confirmed discharge-positive current by -1 into a new CSV column, then bind A → A with scale 1 and offset 0. Preserve the original file and record the formula. See the charging preset's [role requirements](presets.md#preset-role-requirements).
 
@@ -279,3 +293,9 @@ Quick-start power updates occur at 0, 1, 3, and 4 seconds with 2, 4, 8, and 10 W
 The old value excludes its expiry endpoint. An effective new update exactly then supplies the value from that time. If `NA` arrives at 2 seconds, even 3-second validity cannot retain the old 4 W: the value becomes unknown at 2 seconds. Observation ending at 6 seconds does not let validity create data beyond 6 seconds.
 
 Related pages: [inputs](inputs.md), [expressions](expressions.md), and [business presets](presets.md).
+
+## Read an enum's original integer code
+
+Use `mode == 'ready'` for a label comparison; no code type is needed. If a DBC labels both 7 and 9 as ready but only code 9 should count, use `enum_code(mode) == 9` in version 4. For an unscaled integer CAN signal the DBC supplies signedness. Otherwise, when the original integer type is not known, declare `code_dtype: uint64` or `int64` on the enum signal to match the data. A text label alone cannot tell you whether its original code was 7 or 9.
+
+Before the first sample arrives, integer, Boolean, and enum signals remain unknown. A choices mapping only explains codes after they arrive. An unmapped code or explicit invalid update replaces the previous valid state. A DBC label such as Invalid does not automatically mark a value invalid; invalid_values must use the decoded value before extra conversion, not an unscaled raw code.

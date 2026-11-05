@@ -24,7 +24,7 @@ class RecordSourcesTests(unittest.TestCase):
 
     def config(self, kind='memory', mode='fixed', size=1, reverse=False, missing=False):
         """建立同步电压/电流两来源。参数: 来源形式/间隔/批大小/顺序/缺值。返回: dict。异常: IO错。"""
-        raw = dict(config_version=3,
+        raw = dict(config_version=4,
             dataset=dict(name='dataset', entity='device', session='session', domain=dict(start='0s',end='0.3s')),
             sources=[], signals=[], derived=dict(power=dict(expr='voltage * current', unit='W')),
             calculations=[dict(name='energy', scope='session', operation='integral', expr='power', unit='J'),

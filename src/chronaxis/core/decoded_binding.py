@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from hashlib import sha256
 from .binding import SignalDefinition, _identity
 from .declarations import DeclarationBindings
+from .unit_conversion import require_config_version
 from .validation import require_identifier
 from ..timebase.conversion import require_int64_ns
 
@@ -106,6 +107,7 @@ class DecodedBindings:
     本对象不保存SourceSpec.rows，也不能交给材料化完整内存历史的快捷入口。
     """
 
+    config_version: int | None = field(default=None, kw_only=True)  # 缺省继承声明，显式不得冲突。
     declarations: DeclarationBindings  # 原配置关系与同步依据；其身份仍只是声明证明。
     sources: tuple[DecodedSourceEvidence, ...]  # 已核对来源事实，保留工厂的固定顺序。
     identity: str = field(init=False)  # 声明加实际证据的独立SHA-256运行身份。
@@ -132,11 +134,26 @@ class DecodedBindings:
             if not set(evidence.projected_aliases).issubset(aliases):
                 raise ValueError('解码投影包含其他来源或未声明别名')
         # 完整证据保留来源/请求/历史摘要、原范围、全源计数和实际投影；不只哈希配置。
+        # 运行绑定继承配置规则，不因实际来源替换而重设版本。
+        version = self.declarations.config_version
+        if self.config_version is not None and require_config_version(self.config_version) != version:
+            raise ValueError('运行绑定config_version与声明不一致')
+        object.__setattr__(self, 'config_version', version)
         payload = ('decoded-binding-v1', self.declarations.identity,
                    tuple((item.source, item.session_id, item.description_sha256, item.request_sha256,
                           item.history_sha256, item.sample_count, item.progress_count, item.projected_aliases,
                           item.observation_start_ns, item.observation_end_ns, item.source_eof) for item in self.sources))
         object.__setattr__(self, 'identity', sha256(_identity(payload).encode('utf-8')).hexdigest())
+
+    @property
+    def extensions(self):
+        """读取宿主注册。参数: 无。返回: 冻结注册或None。异常: 无。"""
+        return self.declarations.extensions
+
+    @property
+    def lookups(self):
+        """读取原声明标定表。参数: 无。返回: 冻结tuple。异常: 无。"""
+        return self.declarations.lookups
 
     @property
     def signals(self) -> tuple[SignalDefinition, ...]:

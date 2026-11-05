@@ -9,10 +9,11 @@
 """
 
 # 控制协议只处理已经归一化的标量事实，不调用参考或NumPy数值内核。
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import isnan
 from types import MappingProxyType
 from ..core.binding import SignalDefinition
+from ..core.numeric import ScalarValue
 from ..core.types import SignalDType
 from ..core.validation import require_identifier
 from ..results.budget import ResourceBudget
@@ -48,7 +49,7 @@ def _same_fact(left: HistorySample, right: HistorySample) -> bool:
     """
     a, b = left.value, right.value
     # dtype/单位另在绑定检查，原位置不同不会改变数值冲突政策。
-    return (a.valid == b.valid and a.quality == b.quality and type(a.value) is type(b.value)
+    return (a.valid == b.valid and a.quality == b.quality and a.code == b.code and type(a.value) is type(b.value)
             and (a.value == b.value or type(a.value) is float and isnan(a.value) and isnan(b.value)))
 
 
@@ -61,6 +62,7 @@ class _StateSnapshot:
     conflict_count: int
     retained_cost: int
     revision: int  # 成功完整组提交次数，仅用于内部两段查询证明提交顺序。
+    prior: dict | None = None  # 仅v4最近一组被替换的(时间,规范标量)，无原记录定位。
 
 
 class LatestSignalState:
@@ -190,6 +192,14 @@ class LatestSignalState:
         self._ensure_open()
         return self.latest[name]
 
+    def _before_group(self, name):
+        """查组前标量。参数: v4别名。返回: (时间,标量)或None。异常: 未声明别名。"""
+        snapshot = self._snapshot
+        if snapshot.prior is not None and name in snapshot.prior:
+            return snapshot.prior[name]
+        sample = snapshot.latest[name]
+        return None if sample is None else (sample.time_ns, sample.value)
+
     def apply(self, group: DecodedTimeGroup) -> CommittedUpdates:
         """整个组检查/选择成功后一次替换最新状态，任何失败保持旧状态。
 
@@ -204,6 +214,13 @@ class LatestSignalState:
             raise ValueError('状态完整组必须严格递增，不能重复提交或回退')
         # 先计输入选定记录/分组引用及固定别名副本，再建立任何临时容器。
         work = 4096 + len(self.definitions) * 512 + sum(512 + estimate_record_bytes(item) for item in group.samples)
+        # 旧历史只有原始整数时，当前组要额外构造并保留一个定宽整数 ScalarValue。
+        # 每字段包装及安全倍数与 estimate_record_bytes 一致，uint64 最大值覆盖两种原码。
+        enrich = sum(1 for item in group.samples if item.name in self.definitions and
+                     self.definitions[item.name].capture_code and item.value.code is None)
+        if enrich:
+            from ..results.codec import _estimate
+            work += enrich * 16 * (256 + _estimate(ScalarValue((1 << 64) - 1, SignalDType.UINT64)))
         self.budget.reserve_ram(work)
         workspace_owned = True
         try:
@@ -219,6 +236,9 @@ class LatestSignalState:
                     raise ValueError('完整组当前绑定/dtype/单位不匹配')
                 if definition.dtype is SignalDType.ENUM and sample.value.labels != self._labels[sample.name]:
                     raise ValueError('完整组ENUM标签域与当前声明不匹配')
+                if definition.capture_code and sample.value.code is None:
+                    from ..core.enum_codes import history_code
+                    sample = replace(sample, value=replace(sample.value, code=history_code(definition, sample)))
                 # 一个别名绑定单一来源；不同CSV定位不能为重复原seq提供合法平手。
                 identity = (sample.name, sample.sequence)
                 if identity in identities:
@@ -236,6 +256,20 @@ class LatestSignalState:
                 conflicts += 0 if same else len(records) - 1
             result = CommittedUpdates(group.time_ns, tuple(selected), conflicts)
             latest = dict(self.latest)
+            # v4 where 查询可以在任意次状态提交后才开始，不能靠上次查询缓存区分
+            # “条件刷新”和“切换”。每别名最多一项及已计费的规范标签域，包含在
+            # 按声明数量/宽度预付的固定状态内；不保留原始定位及无效输入大原文。
+            prior = None
+            for item in selected:
+                if prior is None:
+                    prior = {}
+                old = latest[item.name]
+                prior[item.name] = None
+                if old is not None:
+                    value = old.value
+                    prior[item.name] = (old.time_ns, ScalarValue(value.value if value.valid else None,
+                        value.dtype, value.valid, value.quality, self._labels.get(item.name, ()), value.code,
+                        partial=value.partial))
             latest.update((sample.name, sample) for sample in selected)
             retained = sum(estimate_record_bytes(item) for item in latest.values() if item is not None)
             # 工作申请包含所有新增记录；原未变记录由原持有申请覆盖。
@@ -244,7 +278,7 @@ class LatestSignalState:
                 raise ValueError('状态内部预估不足，拒绝提交')
             # 构造映射、累计整数和整帧均可能分配；必须在安装前完成才能保持失败原子性。
             snapshot = _StateSnapshot(MappingProxyType(latest), group.time_ns, self.conflict_count + conflicts,
-                                      retained, self.revision + 1)
+                                      retained, self.revision + 1, prior)
             release_amount = work - change
             # 账本转账也先完成；之后仅赋值一个已有指针，没有计数算术或容器构造。
             self.budget.release_ram(release_amount)

@@ -1,4 +1,4 @@
-# chronaxis.core.declarations
+# `chronaxis.core.declarations`
 
 在读取数据之前检查来源、信号和派生名称声明，生成不可变的声明绑定。
 
@@ -12,7 +12,7 @@
 
 ## 相关类型
 
-[Interval](chronaxis.core.models.md#api-Interval)、[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)、[SynchronizationEvidence](chronaxis.core.binding.md#api-SynchronizationEvidence)、[TimeType](chronaxis.core.types.md#api-TimeType)、[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)
+[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry)、[Interval](chronaxis.core.models.md#api-Interval)、[LookupTablePlan](chronaxis.core.lookup.md#api-LookupTablePlan)、[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)、[SynchronizationEvidence](chronaxis.core.binding.md#api-SynchronizationEvidence)、[TimeType](chronaxis.core.types.md#api-TimeType)、[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)
 
 ## 对象导航
 
@@ -31,6 +31,9 @@
 from dataclasses import dataclass, field
 from hashlib import sha256
 from .binding import SignalDefinition, SynchronizationEvidence, _identity
+from .unit_conversion import binding_version
+from .unit_registry import REGISTRY_VERSION
+from .lookup import LookupTablePlan, validate_lookups
 from .models import Interval, TimebaseSpec
 from .types import TimeType
 from .validation import require_identifier, require_text
@@ -61,7 +64,7 @@ class DeclaredSource
 |`input_identity`|str|是|无|规范声明身份，与实际数据身份分别保存。|
 |`offset_ns`|int|否|0|显式固定偏移，不自动估计漂移。|
 
-源码：[`src/chronaxis/core/declarations.py:23`](../../../src/chronaxis/core/declarations.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:26`](../../../src/chronaxis/core/declarations.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeclaredSource-__post_init__"></a>
 ### `DeclaredSource.__post_init__`
@@ -93,7 +96,7 @@ TypeError/ValueError/TimeOverflowError为配置错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/declarations.py:36`](../../../src/chronaxis/core/declarations.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:39`](../../../src/chronaxis/core/declarations.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeclarationBindings"></a>
 ## `DeclarationBindings`
@@ -119,9 +122,13 @@ class DeclarationBindings
 |`signals`|tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]|是|无|已校验单信号契约。|
 |`derived_names`|tuple[str, ...]|否|()|signals统一名称空间。|
 |`synchronization`|tuple[[SynchronizationEvidence](chronaxis.core.binding.md#api-SynchronizationEvidence), ...]|否|()|显式核实依据。|
+|`config_version`|int &#124; None|否|None|缺省继承信号；空声明可指定版本。|
+|`extensions`|[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry) &#124; None|否|None|宿主交给静态声明的不可变注册表，用于解析本计划可见的扩展。|
+|`lookups`|tuple[[LookupTablePlan](chronaxis.core.lookup.md#api-LookupTablePlan), ...]|否|()|v4命名表，独立于信号来源。|
+|`temporal_inputs`|tuple[tuple[str, tuple[str, ...]], ...]|否|()|每项由变换名及其物理信号别名元组组成，联合依赖同步检查沿此表还原到采集来源。|
 |`identity`|str|不填写|构造时计算|配置身份，不是执行绑定SHA。|
 
-源码：[`src/chronaxis/core/declarations.py:56`](../../../src/chronaxis/core/declarations.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:59`](../../../src/chronaxis/core/declarations.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeclarationBindings-__post_init__"></a>
 ### `DeclarationBindings.__post_init__`
@@ -157,7 +164,7 @@ TypeError/ValueError为结构错误、名称冲突、来源错误或同步关系
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/declarations.py:73`](../../../src/chronaxis/core/declarations.py#L73)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:80`](../../../src/chronaxis/core/declarations.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeclarationBindings-resolve"></a>
 ### `DeclarationBindings.resolve`
@@ -184,7 +191,7 @@ ValueError为名称非法或未知。
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/declarations.py:144`](../../../src/chronaxis/core/declarations.py#L144)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:166`](../../../src/chronaxis/core/declarations.py#L166)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeclarationBindings-require_synchronized"></a>
 ### `DeclarationBindings.require_synchronized`
@@ -215,4 +222,4 @@ TypeError/ValueError为容器、别名或同步缺项。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/declarations.py:162`](../../../src/chronaxis/core/declarations.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/declarations.py:184`](../../../src/chronaxis/core/declarations.py#L184)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

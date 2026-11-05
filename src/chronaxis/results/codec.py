@@ -53,6 +53,10 @@ def _pack(value, depth: int = 0):
         if type(value).__name__ in _MODELS and type(value) is _MODELS[type(value).__name__]:
             packed = {}
             for field in fields(value):
+                if value_type is ScalarValue and field.name == 'code' and value.code is None:
+                    continue  # 未请求的码视图不改变原始记录格式。
+                if value_type is ScalarValue and field.name == 'partial' and not value.partial:
+                    continue  # 完整标量仍写原格式，只有部分估算需要额外标记。
                 if field.init:
                     packed[field.name] = _pack(getattr(value, field.name), depth + 1)
             return {'model': type(value).__name__, 'fields': packed}
@@ -101,6 +105,10 @@ def _unpack(value, depth: int = 0):
         if set(value) == {'model', 'fields'} and value['model'] in _MODELS and type(value['fields']) is dict:
             cls = _MODELS[value['model']]
             expected = {field.name for field in fields(cls) if field.init}
+            if cls is ScalarValue and 'code' not in value['fields']:
+                expected.discard('code')
+            if cls is ScalarValue and 'partial' not in value['fields']:
+                expected.discard('partial')
             if set(value['fields']) != expected:
                 raise ResultFormatError('结果模型字段缺失或出现未知字段')
             kwargs = {}
@@ -176,7 +184,9 @@ def _estimate(value, depth: int = 0) -> int:
     # 字段键与临时dict的开销按每字段256bytes留余量。
     if type(value) in SUMMARY_MODELS or (type(value).__name__ in _MODELS and type(value) is _MODELS[type(value).__name__]):
         return getsizeof(value) + sum(256 + _estimate(getattr(value, field.name), depth + 1)
-                                    for field in fields(value) if field.init)
+                                    for field in fields(value) if field.init and
+                                    not (value_type is ScalarValue and
+                                         (field.name=='code' and value.code is None or field.name=='partial' and not value.partial)))
     if type(value) is tuple:
         return getsizeof(value) + sum(_estimate(item, depth + 1) + 32 for item in value)
     if isinstance(value, Enum) and type(value).__name__ in _ENUMS:
@@ -232,6 +242,11 @@ def decode_row(payload: bytes, max_bytes: int) -> ResultRow:
                         or type(fields_['quality']) is not int or fields_['quality'] < 0):
                     raise ResultFormatError('结果字段集合或质量类型错误')
                 fields_['quality'] = QualityFlag(fields_['quality'])
+                if version == 15:
+                    for name in ('group_keys','group_values'):
+                        if type(fields_[name]) is not list:
+                            raise ResultFormatError('聚合分组字段需要JSON数组')
+                        fields_[name]=tuple(fields_[name])
                 if version==11:
                     if type(fields_['parent_event_ids']) is not list:
                         raise ResultFormatError('片段父ID需要JSON数组')

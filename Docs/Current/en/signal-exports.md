@@ -9,7 +9,7 @@
 
 [export-signal-minimal.yaml](../examples/export-signal-minimal.yaml) reads `power` from the supplied `quickstart.asc` and `teaching.dbc`. Its integral remains **38 J**; it additionally exports the four original updates at 0, 1, 3, and 4 seconds within `[0,6)`. Sources, signals, and the currently required device label are already defined.
 
-[export-signal-grid.yaml](../examples/export-signal-grid.yaml) adds a 500 ms grid and `max_gap=3s`, producing 12 points from 0 to 5.5 seconds. The estimate at 0.5 seconds is **3 W**. The 4.5, 5, and 5.5 second points have no right-hand update inside the range, so remain `missing` instead of being extrapolated. The integral is still **38 J**. Run `chronaxis run FILE.yaml --output NEW_DIRECTORY`, then use `exports.jsonl` to find `original.csv` or `resampled.csv`.
+[export-signal-grid.yaml](../examples/export-signal-grid.yaml) adds a 500 ms grid and `max_gap=3s`, producing 12 points from 0 to 5.5 seconds. The estimate at 0.5 seconds is **3 W**. The 4.5, 5, and 5.5 second points have no right-hand update inside the range, so remain `missing` instead of being extrapolated. The integral is still **38 J**. Run `chronaxis run FILE.yaml --output RESULT_DIRECTORY`, read the manifest returned by the CLI, then use its `exports.index_file` and `exports.directory` to locate this export's index and `original.csv` or `resampled.csv`.
 
 <a id="原信号csv导出"></a>
 ## Export original signal updates
@@ -17,8 +17,8 @@
 The following fragment assumes `signals` already binds the numeric signal `voltage` and the [export label requirement](exports.md) is met. Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `signal_csv` child. Keep the other output settings and unshown root fields; do not paste a duplicate `outputs` key.
 
 ```yaml
-outputs:
-  signal_csv:
+outputs:                  # Additional result files to publish
+  signal_csv:             # Export selected signals as CSV
     signals: [voltage]    # Use the signal name from the analysis definitions.
 ```
 
@@ -28,10 +28,10 @@ outputs:
 Replace that `signal_csv` child with the following. The two fragments are alternatives, not two blocks to append together.
 
 ```yaml
-outputs:
-  signal_csv:
-    signals: [voltage]
-    resampling:
+outputs:                       # Additional result files to publish
+  signal_csv:                  # Export selected signals as CSV
+    signals: [voltage]         # Names of the analysis signals to export
+    resampling:                # Optional output grid and value selection
       continuous: [voltage]    # Only signals that can meaningfully be interpolated.
       period: 250ms            # Spacing of exported values.
       max_gap: 2s              # Largest permitted gap between actual observations.

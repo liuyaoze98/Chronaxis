@@ -1,6 +1,7 @@
 """省略范围使用同一次读取的真实首末；不预扫描、补造时间或默认保存历史。"""
 from copy import deepcopy
 from pathlib import Path
+from published_paths import published_file, export_root
 from tempfile import TemporaryDirectory
 from uuid import uuid4
 import unittest
@@ -21,7 +22,7 @@ class FullDomainConfigurationTests(unittest.TestCase):
 
     def config(self, rows=None, batch=1):
         """建立三条功率记录：3W保持一秒、1W保持一秒，共4J。参数: 可选记录/批大小。返回: dict。"""
-        return dict(config_version=3, dataset=dict(name='whole'),
+        return dict(config_version=4, dataset=dict(name='whole'),
             sources=[dict(name='meter', source_type='memory', time=dict(clock='clock'),
                 rows=([dict(time=str(t)+'s', values=dict(power=value))
                        for t, value in ((0,3),(1,1),(2,3))] if rows is None else rows))],
@@ -116,7 +117,7 @@ class FullDomainConfigurationTests(unittest.TestCase):
                 with AnalysisRunner(backend).run(AnalysisPlan.from_dict(raw),self.root/uuid4().hex) as result:
                     expected=(tuple(result.iter_events()),tuple(result.iter_sequences()))
                 self.assertEqual(actual,expected)
-                raw=current_fixture(threshold_config()); raw['config_version']=3
+                raw=current_fixture(threshold_config()); raw['config_version']=4
                 raw['dataset'].pop('domain')
                 raw['sources'][0]['rows']=[dict(time=str(t)+'s',values=dict(temperature=v))
                     for t,v in ((0,85),(.12,77),(.3,75))]
@@ -140,10 +141,10 @@ class FullDomainConfigurationTests(unittest.TestCase):
                 if resampled:option['resampling']=dict(continuous=['power'],period='0.5s',max_gap='2s')
                 raw['outputs']=dict(signal_csv=option)
                 with AnalysisRunner(backend).run(AnalysisPlan.from_dict(raw),self.root/uuid4().hex) as result:
-                    destination=self.root/uuid4().hex;result.write(destination)
-                    entry=json.loads((destination/'exports.jsonl').read_text().splitlines()[0])
+                    destination=self.root/uuid4().hex;published=result.write(destination)
+                    entry=json.loads((published_file(published,'exports.jsonl')).read_text().splitlines()[0])
                     name='resampled.csv' if resampled else 'original.csv'
-                    with (destination/'exports'/entry['directory']/name).open(encoding='utf-8') as handle:
+                    with (export_root(published)/entry['directory']/name).open(encoding='utf-8') as handle:
                         rows=list(csv.DictReader(handle))
                     self.assertEqual([r['value'] for r in rows],['3.0','2.0','1.0',''] if resampled else ['3.0','1.0'])
                     if resampled:self.assertEqual(rows[-1]['reason'],'missing_right')
@@ -193,8 +194,8 @@ class FullDomainRawTests(unittest.TestCase):
                         with AnalysisRunner(backend).run(plan,self.root/uuid4().hex) as result:
                             rows={r.calculation_id:r.value for r in result.iter_calculations()}
                             self.assertAlmostEqual(rows['energy'],1344 if mode=='actual' else 880,places=3)
-                            destination=self.root/uuid4().hex;result.write(destination)
-                            self.assertTrue((destination/'exports.jsonl').is_file())
+                            destination=self.root/uuid4().hex;published=result.write(destination)
+                            self.assertTrue((published_file(published,'exports.jsonl')).is_file())
                             budget=result.spool.budget
                         self.assertEqual(budget.ram_bytes,0)
                         self.assertEqual(len(scans),1)

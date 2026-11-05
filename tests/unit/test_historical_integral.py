@@ -337,9 +337,9 @@ class HistoricalIntegralTests(unittest.TestCase):
             for areas, unit, output, quality in cases:
                 _, _, owner = self.energy_fixture(backend, 'memory', areas, unit=unit, output=output)
                 result = self.consume(owner)
-                self.assertEqual((result.value, result.status, result.reason), (None, 'indeterminate', 'calculation_failed'))
+                self.assertEqual((result.value, result.status, result.reason), (None, 'indeterminate', 'no_valid_selected_data' if unit == 'kW' else 'calculation_failed'))
                 self.assertTrue(result.quality & quality)
-                self.assertEqual(result.value_coverage, 1.0)
+                self.assertEqual(result.value_coverage, 0.0 if unit == 'kW' else 1.0)
 
     def test_real_area_product_overflow_preserves_reportable_other_interval(self):
         """真实首段1e308W保持2秒乘积无效，后段2W保持1秒仍报告2J部分值。

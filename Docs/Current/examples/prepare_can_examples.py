@@ -43,7 +43,7 @@ def main():
                 with can.BLFWriter(path) as writer:
                     for message in messages:
                         writer.on_message_received(message)
-    raw = dict(config_version=3, dataset={'name':'directory_energy'},
+    raw = dict(config_version=4, dataset={'name':'directory_energy'},
                sources=[{'paths':'asc','dbc_by_channel':{'1':'teaching.dbc'},'time':{'offset':f'-{epoch}s'}}],
                signals=[{'name':'power','field':{'frame_id':'0x100','signal':'Power'}}],
                calculations=[{'name':'energy','operation':'integral','expr':'power'},

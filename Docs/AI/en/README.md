@@ -20,13 +20,15 @@ The relative commands below illustrate a source or standalone guide directory. F
 
 ## Install Chronaxis and its default dependencies
 
-Installing the local wheel installs the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. No `[can]` suffix is required. On Windows PowerShell, replace the wheel path with the actual file:
+A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install version 0.1.0.dev2, matching this guide:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
 .\.venv\Scripts\python.exe -m pip check
 ```
+
+For a local package, replace `"chronaxis==0.1.0.dev2"` with `".\chronaxis-0.1.0.dev2-py3-none-any.whl"` in the installation command.
 
 Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is optional. This version declares and has been checked with `python-can==4.6.1`, `cantools==39.4.3`, and `natsort==8.4.0`, installed through the wheel's default dependencies. Do not install an arbitrary latest version to fix a missing module, or change signals, thresholds, or the DBC. Other dependency versions are not thereby verified; use the actual distribution's installation metadata. Prepare dependency wheels in advance for offline installation.
 
@@ -37,8 +39,24 @@ Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is o
 
 First read [from input to results](workflow.md) to choose a single analysis, preset, or independent batch.
 
+After querying a task, read the materials in its `references` list, then open the complete configuration named by `example`. Paths are relative to this language’s README directory. A fragment after `#` in a JSON reference identifies the schema node to read.
+
+Select by calculation meaning, rather than matching only the word “energy”:
+
+| Requested result | Task and entry point |
+|---|---|
+| Custom analysis operators | `HOST_EXTENSION`; [registry API](../../Current/en/public-api/ExtensionRegistry.md) and the task's host script. |
+| Aggregate calculation rows, sequence delays, event counts or segment counts | `POWER_STATISTICS`; [statistics and grouping example](../../Current/examples/power-statistics.yaml). |
+| One-dimensional calibration lookup | `CALIBRATION`; [lookup configuration](../../Current/examples/lookup-power.yaml). |
+| Accumulate target-message contributions through the general runner, including contribution details | `MESSAGE_ENERGY`, using general `run`; [complete minimal configuration](../../Current/examples/message-minimal.yaml). |
+| Integrate over each entire interval whose condition lasts beyond a threshold | `CONDITION_ENERGY`, using general `run` or `run_analysis.py`. |
+| In one independent ASC/BLF, calculate each target frame's fixed-period contribution using inputs from that frame | `FAST_MESSAGE_ENERGY` in the high-performance integrator (same-frame per-message accumulation), using `fast validate/explain/run`. |
+| Process the latter independent files from one template in parallel and total comparable metrics | `FAST_TEMPLATE_TOTAL`, using `fast batch --total`; see [complete batch configuration](../../Current/examples/fast/batch.yaml). |
+
+`run_analysis.py` runs a general analysis; it does not automatically select fast. Follow the task-specific commands for fast. Batch files use root `batch_version: 1`; their referenced analysis files separately declare `config_version`.
+
 1. Search the [task index](tasks.json) for the requested task. Read that entry's example, applicability, and related fields. Start with BLF/ASC plus DBC for CAN tasks. Decoded CSV tables do not need a DBC. Do not mix configuration or internal functions from another release.
-2. Write YAML or JSON using integer `config_version: 3`. Examples are complete files; preserve the layout under `../../Current/examples/data`. Their engineering values apply only to the synthetic inputs. If the real time basis, thresholds, encoding, units, or direction are missing, explain which fact is missing and how it changes the result.
+2. Write YAML or JSON using integer `config_version: 4`. Examples are complete files; preserve the layout under `../../Current/examples/data`. Their engineering values apply only to the synthetic inputs. If the real time basis, thresholds, encoding, units, or direction are missing, explain which fact is missing and how it changes the result.
 3. For Python, consult the [public API index](../../Current/en/public-api.json), then the individual API page. Use `load_analysis_plan` for files and `AnalysisPlan.from_dict` for expanded dictionaries. Preset construction returns a `PlanFragment`, which cannot be passed directly to `run`. Inspect every task status after a batch returns.
 4. Load the configuration, validate declarations, inspect dependencies, run, and write the output. Commands are below; the [complete Python call](../run_analysis.py) provides the executable path. Report actual inputs, units, boundaries, quality, and unverified parts. Returning from calculation is not the same as publishing results.
 
@@ -67,7 +85,7 @@ python ../run_analysis.py ../../Current/examples/conditional-energy.yaml result-
 
 This example reads two continuous ASC volumes and decodes state, current, and voltage with a DBC. It requires `state == 0x2 and current >= 10` for strictly more than 60 seconds, then integrates over the entire qualifying event. The first activity lasts exactly 60 seconds and is excluded. The second crosses the file boundary, covers `[61,122)` seconds, and gives `4000 × 61 / 3600000 = 0.06777777777777777 kWh`. Integration starts at condition onset by default, including the first 60 seconds. `confirmed_ns=121000000001` is the strict-duration confirmation time, not the integration start. Use task `CONDITION_ENERGY`; `CHARGE` is not a replacement when its current comparison differs.
 
-The output directory must be new. Default `readable_csv` output places exact-second boundaries and `energy_kwh（kWh）` on the same row in `事件结果.csv` (event results). Check each metric's status and explanation. Discover actual file paths through `run_manifest.json.outputs`. To consume original interchange tables linked by `parent_id`, explicitly select `outputs.tables: csv` or `jsonl`. CLI and manifest `analysis_outcome` distinguish no observation, unknown conditions, conditions not met, insufficient duration, and detected events. No event does not mean zero energy.
+The output directory can be reused; this publication uses a common timestamp suffix. Default `readable_csv` output places exact-second boundaries and `energy_kwh（kWh）` on the same row in `事件结果_<run timestamp>.csv` (event results). Check each metric's status and explanation. Read the manifest path returned by the CLI or API, then use its `outputs` list to find this publication's files. To consume original interchange tables linked by `parent_id`, explicitly select `outputs.tables: csv` or `jsonl`. CLI and manifest `analysis_outcome` distinguish no observation, unknown conditions, conditions not met, insufficient duration, and detected events. No event does not mean zero energy. [View the actual teaching-example result table](../../Current/examples/results/conditional-energy-yaml/事件结果.csv).
 
 For your own data, replace paths, IDs, signals, and conditions using the actual DBC. Decoded tables can use task `CSV`. Do not treat synthetic thresholds as the user's production parameters.
 

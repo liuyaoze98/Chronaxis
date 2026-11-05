@@ -2,102 +2,130 @@
 
 [English](publishing.en.md)
 
-从本次交付目录执行以下命令。先完成发布信息确认和本地校核，再发布GitHub源码及PyPI安装包。TestPyPI试装是可选步骤。使用GitHub自动上传时，先按[可信发布设置](trusted-publishing.md)完成一次账号配置；本页同时保留手动上传命令。
+本页记录 2026-11-02 发布 `0.1.0.dev1` 时实际走通的流程，供下一次发布复用。该版本已经发布；下次先按[版本规则](versioning.md)确定新版本，不覆盖已有文件或移动已有标签。
 
-## 交付目录
+顺序为：**本地打包与验收 → 公开源码和版本附件 → HTML 上线 → PyPI 预演 → PyPI 上传 → 全新环境安装验收 → 保存发布结果**。本次使用 GitHub 可信发布，没有使用 TestPyPI，也没有通过本机 Twine 上传。
 
-|位置|用途|
+## 一次性设置
+
+|项目|已采用的设置|
 |---|---|
-|`source/`|已按公开清单导出的源码；在这里建立新的公开Git历史|
-|`dist/`|只有wheel和sdist，供TestPyPI/PyPI上传|
-|`manual/index.html`、`manual/en/index.html`|中英文离线用户手册|
-|`manual/ai-guide/README.md`、`manual/ai-guide/en/README.md`|可直接阅读的AI指南|
-|`Chronaxis-Source-0.1.0.dev1.zip`|公开源码的独立压缩副本|
-|`Chronaxis-Manual-0.1.0.dev1.zip`|完整双语手册及AI资料，适合作为GitHub Release附件|
-|`SHA256SUMS.txt`、`delivery.json`|发行文件摘要、源码与资料版本、验证结果和待补项|
+|公开源码仓库|[liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis)|
+|PyPI|项目 `chronaxis`；按[可信发布设置](trusted-publishing.md)授权 GitHub|
+|PyPI 发布身份|Owner=`liuyaoze98`，Repository=`Chronaxis`，Workflow=`pypi-publish.yml`，Environment=`pypi`|
+|GitHub Pages|仓库 Settings → Pages → Source 选择 GitHub Actions|
+|HTML 地址|[中文](https://liuyaoze98.github.io/Chronaxis/)与[English](https://liuyaoze98.github.io/Chronaxis/en/)|
+|维护者与许可|`liuyaoze <work@liuyaoze.com>`，MIT|
 
-不要直接推送内部开发仓库的完整历史；它包含开发记录和历史业务资料。公开源码使用本目录的`source/`。测试日志和构建暂存保存在交付目录之外。
+PyPI 通过 GitHub 的短期身份凭据接收文件，无需向 AI 提供密码或令牌。现有可信发布配置可以用于后续版本；更改仓库、工作流文件名或环境名时，需要重新核对绑定。两个工作流均手动触发，上传源码不会自动发布网站或安装包。
 
-## 上传前确认
+## 1. 本地打包与验收
 
-- 本项目仓库为[liuyaoze98/Chronaxis](https://github.com/liuyaoze98/Chronaxis)，包元数据已配置仓库、手册、问题及版本说明链接。PyPI正文在构建时从README生成，将相对文件链接转换为`v0.1.0.dev1`标签下的网页地址；源码README仍支持本地阅读。
-- 核对PyPI账户可发布`chronaxis`，目标版本为`0.1.0.dev1`。HTTP 404不等于这个名称一定可注册；账户权限与名称保留状态仍以PyPI为准。
-- 公开仓库应在PyPI发布前可访问。MIT、作者liuyaoze和邮箱work@liuyaoze.com已确定。
-- 阅读[版本规则](versioning.md)、[第三方说明](third-party.md)和[已知依赖限制](security.md)。已经上传的发行文件不能覆盖；修改后使用新的版本号。
+先同步 `pyproject.toml` 中的版本、README、中文和英文安装说明、AI 指南及本版说明。结果中的 `RunMetadata.software_version` 和缺依赖提示里的 wheel 文件名也要同步。`Documentation` 固定指向在线 HTML，`Changelog` 指向本次版本说明；README 的相对文件链接在构建时转换为本次公开标签下的地址。
 
-建立专用上传环境并检查待上传的两个文件：
+在内部仓库完成验证和提交，再从明确的提交导出。以下工具是本次实际使用的构建链路；参数中的提交必须是已审阅版本。
 
-```powershell
-$Version = '0.1.0.dev1'
-$Wheel = "dist/chronaxis-$Version-py3-none-any.whl"
-$Sdist = "dist/chronaxis-$Version.tar.gz"
-py -3.12 -m venv .venv-publish
-$Python = '.venv-publish/Scripts/python.exe'
-& $Python -m pip install --upgrade twine
-& $Python -m twine check $Wheel $Sdist
-Get-FileHash -Algorithm SHA256 $Wheel, $Sdist
-```
+|工具或检查|用途及通过条件|
+|---|---|
+|`tools/build_m2_docs.py --edition Current`|从 `Docs/Current/documentation.json` 指定源码生成参考；公开签名与实际接口一致|
+|`tools/english_docs.py --record-reviewed`|先核对受影响译文，再登记中英文来源；不能仅刷新摘要消除失败|
+|`tools/lock_ai_inputs.py <手册提交> --runtime <运行源码提交> --device-label <home或work>`|锁定同版指南输入；在提交对应资料后执行|
+|`tools/export_public_source.py <新目录> --revision <提交>`|按白名单导出公开文件和 `PUBLIC-SOURCE.json`，排除内部 Git 历史、管理记录、真实数据及工作区未提交内容|
+|`tools/verify_ai_distribution.py <新构建目录> --public-source <公开导出目录>`|从无 Git 的干净源码构建 sdist，再由 sdist 构建 wheel，检查安装指南与可选 ZIP 一致|
+|`node tools/render_current_docs.mjs`|生成中英文 HTML 和可直接阅读的 AI 资料|
+|`tools/check_current_html.py`、`node tools/test_manual_search.mjs`、`tools/package_current_docs.py`|检查页面/资源/搜索/复制内容，打包并核对手册移动后仍可用|
+|`tools/check_ai_install.py <wheel> <AI ZIP> <已准备的依赖目录> <报告路径> --device-label <home或work>`|在隔离环境核对指南、公开签名和随包任务|
+|`python -m twine check <wheel> <sdist>`|检查 PyPI 包格式与 README；这一步不上传|
 
-两项检查应通过，摘要应与SHA256SUMS.txt相符。上传时明确指定这两个文件，不把手册或源码ZIP当作PyPI安装包。
+Python 工具通过 `python -B` 调用。构建依赖和文档工具要求见[文档维护说明](../Current/maintenance.md)。源代码变化时重建受影响资料，并在交付时比较 HTML 与 wheel 中的 AI 指南。测试或构建失败先定位，不通过修改校验摘要、跳过断言来冒充通过。
 
-## GitHub源码与发行附件
+整理以下五个 GitHub Release 附件，并保存 SHA256：wheel、sdist、`Chronaxis-Source-<版本>.zip`、`Chronaxis-Manual-<版本>.zip`、`SHA256SUMS.txt`。其中摘要文件列出另外四个附件的摘要；上传后再核对五个附件本身。`delivery.json` 和验证日志留在本地交付工作目录；各附件的名字须与工作流一致。PyPI 只接收 wheel 和 sdist。
 
-先在GitHub创建空仓库，不预先生成README或许可证。如果目标仓库已有提交，先核对其内容，不按下列首次发布步骤覆盖它。
+## 2. GitHub源码与发行附件
 
-```powershell
-$Repository = 'https://github.com/liuyaoze98/Chronaxis.git'
-git -C source init -b main
-git -C source config user.name liuyaoze
-git -C source config user.email work@liuyaoze.com
-git -C source add -- src tests examples tools Docs README.md README.en.md LICENSE pyproject.toml setup.py MANIFEST.in .gitattributes .gitignore PUBLIC-SOURCE.json
-git -C source diff --cached --stat
-git -C source commit -m "Release Chronaxis $Version"
-git -C source remote add origin $Repository
-git -C source push -u origin main
-git -C source tag -a "v$Version" -m "Chronaxis $Version"
-git -C source push origin "v$Version"
-```
+内部开发仓库与公开仓库使用独立历史。首次发布时初始化公开仓库；后续发布沿用已有公开检出，先检查工作区、拉取并快进 `main`，再同步本次白名单导出的内容。逐项检查差异后提交并推送；不要把内部仓库直接添加公开 remote 后推送全部历史。
 
-在GitHub Releases中基于此标签先创建草稿，标题用`Chronaxis 0.1.0.dev1`，勾选预发行，正文取[本版说明](release-notes-0.1.0.dev1.md)。附件加入源码ZIP、双语手册ZIP、wheel、sdist及SHA256SUMS.txt。核对五项附件摘要后公开预发行，以便Pages工作流通过只读权限取得手册；PyPI回读通过后更新发布状态。
-
-推送后用未登录浏览器打开仓库、`v0.1.0.dev1`标签以及包元数据中的手册链接，确认外部可读，再上传PyPI。仓库URL已知不代表目前已公开；本地构建检查只核对链接目标文件存在，不能替代这一步。
-
-在线 HTML 手册发布到 https://liuyaoze98.github.io/Chronaxis/，英文入口为 https://liuyaoze98.github.io/Chronaxis/en/。在仓库 Pages 设置中选择 GitHub Actions，再运行 pages.yml：下载已核验的手册附件、检查 SHA256 后部署。新版本先确认在线页面、语言切换、搜索和 AI 指南均可访问，再上传 PyPI；不能只验证链接返回成功。
-
-## TestPyPI试上传与试装
-
-TestPyPI和PyPI使用各自的账户与令牌。运行上传命令后在Twine交互提示中输入对应令牌，令牌不写进项目文件。
+以下命令在已完成公开源码同步的环境使用。`$PublicRepo` 指公开仓库检出目录，不能指内部开发仓库；`$Version` 必须是尚未发布的新版本。
 
 ```powershell
-$env:TWINE_USERNAME = '__token__'
-& $Python -m twine upload --repository testpypi $Wheel $Sdist
-py -3.12 -m venv .venv-testpypi
-$TestPython = '.venv-testpypi/Scripts/python.exe'
-& $TestPython -m pip install $Wheel
-& $TestPython -m pip install --force-reinstall --no-deps --index-url https://test.pypi.org/simple/ "chronaxis==$Version"
-& $TestPython -m pip check
-& $TestPython -m chronaxis guide
-& $TestPython -m chronaxis guide --language en
+$PublicRepo = Read-Host 'Public repository checkout path'
+$Version = Read-Host 'New release version'
+git -C $PublicRepo status --short
+git -C $PublicRepo push origin main
+git -C $PublicRepo tag -a "v$Version" -m "Chronaxis $Version"
+git -C $PublicRepo push origin "v$Version"
 ```
 
-第一次从本地wheel安装用于从正常索引取得依赖，第二次强制从TestPyPI替换Chronaxis本身，避免要求TestPyPI也保存全部依赖。两个指南路径应指向该新环境内实际存在的README。
+当前 PyPI 工作流解析的是**附注标签**，因此使用 `git tag -a`。标签指向已核验的公开源码提交。公开文件应与 `PUBLIC-SOURCE.json` 对应，不能将内部提交 SHA 当作公开提交 SHA。
+
+按该标签创建 GitHub Release 草稿，上传五项附件，核对名称、大小和 SHA256。开发预览版标为 prerelease。附件正确后先公开预发行，正文如实说明 PyPI 尚待上传；这是后续工作流用只读仓库权限取得附件的前提。
+
+## 3. 更新本次发布的工作流
+
+工作流不会自动推断新版本或重新构建文件。**只改本地 `$Version` 变量不够**，每次需检查下表，并将修改提交到公开 `main`。
+
+|文件|每次要更新|当前权限|
+|---|---|---|
+|`.github/workflows/pages.yml`|Release 标签、手册 ZIP 文件名及 SHA256|`contents: read`、`pages: write`、`id-token: write`|
+|`.github/workflows/pypi-publish.yml`|版本说明、Release 标签、该标签指向的公开源码 SHA、wheel/sdist 文件名及各自 SHA256|`contents: read`、`id-token: write`|
+
+两项均限定本仓库和 `main`，官方 Action 固定到提交。源码标签冻结后，可以另外提交发布工作流到 `main`，不为填入公开源码 SHA 而移动标签。本次 `dev1` 就采用这个顺序。当前已提交工作流仍锁定 `0.1.0.dev1`，下一版运行前必须更新。
+
+## 4. HTML上线
+
+```powershell
+gh workflow run pages.yml --repo liuyaoze98/Chronaxis --ref main
+```
+
+在 Actions 中等到本次运行成功。流程下载公开手册附件、校验 SHA256、解压并部署，不在云端重新生成内容。
+
+从公网检查中英文首页、语言切换目标、样式、脚本、搜索数据、一个实际教程及 AI 指南。核对返回内容与已验手册一致，并确认页面为 HTML；HTTP 200 可能只是错误页或访问挑战，不能单独作为验收结果。在线入口提供当前发布版；历史版本通过对应 Release 的离线手册保留。
 
 ## PyPI正式上传与回读
 
-使用与试装一致的两个文件；确认项目地址已公开、delivery.json没有未完成的发布信息后执行：
+先运行不上传的预演：
 
 ```powershell
-& $Python -m twine upload --repository pypi $Wheel $Sdist
+gh workflow run pypi-publish.yml --repo liuyaoze98/Chronaxis --ref main -f upload=false
+```
+
+确认**这一次**运行成功：标签对应源码正确，两项附件摘要通过，上传步骤跳过。随后才执行正式上传：
+
+```powershell
+gh workflow run pypi-publish.yml --repo liuyaoze98/Chronaxis --ref main -f upload=true
+```
+
+当前发布使用 PyPI Trusted Publishing，并保留发布签名。成功后核对 `https://pypi.org/pypi/chronaxis/<版本>/json` 中的两项文件名/SHA256、版本、Python 和依赖要求、MIT、作者邮箱、README 及项目链接；同时检查项目默认版本的 `Documentation` 确实指向 HTML。
+
+从正式 PyPI 新建环境安装，使用随包指南运行示例：
+
+```powershell
 py -3.12 -m venv .venv-pypi
 $CheckPython = '.venv-pypi/Scripts/python.exe'
 & $CheckPython -m pip install --no-cache-dir --index-url https://pypi.org/simple/ "chronaxis==$Version"
 & $CheckPython -m pip check
+& $CheckPython -m chronaxis guide --language en
 $Guide = Split-Path (& $CheckPython -m chronaxis guide)
 & $CheckPython "$Guide/run_analysis.py" "$Guide/examples/conditional-energy.yaml" result-release-check
 ```
 
-预期生成一个61–122秒的事件，能量为`0.06777777777777777 kWh`；`result-release-check`必须是新目录。核对PyPI页面的版本、MIT、维护者邮箱、依赖、README及链接，然后更新GitHub Release中的发布状态，记录两个平台的实际地址和时间。
+虚拟环境和 `result-release-check` 使用新目录。预期得到一个 61–122 秒的事件、`0.06777777777777777 kWh`、状态“完整”；中英文指南均能直接定位，运行前后指南文件不变。Windows/Python 3.12 是本次实际验证环境，不据此扩大平台支持声明。
 
-## 维护依据
+最后更新 GitHub Release 正文，去掉“PyPI 待上传”等临时状态；保存发布地址、源码/标签、文件摘要、工作流运行和安装结果，再更新内部计划、问题与交接记忆。仅有工作流成功不能代替安装验收。
 
-命令依据[PyPA打包教程](https://packaging.python.org/en/latest/tutorials/packaging-projects/)、[GitHub首次推送说明](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)及[PyPI文件名复用规则](https://pypi.org/help/#file-name-reuse)。维护者：liuyaoze。
+## 本次遇到的问题与处理
+
+|现象|实际处理及下次做法|
+|---|---|
+|dev0 的 PyPI 文档链接打开 GitHub Markdown|先上线 HTML，再发 dev1 修正元数据。PyPI 已上传版本的资料不能靠修改仓库 README 原位覆盖|
+|工作流读取 Release 草稿报 `release not found`|草稿对只读身份不可见。先核对并公开附件，再运行 Pages/PyPI；维护者核对草稿时，本次使用 release ID 查询|
+|Pages 申请 `contents:write` 被自动审批拒绝|采用公开附件加 `contents:read`，只保留部署需要的 Pages/OIDC 权限|
+|Git HTTPS 传输重置|本次改用 GitHub Git Data API 上传同一审核内容，只快进已核对父提交；再 fetch 并快进本地公开镜像。没有强推或重写历史|
+|Sigstore/Rekor 返回 HTTP 502|先核对失败阶段及 PyPI 远端文件；本次确认 dev1 尚无文件后原流程重试。若已有部分文件，先核对摘要和状态，不盲目重跑，不默认开启 `skip-existing` 或关闭签名|
+|系统临时目录无写权限|改用本次专用工作目录设置 `TEMP`/`TMP`，重新执行受影响的校验|
+|旧手册检查器要求英文页包含中文履历|使用适用的双语来源、HTML和指南校核，保留原失败记录；不能把不适用断言说成产品缺陷已修复|
+|PyPI HTML 返回 `Client Challenge`|通过官方 JSON 核对发布元数据，另外核对目标 HTML；如实注明未执行浏览器交互验证|
+
+本次 `dev1` 的线上证据：[Pages 第二次部署成功](https://github.com/liuyaoze98/Chronaxis/actions/runs/41463321957)、[PyPI 无上传预演](https://github.com/liuyaoze98/Chronaxis/actions/runs/41464499414)、[PyPI 第二次上传成功](https://github.com/liuyaoze98/Chronaxis/actions/runs/41464970458)、[GitHub 预发行](https://github.com/liuyaoze98/Chronaxis/releases/tag/v0.1.0.dev1)。这些是历史验收记录，不表示下一版本已通过相同检查。
+
+维护者：liuyaoze。详细发布范围见[分发说明](distribution.md)，依赖限制见[安全说明](security.md)。

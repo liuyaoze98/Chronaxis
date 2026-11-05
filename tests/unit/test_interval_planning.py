@@ -33,7 +33,7 @@ def fixture():
 
     参数: 无。返回: 每次新建的schema2配置dict，真实时间与单位显式。异常: 无主动异常。副作用: 无。
     """
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='demo', entity='sensor', session='run', domain=dict(start='0s', end='0.3s')),
         sources=[dict(name='table', source_type='memory', time=dict(time_type='relative', unit='s', origin='demo'),
                       rows=[dict(time=t, values={'raw':4000}) for t in ('0s','0.12s','0.3s')])],
@@ -134,7 +134,7 @@ class IntervalPlanningTests(unittest.TestCase):
         with self.assertRaisesRegex(PlanValidationError, '原始报文'):
             self.build(plain)
         config = legacy_config()
-        config.update(config_version=3)
+        config.update(config_version=4)
         config.pop('message_calculations')
         config['calculations'] = fixture()['calculations']
         config['intervals'] = {'default':{'mode':'dbc'}}
@@ -160,7 +160,7 @@ class IntervalPlanningTests(unittest.TestCase):
         参数: 无，使用本例独立配置。返回: None。异常: AssertionError或意外配置/运行错误使测试失败。副作用: 仅内存声明及测试明确的静态探针；不读报文或DBC。
         """
         config = legacy_config()
-        config.update(config_version=3)
+        config.update(config_version=4)
         config.pop('message_calculations')
         other = deepcopy(config['signals'][0])
         other['name']='other'; other['field']['signal']='Other'
@@ -227,7 +227,7 @@ class IntervalPlanningTests(unittest.TestCase):
 
     def test_only_current_version_and_no_redundant_semantic_marker(self):
         """旧结构及冗余语义版本被拒绝，不能自动迁移或隐式回退。"""
-        for version in (1, 2, True, 3.0, '3', 4):
+        for version in (1, 2, 3, True, 4.0, '4'):
             config = fixture()
             config['config_version'] = version
             with self.assertRaises(PlanValidationError):

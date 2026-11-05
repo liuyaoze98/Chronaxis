@@ -9,24 +9,27 @@ from .diagnostics import locate_error
 
 
 def configuration_type(data):
-    """识别三个独立当前入口。参数: 原生配置。返回: analysis/batch/mapping。异常: ValueError。
+    """识别当前分析或批量入口。参数: 原生配置。返回: analysis/batch。异常: ValueError。
 
-    版本不能猜测或迁移；旧INI由独立legacy import入口处理。
+    只接受当前分析及批量格式，不猜测或迁移输入版本。
     """
     from ..planning.checks import PlanValidationError
-    versions={'config_version':('analysis',3),'batch_version':('batch',1),'mapping_version':('mapping',1)}
+    versions={'config_version':('analysis',(4,)),'batch_version':('batch',(1,))}
     present=[key for key in versions if type(data) is dict and key in data]
     if len(present)!=1:raise PlanValidationError('$','需要且只能有一种配置版本字段','invalid_version')
     key=present[0];name,version=versions[key]
-    if type(data[key]) is not int or data[key]!=version:
-        raise PlanValidationError('$.'+key,'仅接受当前版本'+str(version)+'，不转换旧结构','invalid_version')
+    if type(data[key]) is not int or data[key] not in version:
+        raise PlanValidationError('$.'+key,'仅接受当前版本'+'或'.join(map(str, version))+'，不转换旧结构','invalid_version')
     return name
 
 
 def validate_document(document, base, *, return_plan=False):
     """调用现有模型；return_plan=True时同时返回计划，避免配置工具重复加载DBC。
 
-    批量不加载子任务，映射只核映射与其分析部分；INI模式与段名需在实际导入时核对。
+    参数: document为解析配置，base为相对路径基准，return_plan控制是否返回计划。
+    返回: 入口类别，或(类别, 已校验计划)。
+    异常: PlanValidationError附带文件位置；文件与依赖错误按原入口传播。
+    批量不加载子任务；未知格式在读取业务数据前拒绝。
     """
     from ..planning import AnalysisPlan
     from ..planning.checks import PlanValidationError
@@ -38,15 +41,6 @@ def validate_document(document, base, *, return_plan=False):
         elif name=='batch':
             from ..batch.models import BatchPlan
             plan=BatchPlan.from_dict(document.data,base_dir=base)
-        else:
-            from ..migration.api import _prepare_mapping
-            from ..migration.ini import ImportProblem
-            try:_prepare_mapping(document.data,base)
-            except ImportProblem as error:
-                raise PlanValidationError(error.issue.path,error.issue.message,error.issue.code) from error
-            try:plan=AnalysisPlan.from_dict(document.data['analysis'],base_dir=base)
-            except PlanValidationError as error:
-                error.path='$.analysis'+error.path[1:];error.refresh_text();raise
         return (name,plan) if return_plan else name
     except PlanValidationError as error:raise locate_error(error,document)
 
@@ -65,12 +59,12 @@ def path_fields(data, config_type):
             for owner,key in source_path_fields(holder):
                 yield (data,'inputs') if owner is holder else (owner,key)
         return
-    analysis=data['analysis'] if config_type=='mapping' else data
-    for source in analysis.get('sources',[]):
+    # 非批量入口已校验为当前分析配置，路径直接位于根级来源和公共定义中。
+    for source in data.get('sources',[]):
         from ..planning.input_paths import source_path_fields
         yield from source_path_fields(source)
         for channel in source.get('dbc_by_channel',{}):yield source['dbc_by_channel'],channel
-    for index in range(len(analysis.get('imports',[]))):yield analysis['imports'],index
+    for index in range(len(data.get('imports',[]))):yield data['imports'],index
 
 
 def same_native_value(left,right):

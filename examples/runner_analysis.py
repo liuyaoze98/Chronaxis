@@ -30,7 +30,7 @@ def main():
     rows = ((0, 4000, 1), (1, 4000, 0), (2, 4000, 1), (3, 4000, 0), (8, 4000, 0))
     (root / 'power.csv').write_text('ns,power,active\n' + ''.join(
         f'{second * ns},{power},{active}\n' for second, power, active in rows), encoding='utf-8')
-    config = {'config_version': 3,
+    config = {'config_version': 4,
         'dataset': {'name': 'power_example', 'entity': 'example_device', 'session': 'example_session',
             'domain': {'start': '0s', 'end': '12s'}},
         'sources': [{'name': 'table', 'source_type': 'signal_csv', 'path': 'power.csv', 'time_column': 'ns',

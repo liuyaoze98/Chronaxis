@@ -1,4 +1,4 @@
-# chronaxis.planning.message_calculations
+# `chronaxis.planning.message_calculations`
 
 静态解析当前消息legacy_sum声明，保持解码profile和新计算policy分开。
 
@@ -36,6 +36,7 @@ from ..legacy.disjunction import LegacyDisjunction
 from ..core.types import SignalDType
 from ..sources.can_spec import LegacyCANSpec, can_field_from_key
 from ..sources.text_can_spec import CANTextSpec
+from .diagnostic_collection import usable_node, collect_node_error
 from .checks import PlanValidationError, array_at, choice_at, model_at, object_at, text_at
 from .models import LegacyMessageSelector, MessageCalculationPlan
 from .nodes import expression_at, register_id
@@ -89,7 +90,7 @@ TypeError为指标/绑定模型错误；ValueError为来源能力、声明或定
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/message_calculations.py:28`](../../../src/chronaxis/planning/message_calculations.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/message_calculations.py:29`](../../../src/chronaxis/planning/message_calculations.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_message_calculations"></a>
 ## `parse_message_calculations`
@@ -123,4 +124,4 @@ PlanValidationError保具体JSON路径；cache_policy报旧完整缓存能力尚
 
 返回类型：tuple[[MessageCalculationPlan](chronaxis.planning.models.md#api-MessageCalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/message_calculations.py:98`](../../../src/chronaxis/planning/message_calculations.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/message_calculations.py:99`](../../../src/chronaxis/planning/message_calculations.py#L99)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

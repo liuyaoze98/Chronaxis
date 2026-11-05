@@ -41,44 +41,44 @@ The complete [electrical-base.yaml](../examples/electrical-base.yaml) uses synth
 There is one CAN source, so the signals need no repeated `source`. IDs and signal names come from the DBC, which also supplies types and units. The explicit 20 s validity is for sparse teaching records, not a recommended device setting.
 
 ```yaml
-signals:                                 # Signals available to presets.
-  - name: temperature                    # Name used by the threshold role.
-    field:                               # Original CAN signal.
-      frame_id: '0x11d'                  # Message ID from the DBC.
-      signal: Temperature                # Case-sensitive DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-  - name: voltage                        # Voltage role candidate.
-    field:                               # Original CAN signal.
-      frame_id: '0x11f'                  # Message ID from the DBC.
-      signal: Voltage                    # DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-    measurement_location: pack_terminal  # Actual measurement is at the pack terminals.
-  - name: current                        # Current role candidate.
-    field:                               # Original CAN signal.
-      frame_id: '0x114'                  # Message ID from the DBC.
-      signal: Current                    # DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-    measurement_location: pack_terminal  # Actual measurement location.
-    sign_convention: positive_is_charge  # Positive values mean charging; no sign conversion.
-  - name: mode                           # Integer operating-mode signal.
-    field:                               # Original CAN signal.
-      frame_id: '0x118'                  # Message ID from the DBC.
-      signal: Mode                       # DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-  - name: request                        # Boolean request signal.
-    field:                               # Original CAN signal.
-      frame_id: '0x11a'                  # Message ID from the DBC.
-      signal: Request                    # DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-    choices:                             # Input code to boolean value.
+signals:                                   # Signals available to presets.
+  - name: temperature                      # Name used by the threshold role.
+    field:                                 # Original CAN signal.
+      frame_id: '0x11d'                    # Message ID from the DBC.
+      signal: Temperature                  # Case-sensitive DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+  - name: voltage                          # Voltage role candidate.
+    field:                                 # Original CAN signal.
+      frame_id: '0x11f'                    # Message ID from the DBC.
+      signal: Voltage                      # DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+    measurement_location: pack_terminal    # Actual measurement is at the pack terminals.
+  - name: current                          # Current role candidate.
+    field:                                 # Original CAN signal.
+      frame_id: '0x114'                    # Message ID from the DBC.
+      signal: Current                      # DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+    measurement_location: pack_terminal    # Actual measurement location.
+    sign_convention: positive_is_charge    # Positive values mean charging; no sign conversion.
+  - name: mode                             # Integer operating-mode signal.
+    field:                                 # Original CAN signal.
+      frame_id: '0x118'                    # Message ID from the DBC.
+      signal: Mode                         # DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+  - name: request                          # Boolean request signal.
+    field:                                 # Original CAN signal.
+      frame_id: '0x11a'                    # Message ID from the DBC.
+      signal: Request                      # DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+    choices:                               # Input code to boolean value.
       - [0, false]
       - [1, true]
-  - name: response                       # Boolean response signal.
-    field:                               # Original CAN signal.
-      frame_id: '0x11b'                  # Message ID from the DBC.
-      signal: Response                   # DBC signal name.
-    valid_for: 20s                       # Validity for this teaching input.
-    choices:                             # Input code to boolean value.
+  - name: response                         # Boolean response signal.
+    field:                                 # Original CAN signal.
+      frame_id: '0x11b'                    # Message ID from the DBC.
+      signal: Response                     # DBC signal name.
+    valid_for: 20s                         # Validity for this teaching input.
+    choices:                               # Input code to boolean value.
       - [0, false]
       - [1, true]
 ```
@@ -102,7 +102,12 @@ Ordinary rules also default to `selection_origin: onset`, including the qualifyi
 
 <a id="充电时段charge_sessionparameters"></a>
 <a id="充电时段-charge_session-parameters"></a>
-## Charging periods: `charge_session.parameters`
+## Preset parameter reference
+
+<a id="preset-charge-parameters"></a>
+### Charging periods: `charge_session.parameters`
+
+[Complete example](#preset-charge-example).
 
 `charge_session` is a `preset_type` value, not an additional parent key. These fields belong inside `presets[].parameters`.
 
@@ -129,7 +134,10 @@ A different instance name changes the generated prefix.
 
 <a id="故障前后数据fault_contextparameters"></a>
 <a id="故障前后数据-fault_context-parameters"></a>
-## Fault context: `fault_context.parameters`
+<a id="preset-fault-parameters"></a>
+### Fault context: `fault_context.parameters`
+
+[Complete example](#preset-fault-example).
 
 These fields belong inside `presets[].parameters`, with `preset_type: fault_context`.
 
@@ -143,7 +151,10 @@ The preset generates `<name>_alarm` as a rising-edge rule and `<name>_context` a
 
 <a id="请求与响应command_responseparameters"></a>
 <a id="请求与响应-command_response-parameters"></a>
-## Request/response: `command_response.parameters`
+<a id="preset-command-parameters"></a>
+### Request/response: `command_response.parameters`
+
+[Complete example](#preset-command-example).
 
 These fields belong inside `presets[].parameters`, with `preset_type: command_response`.
 
@@ -158,7 +169,10 @@ Generated nodes are `<name>_request`, `<name>_response`, and `<name>_pair`. See 
 
 <a id="超阈值时段threshold_excursionparameters"></a>
 <a id="超阈值时段-threshold_excursion-parameters"></a>
-## Threshold alarms: `threshold_excursion.parameters`
+<a id="preset-threshold-parameters"></a>
+### Threshold alarms: `threshold_excursion.parameters`
+
+[Complete example](#preset-threshold-example).
 
 These fields belong inside `presets[].parameters`, with `preset_type: threshold_excursion`.
 
@@ -205,47 +219,55 @@ Every role signal requires a positive resolvable validity duration and `backward
 | Omitted role, resolved automatically | Role-specific string from the table, such as `command.request` | String `"1"` from this release's role definition | Exactly one signal must satisfy all requirements; zero or multiple candidates raise `PlanValidationError`. |
 | `threshold_excursion` | Not used for role lookup | Not used for role lookup | Explicit `signal` role required. |
 
-For automatic request/response lookup, add `semantic_id: command.request` and `semantic_contract_version: "1"` to the request signal, and `command.response` / `"1"` to the response. These select version 1 of those role contracts. The file still uses `config_version: 3`, while an omitted preset `version` defaults to `"1"`; the three version fields describe different objects.
+For automatic request/response lookup, add `semantic_id: command.request` and `semantic_contract_version: "1"` to the request signal, and `command.response` / `"1"` to the response. These select version 1 of those role contracts. The file still uses `config_version: 4`, while an omitted preset `version` defaults to `"1"`; the three version fields describe different objects.
 
 Optional semantic text on original `signals` may be omitted or null. If `semantic_contract_version` is provided, `semantic_id` must also be provided. Optional semantic text on `derived` must be omitted or nonempty, not null. Derived semantic declarations describe results but do not make them candidates for preset roles in this release. Explicit role bindings also select only original `signals`. See [derived fields](expressions.md).
 
 <a id="请求响应"></a>
-## Request/response example
+## Preset examples
+
+<a id="preset-command-example"></a>
+### Request/response example
+
+[Parameter reference](#preset-command-parameters).
 
 Add or replace the root `presets` section in [electrical-base.yaml](../examples/electrical-base.yaml). This fragment includes its parent key; do not place that key inside the preset list.
 
 ```yaml
-presets:                           # Predefined combinations of analysis nodes.
-  - name: cmd                      # Prefix for generated node names.
-    role_bindings:                 # Select existing signals for each role.
-      request: request             # Previously defined boolean request.
-      response: response           # Previously defined boolean response.
-    parameters:                    # Parameters for command_response.
-      max_delay: 2s                # Inclusive maximum response delay.
-    preset_type: command_response  # Request/response preset.
+presets:                             # Predefined combinations of analysis nodes.
+  - name: cmd                        # Prefix for generated node names.
+    role_bindings:                   # Select existing signals for each role.
+      request: request               # Previously defined boolean request.
+      response: response             # Previously defined boolean response.
+    parameters:                      # Parameters for command_response.
+      max_delay: 2s                  # Inclusive maximum response delay.
+    preset_type: command_response    # Request/response preset.
 ```
 
 This generates `cmd_request`, `cmd_response`, and `cmd_pair`. Setting `emit_initial: true` permits initially true values on both ends. Do not define ordinary rules with those same names. See [sequences](sequences.md) for pairing and missing data.
 
 <a id="阈值报警和总持续时间"></a>
-## Threshold alarms and total duration
+<a id="preset-threshold-example"></a>
+### Threshold alarms and total duration
+
+[Parameter reference](#preset-threshold-parameters).
 
 Add or replace the root `presets` section in the electrical base:
 
 ```yaml
-presets:                              # Predefined analysis nodes.
-  - name: hot                         # Prefix for generated names.
-    role_bindings:                    # Explicit signal selection is required here.
-      signal: temperature             # Previously defined numeric signal.
-    parameters:                       # Threshold and recovery requirements.
-      enter_threshold: 80             # Enter at or above 80.
-      exit_threshold: 75              # Clear at or below 75.
-    preset_type: threshold_excursion  # Hysteresis alarm preset.
+presets:                                # Predefined analysis nodes.
+  - name: hot                           # Prefix for generated names.
+    role_bindings:                      # Explicit signal selection is required here.
+      signal: temperature               # Previously defined numeric signal.
+    parameters:                         # Threshold and recovery requirements.
+      enter_threshold: 80               # Enter at or above 80.
+      exit_threshold: 75                # Clear at or below 75.
+    preset_type: threshold_excursion    # Hysteresis alarm preset.
 ```
 
-This preset always means value >= upper threshold to enter and <= lower threshold to exit. Entry must be strictly above exit. For a low-value alarm, write custom `hysteresis` conditions. Here degC remains the same original unit; input must also be degC. Do not apply a scale, offset, or sign transformation and then claim that this preset has verified that conversion.
+This preset always means value >= upper threshold to enter and <= lower threshold to exit. Entry must be strictly above exit. For a low-value alarm, write custom `hysteresis` conditions. This example uses degC for both input and analysis. You can convert a signal using registered unit relationships, such as degC to K. Preset thresholds must then use the converted signal unit and values, not the original Celsius numbers.
 
-It generates `hot_activity` and `hot_duration`. Read per-activity durations through `iter_calculations()`. The total is in `result.metadata.threshold_durations`, or `run.threshold_durations` in the published `run_manifest.json`. The public summary uses `value` and `unit`, with unit always `s`; it does not duplicate the duration in nanoseconds.
+It generates `hot_activity` and `hot_duration`. Read per-activity durations through `iter_calculations()`. The total is in `result.metadata.threshold_durations`, or `run.threshold_durations` in the published `run_manifest_<timestamp>.json`. The public summary uses `value` and `unit`, with unit always `s`; it does not duplicate the duration in nanoseconds.
 
 | Observation | Total-duration result | Reason |
 |---|---|---|
@@ -273,24 +295,32 @@ A confirmation wait can also make the initial state unknown. In [preset-threshol
 The summary covers actual observation. If analysis requests through 12 s but the log ends at 9 s, also inspect the manifest's observed range. The summary does not prove there was no alarm during 9–12 s.
 
 <a id="充电与故障前后文"></a>
-## Charging and fault-context examples
+<a id="preset-charge-example"></a>
+### Charging activities and energy example
+
+[Parameter reference](#preset-charge-parameters).
 
 The charging preset below requires mode 1, current strictly above 5 A, and a continuous duration of at least 3 s, and calculates voltage × current energy. Replace the electrical base's root `presets` section:
 
 ```yaml
-presets:                         # Predefined analysis nodes.
-  - name: charge                 # Prefix for generated names.
-    role_bindings:               # Existing signals fulfilling the role requirements.
-      mode: mode                 # Integer charging-mode signal.
-      current: current           # Current in A, charging-positive at pack terminals.
-      voltage: voltage           # Voltage in V at pack terminals.
-    parameters:                  # Charging requirements.
-      mode_value: 1              # Device's charging-mode code.
-      current_min: 5             # Strict lower current threshold in A.
-      minimum_duration: 3s       # Minimum continuous qualifying duration.
-      compute_energy: true       # Generate power and Wh energy calculation.
-    preset_type: charge_session  # Charging-period preset.
+presets:                           # Predefined analysis nodes.
+  - name: charge                   # Prefix for generated names.
+    role_bindings:                 # Existing signals fulfilling the role requirements.
+      mode: mode                   # Integer charging-mode signal.
+      current: current             # Current in A, charging-positive at pack terminals.
+      voltage: voltage             # Voltage in V at pack terminals.
+    parameters:                    # Charging requirements.
+      mode_value: 1                # Device's charging-mode code.
+      current_min: 5               # Strict lower current threshold in A.
+      minimum_duration: 3s         # Minimum continuous qualifying duration.
+      compute_energy: true         # Generate power and Wh energy calculation.
+    preset_type: charge_session    # Charging-period preset.
 ```
+
+<a id="preset-fault-example"></a>
+### Fault-context window example
+
+[Parameter reference](#preset-fault-parameters).
 
 `fault_context` instead selects data around fault onset. A fault at 10 s with `pre: 2s` and `post: 3s` selects 8–13 s. If the log does not cover that entire range, results describe the observed portion. It does not measure the duration of the fault; use `condition_duration` or `hysteresis` for that.
 

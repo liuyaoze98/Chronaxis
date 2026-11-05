@@ -66,7 +66,7 @@ class RunnerRecoveryTests(unittest.TestCase):
         else:
             (work/'source.csv').write_text('ns,v\n0,2\n2,3\n8,4\n', encoding='utf-8')
             source.update(path='source.csv', time_column='ns')
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='recovery', entity='synthetic', session='session', domain=dict(start='0ns',end='12ns')),
             sources=[source], signals=[dict(name='v',source='table',field='v',dtype='float64',unit='1',valid_for='20ns')],
             rules=[dict(name='active',rule_type='condition_duration',condition='v > 0',minimum_duration='0ns')],

@@ -96,7 +96,7 @@ class StrictDurationTests(unittest.TestCase):
                 root = Path(directory)
                 (root / 'part1.csv').write_text('time,power,active\n0,4000,1\n30,4000,1\n', encoding='utf-8')
                 (root / 'part2.csv').write_text(f'time,power,active\n{end},4000,0\n', encoding='utf-8')
-                raw = dict(config_version=3, dataset=dict(name='data', domain=dict(start='0s', end=f'{end}s')),
+                raw = dict(config_version=4, dataset=dict(name='data', domain=dict(start='0s', end=f'{end}s')),
                     sources=[dict(name='input', source_type='signal_csv',
                                   paths=['part1.csv', 'part2.csv'], time_column='time', time=dict(unit='s'))],
                     signals=[dict(name=name, field=name, dtype='float64', unit=unit, valid_for='120s')

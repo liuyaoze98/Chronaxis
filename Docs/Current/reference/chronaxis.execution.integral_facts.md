@@ -1,4 +1,4 @@
-# chronaxis.execution.integral_facts
+# `chronaxis.execution.integral_facts`
 
 逐块累加积分覆盖时长、缺失区间和来源信息。每个输入块必须紧接上一块；完整处理目标范围后才返回整段统计。保存诊断信息前先检查所需内存额度。
 
@@ -69,7 +69,7 @@ ResultFormatError 为既有估算协议无法处理的字段。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/integral_facts.py:23`](../../../src/chronaxis/execution/integral_facts.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:23`](../../../src/chronaxis/execution/integral_facts.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_unique_refs"></a>
 ## `_unique_refs`
@@ -95,7 +95,7 @@ _unique_refs(existing, incoming)
 
 MemoryError 为预算已申请后的实际分配失败。
 
-源码：[`src/chronaxis/execution/integral_facts.py:37`](../../../src/chronaxis/execution/integral_facts.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:37`](../../../src/chronaxis/execution/integral_facts.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_join_unknown"></a>
 ## `_join_unknown`
@@ -121,7 +121,7 @@ _join_unknown(existing, incoming)
 
 MemoryError 为已申请工作空间内的实际分配失败。
 
-源码：[`src/chronaxis/execution/integral_facts.py:62`](../../../src/chronaxis/execution/integral_facts.py#L62)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:62`](../../../src/chronaxis/execution/integral_facts.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator"></a>
 ## `IntegralFactsAccumulator`
@@ -133,7 +133,7 @@ IntegralFactsAccumulator(budget: ResourceBudget, spec: CalculationDefinition, ob
 ```
 
 
-源码：[`src/chronaxis/execution/integral_facts.py:83`](../../../src/chronaxis/execution/integral_facts.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:83`](../../../src/chronaxis/execution/integral_facts.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-__init__"></a>
 ### `IntegralFactsAccumulator.__init__`
@@ -164,7 +164,7 @@ IntegralFactsAccumulator.__init__(budget: ResourceBudget, spec: CalculationDefin
 TypeError/ValueError 为协议错误；预算/分配/取消原样传播。
 清理仍失败时，原异常.integral_facts_cleanup_owner 提供可重试 close 的 owner。
 
-源码：[`src/chronaxis/execution/integral_facts.py:91`](../../../src/chronaxis/execution/integral_facts.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:91`](../../../src/chronaxis/execution/integral_facts.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-closed"></a>
 ### `IntegralFactsAccumulator.closed`
@@ -192,7 +192,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/integral_facts.py:148`](../../../src/chronaxis/execution/integral_facts.py#L148)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:148`](../../../src/chronaxis/execution/integral_facts.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-failed"></a>
 ### `IntegralFactsAccumulator.failed`
@@ -220,7 +220,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/integral_facts.py:154`](../../../src/chronaxis/execution/integral_facts.py#L154)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:154`](../../../src/chronaxis/execution/integral_facts.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-facts"></a>
 ### `IntegralFactsAccumulator.facts`
@@ -258,7 +258,7 @@ IntegralFactsAccumulator.facts: IntegralFacts
 
 返回类型：[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)。
 
-源码：[`src/chronaxis/execution/integral_facts.py:160`](../../../src/chronaxis/execution/integral_facts.py#L160)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:160`](../../../src/chronaxis/execution/integral_facts.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-_require_open"></a>
 ### `IntegralFactsAccumulator._require_open`
@@ -288,7 +288,7 @@ ResultClosedError。
 
 - `ResultClosedError`：积分事实owner已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/integral_facts.py:172`](../../../src/chronaxis/execution/integral_facts.py#L172)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:172`](../../../src/chronaxis/execution/integral_facts.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-_reserve"></a>
 ### `IntegralFactsAccumulator._reserve`
@@ -313,7 +313,7 @@ IntegralFactsAccumulator._reserve(amount)
 
 原预算或取消异常。
 
-源码：[`src/chronaxis/execution/integral_facts.py:177`](../../../src/chronaxis/execution/integral_facts.py#L177)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:177`](../../../src/chronaxis/execution/integral_facts.py#L177)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-_release"></a>
 ### `IntegralFactsAccumulator._release`
@@ -338,7 +338,7 @@ IntegralFactsAccumulator._release(amount)
 
 原释放或取消异常。
 
-源码：[`src/chronaxis/execution/integral_facts.py:190`](../../../src/chronaxis/execution/integral_facts.py#L190)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:190`](../../../src/chronaxis/execution/integral_facts.py#L190)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-_validate_block"></a>
 ### `IntegralFactsAccumulator._validate_block`
@@ -375,7 +375,7 @@ TypeError/ValueError 为协议错误。
 - `ValueError`：正窗口不接受不推进的块。
 - `ValueError`：未知范围必须有序且不重叠。
 
-源码：[`src/chronaxis/execution/integral_facts.py:203`](../../../src/chronaxis/execution/integral_facts.py#L203)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:203`](../../../src/chronaxis/execution/integral_facts.py#L203)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-push"></a>
 ### `IntegralFactsAccumulator.push`
@@ -406,7 +406,7 @@ IntegralFactsAccumulator.push(facts: IntegralFacts) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_facts.py:239`](../../../src/chronaxis/execution/integral_facts.py#L239)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:239`](../../../src/chronaxis/execution/integral_facts.py#L239)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-finish"></a>
 ### `IntegralFactsAccumulator.finish`
@@ -439,7 +439,7 @@ RuntimeError 为失败状态；ValueError 为观测前缀不足。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_facts.py:280`](../../../src/chronaxis/execution/integral_facts.py#L280)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:280`](../../../src/chronaxis/execution/integral_facts.py#L280)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralFactsAccumulator-close"></a>
 ### `IntegralFactsAccumulator.close`
@@ -467,4 +467,4 @@ None；重复关闭不再扣账。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_facts.py:295`](../../../src/chronaxis/execution/integral_facts.py#L295)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_facts.py:295`](../../../src/chronaxis/execution/integral_facts.py#L295)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

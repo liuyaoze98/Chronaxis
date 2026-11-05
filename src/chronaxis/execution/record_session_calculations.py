@@ -6,6 +6,8 @@
 后才交付最终结果，失败不发布已累计的前缀。
 """
 
+from ..core.moments import SAMPLE_MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import replace
 from ..core.models import Interval
 from functools import partial
@@ -14,8 +16,9 @@ from ..legacy.records import field_to_dict
 from ..results.errors import ResultClosedError, AnalysisError
 from ..results.spool import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..results.summary import SummaryCalculationRow
-from ..results.summary import SummaryCoverageCalculationRow
+from ..results.summary import SummaryCoverageCalculationRow, SummaryHostedCalculationRow
 from ..results.summary import SummaryEventRow
+from ..core.types import QualityFlag as Q
 from ..results.summary import SummarySequenceRow
 from ..sources.can_spec import can_field_from_key
 from .history import _metadata_bytes
@@ -31,6 +34,8 @@ from .record_rule_timeline import RecordRuleTimeline
 from .record_sequences import RecordSequences
 from ..planning.intervals import IntervalChoice
 from .record_event_durations import RecordEventDurations,is_event_duration
+from ..core.counts_v4 import OBJECT_COUNTS
+from .record_object_counts import object_count_results
 from .record_scope_calculations import RecordScopeCalculations
 from .record_time_indexes import RecordTimeIndexes
 from .record_windows import RecordWindows
@@ -73,11 +78,15 @@ class RecordSessionCalculations:
         self._sequences = None
         self._event_durations=None
         self._scope_calculations=None
+        self._segment_counts = {}
+        self._transform_stages = []
+        self._transform_aliases = frozenset()
         self._time_indexes=self._windows=self._exports=None
         self._diagnostics=None
         self._rules_begun = False
         self._constant_calculations=frozenset()
         self._spool = None
+        self._aggregations = self._append_result = None
         self._next_sequence = 0
         # 指标状态随原写出计数；不为了概况回读结果仓。
         self._outcome_counts = dict(complete=0, partial=0, indeterminate=0, no_observation=0)
@@ -110,6 +119,8 @@ class RecordSessionCalculations:
             if self._diagnostics is not None:
                 raw_sources={c.source_name for c in self._cursors if c._raw}
                 for sample in group.samples:
+                    if sample.name in self._transform_aliases:
+                        continue  # 网格样本不是实际来源的报文或原字段诊断。
                     if sample.source_ref.source_name not in raw_sources:
                         values_needed=set(self._requirements.ordinary_sample_aliases)|set(self._requirements.message_aliases)
                         clock_only=sample.name not in values_needed
@@ -149,7 +160,7 @@ class RecordSessionCalculations:
                 if condition is not None and condition.invalidated_at is not None:
                     calculation.expire_at(condition.invalidated_at, condition=True)
                 if row is not None:
-                    updates=({'actual_value_updates':(any(s.name in value._static.dependencies for s in group.samples),)}
+                    updates=({'actual_value_updates':(value.actual_update_at(row[0]),)}
                         if getattr(calculation,'_samples',False) else {})
                     if condition is None:
                         calculation.consume((row,),**updates)
@@ -204,15 +215,27 @@ class RecordSessionCalculations:
         self._spool = spool
         plan = self._plan
         try:
+            self._append_result = spool.append
+            if plan.aggregations:
+                from .result_aggregations import ResultAggregations
+                self._aggregations=self._new(ResultAggregations,'aggregation_cleanup_owner',plan,self._budget)
+                self._append_result=self._append_aggregate_input
             choices = dict(plan.intervals.resolved)
+            hosted_reductions=plan.extensions.reductions if plan.extensions is not None else {}
+            # 仅有数值输入的会话指标建立表达式和归约资源；对象计数在规则、窗口封口后产生。
+            session_values = tuple(m for m in plan.calculations if m.scope == 'session'
+                                   and m.operation not in OBJECT_COUNTS)
+            self._segment_counts = {m.count_target: 0 for m in plan.calculations if m.operation == 'segment_count'}
             for request in plan.calculations:
-                if request.operation in ('sample_minimum','sample_maximum','sample_mean','select'):
+                if request.operation in ('sample_count','sample_minimum','sample_maximum','sample_mean','select', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES, *hosted_reductions):
                     choices[request.calculation_id]=IntervalChoice('actual')
             self._constant_calculations=frozenset(index for index,calculation in
-                enumerate(m for m in plan.calculations if m.scope=='session')
+                enumerate(session_values)
                 if choices[calculation.calculation_id].driver is None and not any(
                     expression.dependencies for expression in (calculation.signal,calculation.condition) if expression is not None))
             needed=self._requirements
+            active_transforms=tuple(t for t in plan.transforms if t.name in needed.transform_names)
+            self._transform_aliases=frozenset(t.name for t in active_transforms)
             if plan.diagnostics.trace or plan.diagnostics.integrity:
                 self._diagnostics=self._new(RecordDiagnostics,'record_diagnostics_cleanup_owner',
                     plan,needed,self._budget,self._emit_input_trace)
@@ -220,7 +243,7 @@ class RecordSessionCalculations:
             values=set(needed.ordinary_sample_aliases)|set(needed.message_aliases)
             clocks={name for source in needed.sources for name in source.clock_aliases}
             group_names=set(needed.ordinary_sample_aliases)|clocks
-            state_names=set(needed.analysis_sample_aliases)|clocks
+            state_names=set(needed.analysis_sample_aliases)|clocks|self._transform_aliases
             export_names=set() if plan.outputs.signal_csv is None else set(plan.outputs.signal_csv.spec.signals)
             export_sources={item.definition.source for item in plan.signals if item.definition.name in export_names}
             for request in plan.message_calculations:
@@ -233,7 +256,14 @@ class RecordSessionCalculations:
                     contribution_consumer=(partial(self._emit_contribution,request)
                         if plan.outputs.contributions=='full' else None))
                 self._messages.append((request, owner))
-            definitions = tuple(item.definition for item in plan.signals
+            from ..core.enum_codes import code_dependencies
+            expressions = [expr for rule in plan.rules for expr in rule.expressions]
+            expressions.extend(expr for calc in plan.calculations for expr in (calc.signal, calc.condition)
+                               if expr is not None)
+            expressions.extend(t.expression for t in active_transforms)
+            requested_codes = {name for expr in expressions for name in code_dependencies(expr.root)}
+            definitions = tuple(replace(item.definition, capture_code=True) if item.definition.name in requested_codes
+                                else item.definition for item in plan.signals
                                 if item.definition.name in values | clocks)
             state = None
             source_cursors = {}
@@ -254,6 +284,23 @@ class RecordSessionCalculations:
             # 不提前构造带假有效期的计算状态；无关信号不进入definitions。
             from .signal_validity import resolve_signal_validity
             definitions = resolve_signal_validity(definitions, source_cursors)
+            definitions += tuple(t.output for t in active_transforms)
+            # 由最后一层向前接回调。每层只打开自己所需状态，原Reader仍只消费一次。
+            if active_transforms:
+                from .transform_stream import TransformStage
+                emit=self._consume_group
+                for t in reversed(active_transforms):
+                    choice=choices[t.name]
+                    period=choice.step_ns
+                    if choice.mode=='dbc':
+                        definition=next(d for d in definitions if d.name==choice.driver)
+                        locator=field_to_dict(can_field_from_key(definition.field))
+                        period=next(f['cycle_ns'] for f in source_cursors[definition.source].metadata['fields']
+                                    if f['locator']==locator)
+                    stage=self._new(TransformStage,'transform_cleanup_owner',plan,t,definitions,choice,period,
+                                    self._source_ends,source_cursors,self._budget,emit)
+                    self._transform_stages.insert(0,stage)
+                    emit=stage.push
             if self._full_domain:
                 # 零长度只供尚未收到输入的数值owner构造，不作为观测或读取过滤条件。
                 # 游标已用原始None请求创建；每轮前瞻后改成真实已读范围。
@@ -266,9 +313,7 @@ class RecordSessionCalculations:
                 self._exports=self._new(RecordExports,'record_exports_cleanup_owner',
                     plan,self._budget,self._path/'exports',self._cursors)
             derived = tuple(item.definition for item in plan.derived)
-            for request in plan.calculations:
-                if request.scope!='session':
-                    continue
+            for request in session_values:
                 choice = choices[request.calculation_id]
                 step = choice.step_ns
                 if choice.mode == 'dbc':
@@ -284,11 +329,15 @@ class RecordSessionCalculations:
                         self._expressions[-1][index] = self._new(DriverExpression,
                             'driver_expression_cleanup_owner', static, state, choice.driver,
                             backend=plan.execution.backend, derived=derived, observation_ends=self._source_ends)
-                spec = CalculationDefinition(request.calculation_id, request.operation, plan.dataset.domain,
-                                  request.partial_policy, request.unit, minimum_coverage=request.minimum_coverage)
+                descriptor=hosted_reductions.get(request.operation)
+                spec = CalculationDefinition(request.calculation_id, 'sample_minimum' if descriptor else request.operation, plan.dataset.domain,
+                                  request.partial_policy, request.unit, minimum_coverage=request.minimum_coverage,
+                                  config_version=plan.config_version, ddof=request.ddof, q=request.q)
                 factory = RecordIntegral if request.operation == 'integral' else RecordTimeCalculation
                 recovery = 'record_integral_cleanup_owner' if request.operation == 'integral' else 'record_time_cleanup_owner'
                 extra = {'work_dir': self._path} if request.operation == 'time_weighted_mean' else {}
+                if descriptor:
+                    extra={'hosted':descriptor}
                 if request.operation=='select':
                     factory,recovery=RecordSelection,'record_selection_cleanup_owner'
                     extra={'consumer':partial(self._emit_selection,request,None)}
@@ -384,36 +433,45 @@ class RecordSessionCalculations:
                 self._windows.finish(self._cursors,spool)
             if self._exports is not None:
                 self._exports.seal()
-            for sequence, (request, calculation) in enumerate(zip((m for m in plan.calculations if m.scope=='session'), self._calculations)):
+            for request, calculation in zip(session_values, self._calculations):
                 result = calculation.finish()
                 if request.operation=='select':continue
                 if self._full_domain and self._observed_domain is None:
                     result = replace(result, value=None, status='indeterminate', reason='no_observation')
-                model=SummaryCalculationRow if result.coverage_status is None else SummaryCoverageCalculationRow
-                extra={} if result.coverage_status is None else {'coverage_status':result.coverage_status}
-                spool.append(model(self._next_sequence, plan.dataset.dataset_id, plan.dataset.entity,
-                    plan.dataset.session_id, request.calculation_id, request.operation, 'session', None,
-                    result.value, result.unit, result.status, result.reason, result.quality,**extra))
-                self._count_outcome(result.status,result.reason)
-                self._next_sequence+=1
+                self._emit_event_duration(request,None,result)
+            # 所有片段已完成合并，此时只读取事件计数及按需记录的最终片段身份数。
+            for request, result in object_count_results(self._plan, self._rules, self._segment_counts):
+                self._emit_event_duration(request, None, result)
             for sequence, (request, owner) in enumerate(self._messages, len(plan.calculations)):
                 result = owner.snapshot()
                 incomplete = any(count for reason, count in result.skip_counts.items()
                                  if reason is not LegacySkipReason.CONDITION_FALSE)
                 status = 'indeterminate' if result.value is None else 'partial' if incomplete else 'complete'
-                spool.append(SummaryCalculationRow(self._next_sequence, plan.dataset.dataset_id, plan.dataset.entity,
+                self._append_result(SummaryCalculationRow(self._next_sequence, plan.dataset.dataset_id, plan.dataset.entity,
                     plan.dataset.session_id, request.calculation_id, 'legacy_sum', 'session', None,
                     None if result.value is None else round(result.value, 6), request.unit, status,
                     result.reason or ('partial_input' if incomplete else 'ok'), owner.quality))
                 self._count_outcome(status,result.reason)
                 self._next_sequence+=1
+            if self._aggregations is not None:
+                for row in self._aggregations.rows(self._rules,self._next_sequence):
+                    spool.append(row)
+                    self._next_sequence+=1
         except BaseException as error:
             self._failed = True
             error.record_session_cleanup_owner = self
             raise
         finally:
             metadata = definitions = derived = state = batch = result = source_cursors = cursor = source_definitions = None
-            self._spool=None
+            self._spool=self._append_result=None
+
+    def _append_aggregate_input(self,row):
+        """从同一源行同时得到公开记录和聚合输入，不复制或重扫源表。
+
+        参数: row 为当前行。返回: None。异常: 原写出/归约错误终止整个会话。
+        """
+        self._spool.append(row)
+        self._aggregations.accept(row)
 
     def _finish_actual_tails(self):
         """以实际来源EOF结算连续计算和样本统计，固定周期不凭空加报文。
@@ -472,16 +530,18 @@ class RecordSessionCalculations:
             result,_=value.evaluate_at(last)
             selected=None if condition is None else condition.evaluate_at(last)[0]
             for time in dict.fromkeys((first,last)):
-                calculation.consume(((time,result,None),),**({} if condition is None else
+                # 常量的两个观测边界只说明保持范围，没有真实值更新可供计数。
+                updates = {'actual_value_updates': (False,)} if calculation._spec.operation in ('sample_count', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES) else {}
+                calculation.consume(((time,result,None),),**updates,**({} if condition is None else
                     {'conditions':(selected,),'condition_valid_until_ns':(None,)}))
 
     def _emit_event(self,event):
         """将必要事件字段直接写一次最终结果仓。参数: 原核心事件。返回: None。异常: 原写入错。"""
         try:
             plan=self._plan
-            self._spool.append(SummaryEventRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
+            self._append_result(SummaryEventRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
                 plan.dataset.session_id,event.rule.rule_id,event.event_id,event.start_ns,event.confirmed_ns,
-                event.end_ns,event.status,event.trigger_kind,event.quality))
+                event.end_ns,event.status,event.trigger_kind,event.quality | (event.dependency_quality & Q.ESTIMATED)))
             self._next_sequence+=1
             if self._event_durations is not None:
                 self._event_durations.observe_event(event)
@@ -495,7 +555,10 @@ class RecordSessionCalculations:
         plan=self._plan
         model=SummaryCalculationRow if result.coverage_status is None else SummaryCoverageCalculationRow
         extra={} if result.coverage_status is None else {'coverage_status':result.coverage_status}
-        self._spool.append(model(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
+        if plan.extensions is not None and request.operation in plan.extensions.reductions:
+            model=SummaryHostedCalculationRow
+            extra['extension_version']=plan.extensions.reductions[request.operation].version
+        self._append_result(model(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
             plan.dataset.session_id,request.calculation_id,request.operation,request.scope.split(':',1)[0],event_id,
             result.value,result.unit,result.status,result.reason,result.quality,**extra))
         self._count_outcome(result.status,result.reason)
@@ -507,11 +570,13 @@ class RecordSessionCalculations:
             self._exports.segment(segment)
         plan=self._plan
         actual=segment.actual
-        self._spool.append(SummarySegmentRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
+        self._append_result(SummarySegmentRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
             plan.dataset.session_id,segment.window_id,segment.segment_id,
             None if actual is None else actual.start_ns,None if actual is None else actual.end_ns,
             segment.status,segment.parent_event_ids,segment.quality))
         self._next_sequence+=1
+        if segment.window_id in self._segment_counts:
+            self._segment_counts[segment.window_id] += 1
         if self._scope_calculations is not None:
             self._scope_calculations.observe_segment(segment)
 
@@ -543,7 +608,7 @@ class RecordSessionCalculations:
         """只写最终配对结论，不复制事件全文。参数: 核心结果。返回: None。异常: 原写入错。"""
         try:
             plan=self._plan
-            self._spool.append(SummarySequenceRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
+            self._append_result(SummarySequenceRow(self._next_sequence,plan.dataset.dataset_id,plan.dataset.entity,
                 plan.dataset.session_id,result.rule.rule_id,result.result_id,result.request.event_id,
                 None if result.response is None else result.response.event_id,result.decided_ns,
                 result.delay_ns,result.status,result.observation_quality))
@@ -678,6 +743,8 @@ class RecordSessionCalculations:
                     self._rules_begun=True
                 live = tuple(head for head in heads if head is not None)
                 if not live:
+                    for stage in self._transform_stages:
+                        stage.finish()
                     for owner in self._rules:
                         ends=[self._source_ends[source] for source in owner.sources if source in self._source_ends]
                         if ends:
@@ -690,7 +757,10 @@ class RecordSessionCalculations:
                 _reserve_owned_ram(self, 16384 + count*1024, '_group_cost')
                 samples = tuple(sample for head in live if head.time_ns == time for sample in head.samples)
                 group = DecodedTimeGroup(time, samples)
-                self._consume_group(group)
+                if self._transform_stages:
+                    self._transform_stages[0].push(group)
+                else:
+                    self._consume_group(group)
                 group = samples = live = None
                 for cursor, head in zip(self._cursors, heads):
                     if head is not None and head.time_ns == time:
@@ -732,8 +802,13 @@ class RecordSessionCalculations:
             return
         self._closing = True
         self._message_buffer.clear()
+        self._segment_counts.clear()
         _release_owned_ram(self, self._message_cost, '_message_cost')
         self._close_slot('_pending')
+        for stage in self._transform_stages:
+            stage.close()
+        self._transform_stages.clear()
+        self._close_slot('_aggregations')
         self._close_slot('_diagnostics')
         self._close_slot('_exports')
         for index, owner in enumerate(self._cursors or ()):

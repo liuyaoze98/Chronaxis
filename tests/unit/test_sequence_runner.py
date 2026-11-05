@@ -3,6 +3,8 @@
 覆盖同刻、截止、缺失、跨批、双后端、独立输出表和失败清理。结果与手算值
 比较，不调用被测配对器来制造期望；工作数据只写仓库work（home的E盘映射）。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -35,7 +37,7 @@ def config_fixture():
     values = [(0, False, False), (1, True, False), (2, False, False), (3, False, True),
               (4, True, False), (5, False, None), (6, False, False), (7, True, False),
               (8, False, False), (9, False, True), (10, True, False), (12, False, False)]
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='sample', entity='device', session='session', domain=dict(start='0ns', end='12ns')),
         sources=[dict(name='input', source_type='memory', time=dict(time_type='relative', unit='ns', origin='clock'),
             rows=[dict(time=f'{time}ns', values={'request': a, 'response': b}) for time, a, b in values])],
@@ -152,7 +154,7 @@ class SequenceRunnerTests(unittest.TestCase):
             out = ROOT / 'work/m3-sequence-public-home-20261022/publish' / uuid4().hex
             manifest = result.write(out)
             self.assertEqual(dict(manifest.row_counts)['sequences'], 4)
-            path = out / ('sequences.' + fmt)
+            path = published_file(manifest,'sequences.'+fmt)
             if fmt == 'csv':
                 with path.open(encoding='utf-8-sig', newline='') as stream:
                     rows = list(csv.DictReader(stream))

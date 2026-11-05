@@ -4,11 +4,11 @@
 
 > These results come from actual runs of bundled synthetic data. They are not expected values for other logs.
 
-This page covers 72 runnable YAML configurations (including two batch plans) and two JSON configurations. Two teaching base files and one shared-definitions file are not standalone tasks and are listed separately at the end.
+This page covers 74 runnable YAML configurations (including two batch plans) and two JSON configurations. Two teaching base files and one shared-definitions file are not standalone tasks and are listed separately at the end.
 
-Run commands from the shared `examples` directory; each output directory must be new. Ordinary examples use readable Chinese CSV by default: exact seconds, metrics joined by interval, and individual statuses/explanations. Explicit CSV/JSONL exchange formats and frame/signal exports retain their own layouts. A blank is not zero.
+Run commands from the shared `examples` directory; output directories can be reused with timestamped filenames. Ordinary examples use readable Chinese CSV by default: exact seconds, metrics joined by interval, and individual statuses/explanations. Explicit CSV/JSONL exchange formats and frame/signal exports retain their own layouts. A blank is not zero.
 
-Each `result-summary.json` extracts status, table counts, applicable analysis outcomes, and threshold-preset summaries from the actual run manifest. A full run also creates `run_manifest.json`. Teaching outputs omit random run IDs, absolute paths, and resource peaks. Small contribution, trace, or export files are retained only in examples that explicitly request them.
+Each `result-summary.json` extracts status, table counts, applicable analysis outcomes, and threshold-preset summaries from the actual run manifest. A full run also creates `run_manifest_<timestamp>.json`. Teaching outputs omit random run IDs, absolute paths, and resource peaks. Small contribution, trace, or export files are retained only in examples that explicitly request them.
 
 
 The result tables below retain the software's actual Chinese headers and values. Key translations: `区间` = interval; `规则` = rule; `开始时间（s）` / `确认时间（s）` / `结束时间（s）` = start / confirmation / end in seconds; `窗口编号` / `窗口` / `父事件区间` = window number / window name / parent event intervals; `状态` = status; `说明` = explanation; `正常结束` = ended normally; `完整` = complete; `部分有效` = partial; `无法确定` = indeterminate; `超时结束` = ended by timeout; `数据中断` = data interruption; `观测结束，活动尚未确认结束` = observation ended before activity end was confirmed. A metric's `：状态` and `：说明` columns describe that metric alone. `—` displays an empty cell. See [Understanding results](results.md) for all status and quality meanings.
@@ -49,9 +49,11 @@ The result tables below retain the software's actual Chinese headers and values.
 |[input-raw-csv-minimal.yaml](../examples/input-raw-csv-minimal.yaml)|Raw message reading and DBC decoding|[Tables and explanation](#input-raw-csv-minimal-yaml)|
 |[interval-actual.yaml](../examples/interval-actual.yaml)|Integrate using actual intervals|[Tables and explanation](#interval-actual-yaml)|
 |[interval-fixed.yaml](../examples/interval-fixed.yaml)|Integrate using fixed periods|[Tables and explanation](#interval-fixed-yaml)|
+|[lookup-power.yaml](../examples/lookup-power.yaml)|Average power after a voltage lookup|[Tables and explanation](#lookup-power-yaml)|
 |[message-directions.yaml](../examples/message-directions.yaml)|Accumulate messages by direction|[Tables and explanation](#message-directions-yaml)|
 |[message-energy.yaml](../examples/message-energy.yaml)|Per-message accumulation|[Tables and explanation](#message-energy-yaml)|
 |[message-minimal.yaml](../examples/message-minimal.yaml)|Per-message accumulation|[Tables and explanation](#message-minimal-yaml)|
+|[power-statistics.yaml](../examples/power-statistics.yaml)|Power variation and the P95 of loaded-period means|[Tables and explanation](#power-statistics-yaml)|
 |[preset-charge-energy.yaml](../examples/preset-charge-energy.yaml)|Charging activity and accumulated quantities|[Tables and explanation](#preset-charge-energy-yaml)|
 |[preset-charge-minimal.yaml](../examples/preset-charge-minimal.yaml)|Charging activity detection|[Tables and explanation](#preset-charge-minimal-yaml)|
 |[preset-command-automatic.yaml](../examples/preset-command-automatic.yaml)|Request/response pairing|[Tables and explanation](#preset-command-automatic-yaml)|
@@ -926,6 +928,28 @@ Why these results: Records remain at 0, 0.12, and 0.30 s, but each of the two ca
 No event, window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
 
+<a id="lookup-power-yaml"></a>
+## lookup-power.yaml
+
+Purpose: Average power after a voltage lookup. Configuration: [Download](../examples/lookup-power.yaml); guide: [Read the chapter](expressions.md).
+
+```powershell
+chronaxis run lookup-power.yaml --output result-lookup-power-yaml
+```
+
+Why these results: Three voltage readings are 3, 7, and 3 V. The calibration table maps 3 V to 10 W and 11 V to 50 W; linear interpolation maps 7 V to 30 W. The sample mean power is therefore (10 + 30 + 10) / 3 = 50/3 W, approximately 16.67 W.
+
+[Run status and table list](../examples/results/lookup-power-yaml/result-summary.json): `completed`.
+
+**Session results: [Download full 会话结果.csv](../examples/results/lookup-power-yaml/会话结果.csv) (1 row)**
+
+| rated_power（W） | rated_power：状态 | rated_power：说明 |
+| --- | --- | --- |
+| 16.666666666666668 | 完整 | — |
+
+No event, window, or request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
+
+
 <a id="message-directions-yaml"></a>
 ## message-directions.yaml
 
@@ -1009,6 +1033,49 @@ Why these results: Each complete message contributes 4000 W × 0.1 s = 400 J. Tw
 | 800.0 | 完整 | — |
 
 No event, window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
+
+
+<a id="power-statistics-yaml"></a>
+## power-statistics.yaml
+
+Purpose: Power variation and the P95 of loaded-period means. Configuration: [Download](../examples/power-statistics.yaml); guide: [Read the chapter](calculations.md#v4-power-statistics).
+
+```powershell
+chronaxis run power-statistics.yaml --output result-power-statistics-yaml
+```
+
+Why these results: The five readings are 0, 10, 0, 20, and 0 W. Their mean is 6 W and their sum of squared deviations is 320 W². Dividing by four gives a sample variance of 80 W²; the population standard deviation is 8 W. Values 0, 10, and 20 W are held for four, three, and two seconds, respectively, giving a time-weighted RMS of √(1100/9) W. The P95 of the sorted readings is 18 W. The two loaded intervals, [1,4) and [5,7) seconds, have means of 10 and 20 W; their P95 is 19.5 W, with two candidates and two contributing values. See the statistics guide for hand calculations of the other counts, variance, and median.
+
+[Run status and table list](../examples/results/power-statistics-yaml/result-summary.json): `completed`.
+
+**Event results: [Download full 事件结果.csv](../examples/results/power-statistics-yaml/事件结果.csv) (4 rows)**
+
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — |
+| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — |
+| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — |
+| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — |
+
+**Session results: [Download full 会话结果.csv](../examples/results/power-statistics-yaml/会话结果.csv) (1 row)**
+
+| cycles（1） | cycles：状态 | cycles：说明 | held_rms（W） | held_rms：状态 | held_rms：说明 | held_spread（W） | held_spread：状态 | held_spread：说明 | held_variance（V^2*A^2） | held_variance：状态 | held_variance：说明 | loads（1） | loads：状态 | loads：说明 | reading_median（W） | reading_median：状态 | reading_median：说明 | reading_p95（W） | reading_p95：状态 | reading_p95：说明 | reading_rms（W） | reading_rms：状态 | reading_rms：说明 | reading_spread（W） | reading_spread：状态 | reading_spread：说明 | reading_variance（V^2*A^2） | reading_variance：状态 | reading_variance：说明 | readings（1） | readings：状态 | readings：说明 | starts（1） | starts：状态 | starts：说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 完整 | — | 11.055415967851332 | 完整 | — | 7.85674201318386 | 完整 | — | 61.72839506172837 | 完整 | — | 2 | 完整 | — | 0.0 | 完整 | — | 18.0 | 完整 | — | 10.0 | 完整 | — | 8.000000000000002 | 完整 | — | 80.00000000000004 | 完整 | — | 5 | 完整 | — | 2 | 完整 | — |
+
+**Window results: [Download full 窗口结果.csv](../examples/results/power-statistics-yaml/窗口结果.csv) (1 row)**
+
+| 窗口编号 | 窗口 | 开始时间（s） | 结束时间（s） | 窗口状态 | 父事件区间 | 说明 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | test_cycle | 1 | 8.5 | 完整 | 3、4 | — |
+
+**Aggregation results: [Download full 聚合结果.csv](../examples/results/power-statistics-yaml/聚合结果.csv) (1 row)**
+
+| 聚合项 | 分组 | 结果 | 单位 | 状态 | 原因 | 候选数 | 参与数 | 定义排除数 | 质量排除数 | 参与的部分值 | 匹配 | 确认超时 | 观测不足 | 未决 | 已完整发现总体 | 质量说明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| load_mean_p95 | {"session_id":"power_bench"} | 19.5 | W | 完整 | 正常 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 是 | — |
+
+No request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
 
 <a id="preset-charge-energy-yaml"></a>
@@ -1742,7 +1809,7 @@ Purpose: Enum state edge. Configuration: [Download](../examples/signal-enum-mini
 chronaxis run signal-enum-minimal.yaml --output result-signal-enum-minimal-yaml
 ```
 
-Why these results: ModeCode changes from 0 to 7 at 100 ms. DBC choices map them to idle/running; state == "running" becomes true and produces a rising edge.
+Why these results: ModeCode changes from 0 to 7 at 100 ms. DBC choices map them to idle/running; mode == "running" becomes true and produces a rising edge.
 
 [Run status and table list](../examples/results/signal-enum-minimal-yaml/result-summary.json): `completed`.
 
@@ -1764,7 +1831,7 @@ Purpose: Current unit conversion. Configuration: [Download](../examples/signal-n
 chronaxis run signal-number-conversion.yaml --output result-signal-number-conversion-yaml
 ```
 
-Why these results: DBC decoding yields 5000, 7000, 5000, and 5000 mA. conversion.scale=0.001 converts to A, giving maximum 7 A. No configured invalid code occurs.
+Why these results: DBC decoding yields 5000, 7000, 5000, and 5000 mA. The mA-to-A unit relationship automatically applies a factor of 0.001, giving maximum 7 A. No configured invalid code occurs.
 
 [Run status and table list](../examples/results/signal-number-conversion-yaml/result-summary.json): `completed`.
 
@@ -1786,7 +1853,7 @@ Purpose: DBC current maximum. Configuration: [Download](../examples/signal-numbe
 chronaxis run signal-number-minimal.yaml --output result-signal-number-minimal-yaml
 ```
 
-Why these results: DBC values are 5000, 7000, 5000, and 5000 mA. sample_maximum gives 7000 mA; no additional conversion is applied.
+Why these results: DBC values are 5000, 7000, 5000, and 5000 mA. sample_maximum selects the largest value and displays 7000 mA in the output unit explicitly requested by the calculation.
 
 [Run status and table list](../examples/results/signal-number-minimal-yaml/result-summary.json): `completed`.
 
@@ -2078,6 +2145,6 @@ python tools/build_example_results.py --work work/manual-results-new --publish
 python tools/build_example_results.py --check
 ```
 
-Generation first runs independent mathematical assertions for 72 YAML configurations, then two JSON configurations and explicit expectations in the existing rule, time, window, and related scripts. Explanations are maintained separately, not reverse-engineered from observed output. `--check` compares parsed configuration values and input/result digests: comments and indentation do not affect the configuration digest, while inputs/results are checked byte-for-byte. This establishes file consistency, not a new execution.
+Generation first runs independent mathematical assertions for 74 YAML configurations, then two JSON configurations and explicit expectations in the existing rule, time, window, and related scripts. Explanations are maintained separately, not reverse-engineered from observed output. `--check` compares parsed configuration values and input/result digests: comments and indentation do not affect the configuration digest, while inputs/results are checked byte-for-byte. This establishes file consistency, not a new execution.
 
 Supply `--device-label home` or `--device-label work` according to the actual device. If omitted, the generator reads CHRONAXIS_DEVICE_LABEL, using pending if unknown. This labels newly generated results without changing the teaching inputs' origin.

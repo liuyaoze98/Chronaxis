@@ -1,4 +1,4 @@
-# chronaxis.execution.historical_selection_rows
+# `chronaxis.execution.historical_selection_rows`
 
 逐块读取历史数据，逐行返回真实更新对应的SelectionRow。条件为真或未知的行分别保留状态。返回行借用当前块的数据，只能在下一次读取或关闭之前使用；若需长期保存，应由调用方复制并管理内存。
 
@@ -60,7 +60,7 @@ HistoricalSelectionRows(history, context, bindings, compiled, spec, condition=No
 ```
 
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:31`](../../../src/chronaxis/execution/historical_selection_rows.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:31`](../../../src/chronaxis/execution/historical_selection_rows.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-__init__"></a>
 ### `HistoricalSelectionRows.__init__`
@@ -94,7 +94,7 @@ HistoricalSelectionRows.__init__(history, context, bindings, compiled, spec, con
 类型、能力、同步、预算、构造或取消错误；
     持续清理失败时原异常附historical_selection_rows_cleanup_owner用于恢复close。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:40`](../../../src/chronaxis/execution/historical_selection_rows.py#L40)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:40`](../../../src/chronaxis/execution/historical_selection_rows.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_make_blocks"></a>
 ### `HistoricalSelectionRows._make_blocks`
@@ -120,7 +120,7 @@ HistoricalCalculationBlocks或HistoricalConditionalBlocks。
 
 原构造/身份/同步/预算错误，恢复句柄由父构造接管。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:96`](../../../src/chronaxis/execution/historical_selection_rows.py#L96)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:96`](../../../src/chronaxis/execution/historical_selection_rows.py#L96)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-closed"></a>
 ### `HistoricalSelectionRows.closed`
@@ -148,7 +148,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:112`](../../../src/chronaxis/execution/historical_selection_rows.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:112`](../../../src/chronaxis/execution/historical_selection_rows.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-failed"></a>
 ### `HistoricalSelectionRows.failed`
@@ -176,7 +176,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:117`](../../../src/chronaxis/execution/historical_selection_rows.py#L117)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:117`](../../../src/chronaxis/execution/historical_selection_rows.py#L117)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-exhausted"></a>
 ### `HistoricalSelectionRows.exhausted`
@@ -204,7 +204,7 @@ True表示输入或结果已正常读完；False表示尚未正常读完。发�
 
 无。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:122`](../../../src/chronaxis/execution/historical_selection_rows.py#L122)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:122`](../../../src/chronaxis/execution/historical_selection_rows.py#L122)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-__iter__"></a>
 ### `HistoricalSelectionRows.__iter__`
@@ -230,7 +230,7 @@ HistoricalSelectionRows.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:126`](../../../src/chronaxis/execution/historical_selection_rows.py#L126)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:126`](../../../src/chronaxis/execution/historical_selection_rows.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_reserve"></a>
 ### `HistoricalSelectionRows._reserve`
@@ -256,7 +256,7 @@ HistoricalSelectionRows._reserve(amount, *, slot=None)
 
 预算或取消传播，未真正增加账本时不记所有权。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:130`](../../../src/chronaxis/execution/historical_selection_rows.py#L130)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:130`](../../../src/chronaxis/execution/historical_selection_rows.py#L130)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_release"></a>
 ### `HistoricalSelectionRows._release`
@@ -282,7 +282,7 @@ HistoricalSelectionRows._release(amount, *, slot=None)
 
 原释放/取消传播，恢复后close不能再次抵销已释放费用。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:146`](../../../src/chronaxis/execution/historical_selection_rows.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:146`](../../../src/chronaxis/execution/historical_selection_rows.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_drop_row"></a>
 ### `HistoricalSelectionRows._drop_row`
@@ -308,7 +308,7 @@ HistoricalSelectionRows._drop_row()
 
 行费用释放或取消传播，之后需要调用close关闭资源。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:161`](../../../src/chronaxis/execution/historical_selection_rows.py#L161)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:161`](../../../src/chronaxis/execution/historical_selection_rows.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_drop_current"></a>
 ### `HistoricalSelectionRows._drop_current`
@@ -334,7 +334,7 @@ HistoricalSelectionRows._drop_current()
 
 generator/block关闭、释放或取消传播，可重试。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:171`](../../../src/chronaxis/execution/historical_selection_rows.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:171`](../../../src/chronaxis/execution/historical_selection_rows.py#L171)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_load_current"></a>
 ### `HistoricalSelectionRows._load_current`
@@ -364,7 +364,7 @@ EOF为StopIteration；读取、预算、核构造或取消传播。
 
 - `ResultClosedError`：选择行自有分块者已关闭、失败或正在清理。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:187`](../../../src/chronaxis/execution/historical_selection_rows.py#L187)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:187`](../../../src/chronaxis/execution/historical_selection_rows.py#L187)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-_finish_exhaustion"></a>
 ### `HistoricalSelectionRows._finish_exhaustion`
@@ -390,7 +390,7 @@ HistoricalSelectionRows._finish_exhaustion()
 
 关闭/释放取消传播，失败后仅可close恢复。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:214`](../../../src/chronaxis/execution/historical_selection_rows.py#L214)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:214`](../../../src/chronaxis/execution/historical_selection_rows.py#L214)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-__next__"></a>
 ### `HistoricalSelectionRows.__next__`
@@ -422,7 +422,7 @@ HistoricalSelectionRows.__next__()
 - `RuntimeError`：失败的历史选择行只能关闭。
 - `ResultClosedError`：选择行自有输入已关闭、失败或正在清理。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:228`](../../../src/chronaxis/execution/historical_selection_rows.py#L228)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:228`](../../../src/chronaxis/execution/historical_selection_rows.py#L228)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalSelectionRows-close"></a>
 ### `HistoricalSelectionRows.close`
@@ -448,4 +448,4 @@ HistoricalSelectionRows.close()
 
 generator/block/分块者关闭或金额释放取消可重试。
 
-源码：[`src/chronaxis/execution/historical_selection_rows.py:270`](../../../src/chronaxis/execution/historical_selection_rows.py#L270)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_selection_rows.py:270`](../../../src/chronaxis/execution/historical_selection_rows.py#L270)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,4 +1,4 @@
-# chronaxis.configuration.overrides
+# `chronaxis.configuration.overrides`
 
 只覆盖公共定义中的明确配置项，不允许隐藏改名、添加对象或递归合并自由数据。
 
@@ -40,8 +40,8 @@ apply_overrides(target, document, prefix, locations, origins)
 |---|---|---|---|---|
 |`target`|dict|是|无|位置或关键字。本次独立合并副本，函数应用覆盖后移除overrides键。|
 |`document`|ConfigurationDocument|是|无|位置或关键字。主配置原文及定位信息，覆盖路径以其目录为基准。|
-|`prefix`|tuple|是|无|位置或关键字。普通分析为空元组；INI映射为analysis前缀。|
+|`prefix`|tuple|是|无|位置或关键字。覆盖字段的父路径；当前分析配置从根级空元组开始。|
 |`locations`|dict|是|无|位置或关键字。最终字段到原位置的可修改索引，删除已被整体替换的旧字段。|
 |`origins`|dict|是|无|位置或关键字。最终字段到声明文件/字段位置的可修改索引。|
 
-源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

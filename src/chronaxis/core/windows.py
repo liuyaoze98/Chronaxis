@@ -197,7 +197,7 @@ def make_segment(spec, requested, actual, coverage, parents, *, compact=False, c
     if compact:
         quality=Q.NONE
         for event in parents:
-            quality|=event.quality
+            quality|=event.quality | (event.dependency_quality & Q.ESTIMATED)
         if actual is not None and not actual.duration_ns():
             actual=None
         status='empty' if actual is None else 'partial' if clipped or actual!=requested else 'complete'

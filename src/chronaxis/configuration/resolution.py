@@ -20,14 +20,26 @@ def _interval(choice):
     return result
 
 
-def _signal_defaults(raw,plan):
-    """复用当前编译的信号事实；只在展开或内部复核副本填写，不再读DBC。"""
+def _signal_defaults(raw,plan,*,normalized=False):
+    """复用当前编译的信号事实，不为导出配置再次读取DBC。
+
+    参数: raw为独立配置副本；plan为当前计划；normalized表示转换字段已展开为内部平铺形式。
+    返回: None；只补入可重复加载的原类型、单位及映射。
+    异常: KeyError为内部配置与计划不匹配；不修改用户原文件。
+    """
     from ..planning.signal_groups import declared_signals
     for signal,typed in zip(declared_signals(raw['signals']),plan.signals):
-        signal.setdefault('dtype',typed.definition.dtype.value)
+        # 保留换算前的声明类型，重载再推导同一提升；不输出额外input_dtype字段。
+        signal.setdefault('dtype',(typed.definition.input_dtype or typed.definition.dtype).value)
+        # 固定DBC原单位而不新增另一份转换记录；重载继续沿完整系数做一次转换。
+        if plan.config_version == 4:
+            destination = signal if normalized else signal.setdefault('conversion', {})
+            destination.setdefault('input_unit', typed.definition.input_unit)
         signal.setdefault('unit',typed.definition.unit)
         if typed.definition.dtype.value=='enum':
             signal.setdefault('choices',[list(pair) for pair in typed.definition.choices])
+            if typed.definition.code_dtype is not None:
+                signal.setdefault('code_dtype', typed.definition.code_dtype.value)
 
 
 def _analysis_defaults(raw,plan):
@@ -35,7 +47,7 @@ def _analysis_defaults(raw,plan):
 
     只填写实际有含义且可重新加载的字段；不猜单位/方向/阈值，不写无关规则参数或DBC周期。
     """
-    _signal_defaults(raw,plan)
+    _signal_defaults(raw,plan,normalized=True)
     raw.setdefault('execution',{}).update(asdict(plan.execution))
     raw.setdefault('diagnostics',{}).update(asdict(plan.diagnostics))
     outputs=raw.setdefault('outputs',{})
@@ -86,8 +98,32 @@ def _analysis_defaults(raw,plan):
         for key in ('pre','post'):window.setdefault(key,_duration(getattr(typed,key+'_ns')))
         window.setdefault('merge',typed.merge)
     for calculation,typed in zip(raw.get('calculations',[]),plan.calculations):
-        for key in ('unit','partial_policy','minimum_coverage'):calculation.setdefault(key,getattr(typed,key))
+        # 对象数本身没有覆盖率门槛；补齐默认值后仍应是一份合法配置。
+        keys = ('unit','partial_policy') if typed.count_target is not None else ('unit','partial_policy','minimum_coverage')
+        for key in keys:calculation.setdefault(key,getattr(typed,key))
         if typed.method is not None:calculation.setdefault('method',typed.method)
+        if typed.ddof is not None:calculation.setdefault('ddof',typed.ddof)
+    # 只列出该归约实际使用的默认值；例如 count 不接受 field，也不需要输入单位转换。
+    for aggregation, typed in zip(raw.get('aggregations', []), plan.aggregations):
+        aggregation.setdefault('unit', typed.unit)
+        aggregation.setdefault('partial_policy', typed.partial_policy)
+        if typed.field is not None:
+            aggregation.setdefault('field', typed.field)
+        if typed.operation == 'variance':
+            aggregation.setdefault('ddof', typed.ddof)
+        if typed.operation != 'count' and typed.source_kind == 'calculation':
+            aggregation.setdefault('include_partial', typed.include_partial)
+    # 变换可相互引用，计划按依赖排序；用名字找对应项，不能和原列表按位置配对。
+    transform_plans = {item.name: item for item in plan.transforms}
+    for transform in raw.get('transforms', ()):
+        typed = transform_plans[transform['name']]
+        transform.setdefault('unit', typed.output.unit)
+        if typed.step_ns is not None:
+            transform.setdefault('partial_policy', typed.partial_policy)
+            transform.setdefault('minimum_coverage', typed.minimum_coverage)
+            # 网格默认以该时钟的零点为起点。绝对时钟不能填入相对时长。
+            zero = '1970-01-01T00:00:00+00:00' if plan.bindings.timebase.time_type.value == 'absolute' else '0s'
+            transform.setdefault('origin', zero)
     for sequence,typed in zip(raw.get('sequences',[]),plan.sequences):sequence.setdefault('max_pending',typed.max_pending)
     intervals=raw.setdefault('intervals',{})
     intervals.setdefault('default',_interval(plan.intervals.default))
@@ -112,25 +148,22 @@ def resolved_configuration(source, *, defaults=False):
             for key in ('fail_fast','backend'):raw.setdefault(key,getattr(plan,key))
     else:
         from ..planning.config_groups import normalize_configuration
-        analysis=normalize_configuration(raw['analysis'] if name=='mapping' else raw)
-        if name=='mapping':raw['analysis']=analysis
-        else:raw=analysis
-        if analysis.get('presets'):
-            expand_presets(analysis,tuple(item.definition for item in plan.signals))
-        analysis.pop('presets',None)
-        if defaults:_analysis_defaults(analysis,plan)
+        raw=normalize_configuration(raw)
+        if raw.get('presets'):
+            expand_presets(raw,tuple(item.definition for item in plan.signals))
+        raw.pop('presets',None)
+        if defaults:_analysis_defaults(raw,plan)
     # 默认展开和预设内部片段统一还原成当前公共分组，不输出第二套配置语法。
     if name!='batch':
         from ..planning.config_groups import public_configuration
-        if name=='mapping':raw['analysis']=public_configuration(raw['analysis'])
-        else:raw=public_configuration(raw)
+        raw=public_configuration(raw)
     # 使用词法绝对定位，保留..与符号链接的原路径解释；不stat/open业务文件。
     for owner,key in path_fields(raw,name):
         owner[key]=str((source.parent/Path(owner[key])).absolute())
     # 导出前复核全部有效字段；失败时还没有创建输出文件。
     validation=deepcopy(raw)
     if name!='batch':
-        _signal_defaults(validation['analysis'] if name=='mapping' else validation,plan)
+        _signal_defaults(validation,plan)
     checked=parse_configuration(serialize_configuration(validation,'json'),format='json',source=str(source))
     validate_document(checked,source.parent)
     return raw

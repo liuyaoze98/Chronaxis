@@ -26,28 +26,28 @@ The complete file is [analysis.yaml](../examples/analysis.yaml). Its input paths
 In YAML, indentation defines nesting. Here, two spaces indent a child field, and `-` starts a list item. A reference such as `dataset.name` describes the field's location: write `name` indented beneath `dataset`, not a literal key named `dataset.name`. See [configuration notation](configuration-language.md#field-paths).
 
 ```yaml
-config_version: 3                           # Configuration format version
-dataset:
-  name: energy                             # Name of this analysis
-sources:
-  - paths: data/can/quickstart.asc           # Relative to this YAML file
-    dbc_by_channel:
-      '1': data/can/teaching.dbc             # Public channel numbers start at 1
-signals:
-  - name: power                             # Name used in expressions
-    field:
-      frame_id: '0x100'                     # CAN message ID
-      signal: Power                        # Signal name in the DBC
-calculations:
-  - name: energy                           # Result column name
-    operation: integral                    # Integrate power over time
-    expr: power
-  - name: sample_average
-    operation: sample_mean                 # Equal weight for each sample
-    expr: power
-  - name: time_average
-    operation: time_weighted_mean          # Weight by valid time
-    expr: power
+config_version: 4                     # Current analysis configuration version
+dataset:                              # Analysis identity and optional input range
+  name: energy                        # Name of this analysis
+sources:                              # Input sources used by this analysis
+  - paths: data/can/quickstart.asc    # Relative to this YAML file
+    dbc_by_channel:                   # DBC files indexed by user-facing CAN channel
+      '1': data/can/teaching.dbc      # Public channel numbers start at 1
+signals:                              # Signals available to expressions
+  - name: power                       # Name used in expressions
+    field:                            # Locate the original input field
+      frame_id: '0x100'               # CAN message ID
+      signal: Power                   # Signal name in the DBC
+calculations:                         # Requested statistics or selected rows
+  - name: energy                      # Result column name
+    operation: integral               # Integrate power over time
+    expr: power                       # Formula using the declared signal or derived names
+  - name: sample_average              # Name used to identify and reference this object
+    operation: sample_mean            # Equal weight for each sample
+    expr: power                       # Formula using the declared signal or derived names
+  - name: time_average                # Name used to identify and reference this object
+    operation: time_weighted_mean     # Weight by valid time
+    expr: power                       # Formula using the declared signal or derived names
 ```
 
 Only the analysis name, log and DBC paths, signal, and three calculations are needed. There is no need to specify `session`, `entity`, `source_type`, `time_type`, a reference to the only source, or the default session scope. Signal type and unit come from the DBC; a unique channel is selected automatically. Omitting `domain` uses the observed range.
@@ -59,12 +59,12 @@ chronaxis validate analysis.yaml
 chronaxis run analysis.yaml --output new-result
 ```
 
-The output directory must not already exist. `validate` checks the declarations and required DBC metadata; `run` reads the actual messages and produces results. If the virtual environment is not activated, invoke its Python executable with `-m chronaxis`.
+The output directory can be reused; each publication uses timestamped filenames. `validate` checks the declarations and required DBC metadata; `run` reads the actual messages and produces results. If the virtual environment is not activated, invoke its Python executable with `-m chronaxis`.
 
 <a id="核对结果"></a>
 ## 3. Check the results
 
-Open `new-result/会话结果.csv` (session results). The [example output](example-results.md#analysis-yaml) explains the columns.
+Open `new-result/会话结果_<timestamp>.csv` (session results). The [example output](example-results.md#analysis-yaml) explains the columns.
 
 | Calculation | Expected value | Meaning |
 |---|---|---|

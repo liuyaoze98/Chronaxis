@@ -90,7 +90,7 @@ class ResultPublishRetryTests(unittest.TestCase):
         spool.append(summary_event_row(0, 1))
         spool.append(summary_selection_row(1))
         spool.seal()
-        metadata = RunMetadata('retry-run', 'synthetic-input', 'synthetic-plan', 'reference', 3,
+        metadata = RunMetadata('retry-run', 'synthetic-input', 'synthetic-plan', 'reference', 4,
             'relative nanoseconds; origin=0', (('session', 0, 20),),
             datetime.now(timezone.utc).isoformat(), limitations=('synthetic install-lock verification only',),
             device_label='home', detailed_diagnostics=True, retain_work=True)
@@ -165,12 +165,13 @@ class ResultPublishRetryTests(unittest.TestCase):
         self.assertEqual(timer_errors, [])
         self.assertTrue(locks[0].closed)
         self.assertEqual(locks[0].close_calls, 1)
-        self.assertGreaterEqual(len(attempts), 2)
-        self.assertLessEqual(len(attempts), 6)
-        self.assertEqual(len(errors), len(attempts) - 1)
+        locked_attempts = [a for a in attempts if a[0] == attempts[0][0]]
+        self.assertGreaterEqual(len(locked_attempts), 2)
+        self.assertLessEqual(len(locked_attempts), 6)
+        self.assertEqual(len(errors), len(locked_attempts) - 1)
         self.assertTrue(all(isinstance(exc, PermissionError) and exc.winerror in (5, 32) for exc in errors))
-        self.assertEqual(len({source for source, _ in attempts}), 1)
-        self.assertTrue(all(target == destination for _, target in attempts))
+        self.assertEqual(len({source for source, _ in attempts}), len(published.output_files) + 1)
+        self.assertTrue(all(target.parent == destination for _, target in attempts))
         self.assertFalse(attempts[0][0].exists())
         self.assertEqual(json.loads(published.manifest_path.read_text(encoding='utf-8'))['status'], 'completed')
         self.assertEqual(self.source_snapshot(result), snapshot)
@@ -207,9 +208,9 @@ class ResultPublishRetryTests(unittest.TestCase):
         self.assertTrue(getattr(errors[-1], '__notes__', ()))
         self.assertEqual(len({source for source, _ in attempts}), 1)
         temporary = attempts[0][0]
-        self.assertTrue(temporary.is_dir())
-        self.assertFalse(destination.exists())
-        self.assertEqual(json.loads((temporary / 'run_manifest.json').read_text(encoding='utf-8'))['status'], 'output_failed')
+        self.assertTrue(temporary.is_file())
+        self.assertEqual(list(destination.iterdir()), [])
+        self.assertEqual(json.loads((temporary.parent / 'run_manifest.json').read_text(encoding='utf-8'))['status'], 'output_failed')
         self.assertEqual(self.source_snapshot(result), snapshot)
         # 普通安装失败只结束本次publish；解除真实锁后可向另一新目录正常重试。
         locks[0].close()
@@ -219,50 +220,43 @@ class ResultPublishRetryTests(unittest.TestCase):
         self.close_result(result)
 
     def test_existing_target_and_target_created_during_real_lock_are_never_overwritten(self):
-        """既有目标零rename；首真实锁错后插入目标时下一尝试先拒绝，保sentinel和源。
+        """文件级发布遇已有目标或锁期间出现目标均拒绝。
 
-        参数: 无。返回: None。异常: 目标覆盖、存在检查只做一次或源被移动即失败。
+        参数: 无。返回: None。异常: 断言失败表示覆盖原文件或无界重试。
         """
         import chronaxis.results.result as module
         for race in (False, True):
             with self.subTest(race=race):
                 root, result = self.fixture()
-                destination, snapshot = root / 'existing', self.source_snapshot(result)
-                sentinel = destination / 'owned-before-publish.txt'
-                original, attempts, errors, locks = module.os.rename, [], [], []
+                source, target = root/'source.csv', root/'destination.csv'
+                source.write_bytes(b'new result')
                 if not race:
-                    destination.mkdir()
-                    sentinel.write_bytes(b'preserve destination')
+                    target.write_bytes(b'preserve destination')
+                original, attempts, errors, locks = module.os.rename, [], [], []
 
-                def race_rename(source, target, *args, **kwargs):
-                    """原rename首个真实锁错后创建目标。参数: 原参数。返回: 原返回。异常: 原OS错误。"""
-                    attempts.append((Path(source), Path(target)))
+                def race_rename(source_path, target_path, *args, **kwargs):
+                    """首个真实锁错后插入目标。参数: rename参数。返回: 原返回。异常: 原OS错误。"""
+                    attempts.append((Path(source_path), Path(target_path)))
                     if not locks:
-                        locks.append(DirectoryDeleteLock(source))
+                        locks.append(DirectoryDeleteLock(source_path))
                         self.addCleanup(locks[0].close)
                     try:
-                        return original(source, target, *args, **kwargs)
+                        return original(source_path, target_path, *args, **kwargs)
                     except OSError as exc:
                         errors.append(exc)
-                        if race and len(errors) == 1:
-                            destination.mkdir()
-                            sentinel.write_bytes(b'preserve destination')
+                        target.write_bytes(b'preserve destination')
                         raise
 
-                with patch.object(module.os, 'rename', new=race_rename), self.assertRaises(AnalysisError) as caught:
-                    result.write(destination)
-                self.assertIsInstance(caught.exception.__cause__, FileExistsError)
+                with patch.object(module.os, 'rename', new=race_rename), self.assertRaises(FileExistsError):
+                    result._install_directory(source, target)
                 self.assertEqual(len(attempts), int(race))
                 self.assertEqual(len(errors), int(race))
                 if race:
                     self.assertIsInstance(errors[0], PermissionError)
                     self.assertIn(errors[0].winerror, (5, 32))
-                    self.assertTrue(attempts[0][0].is_dir())
-                    self.assertFalse(locks[0].closed)
                     locks[0].close()
-                self.assertEqual(sentinel.read_bytes(), b'preserve destination')
-                self.assertEqual(tuple(path.name for path in destination.iterdir()), ('owned-before-publish.txt',))
-                self.assertEqual(self.source_snapshot(result), snapshot)
+                self.assertEqual(source.read_bytes(), b'new result')
+                self.assertEqual(target.read_bytes(), b'preserve destination')
                 self.close_result(result)
 
     def test_noneligible_real_missing_source_and_controlled_permission_are_not_retried(self):

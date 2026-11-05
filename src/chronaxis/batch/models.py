@@ -84,6 +84,23 @@ class BatchPlan:
         返回: 冻结BatchPlan。异常: PlanValidationError定位字段；不读取业务报文，模板可读取DBC元数据。
         """
         from ..planning.checks import object_at, array_at, text_at, model_at, PlanValidationError, number_at, choice_at
+        from ..planning.diagnostic_collection import DiagnosticCollection
+        from ..planning.checks import require_json_value
+        require_json_value(config, '$')
+        diagnostics = DiagnosticCollection(config, 'batch-v1.schema.json')
+        names = set()
+        if type(config) is dict and type(config.get('jobs')) is list:
+            for index, job in enumerate(config['jobs']):
+                path = f'$.jobs[{index}]'
+                if type(job) is not dict or not diagnostics.usable(path):
+                    continue
+                name = job.get('name', f'job_{index+1}').casefold()
+                if name in names:
+                    diagnostics.add(PlanValidationError(path+'.name', '任务名称不能重复或仅大小写不同',
+                        'duplicate_id', hint='为每个独立任务指定唯一name'))
+                names.add(name)
+        # 批量自身结构一次报告；jobs子计划仍在工作进程启动时才加载。
+        diagnostics.finish()
         if type(config) is dict and ('workers' in config or 'max_workers' in config):
             raise PlanValidationError('$.process_count', '请使用process_count设置分析工作进程数；workers/max_workers不再接受')
         raw = object_at(config, '$', ('batch_version',), ('jobs', 'template', 'inputs', 'source', 'process_count', 'fail_fast', 'backend'))
@@ -129,6 +146,7 @@ class BatchJobResult:
     input_identity: str | None = None  # 只有实际分析返回后才记录。
     run_id: str | None = None  # 同计划重跑仍有独立运行身份。
     output_dir: Path | None = None  # 实际发布成功的目录，不预填未生成输出。
+    manifest_path: Path | None = None  # 本次任务实际完成清单，不猜固定文件名。
     error_type: str | None = None  # 原异常类型或未启动取消原因。
     error_message: str | None = None  # 原错误说明，不用成功值覆盖失败。
     error_chain: tuple[str, ...] = ()  # cause链和清理notes，保留错误来源。
@@ -151,6 +169,7 @@ class BatchJobResult:
                  'elapsed_seconds', 'memory_budget_bytes', 'worker_pid')
         result = {name: getattr(self, name) for name in names}
         result.update(output_dir=None if self.output_dir is None else str(self.output_dir),
+                      manifest_path=None if self.manifest_path is None else str(self.manifest_path),
                       error_chain=list(self.error_chain),
                       cleanup_pending=self.recovery is not None and not self.recovery.closed)
         return result
@@ -160,7 +179,7 @@ class BatchJobResult:
 class BatchReport:
     """按原任务顺序汇总结果；每个任务数值表仍在各自目录，不跨口径归约。"""
 
-    output_dir: Path  # 本批新目录，已有目标不会被覆盖。
+    output_dir: Path  # 可复用的输出根，任务子目录和报告按本批时间区分。
     jobs: tuple[BatchJobResult, ...]  # 最终结果顺序不受工作进程完成先后影响。
     process_count: int  # 本次配置的工作进程上限。
     fail_fast: bool  # 是否在观察到失败后停止派发。
@@ -168,6 +187,8 @@ class BatchReport:
     device_label: str  # 调用方明确提供；缺省pending，不猜测机器。
     worker_process_count: int = 0  # 本次实际启动的工作进程数，空批次为0。
     infrastructure_error: str | None = None  # 调度或汇总基础设施错误，与任务业务失败分开。
+    report_path: Path | None = None  # 成功发布后返回的实际报告路径。
+    _publication: object = field(default=None, repr=False, compare=False)  # 持有本批名称，关闭释放。
 
     @property
     def status(self) -> str:
@@ -190,6 +211,11 @@ class BatchReport:
     def close(self) -> None:
         """重试所有未完清理。参数: 无。返回: None。异常: 首个关闭错误，其他项仍尝试。"""
         first = None
+        if self._publication is not None:
+            try:
+                self._publication.close()
+            except BaseException as error:
+                first = error
         for job in self.jobs:
             if job.recovery is not None:
                 try:
@@ -198,5 +224,7 @@ class BatchReport:
                     # 一项失败不能阻止其他独立任务释放资源；原句柄仍由本报告保留。
                     if first is None:
                         first = error
+                    else:
+                        first.add_note('其他批量任务清理失败：' + str(error))
         if first is not None:
             raise first

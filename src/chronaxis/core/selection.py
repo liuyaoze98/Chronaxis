@@ -11,7 +11,7 @@ FALSE行被过滤。只输出目标表达式依赖的真实时间组更新，不
 # 冻结行协议避免消费者修改结果身份。
 from dataclasses import dataclass
 # 只共享静态模型，不包含筛选数值内核。
-from .calculations import CalculationSeries, CalculationDefinition
+from .calculations import CalculationSeries, CalculationDefinition, calculation_conversion
 from .models import SourceRef
 from .numeric import ScalarValue
 from .types import Truth, QualityFlag as Q
@@ -23,9 +23,9 @@ from ..timebase.conversion import require_int64_ns
 class SelectionRow:
     """保存一个真实表达式更新时间组的选择结果。
 
-    value保持原dtype、枚举标签、有效性和质量；selection只允许TRUE或UNKNOWN。
+    value保存输出dtype、枚举标签、有效性和质量；selection只允许TRUE或UNKNOWN。
     quality汇总原依赖、值及条件原因；binding_identity与source_refs定位当前输入。
-    unit保留当前分析值单位；行流不执行隐式单位换算。
+    unit与当前行值一致；允许已核实的目标单位换算。
     所有字段不可变，没有跨任务状态；UNKNOWN不是已知选中，不能隐式转bool。
     """
 
@@ -60,15 +60,31 @@ class SelectionRow:
 
 
 def require_selection(series, spec):
-    """验证选择行流的输入，不把行流当成标量或隐式换单位。
+    """验证选择行流的输入及当前版本允许的单位换算。
 
     参数: series为CalculationSeries，spec为operation=select的CalculationDefinition。
     返回: None。
-    异常: TypeError为模型错误；ValueError为算子或单位转换请求。
+    异常: TypeError为模型错误；ValueError为算子或不被当前版本支持的单位转换。
     """
     # 两个后端共享已校验协议，筛选算法仍独立。
     if not isinstance(series, CalculationSeries) or not isinstance(spec, CalculationDefinition):
         raise TypeError('选择行流需CalculationSeries和CalculationDefinition')
     # 此入口保留原值，转换需要先在分析表达式/绑定中明确完成。
-    if spec.operation != 'select' or spec.output_unit not in (None, series.unit):
+    if spec.operation != 'select':
         raise ValueError('选择行流需select且保留输入单位')
+    # v4允许已登记目标单位；类型也在产出第一行前检查，不能转换枚举编码。
+    calculation_conversion(spec, series.unit).dtype(series.values[0].dtype)
+
+
+def partial_selection(value,quality,spec):
+    """处理来自部分时间窗口的选中值，不更改真实行身份。
+
+    参数: value 为转换后的值，quality 为行的诊断，spec 决定 report/strict。
+    返回: 值及行质量；strict 不提供正常值。异常: 值契约不合法时传播。
+    """
+    from dataclasses import replace
+    if spec.partial_policy=='strict':
+        value=ScalarValue(None,value.dtype,False,value.quality|Q.ESTIMATED,value.labels)
+    elif value.valid:
+        value=replace(value,partial=True)
+    return value,quality|Q.ESTIMATED

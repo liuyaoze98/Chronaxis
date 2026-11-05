@@ -1,12 +1,12 @@
 # chronaxis.load_analysis_plan
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.plan.md)。
+使用`from chronaxis import load_analysis_plan`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.plan.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [load_analysis_plan](#api-load_analysis_plan)
+- [`load_analysis_plan`](#api-load_analysis_plan)
 
 <a id="api-load_analysis_plan"></a>
 ## `load_analysis_plan`
@@ -14,7 +14,7 @@
 加载JSON/YAML及显式公共定义，应用受限覆盖并编译分析计划。目录输入会展开文件名；信号缺省类型、单位或枚举映射时按需读取DBC，不扫描业务报文。
 
 ```python
-load_analysis_plan(path: Path | str) -> AnalysisPlan
+load_analysis_plan(path: Path | str, *, extensions=None) -> AnalysisPlan
 ```
 
 ### 参数
@@ -22,6 +22,7 @@ load_analysis_plan(path: Path | str) -> AnalysisPlan
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|是|无|位置或关键字。配置文件路径；不接受目录扫描或任意路径对象。 配置按UTF-8读取，允许文件开头带BOM。|
+|`extensions`|ExtensionRegistry &#124; None|否|None|仅关键字。宿主为版本4分析显式创建的注册表；省略时没有可额外调用的宿主操作。|
 
 ### 返回说明
 
@@ -46,4 +47,4 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:258`](../../../src/chronaxis/planning/plan.py#L258)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/plan.py:368`](../../../src/chronaxis/planning/plan.py#L368)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

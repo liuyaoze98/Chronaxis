@@ -11,6 +11,8 @@ None兼容原domain及原预算，不证明实际观测。原context、绑定和
 """
 
 # 只组合新分析分块者、独立样本核和既有结果政策，历史读写与解码保持原样。
+from ..core.moments import SAMPLE_MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from ..core.decoded_binding import DecodedBindings
 from ..core.expression import CompiledExpression
 from ..core.calculations import CalculationDefinition, make_calculation_result
@@ -67,7 +69,7 @@ class HistoricalSampleCalculation:
                 or not isinstance(spec, CalculationDefinition)
                 or condition is not None and not isinstance(condition, CompiledExpression)):
             raise TypeError('历史样本指标需真实历史、保持上下文、绑定、表达式和CalculationDefinition')
-        if spec.operation not in ('sample_minimum', 'sample_maximum', 'sample_mean'):
+        if spec.operation not in ('sample_count', 'sample_minimum', 'sample_maximum', 'sample_mean', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES):
             raise ValueError('当前样本归约只接三种samples算子')
         if (backend not in ('reference', 'numpy') or type(batch_intervals) is not int
                 or batch_intervals < 1 or type(partial_limit) is not int or partial_limit < 1):
@@ -129,7 +131,7 @@ class HistoricalSampleCalculation:
             factory = NumpySampleReduction
         # 实际每块仍校验unit/dtype，均值计数来自原值实际更新，不能按块数平均。
         return factory(self._spec, self._compiled.root.unit, self._compiled.root.dtype,
-                       partial_limit=self._partial_limit)
+                       partial_limit=self._partial_limit, quantile_budget=self._budget)
 
     def _make_blocks(self):
         """创建一次自有历史回读者，按可选条件选择单源或联合边界。
@@ -327,6 +329,8 @@ class HistoricalSampleCalculation:
             if self._blocks is not None:
                 self._blocks.close()
                 self._blocks = None
+            if self._reducer is not None:
+                self._reducer.close()
             self._release(self._held_cost)
         finally:
             # 所有句柄已释放且实际自有金额为0才清空状态；不拿借用账本总额充当关闭证明。

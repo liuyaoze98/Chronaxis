@@ -184,7 +184,7 @@ class ASCDemandTimeTests(unittest.TestCase):
 
     def config(self, parser, *, full=False, frames=False):
         """参数: parser输入，full完整检查，frames原帧导出。返回: 公共配置。异常: 无。"""
-        result={'config_version':3,'dataset':{'name':'time_check'},
+        result={'config_version':4,'dataset':{'name':'time_check'},
             'sources':[{'name':'bus','path':str(parser.path.resolve()),
                 'dbc_by_channel':{'1':str(self.dbc.resolve())}}],
             'signals':[{'name':'voltage','source':'bus',

@@ -126,7 +126,8 @@ def pack_message_values(definition: SignalDefinition, originals: tuple, backend:
         raise TypeError('pack_message_values需要typed声明/tuple原值及明确后端')
     # 数值列与原有pack_decoded走同一布局，未借助SignalSeries或假时间归一化。
     values, valid, quality, labels = _pack_numeric_columns(definition, originals, backend)
-    return NumericArray(definition.dtype, values, valid, quality, labels)
+    from ..core.enum_codes import code_column
+    return NumericArray(definition.dtype, values, valid, quality, labels, code_column(definition, originals))
 
 
 def pack_decoded(definition: SignalDefinition, records: tuple[tuple[int, int, int | float | bool | str | None], ...], source_ref: SourceRef | tuple[SourceRef, ...], backend: str, *, retain_original=True, clock_only=False) -> SignalSeries:
@@ -167,4 +168,6 @@ def pack_decoded(definition: SignalDefinition, records: tuple[tuple[int, int, in
     # 精确时间与原序号分别int64，公共模型随后验证非递减/唯一。
     times, sequences = np.array([item[0] for item in records], dtype=np.int64), np.array([item[1] for item in records], dtype=np.int64)
     # 每行保持实际SourceRef，不从别名或semantic_id猜定位。
-    return SignalSeries(definition.name, definition.dtype, definition.unit, times, values, valid, quality, sequences, (source_ref,) * len(records) if isinstance(source_ref, SourceRef) else source_ref, labels, originals if retain_original else None)
+    from ..core.enum_codes import code_column
+    code = None if clock_only else code_column(definition, originals)
+    return SignalSeries(definition.name, definition.dtype, definition.unit, times, values, valid, quality, sequences, (source_ref,) * len(records) if isinstance(source_ref, SourceRef) else source_ref, labels, originals if retain_original else None, code)

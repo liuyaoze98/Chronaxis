@@ -198,7 +198,9 @@ def main():
         text = path.read_text(encoding='utf-8')
         from check_current_html import fenced_blocks
         fenced_blocks(text)
-        if not sources.tree:
+        # 英文页采用独立译文来源清单，不要求复制中文维护履历；正文和链接仍逐页校核。
+        english_page = DOC.name == 'Current' and path.relative_to(DOC).parts[0] == 'en'
+        if not sources.tree and not english_page:
             assert 'liuyaoze' in text and '变更履历' in text, path
         # JSON schema中的正则可能长得像Markdown链接；代码围栏不参与导航解析。
         prose = re.sub(r'^(`{3,}|~{3,})[^\n]*\n.*?^\1\s*$', '', text, flags=re.M | re.S)

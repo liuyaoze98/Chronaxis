@@ -1,4 +1,4 @@
-# chronaxis.legacy.batch_wire
+# `chronaxis.legacy.batch_wire`
 
 定义父进程和CAN读取子进程之间使用的批次格式。一个字节包包含多少条记录、每条记录怎样编码和校验，都由这里规定。它不执行读取或DBC解码，也不反序列化任意Python对象。
 
@@ -57,7 +57,7 @@ class LegacyDecodedBatch
 |`protocol_version`|int|否|1|区分source全时间的新包与旧包，证明含义不可混用。|
 |`input_index`|int|否|0|当前批所在原序文件；单文件为0，不逐条复制路径。|
 
-源码：[`src/chronaxis/legacy/batch_wire.py:31`](../../../src/chronaxis/legacy/batch_wire.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:31`](../../../src/chronaxis/legacy/batch_wire.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyDecodedBatch-frame_count"></a>
 ### `LegacyDecodedBatch.frame_count`
@@ -85,7 +85,7 @@ int。
 
 无。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:50`](../../../src/chronaxis/legacy/batch_wire.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:50`](../../../src/chronaxis/legacy/batch_wire.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-encode_batch"></a>
 ## `encode_batch`
@@ -134,7 +134,7 @@ bytes数据包。
 
 这是内部编码器，记录语义由原模型/编码器及接收端再次严格检查。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:55`](../../../src/chronaxis/legacy/batch_wire.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:55`](../../../src/chronaxis/legacy/batch_wire.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-decode_batch"></a>
 ## `decode_batch`
@@ -184,7 +184,7 @@ decode_batch(payload, *, expected_start, row_limit, byte_limit, frame_ids, time_
 
 父先付费；本函数不依靠头内数量分配无限数组，也不忽略尾随字节。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:97`](../../../src/chronaxis/legacy/batch_wire.py#L97)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:97`](../../../src/chronaxis/legacy/batch_wire.py#L97)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-record_payload_offset"></a>
 ## `record_payload_offset`
@@ -213,7 +213,7 @@ ValueError为未知scope。
 
 - `ValueError`：未知批次时间范围。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:162`](../../../src/chronaxis/legacy/batch_wire.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:162`](../../../src/chronaxis/legacy/batch_wire.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_encode_required_batch"></a>
 ## `_encode_required_batch`
@@ -254,7 +254,7 @@ bytes。
 - `ValueError`：批次单条记录必须是原限额内bytes。
 - `ValueError`：批次编码超过已授权字节上限。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:171`](../../../src/chronaxis/legacy/batch_wire.py#L171)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:171`](../../../src/chronaxis/legacy/batch_wire.py#L171)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_decode_required_batch"></a>
 ## `_decode_required_batch`
@@ -299,4 +299,4 @@ _decode_required_batch(payload, *, expected_start, row_limit, byte_limit, frame_
 - `ValueError`：所选时间批次缺少目标时间。
 - `ValueError`：批次原时间与记录时间不一致。
 
-源码：[`src/chronaxis/legacy/batch_wire.py:208`](../../../src/chronaxis/legacy/batch_wire.py#L208)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_wire.py:208`](../../../src/chronaxis/legacy/batch_wire.py#L208)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

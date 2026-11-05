@@ -11,6 +11,9 @@
 from dataclasses import replace
 from ..core import expression_reference, expression_numpy
 from ..core.expression import StaticExpression, validate_expression
+from ..core.lookup import pack_requested_lookups
+from ..core.where_updates import contains_where
+from ..core.enum_codes import expire_value
 from ..core.declarations import DeclarationBindings
 from ..core.numeric import ScalarValue
 from ..core.types import SignalDType as D, QualityFlag as Q
@@ -20,6 +23,7 @@ from ..timebase.conversion import require_int64_ns
 from .history import _metadata_bytes
 from .calculation_values import scalar_from_column
 from .state import LatestSignalState
+from .where_state import before_context, scalar_columns, group_updates, group_active
 
 
 class DriverExpression:
@@ -68,7 +72,9 @@ class DriverExpression:
                 if actual != declared:
                     raise ValueError('驱动表达式与实际信号定义不同：' + str(name))
             static.bindings.require_synchronized(tuple(sorted(names)))
-            self._static = checked
+            # 固定申请已覆盖完整点对及每点16字节的只读列，参考后端直接二分原点对。
+            self._static = pack_requested_lookups(checked) if backend == 'numpy' else checked
+            self._has_where = contains_where(checked.root)
             self._definitions = tuple((name, state.definitions[name]) for name in static.dependencies)
             # 费用随表达式复杂度和依赖数增长，不随输入记录数增长。
             nodes, pending = 0, [checked.root]
@@ -104,36 +110,113 @@ class DriverExpression:
                                     tuple(dict.fromkeys(label for _, label in definition.choices))
                                     if definition.dtype is D.ENUM else ())
             elif end is not None and (time_ns >= end if continuous else time_ns > end):
-                value = ScalarValue(None, definition.dtype, False, sample.value.quality | Q.MISSING, sample.value.labels)
+                value = expire_value(sample.value, Q.MISSING)
             elif time_ns - sample.time_ns >= definition.valid_for_ns:
-                value = ScalarValue(None, definition.dtype, False, sample.value.quality | Q.STALE, sample.value.labels)
+                value = expire_value(sample.value, Q.STALE)
             else:
                 value = sample.value
                 expires = sample.time_ns + definition.valid_for_ns
-                if value.valid and expires < (1 << 63):
+                available = value.valid or value.code is not None and value.code.valid
+                if available and expires < (1 << 63):
                     deadlines.append(expires)
-                if value.valid and end is not None:
+                if available and end is not None:
                     deadlines.append(end)
             context[name] = value
         return context, deadlines
 
-    def _evaluate_values(self, context):
-        """复用选定后端的独立数值核。参数: 已付费当前typed值映射。返回: ScalarValue。异常: 原计算/分配错误。"""
+    def _evaluate_values(self, context, unobserved=None):
+        """复用所选后端。参数: typed值映射、可选规则缺项集合。返回: ScalarValue。异常: 原计算/分配错误。"""
         result = columns = value = None
+        cache = {}
         try:
             if self._backend == 'reference':
-                return expression_reference._evaluate(self._static.root, context, {}).value
-            import numpy as np
-            from ..core.numeric_numpy import NumericArray, DTYPES
-            columns = {}
-            for name, value in context.items():
-                physical = value.labels.index(value.value) if value.valid and value.dtype is D.ENUM else value.value if value.valid else 0
-                columns[name] = NumericArray(value.dtype, np.array([physical], dtype=DTYPES[value.dtype]),
-                    np.array([value.valid], dtype=bool), np.array([int(value.quality)], dtype=np.uint16), value.labels)
-            result = expression_numpy._evaluate(self._static.root, columns, 1, {})
-            return scalar_from_column(result.value, 0)
+                value = expression_reference._evaluate(self._static.root, context, cache).value
+            else:
+                columns = scalar_columns(context)
+                result = expression_numpy._evaluate(self._static.root, columns, 1, cache)
+                value = scalar_from_column(result.value, 0)
+            if unobserved is not None:
+                # 两后端在单点均只访问当前活动分支；规则只记别名，不存逐时刻轨迹。
+                unobserved.update(n.name for n in cache if n.operator == 'name' and self._state.get(n.name) is None)
+            if value.valid and not value.partial and any(n.operator=='name' and context[n.name].partial for n in cache):
+                value = replace(value,partial=True)
+            return value
         finally:
-            context = result = columns = value = None
+            context = result = columns = value = cache = None
+
+    def actual_update_at(self, time_ns):
+        """检查真实数值更新。参数: 完整组纳秒。返回: bool。异常: 状态/预算/后端错误。"""
+        return self._point_evidence(time_ns, 'updated')
+
+    def active_end_at(self, time_ns):
+        """检查活动来源末端。参数: 查询纳秒。返回: bool。异常: 状态/预算/后端错误。"""
+        return self._point_evidence(time_ns, 'source_end')
+
+    def actual_unknown_at(self, time_ns, point):
+        """区分真实中断与并列 TTL。参数: 完整组纳秒、已知无效点值。返回: bool。异常: 状态/求值错误。"""
+        return self._point_evidence(time_ns, 'invalid', point)
+
+    def _point_evidence(self, time_ns, kind, point=None):
+        """检查点上的活动更新、未知原因或活动来源末端，不推进驱动。
+
+        参数: 查询纳秒、证据种类，invalid 另传当前实际点。返回: bool。
+        异常: 状态、预算及后端求值错误；失败后只允许关闭。
+        """
+        self._require_open()
+        source_end = kind == 'source_end'
+        if not source_end and self._state.last_time_ns != time_ns:
+            return False
+        names = self._static.dependencies
+        ends = self._observation_ends or {}
+        if source_end and not any(ends.get(d.source) == time_ns for _, d in self._definitions):
+            return False
+        if not self._has_where:
+            return source_end or any((sample := self._state.get(name)) is not None and sample.time_ns == time_ns for name in names)
+        primary = None
+        try:
+            _reserve_owned_ram(self, self._workspace, '_work_cost')
+            current, _ = self._context_at(time_ns)
+            if source_end:
+                return group_active(self._static.root, current,
+                    {name: ends.get(d.source) == time_ns for name, d in self._definitions}, self._backend)
+            flags = {name: (sample := self._state.get(name)) is not None and sample.time_ns == time_ns for name in names}
+            if kind == 'invalid':
+                # 判定实际中断使用“同一 t 排除真实更新”而非左侧保持；否则 TTL 到期
+                # 与旁列真实有效更新恰好同刻，会被误判为样本导致的中断。
+                invalid = {n: real and not self._state.get(n).value.valid for n, real in flags.items()}
+                if group_active(self._static.root, current, invalid, self._backend):
+                    return True
+                prior = before_context(self._state, names, time_ns, ends=self._observation_ends)
+                old = self._evaluate_values(prior)
+                return old.valid or bool(point.quality & ~old.quality)
+            previous = before_context(self._state, names, time_ns, ends=self._observation_ends, left_limit=True)
+            return group_updates(self._static.root, current, previous, flags, self._backend)
+        except BaseException as error:
+            primary, self._failed = error, True
+            raise
+        finally:
+            try:
+                _release_owned_ram(self, self._work_cost, '_work_cost')
+            except BaseException as cleanup:
+                self._failed = True
+                if primary is None:
+                    raise
+                primary.add_note('活动依赖检查费用释放失败：' + type(cleanup).__name__)
+
+    def _output_deadline(self, time, output, deadlines):
+        """选取首次可见失效。参数: 当前纳秒、输出、TTL/来源候选末端。
+        返回: 整数截止或 None。异常: 候选边界上的求值错误。
+        """
+        if not self._has_where and not (output.dtype is D.BOOL and self._boolean_short_circuit):
+            return min(deadlines, default=None)
+        if output.valid:
+            for candidate in sorted(set(deadlines)):
+                if candidate >= time:
+                    future_context, _ = self._context_at(candidate, continuous=True)
+                    future = self._evaluate_values(future_context)
+                    if not future.valid or future.value != output.value:
+                        return candidate
+        return None
 
     def evaluate(self):
         """仅在最新完整组包含驱动更新时求值一次；其他组仅由state保存最新值。
@@ -170,32 +253,40 @@ class DriverExpression:
             # 已知FALSE and UNKNOWN等不能因为无关分支失效而被整体改成UNKNOWN。
             check_condition = (self._static.root.dtype is D.BOOL and self._boolean_short_circuit
                                and self._invalidated_at is not None)
-            if not is_driver and not check_condition:
+            if not is_driver and not check_condition and not self._has_where:
                 self._last_revision = revision
                 return None
             _reserve_owned_ram(self, self._workspace, '_work_cost')
             context, deadlines = self._context_at(time, continuous=not is_driver)
             output = self._evaluate_values(context)
+            if self._has_where:
+                # EOF 可能随下一条真实记录才确定。按该时间上仍生效的旧组求值，
+                # 避免把新分支的失效倒填到旧区间，或让未选来源提前截止。
+                self._invalidated_at = None
+                ends = self._observation_ends or {}
+                cutoffs = {ends[d.source] for _, d in self._definitions if d.source in ends and
+                           previous_time is not None and previous_time <= ends[d.source] <= time}
+                for cutoff in sorted(cutoffs):
+                    point = before_context(self._state, self._static.dependencies, cutoff, ends=ends)
+                    if not group_active(self._static.root, point,
+                            {n: ends.get(d.source) == cutoff for n, d in self._definitions}, self._backend):
+                        continue
+                    prior = before_context(self._state, self._static.dependencies, cutoff, ends=ends, continuous=True)
+                    if not self._evaluate_values(prior).valid:
+                        self._invalidated_at = cutoff
+                        break
+                if self._invalidated_at is None and not output.valid:
+                    self._invalidated_at = time
             if not is_driver:
                 if (self._last_value is not None and output.valid and self._last_value.valid
                         and output.value == self._last_value.value):
                     self._invalidated_at = None
                 self._last_revision = revision
                 return None
-            deadline = min(deadlines) if deadlines else None
+            deadline = self._output_deadline(time, output, deadlines)
             if output.dtype is D.BOOL:
                 if output.valid and self._last_value is not None and self._last_value.valid and output.value == self._last_value.value:
                     self._invalidated_at = None
-                # 依赖逐个过期可能不改变三值结论，只在结论不再成立的首个截止停止保持。
-                if self._boolean_short_circuit:
-                    deadline = None
-                if output.valid and self._boolean_short_circuit:
-                    for candidate in sorted(set(deadlines)):
-                        future_context, _ = self._context_at(candidate, continuous=True)
-                        future = self._evaluate_values(future_context)
-                        if not future.valid or future.value != output.value:
-                            deadline = candidate
-                            break
             self._last_value = output if output.dtype is D.BOOL else None
             self._last_revision = revision
             return time, output, deadline
@@ -220,10 +311,11 @@ class DriverExpression:
         self._require_open()
         return self._invalidated_at
 
-    def evaluate_at(self, time_ns, *, continuous=True):
+    def evaluate_at(self, time_ns, *, continuous=True, unobserved=None):
         """在当前最新状态上查询实际边界，供规则的TTL和等待调度使用。
 
-        参数: time_ns不得早于已提交组；continuous=False查询实际点，True查询右侧保持。
+        参数: time_ns不得早于已提交组；continuous=False查询实际点，True查询右侧保持；
+            unobserved可收集当前活动路径从未观测的别名，不记录未来推算中的缺项。
         返回: (ScalarValue, 下一次可能改变已知结果的实际截止或None)。不提交组、
             不改变驱动游标，不制造报文，也不保存查询轨迹。
         异常: 时间/状态/预算/数值错误；失败后仅可关闭，费用释放失败仍保原责任。
@@ -237,11 +329,11 @@ class DriverExpression:
                 raise ValueError('边界查询需要bool视图且不能回读已覆盖的旧状态')
             _reserve_owned_ram(self,self._workspace,'_work_cost')
             context,deadlines = self._context_at(time,continuous=continuous)
-            output = self._evaluate_values(context)
+            output = self._evaluate_values(context, unobserved)
             deadline = None
             if output.valid:
                 for candidate in sorted(set(value for value in deadlines if value > time)):
-                    if not self._boolean_short_circuit:
+                    if not self._boolean_short_circuit and not self._has_where:
                         deadline = candidate
                         break
                     future_context,_ = self._context_at(candidate,continuous=True)

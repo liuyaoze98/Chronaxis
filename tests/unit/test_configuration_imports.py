@@ -15,9 +15,7 @@ from chronaxis.configuration import load_configuration, parse_configuration
 from chronaxis.configuration.imports import expand_document_imports
 from chronaxis.configuration.file_tools import convert_configuration, validate_document
 from chronaxis.configuration.resolution import resolved_configuration
-from chronaxis.migration import import_legacy_ini, load_legacy_ini
 import test_configuration_entrypoints as entrypoints
-from test_legacy_import_sclicer import mapping_fixture
 
 
 class ConfigurationImportsTests(unittest.TestCase):
@@ -83,7 +81,7 @@ class ConfigurationImportsTests(unittest.TestCase):
 
     def test_fragment_shape_and_nested_import_are_rejected(self):
         """公共文件不能声明规则、版本或第二层导入。参数: 无。返回: None。异常: 断言。"""
-        for fragment in ({},[],{'imports':['not-opened.yaml']},{'config_version':3},{'rules':[]},
+        for fragment in ({},[],{'imports':['not-opened.yaml']},{'config_version':4},{'rules':[]},
                          {'signals':None},{'sources':[None]},{'signals':[{'name':False}]}):
             with self.subTest(fragment=fragment):
                 raw,path=self.split();self.write('shared/signals.json',fragment)
@@ -131,20 +129,6 @@ class ConfigurationImportsTests(unittest.TestCase):
         self.assertEqual(load_analysis_plan(path),load_analysis_plan(converted))
         with self.assertRaises(ValueError):convert_configuration(path,self.root/'bad.json')
         self.assertFalse((self.root/'bad.json').exists())
-
-    def test_mapping_file_imports_but_bytes_api_remains_static(self):
-        """映射analysis可共享定义，纯字节导入仍拒绝隐式读取。参数: 无。返回: None。异常: 断言。"""
-        mapping=mapping_fixture();analysis=mapping['analysis']
-        self.write('mapping-definitions.yaml',{key:analysis.pop(key) for key in ('sources','signals')})
-        analysis['imports']=['mapping-definitions.yaml']
-        content=b'[TRIGGER_test]\nmode=single\nexpr=BMS_BatPackHiResSOC > 1\npre_sec=0\npost_sec=0\n'
-        ini=self.folder/'source.ini';ini.write_bytes(content)
-        path=self.write('mapping.yaml',mapping)
-        self.assertEqual(validate_document(load_configuration(path),self.folder),'mapping')
-        result=load_legacy_ini(ini,path,mode='sclicer_single')
-        self.assertEqual(result.report.status,'success',result.report.issues)
-        rejected=import_legacy_ini(content,mapping,mode='sclicer_single',base_dir=self.folder)
-        self.assertEqual(rejected.report.issues[0].code,'unresolved_imports')
 
     def test_resolve_removes_imports_and_reloads_without_definitions(self):
         """独立配置不再读取公共文件且保持执行计划。参数: 无。返回: None。异常: 断言。"""

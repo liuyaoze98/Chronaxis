@@ -248,11 +248,13 @@ class RunSession:
                 +(('sequences',) if plan.sequences else ())+ (('segments',) if plan.windows else ())
                 +(('contributions',) if plan.outputs.contributions=='full' and plan.message_calculations else ())
                 +(('input_trace',) if plan.diagnostics.trace else ())
-                +(('selections',) if any(m.operation=='select' for m in plan.calculations) else ()),
+                +(('selections',) if any(m.operation=='select' for m in plan.calculations) else ())
+                +(('aggregations',) if plan.aggregations else ()),
             enable_sequences=bool(plan.sequences),
             enable_contributions=plan.outputs.contributions=='full' and bool(plan.message_calculations),
             enable_trace=plan.diagnostics.trace,
             enable_selections=any(m.operation=='select' for m in plan.calculations),
+            enable_aggregations=bool(plan.aggregations),
             failure_diagnostics=plan.diagnostics.retain_work)
         self._construct('_record_calculations', RecordSessionCalculations, plan, self._budget, self._path, requirements=self._requirements)
         self._record_calculations.execute_into(self._spool)
@@ -263,15 +265,15 @@ class RunSession:
         frame_notices = tuple((cursor.source_name, notice) for cursor in self._record_calculations._cursors
                               for notice in cursor.frame_format_notices)
         analysis_outcome=self._record_calculations.analysis_outcome()
-        _reserve_owned_ram(self, 65536 + 32 * _metadata_bytes((plan.metadata,plan.presets,diagnostic_inputs,frame_notices,analysis_outcome)), '_metadata_cost')
+        _reserve_owned_ram(self, 65536 + 32 * _metadata_bytes((plan.metadata,plan.presets,diagnostic_inputs,frame_notices,analysis_outcome,plan.aggregations)), '_metadata_cost')
         self._metadata = RunMetadata(run_id=self._run_id, input_identity=None,
-            plan_hash=plan.identity, backend=plan.execution.backend, config_version=3,
+            plan_hash=plan.identity, backend=plan.execution.backend, config_version=plan.config_version,
             source_time_interpretation='original-record-times',
             session_boundaries=(), session_ids=(plan.dataset.session_id,),
             started_at=self._started_at, parsing_policy='requested-fields-and-driver-times',
             device_label=plan.metadata.get('device_label', 'pending'), retain_work=plan.diagnostics.retain_work,
             threshold_durations=self._record_calculations.threshold_summaries(),input_diagnostics=diagnostic_inputs,
-            frame_format_notices=frame_notices,analysis_outcome=analysis_outcome,
+            frame_format_notices=frame_notices,analysis_outcome=analysis_outcome,aggregation_definitions=plan.aggregations,
             limitations=tuple(f'{source}.{notice.alias}: DBC声明CAN FD，按显式经典CAN定位读取；原帧未转换'
                               for source, notice in frame_notices),
             trace_requested=plan.diagnostics.trace,integrity_diagnostics=plan.diagnostics.integrity)

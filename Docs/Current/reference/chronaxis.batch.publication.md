@@ -1,4 +1,4 @@
-# chronaxis.batch.publication
+# `chronaxis.batch.publication`
 
 把批量报告写入新的JSON文件。先写临时文件并关闭，再改名为正式报告；目标已经存在时不会覆盖。当前发布方式使用Windows的不覆盖重命名，其他平台会报错。任务各自已经生成的结果不会因此被删除。
 
@@ -12,13 +12,13 @@
 
 |对象|用途|
 |---|---|
-|[`write_batch_report`](#api-write_batch_report)|发布固定汇总文件。|
+|[`write_batch_report`](#api-write_batch_report)|发布带本批时间的汇总文件。|
+|[`_write_batch_report`](#api-_write_batch_report)|先完成可选的 fast 总量计算，再一次发布同一批报告。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from pathlib import Path
-from uuid import uuid4
 from .models import BatchReport
 ```
 
@@ -27,7 +27,7 @@ from .models import BatchReport
 <a id="api-write_batch_report"></a>
 ## `write_batch_report`
 
-发布固定汇总文件。
+发布带本批时间的汇总文件。
 
 ```python
 write_batch_report(report: BatchReport) -> Path
@@ -41,7 +41,7 @@ write_batch_report(report: BatchReport) -> Path
 
 ### 返回说明
 
-batch_report.json路径。
+实际报告路径。
 
 ### 异常说明
 
@@ -59,4 +59,22 @@ batch_report.json路径。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-_write_batch_report"></a>
+## `_write_batch_report`
+
+先完成可选的 fast 总量计算，再一次发布同一批报告。
+
+```python
+_write_batch_report(report, extra)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`report`|[BatchReport](chronaxis.batch.models.md#api-BatchReport)|是|无|位置或关键字。本批各任务的成功、取消、失败以及发布路径。|
+|`extra`|dict &#124; None|是|无|位置或关键字。在报告根写入的 fast 执行标志和可选总量。|
+
+源码：[`src/chronaxis/batch/publication.py:23`](../../../src/chronaxis/batch/publication.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

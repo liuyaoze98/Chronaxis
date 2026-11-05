@@ -1,4 +1,4 @@
-"""从YAML配置执行分析并逐行读取结果；输入为配置路径，可选输出新目录。"""
+"""从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。"""
 import argparse
 from pathlib import Path
 
@@ -9,7 +9,7 @@ def main():
     """检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')
-    parser.add_argument('--output', type=Path, help='尚不存在的正式输出目录；省略则只打印结果')
+    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')
     args = parser.parse_args()
     plan = load_analysis_plan(args.plan)
     report = validate_analysis_plan(plan)

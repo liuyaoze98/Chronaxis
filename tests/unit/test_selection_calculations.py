@@ -174,7 +174,7 @@ class SelectionCalculationTests(unittest.TestCase):
         self.assertEqual(tuple(row.value.value for row in rows), (2**64-1, 2**53+1))
 
     def test_selection_contract_errors(self):
-        """拒绝标量算子、隐式单位换算、错绑定和FALSE输出协议。
+        """拒绝标量算子、不兼容单位换算、错绑定和FALSE输出协议。
 
         参数: 无；故意错误的声明。
         返回: None。
@@ -186,7 +186,7 @@ class SelectionCalculationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 tuple(select(series, replace(spec, operation='time_weighted_mean')))
             with self.assertRaises(ValueError):
-                tuple(select(series, replace(spec, output_unit='kW')))
+                tuple(select(series, replace(spec, output_unit='V')))
         # 输出行只能TRUE或UNKNOWN，不能偷偷把FALSE输出给消费者。
         with self.assertRaises(TypeError):
             SelectionRow(0, ScalarValue(2., D.FLOAT64), Truth.FALSE, Q.NONE, 'binding', (), 'W')

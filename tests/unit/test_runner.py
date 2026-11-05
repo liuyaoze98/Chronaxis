@@ -7,6 +7,8 @@
 内部资源通过真实close及文件游标观察，返回AnalysisResult只拥有最终暂存及其费用；
 所有合成产物保留在新项目work并标home，不写RefProjects，不修改旧测试或算法。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -55,7 +57,7 @@ class RunnerTests(unittest.TestCase):
         """
         work = Path(__file__).resolve().parents[2] / 'work/m2-run-tests/public-runner' / uuid4().hex
         work.mkdir(parents=True)
-        config = {'config_version': 3,
+        config = {'config_version': 4,
             'dataset': {'name': 'runner_dataset', 'entity': 'runner_device', 'session': 'runner_session',
                 'domain': {'start': str(domain[0]) + 'ns', 'end': str(domain[1]) + 'ns'}},
             'sources': [], 'signals': [], 'derived': {'twice': {'expr': 'a * 2', 'unit': '1'}} if signals else {},
@@ -342,7 +344,7 @@ class RunnerTests(unittest.TestCase):
                 self.assertEqual(first.row_counts, second.row_counts)
                 self.assertEqual(self.rows(result).events, tables.events)
                 self.assertEqual(len(evidence.reads), 2)
-                self.assertEqual((first.output_dir / 'events.csv').read_bytes(), (second.output_dir / 'events.csv').read_bytes())
+                self.assertEqual((published_file(first,'events.csv')).read_bytes(), (published_file(second,'events.csv')).read_bytes())
                 self.close_result(result)
 
     def test_csv_and_jsonl_manifest_describe_real_run_and_roundtrip_typed_rows(self):
@@ -356,7 +358,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(document['status'],'completed')
             self.assertEqual(document['run']['backend'],data.plan.execution.backend)
             self.assertEqual(document['run']['plan_hash'],data.plan.identity)
-            self.assertEqual(document['run']['config_version'],3)
+            self.assertEqual(document['run']['config_version'],4)
             self.assertEqual(document['run']['device_label'],'home')
             self.assertNotIn('semantic_version',document['run'])
             self.assertNotIn('input_identity',document['run'])
@@ -365,7 +367,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(document['resources']['whole_process_rss'],'not_measured')
             self.assertEqual(document['row_counts'],{name:len(getattr(rows,name)) for name in ('events','segments','calculations','selections')})
             for table in ('events','segments','calculations','selections'):
-                expected=getattr(rows,table);path=manifest.output_dir/(table+'.'+fmt)
+                expected=getattr(rows,table);path=published_file(manifest,table+'.'+fmt)
                 if fmt=='jsonl':
                     self.assertEqual(tuple(decode_row(line,result.spool.max_row_bytes) for line in path.read_bytes().splitlines(keepends=True)),expected)
                 else:

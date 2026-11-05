@@ -1,13 +1,15 @@
 # chronaxis.AnalysisPlan
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.plan.md)。
+使用`from chronaxis import AnalysisPlan`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.plan.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [AnalysisPlan](#api-AnalysisPlan)
-- [AnalysisPlan.from_dict](#api-AnalysisPlan-from_dict)
+- [`AnalysisPlan`](#api-AnalysisPlan)
+- [`AnalysisPlan.extensions`](#api-AnalysisPlan-extensions)
+- [`AnalysisPlan.lookups`](#api-AnalysisPlan-lookups)
+- [`AnalysisPlan.from_dict`](#api-AnalysisPlan-from_dict)
 
 <a id="api-AnalysisPlan"></a>
 ## `AnalysisPlan`
@@ -26,14 +28,14 @@ identity由配置和来源定位声明计算，用于区分计划；不能据此
 实际列、内存使用或分析结果已核实。各次构建的绑定和声明相互独立。
 
 ```python
-AnalysisPlan(config_version: int, dataset: chronaxis.planning.models.DatasetPlan, sources: tuple[chronaxis.planning.models.SourcePlan, ...], signals: tuple[chronaxis.planning.models.SignalPlan, ...], derived: tuple[chronaxis.planning.models.DerivedPlan, ...], rules: tuple[chronaxis.planning.models.RulePlan, ...], windows: tuple[chronaxis.planning.models.WindowPlan, ...], calculations: tuple[chronaxis.planning.models.CalculationPlan, ...], presets: tuple[chronaxis.planning.preset_models.PresetSpec, ...], preset_bindings: tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...], execution: chronaxis.planning.models.ExecutionPlan, outputs: chronaxis.planning.models.OutputPlan, bindings: chronaxis.core.declarations.DeclarationBindings, derived_expressions: tuple[chronaxis.core.expression.StaticExpression, ...], metadata: collections.abc.Mapping, raw_config: collections.abc.Mapping, base_dir: pathlib.Path, identity: str, message_calculations: tuple[chronaxis.planning.models.MessageCalculationPlan, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = (), intervals: 'IntervalPlan | None' = None, diagnostics: 'DiagnosticPlan | None' = None) -> None
+AnalysisPlan(config_version: int, dataset: chronaxis.planning.models.DatasetPlan, sources: tuple[chronaxis.planning.models.SourcePlan, ...], signals: tuple[chronaxis.planning.models.SignalPlan, ...], derived: tuple[chronaxis.planning.models.DerivedPlan, ...], rules: tuple[chronaxis.planning.models.RulePlan, ...], windows: tuple[chronaxis.planning.models.WindowPlan, ...], calculations: tuple[chronaxis.planning.models.CalculationPlan, ...], presets: tuple[chronaxis.planning.preset_models.PresetSpec, ...], preset_bindings: tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...], execution: chronaxis.planning.models.ExecutionPlan, outputs: chronaxis.planning.models.OutputPlan, bindings: chronaxis.core.declarations.DeclarationBindings, derived_expressions: tuple[chronaxis.core.expression.StaticExpression, ...], metadata: collections.abc.Mapping, raw_config: collections.abc.Mapping, base_dir: pathlib.Path, identity: str, message_calculations: tuple[chronaxis.planning.models.MessageCalculationPlan, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = (), intervals: 'IntervalPlan | None' = None, diagnostics: 'DiagnosticPlan | None' = None, aggregations: tuple[chronaxis.planning.aggregations.AggregationPlan, ...] = (), transforms: tuple[chronaxis.planning.transforms.TemporalTransformPlan, ...] = ()) -> None
 ```
 
 ### 属性与数据字段
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`config_version`|int|是|无|保存已加载配置的结构版本，当前为整数3。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。|
+|`config_version`|int|是|无|保存已加载配置的结构版本，接受整数3和4。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。|
 |`dataset`|[DatasetPlan](../reference/chronaxis.planning.models.md#api-DatasetPlan)|是|无|分析对象、会话和请求时间范围。|
 |`sources`|tuple[[SourcePlan](../reference/chronaxis.planning.models.md#api-SourcePlan), ...]|是|无|已解析的来源配置，保持用户声明顺序。|
 |`signals`|tuple[[SignalPlan](../reference/chronaxis.planning.models.md#api-SignalPlan), ...]|是|无|原字段与信号名称、类型、单位及有效期声明。|
@@ -55,6 +57,8 @@ AnalysisPlan(config_version: int, dataset: chronaxis.planning.models.DatasetPlan
 |`sequences`|tuple[[SequencePlan](../reference/chronaxis.planning.sequences.md#api-SequencePlan), ...]|否|()|保存sequences配置解析后的请求/响应配对元组；空元组表示不进行配对。|
 |`intervals`|'[IntervalPlan](../reference/chronaxis.planning.intervals.md#api-IntervalPlan) &#124; None'|否|None|当前记录流的有限间隔声明。|
 |`diagnostics`|'[DiagnosticPlan](../reference/chronaxis.planning.intervals.md#api-DiagnosticPlan) &#124; None'|否|None|分别声明追溯、完整性检查与现场留存。|
+|`aggregations`|tuple[[AggregationPlan](../reference/chronaxis.planning.aggregations.md#api-AggregationPlan), ...]|否|()|本计划中已通过检查的结果聚合定义，按声明顺序保存。默认空元组表示无需订阅任何结果总体。|
+|`transforms`|tuple[[TemporalTransformPlan](../reference/chronaxis.planning.transforms.md#api-TemporalTransformPlan), ...]|否|()|编译后的时序变换元组，所依赖的变换先于使用它的变换。|
 
 ### 调用示例
 
@@ -71,25 +75,82 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:59`](../../../src/chronaxis/planning/plan.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-AnalysisPlan-extensions"></a>
+### `AnalysisPlan.extensions`
+
+读取计划使用的宿主注册。
+
+```python
+AnalysisPlan.extensions
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+ExtensionRegistry或None。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-AnalysisPlan-lookups"></a>
+### `AnalysisPlan.lookups`
+
+读取本配置声明的标定表。
+
+```python
+AnalysisPlan.lookups
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+LookupTablePlan 元组。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
 
-复制配置字典，检查版本3的静态要求；新版本执行能力另行验证。
+复制配置字典，按唯一支持的版本4检查静态要求；执行能力由所选后端决定。
 
 ```python
-AnalysisPlan.from_dict(config: dict, *, base_dir: Path | str | None=None) -> 'AnalysisPlan'
+AnalysisPlan.from_dict(config: dict, *, base_dir: Path | str | None=None, extensions=None) -> 'AnalysisPlan'
 ```
 
-装饰器：`classmethod`, `public_errors`。
+装饰器：`classmethod`, `public_errors`, `diagnose_plan`。
 
 #### 参数
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`config`|dict[str, object]|是|无|位置或关键字。当前公开分析配置字典，含config_version=3、dataset、sources和signals；不接受未展开imports。目录声明会枚举文件名，缺省CAN元数据时读取DBC；不读取业务记录。见[配置字段参考](../configuration-reference.md)。|
+|`config`|dict[str, object]|是|无|位置或关键字。当前公开分析配置字典，含config_version（4）、dataset、sources和signals；不接受未展开imports。目录声明会枚举文件名，缺省CAN元数据时读取DBC；不读取业务记录。见[配置字段参考](../configuration-reference.md)。|
 |`base_dir`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str &#124; None|否|None|仅关键字。相对来源路径的解释基准；默认None， 使用当前工作目录。传入Path或文本时转换为绝对路径。|
+|`extensions`|ExtensionRegistry &#124; None|否|None|仅关键字。宿主为版本4分析显式创建的注册表；省略时没有可额外调用的宿主操作。|
 
 #### 返回说明
 
@@ -108,4 +169,4 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:99`](../../../src/chronaxis/planning/plan.py#L99)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

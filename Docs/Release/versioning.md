@@ -16,6 +16,6 @@
 
 PyPI 不允许重复使用已上传的发行文件名，删除后也不能覆盖。因此已公开版本不可原地替换；修正后发布新版本。Git 标签可以是 `v0.1.0.dev0`，包元数据版本不加 `v`。
 
-`config_version: 3` 是配置格式版本，不是软件版本。开发阶段 M2/M3/M4、手册修订和内部提交号也不替代软件版本。示例配置和指南应与实际包版本匹配。
+`config_version: 4` 是配置格式版本，不是软件版本。开发阶段 M2/M3/M4、手册修订和内部提交号也不替代软件版本。示例配置和指南应与实际包版本匹配。
 
 维护者：liuyaoze。政策依据：[Python 规范](https://packaging.python.org/en/latest/specifications/version-specifiers/)、[PyPI 文件名规则](https://pypi.org/help/#file-name-reuse)。

@@ -12,8 +12,6 @@ from unittest.mock import patch
 
 from ruamel.yaml import YAML
 from chronaxis import AnalysisRunner, load_analysis_plan, load_batch_plan, run_batch, PlanValidationError
-from chronaxis.migration import load_legacy_ini
-import test_legacy_import_sclicer as migration_fixture
 
 
 class ConfigurationEntrypointTests(unittest.TestCase):
@@ -24,7 +22,7 @@ class ConfigurationEntrypointTests(unittest.TestCase):
         self.root=Path(tempfile.mkdtemp(prefix='yaml-entrypoints-',dir='work')).resolve()
         self.folder=self.root/'configuration';self.folder.mkdir()
         (self.folder/'input.csv').write_text('t,p\n0,2\n1,4\n2,100\n',encoding='utf-8')
-        self.config=dict(config_version=3,dataset=dict(name='demo',entity='object',session='session',
+        self.config=dict(config_version=4,dataset=dict(name='demo',entity='object',session='session',
             domain=dict(start='0s',end='2s')),sources=[dict(name='input',source_type='signal_csv',
             path='input.csv',time_column='t',time=dict(time_type='relative',unit='s',clock='common'))],
             signals=[dict(name='power',source='input',field='p',dtype='float64',unit='W',valid_for='2s')],
@@ -73,7 +71,7 @@ class ConfigurationEntrypointTests(unittest.TestCase):
         output=self.root/'cli-published'
         completed=self.command('run',paths[1],'--output',output)
         self.assertEqual(completed.returncode,0,completed.stderr)
-        with (output/'会话结果.csv').open(encoding='utf-8-sig',newline='') as stream:
+        with next(output.glob('会话结果_*.csv')).open(encoding='utf-8-sig',newline='') as stream:
             published=list(csv.DictReader(stream))
         self.assertEqual(len(published),1)
         self.assertEqual(float(published[0]['energy（J）']),6.0)
@@ -84,10 +82,13 @@ class ConfigurationEntrypointTests(unittest.TestCase):
         path=self.write('unread.yml',config);opened=[];original=Path.open
         def observe(target,*args,**kwargs):
             """只允许指定配置的实际打开。参数: Path与打开参数。返回: FD。异常: 非配置I/O。"""
-            self.assertEqual(target,path);opened.append(target);return original(target,*args,**kwargs)
+            schemas = Path(__file__).resolve().parents[2] / 'Docs' / 'Schema'
+            self.assertIn(target,(path,schemas/'analysis.schema.json',schemas/'batch-v1.schema.json'))
+            if target == path: opened.append(target)
+            return original(target,*args,**kwargs)
         with patch.object(Path,'open',observe):load_analysis_plan(path)
         self.assertEqual(opened,[path])
-        path.write_text('config_version: 3\nconfig_version: 3\n',encoding='utf-8')
+        path.write_text('config_version: 4\nconfig_version: 4\n',encoding='utf-8')
         with self.assertRaises(PlanValidationError) as caught:load_analysis_plan(path)
         self.assertEqual(caught.exception.code,'duplicate_key')
         self.assertIn('第2行',str(caught.exception))
@@ -112,35 +113,13 @@ class ConfigurationEntrypointTests(unittest.TestCase):
         output=self.root/'batch-output'
         report=run_batch(plan,output,device_label='home')
         try:
-            document=json.loads((output/'batch_report.json').read_text(encoding='utf-8'))
+            document=json.loads(report.report_path.read_text(encoding='utf-8'))
             self.assertEqual(document['counts'],dict(completed=2,failed=1,cancelled=0))
         finally:report.close()
         completed=self.command('batch','run',path,'--output',self.root/'batch-cli')
         self.assertEqual(completed.returncode,1,completed.stderr)
         self.assertEqual(json.loads(completed.stdout)['counts'],dict(completed=2,failed=1,cancelled=0))
 
-    def test_ini_mapping_yaml_keeps_original_bytes_paths_and_issue_protocol(self):
-        """INI原文不变，两格式映射同计划/身份；YAML错误仍返回迁移Issue及实际行列。参数: 无。返回: None。异常: 断言。"""
-        ini=self.root/'source.ini';content=b'[TRIGGER_test]\r\nmode=single\r\nexpr=OBC_OpMod==2\r\n';ini.write_bytes(content)
-        mapping=migration_fixture.mapping_fixture()
-        paths=[self.write('mapping.json',mapping),self.write('mapping.yaml',mapping)]
-        results=[load_legacy_ini(ini,path,mode='sclicer_single',device_label='home') for path in paths]
-        for result in results:
-            self.assertIsNotNone(result.plan,result.report.to_dict())
-            self.assertEqual(result.original_ini,content)
-            self.assertEqual(result.plan.sources[0].config.paths[0],self.folder/'missing/input.csv')
-        self.assertEqual(results[0].plan,results[1].plan)
-        self.assertEqual(results[0].report.mapping_identity,results[1].report.mapping_identity)
-        output=self.root/'imported.json'
-        completed=self.command('legacy','import',ini,'--mode','sclicer_single','--mapping',paths[1],'--output',output)
-        self.assertEqual(completed.returncode,0,completed.stderr)
-        self.assertEqual(load_analysis_plan(output).identity,results[1].plan.identity)
-        paths[1].write_text('analysis:\n  key: 1\n  key: 2\n',encoding='utf-8')
-        failed=load_legacy_ini(ini,paths[1],mode='sclicer_single')
-        self.assertIsNone(failed.plan)
-        issue=failed.report.issues[-1]
-        self.assertEqual((issue.code,issue.path,issue.line,issue.column),('duplicate_mapping_key','$.analysis.key',3,3))
-        self.assertEqual(ini.read_bytes(),content)
 
 
 if __name__=='__main__':

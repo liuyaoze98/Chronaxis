@@ -16,7 +16,7 @@ class RecordSequenceRunnerTests(unittest.TestCase):
     def config(self,mode='actual'):
         """转为新合同并明确周期驱动。参数: 模式。返回: 配置。异常: 无。"""
         raw=config_fixture()
-        raw.update(config_version=3)
+        raw.update(config_version=4)
         raw['intervals']={'default':{'mode':mode}}
         if mode=='fixed':
             raw['intervals']['default'].update(value='1ns',driver='request')

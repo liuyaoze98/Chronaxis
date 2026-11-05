@@ -102,7 +102,7 @@ class SignalCSVWriter(ExportFiles):
     """复用原写文件和线性网格，支持逐样本推进而不强制暂存整份输入。"""
 
     def __init__(self,spec,interval,destination,budget,*,device_label,check_cancel=None,
-                 definitions=(),backend='numpy',compact=False,integrity=True):
+                 definitions=(),backend='numpy',compact=False,integrity=True,timestamped=False):
         """预付输出状态并建立所需表。参数: 导出规格/范围/目标/预算与后端。返回: owner。异常: 原构造错。"""
         if type(compact) is not bool:
             raise TypeError('compact必须为bool')
@@ -111,7 +111,7 @@ class SignalCSVWriter(ExportFiles):
         if (device_label not in ('home','work') or backend not in ('reference','numpy')
                 or check_cancel is not None and not callable(check_cancel)):
             raise ValueError('导出需要实际设备标签及可选取消回调')
-        super().__init__(destination,budget,integrity=integrity)
+        super().__init__(destination,budget,integrity=integrity,timestamped=timestamped)
         self.spec,self.interval,self.definitions=spec,interval,definitions
         self.device_label,self.backend,self.compact=device_label,backend,compact
         self._check_cancel=check_cancel
@@ -134,6 +134,7 @@ class SignalCSVWriter(ExportFiles):
                 self.select_file('original.csv')
                 self.append(_csv_bytes(('time_ns','signal','value','unit','quality') if compact else _COLUMNS))
         except BaseException as error:
+            self._failed = True
             _cleanup_owner(self,error,'export_cleanup_owner','信号CSV构造');raise
 
     def push(self,sample):
@@ -193,12 +194,13 @@ def export_signal_csv(records,spec,interval,destination,budget,*,device_label,ch
 
     参数: 可关闭记录流、规格/范围/目标/预算；设备、取消、绑定、后端、精简开关。
     integrity只在请求时计算文件摘要；file_consumer接收写入时取得的有限文件身份，供内部登记复用。
-    返回: 已完成输出目录。异常: 原格式/输入/预算/取消错；清理失败附真实owner。
+    返回: 公开ExportManifest含实际路径；内部file_consumer模式返回Path。异常: 原格式/输入/预算/取消错；清理失败附真实owner。
     """
     if file_consumer is not None and not callable(file_consumer):
         raise TypeError('file_consumer须为回调')
     owner=SignalCSVWriter(spec,interval,destination,budget,device_label=device_label,
-        check_cancel=check_cancel,definitions=definitions,backend=backend,compact=compact,integrity=integrity)
+        check_cancel=check_cancel,definitions=definitions,backend=backend,compact=compact,integrity=integrity,
+        timestamped=file_consumer is None)
     try:
         owner.reader=iter(records)
         for sample in owner.reader: owner.push(sample)
@@ -206,4 +208,5 @@ def export_signal_csv(records,spec,interval,destination,budget,*,device_label,ch
         if file_consumer is not None: file_consumer(tuple(owner.files))
         return output
     except BaseException as error:
+        owner._failed = True
         _cleanup_owner(owner,error,'export_cleanup_owner','信号CSV导出');raise

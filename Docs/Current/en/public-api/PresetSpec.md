@@ -4,8 +4,8 @@ Import this object from `chronaxis`. This page covers directly public members an
 
 ## Members
 
-- [PresetSpec](#api-PresetSpec)
-- [from_dict](#api-PresetSpec-from_dict)
+- [`PresetSpec`](#api-PresetSpec)
+- [`from_dict`](#api-PresetSpec-from_dict)
 
 <a id="api-PresetSpec"></a>
 ## `PresetSpec`
@@ -16,13 +16,13 @@ Freeze a preset ID, type/version, role aliases, and parameters as an independent
 PresetSpec(id: str, preset_type: str, version: str, role_bindings: collections.abc.Mapping, parameters: collections.abc.Mapping) -> None
 ```
 
-| Field | Type | Required / default | Meaning |
-|---|---|---|---|
-| `id` | str | Required | Unique preset instance name, such as hot; generated names use this prefix and must not collide with existing nodes. |
-| `preset_type` | str | Required | charge_session, fault_context, command_response, or threshold_excursion. See [presets](../presets.md) for their purposes and roles. |
-| `version` | str | Required | Current template version is string `"1"`, not number 1 or the top-level config_version. |
-| `role_bindings` | Mapping | Required | Map permitted roles to defined signals, for example `{"signal": "temperature"}`. Omitted roles require the documented semantic lookup declarations. |
-| `parameters` | Mapping | Required | Type-specific parameters, such as threshold unit/enter_threshold/exit_threshold. Obtain values from business requirements and device units; do not mix different preset types' fields. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`id`|str|Yes|No default|Unique preset instance name, such as hot; generated names use this prefix and must not collide with existing nodes.|
+|`preset_type`|str|Yes|No default|charge_session, fault_context, command_response, or threshold_excursion. See [presets](../presets.md) for their purposes and roles.|
+|`version`|str|Yes|No default|Current template version is string `"1"`, not number 1 or the top-level config_version.|
+|`role_bindings`|Mapping|Yes|No default|Map permitted roles to defined signals, for example `{"signal": "temperature"}`. Omitted roles require the documented semantic lookup declarations.|
+|`parameters`|Mapping|Yes|No default|Type-specific parameters, such as threshold unit/enter_threshold/exit_threshold. Obtain values from business requirements and device units; do not mix different preset types' fields.|
 
 <a id="api-PresetSpec-from_dict"></a>
 ### `PresetSpec.from_dict`
@@ -35,9 +35,9 @@ PresetSpec.from_dict(value)
 
 Class method.
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `value` | dict[str, object] | Required | Positional or keyword. Requires name, preset_type, and parameters. Omitted version is string `"1"`; omitted role_bindings is an empty mapping. See [role requirements](../presets.md). |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`value`|dict[str, object]|Yes|No default|Positional or keyword. Requires name, preset_type, and parameters. Omitted version is string `"1"`; omitted role_bindings is an empty mapping. See [role requirements](../presets.md).|
 
 Returns PresetSpec. Raises `PlanValidationError` for unknown keys, missing fields, or construction-protocol errors.
 
@@ -57,5 +57,5 @@ print(spec.id, spec.preset_type)
 
 ## Source locations
 
-- [`src/chronaxis/planning/preset_models.py:52`](../../../../src/chronaxis/planning/preset_models.py#L52) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
-- [`src/chronaxis/planning/preset_models.py:90`](../../../../src/chronaxis/planning/preset_models.py#L90) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/preset_models.py:52`](../../../../src/chronaxis/planning/preset_models.py#L52) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/planning/preset_models.py:90`](../../../../src/chronaxis/planning/preset_models.py#L90) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -4,9 +4,10 @@
 每个表按会话、业务对象和真实顺序排序，父ID明确关联事件或片段。
 """
 
-from .summary import SummaryCalculationRow, SummaryCoverageCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummaryInputRow, SummarySelectionRow, SUMMARY_MODELS
+from .summary import SummaryCalculationRow, SummaryCoverageCalculationRow, SummaryHostedCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummaryInputRow, SummarySelectionRow, SUMMARY_MODELS
 
-ResultRow = SummaryCalculationRow | SummaryEventRow | SummarySequenceRow | SummarySegmentRow | SummaryCoverageCalculationRow | SummaryContributionRow | SummaryInputRow | SummarySelectionRow
+from .aggregation_row import SummaryAggregationRow
+ResultRow = SummaryCalculationRow | SummaryEventRow | SummarySequenceRow | SummarySegmentRow | SummaryCoverageCalculationRow | SummaryContributionRow | SummaryInputRow | SummarySelectionRow | SummaryAggregationRow
 
 
 def row_table(row: ResultRow) -> str:
@@ -34,6 +35,8 @@ def row_sort_key(row: ResultRow) -> tuple:
     # 各表分别排序；序号为相同业务键提供稳定顺序。
     try:
         row_table(row)
+        if type(row) is SummaryAggregationRow:
+            return (row.session_id,row.aggregation_id,*row.group_values,row.sequence)
         if type(row) in SUMMARY_MODELS and SUMMARY_MODELS[type(row)][0]=='selections':
             return (row.session_id,row.calculation_id,row.scope,row.parent_id or '',row.time_ns,
                     row.sequence,row.dataset_id,row.entity_id)

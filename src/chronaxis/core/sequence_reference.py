@@ -95,7 +95,9 @@ class SequenceDetector:
         """
         # 只累积请求之后出现的未知位，之前的缺失不能污染新请求。
         request, snapshot, _deadline = pending
-        quality = Q.NONE
+        quality = request.dependency_quality & Q.ESTIMATED
+        if response is not None:
+            quality |= response.dependency_quality & Q.ESTIMATED
         for bit, before, after in zip(_QUALITY_BITS, snapshot, self._counts):
             if after > before:
                 quality |= bit
@@ -156,7 +158,7 @@ class SequenceDetector:
             while self._pending:
                 output.append(self._result(self._pending.popleft(), time, early_end=True))
             self._ended = True
-        self._quality = tick.condition.quality
+        self._quality = tick.condition.quality | (tick.condition.diagnostic_quality & Q.ESTIMATED)
         self._last_time = time
 
     def push(self, ticks: tuple[SequenceTick, ...], *, advances=None) -> tuple[SequenceResult, ...]:

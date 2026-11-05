@@ -37,7 +37,7 @@ def _collapse(bindings: SignalBindings, samples: tuple[SignalSample, ...]) -> tu
     # 基线取首条仅用于判断是否一致，不作为冲突时默认结果。
     first = samples[0]
     # 无效NaN诊断可以与相同原因的NaN一致，不使用其普通比较结果。
-    same = all(item.valid == first.valid and item.quality == first.quality and
+    same = all(item.valid == first.valid and item.quality == first.quality and item.code == first.code and
                type(item.value) is type(first.value) and
                (item.value == first.value or (type(item.value) is float and isnan(item.value) and isnan(first.value)))
                for item in samples)
@@ -175,16 +175,19 @@ class StateValue:
     actual_update: bool  # 该点是否真正发生更新。
 
 
-def align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: bool = False, strict_before: bool = False) -> tuple[StateValue, ...]:
+def align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: bool = False,
+                    strict_before: bool = False, left_limit: bool = False) -> tuple[StateValue, ...]:
     """逐查询点取得最新历史观测，再检查有效期和来源、会话范围。
 
     参数:
         series (SignalSeries): 当前绑定下已经检查的规范序列。
         times_ns (tuple[int, ...]): 非递减int64纳秒查询轴，允许空轴和重复点。
         point (bool): 默认False，使用左闭右开连续范围；True包含来源及会话
-            的真实末端，但有效期右端始终排除。
+            的真实末端；普通查询排除有效期右端。
         strict_before (bool): 默认False；True只取sample_time < t的样本，
             仍在当前t检查有效期，用来区分实际更新与同刻到期。
+        left_limit (bool): 仅可用于 strict_before，取 t 的左侧保持；到期恰为 t 的旧值
+            在左侧仍有效，来源与会话的左端无左侧保持。用于区分无间隙刷新与真正恢复。
     返回:
         tuple[StateValue, ...]: 每个查询点一个结果；无历史为MISSING，过期为STALE。
         最新无效更新不会被更早有效值替代，空轴返回空tuple。
@@ -196,9 +199,12 @@ def align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: b
         仅使用局部游标和结果集合，不调用NumPy对齐，不修改输入。
     """
     # 不接受未校验序列或可变查询容器。
-    if not isinstance(series, SignalSeries) or not isinstance(times_ns, tuple) or type(point) is not bool or type(strict_before) is not bool:
+    if (not isinstance(series, SignalSeries) or not isinstance(times_ns, tuple)
+            or any(type(flag) is not bool for flag in (point, strict_before, left_limit))):
         # point不能以数值truthiness切换契约。
         raise TypeError("参考对齐需要SignalSeries、tuple时间及bool point")
+    if left_limit and not strict_before:
+        raise ValueError('左侧保持须排除同刻更新')
     # 只用精确Python整数，参考不调用NumPy索引/掩码内核。
     times = tuple(require_int64_ns(time, "query.time_ns") for time in times_ns)
     # 保证时间推进不回退，重复查询点允许。
@@ -219,6 +225,8 @@ def align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: b
             cursor += 1
         # 连续域末端排除；point显式包含真实终点。
         in_domain = session.domain_start_ns <= time and (time <= session.domain_end_ns if point else time < session.domain_end_ns)
+        if left_limit:
+            in_domain = session.domain_start_ns < time <= session.domain_end_ns
         # 会话外或无历史没有可用观测，不能取末元素。
         if not in_domain or cursor < 0:
             # 没有可用历史时保留None和MISSING原因，不用数值0代替未知结果。
@@ -229,12 +237,15 @@ def align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: b
         sample = series.samples[cursor]
         # 质量在局部结果叠加，原样本原因保持不变。
         quality = sample.quality
-        # TTL始终右端排除，Python整数差避免绝对时间浮点损失。
-        if time - sample.time_ns >= age:
+        # 左侧视图恰好到期仍有左邻域，普通点与右侧视图则已经过期。
+        elapsed = time - sample.time_ns
+        if elapsed > age or (not left_limit and elapsed == age):
             # 自动计时失效无需等待新报文。
             quality |= QualityFlag.STALE
         # 来源末端与会话一样按point/连续显式区分。
         in_source = series.observation_start_ns <= time and (time <= series.observation_end_ns if point else time < series.observation_end_ns)
+        if left_limit:
+            in_source = series.observation_start_ns < time <= series.observation_end_ns
         # 更长的其他来源不能延长当前来源保持。
         if not in_source:
             # 来源观测不足与输入无效/TTL原因一起保留。

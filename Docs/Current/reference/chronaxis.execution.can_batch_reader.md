@@ -1,4 +1,4 @@
-# chronaxis.execution.can_batch_reader
+# `chronaxis.execution.can_batch_reader`
 
 将有界CAN批次接成按需历史，保留每条原yield的时间及必要记录的原序。
 
@@ -78,7 +78,7 @@ TypeError/ValueError为输入类型/非有限；TimeOverflowError为舍入后越
 
 整数比精确保留float已有位值；负零、负半值和次正规数均不先乘float。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:20`](../../../src/chronaxis/execution/can_batch_reader.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:20`](../../../src/chronaxis/execution/can_batch_reader.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_dense_time_tail"></a>
 ## `_dense_time_tail`
@@ -115,7 +115,7 @@ _dense_time_tail(owner, timestamps, offset, mapped_times)
 
 稀疏证明不成立时逐项换算，微小float回退仍允许量化成同一纳秒。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:42`](../../../src/chronaxis/execution/can_batch_reader.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:42`](../../../src/chronaxis/execution/can_batch_reader.py#L42)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_retained_time_indices"></a>
 ## `_retained_time_indices`
@@ -140,7 +140,7 @@ _retained_time_indices(batch)
 
 取消/分配错误原样传播；非典型记录回原路径，不新增业务拒绝条件。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:66`](../../../src/chronaxis/execution/can_batch_reader.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:66`](../../../src/chronaxis/execution/can_batch_reader.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_sparse_batch_times"></a>
 ## `_sparse_batch_times`
@@ -170,7 +170,7 @@ _sparse_batch_times(owner, batch)
     换算其纳秒和量化标志。末点失败不能抢先报错，必须回原后缀寻找第一处错误。
 费用: 最多4096个槽和1024个保留索引，含回退表仍小于原4MiB预付，无缓存或新owner。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:90`](../../../src/chronaxis/execution/can_batch_reader.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:90`](../../../src/chronaxis/execution/can_batch_reader.py#L90)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead"></a>
 ## `CANBatchObservationRead`
@@ -187,7 +187,7 @@ CANBatchObservationRead(owner, request)
 继承关系：[CANObservationRead](chronaxis.execution.can_reader.md#api-CANObservationRead)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:146`](../../../src/chronaxis/execution/can_batch_reader.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:146`](../../../src/chronaxis/execution/can_batch_reader.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-__init__"></a>
 ### `CANBatchObservationRead.__init__`
@@ -213,7 +213,7 @@ read。
 
 原错误。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:153`](../../../src/chronaxis/execution/can_batch_reader.py#L153)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:153`](../../../src/chronaxis/execution/can_batch_reader.py#L153)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-_load_batch"></a>
 ### `CANBatchObservationRead._load_batch`
@@ -248,7 +248,7 @@ bool是否取到批次，空时间批也算真实返回。
 - `SourceReadError`：CAN批进程未完成真实EOF及关闭。
 - `SourceReadError`：CAN所需记录时间回退，禁止重排。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:161`](../../../src/chronaxis/execution/can_batch_reader.py#L161)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:161`](../../../src/chronaxis/execution/can_batch_reader.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-_advance_record"></a>
 ### `CANBatchObservationRead._advance_record`
@@ -278,7 +278,7 @@ bool是否有记录，跳过无目标批但保其全部观测。
 
 - `SourceReadError`：目标CAN frame_id的通道/标准/FD标志歧义。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:247`](../../../src/chronaxis/execution/can_batch_reader.py#L247)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:247`](../../../src/chronaxis/execution/can_batch_reader.py#L247)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-_packed_batch"></a>
 ### `CANBatchObservationRead._packed_batch`
@@ -304,7 +304,7 @@ CANBatchObservationRead._packed_batch()
 
 原模型/归一化/预算/IO错误；样本时间和sequence均来自同次原记录。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:280`](../../../src/chronaxis/execution/can_batch_reader.py#L280)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:280`](../../../src/chronaxis/execution/can_batch_reader.py#L280)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-__next__"></a>
 ### `CANBatchObservationRead.__next__`
@@ -330,7 +330,7 @@ SignalBatch。
 
 StopIteration为真实完成；其他原错误poison本read。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:323`](../../../src/chronaxis/execution/can_batch_reader.py#L323)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:323`](../../../src/chronaxis/execution/can_batch_reader.py#L323)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANBatchObservationRead-close"></a>
 ### `CANBatchObservationRead.close`
@@ -356,4 +356,4 @@ CANBatchObservationRead.close()
 
 原可恢复错误。
 
-源码：[`src/chronaxis/execution/can_batch_reader.py:353`](../../../src/chronaxis/execution/can_batch_reader.py#L353)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/can_batch_reader.py:353`](../../../src/chronaxis/execution/can_batch_reader.py#L353)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

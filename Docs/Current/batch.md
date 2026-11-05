@@ -66,7 +66,7 @@ process_count: 2                    # 限制分析工作进程数；正整数，
 python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 2
 ```
 
-`--process-count`可省略：先用批量文件中的process_count；文件也没填时使用1。批量CLI没有`--backend`选项，需在批量配置中填写backend；单任务run才有`--backend`。输出目录必须是新的路径，程序不覆盖既有结果。
+`--process-count`可省略：先用批量文件中的process_count；文件也没填时使用1。批量CLI没有`--backend`选项，需在批量配置中填写backend；单任务run才有`--backend`。输出目录可以重复使用；任务子目录和批量报告使用本批时间后缀，不覆盖已有结果。
 
 ```python
 from chronaxis import load_batch_plan, run_batch
@@ -85,9 +85,9 @@ if __name__ == "__main__":
     main()
 ```
 
-使用jobs时，`load_batch_plan`只读批量文件，任务启动时才读取各自计划和输入。使用template时，加载阶段读取模板、展开inputs并编译每个独立计划；需要补全CAN信号定义时会读取DBC，但此时不扫描业务报文。`run_batch`还写出batch_report.json。更低层的`BatchRunner.run()`返回报告对象，单独使用时需调用`write_batch_report()`写报告，不能假定已经发布报告文件。所有签名见[批量API](reference/chronaxis.batch.api.md)、[BatchRunner](reference/chronaxis.batch.runner.md)、[模型](reference/chronaxis.batch.models.md)。
+使用jobs时，`load_batch_plan`只读批量文件，任务启动时才读取各自计划和输入。使用template时，加载阶段读取模板、展开inputs并编译每个独立计划；需要补全CAN信号定义时会读取DBC，但此时不扫描业务报文。`run_batch`还写出带时间后缀的batch_report文件，实际路径由report.report_path提供。更低层的`BatchRunner.run()`返回报告对象，单独使用时需调用`write_batch_report()`写报告，不能假定已经发布报告文件。所有签名见[批量API](reference/chronaxis.batch.api.md)、[BatchRunner](reference/chronaxis.batch.runner.md)、[模型](reference/chronaxis.batch.models.md)。
 
-Windows使用spawn启动子进程，会重新导入脚本。`if __name__ == "__main__":`保证只有最初启动的脚本派发任务，避免子进程再次创建整批任务。将代码保存为`.py`文件运行；不要直接把启动代码放在模块顶层。进程模式只验收Windows/Python 3.12。
+Windows使用spawn启动子进程，会重新导入脚本。`if __name__ == "__main__":`保证只有最初启动的脚本派发任务，避免子进程再次创建整批任务。将代码保存为`.py`文件运行；不要直接把启动代码放在模块顶层。进程模式已验证的环境为Windows/Python 3.12。
 
 API参数或CLI的`--process-count`优先于批量文件，再其次是默认值1；覆盖不改写原文件。`BatchPlan(..., process_count=4)`和`BatchRunner(process_count=4)`也使用同一含义。普通分析的`execution`和`AnalysisRunner`没有进程数参数；批量能力不表示把一个连续会话拆给多个进程计算。
 
@@ -107,9 +107,9 @@ Python调用不自动读取这个环境变量，应按需要传`run_batch(plan, 
 
 |路径|保存什么|
 |---|---|
-|batch-output/job_1/work/|计算期间的暂存文件和诊断信息。|
-|batch-output/job_1/output/|该任务正式写出的分析结果。|
-|batch-output/batch_report.json|整批报告，按jobs中的顺序列出每个任务是否完成、失败或取消，以及错误和已有文件位置。|
+|batch-output/job_1_<本批时间后缀>/work/|计算期间的暂存文件和诊断信息。|
+|batch-output/job_1_<本批时间后缀>/output/|该任务正式写出的分析结果。|
+|batch-output/batch_report_<时间后缀>.json|整批报告，按jobs中的顺序列出每个任务是否完成、失败或取消，以及错误和已有文件位置。|
 
 报告的output_dir字段仅在正式结果已写出时填写。若文件已写出，但随后关闭资源失败，任务仍标为failed，同时保留结果路径，方便检查已写出的内容。
 
@@ -124,7 +124,7 @@ Python调用不自动读取这个环境变量，应按需要传`run_batch(plan, 
 
 关闭持续失败时，工作进程暂停接收新任务，报告的`cleanup_pending`为true。资源仍由该进程持有；修复占用或环境问题后调用`report.close()`会远程重试。若所有工作进程都在等待清理，尚未启动的任务标为cancelled，不会假报完成。JSON报告保存发布时的清理状态，内存报告的`to_dict()`可读取重试后的状态。
 
-命令退出码为0表示全部成功，1表示任务失败或文件操作失败（包括输出目录已存在），2表示批量配置或参数错误，130表示取消。如果既有失败又有取消，退出码为1。
+命令退出码为0表示全部成功，1表示任务失败或文件操作失败（例如路径不是目录或不可写），2表示批量配置或参数错误，130表示取消。如果既有失败又有取消，退出码为1。
 
 每个任务的内存和磁盘额度仍由自己的analysis.yaml决定。两个任务各允许256MiB同时运行，不能认为整个程序只会使用256MiB；解析库和Python本身也有额外占用。先用1个任务确认结果，再根据机器内存调整process_count。并行的效果应使用实际任务测量；CPU、内存和磁盘都可能成为限制。
 

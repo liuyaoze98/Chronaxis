@@ -4,7 +4,7 @@
 validate和explain直接调用同一AnalysisRunner接口，不读取CSV、DBC或旧日志，不建立
 运行目录。序列化逐项选择公开报告字段，不遍历任意对象或另做一套配置校验。
 报告中的预算和有效期是声明，execution_ready不证明实际输入已核实。
-run先检查新输出与工作路径，再交给AnalysisRunner运行，在同一结果上write并关闭。
+run先检查输出根与独占工作路径，再交给AnalysisRunner运行，在同一结果上write并关闭。
 只有真实关闭成功才打印成功摘要；失败保留原原因链和现存产物，不假报回滚。
 
 本模块仅在实际计划命令时加载；CLI帮助与参数错误仍只需要标准库。
@@ -95,7 +95,7 @@ def run_static(arguments) -> int:
 
 
 def _new_output(arguments) -> Path:
-    """在扫描来源前拒绝已有输出、历史目录和必然冲突的工作路径。
+    """在扫描来源前检查可复用输出根、历史目录和冲突工作路径。
 
     参数: arguments包含output和可选work_dir，由argparse限定为路径文本。
     返回: 绝对输出Path；不创建目录，工作目录实际分配仍归AnalysisRunner。
@@ -115,12 +115,14 @@ def _new_output(arguments) -> Path:
             raise PlanValidationError('$.cli.work_dir', '工作目录不能等于输出目录或位于输出目录内部')
     for path in candidates:
         try:
-            # 两个参数自身都必须全新，不能跟随已有的悬空工作链接创建其目标。
+            # 工作路径必须新建；输出允许已有目录，悬空链接不允许。
             # 最终输出安装的竞态仍由原write检查，运行会话也保留原工作目录检查。
             path.lstat()
         except FileNotFoundError:
             continue
-        raise FileExistsError('输出或工作目标已存在，拒绝使用：' + str(path))
+        if path == output and path.is_dir() and not path.is_symlink():
+            continue
+        raise FileExistsError('工作目录须新建，输出目标须为目录：' + str(path))
     return output
 
 
@@ -143,15 +145,16 @@ def _cause_chain(error) -> tuple:
 def run_analysis(arguments) -> int:
     """复用真实分析和发布，成功关闭所有结果资源后才报告completed。
 
-    参数: arguments含plan、output、可选backend及work_dir；输出必须为全新目录。
+    参数: arguments含plan、output、可选backend及work_dir；输出目录可复用。
     返回: 成功0；已知分析/发布/关闭失败1，并说明输出可能已经发布。
     异常: 配置/路径错误交主CLI分类；取消原样传播；MemoryError及已知编程错误
         的直接或AnalysisError原因链继续抛出，不伪装成普通业务错误。
-    副作用: AnalysisRunner建立专用暂存并读来源，write按原合同安装新目录；不删除产物。
+    副作用: AnalysisRunner建立专用暂存并读来源，write在输出根新增本次文件；不删除已有产物。
     """
     plan = load_analysis_plan(arguments.plan)
     output = _new_output(arguments)
     runner = AnalysisRunner(backend=arguments.backend)
+    manifest = None
     try:
         # 结果拥有其真实仓和资源；write不重新运行来源，退出上下文完成实际close。
         with runner.run(plan, work_dir=arguments.work_dir) as result:
@@ -172,6 +175,11 @@ def run_analysis(arguments) -> int:
         if any(isinstance(item, (MemoryError, TypeError, AttributeError, AssertionError, NameError)) for item in chain):
             raise
         causes = ' <- '.join(type(item).__name__ + ': ' + str(item).replace('\n', ' ') for item in chain)
+        completed = manifest or next((getattr(item, 'completed_manifest') for item in chain
+                                      if getattr(item, 'completed_manifest', None) is not None), None)
+        if completed is not None:
+            print('结果已发布，清单：' + str(completed.manifest_path) + '；收尾失败：' + causes, file=sys.stderr)
+            return 1
         # 目录可能已安装后才发生close错误，非零退出不证明输出被撤销。
         print('分析或发布失败（输出可能已发布，请核对目标目录 ' + str(output) + '）：' + causes,
               file=sys.stderr)

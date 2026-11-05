@@ -1,4 +1,4 @@
-# chronaxis.planning.dbc_defaults
+# `chronaxis.planning.dbc_defaults`
 
 仅在信号省略类型/单位或enum映射时读取DBC元数据，不读取报文。
 
@@ -9,27 +9,91 @@
 
 ## 相关类型
 
-[CANDependencyError](chronaxis.can_dependencies.md#api-CANDependencyError)、[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)
+[CANDependencyError](chronaxis.can_dependencies.md#api-CANDependencyError)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)
 
 ## 对象导航
 
 |对象|用途|
 |---|---|
+|[`scoped_dbc_cache`](#api-scoped_dbc_cache)|在一次 fast 准备期间共享 DBC，嵌套子计划沿用外层缓存，退出即释放。|
+|[`load_dbc`](#api-load_dbc)|返回当前准备范围的数据库；普通单任务保持原加载行为。|
+|[`requested_enum_codes`](#api-requested_enum_codes)|在加载 DBC 前定位 enum_code 使用的信号，只解析表达式位置和简单派生别名。|
 |[`_numeric_dtype`](#api-_numeric_dtype)|按解码后的数值范围选类型；有浮点缩放就使用float64，不丢弃小数。|
 |[`_enum_choices`](#api-_enum_choices)|把DBC原码表转换到既有解码值域，不对实际记录再施加一次DBC缩放。|
 |[`DBCDefaults`](#api-DBCDefaults)|一次计划编译内的临时数据库缓存，显式完整声明不打开DBC。|
 |[`DBCDefaults.__init__`](#api-DBCDefaults-__init__)|创建空缓存，不访问磁盘。|
-|[`DBCDefaults.fill`](#api-DBCDefaults-fill)|参数为信号配置、CAN来源和定位；返回补默认值的独立dict，错误定位到信号。|
+|[`DBCDefaults.fill`](#api-DBCDefaults-fill)|补全DBC可证明的声明，不重复应用原解码缩放。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from contextlib import contextmanager
+from contextvars import ContextVar
+from pathlib import Path
 from .checks import PlanValidationError
 from ..legacy.binding import dbc_candidates
 from ..can_dependencies import CANDependencyError, import_can_dependency
 ```
 
 </details>
+
+<a id="api-scoped_dbc_cache"></a>
+## `scoped_dbc_cache`
+
+在一次 fast 准备期间共享 DBC，嵌套子计划沿用外层缓存，退出即释放。
+
+```python
+scoped_dbc_cache()
+```
+
+装饰器：`contextmanager`。
+
+参数：无显式参数。
+
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:19`](../../../src/chronaxis/planning/dbc_defaults.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-load_dbc"></a>
+## `load_dbc`
+
+返回当前准备范围的数据库；普通单任务保持原加载行为。
+
+```python
+load_dbc(path)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的文件路径。|
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:31`](../../../src/chronaxis/planning/dbc_defaults.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-requested_enum_codes"></a>
+## `requested_enum_codes`
+
+在加载 DBC 前定位 enum_code 使用的信号，只解析表达式位置和简单派生别名。
+
+```python
+requested_enum_codes(config)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`config`|Mapping|是|无|位置或关键字。尚未读取业务记录的分析声明，用来定位表达式显式要求的枚举原始代码。|
+
+### 返回说明
+
+原码别名集合。
+
+### 异常说明
+
+完整语法诊断由稍后的统一编译器报告。
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:43`](../../../src/chronaxis/planning/dbc_defaults.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_numeric_dtype"></a>
 ## `_numeric_dtype`
@@ -46,7 +110,15 @@ _numeric_dtype(signal)
 |---|---|---|---|---|
 |`signal`|cantools.database.can.Signal|是|无|位置或关键字。DBC信号定义，按解码值范围、符号及缩放推导数值类型，不自动选择enum。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:11`](../../../src/chronaxis/planning/dbc_defaults.py#L11)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+### 返回说明
+
+float64、int64或uint64文本。
+
+### 异常说明
+
+ValueError为缩放后整数不能用64位类型表示。
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:89`](../../../src/chronaxis/planning/dbc_defaults.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_enum_choices"></a>
 ## `_enum_choices`
@@ -63,7 +135,15 @@ _enum_choices(signal)
 |---|---|---|---|---|
 |`signal`|cantools.database.can.Signal|是|无|位置或关键字。含choices和conversion的DBC信号；返回解码值到文字映射，浮点编码不截断。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:25`](../../../src/chronaxis/planning/dbc_defaults.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+### 返回说明
+
+[已解码整数码, 标签]列表。
+
+### 异常说明
+
+ValueError为缺少枚举、解码码值含小数或标签为空。
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:108`](../../../src/chronaxis/planning/dbc_defaults.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCDefaults"></a>
 ## `DBCDefaults`
@@ -75,7 +155,7 @@ DBCDefaults()
 ```
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:42`](../../../src/chronaxis/planning/dbc_defaults.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:130`](../../../src/chronaxis/planning/dbc_defaults.py#L130)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCDefaults-__init__"></a>
 ### `DBCDefaults.__init__`
@@ -89,15 +169,27 @@ DBCDefaults.__init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:44`](../../../src/chronaxis/planning/dbc_defaults.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+内存分配错误传播。
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:132`](../../../src/chronaxis/planning/dbc_defaults.py#L132)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCDefaults-fill"></a>
 ### `DBCDefaults.fill`
 
-参数为信号配置、CAN来源和定位；返回补默认值的独立dict，错误定位到信号。
+补全DBC可证明的声明，不重复应用原解码缩放。
 
 ```python
-DBCDefaults.fill(raw, config, field, path)
+DBCDefaults.fill(raw, config, field, path, *, config_version=4, need_code=False)
 ```
 
 #### 参数
@@ -108,5 +200,15 @@ DBCDefaults.fill(raw, config, field, path)
 |`config`|LegacyCANSpec &#124; CANTextSpec|是|无|位置或关键字。当前原始报文来源规格，提供DBC路径。|
 |`field`|CANReferenceTemplate|是|无|位置或关键字。信号定位，含报文ID、DBC信号名与可选帧型限制。|
 |`path`|str|是|无|位置或关键字。原声明字段路径，失败用它定位配置。|
+|`config_version`|int|否|4|仅关键字。config_version选择规则。|
+|`need_code`|bool|否|False|仅关键字。为真时读取枚举原始整数字段的有无符号信息。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:48`](../../../src/chronaxis/planning/dbc_defaults.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+#### 返回说明
+
+独立dict，v4保留DBC原单位作为input_unit。
+
+#### 异常说明
+
+PlanValidationError为缺项、歧义、读取或依赖错误。
+
+源码：[`src/chronaxis/planning/dbc_defaults.py:140`](../../../src/chronaxis/planning/dbc_defaults.py#L140)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

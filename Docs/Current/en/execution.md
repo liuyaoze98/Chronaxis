@@ -13,17 +13,17 @@ For multiple independent analyses, set `process_count` at the root of a separate
 
 [execution-report.yaml](../examples/execution-report.yaml) and [execution-strict.yaml](../examples/execution-strict.yaml) both request 0–12 seconds, while the 4000 W input is observed only through 8 seconds. They return 32000 J / `partial` and an empty value / `indeterminate`, respectively. Only `partial_policy` differs.
 
-Run `chronaxis run FILE.yaml --output NEW_DIRECTORY`. Start with the minimal example and add settings only when needed. The following block shows every default; it is a reference, not a required template. To use it with [analysis.yaml](../examples/analysis.yaml), replace or add the root `execution` object and retain the other root fields. Do not add a second `execution` key.
+Run `chronaxis run FILE.yaml --output OUTPUT_DIRECTORY`. Start with the minimal example and add settings only when needed. The following block shows every default; it is a reference, not a required template. To use it with [analysis.yaml](../examples/analysis.yaml), replace or add the root `execution` object and retain the other root fields. Do not add a second `execution` key.
 
 ```yaml
-execution:
-  backend: numpy
-  batch_rows: 65536
-  memory_budget_bytes: 268435456
-  result_buffer_rows: 4096
-  spool_quota_bytes: null
-  partial_policy: report
-  on_budget_exceeded: error
+execution:                          # Runtime and resource settings
+  backend: numpy                    # Reference or NumPy numerical implementation
+  batch_rows: 65536                 # Maximum calculation rows processed in a batch
+  memory_budget_bytes: 268435456    # Shared analysis memory budget in bytes
+  result_buffer_rows: 4096          # Rows buffered before writing intermediate results
+  spool_quota_bytes: null           # Maximum temporary disk usage in bytes
+  partial_policy: report            # Whether incomplete observations may yield a partial value
+  on_budget_exceeded: error         # Action when the declared resource budget cannot be met
 ```
 
 <a id="全部运行字段"></a>
@@ -102,18 +102,18 @@ Request 0–12 seconds at 4000 W, but suppose the recording stops at 8 seconds. 
 To change the default for all calculations, replace the root `execution` block in [analysis.yaml](../examples/analysis.yaml):
 
 ```yaml
-execution:
-  partial_policy: strict
+execution:                  # Runtime and resource settings
+  partial_policy: strict    # Whether incomplete observations may yield a partial value
 ```
 
 A calculation can override that default. Replace the root `calculations` block with the following example while retaining the other declarations, including `power`:
 
 ```yaml
-calculations:
-  - name: session_energy
-    expr: power
-    partial_policy: report
-    operation: integral
+calculations:                 # Requested statistics or selected rows
+  - name: session_energy      # Name used to identify and reference this object
+    expr: power               # Formula using the declared signal or derived names
+    partial_policy: report    # Whether incomplete observations may yield a partial value
+    operation: integral       # Calculation to apply to the expression
 ```
 
 The calculation's policy takes precedence. These are fragments for a complete configuration; see [quick start](quickstart.md).
@@ -133,8 +133,8 @@ The root `diagnostics` object controls optional evidence. Its three independent 
 To enable tracing, add or replace the root object in [analysis.yaml](../examples/analysis.yaml):
 
 ```yaml
-diagnostics:
-  trace: true
+diagnostics:     # Optional diagnostic material
+  trace: true    # Whether to retain binding and calculation trace records
 ```
 
 Enable message contributions separately with `outputs.contributions: full`. Put descriptive notes in the root `metadata` object (default `{}`); it does not replace `execution` or `diagnostics`. Independent signal/CAN exports have the [device-label requirements](exports.md) described there.
@@ -165,11 +165,10 @@ It creates a new directory under the system temporary directory by default. `--o
 | Ordinary analysis | Root `metadata.device_label`: nonblank text, such as `lab_pc`; defaults to `pending`. Ordinary CLI `run` does not override it from `CHRONAXIS_DEVICE_LABEL`. |
 | Analysis with independent signal/CAN export | The same field must be `home` or `work`, identifying a confirmed device; `pending` and custom labels are rejected. |
 | Batch summary | CLI reads `CHRONAXIS_DEVICE_LABEL`; Python uses `run_batch(..., device_label=...)`, default `pending`. Neither overrides child-analysis metadata. |
-| Legacy INI import report | CLI reads `CHRONAXIS_DEVICE_LABEL`; Python uses the import entry's `device_label` argument. This labels the conversion report, not analysis metadata. |
 
 For an ordinary analysis:
 
 ```yaml
-metadata:
-  device_label: lab_pc
+metadata:                 # Optional descriptive metadata
+  device_label: lab_pc    # Device label recorded in this example
 ```

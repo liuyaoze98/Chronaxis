@@ -4,10 +4,10 @@ Import this object from `chronaxis`. This page covers directly public members an
 
 ## Members
 
-- [BatchReport](#api-BatchReport)
-- [status](#api-BatchReport-status)
-- [to_dict](#api-BatchReport-to_dict)
-- [close](#api-BatchReport-close)
+- [`BatchReport`](#api-BatchReport)
+- [`status`](#api-BatchReport-status)
+- [`to_dict`](#api-BatchReport-to_dict)
+- [`close`](#api-BatchReport-close)
 
 <a id="api-BatchReport"></a>
 ## `BatchReport`
@@ -15,19 +15,21 @@ Import this object from `chronaxis`. This page covers directly public members an
 Summarize results in original job order. Each job's numerical tables remain in its own directory; this report does not combine values across different analysis definitions.
 
 ```python
-BatchReport(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJobResult, ...], process_count: int, fail_fast: bool, cancel_requested: bool, device_label: str, worker_process_count: int = 0, infrastructure_error: str | None = None) -> None
+BatchReport(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJobResult, ...], process_count: int, fail_fast: bool, cancel_requested: bool, device_label: str, worker_process_count: int = 0, infrastructure_error: str | None = None, report_path: pathlib.Path | None = None, _publication: object = None) -> None
 ```
 
-| Field | Type | Required / default | Meaning |
-|---|---|---|---|
-| `output_dir` | [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) | Required | New batch directory; existing targets are not overwritten. |
-| `jobs` | tuple[[BatchJobResult](BatchJobResult.md#api-BatchJobResult), ...] | Required | Final results in declaration order regardless of worker completion order. |
-| `process_count` | int | Required | Configured positive maximum analysis-worker count. Scheduling defaults to 1; direct construction here requires a value. Excludes scheduler and CAN reader subprocesses. Fewer/zero jobs need fewer/zero workers. |
-| `fail_fast` | bool | Required | Whether dispatch stops after observing a failure. |
-| `cancel_requested` | bool | Required | Whether user cancellation or KeyboardInterrupt was observed. |
-| `device_label` | str | Required | Nonempty batch-report source-device label. Only run_batch/BatchRunner.run default this to pending. Does not override child metadata.device_label. |
-| `worker_process_count` | int | Optional; 0 | Actual number of analysis workers started, possibly less than process_count. Zero for an empty or pre-cancelled batch. Excludes CAN reader subprocesses. |
-| `infrastructure_error` | str &#124; None | Optional; None | Scheduler/report-infrastructure error. None means no such error was recorded, not that all jobs succeeded. Inspect each job's status and diagnostics. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`output_dir`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|Yes|No default|Reusable batch output root; existing files are preserved.|
+|`jobs`|tuple[[BatchJobResult](BatchJobResult.md#api-BatchJobResult), ...]|Yes|No default|Final results in declaration order regardless of worker completion order.|
+|`process_count`|int|Yes|No default|Configured positive maximum analysis-worker count. Scheduling defaults to 1; direct construction here requires a value. Excludes scheduler and CAN reader subprocesses. Fewer/zero jobs need fewer/zero workers.|
+|`fail_fast`|bool|Yes|No default|Whether dispatch stops after observing a failure.|
+|`cancel_requested`|bool|Yes|No default|Whether user cancellation or KeyboardInterrupt was observed.|
+|`device_label`|str|Yes|No default|Nonempty batch-report source-device label. Only run_batch/BatchRunner.run default this to pending. Does not override child metadata.device_label.|
+|`worker_process_count`|int|No|0|Actual number of analysis workers started, possibly less than process_count. Zero for an empty or pre-cancelled batch. Excludes CAN reader subprocesses.|
+|`infrastructure_error`|str &#124; None|No|None|Scheduler/report-infrastructure error. None means no such error was recorded, not that all jobs succeeded. Inspect each job's status and diagnostics.|
+|`report_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|No|None|Actual timestamped report path after `run_batch` publishes it. None when `BatchRunner.run` has only run jobs and has not written a report.|
+|`_publication`|object|No|None|Internal reservation for batch names and cleanup. Callers should not supply this field.|
 
 <a id="api-BatchReport-status"></a>
 ### `BatchReport.status`
@@ -60,7 +62,7 @@ No explicit parameters. Returns None, not additional calculation values. Raises 
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:160`](../../../../src/chronaxis/batch/models.py#L160) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
-- [`src/chronaxis/batch/models.py:173`](../../../../src/chronaxis/batch/models.py#L173) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
-- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
-- [`src/chronaxis/batch/models.py:190`](../../../../src/chronaxis/batch/models.py#L190) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/batch/models.py:194`](../../../../src/chronaxis/batch/models.py#L194) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/batch/models.py:200`](../../../../src/chronaxis/batch/models.py#L200) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/batch/models.py:211`](../../../../src/chronaxis/batch/models.py#L211) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

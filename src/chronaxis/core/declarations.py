@@ -12,6 +12,9 @@ from dataclasses import dataclass, field
 from hashlib import sha256
 # 复用已验契约与同步证据，不放宽实际绑定校验。
 from .binding import SignalDefinition, SynchronizationEvidence, _identity
+from .unit_conversion import binding_version
+from .unit_registry import REGISTRY_VERSION
+from .lookup import LookupTablePlan, validate_lookups
 # 时基和范围已经独立验证，不借空SessionSpec制造实际来源。
 from .models import Interval, TimebaseSpec
 from .types import TimeType
@@ -68,6 +71,10 @@ class DeclarationBindings:
     signals: tuple[SignalDefinition, ...]  # 已校验单信号契约。
     derived_names: tuple[str, ...] = ()  # signals统一名称空间。
     synchronization: tuple[SynchronizationEvidence, ...] = ()  # 显式核实依据。
+    config_version: int | None = field(default=None, kw_only=True)  # 缺省继承信号；空声明可指定版本。
+    extensions: object = field(default=None, kw_only=True, repr=False)  # 仅接收宿主传入的不可变注册。
+    lookups: tuple[LookupTablePlan, ...] = field(default=(), kw_only=True)  # v4命名表，独立于信号来源。
+    temporal_inputs: tuple = field(default=(), kw_only=True)  # 离散序列对应的原采集时基。
     identity: str = field(init=False)  # 配置身份，不是执行绑定SHA。
 
     def __post_init__(self) -> None:
@@ -89,6 +96,13 @@ class DeclarationBindings:
         if any(not isinstance(item, DeclaredSource) for item in self.sources) or any(not isinstance(item, SignalDefinition) for item in self.signals):
             # 静态编译也不接受伪造类名。
             raise TypeError('声明绑定需要DeclaredSource/SignalDefinition')
+        # 定义版本必须一致；没有信号时仍允许明确指定新版本。
+        object.__setattr__(self, "config_version", binding_version(self.signals, self.config_version))
+        validate_lookups(self.lookups, self.config_version)
+        if self.extensions is not None:
+            from ..extensions import ExtensionRegistry
+            if type(self.extensions) is not ExtensionRegistry or self.config_version != 4:
+                raise ValueError('extensions需要版本4及宿主ExtensionRegistry')
         # 来源表只属于当前计划。
         sources = {item.name: item for item in self.sources}
         # 重复来源不能字典覆盖。
@@ -138,6 +152,14 @@ class DeclarationBindings:
                    tuple((item.name, item.timebase.timebase_id, item.timebase.time_type.value, item.timebase.origin, item.offset_ns, item.input_identity) for item in self.sources),
                    tuple(item.identity() for item in self.signals), self.derived_names,
                    tuple((item.source, item.evidence) for item in self.synchronization))
+        # 当前规则版本和单位目录均属于身份。
+        payload += (self.config_version, REGISTRY_VERSION)
+        if self.extensions is not None:
+            payload += ('host-extensions-v1', self.extensions.identity)
+        if self.lookups:
+            payload += ('lookup-table-v1', tuple(t.identity for t in self.lookups))
+        if self.temporal_inputs:
+            payload += ('temporal-inputs-v1', self.temporal_inputs)
         # 所有身份材料是已校验结构，不调用外部对象repr。
         object.__setattr__(self, 'identity', sha256(_identity(payload).encode('utf-8')).hexdigest())
 
@@ -171,6 +193,9 @@ class DeclarationBindings:
             # 不接受可变或无限依赖列表。
             raise TypeError('联合依赖names必须为tuple')
         # 单来源多个信号只产生一个同步成员。
+        if self.temporal_inputs:
+            inputs = dict(self.temporal_inputs)
+            names = tuple(alias for name in names for alias in inputs.get(name,(name,)))
         used = {self.resolve(name).source for name in names}
         # 独立来源可在自己坐标中校验。
         if len(used) <= 1:

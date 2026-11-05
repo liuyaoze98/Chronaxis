@@ -1,4 +1,4 @@
-# chronaxis.core.sequence_reference
+# `chronaxis.core.sequence_reference`
 
 按时间组将请求与响应FIFO配对，区分未响应和无法确定。
 
@@ -59,7 +59,7 @@ SequenceDetector(rule: SequenceRule, start_ns: int, end_ns: int, *, max_pending:
 ```
 
 
-源码：[`src/chronaxis/core/sequence_reference.py:25`](../../../src/chronaxis/core/sequence_reference.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:25`](../../../src/chronaxis/core/sequence_reference.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-__init__"></a>
 ### `SequenceDetector.__init__`
@@ -91,7 +91,7 @@ TypeError/ValueError/OverflowError为规则、范围或容量错误。
 
 - `TypeError`：需要SequenceRule及正int max_pending。
 
-源码：[`src/chronaxis/core/sequence_reference.py:33`](../../../src/chronaxis/core/sequence_reference.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:33`](../../../src/chronaxis/core/sequence_reference.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-pending_count"></a>
 ### `SequenceDetector.pending_count`
@@ -119,7 +119,7 @@ SequenceDetector.pending_count
 
 无主动异常。
 
-源码：[`src/chronaxis/core/sequence_reference.py:55`](../../../src/chronaxis/core/sequence_reference.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:55`](../../../src/chronaxis/core/sequence_reference.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-_note"></a>
 ### `SequenceDetector._note`
@@ -144,7 +144,7 @@ None，更新固定长度计数器。
 
 无主动异常；只由内部协议调用。
 
-源码：[`src/chronaxis/core/sequence_reference.py:65`](../../../src/chronaxis/core/sequence_reference.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:65`](../../../src/chronaxis/core/sequence_reference.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-_advance"></a>
 ### `SequenceDetector._advance`
@@ -169,7 +169,7 @@ None；正长度未知区间计入质量，零长度不增加区间证据。
 
 无主动异常，外层已验证时间顺序。
 
-源码：[`src/chronaxis/core/sequence_reference.py:77`](../../../src/chronaxis/core/sequence_reference.py#L77)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:77`](../../../src/chronaxis/core/sequence_reference.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-_result"></a>
 ### `SequenceDetector._result`
@@ -197,7 +197,7 @@ SequenceResult，匹配或有质量依据的未匹配结果。
 
 模型校验或内存异常传播，不输出伪成功。
 
-源码：[`src/chronaxis/core/sequence_reference.py:89`](../../../src/chronaxis/core/sequence_reference.py#L89)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:89`](../../../src/chronaxis/core/sequence_reference.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-_consume"></a>
 ### `SequenceDetector._consume`
@@ -228,7 +228,7 @@ MemoryError为候选上限；结果构造失败传播。
 
 - `MemoryError`：sequence待响应请求超过max_pending。
 
-源码：[`src/chronaxis/core/sequence_reference.py:117`](../../../src/chronaxis/core/sequence_reference.py#L117)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:119`](../../../src/chronaxis/core/sequence_reference.py#L119)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-push"></a>
 ### `SequenceDetector.push`
@@ -265,7 +265,7 @@ TypeError/ValueError/OverflowError为协议错误；MemoryError为容量不足�
 
 返回类型：tuple[[SequenceResult](chronaxis.core.sequence.md#api-SequenceResult), ...]。
 
-源码：[`src/chronaxis/core/sequence_reference.py:162`](../../../src/chronaxis/core/sequence_reference.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:164`](../../../src/chronaxis/core/sequence_reference.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequenceDetector-finish"></a>
 ### `SequenceDetector.finish`
@@ -295,7 +295,7 @@ ValueError为缺EOF、失败或重复finish。
 
 - `ValueError`：finish需要完整terminal且实例未关闭。
 
-源码：[`src/chronaxis/core/sequence_reference.py:198`](../../../src/chronaxis/core/sequence_reference.py#L198)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:200`](../../../src/chronaxis/core/sequence_reference.py#L200)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-pair_sequence"></a>
 ## `pair_sequence`
@@ -337,13 +337,13 @@ TypeError/ValueError为类型/归属/缺失事件时刻；容量与时间溢出�
 
 不补采样、解析文件或推断同步；大数据上层直接分批使用SequenceDetector。
 
-源码：[`src/chronaxis/core/sequence_reference.py:211`](../../../src/chronaxis/core/sequence_reference.py#L211)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/sequence_reference.py:213`](../../../src/chronaxis/core/sequence_reference.py#L213)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 ## 内部匿名回调
 
 
-<a id="lambda-140"></a>
-### 第140行匿名函数
+<a id="lambda-142"></a>
+### 第142行匿名函数
 
 ```python
 lambda item: item.event_id
@@ -353,8 +353,8 @@ lambda item: item.event_id
 |---|---|---|
 |`item`|本时间刻度的请求或响应事件。|返回event_id，按事件标识稳定排序。|
 
-<a id="lambda-146"></a>
-### 第146行匿名函数
+<a id="lambda-148"></a>
+### 第148行匿名函数
 
 ```python
 lambda item: item.event_id

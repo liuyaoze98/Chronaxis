@@ -15,6 +15,7 @@
 from .models import DatasetSpec, Interval, MemoryRow, SessionSpec, SignalSample, SourceRef, SourceSpec, TimebaseSpec
 # 绑定只处理冻结声明，不读取旧来源或执行样本运算。
 from .binding import SignalBindings, SignalDefinition, SynchronizationEvidence
+from .lookup import LookupTablePlan
 # 消息域声明与真实仓证据使用独立身份，不伪造普通信号历史。
 from .message_binding import ExpressionParameter, MessageDeclarations, MessageSourceEvidence, MessageBindings
 # 参考状态只依赖标准库，数组入口须显式导入state_numpy。
@@ -57,7 +58,7 @@ from .start_end import StartEndSpec, StartEndDetector
 # 明确当前模型范围，调用者通过chronaxis.core显式选用。
 __all__ = ["DatasetSpec", "Interval", "MemoryRow", "SessionSpec", "SignalSample", "SourceRef",
            "SourceSpec", "TimebaseSpec", "QualityFlag", "SignalDType", "SourceType", "TimeType", "Truth",
-           "SignalBindings", "SignalDefinition", "SynchronizationEvidence", "SignalSeries", "StateValue",
+           "SignalBindings", "SignalDefinition", "SynchronizationEvidence", "SignalSeries", "StateValue", "LookupTablePlan",
            "TimeGroup", "AtomicUpdateBuffer", "align_reference", "common_timeline", "iter_time_groups",
            "ScalarValue", "binary_reference", "memory_series_reference", "normalize_reference", "to_float_reference", "unary_reference",
            "CompiledExpression", "DerivedDefinition", "compile_expression", "Evaluation", "evaluate_reference", "evaluate_memory_reference",

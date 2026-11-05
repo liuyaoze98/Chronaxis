@@ -1,4 +1,4 @@
-# chronaxis.batch.runner
+# `chronaxis.batch.runner`
 
 同时运行多份彼此独立的分析计划，最多启动process_count个任务。每个任务各用自己的状态、资源限额和目录。取消或fail_fast触发后不再启动新任务；已经启动的任务完成清理后退出。process_count限制任务数，并不限制整个Python进程的总内存。
 
@@ -12,9 +12,8 @@
 
 |对象|用途|
 |---|---|
-|[`_new_root`](#api-_new_root)|检查批量新目录。|
+|[`_new_root`](#api-_new_root)|检查可复用批量目录。|
 |[`_facts`](#api-_facts)|分别提取计划标识和实际输入标识，写入任务结果。|
-|[`_diagnostics`](#api-_diagnostics)|保留有限异常链而不持有栈。|
 |[`_cancelled`](#api-_cancelled)|记录未启动取消。|
 |[`_report`](#api-_report)|补齐未启动项。|
 |[`_run_job`](#api-_run_job)|执行一个独立任务并关闭所有资源。|
@@ -22,6 +21,7 @@
 |[`BatchRunner`](#api-BatchRunner)|通过有限spawn工作进程执行独立任务；同一任务的连续文件保持原顺序。|
 |[`BatchRunner.__init__`](#api-BatchRunner-__init__)|配置调度。|
 |[`BatchRunner.run`](#api-BatchRunner-run)|运行独立任务，原声明顺序返回报告。|
+|[`BatchRunner._run`](#api-BatchRunner-_run)|共享派发/清理循环；fast_specs 仅由 fast 校验入口构造，可选 fast_rows 接收汇总所需小行。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
@@ -34,6 +34,7 @@ from ..planning import load_analysis_plan
 from ..planning.plan import AnalysisPlan
 from ..runner import AnalysisRunner
 from ..results.spool import _cleanup_owner
+from .._batch_worker import _diagnostics
 from .models import BatchJob, BatchJobResult, BatchReport, CleanupHandle
 ```
 
@@ -42,7 +43,7 @@ from .models import BatchJob, BatchJobResult, BatchReport, CleanupHandle
 <a id="api-_new_root"></a>
 ## `_new_root`
 
-检查批量新目录。
+检查可复用批量目录。
 
 ```python
 _new_root(value) -> Path
@@ -52,7 +53,7 @@ _new_root(value) -> Path
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`value`|str &#124; [pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本批任务的根输出目录，必须是尚不存在的新目录；创建后各任务在其中使用独立子目录。|
+|`value`|str &#124; [pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本批任务的根输出目录，可以已有；任务在其中使用带本批时间后缀的独立子目录。|
 
 ### 返回说明
 
@@ -60,16 +61,11 @@ _new_root(value) -> Path
 
 ### 异常说明
 
-类型/已有/只读路径错误。
-
-本函数直接报告的具体错误：
-
-- `TypeError`：批量输出需要str或Path。
-- `ValueError`：批量输出不能位于RefProjects。
+类型、不可用目录或受保护路径错误。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/runner.py:23`](../../../src/chronaxis/batch/runner.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:24`](../../../src/chronaxis/batch/runner.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_facts"></a>
 ## `_facts`
@@ -97,34 +93,7 @@ _facts(job, plan=None) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/runner.py:38`](../../../src/chronaxis/batch/runner.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
-
-<a id="api-_diagnostics"></a>
-## `_diagnostics`
-
-保留有限异常链而不持有栈。
-
-```python
-_diagnostics(error) -> tuple[str, ...]
-```
-
-### 参数
-
-|名称|数据类型|必填|省略时的值|用途、取值和效果|
-|---|---|---|---|---|
-|`error`|BaseException|是|无|位置或关键字。本次操作产生的原异常对象；用于保留原因链、附加清理失败信息或继续抛出，不应换成一段字符串。|
-
-### 返回说明
-
-文本tuple。
-
-### 异常说明
-
-原异常格式错误。
-
-返回类型：tuple[str, ...]。
-
-源码：[`src/chronaxis/batch/runner.py:49`](../../../src/chronaxis/batch/runner.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:30`](../../../src/chronaxis/batch/runner.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_cancelled"></a>
 ## `_cancelled`
@@ -152,7 +121,7 @@ _cancelled(job, reason) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:60`](../../../src/chronaxis/batch/runner.py#L60)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:41`](../../../src/chronaxis/batch/runner.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_report"></a>
 ## `_report`
@@ -186,7 +155,7 @@ _report(root, jobs, results, process_count, fail_fast, cancelled, label, reason)
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:65`](../../../src/chronaxis/batch/runner.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:46`](../../../src/chronaxis/batch/runner.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_run_job"></a>
 ## `_run_job`
@@ -217,7 +186,7 @@ _run_job(job, directory, backend, stop, cancel) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:74`](../../../src/chronaxis/batch/runner.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:55`](../../../src/chronaxis/batch/runner.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_pause"></a>
 ## `_pause`
@@ -243,7 +212,7 @@ None。
 
 主进程取消。
 
-源码：[`src/chronaxis/batch/runner.py:118`](../../../src/chronaxis/batch/runner.py#L118)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:103`](../../../src/chronaxis/batch/runner.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchRunner"></a>
 ## `BatchRunner`
@@ -255,7 +224,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:123`](../../../src/chronaxis/batch/runner.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -287,7 +256,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:126`](../../../src/chronaxis/batch/runner.py#L126)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -303,13 +272,13 @@ BatchRunner.run(jobs, output_dir, *, cancel_event=None, device_label='pending') 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`jobs`|tuple|是|无|位置或关键字。提供BatchJob元组，例如load_batch_plan("batch.yaml").jobs；每项含独立分析的ID与计划，顺序决定报告排列。|
-|`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。新批量结果目录，每个任务按id创建子目录；目标已经存在时拒绝覆盖。|
+|`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。|
 |`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|否|None|仅关键字。可选取消标记；None表示没有。其他线程调用set()后停止派发新任务，正在执行的任务继续收尾。|
 |`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，例如已核实的"home"或"work"；未确定时用"pending"。这是来源说明，不参与数值计算，也不根据文件路径猜测。|
 
 #### 返回说明
 
-BatchReport，close可重试子进程内失败清理。
+BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写批量报告，report_path为None；close可重试未完成清理。
 
 #### 异常说明
 
@@ -328,4 +297,26 @@ BatchReport，close可重试子进程内失败清理。
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:138`](../../../src/chronaxis/batch/runner.py#L138)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-BatchRunner-_run"></a>
+### `BatchRunner._run`
+
+共享派发/清理循环；fast_specs 仅由 fast 校验入口构造，可选 fast_rows 接收汇总所需小行。
+
+```python
+BatchRunner._run(jobs, output_dir, *, cancel_event, device_label, fast_specs=None, fast_rows=None)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`jobs`|tuple[[BatchJob](chronaxis.batch.models.md#api-BatchJob), ...]|是|无|位置或关键字。按配置顺序派发的独立任务。|
+|`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本批次报告和各文件发布目录的父路径。|
+|`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|是|无|仅关键字。已设置时取消本次操作，省略时按调用方的正常生命周期运行。|
+|`device_label`|str|是|无|仅关键字。报告标记所用设备的来源名称。|
+|`fast_specs`|dict &#124; None|否|None|仅关键字。任务名到文件级计算参数的映射，启用 fast 时传入。|
+|`fast_rows`|dict &#124; None|否|None|仅关键字。请求总量时收集各任务未舍入行，按任务名存放。|
+
+源码：[`src/chronaxis/batch/runner.py:134`](../../../src/chronaxis/batch/runner.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

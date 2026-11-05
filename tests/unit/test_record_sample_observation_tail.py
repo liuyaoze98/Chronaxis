@@ -36,7 +36,7 @@ BA_ "GenMsgCycleTime" BO_ 256 1000;
             lines.append(f'{time:.6f} 1 100 Rx d 2 {value & 255:02X} {value >> 8:02X}')
         if end is not None:lines.append(f'{end:.6f} 1 7FE Rx d 1 00')
         (self.root/'meter.asc').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-        return dict(config_version=3,dataset=dict(name='tail'),
+        return dict(config_version=4,dataset=dict(name='tail'),
             sources=[dict(name='meter',path='meter.asc',dbc_by_channel={'1':'meter.dbc'},time=dict(clock='shared'))],
             signals=[dict(name='power',field=dict(frame_id='0x100',signal='Power'),valid_for=age)],
             calculations=[dict(name=op,operation=op,expr='power') for op in

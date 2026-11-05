@@ -19,6 +19,7 @@ from dataclasses import dataclass
 # context只接受真实映射，不反射对象属性。
 from collections.abc import Mapping
 # 用静态编译模型和当前真实绑定校验身份。
+from .enum_codes import memory_histories, aligned_scalar
 from .expression import CompiledExpression
 # 已校验输入绑定不能用用户字符串冒充。
 from .binding import SignalBindings
@@ -29,6 +30,14 @@ from .message_binding import MessageBindings
 # 独立参考数值内核，内部比较映射只有标准运算。
 from .numeric import (COMPARE_FUNCTIONS, ScalarValue, binary_reference, memory_series_reference,
                       to_float_reference, unary_reference)
+# 单位转换使用独立标量仿射核，导入不在每个样本上重复执行。
+from .affine import affine_reference
+from .expression_math_v4 import MATH_KERNELS
+from .expression_math_reference import math_reference
+from .expression_integer_v4 import INTEGER_KERNELS
+from .expression_integer_reference import integer_reference
+from .lookup_reference import lookup_reference
+from .enum_codes import enum_code_reference
 # 独立参考保持为memory查询生成输入。
 from .state import align_reference
 # 三值使用BOOL的valid，不将UNKNOWN默认转False。
@@ -69,7 +78,8 @@ def require_context(compiled, context, bindings):
         # 不把接口配置错吞为UNKNOWN。
         raise TypeError('执行需要CompiledExpression/context及真实普通或消息绑定')
     # 相同结构名称不证明输入数据/转换/TTL相同。
-    if compiled.bindings.identity != bindings.identity:
+    if (compiled.bindings.identity != bindings.identity or
+            getattr(compiled.bindings,'extensions',None) is not getattr(bindings,'extensions',None)):
         # 必须重新编译真实当前绑定。
         raise ValueError('可执行表达式与当前输入绑定身份不同')
     # 普通解码核实际投影，消息绑定核单来源依赖；两者均拒绝静态声明冒充运行域。
@@ -135,6 +145,21 @@ def _evaluate(node, context, cache):
         value = context[node.name]
         # 上游全部质量同时作为诊断保留。
         result = Evaluation(value, value.quality)
+    elif node.operator == 'where':
+        # 先求条件；UNKNOWN没有活动数值分支，它的原因就是当前输出无效的原因。
+        condition = _evaluate(node.args[0], context, cache)
+        if not condition.value.valid:
+            value = ScalarValue(None, node.dtype, False, condition.value.quality)
+            result = Evaluation(value, condition.dependency_quality)
+        else:
+            # 已知条件只访问所选子树，分支已在编译期统一输出类型和单位。
+            branch = _evaluate(node.args[1 if condition.value.value else 2], context, cache)
+            result = Evaluation(branch.value, condition.dependency_quality | branch.dependency_quality)
+    elif node.operator == 'enum_code':
+        # 原码有独立质量域：代码9可以有效，即使其标签没有登记。
+        operand = _evaluate(node.args[0], context, cache).value
+        value = enum_code_reference(node, operand)
+        result = Evaluation(value, value.quality)
     else:
         # 子树全部求值以保留原依赖异常，即使逻辑已可决断。
         children = tuple(_evaluate(arg, context, cache) for arg in node.args)
@@ -158,6 +183,20 @@ def _evaluate(node, context, cache):
         elif node.operator == 'to_float':
             # 不能通过编译隐藏舍入整数。
             value = to_float_reference(values[0])
+        elif node.operator == 'unit_convert':
+            # 编译期已确定系数，运行时只转换当前值并保留精度/缺失原因。
+            value = affine_reference(values[0], *node.value, node.dtype)
+        elif node.operator == 'lookup':
+            value = lookup_reference(node.value, values[0])
+        elif node.operator == 'host_function':
+            from ..extension_runtime import point_call
+            value = point_call(node.host_function,'reference',values)
+        elif node.operator in MATH_KERNELS:
+            # 逐点极值、限幅与开方沿统一参数dtype执行，原诊断仍随结果上报。
+            value = math_reference(node.operator, values)
+        elif node.operator in INTEGER_KERNELS:
+            # 原码或普通整数都按同一64位协议计算，不使用标签索引。
+            value = integer_reference(node, values)
         # 精确整数比较literal可以超过64位边界。
         elif node.operator.startswith('int_literal_'):
             # Python整数参考绝不先转float。
@@ -239,7 +278,7 @@ def evaluate_memory_reference(compiled: CompiledExpression, times: tuple[int, ..
     if not isinstance(compiled, CompiledExpression) or not isinstance(compiled.bindings, SignalBindings):
         raise TypeError('memory快捷求值需要真实SignalBindings的CompiledExpression')
     # 仅材料化当前实际依赖，不改变旧链筛选或扫描次数。
-    histories = {name: memory_series_reference(compiled.bindings, name) for name in compiled.dependencies}
+    histories = memory_histories(compiled, compiled.dependencies, memory_series_reference)
     # 参考保持与数组查询实现独立。
     aligned = {name: align_reference(series, times, point=point) for name, series in histories.items()}
     # 当前memory空依赖也需严格校验时间/视图接口。
@@ -263,8 +302,7 @@ def evaluate_memory_reference(compiled: CompiledExpression, times: tuple[int, ..
     # 标量参考允许逐时间解释，不冒充数组化。
     for index in range(len(times)):
         # 当前局部context不跨时间保存数值。
-        context = {name: ScalarValue(states[index].value, compiled.bindings.resolve(name).dtype, states[index].valid, states[index].quality,
-                                     tuple(dict.fromkeys(label for _, label in compiled.bindings.resolve(name).choices)) if compiled.bindings.resolve(name).dtype is D.ENUM else ())
+        context = {name: aligned_scalar(compiled.bindings.resolve(name), states[index])
                    for name, states in aligned.items()}
         # 完整绑定身份再次门槛校验后运行真实参考。
         results.append(evaluate_reference(compiled, context, compiled.bindings))

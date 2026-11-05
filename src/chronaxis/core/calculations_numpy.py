@@ -19,7 +19,7 @@ compute_numpy接收CalculationSeries和CalculationDefinition，打包成同长�
 # 真正列计算与归约，禁止object/vectorize替代数值内核。
 import numpy as np
 # 单位和输出政策不包含被测面积/覆盖算法。
-from .calculations import make_calculation_result, calculation_unit
+from .calculations import make_calculation_result, calculation_conversion
 # 仅共享typed输入门槛，无参考计算调用。
 from .calculations_reference import require_calculation
 # 完整未知诊断区间恢复模型。
@@ -29,9 +29,14 @@ from .numeric_numpy import DTYPES, NumericArray, to_float_numpy
 # 原因明确，不将UNKNOWN存储占位当真值。
 from .types import QualityFlag as Q, Truth
 # 共享冻结行模型，不调用参考筛选或归约。
-from .selection import SelectionRow, require_selection
+from .selection import SelectionRow, require_selection, partial_selection
 # 复用本数组后端的独立误差项算法，不调用参考归约或重新计算覆盖事实。
 from .integral_sum_numpy import NumpyIntegralSum
+from .calculation_output_numpy import convert_result_numpy
+from .affine_numpy import affine_numpy
+from .moments import MOMENTS, compute_moment_series
+from .quantiles import SAMPLE_QUANTILES, compute_quantile_series
+from .numeric import ScalarValue
 
 
 def _sum_finite_numpy(values):
@@ -81,16 +86,33 @@ def select_numpy(series, spec):
     known = np.ones(len(times), dtype=bool) if series.conditions is None else np.array([value.valid for value in series.conditions], dtype=bool)
     truth = np.ones(len(times), dtype=bool) if series.conditions is None else np.array([value.value if value.valid else False for value in series.conditions], dtype=bool)
     keep = actual & (times >= start) & (times < end) & (~known | truth)
+    # 只对真实选中行组列执行单位换算，循环仍只负责装箱，不逐样本调用参考核。
+    indices = np.flatnonzero(keep)
+    conversion = calculation_conversion(spec, series.unit)
+    converted = None
+    if conversion is not None and (conversion.factor != 1 or conversion.offset != 0):
+        dtype = series.values[0].dtype
+        column = NumericArray(dtype,
+            np.array([series.values[i].value if series.values[i].valid else 0 for i in indices], dtype=DTYPES[dtype]),
+            np.array([series.values[i].valid for i in indices], dtype=bool),
+            np.array([int(series.values[i].quality) for i in indices], dtype=np.uint16))
+        converted = affine_numpy(column, conversion.factor, conversion.offset, conversion.dtype(dtype))
     # 索引数组先筛选；循环仅打包输出，不调用参考筛选。
-    for index in np.flatnonzero(keep):
+    for position, index in enumerate(indices):
         selection = Truth.TRUE if known[index] else Truth.UNKNOWN
         value = series.values[index]
+        if converted is not None:
+            value = ScalarValue(converted.values[position].item(), converted.dtype,
+                                bool(converted.valid[position]), Q(int(converted.quality[position])))
         condition_quality = Q.NONE if series.conditions is None else series.conditions[index].quality
-        yield SelectionRow(int(times[index]), value, selection, series.diagnostics[index] | value.quality | condition_quality,
-                           series.binding_identity, series.source_refs, series.unit)
+        quality=series.diagnostics[index] | value.quality | condition_quality
+        if series.values[index].partial or series.conditions is not None and series.conditions[index].partial:
+            value,quality=partial_selection(value,quality,spec)
+        yield SelectionRow(int(times[index]), value, selection, quality,
+                           series.binding_identity, series.source_refs, series.unit if conversion is None else conversion.unit)
 
 
-def compute_numpy(series, spec, *, step_ns=None):
+def compute_numpy(series, spec, *, step_ns=None, budget=None):
     """批量计算保持面积、样本/时间统计、BOOL TRUE时长和覆盖。
 
     参数:
@@ -98,6 +120,7 @@ def compute_numpy(series, spec, *, step_ns=None):
         spec还提供输出单位及report或strict部分结果政策；duration需BOOL输入。
         step_ns为可选固定/DBC周期，只接收所选驱动真实更新；按交集比例计算
         面积、时长和均值权重，不改变实际坐标或输出第二套时间。
+        budget为精确分位数的可选共享RAM账本，省略时采用项目默认配额。
     返回:
         CalculationResult，保存数值、覆盖、未知范围、来源与质量原因；select另用行流入口。
         积分区间使用(N-1,)数组，真实样本选择使用(N,)掩码；正常零与None分开。
@@ -111,8 +134,18 @@ def compute_numpy(series, spec, *, step_ns=None):
     """
     # 静态模型门槛与数值实现分开。
     require_calculation(series, spec, step_ns=step_ns)
+    if spec.operation in SAMPLE_QUANTILES:
+        from .sample_reduction_numpy import NumpySampleReduction
+        return compute_quantile_series(series, spec, NumpySampleReduction, budget)
+    if spec.operation in MOMENTS:
+        from .sample_reduction_numpy import NumpySampleReduction
+        from .time_reduction_numpy import NumpyTimeReduction
+        from .conditional_time_reduction_numpy import NumpyConditionalTimeReduction
+        return compute_moment_series(series, spec, NumpySampleReduction, NumpyTimeReduction,
+                                     NumpyConditionalTimeReduction, step_ns)
     # 输出维度及因子由明确单位表验证，不重复DBC缩放。
-    unit, factor = calculation_unit(spec, series.unit)
+    conversion = calculation_conversion(spec, series.unit)
+    unit, factor = conversion.unit, conversion.factor
     # Python仅求两个配置区间交集，不执行逐样本数值。
     start = max(spec.window.start_ns, series.observation.start_ns)
     # 不在EOF外补未知周期或面积。
@@ -216,6 +249,8 @@ def compute_numpy(series, spec, *, step_ns=None):
             result, failed, reduction_quality = _sum_finite_numpy(areas[selected])
             quality |= reduction_quality
         # 整数min仍精确，不隐式转大整数float。
+        elif spec.operation == 'sample_count':
+            result = int(np.count_nonzero(samples))
         elif np.any(samples) and spec.operation == 'sample_minimum':
             # 只实际样本，不插入窗口左端保持值。
             result = np.min(values.values[samples]).item()
@@ -263,29 +298,11 @@ def compute_numpy(series, spec, *, step_ns=None):
                 quality |= reduction_quality
             else:
                 result = 0.0
-    # 转换因子1保持整数极值，其他明确单位转换前校验精度。
-    if result is not None and factor != 1:
-        # 单项结果转float仍走独立尾位判据，不先丢大整数精度。
-        if type(result) is int:
-            # 结果单列typed布局不借参考运算。
-            converted = to_float_numpy(NumericArray(column.dtype, np.array([result], dtype=DTYPES[column.dtype]), np.array([True]), np.array([0], dtype=np.uint16)))
-            # 失败保留原覆盖，结果不能正常返回。
-            if not converted.valid[0]:
-                # 明确PRECISION_LOSS/NONFINITE输出诊断。
-                failed, quality = True, quality | Q(int(converted.quality[0]))
-            else:
-                # 仅已证明精确的整数结果才换单位。
-                result = converted.values[0].item()
-        # 不继续转换已失败候选。
-        if not failed:
-            # 一次UFUNC输出单位转换，符号不改变。
-            with np.errstate(over='ignore', under='ignore', invalid='ignore'):
-                # original用于检查非零转换下溢。
-                original, result = result, np.multiply(np.float64(result), factor).item()
-            # 非零输入输出0不能伪装正常有效零。
-            if result == 0 and original != 0:
-                # 未新增schema质量位，使用已有精度原因。
-                failed, quality = True, quality | Q.PRECISION_LOSS
+    # 归约后应用一次完整仿射转换，并检查目标数值精度。
+    if result is not None and not failed and spec.operation != 'sample_count':
+        result, conversion_quality = convert_result_numpy(result, column.dtype, conversion)
+        failed = conversion_quality != Q.NONE
+        quality |= conversion_quality
     # 总归约/转换非有限为计算失败，不正常Inf。
     if type(result) is float and not np.isfinite(result):
         # 覆盖事实不会改成0来掩盖算术失败。

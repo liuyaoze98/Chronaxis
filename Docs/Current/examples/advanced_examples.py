@@ -26,9 +26,9 @@ def verify(output):
             if name=='start-end':
                 assert [(r.start_ns,r.end_ns) for r in events]==[(0,2_000_000_000),(4_000_000_000,9_000_000_000),(11_000_000_000,14_000_000_000)]
                 entry['events']=[{'start_ns':r.start_ns,'end_ns':r.end_ns,'status':r.status,'trigger':r.trigger} for r in events]
-            target=output/name;result.write(target)
+            target=output/name;publication=result.write(target)
             if name=='message-energy':
-                with (target/'贡献明细.csv').open(encoding='utf-8-sig',newline='') as stream:contributions=list(csv.DictReader(stream))
+                with next(path for path in publication.output_files if path.name.startswith('贡献明细_')).open(encoding='utf-8-sig',newline='') as stream:contributions=list(csv.DictReader(stream))
                 assert len(contributions)==3,contributions
                 assert any('缺少计算输入' in r['说明'] for r in contributions),contributions
                 entry['contributions']=contributions

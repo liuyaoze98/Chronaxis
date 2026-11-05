@@ -11,10 +11,10 @@ Convert a value with an explicit unit to nanoseconds, rounding the final result 
 convert_time(value: int | float | str | Decimal, unit: str) -> TimeConversion
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `value` | int &#124; float &#124; str &#124; Decimal | Required | Positional or keyword. Finite integer, decimal text, Decimal, or existing float. Negative time coordinates are allowed. |
-| `unit` | str | Required | Positional or keyword. Case-sensitive `s`, `ms`, `us`, or `ns`; no default unit. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`value`|int &#124; float &#124; str &#124; Decimal|Yes|No default|Positional or keyword. Finite integer, decimal text, Decimal, or existing float. Negative time coordinates are allowed.|
+|`unit`|str|Yes|No default|Positional or keyword. Case-sensitive `s`, `ms`, `us`, or `ns`; no default unit.|
 
 Returns [TimeConversion](TimeConversion.md#api-TimeConversion) containing integer nanoseconds, input representation/unit, and separate diagnostics for nanosecond rounding and pre-existing floating-point precision limits.
 
@@ -26,4 +26,4 @@ No side effects: inputs, Decimal context, and time basis are unchanged.
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:143`](../../../../src/chronaxis/timebase/conversion.py#L143) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/timebase/conversion.py:143`](../../../../src/chronaxis/timebase/conversion.py#L143) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

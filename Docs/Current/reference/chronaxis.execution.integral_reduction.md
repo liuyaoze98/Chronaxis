@@ -1,4 +1,4 @@
-# chronaxis.execution.integral_reduction
+# `chronaxis.execution.integral_reduction`
 
 在同一个对象中管理积分求和、覆盖统计和资源占用。push接收下一块面积，finish整理最终结果，close归还资源额度。处理块后不长期保存原数组。
 
@@ -53,7 +53,7 @@ IntegralReduction(budget: ResourceBudget, spec: CalculationDefinition, observati
 ```
 
 
-源码：[`src/chronaxis/execution/integral_reduction.py:23`](../../../src/chronaxis/execution/integral_reduction.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:23`](../../../src/chronaxis/execution/integral_reduction.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-__init__"></a>
 ### `IntegralReduction.__init__`
@@ -91,7 +91,7 @@ None，初始化新 owner。
 - `TypeError`：积分归约需要ResourceBudget和integral CalculationDefinition。
 - `ValueError`：积分归约后端需要reference或numpy。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:31`](../../../src/chronaxis/execution/integral_reduction.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:31`](../../../src/chronaxis/execution/integral_reduction.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-closed"></a>
 ### `IntegralReduction.closed`
@@ -121,7 +121,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:83`](../../../src/chronaxis/execution/integral_reduction.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:83`](../../../src/chronaxis/execution/integral_reduction.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-failed"></a>
 ### `IntegralReduction.failed`
@@ -151,7 +151,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:88`](../../../src/chronaxis/execution/integral_reduction.py#L88)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:88`](../../../src/chronaxis/execution/integral_reduction.py#L88)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-result"></a>
 ### `IntegralReduction.result`
@@ -181,7 +181,7 @@ IntegralReduction.result: IntegralSumResult
 
 返回类型：[IntegralSumResult](chronaxis.core.integral_sum.md#api-IntegralSumResult)。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:93`](../../../src/chronaxis/execution/integral_reduction.py#L93)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:93`](../../../src/chronaxis/execution/integral_reduction.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-facts"></a>
 ### `IntegralReduction.facts`
@@ -211,7 +211,7 @@ IntegralReduction.facts: IntegralFacts
 
 返回类型：[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:102`](../../../src/chronaxis/execution/integral_reduction.py#L102)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:102`](../../../src/chronaxis/execution/integral_reduction.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-_require_open"></a>
 ### `IntegralReduction._require_open`
@@ -243,7 +243,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:110`](../../../src/chronaxis/execution/integral_reduction.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:110`](../../../src/chronaxis/execution/integral_reduction.py#L110)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-_require_finished"></a>
 ### `IntegralReduction._require_finished`
@@ -275,7 +275,7 @@ IntegralReduction._require_finished() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:115`](../../../src/chronaxis/execution/integral_reduction.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:115`](../../../src/chronaxis/execution/integral_reduction.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-_reserve"></a>
 ### `IntegralReduction._reserve`
@@ -302,7 +302,7 @@ IntegralReduction._reserve(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:121`](../../../src/chronaxis/execution/integral_reduction.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:121`](../../../src/chronaxis/execution/integral_reduction.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-_release"></a>
 ### `IntegralReduction._release`
@@ -329,7 +329,7 @@ IntegralReduction._release(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:134`](../../../src/chronaxis/execution/integral_reduction.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:134`](../../../src/chronaxis/execution/integral_reduction.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-push"></a>
 ### `IntegralReduction.push`
@@ -361,7 +361,7 @@ IntegralReduction.push(terms: ReferenceIntegralTerms | NumpyIntegralTerms) -> No
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:147`](../../../src/chronaxis/execution/integral_reduction.py#L147)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:147`](../../../src/chronaxis/execution/integral_reduction.py#L147)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-finish"></a>
 ### `IntegralReduction.finish`
@@ -393,7 +393,7 @@ None，重复成功完成无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:175`](../../../src/chronaxis/execution/integral_reduction.py#L175)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:175`](../../../src/chronaxis/execution/integral_reduction.py#L175)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-IntegralReduction-close"></a>
 ### `IntegralReduction.close`
@@ -421,4 +421,4 @@ None，重复成功关闭无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/integral_reduction.py:196`](../../../src/chronaxis/execution/integral_reduction.py#L196)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/integral_reduction.py:196`](../../../src/chronaxis/execution/integral_reduction.py#L196)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

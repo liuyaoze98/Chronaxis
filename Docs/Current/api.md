@@ -1,6 +1,6 @@
 # Python公开API索引
 
-按调用任务查询公开入口。每个名称进入单独的公开对象页，包含完整构造签名、公开方法/属性、参数、返回值和异常。下列名称均可从`chronaxis`导入；结果行模型见[结果结构](reference/chronaxis.results.summary.md)，内部模块见[开发参考](reference/index.md)。从文件运行的完整流程见[Python快速开始](api-usage.md)。
+按调用任务查询公开入口。每个名称进入单独的公开对象页，包含完整构造签名、公开方法/属性、参数、返回值和异常。通用分析、批量、预设和时间入口从`chronaxis`导入；高性能积分器和自定义分析算子在各节注明实际导入模块；结果行模型见[结果结构](reference/chronaxis.results.summary.md)，内部模块见[开发参考](reference/index.md)。从文件运行的完整流程见[Python快速开始](api-usage.md)。
 
 ## 计划加载与检查
 
@@ -19,6 +19,7 @@
 |`chronaxis.AnalysisRunner`|[AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner)：保存可选后端覆盖，复用同一静态校验，逐次创建独立运行资源。|
 |`chronaxis.AnalysisResult`|[AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult)：保存暂存路径和小型元数据，无events/segments/calculations全量列表。|
 |`chronaxis.OutputManifest`|[OutputManifest](public-api/OutputManifest.md#api-OutputManifest)：保存成功发布目录、清单和固定白名单表行数；legacy只在启用时出现。|
+|`chronaxis.ExportManifest`|[ExportManifest](public-api/ExportManifest.md#api-ExportManifest)：提供直接信号CSV或原帧导出的实际目录、完成清单及数据文件路径。|
 |`chronaxis.RunMetadata`|[RunMetadata](public-api/RunMetadata.md#api-RunMetadata)：保存运行身份、实际后端、时间解释、会话边界与兼容限制。|
 |`chronaxis.AnalysisError`|[AnalysisError](public-api/AnalysisError.md#api-AnalysisError)：表示分析或结果交付失败；异常本身不承诺旧输出已回滚。|
 |`chronaxis.ResultClosedError`|[ResultClosedError](public-api/ResultClosedError.md#api-ResultClosedError)：表示结果已经关闭，不能再创建迭代器、读取或发布。|
@@ -34,6 +35,28 @@
 |`chronaxis.BatchRunner`|[BatchRunner](public-api/BatchRunner.md#api-BatchRunner)：通过process_count设置分析工作进程数，每次run创建并回收本批的工作进程；不跨批次缓存计划和状态。|
 |`chronaxis.load_batch_plan`|[load_batch_plan](public-api/load_batch_plan.md#api-load_batch_plan)：读取严格批量JSON/YAML。参数: path为UTF-8配置文件。返回: BatchPlan。异常: 带路径配置错误。|
 |`chronaxis.run_batch`|[run_batch](public-api/run_batch.md#api-run_batch)：运行并发布批量报告。|
+
+## 高性能积分器
+
+| 公开入口 | 使用场景 |
+|---|---|
+| [chronaxis.fast.run](public-api/fast.run.md) | 同帧逐报文累计；能量公式须包含时间因子，见[积分器指南](fast-energy.md)。 |
+| [chronaxis.fast.batch.run_batch](public-api/fast.batch.run_batch.md) | 对多个独立文件执行上述计算，可请求可比计算项的整批总量。 |
+
+使用`from chronaxis.fast import run`和`from chronaxis.fast.batch import run_batch`导入上述入口。
+
+## 自定义分析算子
+
+使用`from chronaxis.extensions import ExtensionRegistry, FunctionSpec, ReductionSpec, TransformSpec`导入以下对象。
+
+| 公开入口 | 使用场景 |
+|---|---|
+| [ExtensionRegistry](public-api/ExtensionRegistry.md) | 加载与执行计划时传入同一注册表。 |
+| [FunctionSpec](public-api/FunctionSpec.md) | 注册表达式中逐值调用的函数。 |
+| [ReductionSpec](public-api/ReductionSpec.md) | 注册对一个统计范围内多行数据求值的统计操作。 |
+| [TransformSpec](public-api/TransformSpec.md) | 注册按时间窗口求值的计算。 |
+
+参数、生命周期和完整示例见[自定义分析算子](host-extensions.md)。
 
 ## 业务预设
 

@@ -44,7 +44,7 @@ async function collect(dir){
 }
 /** 用户页面隐藏维护履历；源码文件仍完整保留。 */
 function readingText(text){
-  const parts=text.split(/^## 变更履历\s*$/m);
+  const parts=text.split(/^## (?:变更履历|版本记录|Change history|Revision history)\s*$/m);
   if(parts.length>1&&/^#{1,6} /m.test(parts.slice(1).join('\n')))throw new Error('变更履历后包含正文标题；请将正文移到履历前');
   return parts[0].trim();
 }
@@ -101,7 +101,8 @@ for(const file of files){
   renderLanguage=relative.startsWith('en/')?'en':'zh';
   const local=relative.replace(/^en\//,'');
   const text=readingText(await fs.readFile(file,'utf8'));
-  const title=(text.match(/^# (.+)$/m)||[])[1]||relative;
+  // 模块标题用行内代码保护下划线；浏览器标题和检索名称只显示标识符。
+  const title=((text.match(/^# (.+)$/m)||[])[1]||relative).replace(/^`([^`]+)`$/, '$1');
   let body=marked.parse(text,{gfm:true});
   const toc=[],used=new Set(["manual-main-content","navigation","nav-toggle","search","hits","search-category",...Array.from(body.matchAll(/\bid="([^"]+)"/g),m=>m[1])]);
   body=body.replace(/<h([1234])>([\s\S]*?)<\/h\1>/g,(_,level,inner)=>{
@@ -169,9 +170,9 @@ for(const [source,dest] of attachments){
   await fs.mkdir(path.dirname(dest),{recursive:true});
   await fs.copyFile(source,dest);
 }
-// 四份规范互有相对引用，整体复制才能离线使用。
+// 三份当前规范互有相对引用，整体复制才能离线使用。
 await fs.mkdir(path.join(output,'attachments/Docs/Schema'),{recursive:true});
-for(const name of ['analysis.schema.json','batch-v1.schema.json','definitions.schema.json','legacy-import-v1.schema.json']){
+for(const name of ['analysis.schema.json','batch-v1.schema.json','definitions.schema.json']){
   await fs.copyFile(path.join(root,'Docs/Schema',name),path.join(output,'attachments/Docs/Schema',name));
 }
 for(const file of ['documentation.json','public-api.json','navigation.json','reference/inventory.json'])await fs.copyFile(path.join(docs,file),path.join(output,file));

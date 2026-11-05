@@ -188,10 +188,10 @@ class InputRequirementsTests(unittest.TestCase):
         """
         config = legacy_config()
         voltage = deepcopy(config['signals'][0])
-        voltage.update(name='voltage', unit='V')
+        voltage.update(name='voltage', unit='V', conversion={'input_unit':'V'})
         voltage['field'].update(frame_id=428, signal='Voltage')
         current = deepcopy(voltage)
-        current.update(name='current', unit='A')
+        current.update(name='current', unit='A', conversion={'input_unit':'A'})
         current['field']['signal'] = 'Current'
         config['signals'] = [voltage, current]
         calculation = config['message_calculations'][0]

@@ -27,10 +27,11 @@ class AnalysisRunner:
     session；结果所有权交给调用者，失败未清完资源通过原异常的最高owner恢复。
     """
 
-    def __init__(self, backend=None):
+    def __init__(self, backend=None, *, extensions=None):
         """选择是否覆盖计划后端，不读取任何来源或配置文件。
 
         参数: backend为None/reference/numpy；None使用各次计划原execution.backend。
+            extensions 为创建计划时使用的同一个宿主注册；省略时运行内置操作。
         返回: None；初始化实例状态。异常: TypeError为非文本覆盖；ValueError为未知后端。
         """
         # 明确拒绝任意对象和隐藏回退，不能把拼错的后端当成默认NumPy。
@@ -39,6 +40,11 @@ class AnalysisRunner:
                 raise TypeError('AnalysisRunner backend需要reference、numpy或None')
             if backend not in ('reference', 'numpy'):
                 raise ValueError('AnalysisRunner仅支持reference与numpy后端')
+        if extensions is not None:
+            from .extensions import ExtensionRegistry
+            if type(extensions) is not ExtensionRegistry:
+                raise TypeError('extensions需要宿主建立的ExtensionRegistry')
+        self._extensions = extensions
         self._backend = backend
 
     @property
@@ -57,6 +63,8 @@ class AnalysisRunner:
         """
         if not isinstance(plan, AnalysisPlan) or not isinstance(plan.execution, ExecutionPlan):
             raise TypeError('AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划')
+        if plan.bindings.extensions is not self._extensions:
+            raise ValueError('AnalysisRunner与AnalysisPlan必须使用同一个宿主注册')
         # 来源、绑定及raw_config仍借原对象；后端是本次执行选项，不伪造另一份输入。
         if self._backend is None or self._backend == plan.execution.backend:
             return plan
@@ -101,6 +109,10 @@ class AnalysisRunner:
             # 惰性加载保证validate/explain没有实际来源组件的创建或调用。
             from .execution.run_session import RunSession
             session = RunSession(effective, work_dir=work_dir)
+            if self._extensions is not None:
+                from .extensions import using_extension_budget
+                with using_extension_budget(session._budget):
+                    return session.execute()
             return session.execute()
         except BaseException as exc:
             # 未返回构造有自己的最高owner；正常构造后仍由唯一session关闭全部本次资源。

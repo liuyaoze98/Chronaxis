@@ -147,7 +147,7 @@ class CANBindingClockRunnerTests(unittest.TestCase):
 
         def edit(raw):
             """只将新增Tick用于时钟。参数: 配置。返回: None。异常: 夹具键缺失。"""
-            clock=deepcopy(raw['signals'][0]);clock.update(name='clock',unit='1')
+            clock=deepcopy(raw['signals'][0]);clock.update(name='clock',unit='1',conversion={'input_unit':'1'})
             clock['field'].update(signal='Tick',frame_id=257)
             clock['field'].pop('is_extended',None);clock['field'].pop('is_fd',None)
             raw['signals'].append(clock);raw['intervals']['default']['driver']='clock'

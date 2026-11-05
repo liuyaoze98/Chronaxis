@@ -1,9 +1,10 @@
-"""从指定版本的固定Git对象生成完整Markdown参考，不导入或修改产品代码。
+"""从指定版本的固定Git对象生成完整Markdown参考，不修改产品代码。
 
 输入为BASELINE下src/chronaxis的Python源文件及schema；输出在Docs/<版本>/reference，
 清单记录文件哈希、定义、参数和字段，供独立覆盖检查。AST遍历包含私有、嵌套、
 property和vendor定义；模块导出另列。人工教程不由本脚本覆盖。只读取Git对象，
-不读取RefProjects、不执行reader、不混入工作区未提交或后续修改。重复构建结果相同。
+不读取RefProjects、不执行reader、不混入工作区未提交或后续修改。Current公开签名
+在隔离子进程中导入选定源码反射；其余模块只作AST分析。重复构建结果相同。
 """
 
 import ast
@@ -11,12 +12,14 @@ import copy
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
 from doc_type_links import imports as type_imports, type_cell
 from doc_public_api import build_public
 from doc_sources import DocSources
+from public_api_catalog import refresh as refresh_public_catalog
 
 # 固定接受本次M2范围，不把HEAD变化自动解释为手册升级。
 ROOT = Path(__file__).resolve().parents[1]
@@ -312,6 +315,9 @@ def render_module(path, source, overrides):
     layer = module.split('.')[1] if '.' in module else 'root'
     aliases = type_imports(source, module, package=path.endswith('/__init__.py'))
     title, guide = LAYER_GUIDES.get(layer, ('公开入口与命令行', '../api-usage.md'))
+    if EDITION == 'Current' and layer in ('legacy', 'migration'):
+        # 当前共用CAN读取层保留；旧版手册的迁移入口不改写为新版本行为。
+        title, guide = 'CAN读取与逐报文计算', '../inputs.md'
     doc = ast.get_docstring(tree) or overrides.get(module, {}).get('summary', '')
     header = f'# {module}\n\n> {EDITION} `{BASELINE}` · device_label: {LABEL} · {title}\n\n'
     intro = overrides.get(module, {}).get('summary', '')
@@ -322,7 +328,8 @@ def render_module(path, source, overrides):
            + ('类型记法及必填列见[如何读参数表](../api-usage.md#api-table-reading)。' if EDITION in ('M3', 'Current') else '')
            + '旧docstring中的任务编号表示编写时点；当前可用能力见[能力表](../status.md)。\n\n', module_terms(source)]
     if EDITION == 'Current':
-        out = [f'# {module}\n\n', plain(intro or doc) + '\n\n',
+        # 模块标识符中的双下划线不能被Markdown当作强调标记吞掉。
+        out = [f'# `{module}`\n\n', plain(intro or doc) + '\n\n',
                '这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。'
                '签名来自固定源码，公开类构造签名经实际Python接口核对。\n\n']
     if intro and doc and intro != doc and EDITION not in ('M3', 'Current'):
@@ -501,7 +508,10 @@ def main():
         TASK = metadata['task']
     LANGUAGE = json.loads((DOC / 'reference-language.json').read_text(encoding='utf-8'))
     if EDITION == 'Current':
-        public = json.loads((DOC / 'public-api.json').read_text(encoding='utf-8'))
+        # 先验证来源，再由同一基线反射签名；根导出与公开子模块统一建索引。
+        DocSources(ROOT, BASELINE, EDITION)
+        public = refresh_public_catalog(ROOT, BASELINE,
+                                        source_tree=os.environ.get('CHRONAXIS_DOC_SOURCE_TREE') == '1')
         PUBLIC_SIGNATURES = {item['module'] + '.' + item['qualified']: item['signature']
                              for item in public['objects'] if item.get('signature')}
     OUT.mkdir(parents=True, exist_ok=True)
@@ -510,6 +520,12 @@ def main():
     paths = SOURCES.paths()
     # 先取得完整限定名和真实导入，再渲染链接；禁止把threading.Event按短名猜成业务Event。
     sources={path:git_text(path) for path in paths if path.endswith('.py')}
+    # 生成页以本次模块清单为准，删除已从产品中移除的旧模块页。
+    expected_pages = {path.removeprefix('src/').removesuffix('.py').replace('/', '.')
+                      .removesuffix('.__init__') + '.md' for path in sources}
+    for old_page in OUT.glob('chronaxis.*.md'):
+        if old_page.name not in expected_pages:
+            old_page.unlink()
     TYPE_LOCATIONS={};TYPE_IMPORTS={}
     for path,source in sources.items():
         module=path.removeprefix('src/').removesuffix('.py').replace('/','.').removesuffix('.__init__')

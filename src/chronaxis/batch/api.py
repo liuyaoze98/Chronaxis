@@ -13,7 +13,7 @@ from .publication import write_batch_report
 def run_batch(plan: BatchPlan, output_dir, *, process_count: int | None = None, cancel_event=None, device_label='pending'):
     """运行并发布批量报告。
 
-    参数: plan为load_batch_plan取得的BatchPlan，规定本次独立任务及调度设置；process_count为可选正整数覆盖，None沿用计划；output_dir全新目录；cancel_event为可选Event；device_label为实际标签。
+    参数: plan为load_batch_plan取得的BatchPlan，规定本次独立任务及调度设置；process_count为可选正整数覆盖，None沿用计划；output_dir可复用目录；cancel_event为可选Event；device_label为实际标签。
     返回: BatchReport；failed/cancelled保留在报告，不伪装全部成功。
     异常: TypeError为非BatchPlan或取消对象类型不符；ValueError为无效并发、后端或
         任务声明；目录创建、调度、报告发布错误按原类型传播。单任务失败记录在jobs中，
@@ -33,14 +33,21 @@ def run_batch(plan: BatchPlan, output_dir, *, process_count: int | None = None, 
             report = replace(report, infrastructure_error=type(error).__name__ + ': ' + str(error))
             error.batch_report = report
             try:
-                write_batch_report(report)
+                report = replace(report, report_path=write_batch_report(report))
+                error.batch_report = report
             except BaseException as diagnostic:
-                error.add_note('批量失败报告未发布: ' + type(diagnostic).__name__)
+                if hasattr(diagnostic, 'published_report_path'):
+                    report = replace(report, report_path=diagnostic.published_report_path)
+                    error.batch_report = report
+                error.add_note(('批量报告已发布但收尾失败: ' if hasattr(diagnostic, 'published_report_path')
+                                else '批量失败报告未发布: ') + type(diagnostic).__name__)
         raise
     try:
-        write_batch_report(report)
+        report = replace(report, report_path=write_batch_report(report))
     except BaseException as error:
         # 已完成任务绝不因汇总文件失败而丢失，未清理资源仍可从原异常恢复。
+        if hasattr(error, 'published_report_path'):
+            report = replace(report, report_path=error.published_report_path)
         error.batch_report = report
         raise
     return report

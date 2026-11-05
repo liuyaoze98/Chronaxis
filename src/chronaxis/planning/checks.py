@@ -50,11 +50,19 @@ class PlanValidationError(ValueError):
         self.location=location
         self.object_name=object_name
         self.value_preview=value
+        self._diagnostics = None
+        self.blocked_checks = ()
         super().__init__()
         self.refresh_text()
 
     def refresh_text(self):
         """重建人读消息。参数: 无。返回: None。异常: 无；附加定位后调用。"""
+        if self._diagnostics is not None:
+            text = '\n'.join(f'{index}. {item}' for index, item in enumerate(self._diagnostics, 1))
+            if self.blocked_checks:
+                text += '\n暂未检查：' + '；'.join(item['path'] + '（' + item['reason'] + '）' for item in self.blocked_checks)
+            self.args = (text,)
+            return
         place=self.source or ''
         if self.location is not None:
             place+=f':{self.location.line}:{self.location.column}（第{self.location.line}行，第{self.location.column}列）'
@@ -73,6 +81,25 @@ class PlanValidationError(ValueError):
             line=None if self.location is None else self.location.line,
             column=None if self.location is None else self.location.column,
             object_name=self.object_name,value=self.value_preview,hint=self.hint)
+
+    @property
+    def diagnostics(self):
+        """返回各项独立诊断。参数: 无。返回: tuple；单错也为一项。异常: 无。"""
+        return self._diagnostics if self._diagnostics is not None else (self,)
+
+    @classmethod
+    def from_diagnostics(cls, errors, blocked=()):
+        """合并错误并保留原类型兼容。参数: 非空错误序列/阻断说明。返回: 异常。异常: 空序列ValueError。"""
+        if not errors:
+            raise ValueError('诊断集合不能为空')
+        if len(errors) == 1 and not blocked:
+            return errors[0]
+        first = errors[0]
+        result = cls(first.path, first.message, first.code)
+        result._diagnostics = tuple(errors)
+        result.blocked_checks = tuple(blocked)
+        result.refresh_text()
+        return result
 
 
 def configuration_error(error):

@@ -1,4 +1,4 @@
-# chronaxis.execution.expressions
+# `chronaxis.execution.expressions`
 
 在有预算的保持快照上调用两个既有独立表达式数值核。
 
@@ -17,7 +17,7 @@ owner先申请固定空间，再有预算地遍历元数据及各表达式DAG；
 
 ## 相关类型
 
-[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)、[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation)、[ExprNode](chronaxis.core.expression.md#api-ExprNode)、[HoldQueries](chronaxis.execution.hold.md#api-HoldQueries)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)、[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation)、[ExprNode](chronaxis.core.expression.md#api-ExprNode)、[HoldQueries](chronaxis.execution.hold.md#api-HoldQueries)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -30,7 +30,7 @@ owner先申请固定空间，再有预算地遍历元数据及各表达式DAG；
 |[`ExpressionResult.times_ns`](#api-ExpressionResult-times_ns)|读取自有整数ns轴。|
 |[`ExpressionResult.rows`](#api-ExpressionResult-rows)|读取参考输出。|
 |[`ExpressionResult.arrays`](#api-ExpressionResult-arrays)|读取NumPy输出。|
-|[`ExpressionResult.actual_update`](#api-ExpressionResult-actual_update)|读取实际依赖更新OR。|
+|[`ExpressionResult.actual_update`](#api-ExpressionResult-actual_update)|读取真实输出更新，where 按活动分支。|
 |[`ExpressionResult.samples`](#api-ExpressionResult-samples)|读取非None原样本，保留dependencies顺序。|
 |[`ExpressionResult.binding_identity`](#api-ExpressionResult-binding_identity)|读取实际绑定身份。|
 |[`ExpressionResult.compiled_identity`](#api-ExpressionResult-compiled_identity)|读取登记表达式身份。|
@@ -45,6 +45,8 @@ owner先申请固定空间，再有预算地遍历元数据及各表达式DAG；
 |[`ExpressionQueries.closed`](#api-ExpressionQueries-closed)|查看当前对象是否已经关闭。|
 |[`ExpressionQueries._ensure_open`](#api-ExpressionQueries-_ensure_open)|拒绝owner/调用方保持/state关闭后新查询。|
 |[`ExpressionQueries._prepare`](#api-ExpressionQueries-_prepare)|检查表达式登记关系，并预留本次输出、缓存及原样本的空间。|
+|[`ExpressionQueries._where_evidence`](#api-ExpressionQueries-_where_evidence)|同一状态快照只有最近组可能更新。|
+|[`ExpressionQueries._source_cutoffs`](#api-ExpressionQueries-_source_cutoffs)|取静态候选末端供活动判断。|
 |[`ExpressionQueries._check_axis`](#api-ExpressionQueries-_check_axis)|检查规范整数轴非回退及最新状态限制，纯常量同样执行。|
 |[`ExpressionQueries._register`](#api-ExpressionQueries-_register)|在完整申请中只构造结果，外层取得对象后负责登记。|
 |[`ExpressionQueries._keep_hold`](#api-ExpressionQueries-_keep_hold)|登记临时保持结果，列表增长失败也关闭刚取得的申请。|
@@ -67,6 +69,8 @@ from ..core.expression import CompiledExpression, ExprNode
 from ..core.expression_reference import Evaluation, evaluate_reference
 from ..core.expression_numpy import ArrayEvaluation, evaluate_numpy
 from ..core.numeric import ScalarValue
+from ..core.lookup import pack_requested_lookups
+from ..core.types import QualityFlag as Q
 from ..core.numeric_numpy import NumericArray
 from ..results.errors import ResultClosedError
 from ..timebase.conversion import require_int64_ns
@@ -74,6 +78,8 @@ from .bindings import _fingerprint
 from .history import _metadata_bytes
 from .history_records import estimate_record_bytes
 from .hold import HoldQueries
+from .where_state import before_context, group_updates, group_active
+from .calculation_values import scalar_from_column
 ```
 
 </details>
@@ -91,7 +97,7 @@ ExpressionResult(owner, cost, times, payload, actual, samples, compiled)
 ```
 
 
-源码：[`src/chronaxis/execution/expressions.py:37`](../../../src/chronaxis/execution/expressions.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:41`](../../../src/chronaxis/execution/expressions.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-__init__"></a>
 ### `ExpressionResult.__init__`
@@ -122,7 +128,7 @@ ExpressionResult.__init__(owner, cost, times, payload, actual, samples, compiled
 
 构造失败由调用方释放本次预算，不向owner安装半成品。
 
-源码：[`src/chronaxis/execution/expressions.py:44`](../../../src/chronaxis/execution/expressions.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:48`](../../../src/chronaxis/execution/expressions.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-_ensure_open"></a>
 ### `ExpressionResult._ensure_open`
@@ -152,7 +158,7 @@ ResultClosedError。
 
 - `ResultClosedError`：表达式查询结果已关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:65`](../../../src/chronaxis/execution/expressions.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:71`](../../../src/chronaxis/execution/expressions.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-closed"></a>
 ### `ExpressionResult.closed`
@@ -180,7 +186,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/expressions.py:72`](../../../src/chronaxis/execution/expressions.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:78`](../../../src/chronaxis/execution/expressions.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-times_ns"></a>
 ### `ExpressionResult.times_ns`
@@ -208,7 +214,7 @@ tuple或只读int64列。
 
 对象处于下列状态时抛ResultClosedError：表达式查询结果已关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:77`](../../../src/chronaxis/execution/expressions.py#L77)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:83`](../../../src/chronaxis/execution/expressions.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-rows"></a>
 ### `ExpressionResult.rows`
@@ -242,7 +248,7 @@ Evaluation tuple。
 
 返回类型：tuple[[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation), ...]。
 
-源码：[`src/chronaxis/execution/expressions.py:83`](../../../src/chronaxis/execution/expressions.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:89`](../../../src/chronaxis/execution/expressions.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-arrays"></a>
 ### `ExpressionResult.arrays`
@@ -276,12 +282,12 @@ ArrayEvaluation。
 
 返回类型：[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)。
 
-源码：[`src/chronaxis/execution/expressions.py:92`](../../../src/chronaxis/execution/expressions.py#L92)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:98`](../../../src/chronaxis/execution/expressions.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-actual_update"></a>
 ### `ExpressionResult.actual_update`
 
-读取实际依赖更新OR。
+读取真实输出更新，where 按活动分支。
 
 ```python
 ExpressionResult.actual_update
@@ -304,7 +310,7 @@ ExpressionResult.actual_update
 
 关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:101`](../../../src/chronaxis/execution/expressions.py#L101)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:107`](../../../src/chronaxis/execution/expressions.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-samples"></a>
 ### `ExpressionResult.samples`
@@ -332,7 +338,7 @@ tuple。
 
 关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:107`](../../../src/chronaxis/execution/expressions.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:113`](../../../src/chronaxis/execution/expressions.py#L113)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-binding_identity"></a>
 ### `ExpressionResult.binding_identity`
@@ -360,7 +366,7 @@ SHA文本。
 
 对象处于下列状态时抛ResultClosedError：表达式查询结果已关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:113`](../../../src/chronaxis/execution/expressions.py#L113)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:119`](../../../src/chronaxis/execution/expressions.py#L119)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-compiled_identity"></a>
 ### `ExpressionResult.compiled_identity`
@@ -388,7 +394,7 @@ SHA文本。
 
 对象处于下列状态时抛ResultClosedError：表达式查询结果已关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:119`](../../../src/chronaxis/execution/expressions.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:125`](../../../src/chronaxis/execution/expressions.py#L125)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-close"></a>
 ### `ExpressionResult.close`
@@ -419,7 +425,7 @@ None；重复关闭不会重复抵销申请。
 从owner登记表移除自身，丢弃时间轴、输出和原样本引用。
     外部提前取得的数组或行对象仍由外部调用方负责其生命周期。
 
-源码：[`src/chronaxis/execution/expressions.py:124`](../../../src/chronaxis/execution/expressions.py#L124)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:130`](../../../src/chronaxis/execution/expressions.py#L130)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionResult-_discard"></a>
 ### `ExpressionResult._discard`
@@ -445,7 +451,7 @@ None，标记关闭。
 
 登记移除错误传播，finally仍关闭避免重复扣账。
 
-源码：[`src/chronaxis/execution/expressions.py:151`](../../../src/chronaxis/execution/expressions.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:157`](../../../src/chronaxis/execution/expressions.py#L157)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries"></a>
 ## `ExpressionQueries`
@@ -461,7 +467,7 @@ ExpressionQueries(holds: HoldQueries, bindings: DecodedBindings, expressions: tu
 ```
 
 
-源码：[`src/chronaxis/execution/expressions.py:166`](../../../src/chronaxis/execution/expressions.py#L166)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:172`](../../../src/chronaxis/execution/expressions.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-__init__"></a>
 ### `ExpressionQueries.__init__`
@@ -496,7 +502,7 @@ TypeError: 输入类型或元数据类型不符合已定义协议。
 先预留容器，再按对象身份遍历绑定、表达式及标签域，逐步增加申请。
     核对来源证据和同步条件，最后记录每个表达式的节点、边及枚举域成本。
 
-源码：[`src/chronaxis/execution/expressions.py:174`](../../../src/chronaxis/execution/expressions.py#L174)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:180`](../../../src/chronaxis/execution/expressions.py#L180)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_charge"></a>
 ### `ExpressionQueries._charge`
@@ -523,7 +529,7 @@ ExpressionQueries._charge(amount)
 
 先申请再增加本owner计数，失败不改原申请，不启动后续容器增长。
 
-源码：[`src/chronaxis/execution/expressions.py:239`](../../../src/chronaxis/execution/expressions.py#L239)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:247`](../../../src/chronaxis/execution/expressions.py#L247)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_walk_metadata"></a>
 ### `ExpressionQueries._walk_metadata`
@@ -558,7 +564,7 @@ TypeError: 遇到协议之外的类型。
 表达式树不套用历史JSON的32层限制；不扩大表达式允许的语法。
     预算包含对象浅大小、遍历集合、栈以及后续指纹计算的保守暂存。
 
-源码：[`src/chronaxis/execution/expressions.py:252`](../../../src/chronaxis/execution/expressions.py#L252)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:260`](../../../src/chronaxis/execution/expressions.py#L260)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_check_contract"></a>
 ### `ExpressionQueries._check_contract`
@@ -592,7 +598,7 @@ ValueError为来源/指纹/端点/定义不符。
 - `ValueError`：保持完整信号转换与解码运行绑定不同。
 - `ValueError`：保持实际描述/范围/EOF与运行证据不同。
 
-源码：[`src/chronaxis/execution/expressions.py:296`](../../../src/chronaxis/execution/expressions.py#L296)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:304`](../../../src/chronaxis/execution/expressions.py#L304)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_node_counts"></a>
 ### `ExpressionQueries._node_counts`
@@ -611,7 +617,7 @@ ExpressionQueries._node_counts(compiled)
 
 #### 返回说明
 
-三项元组：唯一节点数、参数边数、枚举相关的暂存字节估算。
+四项元组：唯一节点数、参数边数、枚举暂存字节估算、是否有 where。
 
 #### 异常说明
 
@@ -627,7 +633,7 @@ TypeError: 节点不是ExprNode。
 用对象身份去重，不对递归节点作结构哈希；不同对象保守分别计账。
     即使查询轴为空，枚举标签构造和验证仍可能需要空间。
 
-源码：[`src/chronaxis/execution/expressions.py:329`](../../../src/chronaxis/execution/expressions.py#L329)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:337`](../../../src/chronaxis/execution/expressions.py#L337)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-closed"></a>
 ### `ExpressionQueries.closed`
@@ -655,7 +661,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/expressions.py:363`](../../../src/chronaxis/execution/expressions.py#L363)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:377`](../../../src/chronaxis/execution/expressions.py#L377)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_ensure_open"></a>
 ### `ExpressionQueries._ensure_open`
@@ -685,7 +691,7 @@ ExpressionQueries._ensure_open()
 
 - `ResultClosedError`：表达式查询owner已关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:367`](../../../src/chronaxis/execution/expressions.py#L367)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:381`](../../../src/chronaxis/execution/expressions.py#L381)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_prepare"></a>
 ### `ExpressionQueries._prepare`
@@ -720,7 +726,60 @@ ResultClosedError: owner、保持对象或状态已关闭。
 成本随节点、边、依赖和轴长增长，也覆盖空轴对象头及固定枚举临时量。
     原样本引用单独计账；这里不创建保持列，也不执行数值运算。
 
-源码：[`src/chronaxis/execution/expressions.py:374`](../../../src/chronaxis/execution/expressions.py#L374)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:388`](../../../src/chronaxis/execution/expressions.py#L388)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-ExpressionQueries-_where_evidence"></a>
+### `ExpressionQueries._where_evidence`
+
+同一状态快照只有最近组可能更新。
+
+```python
+ExpressionQueries._where_evidence(compiled, time, context, backend)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`compiled`|[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)|是|无|位置或关键字。已登记的运行表达式，使用其完整别名依赖和编译树计算当前活动输入。|
+|`time`|int|是|无|位置或关键字。与已提交原子组比较的真实纳秒时刻。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。按此刻保持状态构造的表达式输入，用来取得条件并选择实际分支。|
+|`backend`|str|是|无|位置或关键字。本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。|
+
+#### 返回说明
+
+真实输出更新及活动无效输入标志。
+
+#### 异常说明
+
+状态/后端求值错误。
+
+源码：[`src/chronaxis/execution/expressions.py:422`](../../../src/chronaxis/execution/expressions.py#L422)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-ExpressionQueries-_source_cutoffs"></a>
+### `ExpressionQueries._source_cutoffs`
+
+取静态候选末端供活动判断。
+
+```python
+ExpressionQueries._source_cutoffs(compiled)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`compiled`|[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)|是|无|位置或关键字。已登记的运行表达式，使用其完整别名依赖和编译树计算当前活动输入。|
+
+#### 返回说明
+
+别名到纳秒。
+
+#### 异常说明
+
+绑定错误。
+
+源码：[`src/chronaxis/execution/expressions.py:438`](../../../src/chronaxis/execution/expressions.py#L438)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_check_axis"></a>
 ### `ExpressionQueries._check_axis`
@@ -751,7 +810,7 @@ ValueError为回退。
 - `ValueError`：表达式查询轴回退。
 - `ValueError`：最新状态不能回溯已经提交的过去。
 
-源码：[`src/chronaxis/execution/expressions.py:408`](../../../src/chronaxis/execution/expressions.py#L408)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:442`](../../../src/chronaxis/execution/expressions.py#L442)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_register"></a>
 ### `ExpressionQueries._register`
@@ -781,7 +840,7 @@ ExpressionResult。
 
 构造错误由查询抵销，返回取消不遗留登记。
 
-源码：[`src/chronaxis/execution/expressions.py:424`](../../../src/chronaxis/execution/expressions.py#L424)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:458`](../../../src/chronaxis/execution/expressions.py#L458)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_keep_hold"></a>
 ### `ExpressionQueries._keep_hold`
@@ -807,7 +866,7 @@ ExpressionQueries._keep_hold(held, result)
 
 列表分配错误传播；新结果关闭，之前结果仍由查询finally处理。
 
-源码：[`src/chronaxis/execution/expressions.py:433`](../../../src/chronaxis/execution/expressions.py#L433)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:467`](../../../src/chronaxis/execution/expressions.py#L467)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-query_reference"></a>
 ### `ExpressionQueries.query_reference`
@@ -846,7 +905,7 @@ ExpressionQueries.query_reference(compiled, times_ns: tuple[int, ...], *, point=
 
 返回类型：[ExpressionResult](chronaxis.execution.expressions.md#api-ExpressionResult)。
 
-源码：[`src/chronaxis/execution/expressions.py:446`](../../../src/chronaxis/execution/expressions.py#L446)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:480`](../../../src/chronaxis/execution/expressions.py#L480)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-query_numpy"></a>
 ### `ExpressionQueries.query_numpy`
@@ -885,7 +944,7 @@ ExpressionQueries.query_numpy(compiled, times_ns: np.ndarray, *, point=False) ->
 
 返回类型：[ExpressionResult](chronaxis.execution.expressions.md#api-ExpressionResult)。
 
-源码：[`src/chronaxis/execution/expressions.py:513`](../../../src/chronaxis/execution/expressions.py#L513)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:567`](../../../src/chronaxis/execution/expressions.py#L567)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-close"></a>
 ### `ExpressionQueries.close`
@@ -916,7 +975,7 @@ None；重复关闭幂等，部分初始化失败也可调用。
 丢弃本owner持有的绑定、表达式、标签及登记引用。
     调用方的holds、state、history和运行绑定lease不由这里关闭。
 
-源码：[`src/chronaxis/execution/expressions.py:579`](../../../src/chronaxis/execution/expressions.py#L579)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:660`](../../../src/chronaxis/execution/expressions.py#L660)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ExpressionQueries-_finish_close"></a>
 ### `ExpressionQueries._finish_close`
@@ -942,4 +1001,4 @@ None，owner关闭。
 
 无主动异常；只在已释放固定空间的收尾调用。
 
-源码：[`src/chronaxis/execution/expressions.py:610`](../../../src/chronaxis/execution/expressions.py#L610)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/expressions.py:691`](../../../src/chronaxis/execution/expressions.py#L691)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

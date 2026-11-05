@@ -12,7 +12,7 @@
 
 [execution-report.yaml](examples/execution-report.yaml)与[execution-strict.yaml](examples/execution-strict.yaml)都请求0～12秒，但4000W输入只观测到8秒。前者得到32000J/partial，后者得到空值/indeterminate；数据和公式完全相同，只有partial_policy不同。
 
-命令：`chronaxis run 文件名.yaml --output 新目录`。先完成最小例，再按资源或诊断需求增加字段。默认运行无需填写execution。下段仅作为全部默认值的参考，不是需要复制的配置：
+命令：`chronaxis run 文件名.yaml --output 结果目录`。先完成最小例，再按资源或诊断需求增加字段。默认运行无需填写execution。下段仅作为全部默认值的参考，不是需要复制的配置：
 
 以下是可放入完整分析配置根级的片段。全部字段可省略，使用表中的默认值。
 
@@ -82,7 +82,7 @@ YAML写法见上例的`execution.backend`。Python中`AnalysisRunner(backend="re
 
 `on_budget_exceeded`目前只支持`"error"`。不能填`"skip"`让程序丢数据继续。
 
-样本最小值、最大值和均值在归约时会根据共享预算的剩余空间自动拆成较小计算块；同一任务的读取队列和其他计算项也计入这份预算。拆块不丢样本，不改变结果、有效期或条件范围，也不降低资源检查要求。普通任务无需为此新增配置。
+样本最小值、最大值和均值在汇总样本时会根据共享预算的剩余空间自动拆成较小计算块；同一任务的读取队列和其他计算项也计入这份预算。拆块不丢样本，不改变结果、有效期或条件范围，也不降低资源检查要求。普通任务无需为此新增配置。
 
 如果连最小计算块都放不下，错误会指出计算项名称、样本统计工作区以及当前可用字节数。先检查是否请求了无用统计，再考虑减少读取批量；只有确认机器和任务所需空间后才提高内存额度。预算数是保守的管理估算，不是任务管理器中的实际进程内存。
 
@@ -124,11 +124,11 @@ execution:                  # 设置计算实现、资源上限和数据不全�
 应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在文件根级加入或替换`calculations`，代码已包含父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
 ```yaml
-calculations:                 # 列出希望获得的统计或积分结果，每项独立选择范围和算法
-  - name: session_energy      # 为这项计算结果取唯一名称；结果表用它区分计算项
-    expr: power               # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+calculations:                 # 本例的统计结果
+  - name: session_energy      # 结果表中的计算名称
+    expr: power               # 使用已定义的信号或公式
     partial_policy: report    # 决定数据不全时是否保留可核实数值；report保留并标记，strict返回空值
-    operation: integral       # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
+    operation: integral       # 按有效持续时间积分
 ```
 
 单个计算项里的设置优先于execution默认值。上面都是放进完整配置的片段；完整例子在[快速上手](quickstart.md)。
@@ -176,7 +176,6 @@ metadata保存运行附加信息，缺省为空对象。其中metadata.device_la
 |普通分析|根级metadata.device_label；非空文本，如lab_pc；省略为pending，空白文本无效。CLI普通run不以CHRONAXIS_DEVICE_LABEL自动覆盖它。|
 |含独立信号或CAN文件导出的分析|同一字段必须为home或work，表示已经确认的产出设备；不能使用pending或自定义文本。|
 |批量总报告|CLI从CHRONAXIS_DEVICE_LABEL取得；Python使用run_batch的device_label参数，缺省pending。不会覆盖每个子分析的metadata.device_label。|
-|旧INI导入报告|CLI读取CHRONAXIS_DEVICE_LABEL；Python使用导入入口device_label参数。它标记转换报告，不改分析配置的metadata。|
 
 普通分析可在根级填写：
 

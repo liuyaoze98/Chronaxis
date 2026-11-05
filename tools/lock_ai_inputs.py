@@ -10,9 +10,11 @@ import json
 from pathlib import Path
 import subprocess
 import tomllib
+from runpy import run_path
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
+resource_bytes = run_path(str(ROOT / "tools/ai_resource_bytes.py"))["resource_bytes"]
 
 
 def git(*args):
@@ -28,9 +30,27 @@ def lock(manual, runtime, device):
     product = json.loads(git("show", f"{revision}:{meta}"))["baseline"]
     tasks = json.loads((ROOT / "Docs/AI/tasks.json").read_bytes())["tasks"]
     names = {meta, "Docs/Current/public-api.json", "Docs/Current/examples/shared/definitions.yaml",
-             "Docs/Current/examples/preset-charge-minimal.yaml", "Docs/Current/en/public-api.json",
+             "Docs/Current/examples/preset-charge-minimal.yaml",
+             "Docs/Current/examples/results/conditional-energy-yaml/事件结果.csv",
+             "Docs/Current/en/public-api.json",
              "Docs/Current/en/schema-translations.json"}
+    # 时序教学计划和宿主程序共享本目录的ASC/DBC；打包时保持全部相对路径。
+    names.update("Docs/Current/examples/temporal/" + name for name in
+                 ("analysis.yaml","rolling-actual.yaml","host-analysis.yaml","host_extensions.py","meter.asc","meter.dbc"))
+    names.update("Docs/Current/examples/fast/" + name for name in
+                 ("analysis.yaml","analysis-blf.yaml","batch.yaml","unsupported.yaml","data/power.dbc",
+                  "data/run2.asc","data/run10.asc","data/single.blf"))
     names.update("Docs/AI/en/" + name for name in ("README.md", "workflow.md", "semantics.md", "tasks.json"))
+    # 任务后续阅读使用同一手册正文；方向扩展示例也随专题分发。
+    names.update("Docs/Current/" + language + topic + ".md"
+                 for language in ("", "en/") for topic in ("aggregations", "message-calculations", "expressions", "configuration-language",
+                     "results", "examples", "example-results", "fast-energy", "calculations"))
+    # 结果链接提供同源实际表和解释，不能只用配置文件充当输出。
+    names.update("Docs/Current/examples/results/power-statistics-yaml/" + name
+                 for name in ("result-summary.json", "事件结果.csv", "会话结果.csv", "窗口结果.csv", "聚合结果.csv"))
+    names.update("Docs/Current/examples/" + name for name in
+                 ("message-directions.yaml", "message-energy.yaml", "readability_examples.py",
+                  "example_support.py", "execution-comparison.json"))
     for task in tasks:
         # 索引可直接从Docs/AI阅读；只接受约定的Current示例目录，不隐式猜测路径。
         example = task["example"]
@@ -41,13 +61,13 @@ def lock(manual, runtime, device):
                 "Docs/Current/public-api", "Docs/Current/en/public-api", "Docs/Schema").decode().splitlines()
     names.update(p for p in paths if p.endswith((".json",".md",".csv",".asc",".blf",".dbc"))
                  and not p.startswith("Docs/Schema/README"))
-    # 文本跨设备统一LF；规范必须与对应产品提交相同，示例说明使用手册修订。
+    # 普通文本统一LF，已记录摘要的结果保留字节；与构建器使用同一规则。
     inputs = {}
     for name in sorted(names):
         data = git("show", f"{revision}:{name}")
         if name.startswith("Docs/Schema/") and data != git("show", f"{product}:{name}"):
             raise ValueError("规范与产品基线不一致：" + name)
-        inputs[name] = sha256(data if name.lower().endswith(".blf") else data.replace(b"\r\n", b"\n")).hexdigest()
+        inputs[name] = sha256(resource_bytes(name, data)).hexdigest()
     # 版本号和导出名不一定反映运行语义；一次读取已审核的产品树（含指南入口）。
     runtime_rev = git("rev-parse", "--verify", runtime + "^{commit}").decode().strip()
     material = []
@@ -66,10 +86,11 @@ def lock(manual, runtime, device):
     resources = ["README.md", "README.en.md", "LICENSE", "Docs/Release/versioning.md", "Docs/Release/distribution.md",
                  "Docs/Release/publishing.md", "Docs/Release/publishing.en.md", "Docs/Release/release-notes-0.1.0.dev0.md",
                  "Docs/Release/release-notes-0.1.0.dev1.md", "Docs/Release/release-notes-0.1.0.dev1.en.md",
+                 "Docs/Release/release-notes-0.1.0.dev2.md", "Docs/Release/release-notes-0.1.0.dev2.en.md",
                  "Docs/Release/trusted-publishing.md", "Docs/Release/trusted-publishing.en.md",
                  "Docs/Release/third-party.md", "Docs/Release/security.md", "Docs/Release/ThirdParty/highlight.js-LICENSE.txt",
                  "Docs/Release/ThirdParty/marked-LICENSE.txt", "tools/public_docs.py",
-                 "tools/build_ai_guide.py", "tools/pypi_readme.py", "tools/ai_field_views.py", "tools/english_docs.py", "Docs/AI/lookup.py",
+                 "tools/build_ai_guide.py", "tools/ai_resource_bytes.py", "tools/pypi_readme.py", "tools/ai_field_views.py", "tools/english_docs.py", "Docs/AI/lookup.py",
                  "Docs/AI/semantics.md", "Docs/AI/workflow.md", "Docs/AI/README.md", "Docs/AI/tasks.json",
                  "Docs/AI/run_analysis.py","Docs/AI/inputs.lock.json"]
     manifest = "".join("include " + f + "\n" for f in sorted(set(resources) | names))

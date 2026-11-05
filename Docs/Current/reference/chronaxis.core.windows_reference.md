@@ -1,4 +1,4 @@
-# chronaxis.core.windows_reference
+# `chronaxis.core.windows_reference`
 
 独立用Python精确整数扩展、合并并裁剪事件窗口，输出完整片段事实。
 
@@ -62,4 +62,4 @@ Segment或compact的CompactSegment tuple；bounds为按所选周期解析的真�
 逐事件精确扩展，按none/重叠/相邻/真实退出间隔分组，逐组裁剪。
     不改变原Event，不增加旧writer调用，不凭EOF外的请求补观测。
 
-源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

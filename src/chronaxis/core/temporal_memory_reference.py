@@ -9,6 +9,7 @@
 """
 
 # 静态配置协议及不可变时间证据可共享。
+from .enum_codes import memory_histories, aligned_scalar
 from .expression import CompiledExpression
 # memory快捷路径只接受包含真实原行的绑定，解码历史使用独立执行驱动。
 from .binding import SignalBindings
@@ -24,6 +25,8 @@ from .temporal import ConditionTick, ConditionTimeline, TemporalRule
 from .temporal_reference import detect_reference
 # 类型与三值严格分开。
 from .types import SignalDType as D, QualityFlag as Q, Truth
+from .where_updates import contains_where, reference_active, reference_updates
+from .calculations_memory_reference import _scalar_context
 
 
 def require_memory_rule(compiled, rule):
@@ -58,29 +61,37 @@ def _evidence(compiled, histories, times):
         for point, before in ((False, False), (True, False), (True, True))]
     # 每次调用新context/结果，不继承上个任务状态。
     ticks = []
+    conditional = contains_where(compiled.root)
+    # 据左侧保持判断有无实际空档；原有的同刻更新前视图另用于判断中断原因。
+    left_view = ({n: align_reference(h, times, point=True, strict_before=True, left_limit=True)
+                  for n, h in histories.items()} if conditional else None)
     # 标量参考逐时间解释，每组原子结果已齐。
     for index, time in enumerate(times):
         # 三个结果只共享typed协议，不共享数组计算。
         results = []
         # 三视图分别运行当前表达式，保持因果检查明确。
-        for view in views:
+        for kind, view in enumerate(views):
             # 当前绑定dtype与enum标签完整保留。
-            context = {name: ScalarValue(states[index].value, compiled.bindings.resolve(name).dtype,
-                                         states[index].valid, states[index].quality,
-                                         tuple(dict.fromkeys(label for _, label in compiled.bindings.resolve(name).choices))
-                                         if compiled.bindings.resolve(name).dtype is D.ENUM else ()) for name, states in view.items()}
+            context = {name: aligned_scalar(compiled.bindings.resolve(name), states[index]) for name, states in view.items()}
             # 真实参考解释当前点，不调用NumPy内核。
             results.append(evaluate_reference(compiled, context, compiled.bindings))
+            if conditional and kind == 1:
+                point = context
         # 未知不能变False，normal结果无结果质量但保留独立诊断。
         states = [Truth.UNKNOWN if not result.value.valid else Truth.TRUE if result.value.value else Truth.FALSE for result in results]
         # 当前完整点是否包含任一真实依赖更新。
-        actual = any(values[index].actual_update for values in views[1].values())
-        # 真实无效更新可以证明实际中断；只有旧值到期不能证明发生了无效更新。
-        invalid = any(values[index].actual_update and not values[index].sample.valid for values in views[1].values())
-        # 新更新导致未知；任意有效旁列更新不能把并列TTL误判actual中断。
-        actual_unknown = actual and states[1] is Truth.UNKNOWN and (invalid or states[2] is not Truth.UNKNOWN or bool(results[1].value.quality & ~results[2].value.quality))
-        # 依赖来源提前结束不会延长其连续范围。
-        source_end = any(history.observation_end_ns == time for history in histories.values())
+        if conditional:
+            updates = {name: view[index].actual_update for name, view in views[1].items()}
+            actual = reference_updates(compiled.root, point, _scalar_context(compiled.bindings, left_view, index), updates)
+            invalid = reference_active(compiled.root, point, {name: flag and not views[1][name][index].sample.valid
+                                                              for name, flag in updates.items()})
+            source_end = reference_active(compiled.root, point, {name: h.observation_end_ns == time for name, h in histories.items()})
+        else:
+            actual = any(values[index].actual_update for values in views[1].values())
+            invalid = any(values[index].actual_update and not values[index].sample.valid for values in views[1].values())
+            source_end = any(history.observation_end_ns == time for history in histories.values())
+        actual_unknown = actual and states[1] is Truth.UNKNOWN and (
+            invalid or states[2] is not Truth.UNKNOWN or bool(results[1].value.quality & ~results[2].value.quality))
         # Session终点连续视图强制结束，点视图仍保留真实更新。
         terminal = time == compiled.bindings.session.domain_end_ns
         # 原常量/决定性逻辑也不能在真实终点增加持续面积。
@@ -109,7 +120,7 @@ def build_timeline_reference(compiled, rule):
     # 当前会话/BOOL根先验证再计算。
     require_memory_rule(compiled, rule)
     # 仅取当前依赖的既有原行，不额外读取/解码。
-    histories = {name: memory_series_reference(compiled.bindings, name) for name in compiled.dependencies}
+    histories = memory_histories(compiled, compiled.dependencies, memory_series_reference)
     # 显式跨来源同步证据仍为执行前门槛。
     compiled.bindings.require_synchronized(compiled.dependencies)
     # 纯常量也用明示会话端点，非空依赖的轴含TTL/来源边界。

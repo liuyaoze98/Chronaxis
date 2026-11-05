@@ -1,4 +1,4 @@
-# chronaxis.core.window_delta
+# `chronaxis.core.window_delta`
 
 定义最近一段完整时间内的首尾变化量、方向和单调限制；变化量单位仍是信号单位，不是每秒变化率。详见[window_delta](../rules.md)。
 
@@ -49,7 +49,7 @@ class WindowDeltaSpec
 |`monotonic`|bool|否|False|rise非降、fall非升、any二者任一。|
 |`coverage_policy`|str|否|'full'|样本兼容口径不在本核心隐式启用。|
 
-源码：[`src/chronaxis/core/window_delta.py:16`](../../../src/chronaxis/core/window_delta.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:16`](../../../src/chronaxis/core/window_delta.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaSpec-__post_init__"></a>
 ### `WindowDeltaSpec.__post_init__`
@@ -82,7 +82,7 @@ WindowDeltaSpec.__post_init__()
 - `ValueError`：threshold须为非负有限数值。
 - `ValueError`：当前window_delta仅支持full覆盖政策。
 
-源码：[`src/chronaxis/core/window_delta.py:25`](../../../src/chronaxis/core/window_delta.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:25`](../../../src/chronaxis/core/window_delta.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeltaSpan"></a>
 ## `DeltaSpan`
@@ -105,8 +105,10 @@ class DeltaSpan
 |`value`|int &#124; float &#124; None|是|无|规范后的原生数值，未知可为None。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|否|Q.NONE|连续区间无效原因。|
 |`point_quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag) &#124; None|否|None|默认与连续质量相同。|
+|`partial`|bool|否|False|本段连续取值是否依赖覆盖不全的变换结果。|
+|`point_partial`|bool|否|False|此段起点单独采用的点值是否只具有部分覆盖，与段内连续值分别记录。|
 
-源码：[`src/chronaxis/core/window_delta.py:42`](../../../src/chronaxis/core/window_delta.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:42`](../../../src/chronaxis/core/window_delta.py#L42)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DeltaSpan-__post_init__"></a>
 ### `DeltaSpan.__post_init__`
@@ -140,7 +142,7 @@ DeltaSpan.__post_init__()
 - `ValueError`：没有数值必须注明未知原因。
 - `TypeError`：DeltaSpan值需原生int/float或None。
 
-源码：[`src/chronaxis/core/window_delta.py:55`](../../../src/chronaxis/core/window_delta.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:57`](../../../src/chronaxis/core/window_delta.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaResult"></a>
 ## `WindowDeltaResult`
@@ -167,7 +169,7 @@ class WindowDeltaResult
 |`coverage`|float|是|无|已知时间/完整窗口时长。|
 |`monotonic`|bool &#124; None|是|无|对应方向是否单调。|
 
-源码：[`src/chronaxis/core/window_delta.py:78`](../../../src/chronaxis/core/window_delta.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:80`](../../../src/chronaxis/core/window_delta.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-validate_delta_input"></a>
 ## `validate_delta_input`
@@ -205,4 +207,4 @@ validate_delta_input(spec, spans, time_ns, dtype)
 - `TypeError`：有效整数信号不能隐式转浮点。
 - `ValueError`：有效数值超出声明dtype。
 
-源码：[`src/chronaxis/core/window_delta.py:95`](../../../src/chronaxis/core/window_delta.py#L95)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta.py:97`](../../../src/chronaxis/core/window_delta.py#L97)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

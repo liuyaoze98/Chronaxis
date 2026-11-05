@@ -1,5 +1,5 @@
 # 合成教学示例：两个条件连续超过60秒，再对整个合格区间积分。
-config_version: 3                                     # 当前配置结构版本
+config_version: 4                                     # 当前配置结构版本
 dataset:                                              # 本次分析
   name: conditional_energy                            # 结果使用这个任务名称
 sources:                                              # 两卷连续文件组成一个来源

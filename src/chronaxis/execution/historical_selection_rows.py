@@ -3,7 +3,7 @@
 输入为已封存的新解码历史、保持上下文、实际绑定、值表达式、select请求和可选
 BOOL条件。只回读新历史，由原单值/联合分块者保留TTL、同刻和半开更新标志；
 每块复用独立select_reference或select_numpy，不重扫来源adapter，不物化全窗行表。
-FALSE过滤，UNKNOWN诊断行保留；原数值、BOOL、ENUM的dtype/标签/单位/质量不转换。
+FALSE过滤，UNKNOWN诊断行保留；数值行按已核实的目标单位换算。
 observation显式限制原domain内的计算域；该域右端点及之后的真实更新和UNKNOWN行
 不再输出。None兼容原domain及预算，不证明实际观测，不改变原context、绑定或请求。
 
@@ -47,14 +47,14 @@ class HistoricalSelectionRows:
         返回: 尚未消费历史的行owner。异常: 类型、能力、同步、预算、构造或取消错误；
             持续清理失败时原异常附historical_selection_rows_cleanup_owner用于恢复close。
         """
-        # 真实身份与联合同步在构造资源前检查，选择行不允许隐式输出单位转换。
+        # 真实身份、联合同步和当前版本的选择输出单位在构造资源前检查。
         if (not isinstance(history, DecodedHistoryStore) or not isinstance(context, HoldContext)
                 or not isinstance(bindings, DecodedBindings) or not isinstance(compiled, CompiledExpression)
                 or not isinstance(spec, CalculationDefinition)
                 or condition is not None and not isinstance(condition, CompiledExpression)):
             raise TypeError('历史选择行需真实历史、上下文、绑定、表达式和CalculationDefinition')
-        if spec.operation != 'select' or spec.output_unit not in (None, compiled.root.unit):
-            raise ValueError('历史选择行需select且保留原表达式单位')
+        if spec.operation != 'select':
+            raise ValueError('历史选择行需select')
         if (backend not in ('reference', 'numpy') or type(batch_intervals) is not int or batch_intervals < 1):
             raise ValueError('历史选择行需合法后端与正原生int块大小')
         if compiled.bindings.identity != bindings.identity:

@@ -57,17 +57,25 @@ class M3AcceptanceTests(unittest.TestCase):
     def run_checked(self, raw, folder):
         """运行并核对联合结果，关闭后检查资源。
 
-        参数: raw配置及folder全新工作目录。返回: 摘要和发布目录。异常: 执行/断言错误。
+        参数: raw配置及folder全新工作目录。返回: 摘要和本次清单路径。异常: 执行/断言错误。
         """
         result = AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(raw)), work_dir=folder / 'run')
         budget = result.spool.budget
         try:
             summary = check_result(result)
-            output = result.write(folder / 'output').output_dir
+            output = result.write(folder / 'output').manifest_path
         finally:
             result.close()
         self.assertEqual(budget.ram_bytes, 0)
         return summary, output
+
+    def table_path(self, manifest_path, table):
+        """从本次清单定位表。参数: 清单路径及逻辑表名。返回: Path。异常: 缺表或文件错误。"""
+        manifest_path = Path(manifest_path)
+        manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+        name = next(item['name'] for item in manifest['outputs']
+                    if item['name'].startswith(table + '_') and item['name'].endswith('.csv'))
+        return manifest_path.parent / name
 
     def test_joint_rules_across_files_batches_and_backends(self):
         """迟滞和待响应状态跨文件/批继续，六种组合均满足手算。参数: 无。返回: None。异常: 断言。"""
@@ -100,10 +108,10 @@ class M3AcceptanceTests(unittest.TestCase):
         (self.work / 'cli.json').write_text(json.dumps(current_fixture(dict(device_label='home', returncode=process.returncode,
             stdout=process.stdout, stderr=process.stderr)), ensure_ascii=False, indent=2), encoding='utf-8')
         self.assertEqual(process.returncode, 0, process.stderr)
+        cli_manifest = Path(json.loads(process.stdout)['manifest'])
         for table in ('events', 'segments', 'calculations', 'sequences'):
-            filename = table + '.csv'
-            self.assertEqual((baseline / filename).read_bytes(), (api / filename).read_bytes())
-            self.assertEqual((api / filename).read_bytes(), (self.work / 'cli-output' / filename).read_bytes())
+            self.assertEqual(self.table_path(baseline, table).read_bytes(), self.table_path(api, table).read_bytes())
+            self.assertEqual(self.table_path(api, table).read_bytes(), self.table_path(cli_manifest, table).read_bytes())
 
     def test_batch_joint_plans_do_not_share_alarm_state(self):
         """同时运行有报警与无报警的组合计划，串并行输出一致且任务状态不串用。参数: 无。返回: None。异常: 断言。"""
@@ -118,9 +126,9 @@ class M3AcceptanceTests(unittest.TestCase):
             self.assertEqual(report.status, 'completed', report.to_dict())
         for sequential, concurrent in zip(reports[0].jobs, reports[1].jobs):
             for table in ('events', 'segments', 'calculations', 'sequences'):
-                self.assertEqual((sequential.output_dir / (table + '.csv')).read_bytes(),
-                                 (concurrent.output_dir / (table + '.csv')).read_bytes())
-            with (sequential.output_dir / 'events.csv').open(encoding='utf-8-sig', newline='') as stream:
+                self.assertEqual(self.table_path(sequential.manifest_path, table).read_bytes(),
+                                 self.table_path(concurrent.manifest_path, table).read_bytes())
+            with self.table_path(sequential.manifest_path, 'events').open(encoding='utf-8-sig', newline='') as stream:
                 rows = list(csv.DictReader(stream))
             self.assertEqual(sum(row['rule_id'] == 'alarm' for row in rows), int(sequential.job_id == 'high'))
 

@@ -12,6 +12,7 @@ from ..core.windows_reference import build_segments_reference
 from ..core.windows_numpy import build_segments_numpy
 from ..results.summary import SummaryEventRow
 from ..results.codec import decode_row
+from ..core.types import QualityFlag as Q
 from ..results.errors import ResultClosedError,ResultFormatError
 from ..results.spool import _reserve_owned_ram,_release_owned_ram,_cleanup_owner
 from .history import _metadata_bytes
@@ -161,6 +162,8 @@ class RecordWindows:
                 driver=self._choices[window.window_id].driver
                 if driver:
                     names.add(driver)
+                from ..planning.transforms import physical_dependencies
+                names=physical_dependencies(self._plan,names)
                 sources={definitions[name].source for name in names} if names else {source.name for source in self._plan.sources}
                 starts=[c.observed_start for c in cursors if c.source_name in sources and c.observed_start is not None]
                 ends=[c.observed_end for c in cursors if c.source_name in sources and c.observed_start is not None and c.observed_end is not None]
@@ -185,7 +188,8 @@ class RecordWindows:
                     raise ResultFormatError('窗口需要同次精简事件表')
                 count+=1
                 event=Event(row.event_id,self._rules[row.rule_id],'point' if row.end_ns is None else 'activity',
-                    row.start_ns,row.confirmed_ns,row.end_ns,row.status,row.trigger,row.quality,row.quality)
+                    row.start_ns,row.confirmed_ns,row.end_ns,row.status,row.trigger,
+                    row.quality & ~Q.ESTIMATED if row.status in ('point','timeout','closed') else row.quality,row.quality)
                 for window in self._plan.windows:
                     if window.event!=row.rule_id:
                         continue

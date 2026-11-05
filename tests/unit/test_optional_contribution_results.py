@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from publication_fixtures import published_path
 from unittest.mock import patch
 
 from chronaxis.core.types import QualityFlag as Q
@@ -97,7 +98,7 @@ class OptionalContributionResultTests(unittest.TestCase):
             with closing(result.iter_contributions()) as reader:
                 self.assertEqual(tuple(reader), ())
             published = result.write(self.root / ('empty-'+format))
-            table = published.output_dir / ('contributions.'+format)
+            table = published_path(published.output_dir / ('contributions.'+format))
             self.assertTrue(table.exists())
             self.assertEqual(dict(published.row_counts)['contributions'], 0)
             if format == 'jsonl':
@@ -124,11 +125,11 @@ class OptionalContributionResultTests(unittest.TestCase):
                         self.assertEqual(tuple(result.iter_calculations()), (total(),))
                         published = result.write(self.root / f'{format}-{full}-{detailed}')
                         names = {path.name for path in published.output_dir.iterdir()}
-                        self.assertEqual(('contributions.'+format) in names, full)
-                        self.assertEqual('quality.jsonl' in names, detailed)
-                        self.assertNotIn('message_calculations.'+format, names)
+                        self.assertEqual(any(n.startswith('contributions_') and n.endswith('.'+format) for n in names), full)
+                        self.assertEqual(any(n.startswith('quality_') and n.endswith('.jsonl') for n in names), detailed)
+                        self.assertFalse(any(n.startswith('message_calculations_') for n in names))
                         if full:
-                            path = published.output_dir / ('contributions.'+format)
+                            path = published_path(published.output_dir / ('contributions.'+format))
                             if format == 'jsonl':
                                 rows = tuple(decode_row(line, 65536) for line in path.read_bytes().splitlines(keepends=True))
                                 self.assertEqual(rows, contributions())
@@ -139,7 +140,7 @@ class OptionalContributionResultTests(unittest.TestCase):
                                 self.assertEqual([row['original_sequence'] for row in rows], ['0', '1', '2'])
                                 self.assertEqual(rows[-1]['reason'], 'missing_input')
                         if detailed:
-                            quality = [json.loads(line) for line in (published.output_dir/'quality.jsonl').read_text(encoding='utf-8').splitlines()]
+                            quality = [json.loads(line) for line in published_path(published.output_dir/'quality.jsonl').read_text(encoding='utf-8').splitlines()]
                             selected = [row for row in quality if row['table']=='contributions']
                             self.assertEqual([row['quality'] for row in selected], [0, 0, int(Q.MISSING)] if full else [])
                             self.assertEqual([row['reason'] for row in selected], ['contributed', 'contributed', 'missing_input'] if full else [])
@@ -162,12 +163,12 @@ class OptionalContributionResultTests(unittest.TestCase):
             with patch.object(result, '_install_directory', side_effect=OSError('合成安装错误')):
                 with self.assertRaises(AnalysisError):
                     result.write(self.root/'failed')
-            self.assertFalse((self.root/'failed').exists())
+            self.assertEqual(list((self.root/'failed').iterdir()), [])
             first, second = result.write(self.root/'first'), result.write(self.root/'second')
         self.assertEqual(first.row_counts, second.row_counts)
         for name in ('calculations', 'contributions', 'events'):
-            self.assertEqual((first.output_dir/(name+'.jsonl')).read_bytes(),
-                             (second.output_dir/(name+'.jsonl')).read_bytes())
+            self.assertEqual(published_path(first.output_dir/(name+'.jsonl')).read_bytes(),
+                             published_path(second.output_dir/(name+'.jsonl')).read_bytes())
 
     def test_budget_rejection_precedes_encoding_and_preserves_caller_loan(self):
         """预算不足不编码贡献、不增加计数，也不抵销调用方借款。参数: 无。返回: None。异常: 断言。"""

@@ -1,4 +1,4 @@
-# chronaxis.core.conditional_integral_terms_reference
+# `chronaxis.core.conditional_integral_terms_reference`
 
 逐段计算条件积分面积，供NumPy实现作结果对照。只有筛选条件为真且数值有效时才计算面积。无法精确转换的值、溢出及非零值下溢都会记录原因；条件未知不会被补成零。返回各段面积，最后的求和由后续模块完成。
 
@@ -56,4 +56,4 @@ ReferenceConditionalIntegralTerms；面积为输入单位乘秒，无效槽位0�
 
 输入、单位、时间与分配错误传播；精度、面积溢出/下溢写入质量及未知。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

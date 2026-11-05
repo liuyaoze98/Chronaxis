@@ -1,4 +1,4 @@
-# chronaxis.core.selection
+# `chronaxis.core.selection`
 
 声明已解码信号层的选择行，保留时间、原值、三值状态和来源身份。
 
@@ -21,13 +21,14 @@ FALSE行被过滤。只输出目标表达式依赖的真实时间组更新，不
 |---|---|
 |[`SelectionRow`](#api-SelectionRow)|保存一个真实表达式更新时间组的选择结果。|
 |[`SelectionRow.__post_init__`](#api-SelectionRow-__post_init__)|验证行类型、时间和当前来源身份，不执行筛选。|
-|[`require_selection`](#api-require_selection)|验证选择行流的输入，不把行流当成标量或隐式换单位。|
+|[`require_selection`](#api-require_selection)|验证选择行流的输入及当前版本允许的单位换算。|
+|[`partial_selection`](#api-partial_selection)|处理来自部分时间窗口的选中值，不更改真实行身份。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from dataclasses import dataclass
-from .calculations import CalculationSeries, CalculationDefinition
+from .calculations import CalculationSeries, CalculationDefinition, calculation_conversion
 from .models import SourceRef
 from .numeric import ScalarValue
 from .types import Truth, QualityFlag as Q
@@ -42,9 +43,9 @@ from ..timebase.conversion import require_int64_ns
 
 保存一个真实表达式更新时间组的选择结果。
 
-value保持原dtype、枚举标签、有效性和质量；selection仅接受TRUE或UNKNOWN。
+value保存输出dtype、枚举标签、有效性和质量；selection仅接受TRUE或UNKNOWN。
 quality汇总原依赖、值及条件原因；binding_identity与source_refs定位当前输入。
-unit保留当前分析值单位；行流不执行隐式单位换算。
+unit与当前行值一致；允许已核实的目标单位换算。
 所有字段不可变，没有跨任务状态；UNKNOWN不是已知选中，不能隐式转bool。
 
 ```python
@@ -63,7 +64,7 @@ class SelectionRow
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|当前所有依赖的原字段定位。|
 |`unit`|str|是|无|当前分析值单位，和原带有明确类型的值一起保留。|
 
-源码：[`src/chronaxis/core/selection.py:23`](../../../src/chronaxis/core/selection.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/selection.py:23`](../../../src/chronaxis/core/selection.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SelectionRow-__post_init__"></a>
 ### `SelectionRow.__post_init__`
@@ -95,12 +96,12 @@ TypeError/ValueError/OverflowError为不合法协议。
 - `TypeError`：选择行来源需tuple SourceRef。
 - `ValueError`：选择行质量不能隐藏无效值或UNKNOWN原因。
 
-源码：[`src/chronaxis/core/selection.py:40`](../../../src/chronaxis/core/selection.py#L40)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/selection.py:40`](../../../src/chronaxis/core/selection.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-require_selection"></a>
 ## `require_selection`
 
-验证选择行流的输入，不把行流当成标量或隐式换单位。
+验证选择行流的输入及当前版本允许的单位换算。
 
 ```python
 require_selection(series, spec)
@@ -126,4 +127,31 @@ TypeError为模型错误；ValueError为算子或单位转换请求。
 - `TypeError`：选择行流需CalculationSeries和CalculationDefinition。
 - `ValueError`：选择行流需select且保留输入单位。
 
-源码：[`src/chronaxis/core/selection.py:62`](../../../src/chronaxis/core/selection.py#L62)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/selection.py:62`](../../../src/chronaxis/core/selection.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-partial_selection"></a>
+## `partial_selection`
+
+处理来自部分时间窗口的选中值，不更改真实行身份。
+
+```python
+partial_selection(value, quality, spec)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。已经完成输出单位换算的选择值，保留其是否基于部分窗口的标记。|
+|`quality`|QualityFlag|是|无|位置或关键字。该选择行原有的诊断位；部分输入还要携带ESTIMATED。|
+|`spec`|[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)|是|无|位置或关键字。本次select请求；report保留部分值，strict不提供一个正常数值。|
+
+### 返回说明
+
+值及行质量；strict 不提供正常值。
+
+### 异常说明
+
+值契约不合法时传播。
+
+源码：[`src/chronaxis/core/selection.py:79`](../../../src/chronaxis/core/selection.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

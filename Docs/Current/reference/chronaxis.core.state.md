@@ -1,4 +1,4 @@
-# chronaxis.core.state
+# `chronaxis.core.state`
 
 检查内存样本的原行身份，并按有限有效期查询最新观测或提交同一时刻更新。
 
@@ -74,7 +74,7 @@ ValueError为默认error下不同事实冲突；不静默按遍历顺序选值�
 
 返回类型：tuple[[SignalSample](chronaxis.core.models.md#api-SignalSample), int]。
 
-源码：[`src/chronaxis/core/state.py:28`](../../../src/chronaxis/core/state.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:28`](../../../src/chronaxis/core/state.py#L28)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalSeries"></a>
 ## `SignalSeries`
@@ -102,7 +102,7 @@ class SignalSeries
 |`observation_end_ns`|int|不填写|构造时计算|分析坐标来源末端。|
 |`conflict_count`|int|不填写|构造时计算|last_by_sequence显式覆盖数量。|
 
-源码：[`src/chronaxis/core/state.py:53`](../../../src/chronaxis/core/state.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:53`](../../../src/chronaxis/core/state.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalSeries-__post_init__"></a>
 ### `SignalSeries.__post_init__`
@@ -140,7 +140,7 @@ TypeError为结构/dtype；ValueError为归属/原序号/顺序/冲突；
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/state.py:70`](../../../src/chronaxis/core/state.py#L70)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:70`](../../../src/chronaxis/core/state.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-StateValue"></a>
 ## `StateValue`
@@ -167,7 +167,7 @@ class StateValue
 |`sample`|[SignalSample](chronaxis.core.models.md#api-SignalSample) &#124; None|是|无|最新实际观测；不回退旧有效值。|
 |`actual_update`|bool|是|无|该点是否真正发生更新。|
 
-源码：[`src/chronaxis/core/state.py:161`](../../../src/chronaxis/core/state.py#L161)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:161`](../../../src/chronaxis/core/state.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-align_reference"></a>
 ## `align_reference`
@@ -175,7 +175,7 @@ class StateValue
 逐查询点取得最新历史观测，再检查有效期和来源、会话范围。
 
 ```python
-align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: bool=False, strict_before: bool=False) -> tuple[StateValue, ...]
+align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: bool=False, strict_before: bool=False, left_limit: bool=False) -> tuple[StateValue, ...]
 ```
 
 ### 参数
@@ -184,8 +184,9 @@ align_reference(series: SignalSeries, times_ns: tuple[int, ...], *, point: bool=
 |---|---|---|---|---|
 |`series`|[SignalSeries](chronaxis.core.state.md#api-SignalSeries)|是|无|位置或关键字。当前绑定下已经检查的规范序列。|
 |`times_ns`|tuple[int, ...]|是|无|位置或关键字。非递减int64纳秒查询轴，允许空轴和重复点。|
-|`point`|bool|否|False|仅关键字。默认False，使用左闭右开连续范围；True包含来源及会话 的真实末端，但有效期右端始终排除。|
+|`point`|bool|否|False|仅关键字。默认False，使用左闭右开连续范围；True包含来源及会话 的真实末端；普通查询排除有效期右端。|
 |`strict_before`|bool|否|False|仅关键字。默认False；True只取sample_time < t的样本， 仍在当前t检查有效期，用来区分实际更新与同一时刻到期。|
+|`left_limit`|bool|否|False|仅关键字。仅可用于 strict_before，取 t 的左侧保持；到期恰为 t 的旧值 在左侧仍有效，来源与会话的左端无左侧保持。用于区分无间隙刷新与真正恢复。|
 
 ### 返回说明
 
@@ -204,7 +205,7 @@ TypeError: 序列、查询容器或模式标志类型错误，或者时间不是
 
 返回类型：tuple[[StateValue](chronaxis.core.state.md#api-StateValue), ...]。
 
-源码：[`src/chronaxis/core/state.py:178`](../../../src/chronaxis/core/state.py#L178)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:178`](../../../src/chronaxis/core/state.py#L178)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_require_series_group"></a>
 ## `_require_series_group`
@@ -236,7 +237,7 @@ TypeError为结构；ValueError为不同绑定或同步缺项。
 
 返回类型：[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)。
 
-源码：[`src/chronaxis/core/state.py:250`](../../../src/chronaxis/core/state.py#L250)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:261`](../../../src/chronaxis/core/state.py#L261)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-common_timeline"></a>
 ## `common_timeline`
@@ -272,7 +273,7 @@ TypeError/ValueError为结构或不同绑定；时间错误传播。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/core/state.py:273`](../../../src/chronaxis/core/state.py#L273)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:284`](../../../src/chronaxis/core/state.py#L284)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-TimeGroup"></a>
 ## `TimeGroup`
@@ -293,7 +294,7 @@ class TimeGroup
 |`updates`|tuple[[SignalSample](chronaxis.core.models.md#api-SignalSample), ...]|是|无|各信号最多一项，冲突已处理。|
 |`conflict_count`|int|否|0|本组显式last_by_sequence处理数量。|
 
-源码：[`src/chronaxis/core/state.py:314`](../../../src/chronaxis/core/state.py#L314)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:325`](../../../src/chronaxis/core/state.py#L325)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AtomicUpdateBuffer"></a>
 ## `AtomicUpdateBuffer`
@@ -310,7 +311,7 @@ AtomicUpdateBuffer(bindings: SignalBindings)
 ```
 
 
-源码：[`src/chronaxis/core/state.py:325`](../../../src/chronaxis/core/state.py#L325)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:336`](../../../src/chronaxis/core/state.py#L336)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AtomicUpdateBuffer-__init__"></a>
 ### `AtomicUpdateBuffer.__init__`
@@ -339,7 +340,7 @@ TypeError为非绑定输入。
 
 - `TypeError`：buffer需要SignalBindings。
 
-源码：[`src/chronaxis/core/state.py:334`](../../../src/chronaxis/core/state.py#L334)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:345`](../../../src/chronaxis/core/state.py#L345)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AtomicUpdateBuffer-_commit"></a>
 ### `AtomicUpdateBuffer._commit`
@@ -367,7 +368,7 @@ ValueError为默认冲突；只修改当前pending。
 
 返回类型：[TimeGroup](chronaxis.core.state.md#api-TimeGroup)。
 
-源码：[`src/chronaxis/core/state.py:354`](../../../src/chronaxis/core/state.py#L354)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:365`](../../../src/chronaxis/core/state.py#L365)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AtomicUpdateBuffer-push"></a>
 ### `AtomicUpdateBuffer.push`
@@ -402,7 +403,7 @@ TypeError为结构；ValueError为已finish、归属/回退/冲突。
 
 返回类型：tuple[[TimeGroup](chronaxis.core.state.md#api-TimeGroup), ...]。
 
-源码：[`src/chronaxis/core/state.py:386`](../../../src/chronaxis/core/state.py#L386)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:397`](../../../src/chronaxis/core/state.py#L397)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AtomicUpdateBuffer-finish"></a>
 ### `AtomicUpdateBuffer.finish`
@@ -434,7 +435,7 @@ ValueError为重复finish或未处理冲突；batch尾不能调用本方法。
 
 返回类型：tuple[[TimeGroup](chronaxis.core.state.md#api-TimeGroup), ...]。
 
-源码：[`src/chronaxis/core/state.py:436`](../../../src/chronaxis/core/state.py#L436)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:447`](../../../src/chronaxis/core/state.py#L447)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-iter_time_groups"></a>
 ## `iter_time_groups`
@@ -469,7 +470,7 @@ TypeError/ValueError为结构/不同绑定/重复列/批次参数或冲突。
 
 只维护局部heap/一批/pending，不读取旧日志或改样本顺序。
 
-源码：[`src/chronaxis/core/state.py:455`](../../../src/chronaxis/core/state.py#L455)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/state.py:466`](../../../src/chronaxis/core/state.py#L466)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 ## 内部匿名回调
 
@@ -485,8 +486,8 @@ lambda sample: sample.sequence
 |---|---|---|
 |`sample`|已规范化的信号样本。|返回样本sequence以选择同刻最后更新。|
 
-<a id="lambda-476"></a>
-### 第476行匿名函数
+<a id="lambda-487"></a>
+### 第487行匿名函数
 
 ```python
 lambda sample: sample.time_ns

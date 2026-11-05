@@ -19,7 +19,7 @@ The `chronaxis config` command group works on configuration files: `init` create
 | `--output` | `convert` | Required new file. `.yaml`/`.yml` writes YAML and `.json` writes JSON. Configurations with relative paths must remain in the same directory. |
 | `--output` | `resolve` | Optional new file; otherwise print to the terminal. The suffix selects the format; the parent directory must be available. |
 | `--format` | `resolve` | `yaml` or `json`. Terminal output defaults to YAML. When writing a file, an explicit format must match its suffix. |
-| `--defaults` | `resolve` | Flag without a value. Include applicable defaults; otherwise preserve explicit declarations. Only determinable configuration defaults are expanded. Missing CAN types, units, or enum choices may require reading the specified DBC. |
+| `--defaults` | `resolve` | Flag without a value. Include applicable defaults; otherwise preserve explicit declarations. Only determinable configuration defaults are expanded. Missing CAN types, input/target units, or enum information may require reading the specified DBC. |
 | `--fields` | `origins` | Flag without a value. List individual user-declared field locations; otherwise list source, signal, and derived-definition origins. |
 | `--format` | `origins` | `text` (default) or `json`. JSON is an origin report for tools, not an expanded analysis configuration. |
 
@@ -53,7 +53,7 @@ For BLF, replace `can-asc` with `can-blf`. Both templates include a matching DBC
 chronaxis config convert demo/plan.yaml --output demo/plan.json
 ```
 
-Conversion supports analysis configuration version 3, batch version 1, and INI mapping version 1 as separate document types. It changes representation, not an older configuration structure. Types, numbers, key order, and path text are retained; comments are not. The output is parsed again to check preservation, including large integers and floating-point negative zero. The destination must not exist.
+Conversion supports analysis configuration version 4 and batch version 1 as separate document types. It changes representation, not an older configuration structure. Types, numbers, key order, and path text are retained; comments are not. The output is parsed again to check preservation, including large integers and floating-point negative zero. The destination must not exist.
 
 When paths are relative, conversion is allowed only within the same directory, so unchanged text continues to identify the same files. Use `resolve` to write a configuration elsewhere with fixed input locations.
 
@@ -70,7 +70,7 @@ chronaxis config resolve demo/plan.yaml --defaults --output elsewhere/effective.
 
 Without `--output`, the terminal contains only configuration text, in YAML by default. Use `--format json` for JSON or redirection to another program. For file output, the extension selects the format; a conflicting explicit `--format` is an error.
 
-`--defaults` also writes applicable execution budgets, backend, output and diagnostic switches, decoder/CSV settings, signal hold and same-time policies, rule confirmation settings, calculation units and coverage/inheritance policies, sequence capacities, and effective node intervals. It uses the current `reader`, `conversion`, `time.clock`, object `scope`, and node `interval` structures. It does not add irrelevant rule fields, guess business thresholds, or invent a period without reading the DBC. Loading a CAN plan can read the DBC to fill omitted `dtype`, `unit`, or enum `choices`; complete explicit declarations do not cause an extra DBC read just for this operation. Without `--defaults`, explicit values are retained.
+`--defaults` also writes applicable execution budgets, backend, output and diagnostic switches, decoder/CSV settings, signal hold and same-time policies, rule confirmation settings, calculation units and coverage/inheritance policies, sequence capacities, and effective node intervals. It uses the current `reader`, `conversion`, `time.clock`, object `scope`, and node `interval` structures. It does not add irrelevant rule fields, guess business thresholds, or invent a period without reading the DBC. Loading a CAN plan can read the DBC to fill omitted `dtype`, `unit`, or enum `choices`. Version 4 also fills omitted `conversion.input_unit` and obtains the original enum code type when required. No extra DBC read for defaults is needed only when all required information is explicit. Without `--defaults`, explicit values are retained.
 
 Input, DBC, and batch-child plan paths become absolute paths based on their declaring files. They are joined and normalized lexically; symlink and directory-junction targets are not resolved. The command does not read messages or physical signal data, copy data, or modify original files. Directory/glob expansion enumerates filenames, and missing CAN metadata may require a DBC read.
 

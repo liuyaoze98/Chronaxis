@@ -18,6 +18,7 @@
 # 数组shape/UFUNC由实际NumPy执行。
 import numpy as np
 # 整列表达式独立解释，不逐样本参考调用。
+from .enum_codes import memory_histories, aligned_column
 from .expression_numpy import evaluate_numpy
 # 当前协议与独立真正数组指标内核。
 from .calculations import CalculationSeries
@@ -39,6 +40,7 @@ from .state import common_timeline
 from .state_numpy import align_numpy, build_signal_array
 # 原因包装与数据类型明确。
 from .types import QualityFlag as Q
+from .where_updates import contains_where, numpy_updates
 
 
 def build_calculation_series_numpy(compiled, spec, *, condition=None):
@@ -59,7 +61,7 @@ def build_calculation_series_numpy(compiled, spec, *, condition=None):
     # 静态当前输入门槛，无参考数值调用。
     names = require_calculation_plan(compiled, spec, condition)
     # 实际独立原行转换，只读现有内存输出。
-    histories = {name: memory_series_numpy(compiled.bindings, name) for name in names}
+    histories = memory_histories(compiled, names, memory_series_numpy, condition)
     # 每列typed存储一次，不合并不同dtype为object宽表。
     arrays = {name: build_signal_array(history) for name, history in histories.items()}
     # 当前会话实际范围与请求区分，EOF外没有假数据。
@@ -73,17 +75,22 @@ def build_calculation_series_numpy(compiled, spec, *, condition=None):
     # 当前全列保持/searchsorted/TTL独立于标量参考。
     aligned = {name: align_numpy(array, axis) for name, array in arrays.items()}
     # 依赖列dtype/质量/enum标签必须同当前绑定。
-    context = {name: NumericArray(compiled.bindings.resolve(name).dtype, states.values, states.valid, states.quality, arrays[name].labels) for name, states in aligned.items()}
+    context = {name: aligned_column(states) for name, states in aligned.items()}
     # 数值表达式的精确依赖鍵，全部shape相同。
     numeric = evaluate_numpy(compiled, {name: context[name] for name in compiled.dependencies}, compiled.bindings, size=len(times))
     # 只有明确布尔条件才执行选择，空条件不同于UNKNOWN。
     selected = evaluate_numpy(condition, {name: context[name] for name in condition.dependencies}, compiled.bindings, size=len(times)) if condition is not None else None
     # 样本标志只来自当前数值依赖更新，不包括条件独自更新。
-    actual = np.zeros(len(times), dtype=bool)
-    # 静态依赖列循环，所有样本标志整列OR。
-    for name in compiled.dependencies:
-        # 合并同时刻原子依赖组，不按逐字段顺序产生样本。
-        actual |= aligned[name].actual_update
+    if contains_where(compiled.root):
+        # 同刻更新前后的选择决定样本；未选支路刷新不能额外加权。
+        previous = {name: align_numpy(arrays[name], axis, point=True, strict_before=True, left_limit=True) for name in compiled.dependencies}
+        before = {name: aligned_column(state)
+                  for name, state in previous.items()}
+        actual = numpy_updates(compiled.root, context, before, {n: aligned[n].actual_update for n in previous}, len(times))
+    else:
+        actual = np.zeros(len(times), dtype=bool)
+        for name in compiled.dependencies:
+            actual |= aligned[name].actual_update
     # typed装箱仅恢复输出模型，invalid占位不成为正常0。
     # ENUM物理列保存整数码；公开行恢复标签字符串，invalid仍为None并保留标签域。
     values = tuple(ScalarValue((numeric.value.labels[int(numeric.value.values[index])] if numeric.value.labels else numeric.value.values[index].item())
@@ -116,12 +123,13 @@ def select_memory_numpy(compiled, spec, *, condition=None):
     return select_numpy(series, spec)
 
 
-def compute_memory_numpy(compiled, spec, *, condition=None):
+def compute_memory_numpy(compiled, spec, *, condition=None, budget=None):
     """从已有内存行执行数组表达式及指标计算，返回可追溯结果。
 
     参数:
         compiled: 当前表达式；spec为数值统计或BOOL duration的CalculationDefinition。
         condition: 可选同绑定身份的BOOL表达式。
+        budget为精确分位数的可选共享RAM账本，省略时采用项目默认配额。
     返回:
         CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆盖、未知范围与来源。
     异常:
@@ -133,4 +141,4 @@ def compute_memory_numpy(compiled, spec, *, condition=None):
     # 原行到typed指标列由独立数组链执行。
     series = build_calculation_series_numpy(compiled, spec, condition=condition)
     # 实际掩码/UFUNC/归约内核，不调用参考compute。
-    return compute_numpy(series, spec)
+    return compute_numpy(series, spec, budget=budget)

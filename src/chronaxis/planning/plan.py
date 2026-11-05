@@ -23,7 +23,7 @@ execution中的预算与outputs中的格式
 identity用于区分配置和来源定位声明，不证明磁盘上的输入内容已经核实。
 
 本模块依赖核心声明模型和planning中的字段检查、来源解析及节点解析。
-from_dict不执行输入I/O；load_analysis_plan只打开指定配置及一层公共定义文件并及时关闭句柄。
+from_dict不读分析数据，按需读取DBC元数据；load_analysis_plan还读取配置及一层公共定义并及时关闭句柄。
 """
 
 # 创建不可变模型并计算声明哈希；语法解析交共享配置入口。
@@ -35,6 +35,7 @@ from collections.abc import Mapping
 from ..core.declarations import DeclarationBindings, DeclaredSource
 from ..core.expression import DerivedDefinition, StaticExpression
 from .config_groups import public_errors
+from .diagnostic_collection import diagnose_plan, current_collection, usable_node, collect_node_error
 from ..core.models import Interval
 from ..core.types import TimeType
 # 固定CAN配置和profile标识只含静态模型，不导入reader、writer或旧依赖。
@@ -46,6 +47,9 @@ from ..configuration.diagnostics import locate_error
 from .checks import (PlanValidationError, configuration_error, array_at, canonical, choice_at, coordinate_at, json_value,
                      metadata_at, model_at, number_at, object_at, require_json_value, text_at, timezone_at)
 from .inputs import parse_sources, parse_signals
+from .aggregations import AggregationPlan, parse_aggregations
+from .transforms import TemporalTransformPlan, build_transforms
+from .lookups import parse_lookups
 from .models import DatasetPlan, DerivedPlan, ExecutionPlan, MessageCalculationPlan, CalculationPlan, OutputPlan, RulePlan, SignalPlan, SourcePlan, WindowPlan
 from .message_calculations import parse_message_calculations
 from .legacy_execution import require_can_decode_scope
@@ -71,7 +75,7 @@ class AnalysisPlan:
     实际列、内存使用或分析结果已核实。各次构建的绑定和声明相互独立。
     """
 
-    config_version: int  # 唯一当前结构版本3；执行接线由能力报告约束。
+    config_version: int  # 当前固定为4；拒绝旧配置，实际能力由已接线节点约束。
     dataset: DatasetPlan  # 分析对象、会话和请求时间范围。
     sources: tuple[SourcePlan, ...]  # 已解析的来源配置，保持用户声明顺序。
     signals: tuple[SignalPlan, ...]  # 原字段与信号名称、类型、单位及有效期声明。
@@ -93,17 +97,36 @@ class AnalysisPlan:
     sequences: tuple[SequencePlan, ...] = ()  # 可选点事件FIFO配对；旧计划不增加结果表。
     intervals: 'IntervalPlan | None' = None  # 当前记录流的有限间隔声明。
     diagnostics: 'DiagnosticPlan | None' = None  # 分别声明追溯、完整性检查与现场留存。
+    aggregations: tuple[AggregationPlan, ...] = ()  # 仅配置后消费必要结果及总体证据。
+    transforms: tuple[TemporalTransformPlan, ...] = ()  # 依赖在前的离散分析序列。
+
+    def __post_init__(self):
+        """拒绝直接构造或replace得到的旧版本计划，不只检查字典入口。"""
+        from ..core.unit_conversion import require_config_version
+        require_config_version(self.config_version)
+
+    @property
+    def extensions(self):
+        """读取计划使用的宿主注册。参数: 无。返回: ExtensionRegistry或None。异常: 无。"""
+        return self.bindings.extensions
+
+    @property
+    def lookups(self):
+        """读取本配置声明的标定表。参数: 无。返回: LookupTablePlan 元组。异常: 无。"""
+        return self.bindings.lookups
 
     @classmethod
     @public_errors
-    def from_dict(cls, config: dict, *, base_dir: Path | str | None = None) -> 'AnalysisPlan':
-        """复制配置字典，检查版本3的静态要求；新版本执行能力另行验证。
+    @diagnose_plan
+    def from_dict(cls, config: dict, *, base_dir: Path | str | None = None, extensions=None) -> 'AnalysisPlan':
+        """复制配置字典，按唯一支持的版本4检查静态要求；执行能力由所选后端决定。
 
         参数:
+            extensions: 仅宿主 Python 可提供的不可变 ExtensionRegistry。省略时只识别内置操作。
             config (dict): 使用Python原生字典、列表和标量的分析声明；可由YAML加载取得。
                 必填config_version、dataset、sources、signals；derived、rules、windows、
                 sequences、calculations、message_calculations、presets、execution、outputs、
-                intervals、diagnostics和metadata按需提供。完整结构见用户手册配置字段参考。
+                intervals、diagnostics和metadata按需提供。版本4可用lookups声明标定表。
                 字段、名称、表达式和引用都按对应规则检查。
             base_dir (Path | str | None): 相对来源路径的解释基准；默认None，
                 使用当前工作目录。传入Path或文本时转换为绝对路径。
@@ -124,8 +147,10 @@ class AnalysisPlan:
         if type(config) is dict and 'imports' in config:
             raise PlanValidationError('$.imports','from_dict不读取公共定义文件','unresolved_imports',
                                       hint='使用load_analysis_plan加载配置文件，或传入config resolve展开后的字典')
-        root = object_at(config, '$', ('config_version', 'dataset', 'sources', 'signals'),
-                         ('derived', 'rules', 'windows', 'calculations', 'presets', 'message_calculations', 'sequences', 'execution', 'outputs', 'metadata', 'intervals', 'diagnostics'))
+        collection = current_collection()
+        if type(config) is not dict or any(key not in config for key in ('config_version','dataset','sources','signals')):
+            collection.finish()
+        root = config
         # 复制并冻结配置，拒绝非JSON值、非有限数和非文本键。
         # 先保留原JSON类型及循环诊断，再冻结，避免tuple被隐式转为合法数组。
         require_json_value(root, '$')
@@ -133,9 +158,18 @@ class AnalysisPlan:
         # 用副本继续解析，避免调用者之后修改原配置影响本次检查。
         root = json_value(frozen)
         from .config_groups import normalize_configuration
-        root = normalize_configuration(root)
+        with collection.stage('$', check=False) as ready:
+            root = normalize_configuration(root)
         # 当前唯一结构采用记录间隔和按需输出默认值。
-        version = choice_at(root['config_version'], (3,), '$.config_version')
+        version = None
+        with collection.stage('$.config_version') as ready:
+            if ready:
+                version = choice_at(root['config_version'], (4,), '$.config_version')
+        lookups = ()
+        if 'lookups' in root:
+            with collection.stage('$.lookups', requires=version is not None) as ready:
+                if ready:
+                    lookups = parse_lookups(root['lookups'], version)
         # 只接受Path或文本路径；这里不读取目标或解析符号链接。
         if base_dir is not None and not isinstance(base_dir, (Path, str)):
             # 拒绝其他对象，避免配置触发自定义路径转换代码。
@@ -143,40 +177,53 @@ class AnalysisPlan:
         # 省略base_dir时使用当前工作目录，否则将基准转为绝对路径。
         base = Path.cwd() if base_dir is None else Path(base_dir).absolute()
         # 解析来源配置，保存定位和格式声明；此时仍不打开CSV。
-        sources = parse_sources(root['sources'], base)
+        sources = ()
+        with collection.stage('$.sources', requires=True, check=False) as ready:
+            if ready:
+                sources = parse_sources(root['sources'], base)
         # 以首个来源声明的时钟作为分析基准，多源关系在依赖检查时核对。
-        timebase = sources[0].config.timebase
+        timebase = sources[0].config.timebase if sources else None
         # dataset只接受规定的单对象、单会话和时间范围字段。
-        raw_dataset = object_at(root['dataset'], '$.dataset', ('name',), ('entity', 'session', 'domain', 'metadata'))
-        # 检查数据集名称，避免把路径或表达式当作标识。
-        dataset_id = text_at(raw_dataset['name'], '$.dataset.name', identifier=True)
-        # 普通单任务沿用数据集名；对象与会话仍由本次计划实例隔离，不共享状态。
-        entity = text_at(raw_dataset.get('entity', dataset_id), '$.dataset.entity', identifier=True)
-        session = text_at(raw_dataset.get('session', dataset_id), '$.dataset.session', identifier=True)
-        # 省略domain是真正的无时间筛选声明，不制造假端点或实际观测范围。
-        domain_explicit = 'domain' in raw_dataset
-        domain = None
-        if domain_explicit:
-            # 只有用户显式请求时间域才解析坐标；显式null仍是配置错误。
-            raw_domain = object_at(raw_dataset['domain'], '$.dataset.domain', ('start', 'end'))
-            tz = timezone_at(sources[0].timezone_text, '$.dataset.domain.timezone')
-            start = coordinate_at(raw_domain['start'], '$.dataset.domain.start', absolute=timebase.time_type is TimeType.ABSOLUTE, tz=tz)
-            end = coordinate_at(raw_domain['end'], '$.dataset.domain.end', absolute=timebase.time_type is TimeType.ABSOLUTE, tz=tz)
-            domain = model_at(Interval, '$.dataset.domain', start, end)
-        # 保存对象、会话、范围和只读元数据，供后续引用。
-        dataset = DatasetPlan(dataset_id, entity, session, domain, timebase,
-            metadata_at(raw_dataset.get('metadata', {}), '$.dataset.metadata'), domain_explicit)
+        dataset = None
+        with collection.stage('$.dataset', requires=bool(sources), check=True) as ready:
+            if ready:
+                raw_dataset = object_at(root['dataset'], '$.dataset', ('name',), ('entity', 'session', 'domain', 'metadata'))
+                # 检查数据集名称，避免把路径或表达式当作标识。
+                dataset_id = text_at(raw_dataset['name'], '$.dataset.name', identifier=True)
+                # 普通单任务沿用数据集名；对象与会话仍由本次计划实例隔离，不共享状态。
+                entity = text_at(raw_dataset.get('entity', dataset_id), '$.dataset.entity', identifier=True)
+                session = text_at(raw_dataset.get('session', dataset_id), '$.dataset.session', identifier=True)
+                # 省略domain是真正的无时间筛选声明，不制造假端点或实际观测范围。
+                domain_explicit = 'domain' in raw_dataset
+                domain = None
+                if domain_explicit:
+                    # 只有用户显式请求时间域才解析坐标；显式null仍是配置错误。
+                    raw_domain = object_at(raw_dataset['domain'], '$.dataset.domain', ('start', 'end'))
+                    tz = timezone_at(sources[0].timezone_text, '$.dataset.domain.timezone')
+                    start = coordinate_at(raw_domain['start'], '$.dataset.domain.start', absolute=timebase.time_type is TimeType.ABSOLUTE, tz=tz)
+                    end = coordinate_at(raw_domain['end'], '$.dataset.domain.end', absolute=timebase.time_type is TimeType.ABSOLUTE, tz=tz)
+                    domain = model_at(Interval, '$.dataset.domain', start, end)
+                # 保存对象、会话、范围和只读元数据，供后续引用。
+                dataset = DatasetPlan(dataset_id, entity, session, domain, timebase,
+                    metadata_at(raw_dataset.get('metadata', {}), '$.dataset.metadata'), domain_explicit)
         # 检查每个信号的原字段、类型、单位转换、有效期和来源定位。
-        signals = parse_signals(root['signals'], sources)
+        signals = ()
+        with collection.stage('$.signals', requires=bool(sources) and version is not None, check=False) as ready:
+            if ready:
+                from .dbc_defaults import requested_enum_codes
+                signals = parse_signals(root['signals'], sources, config_version=version,
+                                        enum_codes=requested_enum_codes(root))
         # 延迟导入避免公开预设直接导入时产生模块循环；只对局部副本展开，无来源I/O。
         from ..presets import expand_presets
-        presets, preset_bindings = expand_presets(root, tuple(item.definition for item in signals))
+        presets, preset_bindings = (), ()
+        with collection.stage('$.presets', requires=not root.get('presets') or collection.usable('$.signals')) as ready:
+            if ready:
+                presets, preset_bindings = expand_presets(root, tuple(item.definition for item in signals))
         # 派生项按名称组织；类型由表达式推导，不单独指定有效期。
         raw_derived = root.get('derived', {})
         # 派生项必须是名称到配置的字典，不能由数组位置猜名称。
         if type(raw_derived) is not dict:
-            # 在建立依赖图之前拒绝错误的派生配置结构。
-            raise PlanValidationError('$.derived', 'derived必须为别名对象')
+            raw_derived = {}
         # 保持用户声明顺序，收集已经检查的派生项。
         derived = []
         # 逐项检查字段与元数据；收集完成后再检查整个表达式依赖图。
@@ -184,66 +231,129 @@ class AnalysisPlan:
             # 记录当前派生项的配置位置，供错误信息定位。
             path = f'$.derived.{name}'
             # 先检查名称是否合法；表达式别名不能包含属性访问语法。
-            text_at(name, path, identifier=True)
-            # 只接受规定的表达式、单位和可选语义字段，拒绝未知字段。
-            item = object_at(item, path, ('expr',), ('unit', 'semantic_id', 'semantic_contract_version', 'sign_convention', 'measurement_location', 'metadata'))
-            # 建立派生声明，由核心检查表达式文本和单位是否有效。
-            unit = text_at(item['unit'], path + '.unit') if 'unit' in item else None
-            definition = model_at(DerivedDefinition, path, name, item['expr'], unit)
-            # 保存可选语义信息；名称相同不能证明测量含义一致。
-            annotations = tuple(text_at(item[key], path + '.' + key) if key in item else None for key in ('semantic_id', 'semantic_contract_version', 'sign_convention', 'measurement_location'))
-            # 保存只读元数据；表达式不能通过对象属性访问这些信息。
-            derived.append(DerivedPlan(definition, *annotations, metadata_at(item.get('metadata', {}), path + '.metadata')))
+            if not usable_node(path, {'name': name}):
+                continue
+            try:
+                text_at(name, path, identifier=True)
+                # 只接受规定的表达式、单位和可选语义字段，拒绝未知字段。
+                item = object_at(item, path, ('expr',), ('unit', 'semantic_id', 'semantic_contract_version', 'sign_convention', 'measurement_location', 'metadata'))
+                # 建立派生声明，由核心检查表达式文本和单位是否有效。
+                unit = text_at(item['unit'], path + '.unit') if 'unit' in item else None
+                definition = model_at(DerivedDefinition, path, name, item['expr'], unit)
+                # 保存可选语义信息；名称相同不能证明测量含义一致。
+                annotations = tuple(text_at(item[key], path + '.' + key) if key in item else None for key in ('semantic_id', 'semantic_contract_version', 'sign_convention', 'measurement_location'))
+                # 保存只读元数据；表达式不能通过对象属性访问这些信息。
+                derived.append(DerivedPlan(definition, *annotations, metadata_at(item.get('metadata', {}), path + '.metadata')))
+            except PlanValidationError as error:
+                collect_node_error(error, path, {'name': name})
         # 将来源名称、时钟、定位声明和偏移组合为检查用对象。
         declared_sources = tuple(DeclaredSource(item.name, item.config.timebase, item.input_identity, item.config.offset_ns) for item in sources)
         # 在当前会话内统一检查来源、信号和派生名称，建立声明关系。
-        bindings = model_at(DeclarationBindings, '$.signals/derived', session, timebase, domain, declared_sources,
-                            tuple(item.definition for item in signals), tuple(item.definition.name for item in derived))
+        bindings = None
+        with collection.stage('$.signals/derived', requires=dataset is not None and version is not None, check=True) as ready:
+            if ready:
+                bindings = model_at(DeclarationBindings, '$.signals/derived', dataset.session_id, timebase, dataset.domain, declared_sources,
+                                    tuple(item.definition for item in signals), tuple(item.definition.name for item in derived),
+                                    config_version=version, lookups=lookups, extensions=extensions)
         # 检查所有派生定义，包括未被引用的项，拒绝未知名称或循环依赖。
         definitions = tuple(item.definition for item in derived)
+        transforms = ()
+        if 'transforms' in root:
+            with collection.stage('$.transforms', requires=bindings is not None) as ready:
+                if ready:
+                    bindings, transforms = build_transforms(root['transforms'],bindings,definitions,
+                        timezone=timezone_at(sources[0].timezone_text,'$.transforms.origin'))
         # 保存已经检查的表达式结构，不把配置文本当作Python代码执行。
-        expressions = tuple(expression_at(item.name, f'$.derived.{item.name}.expr', bindings, definitions, unit=item.unit) for item in definitions)
+        expressions_list = []
+        collection.checking_derived = True
+        for item in definitions:
+            previous_count = len(expressions_list)
+            with collection.stage(f'$.derived.{item.name}', requires=bindings is not None) as ready:
+                if ready:
+                    expressions_list.append(expression_at(item.name, f'$.derived.{item.name}.expr', bindings, definitions, unit=item.unit))
+            if len(expressions_list) == previous_count:
+                collection.invalid_names.add(item.name)
+        expressions = tuple(expressions_list)
+        collection.checking_derived = False
+        if not collection.errors:
+            # 运行侧保留完整绑定身份；逐项隔离检查只用于定位错误，不能流入执行器。
+            expressions = tuple(expression_at(item.name, f'$.derived.{item.name}.expr', bindings, definitions, unit=item.unit) for item in definitions)
+        # 坏派生项已单列；无关规则不因编译器扫描整个派生集合而重复收到同一个错误。
+        definitions = tuple(item for item in definitions if item.name not in collection.invalid_names)
         # 逐项检查执行选项及默认值；资源预算由实际执行器落实。
-        raw_execution = object_at(root.get('execution', {}), '$.execution', (), ('backend', 'batch_rows', 'memory_budget_bytes', 'result_buffer_rows', 'partial_policy', 'on_budget_exceeded', 'spool_quota_bytes'))
-        # 只允许'numpy'或'reference'，不为未知实现名称自动回退。
-        backend = choice_at(raw_execution.get('backend', 'numpy'), ('numpy', 'reference'), '$.execution.backend')
-        # 分批行数、内存预算和结果缓冲行数必须为正整数，不能是布尔值。
-        limits = tuple(number_at(raw_execution.get(key, default), '$.execution.' + key, integer=True, minimum=1) for key, default in (('batch_rows', 65536), ('memory_budget_bytes', 268435456), ('result_buffer_rows', 4096)))
-        # 检查数据覆盖不完整时采用'report'还是'strict'策略。
-        partial = choice_at(raw_execution.get('partial_policy', 'report'), ('report', 'strict'), '$.execution.partial_policy')
-        # 超出资源预算的处理只接受'error'，不允许静默丢数据。
-        choice_at(raw_execution.get('on_budget_exceeded', 'error'), ('error',), '$.execution.on_budget_exceeded')
-        # 磁盘配额若给出则必须为正整数；None表示没有配置该配额。
-        quota = number_at(raw_execution['spool_quota_bytes'], '$.execution.spool_quota_bytes', integer=True, minimum=1) if raw_execution.get('spool_quota_bytes') is not None else None
-        # 保存检查后的执行选项，包含本次实际采用的默认值。
-        execution = ExecutionPlan(backend, *limits, partial, quota)
+        execution = None
+        with collection.stage('$.execution', requires=True, check=True) as ready:
+            if ready:
+                raw_execution = object_at(root.get('execution', {}), '$.execution', (), ('backend', 'batch_rows', 'memory_budget_bytes', 'result_buffer_rows', 'partial_policy', 'on_budget_exceeded', 'spool_quota_bytes'))
+                # 只允许'numpy'或'reference'，不为未知实现名称自动回退。
+                backend = choice_at(raw_execution.get('backend', 'numpy'), ('numpy', 'reference'), '$.execution.backend')
+                # 分批行数、内存预算和结果缓冲行数必须为正整数，不能是布尔值。
+                limits = tuple(number_at(raw_execution.get(key, default), '$.execution.' + key, integer=True, minimum=1) for key, default in (('batch_rows', 65536), ('memory_budget_bytes', 268435456), ('result_buffer_rows', 4096)))
+                # 检查数据覆盖不完整时采用'report'还是'strict'策略。
+                partial = choice_at(raw_execution.get('partial_policy', 'report'), ('report', 'strict'), '$.execution.partial_policy')
+                # 超出资源预算的处理只接受'error'，不允许静默丢数据。
+                choice_at(raw_execution.get('on_budget_exceeded', 'error'), ('error',), '$.execution.on_budget_exceeded')
+                # 磁盘配额若给出则必须为正整数；None表示没有配置该配额。
+                quota = number_at(raw_execution['spool_quota_bytes'], '$.execution.spool_quota_bytes', integer=True, minimum=1) if raw_execution.get('spool_quota_bytes') is not None else None
+                # 保存检查后的执行选项，包含本次实际采用的默认值。
+                execution = ExecutionPlan(backend, *limits, partial, quota)
         # 规则、窗口和指标共用标识集合，避免同一计划出现重复ID。
-        ids = set()
+        ids = {t.name for t in transforms}
         # 先检查条件和规则，供窗口按当前规则名称建立引用。
-        rules = parse_rules(root.get('rules', []), bindings, definitions, ids)
+        rules = ()
+        with collection.stage('$.rules', requires=bindings is not None, check=False) as ready:
+            if ready:
+                rules = parse_rules(root.get('rules', []), bindings, definitions, ids)
         # 检查活动合并或固定窗口的边界与引用关系。
-        windows = parse_windows(root.get('windows', []), rules, ids)
+        windows = ()
+        with collection.stage('$.windows', requires=bindings is not None, check=False) as ready:
+            if ready:
+                windows = parse_windows(root.get('windows', []), rules, ids)
         # 检查指标所用值、条件、统计范围、联合来源依赖和单位。
-        calculations = parse_calculations(root.get('calculations', []), bindings, definitions, rules, windows, execution, ids)
+        calculations = ()
+        with collection.stage('$.calculations', requires=bindings is not None and execution is not None, check=False) as ready:
+            if ready:
+                calculations = parse_calculations(root.get('calculations', []), bindings, definitions, rules, windows, execution, ids)
         # 新消息模式在同一ID空间解析；不向原配置副本补默认，旧plan身份recipe保持。
-        message_calculations = parse_message_calculations(root.get('message_calculations', []), sources, bindings, ids)
-        sequences = parse_sequences(root.get('sequences', []), rules, bindings, ids)
+        message_calculations = ()
+        with collection.stage('$.message_calculations', requires=bindings is not None, check=False) as ready:
+            if ready:
+                message_calculations = parse_message_calculations(root.get('message_calculations', []), sources, bindings, ids)
+        sequences = ()
+        with collection.stage('$.sequences', requires=bindings is not None, check=False) as ready:
+            if ready:
+                sequences = parse_sequences(root.get('sequences', []), rules, bindings, ids)
+        aggregations = ()
+        if 'aggregations' in root:
+            with collection.stage('$.aggregations', requires=execution is not None and version is not None) as ready:
+                if ready:
+                    aggregations = parse_aggregations(root['aggregations'],version,calculations,rules,windows,sequences,execution,ids)
         # 检查结果输出配置，此处仅保存格式，不创建输出文件。
-        raw_outputs = object_at(root.get('outputs', {}), '$.outputs', (), ('tables', 'manifest', 'contributions','signal_csv','can_frames'))
-        # 结果表只接受CSV或JSONL，清单只接受JSON。
-        outputs = OutputPlan(choice_at(raw_outputs.get('tables', 'readable_csv'), ('readable_csv', 'csv', 'jsonl'), '$.outputs.tables'), choice_at(raw_outputs.get('manifest', 'json'), ('json',), '$.outputs.manifest'),
-            choice_at(raw_outputs.get('contributions', 'none'), ('none', 'full'), '$.outputs.contributions'))
-        # 新导出默认关闭；解析只核引用和时间政策，不创建原始读取器或加载DBC。
+        outputs = None
+        with collection.stage('$.outputs', requires=bindings is not None, check=True) as ready:
+            if ready:
+                raw_outputs = object_at(root.get('outputs', {}), '$.outputs', (), ('tables', 'manifest', 'contributions','signal_csv','can_frames'))
+                # 结果表只接受CSV或JSONL，清单只接受JSON。
+                outputs = OutputPlan(choice_at(raw_outputs.get('tables', 'readable_csv'), ('readable_csv', 'csv', 'jsonl'), '$.outputs.tables'), choice_at(raw_outputs.get('manifest', 'json'), ('json',), '$.outputs.manifest'),
+                    choice_at(raw_outputs.get('contributions', 'none'), ('none', 'full'), '$.outputs.contributions'))
+                # 新导出默认关闭；解析只核引用和时间政策，不创建原始读取器或加载DBC。
+                from dataclasses import replace
+                from .export_options import parse_signal_output,parse_frame_output
+                outputs=replace(outputs,signal_csv=parse_signal_output(raw_outputs.get('signal_csv'),signals,windows,sources=sources),
+                    can_frames=parse_frame_output(raw_outputs.get('can_frames'),sources,windows))
+        # 在构造完整计划前拒绝任何结构/依赖错误，不输出部分可执行对象。
+        collection.finish()
         from dataclasses import replace
-        from .export_options import parse_signal_output,parse_frame_output
-        outputs=replace(outputs,signal_csv=parse_signal_output(raw_outputs.get('signal_csv'),signals,windows,sources=sources),
-            can_frames=parse_frame_output(raw_outputs.get('can_frames'),sources,windows))
         # 对配置副本和来源定位声明计算哈希，不读取文件内容。
-        identity = sha256(canonical({'plan_version': 'config3-static-v1', 'config': frozen, 'sources': [item.input_identity for item in sources]}).encode('utf-8')).hexdigest()
+        identity_parts = {'plan_version': 'config4-static-v1', 'config': frozen, 'sources': [item.input_identity for item in sources]}
+        if extensions is not None:
+            identity_parts['extensions'] = extensions.identity
+        identity = sha256(canonical(identity_parts).encode('utf-8')).hexdigest()
         # 返回完整计划；原配置和附加元数据均保存为独立的只读副本。
         plan = cls(version, dataset, sources, signals, tuple(derived), rules, windows, calculations, presets, preset_bindings, execution, outputs,
                    bindings, expressions, metadata_at(root.get('metadata', {}), '$.metadata'), frozen, base, identity,
-                   message_calculations=message_calculations, sequences=sequences)
+                   message_calculations=message_calculations, sequences=sequences, aggregations=aggregations,
+                   transforms=transforms)
         # 在全部消费者已确定后解析有限间隔选择，DBC实际周期留运行初始化。
         from .intervals import parse_intervals, parse_diagnostics
         plan = replace(plan, intervals=parse_intervals(root.get('intervals', {}), plan),
@@ -255,15 +365,16 @@ class AnalysisPlan:
 
 
 
-def load_analysis_plan(path: Path | str) -> AnalysisPlan:
+def load_analysis_plan(path: Path | str, *, extensions=None) -> AnalysisPlan:
     """读取JSON/YAML配置及一层公共定义，按各自声明目录解释相对来源路径。
 
     参数:
+        extensions: 宿主可选的不可变注册；文件中不能声明或导入代码。
         path (Path | str): 配置文件路径；不接受目录扫描或任意路径对象。
             配置按UTF-8读取，允许文件开头带BOM。
     返回:
         AnalysisPlan: 经过from_dict静态检查的计划。只读取主配置和显式公共定义文件，
-            不打开其中声明的日志、CSV或DBC。
+            不打开其中声明的日志或CSV；省略信号元数据时按需读取DBC。
     异常:
         PlanValidationError: 路径类型错误、文件读取或编码错误、JSON/YAML语法错误、
             重复键、非有限常量或配置声明错误。加载错误带配置文件定位，
@@ -283,7 +394,7 @@ def load_analysis_plan(path: Path | str) -> AnalysisPlan:
         from ..configuration.imports import expand_document_imports
         document = expand_document_imports(document)
         # 配置文件的词法父目录继续作为相对来源定位基准，不读取来源。
-        return AnalysisPlan.from_dict(document.data, base_dir=target.parent)
+        return AnalysisPlan.from_dict(document.data, base_dir=target.parent, extensions=extensions)
     except ConfigurationError as error:
         raise configuration_error(error) from error
     except PlanValidationError as error:

@@ -1,4 +1,4 @@
-# chronaxis.results.codec
+# `chronaxis.results.codec`
 
 编码和严格解码当前扁平结果JSONL；内部叶子格式另用于历史和导出。
 
@@ -78,7 +78,7 @@ ResultFormatError表示类型或深度不受支持。
 
 - `ResultFormatError`：结果行嵌套超过32层。
 
-源码：[`src/chronaxis/results/codec.py:35`](../../../src/chronaxis/results/codec.py#L35)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:35`](../../../src/chronaxis/results/codec.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_unpack"></a>
 ## `_unpack`
@@ -113,7 +113,7 @@ ResultFormatError/TypeError/ValueError为结构或模型校验错误。
 - `ResultFormatError`：枚举底层值类型错误。
 - `ResultFormatError`：结果模型字段缺失或出现未知字段。
 
-源码：[`src/chronaxis/results/codec.py:71`](../../../src/chronaxis/results/codec.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:75`](../../../src/chronaxis/results/codec.py#L75)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_unique_object"></a>
 ## `_unique_object`
@@ -138,7 +138,7 @@ dict。
 
 ResultFormatError为重复字段。
 
-源码：[`src/chronaxis/results/codec.py:116`](../../../src/chronaxis/results/codec.py#L116)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:124`](../../../src/chronaxis/results/codec.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_reject_constant"></a>
 ## `_reject_constant`
@@ -163,7 +163,7 @@ _reject_constant(value)
 
 ResultFormatError始终抛出。
 
-源码：[`src/chronaxis/results/codec.py:143`](../../../src/chronaxis/results/codec.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:151`](../../../src/chronaxis/results/codec.py#L151)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-estimate_row_bytes"></a>
 ## `estimate_row_bytes`
@@ -190,7 +190,7 @@ ResultFormatError为未登记类型或过深结构；不测量全进程RSS。
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/codec.py:152`](../../../src/chronaxis/results/codec.py#L152)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:160`](../../../src/chronaxis/results/codec.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_estimate"></a>
 ## `_estimate`
@@ -223,7 +223,7 @@ ResultFormatError为类型/深度不支持。
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/codec.py:165`](../../../src/chronaxis/results/codec.py#L165)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:173`](../../../src/chronaxis/results/codec.py#L173)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-encode_row"></a>
 ## `encode_row`
@@ -256,7 +256,7 @@ ResultFormatError/ValueError为类型、大小或格式错误。
 
 返回类型：bytes。
 
-源码：[`src/chronaxis/results/codec.py:187`](../../../src/chronaxis/results/codec.py#L187)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:197`](../../../src/chronaxis/results/codec.py#L197)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-decode_row"></a>
 ## `decode_row`
@@ -295,4 +295,4 @@ ResultFormatError为解析/版本/模型错误，ValueError为限额配置错误
 
 返回类型：ResultRow。
 
-源码：[`src/chronaxis/results/codec.py:210`](../../../src/chronaxis/results/codec.py#L210)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/codec.py:220`](../../../src/chronaxis/results/codec.py#L220)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

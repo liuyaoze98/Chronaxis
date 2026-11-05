@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-config_version: 3                         # 声明分析文件采用的字段结构版本；当前填写整数3
+config_version: 4                         # 声明分析文件采用的字段结构版本；新分析填写整数4
 dataset:                                  # 设置本次分析名称及可选的对象、会话和时间范围
   name: stability_example                 # 命名本次分析数据集；名称写入结果身份字段
 sources:                                  # 列出输入来源；每项规定数据位置、格式和时间解释方式
@@ -28,8 +28,10 @@ calculations:                             # 列出希望获得的统计或积分
       rule: hysteresis_alarm              # 按指定规则的每次事件分别计算；填写前面rules中的name
     operation: time_weighted_mean         # 选择计算方法；本例按有效值持续时长加权求平均
     expr: temperature                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+    unit: degC                            # 以摄氏度报告报警期间的平均温度，与上面的温度阈值一致
   - name: debounced_alarm_average         # 为这项计算结果取唯一名称；结果表用它区分计算项
     scope:                                # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
       rule: debounced_alarm               # 按指定规则的每次事件分别计算；填写前面rules中的name
     operation: time_weighted_mean         # 选择计算方法；本例按有效值持续时长加权求平均
     expr: temperature                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+    unit: degC                            # 以摄氏度报告报警期间的平均温度，与上面的温度阈值一致

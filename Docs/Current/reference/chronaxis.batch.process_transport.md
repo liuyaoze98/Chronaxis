@@ -1,4 +1,4 @@
-# chronaxis.batch.process_transport
+# `chronaxis.batch.process_transport`
 
 传递独立计划快照和小型结果，保留工作进程中的失败清理责任。
 
@@ -9,7 +9,7 @@
 
 ## 相关类型
 
-[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)、[BatchJob](chronaxis.batch.models.md#api-BatchJob)、[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)、[CleanupHandle](chronaxis.batch.models.md#api-CleanupHandle)、[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ProcessTree](chronaxis.batch.process_tree.md#api-ProcessTree)
+[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)、[BatchJob](chronaxis.batch.models.md#api-BatchJob)、[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)、[CleanupHandle](chronaxis.batch.models.md#api-CleanupHandle)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ProcessTree](chronaxis.batch.process_tree.md#api-ProcessTree)
 
 ## 对象导航
 
@@ -17,24 +17,26 @@
 |---|---|
 |[`job_packet`](#api-job_packet)|提取无活动资源的计划。|
 |[`restore_job`](#api-restore_job)|恢复独立计划。|
-|[`worker_main`](#api-worker_main)|处理run/cleanup/close命令。|
 |[`ProcessWorker`](#api-ProcessWorker)|保存一个可复用工作进程、私有管道及其后代的清理责任。|
 |[`ProcessWorker.__init__`](#api-ProcessWorker-__init__)|启动等待命令的spawn进程。|
 |[`ProcessWorker.submit`](#api-ProcessWorker-submit)|发送独立任务。|
+|[`ProcessWorker.submit_fast`](#api-ProcessWorker-submit_fast)|只传准备完成的文件参数，工作进程不重新解析模板或建立下层进程。|
+|[`ProcessWorker.cancel_fast`](#api-ProcessWorker-cancel_fast)|通知在途文件，协作退出超过五秒才结束本次拥有的进程树。返回是否已强制回收。|
 |[`ProcessWorker.ready`](#api-ProcessWorker-ready)|查询结果或异常退出。|
 |[`ProcessWorker.receive`](#api-ProcessWorker-receive)|取结果并挂远程恢复句柄。|
-|[`ProcessWorker.close`](#api-ProcessWorker-close)|重试远程清理后关闭进程树。|
+|[`ProcessWorker.close`](#api-ProcessWorker-close)|停止本次工作进程并释放其作业、管道和进程句柄；再次调用时从尚未完成的阶段继续。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from dataclasses import replace
 from pathlib import Path
-from threading import Event
+from time import monotonic
 from ..planning.plan import AnalysisPlan
 from ..planning.checks import json_value
 from .models import BatchJob, BatchJobResult, CleanupHandle
 from .process_tree import ProcessTree
+from .._batch_worker import worker_main
 ```
 
 </details>
@@ -62,7 +64,7 @@ job_packet(job)
 
 配置转换错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:20`](../../../src/chronaxis/batch/process_transport.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:19`](../../../src/chronaxis/batch/process_transport.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-restore_job"></a>
 ## `restore_job`
@@ -87,32 +89,7 @@ BatchJob。
 
 重建或身份不一致。
 
-源码：[`src/chronaxis/batch/process_transport.py:28`](../../../src/chronaxis/batch/process_transport.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
-
-<a id="api-worker_main"></a>
-## `worker_main`
-
-处理run/cleanup/close命令。
-
-```python
-worker_main(connection)
-```
-
-### 参数
-
-|名称|数据类型|必填|省略时的值|用途、取值和效果|
-|---|---|---|---|---|
-|`connection`|multiprocessing.connection.PipeConnection|是|无|位置或关键字。本次spawn建立的私有双向Windows管道，只接受所属主进程发送的run、cleanup和close命令。|
-
-### 返回说明
-
-None。
-
-### 异常说明
-
-断管退出，父进程负责树清理。
-
-源码：[`src/chronaxis/batch/process_transport.py:38`](../../../src/chronaxis/batch/process_transport.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:27`](../../../src/chronaxis/batch/process_transport.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker"></a>
 ## `ProcessWorker`
@@ -120,11 +97,11 @@ None。
 保存一个可复用工作进程、私有管道及其后代的清理责任。
 
 ```python
-ProcessWorker()
+ProcessWorker(*, fast=False)
 ```
 
 
-源码：[`src/chronaxis/batch/process_transport.py:81`](../../../src/chronaxis/batch/process_transport.py#L81)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:37`](../../../src/chronaxis/batch/process_transport.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker-__init__"></a>
 ### `ProcessWorker.__init__`
@@ -132,15 +109,14 @@ ProcessWorker()
 启动等待命令的spawn进程。
 
 ```python
-ProcessWorker.__init__()
+ProcessWorker.__init__(*, fast=False)
 ```
 
-参数：无显式参数。
+#### 参数
 
-
-#### 参数说明
-
-无。
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`fast`|bool|否|False|仅关键字。启用 fast 的共享取消信号和文件级任务协议。|
 
 #### 返回说明
 
@@ -150,7 +126,7 @@ ProcessWorker.__init__()
 
 启动/树登记失败立即回收。
 
-源码：[`src/chronaxis/batch/process_transport.py:84`](../../../src/chronaxis/batch/process_transport.py#L84)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:40`](../../../src/chronaxis/batch/process_transport.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker-submit"></a>
 ### `ProcessWorker.submit`
@@ -177,7 +153,41 @@ None。
 
 转换或通信错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:106`](../../../src/chronaxis/batch/process_transport.py#L106)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:68`](../../../src/chronaxis/batch/process_transport.py#L68)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-ProcessWorker-submit_fast"></a>
+### `ProcessWorker.submit_fast`
+
+只传准备完成的文件参数，工作进程不重新解析模板或建立下层进程。
+
+```python
+ProcessWorker.submit_fast(job, directory, spec, total)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`job`|[BatchJob](chronaxis.batch.models.md#api-BatchJob)|是|无|位置或关键字。待派发的独立文件任务，其名称进入报告。|
+|`directory`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。给本次任务独占的结果目录。|
+|`spec`|dict|是|无|位置或关键字。一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。|
+|`total`|bool|是|无|位置或关键字。是否回传未舍入指标，供同一模板的成员按输入顺序相加。|
+
+源码：[`src/chronaxis/batch/process_transport.py:72`](../../../src/chronaxis/batch/process_transport.py#L72)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-ProcessWorker-cancel_fast"></a>
+### `ProcessWorker.cancel_fast`
+
+通知在途文件，协作退出超过五秒才结束本次拥有的进程树。返回是否已强制回收。
+
+```python
+ProcessWorker.cancel_fast()
+```
+
+参数：无显式参数。
+
+
+源码：[`src/chronaxis/batch/process_transport.py:78`](../../../src/chronaxis/batch/process_transport.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker-ready"></a>
 ### `ProcessWorker.ready`
@@ -201,9 +211,9 @@ bool。
 
 #### 异常说明
 
-原管道错误。
+管道探测或进程状态检查发生 EOFError 或 OSError 时抛出 ChildProcessError，携带工作进程 PID 并保留原异常。探测时确认 EOF 或断管后，关闭阶段跳过远程握手。
 
-源码：[`src/chronaxis/batch/process_transport.py:110`](../../../src/chronaxis/batch/process_transport.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:89`](../../../src/chronaxis/batch/process_transport.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker-receive"></a>
 ### `ProcessWorker.receive`
@@ -227,14 +237,14 @@ BatchJobResult。
 
 #### 异常说明
 
-进程死亡或协议错误。
+探测不到结果，或探测、读取遇到 EOF 或断管时，抛出带工作进程 PID 的 ChildProcessError。已收到的消息仍按正常协议校验，类型或种类不符报 RuntimeError，解包失败原样传播。
 
-源码：[`src/chronaxis/batch/process_transport.py:117`](../../../src/chronaxis/batch/process_transport.py#L117)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_transport.py:98`](../../../src/chronaxis/batch/process_transport.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessWorker-close"></a>
 ### `ProcessWorker.close`
 
-重试远程清理后关闭进程树。
+停止本次工作进程并释放其作业、管道和进程句柄；再次调用时从尚未完成的阶段继续。
 
 ```python
 ProcessWorker.close()
@@ -253,6 +263,10 @@ None。
 
 #### 异常说明
 
-清理失败保留全部所有者。
+远程答复清理失败时抛 RuntimeError，仍可重试。断管后等待超过五秒且进程仍在运行时抛 TimeoutError。作业、管道或进程句柄关闭失败时原异常传播；此前已完成的停止步骤保留。
 
-源码：[`src/chronaxis/batch/process_transport.py:129`](../../../src/chronaxis/batch/process_transport.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+#### 处理流程说明
+
+管道可用时，先让工作进程重试待办清理，再发送关闭命令并等待退出。已知断管或关闭握手时遇到 EOF、断管，则先关闭本次作业对象以结束其工作进程及后代。没有作业对象时，只终止该拥有者持有的工作进程。断管后的每次退出等待最多五秒。进程退出后关闭剩余句柄。
+
+源码：[`src/chronaxis/batch/process_transport.py:119`](../../../src/chronaxis/batch/process_transport.py#L119)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

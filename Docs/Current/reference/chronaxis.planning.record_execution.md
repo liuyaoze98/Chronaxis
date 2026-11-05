@@ -1,4 +1,4 @@
-# chronaxis.planning.record_execution
+# `chronaxis.planning.record_execution`
 
 声明新记录流当前可执行范围；静态报告与实际会话共用同一检查。
 
@@ -12,6 +12,16 @@
 |---|---|
 |[`is_event_duration`](#api-is_event_duration)|识别事件总时长的静态声明，不导入执行层。|
 |[`record_execution_errors`](#api-record_execution_errors)|检查会话时间指标的已接线路径。|
+
+<details><summary>导入与重导出来源（展开）</summary>
+
+```python
+from ..core.moments import MOMENTS, SAMPLE_MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
+from ..core.counts_v4 import COUNT_OPERATIONS, OBJECT_COUNTS
+```
+
+</details>
 
 <a id="api-is_event_duration"></a>
 ## `is_event_duration`
@@ -36,7 +46,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/planning/record_execution.py:7`](../../../src/chronaxis/planning/record_execution.py#L7)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/record_execution.py:12`](../../../src/chronaxis/planning/record_execution.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-record_execution_errors"></a>
 ## `record_execution_errors`
@@ -61,4 +71,4 @@ record_execution_errors(plan)
 
 非法带有明确类型的对象属性错误传播；不访问文件或修改计划。
 
-源码：[`src/chronaxis/planning/record_execution.py:14`](../../../src/chronaxis/planning/record_execution.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/record_execution.py:19`](../../../src/chronaxis/planning/record_execution.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

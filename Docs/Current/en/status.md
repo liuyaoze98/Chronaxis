@@ -1,16 +1,18 @@
 <a id="支持范围与限制"></a>
 # Supported features and requirements
 
-Use this page to determine whether the current version can process your inputs and task. Configuration version is the integer `3`. YAML suits hand-written plans; JSON is also supported. Software version `0.1.0.dev1` is a development preview, installable from a wheel or public source; see [installation](installation.md).
+This manual describes Chronaxis 0.1.0.dev2. Analysis configurations must use the integer `config_version: 4`. This version supports automatic unit conversion, statistics, rolling calculations and rates of change. Follow [Installation](installation.md) before running the examples, and read the [upgrade notes](../../Release/release-notes-0.1.0.dev2.en.md) when moving from an earlier version. YAML suits hand-written plans; JSON is also supported.
 
 | Area | Supported scope |
 |---|---|
 | Inputs | In-memory records, decoded-signal CSV, and BLF/ASC/raw CAN CSV with DBC. See [sources](inputs.md) for file, channel and format requirements. |
 | Analysis | Expressions, sustained conditions, edges, hysteresis, debouncing, start/end activities, window deltas, request/response matching, event windows, statistics, integration and per-message accumulation. |
+| Version 4 additions | Automatic unit conversion, conditional expressions, lookups, variance, quantiles, result aggregation, rolling statistics and rates of change. See [Expressions](expressions.md), [Statistics](calculations.md) and [Temporal calculations](temporal-transforms.md). |
+| Same-frame accumulation | The explicit fast entry handles independent ASC/BLF files, same-frame formulas and direction totals. See [High-performance integrator](fast-energy.md) for inputs and supported scope. |
 | Execution | Python API and CLI; `reference` and `numpy` calculation implementations; independent batch tasks; managed memory and temporary-storage budgets. |
 | Outputs | CSV or JSONL summaries, run manifests, optional contributions/input provenance, signal CSV and CAN message exports. |
-| Configuration tools | Templates, YAML/JSON conversion, standalone configuration export, one level of shared definitions, field origins, explicit old-INI import. |
-| Environment | Python >=3.12 and <3.13; Windows/Python 3.12 verified. Results are first completed in a temporary directory and files closed, then the whole directory is renamed to the target. Existing targets are rejected. This publication procedure has been validated only on Windows; see [result publication](results.md#result-publication). |
+| Configuration tools | Templates, YAML/JSON conversion, standalone configuration export, one level of shared definitions, field origins. |
+| Environment | Python >=3.12 and <3.13; Windows/Python 3.12 verified. Results are written and closed in temporary storage, then published with a common timestamp suffix. Directories can be reused, existing files are preserved, and the completion manifest is published last. This publication procedure has been validated only on Windows; see [result publication](results.md#result-publication). |
 
 <a id="需要自行确认的条件"></a>
 ## Information needed from your data

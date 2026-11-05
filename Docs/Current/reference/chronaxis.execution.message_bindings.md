@@ -1,4 +1,4 @@
-# chronaxis.execution.message_bindings
+# `chronaxis.execution.message_bindings`
 
 检查已保存的逐报文数据，并建立MessageBindings，供旧版指标计算使用。输入是MessageDeclarations及已结束写入的DecodedMessageStore；检查内容包括完整读取、SHA校验、报文数量和文件末尾。只有检查成功并关闭检查用读取器后，才返回绑定。
 
@@ -68,7 +68,7 @@ TypeError/ValueError为仓公开元数据已变成非原生文本或非法条数
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/message_bindings.py:32`](../../../src/chronaxis/execution/message_bindings.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:32`](../../../src/chronaxis/execution/message_bindings.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_file_snapshot"></a>
 ## `_file_snapshot`
@@ -100,7 +100,7 @@ _file_snapshot(store: DecodedMessageStore) -> tuple[int, ...]
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/execution/message_bindings.py:55`](../../../src/chronaxis/execution/message_bindings.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:55`](../../../src/chronaxis/execution/message_bindings.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease"></a>
 ## `MessageBindingLease`
@@ -117,7 +117,7 @@ MessageBindingLease(budget: ResourceBudget)
 ```
 
 
-源码：[`src/chronaxis/execution/message_bindings.py:71`](../../../src/chronaxis/execution/message_bindings.py#L71)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:71`](../../../src/chronaxis/execution/message_bindings.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-__init__"></a>
 ### `MessageBindingLease.__init__`
@@ -146,7 +146,7 @@ TypeError为非ResourceBudget；不会接收已经支付却无owner的裸金额�
 
 - `TypeError`：消息绑定lease需要ResourceBudget。
 
-源码：[`src/chronaxis/execution/message_bindings.py:80`](../../../src/chronaxis/execution/message_bindings.py#L80)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:80`](../../../src/chronaxis/execution/message_bindings.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-bindings"></a>
 ### `MessageBindingLease.bindings`
@@ -180,7 +180,7 @@ ResultClosedError为尚未完成、已失败、关闭中或已经关闭。
 
 返回类型：[MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)。
 
-源码：[`src/chronaxis/execution/message_bindings.py:100`](../../../src/chronaxis/execution/message_bindings.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:100`](../../../src/chronaxis/execution/message_bindings.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-closed"></a>
 ### `MessageBindingLease.closed`
@@ -210,7 +210,7 @@ reader和自有费用均清完时为True。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/message_bindings.py:112`](../../../src/chronaxis/execution/message_bindings.py#L112)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:112`](../../../src/chronaxis/execution/message_bindings.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-_require_store"></a>
 ### `MessageBindingLease._require_store`
@@ -245,7 +245,7 @@ None；不读取源CAN或额外打开仓文件。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/message_bindings.py:120`](../../../src/chronaxis/execution/message_bindings.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:120`](../../../src/chronaxis/execution/message_bindings.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-_close_reader"></a>
 ### `MessageBindingLease._close_reader`
@@ -273,7 +273,7 @@ None；正常EOF已关闭的reader也按原幂等接口收尾。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/message_bindings.py:141`](../../../src/chronaxis/execution/message_bindings.py#L141)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:141`](../../../src/chronaxis/execution/message_bindings.py#L141)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-_clear_temporary"></a>
 ### `MessageBindingLease._clear_temporary`
@@ -301,7 +301,7 @@ MessageBindingLease._clear_temporary() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/message_bindings.py:160`](../../../src/chronaxis/execution/message_bindings.py#L160)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:160`](../../../src/chronaxis/execution/message_bindings.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MessageBindingLease-close"></a>
 ### `MessageBindingLease.close`
@@ -334,7 +334,7 @@ None，实际完成后重复调用幂等。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/message_bindings.py:170`](../../../src/chronaxis/execution/message_bindings.py#L170)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:170`](../../../src/chronaxis/execution/message_bindings.py#L170)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-bind_message_store"></a>
 ## `bind_message_store`
@@ -367,4 +367,4 @@ TypeError/ValueError为类型及声明不对应；原仓状态、IO、预算、�
 
 返回类型：[MessageBindingLease](chronaxis.execution.message_bindings.md#api-MessageBindingLease)。
 
-源码：[`src/chronaxis/execution/message_bindings.py:196`](../../../src/chronaxis/execution/message_bindings.py#L196)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_bindings.py:196`](../../../src/chronaxis/execution/message_bindings.py#L196)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

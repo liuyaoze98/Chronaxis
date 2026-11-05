@@ -170,8 +170,8 @@ class AnalysisPlanTests(unittest.TestCase):
         返回: None，所有错误位于版本字段或根对象。
         异常: bool/float版本被当1，或缺项未拒绝使测试失败。
         """
-        # Python中True==1和1.0==1不能改变公开配置的原生类型要求。
-        for version in (True, 3.0, 1, 2, 4, '3'):
+        # 3/4各自保留规则；bool、float、旧结构和尚未支持的5仍明确拒绝。
+        for version in (True, 3.0, 1, 2, 5, '3'):
             with self.subTest(version=version):
                 self.assert_invalid(changed(config_fixture(), ('config_version',), version), '$.config_version', 'invalid_choice')
         # 不再允许用户额外指定独立语义版本。
@@ -200,7 +200,7 @@ class AnalysisPlanTests(unittest.TestCase):
         for name in ('class', 'abs', 'battery.current', 'voltage'):
             with self.subTest(name=name):
                 self.assert_invalid(changed(config, ('signals', 0, 'name'), name),
-                                    '$.signals/derived' if name == 'voltage' else '$.signals[0]')
+                                    '$.signals/derived' if name == 'voltage' else '$.signals[0].name')
         # 单位与禁用语法走已有静态编译器，不改测试期望或开放eval。
         for text in ('battery.current > 5', 'signal("battery.current")', 'current[0]', 'current ** 2', 'missing > 5'):
             with self.subTest(text=text):
@@ -225,7 +225,7 @@ class AnalysisPlanTests(unittest.TestCase):
         # 两个额外派生未被规则引用，仍不能保留依赖环。
         config = config_fixture()
         config['derived'].update(first={'expr': 'second', 'unit': 'A'}, second={'expr': 'first', 'unit': 'A'})
-        self.assert_invalid(config, '$.derived.power.expr')
+        self.assert_invalid(config, '$.derived.first.expr')
 
     def test_time_ranges_ttl_offsets_and_row_order(self):
         """时间单位必须显式，倒序、负时长及越界时间不能静默修正。
@@ -369,7 +369,8 @@ class AnalysisPlanTests(unittest.TestCase):
         self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'paths'), []), '$.sources[0].paths')
         for key, value in (('delimiter', '\n'), ('encoding', 'nonexistent-codec'), ('missing_values', ['', ''])):
             with self.subTest(key=key):
-                self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'reader', key), value), '$.sources[0]')
+                self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'reader', key), value),
+                                    '$.sources[0]' if key == 'encoding' else '$.sources[0].reader.' + key)
 
     def test_identity_changes_without_binding_leaks(self):
         """同表达式的路径、字段、TTL、转换和策略变化区分计划身份。

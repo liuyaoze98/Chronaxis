@@ -28,7 +28,7 @@ class ManualRuntimeContractTests(unittest.TestCase):
         # 解析后的整数65535与浮点哨兵65535.0在Python数值比较之外还要比较类型。
         path=self.root/(uuid4().hex+'.csv')
         path.write_text('t,p\n0,'+first+'\n1,1\n2,1\n',encoding='utf8')
-        return dict(config_version=3,dataset=dict(name='demo',entity='device',session='session',domain=dict(start='0s',end='2s')),
+        return dict(config_version=4,dataset=dict(name='demo',entity='device',session='session',domain=dict(start='0s',end='2s')),
             sources=[dict(name='table',source_type='signal_csv',path=str(path),time_column='t',time=dict(time_type='relative',unit='s',origin='clock'))],
             signals=[dict(name='power',source='table',field='p',dtype='float64',unit='W',valid_for='3s',**signal_options)],
             calculations=[dict(name='energy',scope='session',operation='integral',expr='power')])

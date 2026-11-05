@@ -19,7 +19,7 @@ class ConfigurationDBCDefaultsTests(unittest.TestCase):
         self.write_dbc()
         self.asc=self.root/'input.asc'
         self.asc.write_text('base hex timestamps absolute\n0 1 100 Rx d 2 02 00\n1 1 100 Rx d 2 04 01\n2 1 100 Rx d 2 06 01\n',encoding='utf-8')
-        self.raw=dict(config_version=3,dataset=dict(name='defaults',domain=dict(start='0s',end='2s')),
+        self.raw=dict(config_version=4,dataset=dict(name='defaults',domain=dict(start='0s',end='2s')),
             sources=[dict(path=str(self.asc),dbc_by_channel={'1':str(self.dbc)})],
             signals=[dict(name='voltage',field=dict(frame_id='0x100',signal='Voltage'),valid_for='3s'),
                      dict(name='state',field=dict(frame_id=256,signal='State'),valid_for='3s')],
@@ -66,8 +66,8 @@ class ConfigurationDBCDefaultsTests(unittest.TestCase):
 
     def test_explicit_complete_declarations_do_not_read_dbc(self):
         """显式字段与手工标签保持原值；静态完整声明不新增文件依赖。"""
-        self.raw['signals'][0].update(dtype='float64',unit='V')
-        self.raw['signals'][1].update(dtype='enum',unit='1',choices=[[0,'idle'],[1,'running']])
+        self.raw['signals'][0].update(dtype='float64',unit='V',conversion={'input_unit':'V'})
+        self.raw['signals'][1].update(dtype='enum',unit='1',conversion={'input_unit':'1'},choices=[[0,'idle'],[1,'running']])
         self.raw['rules'][0]['condition']='state == "running"'
         with patch('cantools.database.load_file',side_effect=AssertionError('unexpected DBC load')):
             plan=AnalysisPlan.from_dict(self.raw)

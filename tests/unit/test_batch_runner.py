@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from threading import Barrier, Event, Lock
 import unittest
+from publication_fixtures import published_path
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -73,7 +74,7 @@ class BatchRunnerTests(unittest.TestCase):
         for left, right in zip(sequential.jobs, parallel.jobs):
             self.assertEqual(left.job_id, right.job_id)
             for table in ('events.csv','segments.csv','calculations.csv'):
-                self.assertEqual((left.output_dir/table).read_bytes(),(right.output_dir/table).read_bytes())
+                self.assertEqual(published_path(left.output_dir/table).read_bytes(),published_path(right.output_dir/table).read_bytes())
 
     def test_hysteresis_state_does_not_cross_independent_sessions(self):
         """85到77已报警，另一任务从77开始无前序证据，不能继承报警。参数: 无。返回: None。异常: 断言/运行错误。"""
@@ -88,7 +89,7 @@ class BatchRunnerTests(unittest.TestCase):
         self.assertEqual(report.status, 'completed')
         rows = []
         for job in report.jobs:
-            with (job.output_dir / 'events.csv').open(encoding='utf-8', newline='') as stream:
+            with published_path(job.output_dir / 'events.csv').open(encoding='utf-8', newline='') as stream:
                 rows.append(list(csv.DictReader(stream)))
         self.assertEqual([len(r) for r in rows], [1, 0])
 
@@ -143,7 +144,7 @@ class BatchRunnerTests(unittest.TestCase):
         with patch.object(ProcessWorker, 'submit', submit):
             report = BatchRunner().run((self.job('active'), self.job('next')), self.work/'during', cancel_event=cancel)
         self.assertEqual([j.status for j in report.jobs], ['completed', 'cancelled'])
-        self.assertTrue((report.jobs[0].output_dir/'run_manifest.json').is_file())
+        self.assertTrue(report.jobs[0].manifest_path.is_file())
 
     def test_keyboard_interrupt_waits_for_running_job(self):
         """主线程等待时被取消，已启动任务仍完成关闭，剩余不启动。参数: 无。返回: None。异常: 断言。"""
@@ -169,7 +170,7 @@ class BatchRunnerTests(unittest.TestCase):
         from batch_process_fixtures import cleanup_worker
         with patch('chronaxis.batch.process_transport.worker_main', cleanup_worker):
             report = BatchRunner().run((self.job('pending'), self.job('later')), self.work/'close')
-        marker = self.work/'close/pending/release'
+        marker = report.jobs[0].output_dir.parent/'release'
         def release():
             """测试即使断言失败也先解锁再关闭。参数: 无。返回: None。异常: 原清理错误。"""
             marker.touch()
@@ -177,7 +178,7 @@ class BatchRunnerTests(unittest.TestCase):
         self.addCleanup(release)
         self.assertEqual([j.status for j in report.jobs], ['failed', 'cancelled'])
         self.assertTrue(report.jobs[0].to_dict()['cleanup_pending'])
-        self.assertTrue((report.jobs[0].output_dir/'run_manifest.json').exists())
+        self.assertTrue(report.jobs[0].manifest_path.exists())
         with self.assertRaisesRegex(RuntimeError, 'test remote close blocked'):
             report.close()
         marker.touch()
@@ -199,10 +200,13 @@ class BatchRunnerTests(unittest.TestCase):
             with self.assertRaises((ValueError, TypeError)):
                 BatchRunner().run(jobs, self.work/'not_created')
         self.assertFalse((self.work/'not_created').exists())
-        for target in (self.work, self.work/'RefProjects'/'new'):
+        for target in (self.work/'RefProjects'/'new',):
             with self.assertRaises((ValueError, FileExistsError)):
                 BatchRunner().run((good,), target)
         self.assertFalse((self.work/'RefProjects').exists())
+        reused = BatchRunner().run((good,), self.work)
+        self.addCleanup(reused.close)
+        self.assertEqual(reused.status, 'completed')
 
     def test_worker_cancel_stops_next_job_and_records_request(self):
         """子进程内真实运行边界取消会停止后续派发。"""
@@ -220,7 +224,7 @@ class BatchRunnerTests(unittest.TestCase):
                 BatchRunner().run((self.job('active'), self.job('later')), self.work/'scheduler-error')
         report = caught.exception.batch_report
         self.assertEqual([j.status for j in report.jobs], ['completed', 'cancelled'])
-        self.assertTrue((report.jobs[0].output_dir/'run_manifest.json').is_file())
+        self.assertTrue(report.jobs[0].manifest_path.is_file())
         report.close()
 
     def test_backend_override_uses_same_public_plan_without_mutation(self):
@@ -232,8 +236,8 @@ class BatchRunnerTests(unittest.TestCase):
         self.assertEqual((numpy.status, reference.status), ('completed', 'completed'))
         self.assertEqual(job.plan.read_bytes(), original)
         for table in ('events.csv', 'segments.csv', 'calculations.csv'):
-            self.assertEqual((numpy.jobs[0].output_dir/table).read_bytes(), (reference.jobs[0].output_dir/table).read_bytes())
-        manifest = json.loads((reference.jobs[0].output_dir/'run_manifest.json').read_text(encoding='utf-8'))
+            self.assertEqual(published_path(numpy.jobs[0].output_dir/table).read_bytes(), published_path(reference.jobs[0].output_dir/table).read_bytes())
+        manifest = json.loads(published_path(reference.jobs[0].output_dir/'run_manifest.json').read_text(encoding='utf-8'))
         self.assertEqual(manifest['run']['backend'], 'reference')
 
 

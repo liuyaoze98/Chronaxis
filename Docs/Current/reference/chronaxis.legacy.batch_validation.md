@@ -1,4 +1,4 @@
-# chronaxis.legacy.batch_validation
+# `chronaxis.legacy.batch_validation`
 
 校验批次中不再保存的原报文，避免为丢弃的数据建立完整解码记录副本。
 
@@ -61,7 +61,7 @@ _item_base_size(frame, sequence)
 
 标志按true/false计长，未知is_rx按null计长；原浮点repr保负零和指数，data每字节为两位hex。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:18`](../../../src/chronaxis/legacy/batch_validation.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:18`](../../../src/chronaxis/legacy/batch_validation.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_validate_native_frame"></a>
 ## `_validate_native_frame`
@@ -103,7 +103,7 @@ _validate_native_frame(msg, values, sequence)
 按原构造实参顺序读取字段和转换data，随后保持原模型的校验先后。
 常见完整值字典可用安全上界证明合法；无法证明时仍走原精确检查函数。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:39`](../../../src/chronaxis/legacy/batch_validation.py#L39)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:39`](../../../src/chronaxis/legacy/batch_validation.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-validate_discarded"></a>
 ## `validate_discarded`
@@ -140,4 +140,4 @@ None；既不复制values，也不持有通过检查的数据。
 原字段校验→安全上界正证明，或原ITEM精确计长与完整values检查。没有待保存副本，
     所以不执行公共LegacyDecodedFrame为防止复制时Mapping变化而进行的第二遍检查。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:110`](../../../src/chronaxis/legacy/batch_validation.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:110`](../../../src/chronaxis/legacy/batch_validation.py#L110)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

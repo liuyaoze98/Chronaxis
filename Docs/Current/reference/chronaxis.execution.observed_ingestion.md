@@ -1,4 +1,4 @@
-# chronaxis.execution.observed_ingestion
+# `chronaxis.execution.observed_ingestion`
 
 一边读取来源，一边把信号写入本次历史文件，同时保存实际行数和起止时间。读取记录与历史文件属于同一次运行，后续可据此核对结果使用的输入。
 
@@ -91,7 +91,7 @@ class SourceScanObservation
 |`retained_record_count`|int|否|0|所需记录数，用于解释稀疏时间范围。|
 |`full_check_count`|int|否|0|非原生输入完整检查回退数。|
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:50`](../../../src/chronaxis/execution/observed_ingestion.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:50`](../../../src/chronaxis/execution/observed_ingestion.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SourceScanObservation-__post_init__"></a>
 ### `SourceScanObservation.__post_init__`
@@ -131,7 +131,7 @@ SourceScanObservation.__post_init__()
 - `ValueError`：没有目标记录不能声明目标首末时间。
 - `ValueError`：存在目标记录时必须保留目标首末时间。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:70`](../../../src/chronaxis/execution/observed_ingestion.py#L70)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:70`](../../../src/chronaxis/execution/observed_ingestion.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan"></a>
 ## `ObservedSourceScan`
@@ -147,7 +147,7 @@ ObservedSourceScan(history, source_plan, adapter, request)
 ```
 
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:116`](../../../src/chronaxis/execution/observed_ingestion.py#L116)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:116`](../../../src/chronaxis/execution/observed_ingestion.py#L116)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-__init__"></a>
 ### `ObservedSourceScan.__init__`
@@ -182,7 +182,7 @@ ObservedSourceScan.__init__(history, source_plan, adapter, request)
 - `ValueError`：来源扫描需属于同一历史及共享budget。
 - `ValueError`：来源扫描需原request及尚无append或EOF的历史来源。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:124`](../../../src/chronaxis/execution/observed_ingestion.py#L124)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:124`](../../../src/chronaxis/execution/observed_ingestion.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-_require_contract"></a>
 ### `ObservedSourceScan._require_contract`
@@ -216,7 +216,7 @@ ObservedSourceScan._require_contract()
 - `ValueError`：扫描CAN来源的原消息捕获开关已改变。
 - `ValueError`：文本CAN原帧保存选择已改变。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:176`](../../../src/chronaxis/execution/observed_ingestion.py#L176)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:176`](../../../src/chronaxis/execution/observed_ingestion.py#L176)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-_adopt_cleanup"></a>
 ### `ObservedSourceScan._adopt_cleanup`
@@ -241,7 +241,7 @@ ObservedSourceScan._adopt_cleanup(exc)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:217`](../../../src/chronaxis/execution/observed_ingestion.py#L217)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:217`](../../../src/chronaxis/execution/observed_ingestion.py#L217)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-_close_read"></a>
 ### `ObservedSourceScan._close_read`
@@ -271,7 +271,7 @@ ObservedSourceScan._close_read()
 
 - `AnalysisError`：原memory读取仍有未完成清理费用，来源扫描不能声明完成。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:233`](../../../src/chronaxis/execution/observed_ingestion.py#L233)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:233`](../../../src/chronaxis/execution/observed_ingestion.py#L233)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-consume"></a>
 ### `ObservedSourceScan.consume`
@@ -312,7 +312,7 @@ None，重复调用已完成scan不重读。
 - `ValueError`：同次CAN原帧仓与真实扫描完成事实不一致。
 - `ValueError`：同次CAN消息仓与原读取及真实扫描事实不一致。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:247`](../../../src/chronaxis/execution/observed_ingestion.py#L247)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:247`](../../../src/chronaxis/execution/observed_ingestion.py#L247)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-_ensure_active"></a>
 ### `ObservedSourceScan._ensure_active`
@@ -342,7 +342,7 @@ ResultClosedError为本owner不可用。
 
 - `ResultClosedError`：来源扫描已关闭、正在清理或失败。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:369`](../../../src/chronaxis/execution/observed_ingestion.py#L369)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:369`](../../../src/chronaxis/execution/observed_ingestion.py#L369)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-_require_finished"></a>
 ### `ObservedSourceScan._require_finished`
@@ -372,7 +372,7 @@ ResultClosedError。
 
 - `ResultClosedError`：来源扫描尚未正常完成。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:378`](../../../src/chronaxis/execution/observed_ingestion.py#L378)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:378`](../../../src/chronaxis/execution/observed_ingestion.py#L378)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-capture_message_updates"></a>
 ### `ObservedSourceScan.capture_message_updates`
@@ -400,7 +400,7 @@ ObservedSourceScan.capture_message_updates
 
 无；readonly属性不能把尚未完成的消息仓改成可移交。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:387`](../../../src/chronaxis/execution/observed_ingestion.py#L387)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:387`](../../../src/chronaxis/execution/observed_ingestion.py#L387)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-history"></a>
 ### `ObservedSourceScan.history`
@@ -428,7 +428,7 @@ DecodedHistoryStore。
 
 ResultClosedError为不可用。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:396`](../../../src/chronaxis/execution/observed_ingestion.py#L396)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:396`](../../../src/chronaxis/execution/observed_ingestion.py#L396)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-source_plan"></a>
 ### `ObservedSourceScan.source_plan`
@@ -456,7 +456,7 @@ SourcePlan。
 
 ResultClosedError为不可用。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:403`](../../../src/chronaxis/execution/observed_ingestion.py#L403)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:403`](../../../src/chronaxis/execution/observed_ingestion.py#L403)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-request"></a>
 ### `ObservedSourceScan.request`
@@ -484,7 +484,7 @@ ReadRequest。
 
 ResultClosedError为不可用。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:410`](../../../src/chronaxis/execution/observed_ingestion.py#L410)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:410`](../../../src/chronaxis/execution/observed_ingestion.py#L410)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-finished"></a>
 ### `ObservedSourceScan.finished`
@@ -512,7 +512,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 无。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:417`](../../../src/chronaxis/execution/observed_ingestion.py#L417)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:417`](../../../src/chronaxis/execution/observed_ingestion.py#L417)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-closed"></a>
 ### `ObservedSourceScan.closed`
@@ -540,7 +540,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:423`](../../../src/chronaxis/execution/observed_ingestion.py#L423)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:423`](../../../src/chronaxis/execution/observed_ingestion.py#L423)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-failed"></a>
 ### `ObservedSourceScan.failed`
@@ -568,7 +568,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:429`](../../../src/chronaxis/execution/observed_ingestion.py#L429)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:429`](../../../src/chronaxis/execution/observed_ingestion.py#L429)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-history_sha256"></a>
 ### `ObservedSourceScan.history_sha256`
@@ -596,7 +596,7 @@ str。
 
 对象处于下列状态时抛ResultClosedError：来源扫描尚未正常完成。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:435`](../../../src/chronaxis/execution/observed_ingestion.py#L435)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:435`](../../../src/chronaxis/execution/observed_ingestion.py#L435)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-counts"></a>
 ### `ObservedSourceScan.counts`
@@ -624,7 +624,7 @@ ObservedSourceScan.counts
 
 对象处于下列状态时抛ResultClosedError：来源扫描尚未正常完成。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:442`](../../../src/chronaxis/execution/observed_ingestion.py#L442)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:442`](../../../src/chronaxis/execution/observed_ingestion.py#L442)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-observation"></a>
 ### `ObservedSourceScan.observation`
@@ -652,7 +652,7 @@ SourceScanObservation。
 
 对象处于下列状态时抛ResultClosedError：来源扫描尚未正常完成。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:449`](../../../src/chronaxis/execution/observed_ingestion.py#L449)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:449`](../../../src/chronaxis/execution/observed_ingestion.py#L449)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-runtime_metadata"></a>
 ### `ObservedSourceScan.runtime_metadata`
@@ -684,7 +684,7 @@ ObservedSourceScan.runtime_metadata
 
 - `ValueError`：此来源没有CAN运行元数据。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:456`](../../../src/chronaxis/execution/observed_ingestion.py#L456)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:456`](../../../src/chronaxis/execution/observed_ingestion.py#L456)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-read_identity"></a>
 ### `ObservedSourceScan.read_identity`
@@ -716,7 +716,7 @@ str。
 
 - `ValueError`：此来源没有CAN读取身份。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:465`](../../../src/chronaxis/execution/observed_ingestion.py#L465)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:465`](../../../src/chronaxis/execution/observed_ingestion.py#L465)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-take_raw_store"></a>
 ### `ObservedSourceScan.take_raw_store`
@@ -746,7 +746,7 @@ ObservedSourceScan.take_raw_store(receiver, slot='_raw_store')
 
 - `ValueError`：原帧仓移交需同预算空父槽且只能一次。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:473`](../../../src/chronaxis/execution/observed_ingestion.py#L473)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:473`](../../../src/chronaxis/execution/observed_ingestion.py#L473)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-take_message_store"></a>
 ### `ObservedSourceScan.take_message_store`
@@ -773,7 +773,7 @@ ObservedSourceScan.take_message_store(receiver, slot='_message_store')
 未完成/已关闭错误，ValueError为未开启、已移交或接收槽不符；
     安装前后取消保原异常和observed_source_scan_cleanup_owner。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:492`](../../../src/chronaxis/execution/observed_ingestion.py#L492)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:492`](../../../src/chronaxis/execution/observed_ingestion.py#L492)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ObservedSourceScan-close"></a>
 ### `ObservedSourceScan.close`
@@ -804,4 +804,4 @@ ObservedSourceScan.close()
 - `AnalysisError`：CAN原帧仓尚未完成关闭。
 - `AnalysisError`：CAN消息仓尚未完成关闭。
 
-源码：[`src/chronaxis/execution/observed_ingestion.py:517`](../../../src/chronaxis/execution/observed_ingestion.py#L517)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/observed_ingestion.py:517`](../../../src/chronaxis/execution/observed_ingestion.py#L517)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

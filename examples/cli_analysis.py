@@ -131,7 +131,7 @@ def manifest_facts(path, plan, backend, label, counts):
     assert manifest['status'] == 'completed' and manifest['row_counts'] == counts
     assert manifest['run']['plan_hash'] == plan.identity
     assert manifest['run']['backend'] == backend and manifest['run']['device_label'] == label
-    assert manifest['run']['config_version'] == 3
+    assert manifest['run']['config_version'] == 4
     assert len(manifest['outputs']) == len(counts)
     assert {item['name'] for item in manifest['outputs']} == {
         *(name + '.' + manifest['table_format'] for name in counts)}

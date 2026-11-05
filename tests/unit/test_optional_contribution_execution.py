@@ -6,6 +6,8 @@
 的失败守卫证明未先生成明细再丢弃；普通事件、窗口、select仍与full相同。
 无CAN依赖时明确skip。手算与原完整模式对照分别保留，不能互相替代。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -70,7 +72,7 @@ def make_can_fixture(root, *, backend='numpy', batch_rows=2, contributions='none
         if disjunction:
             calculation['split_by_sign'] = dict(signal='power',bucket=bucket,value_policy='raw_decoded-v1')
         calculations.append(calculation)
-    config = dict(config_version=3,
+    config = dict(config_version=4,
         dataset=dict(name='optional_detail',entity='synthetic',session='session',
             domain=dict(start=domain[0],end=domain[1])),
         sources=[dict(name='bus',source_type='can_blf',path=str(blf),legacy_profile='sclicer-functions-v1',
@@ -184,15 +186,15 @@ class OptionalContributionExecutionTests(unittest.TestCase):
                 self.assertFalse(result.contributions_available)
                 with self.assertRaises(ContributionsUnavailableError):
                     result.iter_contributions()
-                result.write(root/'none-published')
-                published=json.loads((root/'none-published/run_manifest.json').read_text(encoding='utf-8'))
+                output_manifest=result.write(root/'none-published')
+                published=json.loads((output_manifest.manifest_path).read_text(encoding='utf-8'))
                 self.assertEqual(published['status'],'completed')
                 self.assertNotIn('contributions',published['row_counts'])
-                self.assertFalse((root/'none-published/contributions.jsonl').exists())
-                with (root/'none-published/calculations.jsonl').open('rb') as stream:
+                self.assertFalse(any(p.name.startswith('contributions_') for p in output_manifest.output_files))
+                with (published_file(output_manifest,'calculations.jsonl')).open('rb') as stream:
                     decoded=tuple(decode_row(line,1048576) for line in stream)
                 self.assertEqual(summary_values(decoded),summary_values(rows))
-                self.assertFalse((root/'none-published/quality.jsonl').exists())
+                self.assertFalse(any(p.name.startswith('quality_') for p in output_manifest.output_files))
                 config['outputs']['contributions']='full'
                 full = self.run_result(AnalysisPlan.from_dict(current_fixture(config),base_dir=root),root/'full')
                 self.assertEqual(summary_values(rows),summary_values(drain(full.iter_calculations())))

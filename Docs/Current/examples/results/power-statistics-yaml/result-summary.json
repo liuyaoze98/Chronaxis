@@ -1,0 +1,76 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 4,
+    "segments": 1,
+    "calculations": 1,
+    "aggregations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "load_start",
+        "status": "events_found",
+        "event_count": 2,
+        "has_unknown": false,
+        "unobserved_signals": []
+      },
+      {
+        "rule_id": "loaded",
+        "status": "events_found",
+        "event_count": 2,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 14,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "power_bench",
+      "entity_id": "power_bench",
+      "session_id": "power_bench"
+    }
+  },
+  "result_messages": [
+    "load_start：已找到满足要求的事件（2个）",
+    "loaded：已找到满足要求的事件（2个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 341,
+      "sha256": "6290e15bbd8714c8b715d79fe2e344a56db26fce26a7588c7b5750ff16880193",
+      "rows": 4
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 930,
+      "sha256": "0851a5290bf3543e9e1cac951654afcaf177a85f65fcf1d0989db02e46a8e26d",
+      "rows": 1
+    },
+    {
+      "path": "窗口结果.csv",
+      "bytes": 134,
+      "sha256": "bf8ada7c7418794efe5b269c4c80d211f9f3f3cd0c875c435f94fea1de421145",
+      "rows": 1
+    },
+    {
+      "path": "聚合结果.csv",
+      "bytes": 289,
+      "sha256": "5eb2313c81ed64c14191bef2eb21a3d60d4bea26613e179344835ac44b5a3fd4",
+      "rows": 1
+    }
+  ]
+}

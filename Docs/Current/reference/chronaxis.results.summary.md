@@ -1,4 +1,4 @@
-# chronaxis.results.summary
+# `chronaxis.results.summary`
 
 定义按需执行的精简指标行，不要求不存在的完整输入证明。
 
@@ -10,11 +10,12 @@
 
 ## 继承字段
 
+- `SummaryHostedCalculationRow`同时继承[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)字段：`sequence`, `dataset_id`, `entity_id`, `session_id`, `calculation_id`, `operation`, `scope`, `parent_id`, `value`, `unit`, `status`, `reason`, `quality`。构造时须一并提供基类的必填字段；类型、默认值及约束按基类表。
 - `SummaryCoverageCalculationRow`同时继承[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)字段：`sequence`, `dataset_id`, `entity_id`, `session_id`, `calculation_id`, `operation`, `scope`, `parent_id`, `value`, `unit`, `status`, `reason`, `quality`。构造时须一并提供基类的必填字段；类型、默认值及约束按基类表。
 
 ## 相关类型
 
-[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)
+[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[SummaryAggregationRow](chronaxis.results.aggregation_row.md#api-SummaryAggregationRow)
 
 ## 对象导航
 
@@ -22,6 +23,8 @@
 |---|---|
 |[`SummaryCalculationRow`](#api-SummaryCalculationRow)|一条精简指标；未知用None，不能把缺失转换为正常零。|
 |[`SummaryCalculationRow.__post_init__`](#api-SummaryCalculationRow-__post_init__)|核对身份、数值类型及状态，不补造来源或时间信息。|
+|[`SummaryHostedCalculationRow`](#api-SummaryHostedCalculationRow)|宿主归约产生的纯数据行；读取版本和标识不允许动态执行插件。|
+|[`SummaryHostedCalculationRow.__post_init__`](#api-SummaryHostedCalculationRow-__post_init__)|验证固定行协议和清晰的宿主身份。|
 |[`SummaryCoverageCalculationRow`](#api-SummaryCoverageCalculationRow)|仅明确设置覆盖门槛时补一个判定，不重复输出时长、比例或输入明细。|
 |[`SummaryCoverageCalculationRow.__post_init__`](#api-SummaryCoverageCalculationRow-__post_init__)|保留数值政策与覆盖门槛两个不同事实。|
 |[`_require_row_identity`](#api-_require_row_identity)|核精简事件和配对的公共身份。|
@@ -42,11 +45,15 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from ..core.moments import MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 from math import isfinite
 from ..core.types import QualityFlag as Q
+from ..core.counts_v4 import COUNT_OPERATIONS, OBJECT_COUNTS
 from ..core.validation import require_identifier, require_text
 from ..timebase.conversion import require_int64_ns
+from .aggregation_row import SummaryAggregationRow, AGGREGATION_FIELDS
 ```
 
 </details>
@@ -78,7 +85,7 @@ class SummaryCalculationRow
 |`reason`|str|是|无|说明数值完整、部分可用或不能确定的具体原因；与status一起读取，不能只看数值。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:18`](../../../src/chronaxis/results/summary.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:21`](../../../src/chronaxis/results/summary.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryCalculationRow-__post_init__"></a>
 ### `SummaryCalculationRow.__post_init__`
@@ -104,7 +111,53 @@ None。
 
 TypeError/ValueError为字段或组合错误。
 
-源码：[`src/chronaxis/results/summary.py:38`](../../../src/chronaxis/results/summary.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:41`](../../../src/chronaxis/results/summary.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-SummaryHostedCalculationRow"></a>
+## `SummaryHostedCalculationRow`
+
+宿主归约产生的纯数据行；读取版本和标识不允许动态执行插件。
+
+```python
+class SummaryHostedCalculationRow(SummaryCalculationRow)
+```
+
+继承关系：[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
+
+### 属性与数据字段
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`extension_version`|str|是|无|产生这条宿主归约结果的实现版本，可在后续读取时追溯算法。|
+|`coverage_status`|str &#124; None|否|None|启用覆盖判断时记录sufficient或indeterminate；没有覆盖门槛结果时可为空。|
+
+源码：[`src/chronaxis/results/summary.py:84`](../../../src/chronaxis/results/summary.py#L84)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-SummaryHostedCalculationRow-__post_init__"></a>
+### `SummaryHostedCalculationRow.__post_init__`
+
+验证固定行协议和清晰的宿主身份。
+
+```python
+SummaryHostedCalculationRow.__post_init__()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+身份或覆盖状态错误。
+
+源码：[`src/chronaxis/results/summary.py:90`](../../../src/chronaxis/results/summary.py#L90)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryCoverageCalculationRow"></a>
 ## `SummaryCoverageCalculationRow`
@@ -123,7 +176,7 @@ class SummaryCoverageCalculationRow(SummaryCalculationRow)
 |---|---|---|---|---|
 |`coverage_status`|str|是|无|sufficient表示达到显式覆盖门槛；indeterminate表示未满足。默认不要求覆盖门槛时不输出此扩展字段。|
 
-源码：[`src/chronaxis/results/summary.py:75`](../../../src/chronaxis/results/summary.py#L75)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:100`](../../../src/chronaxis/results/summary.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryCoverageCalculationRow-__post_init__"></a>
 ### `SummaryCoverageCalculationRow.__post_init__`
@@ -149,7 +202,7 @@ None。
 
 非法判定。
 
-源码：[`src/chronaxis/results/summary.py:80`](../../../src/chronaxis/results/summary.py#L80)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:105`](../../../src/chronaxis/results/summary.py#L105)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_require_row_identity"></a>
 ## `_require_row_identity`
@@ -174,7 +227,7 @@ None。
 
 类型或字段错误。
 
-源码：[`src/chronaxis/results/summary.py:87`](../../../src/chronaxis/results/summary.py#L87)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:112`](../../../src/chronaxis/results/summary.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryEventRow"></a>
 ## `SummaryEventRow`
@@ -202,7 +255,7 @@ class SummaryEventRow
 |`trigger`|str|是|无|记录底层事件的触发标签：initial为允许的初始点事件；rising_edge/falling_edge为上升/下降沿点事件；start_only为启动点；condition_duration为持续活动（起止、迟滞或去抖也可能通过此标签输出）。标签不是配置rule_type的完整副本；具体算法由rule_id关联rules[].name后查看。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:98`](../../../src/chronaxis/results/summary.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:123`](../../../src/chronaxis/results/summary.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryEventRow-__post_init__"></a>
 ### `SummaryEventRow.__post_init__`
@@ -228,7 +281,7 @@ None。
 
 合同错误。
 
-源码：[`src/chronaxis/results/summary.py:114`](../../../src/chronaxis/results/summary.py#L114)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:139`](../../../src/chronaxis/results/summary.py#L139)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySequenceRow"></a>
 ## `SummarySequenceRow`
@@ -256,7 +309,7 @@ class SummarySequenceRow
 |`status`|str|是|无|matched为成功配对，no_response为充分观测后仍无响应，indeterminate为观测或条件不足而不能断言超时。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:135`](../../../src/chronaxis/results/summary.py#L135)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:160`](../../../src/chronaxis/results/summary.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySequenceRow-__post_init__"></a>
 ### `SummarySequenceRow.__post_init__`
@@ -282,7 +335,7 @@ None。
 
 合同错误。
 
-源码：[`src/chronaxis/results/summary.py:151`](../../../src/chronaxis/results/summary.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:176`](../../../src/chronaxis/results/summary.py#L176)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySegmentRow"></a>
 ## `SummarySegmentRow`
@@ -309,7 +362,7 @@ class SummarySegmentRow
 |`parent_event_ids`|tuple[str, ...]|是|无|产生该片段的全部事件id；窗口合并后仍保留全部父事件关联。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:173`](../../../src/chronaxis/results/summary.py#L173)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:198`](../../../src/chronaxis/results/summary.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySegmentRow-__post_init__"></a>
 ### `SummarySegmentRow.__post_init__`
@@ -335,7 +388,7 @@ None。
 
 字段/组合错误。
 
-源码：[`src/chronaxis/results/summary.py:187`](../../../src/chronaxis/results/summary.py#L187)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:212`](../../../src/chronaxis/results/summary.py#L212)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryContributionRow"></a>
 ## `SummaryContributionRow`
@@ -362,7 +415,7 @@ class SummaryContributionRow
 |`reason`|str|是|无|contributed为有效贡献；missing_input缺输入，condition_false条件未选中，evaluation_error求值失败，nonfinite_input输入非有限。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:219`](../../../src/chronaxis/results/summary.py#L219)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:244`](../../../src/chronaxis/results/summary.py#L244)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryContributionRow-__post_init__"></a>
 ### `SummaryContributionRow.__post_init__`
@@ -388,7 +441,7 @@ None。
 
 类型或字段错误。
 
-源码：[`src/chronaxis/results/summary.py:234`](../../../src/chronaxis/results/summary.py#L234)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:259`](../../../src/chronaxis/results/summary.py#L259)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryInputRow"></a>
 ## `SummaryInputRow`
@@ -415,7 +468,7 @@ class SummaryInputRow
 |`values_json`|str|是|无|保存实际追溯输入的JSON对象文本，例如{"Power":10.0}。CSV读取后json.loads(row.values_json)取得字典；键是来源字段名，不保证等于分析别名。非有限值按追溯协议标记，不作为有效数值。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:253`](../../../src/chronaxis/results/summary.py#L253)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:278`](../../../src/chronaxis/results/summary.py#L278)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummaryInputRow-__post_init__"></a>
 ### `SummaryInputRow.__post_init__`
@@ -441,7 +494,7 @@ None。
 
 字段/格式错误。
 
-源码：[`src/chronaxis/results/summary.py:267`](../../../src/chronaxis/results/summary.py#L267)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:292`](../../../src/chronaxis/results/summary.py#L292)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySelectionRow"></a>
 ## `SummarySelectionRow`
@@ -471,7 +524,7 @@ class SummarySelectionRow
 |`selection`|str|是|无|选择条件的结果：true或unknown；明确false不输出选择行，unknown仍保质量原因。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 
-源码：[`src/chronaxis/results/summary.py:292`](../../../src/chronaxis/results/summary.py#L292)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:317`](../../../src/chronaxis/results/summary.py#L317)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SummarySelectionRow-__post_init__"></a>
 ### `SummarySelectionRow.__post_init__`
@@ -497,7 +550,7 @@ None。
 
 类型/结构错误。
 
-源码：[`src/chronaxis/results/summary.py:309`](../../../src/chronaxis/results/summary.py#L309)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:334`](../../../src/chronaxis/results/summary.py#L334)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-summary_fields"></a>
 ## `summary_fields`
@@ -522,4 +575,4 @@ summary_fields(row)
 
 TypeError为错误根类型。
 
-源码：[`src/chronaxis/results/summary.py:338`](../../../src/chronaxis/results/summary.py#L338)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/summary.py:366`](../../../src/chronaxis/results/summary.py#L366)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

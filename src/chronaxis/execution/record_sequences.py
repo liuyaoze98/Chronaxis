@@ -57,7 +57,8 @@ class RecordSequences:
             driver=choices[spec.sequence_id].driver
             if driver:
                 names.add(driver)
-            sources={self._state.definitions[name].source for name in names}
+            from ..planning.transforms import physical_dependencies
+            sources={self._state.definitions[name].source for name in physical_dependencies(self._plan,names)}
             if any(not self._rules[name].dependencies and choices.get(name,IntervalChoice('actual')).driver is None
                    for name in (spec.start_rule,spec.response_rule)):
                 sources.update(source.name for source in self._plan.sources)

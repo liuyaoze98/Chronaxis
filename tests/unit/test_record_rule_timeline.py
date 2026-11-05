@@ -21,7 +21,7 @@ class RecordRuleTimelineTests(unittest.TestCase):
         results=[]
         for backend in ('reference','numpy'):
             raw=stable_config()
-            raw.update(config_version=3)
+            raw.update(config_version=4)
             raw['dataset']['domain']=dict(start='0ns',end=f'{end}ns')
             raw['signals'][0]['valid_for']=f'{age}ns'
             raw['rules']=[rule]

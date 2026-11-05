@@ -1,4 +1,4 @@
-# chronaxis.legacy.updates
+# `chronaxis.legacy.updates`
 
 表示旧路径一次实际求值所见的更新，并校验单来源的求值顺序。
 
@@ -85,7 +85,7 @@ TypeError: 输入不是精确的原生int，包括bool和整数子类。
 
 返回类型：int。
 
-源码：[`src/chronaxis/legacy/updates.py:27`](../../../src/chronaxis/legacy/updates.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:27`](../../../src/chronaxis/legacy/updates.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyDecodedUpdate"></a>
 ## `LegacyDecodedUpdate`
@@ -120,7 +120,7 @@ class LegacyDecodedUpdate
 |`values`|Mapping[str, int &#124; float &#124; bool &#124; str &#124; None]|是|无|原字段和值的独立冻结副本。|
 |`quality`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag)|否|QualityFlag.NONE|只保留明确记录的原因位。|
 
-源码：[`src/chronaxis/legacy/updates.py:48`](../../../src/chronaxis/legacy/updates.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:48`](../../../src/chronaxis/legacy/updates.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyDecodedUpdate-__post_init__"></a>
 ### `LegacyDecodedUpdate.__post_init__`
@@ -151,7 +151,7 @@ TypeError: 身份、标志、来源引用、质量位、字典或标量类型不
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/updates.py:72`](../../../src/chronaxis/legacy/updates.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:72`](../../../src/chronaxis/legacy/updates.py#L72)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyDecodedUpdate-_freeze_fields"></a>
 ### `LegacyDecodedUpdate._freeze_fields`
@@ -185,7 +185,7 @@ TypeError: 身份、标志、来源引用、质量或原值类型不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/updates.py:91`](../../../src/chronaxis/legacy/updates.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:91`](../../../src/chronaxis/legacy/updates.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUntimedUpdate"></a>
 ## `LegacyUntimedUpdate`
@@ -209,7 +209,7 @@ class LegacyUntimedUpdate(LegacyDecodedUpdate)
 |---|---|---|---|---|
 |`time_ns`|None|是|无|显式未采集；必填，禁止借默认0或其他占位满足时间模型。|
 
-源码：[`src/chronaxis/legacy/updates.py:146`](../../../src/chronaxis/legacy/updates.py#L146)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:146`](../../../src/chronaxis/legacy/updates.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUntimedUpdate-__post_init__"></a>
 ### `LegacyUntimedUpdate.__post_init__`
@@ -242,7 +242,7 @@ TypeError: time_ns不是None，或共有字段类型不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/updates.py:157`](../../../src/chronaxis/legacy/updates.py#L157)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:157`](../../../src/chronaxis/legacy/updates.py#L157)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder"></a>
 ## `LegacyUpdateOrder`
@@ -262,7 +262,7 @@ LegacyUpdateOrder(session_id: str, source: str) -> None
 ```
 
 
-源码：[`src/chronaxis/legacy/updates.py:176`](../../../src/chronaxis/legacy/updates.py#L176)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:176`](../../../src/chronaxis/legacy/updates.py#L176)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-__init__"></a>
 ### `LegacyUpdateOrder.__init__`
@@ -291,7 +291,7 @@ TypeError: 会话或来源不是文本。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/updates.py:188`](../../../src/chronaxis/legacy/updates.py#L188)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:188`](../../../src/chronaxis/legacy/updates.py#L188)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-session_id"></a>
 ### `LegacyUpdateOrder.session_id`
@@ -321,7 +321,7 @@ LegacyUpdateOrder.session_id: str
 
 返回类型：str。
 
-源码：[`src/chronaxis/legacy/updates.py:206`](../../../src/chronaxis/legacy/updates.py#L206)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:206`](../../../src/chronaxis/legacy/updates.py#L206)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-source"></a>
 ### `LegacyUpdateOrder.source`
@@ -351,7 +351,7 @@ LegacyUpdateOrder.source: str
 
 返回类型：str。
 
-源码：[`src/chronaxis/legacy/updates.py:211`](../../../src/chronaxis/legacy/updates.py#L211)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:211`](../../../src/chronaxis/legacy/updates.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-last_time_ns"></a>
 ### `LegacyUpdateOrder.last_time_ns`
@@ -381,7 +381,7 @@ int或初始None；
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/legacy/updates.py:216`](../../../src/chronaxis/legacy/updates.py#L216)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:216`](../../../src/chronaxis/legacy/updates.py#L216)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-last_sequence"></a>
 ### `LegacyUpdateOrder.last_sequence`
@@ -411,7 +411,7 @@ int或初始None；
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/legacy/updates.py:221`](../../../src/chronaxis/legacy/updates.py#L221)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:221`](../../../src/chronaxis/legacy/updates.py#L221)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-last_evaluation_index"></a>
 ### `LegacyUpdateOrder.last_evaluation_index`
@@ -441,7 +441,7 @@ int或初始None；
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/legacy/updates.py:226`](../../../src/chronaxis/legacy/updates.py#L226)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:226`](../../../src/chronaxis/legacy/updates.py#L226)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-count"></a>
 ### `LegacyUpdateOrder.count`
@@ -471,7 +471,7 @@ LegacyUpdateOrder.count: int
 
 返回类型：int。
 
-源码：[`src/chronaxis/legacy/updates.py:231`](../../../src/chronaxis/legacy/updates.py#L231)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:231`](../../../src/chronaxis/legacy/updates.py#L231)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LegacyUpdateOrder-accept"></a>
 ### `LegacyUpdateOrder.accept`
@@ -501,4 +501,4 @@ TypeError: update不是LegacyDecodedUpdate。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/updates.py:235`](../../../src/chronaxis/legacy/updates.py#L235)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/legacy/updates.py:235`](../../../src/chronaxis/legacy/updates.py#L235)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

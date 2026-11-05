@@ -1,6 +1,7 @@
 """精简导出只生成所需业务文件；比较实际帧/插值，不仅检查文件名。"""
 import csv,json
 from pathlib import Path
+from published_paths import published_file
 from uuid import uuid4
 from unittest import TestCase
 from unittest.mock import patch
@@ -31,7 +32,7 @@ class CompactExportTests(TestCase):
                 rows=[sample(0,0.),sample(20,20.,sequence=1),sample(30,None,sequence=2,quality=Q.MISSING)]
                 with patch('chronaxis.results.signal_exports._pack',side_effect=AssertionError('未请求原文')),patch('chronaxis.results.signal_exports._reference_json',side_effect=AssertionError('未请求端点引用')):
                     out=export_signal_csv(rows,spec,Interval(0,41),self.root/uuid4().hex,self.budget,device_label='home',definitions=(definition,),backend=backend,compact=True)
-                with (out/('resampled.csv' if grid else 'original.csv')).open(encoding='utf-8',newline='') as f:
+                with (published_file(out,'resampled.csv' if grid else 'original.csv')).open(encoding='utf-8',newline='') as f:
                     parsed=list(csv.DictReader(f))
                 self.assertNotIn('source_ref_json',parsed[0]);self.assertNotIn('left_time_ns',parsed[0])
                 self.assertNotIn('original_value_json',parsed[0])
@@ -46,11 +47,11 @@ class CompactExportTests(TestCase):
         rows=[raw(1,0),raw(1,1,identifier=0x777),raw(3,2,data=bytes(range(12)),is_fd=True)]
         with patch('chronaxis.results.frame_exports.frame_to_dict',side_effect=AssertionError('未请求帧副本')):
             out=export_can_frames(rows,FrameExportSpec(),Interval(0,10),self.root/'asc',self.budget,source='bus',device_label='home',compact=True)
-        self.assertEqual({p.name for p in out.iterdir()},{'frames.asc','manifest.json'})
-        with ASCRead(ASCSpec(out/'frames.asc'),self.budget) as read:
+        self.assertEqual(set(out.output_dir.iterdir()),{published_file(out,'frames.asc'),out.manifest_path})
+        with ASCRead(ASCSpec(published_file(out,'frames.asc')),self.budget) as read:
             actual=list(read)
         self.assertEqual([(r.time_ns,r.frame) for r in actual],[(r.time_ns,r.frame) for r in rows])
-        doc=json.loads((out/'manifest.json').read_text(encoding='utf-8'))
+        doc=json.loads((published_file(out,'manifest.json')).read_text(encoding='utf-8'))
         self.assertNotIn('exact_source_index',doc);self.assertNotIn('max_float_conversion_error_ns',doc)
         self.assertEqual(self.budget.ram_bytes,0)
 
@@ -61,8 +62,8 @@ class CompactExportTests(TestCase):
         spec=FrameExportSpec('blf',0,'relative','2026-10-24',480)
         with patch('chronaxis.results.frame_exports.Fraction',side_effect=AssertionError('未请求误差对照')),patch('chronaxis.results.frame_exports.frame_to_dict',side_effect=AssertionError('未请求帧副本')):
             out=export_can_frames(rows,spec,Interval(0,200000000),self.root/'blf',self.budget,source='bus',device_label='home',compact=True)
-        with can.BLFReader(out/'frames.blf') as reader: actual=list(reader)
+        with can.BLFReader(published_file(out,'frames.blf')) as reader: actual=list(reader)
         self.assertEqual([r.data for r in actual],[b'\x01\x02',b'\x03\x04'])
         self.assertAlmostEqual(actual[1].timestamp-actual[0].timestamp,.1,places=5)
-        self.assertEqual({p.name for p in out.iterdir()},{'frames.blf','manifest.json'})
+        self.assertEqual(set(out.output_dir.iterdir()),{published_file(out,'frames.blf'),out.manifest_path})
         self.assertEqual(self.budget.ram_bytes,0)

@@ -1,4 +1,4 @@
-# chronaxis.results.frame_patch
+# `chronaxis.results.frame_patch`
 
 用已有DBC位域工具更新明确的连续信号，其他位沿用同一基础帧。
 
@@ -56,7 +56,7 @@ class FrameRebuildRule
 |`protected`|tuple[str, ...]|否|()|明确禁止插值的DBC信号名，例如 `["Counter","Checksum"]`。这些名称须在DBC中存在，也不能出现在continuous中。|
 |`same_time_policy`|str|否|'error'|`"error"`：同一时刻的多个有效值冲突时，把该点视为无法确定，不任选一个值；`"last_by_sequence"`：按来源序号选择最后一条记录。|
 
-源码：[`src/chronaxis/results/frame_patch.py:18`](../../../src/chronaxis/results/frame_patch.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:18`](../../../src/chronaxis/results/frame_patch.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-FrameRebuildRule-__post_init__"></a>
 ### `FrameRebuildRule.__post_init__`
@@ -88,7 +88,7 @@ FrameRebuildRule.__post_init__()
 - `ValueError`：必须选择连续量，且不能插值保护的计数或校验字段。
 - `ValueError`：报文重建字段需要唯一非空名称tuple。
 
-源码：[`src/chronaxis/results/frame_patch.py:29`](../../../src/chronaxis/results/frame_patch.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:29`](../../../src/chronaxis/results/frame_patch.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-FrameRebuildRule-matches"></a>
 ### `FrameRebuildRule.matches`
@@ -113,7 +113,7 @@ FrameRebuildRule.matches(frame)
 
 原模型访问错。
 
-源码：[`src/chronaxis/results/frame_patch.py:46`](../../../src/chronaxis/results/frame_patch.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:46`](../../../src/chronaxis/results/frame_patch.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch"></a>
 ## `DBCFramePatch`
@@ -125,7 +125,7 @@ DBCFramePatch(rule, message, budget)
 ```
 
 
-源码：[`src/chronaxis/results/frame_patch.py:54`](../../../src/chronaxis/results/frame_patch.py#L54)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:54`](../../../src/chronaxis/results/frame_patch.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch-__init__"></a>
 ### `DBCFramePatch.__init__`
@@ -157,7 +157,7 @@ patcher。
 - `TypeError`：需要FrameRebuildRule。
 - `ValueError`：重建规则与DBC报文身份/载荷不符或为容器报文。
 
-源码：[`src/chronaxis/results/frame_patch.py:57`](../../../src/chronaxis/results/frame_patch.py#L57)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:57`](../../../src/chronaxis/results/frame_patch.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch-accept_frame"></a>
 ### `DBCFramePatch.accept_frame`
@@ -186,7 +186,7 @@ ValueError：帧与规则或已选DBC不符，或后续出现另一种实际类�
 
 只记录首次匹配的两个类型标志，后续同型帧不扩大状态。
 
-源码：[`src/chronaxis/results/frame_patch.py:85`](../../../src/chronaxis/results/frame_patch.py#L85)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:85`](../../../src/chronaxis/results/frame_patch.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch-selected"></a>
 ### `DBCFramePatch.selected`
@@ -216,7 +216,7 @@ DBCFramePatch.selected(layout)
 - `ValueError`：报文复用布局不合法。
 - `ValueError`：DBC复用父链非法。
 
-源码：[`src/chronaxis/results/frame_patch.py:100`](../../../src/chronaxis/results/frame_patch.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:100`](../../../src/chronaxis/results/frame_patch.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch-patch"></a>
 ### `DBCFramePatch.patch`
@@ -251,7 +251,7 @@ DBCFramePatch.patch(base, values, layout, *, exact_values=None, trace=True)
 - `ValueError`：当前复用布局缺少必须的连续值。
 - `ValueError`：精确量化目标需要同组Fraction字段。
 
-源码：[`src/chronaxis/results/frame_patch.py:123`](../../../src/chronaxis/results/frame_patch.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:123`](../../../src/chronaxis/results/frame_patch.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DBCFramePatch-close"></a>
 ### `DBCFramePatch.close`
@@ -277,4 +277,4 @@ DBCFramePatch.close()
 
 费用释放错可重试。
 
-源码：[`src/chronaxis/results/frame_patch.py:180`](../../../src/chronaxis/results/frame_patch.py#L180)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/frame_patch.py:180`](../../../src/chronaxis/results/frame_patch.py#L180)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

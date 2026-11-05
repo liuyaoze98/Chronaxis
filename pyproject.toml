@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chronaxis"
-version = "0.1.0.dev1"
+version = "0.1.0.dev2"
 description = "Declarative analysis of multi-source time series"
 dynamic = ["readme"]
 authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]
@@ -25,23 +25,22 @@ dependencies = [
     "python-can==4.6.1",
     "cantools==39.4.3",
     "natsort==8.4.0",
+    "jsonschema==4.25.1",
 ]
 
 [project.urls]
 Repository = "https://github.com/liuyaoze98/Chronaxis"
 Documentation = "https://liuyaoze98.github.io/Chronaxis/"
 Issues = "https://github.com/liuyaoze98/Chronaxis/issues"
-Changelog = "https://github.com/liuyaoze98/Chronaxis/blob/v0.1.0.dev1/Docs/Release/release-notes-0.1.0.dev1.md"
+Changelog = "https://github.com/liuyaoze98/Chronaxis/blob/v0.1.0.dev2/Docs/Release/release-notes-0.1.0.dev2.md"
 
 # 命令行入口与Python API共享计划加载和执行逻辑。
 [project.scripts]
 chronaxis = "chronaxis.cli:main"
 
-# 标准schema验证只用于开发验收，不作为库运行时依赖。
+# 配置汇总诊断与开发验收共用标准schema验证器。
 [project.optional-dependencies]
 test = ["jsonschema==4.25.1"]
-# 兼容已有的chronaxis[can]安装命令；CAN库已由默认依赖安装。
-can = []
 
 [tool.setuptools.packages.find]
 where = ["src"]

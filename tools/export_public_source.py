@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 from zipfile import ZipFile
 from public_docs import reading_text
+from ai_resource_bytes import resource_bytes, validate_result_summaries
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDED_TESTS = {
@@ -28,7 +29,9 @@ PUBLIC_TOOLS = {
     'check_ai_install.py', 'verify_ai_distribution.py', 'lock_ai_inputs.py',
     'test_public_docs.py', 'test_doc_sources.py', 'test_docs_reference.py', 'test_current_html.py',
     'test_manual_example_comments.py', 'test_manual_r2.py',
-    'export_public_source.py', 'pypi_readme.py',
+    'export_public_source.py', 'pypi_readme.py', 'ai_resource_bytes.py',
+    'test_ai_result_bytes.py', 'public_api_catalog.py', 'public_api_notes.py', 'public_api_english.py',
+    'annotate_manual_examples.py', 'manual_example_comments.py',
 }
 
 
@@ -75,7 +78,7 @@ def export(destination, revision='HEAD'):
     lock = json.loads(files['Docs/AI/inputs.lock.json'])
     # 先核输入确属已审核版本；公开正文转换不能掩盖原始资料漂移。
     for name, digest in lock['inputs'].items():
-        original = files[name].replace(b'\r\n', b'\n')
+        original = resource_bytes(name, files[name])
         if sha256(original).hexdigest() != digest:
             raise ValueError('提交中的指南输入与锁不符：'+name)
     transformed = []
@@ -86,7 +89,11 @@ def export(destination, revision='HEAD'):
                 files[name] = public
                 transformed.append(name)
     for name in lock['inputs']:
-        lock['inputs'][name] = sha256(files[name].replace(b'\r\n', b'\n')).hexdigest()
+        lock['inputs'][name] = sha256(resource_bytes(name, files[name])).hexdigest()
+    # 白名单导出也保留结果原字节，并在写目录前核对随附摘要。
+    validate_result_summaries({name.removeprefix('Docs/Current/'): content
+                               for name, content in files.items()
+                               if name.startswith('Docs/Current/examples/results/')})
     files['Docs/AI/inputs.lock.json'] = (json.dumps(lock, indent=2)+'\n').encode()
     files['.gitignore'] = b'__pycache__/\n*.py[cod]\n.venv/\nwork/\nbuild/\ndist/\n*.egg-info/\nDocs/Current/_build/\n'
     # 所有路径来自Git受审白名单，仍核对最终目标避免意外越界。

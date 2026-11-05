@@ -1,4 +1,6 @@
 """核新版样本统计复用旧数值核；条件/TTL/裁剪保持点不能多算样本。"""
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 from copy import deepcopy
@@ -17,7 +19,7 @@ class RecordSampleCalculationTests(unittest.TestCase):
 
     def config(self,*,age='10s',scope='session'):
         """构造值与条件分开更新的数据。参数: 有效期/指标范围。返回: dict。异常: 无。"""
-        raw=dict(config_version=3,
+        raw=dict(config_version=4,
             dataset=dict(name='dataset',entity='device',session='session',domain=dict(start='0s',end='6s')),
             sources=[],signals=[],calculations=[],metadata=dict(device_label='home'))
         for name,unit,dtype,times,values in (('value','W','float64',(0,3,6),(4,8,10)),
@@ -91,8 +93,8 @@ class RecordSampleCalculationTests(unittest.TestCase):
                 last=next(row for row in rows if row.time_ns==3000000000)
                 self.assertEqual(last.selection,'unknown' if unknown else 'true')
                 if unknown:self.assertNotEqual(last.quality,0)
-                output=self.root/uuid4().hex;result.write(output)
-                self.assertTrue((output/'选择结果.csv').exists())
+                output=self.root/uuid4().hex;publication=result.write(output)
+                self.assertTrue((published_file(publication,'选择结果.csv')).exists())
             self.assertEqual(sorted((r.time_ns,r.value,r.selection) for r in rows),
                              [(0,4.,'true'),(3000000000,8.,'unknown' if unknown else 'true')])
 
@@ -155,5 +157,5 @@ class RawSampleCalculationTests(unittest.TestCase):
                 self.assertEqual(next(result.iter_calculations()).value,4800. if mode=='actual' else 4400.)
                 rows=tuple(result.iter_selections());self.assertEqual(len(rows),1 if mode=='actual' else 2)
                 segment,=tuple(result.iter_segments());self.assertTrue(all(row.parent_id==segment.segment_id for row in rows))
-                output=self.root/uuid4().hex;result.write(output)
-                self.assertTrue((output/'selections.jsonl').exists())
+                output=self.root/uuid4().hex;publication=result.write(output)
+                self.assertTrue((published_file(publication,'selections.jsonl')).exists())

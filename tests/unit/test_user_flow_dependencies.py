@@ -59,7 +59,7 @@ class UserFlowDependenciesTests(unittest.TestCase):
 
     def test_explicit_metadata_does_not_import_can_dependency(self):
         """显式完整声明仍是静态路径。参数: 无。返回: None。异常: 意外导入时失败。"""
-        raw = {'dtype': 'int64', 'unit': '1'}
+        raw = {'dtype': 'int64', 'unit': '1', 'input_unit': '1'}
         with patch('chronaxis.can_dependencies.import_module') as importer:
             self.assertEqual(DBCDefaults().fill(raw, None, None, '$.signals[0]'), raw)
         importer.assert_not_called()

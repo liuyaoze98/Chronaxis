@@ -44,7 +44,7 @@ class ConfigurationResolveTests(unittest.TestCase):
         self.assertEqual(before.intervals.resolved,after.intervals.resolved)
 
     def test_all_templates_relocate_and_defaults_keep_typed_semantics(self):
-        """13场景导出到不同目录，两格式及默认开关均可重新加载，原字节不动。参数: 无。返回: None。异常: 断言。"""
+        """12场景导出到不同目录，两格式及默认开关均可重新加载，原字节不动。参数: 无。返回: None。异常: 断言。"""
         for template in available_templates():
             source=initialize_configuration(template.name,self.root/template.name);before=source.read_bytes()
             for defaults in (False,True):
@@ -58,11 +58,6 @@ class ConfigurationResolveTests(unittest.TestCase):
                         elif template.config_type=='batch':
                             from chronaxis import load_batch_plan
                             self.assertEqual(load_batch_plan(source),load_batch_plan(target))
-                        else:
-                            from chronaxis.migration import load_legacy_ini
-                            original=load_legacy_ini(source.parent/'source.ini',source,mode='sclicer_single')
-                            exported=load_legacy_ini(source.parent/'source.ini',target,mode='sclicer_single')
-                            self.assert_semantics(original.plan,exported.plan)
             self.assertEqual(source.read_bytes(),before)
 
     def test_defaults_inherit_and_exported_scenes_execute(self):

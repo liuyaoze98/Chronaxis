@@ -11,9 +11,9 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "分析配置格式3；本地相对引用。字段结构由本规范检查，展开后的跨字段约束由计划模型检查。",
+  "$comment": "分析配置格式4；本地相对引用。字段结构由本规范检查，展开后的跨字段约束由计划模型检查。",
   "title": "Current Chronaxis analysis configuration",
-  "description": "Configuration version 3. Defaults to actual record intervals, with contribution details and extra diagnostics disabled. AnalysisPlan also checks references, units, the driving source, and nanosecond bounds.",
+  "description": "Current analysis configuration version 4 with automatic compatible-unit conversion. Defaults to actual record intervals and requested outputs only; AnalysisPlan checks references, units, drivers and time bounds.",
   "type": "object",
   "required": [
     "config_version",
@@ -28,90 +28,45 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.allOf[0]`
+### `analysis.schema.json: $.allOf[0].properties.signals`
+
+```json
+{
+  "description": "Restrict signal fields to those supported by the selected version."
+}
+```
+
+### `analysis.schema.json: $.allOf[0].properties.signals.items.dependentSchemas.code_dtype.properties.dtype`
+
+```json
+{
+  "const": "enum",
+  "description": "Signal value type; it determines which additional fields apply."
+}
+```
+
+### `analysis.schema.json: $.allOf[0].properties.signals.items.properties.signals`
+
+```json
+{
+  "description": "Restrict signal fields to those supported by the selected version."
+}
+```
+
+### `analysis.schema.json: $.allOf[0].properties.signals.items.properties.signals.items.dependentSchemas.code_dtype.properties.dtype`
+
+```json
+{
+  "const": "enum",
+  "description": "Signal value type; it determines which additional fields apply."
+}
+```
+
+### `analysis.schema.json: $.allOf[1]`
 
 ```json
 {
   "$comment": "省略domain时由同次读取确定实际观测范围，普通分析与按需导出均可使用。"
-}
-```
-
-### `analysis.schema.json: $.allOf[1].then.properties.signals`
-
-```json
-{
-  "description": "Bind original source fields to simple analysis signal names, specifying type, unit, and validity duration."
-}
-```
-
-### `analysis.schema.json: $.allOf[1].then.properties.signals.items.not`
-
-```json
-{
-  "required": [
-    "signals"
-  ]
-}
-```
-
-### `analysis.schema.json: $.allOf[1].then.properties.signals.items.properties.field`
-
-```json
-{
-  "type": "string",
-  "minLength": 1,
-  "pattern": "\\S",
-  "description": "Actual field in the source: an original field name for signal tables/memory, or a CAN channel/message/signal locator object."
-}
-```
-
-### `analysis.schema.json: $.allOf[1].if`
-
-```json
-{
-  "required": [
-    "sources"
-  ]
-}
-```
-
-### `analysis.schema.json: $.allOf[1].if.not`
-
-```json
-{
-  "required": [
-    "imports"
-  ]
-}
-```
-
-### `analysis.schema.json: $.allOf[1].if.properties.sources`
-
-```json
-{
-  "description": "Sources in declaration order. Put consecutive files in one source's paths. Loading may enumerate filenames and read DBC metadata needed for omitted signal settings, but does not read business records."
-}
-```
-
-### `analysis.schema.json: $.allOf[1].if.properties.sources.items`
-
-```json
-{
-  "required": [
-    "source_type"
-  ]
-}
-```
-
-### `analysis.schema.json: $.allOf[1].if.properties.sources.items.properties.source_type`
-
-```json
-{
-  "enum": [
-    "memory",
-    "signal_csv"
-  ],
-  "description": "Source type, selecting the reader and required fields. Options: \"memory\", ordered records embedded in configuration; \"signal_csv\", decoded-signal CSV."
 }
 ```
 
@@ -123,111 +78,24 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field`
-
-```json
-{
-  "type": "object",
-  "required": [
-    "signal",
-    "frame_id"
-  ],
-  "description": "Actual field in the source: an original field name for signal tables/memory, or a CAN channel/message/signal locator object.",
-  "additionalProperties": false
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.allOf[0].then.properties.frame_id`
-
-```json
-{
-  "maximum": 2047,
-  "description": "Integer message IDs for standard frames are limited to 2047. The plan loader checks the range after converting string IDs."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.allOf[0].if`
+### `analysis.schema.json: $.allOf[2].then.properties.signals.items.not`
 
 ```json
 {
   "required": [
-    "is_extended"
+    "signals"
   ]
 }
 ```
 
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.allOf[0].if.properties.is_extended`
-
-```json
-{
-  "const": false,
-  "description": "When standard frame format is explicitly selected, an integer ID must fit in 11 bits."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.channel`
-
-```json
-{
-  "type": "integer",
-  "minimum": 1,
-  "description": "CAN channels in user configuration start at 1; 1 maps to internal channel 0. If omitted, inherits the source's unique channel."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.signal`
+### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field`
 
 ```json
 {
   "type": "string",
   "minLength": 1,
-  "description": "Original signal name in the DBC, used with frame_id to locate a signal within that message. This is not the analysis alias."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.frame_id`
-
-```json
-{
-  "description": "CAN message ID, as an integer or string. 0x is hexadecimal, 0b binary, and no prefix decimal. The parsed value must be 0 to 536870911; an explicitly standard frame is limited to 2047."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.frame_id.oneOf[0]`
-
-```json
-{
-  "type": "integer",
-  "minimum": 0,
-  "maximum": 536870911
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.frame_id.oneOf[1]`
-
-```json
-{
-  "type": "string",
-  "pattern": "^(?:[0-9]+|0[xX][0-9a-fA-F]+|0[bB][01]+)(?![\\s\\S])",
-  "minLength": 1
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.is_extended`
-
-```json
-{
-  "type": "boolean",
-  "description": "Optional standard/extended frame constraint. If omitted, use DBC and actual frames; request an explicit value only when ambiguous. Explicit null is invalid."
-}
-```
-
-### `analysis.schema.json: $.allOf[2].then.properties.signals.items.properties.field.properties.is_fd`
-
-```json
-{
-  "type": "boolean",
-  "description": "Optional CAN/CAN FD constraint. If omitted, use DBC and actual frames; request an explicit value only when ambiguous. Explicit null is invalid."
+  "pattern": "\\S",
+  "description": "Actual field in the source: an original field name for signal tables/memory, or a CAN channel/message/signal locator object."
 }
 ```
 
@@ -274,6 +142,172 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "enum": [
+    "memory",
+    "signal_csv"
+  ],
+  "description": "Source type, selecting the reader and required fields. Options: \"memory\", ordered records embedded in configuration; \"signal_csv\", decoded-signal CSV."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals`
+
+```json
+{
+  "description": "Bind original source fields to simple analysis signal names, specifying type, unit, and validity duration."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "signal",
+    "frame_id"
+  ],
+  "description": "Actual field in the source: an original field name for signal tables/memory, or a CAN channel/message/signal locator object.",
+  "additionalProperties": false
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.allOf[0].then.properties.frame_id`
+
+```json
+{
+  "maximum": 2047,
+  "description": "Integer message IDs for standard frames are limited to 2047. The plan loader checks the range after converting string IDs."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.allOf[0].if`
+
+```json
+{
+  "required": [
+    "is_extended"
+  ]
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.allOf[0].if.properties.is_extended`
+
+```json
+{
+  "const": false,
+  "description": "When standard frame format is explicitly selected, an integer ID must fit in 11 bits."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.channel`
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "description": "CAN channels in user configuration start at 1; 1 maps to internal channel 0. If omitted, inherits the source's unique channel."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.signal`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Original signal name in the DBC, used with frame_id to locate a signal within that message. This is not the analysis alias."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.frame_id`
+
+```json
+{
+  "description": "CAN message ID, as an integer or string. 0x is hexadecimal, 0b binary, and no prefix decimal. The parsed value must be 0 to 536870911; an explicitly standard frame is limited to 2047."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.frame_id.oneOf[0]`
+
+```json
+{
+  "type": "integer",
+  "minimum": 0,
+  "maximum": 536870911
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.frame_id.oneOf[1]`
+
+```json
+{
+  "type": "string",
+  "pattern": "^(?:[0-9]+|0[xX][0-9a-fA-F]+|0[bB][01]+)(?![\\s\\S])",
+  "minLength": 1
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.is_extended`
+
+```json
+{
+  "type": "boolean",
+  "description": "Optional standard/extended frame constraint. If omitted, use DBC and actual frames; request an explicit value only when ambiguous. Explicit null is invalid."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].then.properties.signals.items.properties.field.properties.is_fd`
+
+```json
+{
+  "type": "boolean",
+  "description": "Optional CAN/CAN FD constraint. If omitted, use DBC and actual frames; request an explicit value only when ambiguous. Explicit null is invalid."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].if`
+
+```json
+{
+  "required": [
+    "sources"
+  ]
+}
+```
+
+### `analysis.schema.json: $.allOf[3].if.not`
+
+```json
+{
+  "required": [
+    "imports"
+  ]
+}
+```
+
+### `analysis.schema.json: $.allOf[3].if.properties.sources`
+
+```json
+{
+  "description": "Sources in declaration order. Put consecutive files in one source's paths. Loading may enumerate filenames and read DBC metadata needed for omitted signal settings, but does not read business records."
+}
+```
+
+### `analysis.schema.json: $.allOf[3].if.properties.sources.items`
+
+```json
+{
+  "required": [
+    "source_type"
+  ]
+}
+```
+
+### `analysis.schema.json: $.allOf[3].if.properties.sources.items.properties.source_type`
+
+```json
+{
+  "enum": [
     "can_blf",
     "can_asc",
     "raw_can_csv"
@@ -307,9 +341,765 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 
 ```json
 {
-  "const": 3,
   "type": "integer",
-  "description": "Analysis configuration format number. Only the integer 3 is accepted; older versions and a separate semantic_version are not accepted. Constant: 3."
+  "description": "Analysis format number. Only integer 4 is accepted; older versions, omissions and incorrect types are rejected without conversion.",
+  "const": 4
+}
+```
+
+### `analysis.schema.json: $.properties.transforms`
+
+```json
+{
+  "type": "array",
+  "maxItems": 64,
+  "description": "In version 4, compute rolling values and rates at real record updates or specified output ticks."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "name",
+    "operation",
+    "expr"
+  ],
+  "additionalProperties": false
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.else`
+
+```json
+{
+  "required": [
+    "window",
+    "step"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.else.properties.max_gap`
+
+```json
+{
+  "description": "Do not set max_gap for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then`
+
+```json
+{
+  "required": [
+    "max_gap"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then.properties.window`
+
+```json
+{
+  "description": "Do not set window for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then.properties.step`
+
+```json
+{
+  "description": "Do not set step for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then.properties.origin`
+
+```json
+{
+  "description": "Do not set origin for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then.properties.partial_policy`
+
+```json
+{
+  "description": "Do not set partial_policy for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.then.properties.minimum_coverage`
+
+```json
+{
+  "description": "Do not set minimum_coverage for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.if.properties.operation`
+
+```json
+{
+  "const": "adjacent_rate",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.name`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Name assigned to this declaration and used by references."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.operation`
+
+```json
+{
+  "enum": [
+    "rolling_time_mean",
+    "rolling_minimum",
+    "rolling_maximum",
+    "rolling_integral",
+    "adjacent_rate",
+    "window_rate",
+    "sample_fit_slope"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.expr`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Expression over bound signals or derived values used as input."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Requested result unit; it must be compatible with the quantity."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.window`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "Select the window; the duration of a transform window must be positive."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.step`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "Positive actual-time spacing between scheduled outputs."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.origin`
+
+```json
+{
+  "type": "string",
+  "description": "Actual time origin used to align outputs in the source clock."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.max_gap`
+
+```json
+{
+  "type": "string",
+  "pattern": "^\\s*[+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?\\s*(?:ns|us|ms|s)\\s*$",
+  "description": "Longest permitted gap between adjacent actual updates."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.partial_policy`
+
+```json
+{
+  "enum": [
+    "strict",
+    "report"
+  ],
+  "description": "Choose whether to return a partial value or null when data are incomplete."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.minimum_coverage`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "Minimum fraction of the requested window covered by valid data."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.properties.interval`
+
+```json
+{
+  "$ref": "#/properties/calculations/items/properties/interval",
+  "description": "Use actual intervals, a fixed period or a DBC period from raw messages."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations`
+
+```json
+{
+  "type": "array",
+  "description": "Summarize calculations, pairings, events or windows within this run when requested."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "name",
+    "source",
+    "operation"
+  ],
+  "additionalProperties": false
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].else.properties.q`
+
+```json
+{
+  "description": "Do not set q for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then`
+
+```json
+{
+  "required": [
+    "q"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].if.properties.operation`
+
+```json
+{
+  "const": "quantile",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[1].else.properties.ddof`
+
+```json
+{
+  "description": "Do not set ddof for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[1].if.properties.operation`
+
+```json
+{
+  "const": "variance",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[2].then.properties.field`
+
+```json
+{
+  "description": "Do not set field for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[2].then.properties.unit`
+
+```json
+{
+  "const": "1",
+  "description": "Requested result unit; it must be compatible with the quantity."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[2].if.properties.operation`
+
+```json
+{
+  "const": "count",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.group_by`
+
+```json
+{
+  "description": "Group rows by identifiers available on the selected source."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "sequence_id"
+  ],
+  "description": "Grouping key available for this source. Use each key at most once."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.field`
+
+```json
+{
+  "const": "delay_ns",
+  "description": "Numeric column to read from the selected result rows."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[3].if.properties.source`
+
+```json
+{
+  "required": [
+    "sequence"
+  ],
+  "description": "Select the kind and name of the result to aggregate."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.group_by`
+
+```json
+{
+  "description": "Group rows by identifiers available on the selected source."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "calculation_id",
+    "parent_id"
+  ],
+  "description": "Grouping key available for this source. Use each key at most once."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.field`
+
+```json
+{
+  "const": "value",
+  "description": "Numeric column to read from the selected result rows."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[4].if.properties.source`
+
+```json
+{
+  "required": [
+    "calculation"
+  ],
+  "description": "Select the kind and name of the result to aggregate."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.group_by`
+
+```json
+{
+  "description": "Group rows by identifiers available on the selected source."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "rule_id"
+  ],
+  "description": "Grouping key available for this source. Use each key at most once."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.operation`
+
+```json
+{
+  "const": "count",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.field`
+
+```json
+{
+  "description": "Do not set field for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[5].if.properties.source`
+
+```json
+{
+  "required": [
+    "rule"
+  ],
+  "description": "Select the kind and name of the result to aggregate."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.group_by`
+
+```json
+{
+  "description": "Group rows by identifiers available on the selected source."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "window_id"
+  ],
+  "description": "Grouping key available for this source. Use each key at most once."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.operation`
+
+```json
+{
+  "const": "count",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.field`
+
+```json
+{
+  "description": "Do not set field for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[6].if.properties.source`
+
+```json
+{
+  "required": [
+    "window"
+  ],
+  "description": "Select the kind and name of the result to aggregate."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.name`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "Name assigned to this declaration and used by references."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.source`
+
+```json
+{
+  "type": "object",
+  "description": "Select exactly one calculation, sequence, rule or window from the current run.",
+  "minProperties": 1,
+  "maxProperties": 1,
+  "additionalProperties": false
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.source.properties.calculation`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "Name of the scalar calculation whose rows are to be aggregated."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.source.properties.sequence`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "Name of the declared sequence producing request and response outcomes."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.source.properties.rule`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "Name of the declared rule that produces the events to count."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.source.properties.window`
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+  "description": "Name of the declared window producing the segments to count."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.operation`
+
+```json
+{
+  "enum": [
+    "count",
+    "sum",
+    "mean",
+    "variance",
+    "quantile",
+    "median"
+  ],
+  "description": "Operation on the selected result rows. Mean and P95 response delay use successfully matched responses only."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.field`
+
+```json
+{
+  "enum": [
+    "value",
+    "delay_ns"
+  ],
+  "description": "Optional numeric field. Calculations default to value and sequences to delay_ns. Counts have no numeric field."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.group_by`
+
+```json
+{
+  "type": "array",
+  "uniqueItems": true,
+  "description": "Group by these stable fields. Omitting group_by produces a single group for the selected source."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.group_by.items`
+
+```json
+{
+  "enum": [
+    "dataset_id",
+    "entity_id",
+    "session_id",
+    "calculation_id",
+    "parent_id",
+    "sequence_id",
+    "rule_id",
+    "window_id"
+  ],
+  "description": "Grouping key available for this source. Use each key at most once."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Unit of the aggregate. Counts use 1; response latency can use ms or s."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.include_partial`
+
+```json
+{
+  "type": "boolean",
+  "description": "Include existing partial values. Including them does not make the aggregate complete."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.partial_policy`
+
+```json
+{
+  "enum": [
+    "report",
+    "strict"
+  ],
+  "description": "For an incomplete population, report may return the known part; strict returns no value."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.q`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "Quantile probability, required for quantile. Median uses 0.5 and does not accept q."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.properties.ddof`
+
+```json
+{
+  "type": "integer",
+  "enum": [
+    0,
+    1
+  ],
+  "description": "Degrees of freedom correction for variance; defaults to 0."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups`
+
+```json
+{
+  "type": "array",
+  "maxItems": 64,
+  "description": "Version 4 one-dimensional calibration tables referenced by name in lookup. Input coordinates must strictly increase in their declared unit. Step interpolation retains the fixed-width output type."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items`
+
+```json
+{
+  "type": "object",
+  "required": [
+    "name",
+    "points",
+    "input_unit",
+    "unit"
+  ],
+  "additionalProperties": false
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.name`
+
+```json
+{
+  "$ref": "#/properties/dataset/properties/name",
+  "description": "Unique table name used by expressions."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.input_unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 256,
+  "description": "Calibration axis unit. Compatible query values are converted to this unit."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.unit`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 256,
+  "description": "Requested result unit; it must be compatible with the quantity."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.points`
+
+```json
+{
+  "type": "array",
+  "minItems": 2,
+  "maxItems": 4096,
+  "description": "Numeric [input, output] pairs in ascending input order. The loader checks finite coordinates, fixed-width integers and precision."
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.points.items`
+
+```json
+{
+  "type": "array",
+  "minItems": 2,
+  "maxItems": 2
+}
+```
+
+### `analysis.schema.json: $.properties.lookups.items.properties.points.items.items`
+
+```json
+{
+  "type": "number"
 }
 ```
 
@@ -6543,6 +7333,18 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
+### `analysis.schema.json: $.properties.signals.items.oneOf[0].properties.code_dtype`
+
+```json
+{
+  "enum": [
+    "int64",
+    "uint64"
+  ],
+  "description": "Original integer type of a version 4 enum, used by enum_code. The DBC can supply it for unscaled integer CAN signals."
+}
+```
+
 ### `analysis.schema.json: $.properties.signals.items.oneOf[0].properties.choices`
 
 ```json
@@ -6727,7 +7529,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "object",
-  "description": "Numeric conversion settings for this signal. Omission keeps values unchanged; DBC scaling is not repeated here.",
+  "description": "Additional unit conversion. If both coefficients are omitted, infer conversion from input and target units. Supplying either coefficient selects a complete explicit conversion; DBC scaling is not repeated.",
   "additionalProperties": false
 }
 ```
@@ -6736,13 +7538,10 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 
 ```json
 {
-  "type": [
-    "string",
-    "null"
-  ],
+  "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "Input unit after reader parsing or DBC decoding. Omission or null uses unit; a non-null value must be non-empty text. Declaring a unit does not convert values automatically."
+  "description": "Unit after reading or DBC decoding. Raw CAN inputs infer it from the DBC; decoded CSV and memory inputs use the target unit when omitted. Explicit null is invalid; omit the field instead."
 }
 ```
 
@@ -6751,8 +7550,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "number",
-  "description": "Additional multiplier applied to decoded values; defaults to 1. Together with offset, it defines an explicit numeric conversion.",
-  "default": 1
+  "description": "Multiplier. Inferred if both coefficients are omitted; defaults to 1 only when offset is explicitly supplied. Explicit coefficients must match the units."
 }
 ```
 
@@ -6761,8 +7559,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "number",
-  "description": "Additional offset applied to decoded values; defaults to 0. Multiply the original value by scale, then add this offset, and apply the explicit direction/unit contract.",
-  "default": 0
+  "description": "Offset after multiplication, expressed in the target unit. Inferred if both coefficients are omitted; defaults to 0 only when scale is explicitly supplied."
 }
 ```
 
@@ -7191,6 +7988,18 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
+### `analysis.schema.json: $.properties.signals.items.oneOf[1].properties.signals.items.properties.code_dtype`
+
+```json
+{
+  "enum": [
+    "int64",
+    "uint64"
+  ],
+  "description": "Integer type before enum labels are applied in version 4. Only enum_code requests original codes."
+}
+```
+
 ### `analysis.schema.json: $.properties.signals.items.oneOf[1].properties.signals.items.properties.choices`
 
 ```json
@@ -7385,7 +8194,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "object",
-  "description": "Numeric conversion settings for this signal. Omission keeps values unchanged; DBC scaling is not repeated here.",
+  "description": "Additional unit conversion. If both coefficients are omitted, infer conversion from input and target units. Supplying either coefficient selects a complete explicit conversion; DBC scaling is not repeated.",
   "additionalProperties": false
 }
 ```
@@ -7394,13 +8203,10 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 
 ```json
 {
-  "type": [
-    "string",
-    "null"
-  ],
+  "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "Input unit after reader parsing or DBC decoding. Omission or null uses unit; a non-null value must be non-empty text. Declaring a unit does not convert values automatically."
+  "description": "Unit after reading or DBC decoding. Raw CAN inputs infer it from the DBC; decoded CSV and memory inputs use the target unit when omitted. Explicit null is invalid; omit the field instead."
 }
 ```
 
@@ -7409,8 +8215,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "number",
-  "description": "Additional multiplier applied to decoded values; defaults to 1. Together with offset, it defines an explicit numeric conversion.",
-  "default": 1
+  "description": "Multiplier. Inferred if both coefficients are omitted; defaults to 1 only when offset is explicitly supplied. Explicit coefficients must match the units."
 }
 ```
 
@@ -7419,8 +8224,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "number",
-  "description": "Additional offset applied to decoded values; defaults to 0. Multiply the original value by scale, then add this offset, and apply the explicit direction/unit contract.",
-  "default": 0
+  "description": "Offset after multiplication, expressed in the target unit. Inferred if both coefficients are omitted; defaults to 0 only when scale is explicitly supplied."
 }
 ```
 
@@ -9751,13 +10555,26 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].else`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].else.else`
 
 ```json
 {
   "required": [
     "expr"
   ]
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].else.if.properties.operation`
+
+```json
+{
+  "enum": [
+    "point_event_count",
+    "activity_count",
+    "segment_count"
+  ],
+  "description": "Named operation to run for this calculation."
 }
 ```
 
@@ -9826,6 +10643,220 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 {
   "const": "integral",
   "description": "Calculation operation, distinguishing sample and time-weighted statistics; ambiguous mean/min/max are rejected. Constant: \"integral\", integration using the held previous value."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[2].else.properties.rule`
+
+```json
+{
+  "description": "Do not set rule for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[2].then`
+
+```json
+{
+  "required": [
+    "rule"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[2].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "point_event_count",
+    "activity_count"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[3].else.properties.window`
+
+```json
+{
+  "description": "Do not set window for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[3].then`
+
+```json
+{
+  "required": [
+    "window"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[3].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "segment_count"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[4].then.properties.unit`
+
+```json
+{
+  "const": "1",
+  "description": "Requested result unit; it must be compatible with the quantity."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[4].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "sample_count",
+    "point_event_count",
+    "activity_count",
+    "segment_count"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.scope`
+
+```json
+{
+  "const": "session",
+  "description": "Select the session, event or window over which this calculation runs."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.expr`
+
+```json
+{
+  "description": "Do not set expr for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.condition`
+
+```json
+{
+  "description": "Do not set condition for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.method`
+
+```json
+{
+  "description": "Do not set method for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.minimum_coverage`
+
+```json
+{
+  "description": "Do not set minimum_coverage for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.interval`
+
+```json
+{
+  "description": "Do not set interval for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[5].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "point_event_count",
+    "activity_count",
+    "segment_count"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[6].else.properties.ddof`
+
+```json
+{
+  "description": "Do not set ddof for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[6].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "sample_variance",
+    "sample_stddev",
+    "time_variance",
+    "time_stddev"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[7].then.properties.ddof`
+
+```json
+{
+  "const": 0,
+  "description": "Degrees of freedom subtracted in the variance or standard deviation denominator."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[7].if.properties.operation`
+
+```json
+{
+  "enum": [
+    "time_variance",
+    "time_stddev"
+  ],
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[8].else.properties.q`
+
+```json
+{
+  "description": "Do not set q for this version or operation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[8].then`
+
+```json
+{
+  "required": [
+    "q"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[8].if.properties.operation`
+
+```json
+{
+  "const": "sample_quantile",
+  "description": "Named operation to run for this calculation."
 }
 ```
 
@@ -9960,9 +10991,21 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "max_time",
     "time_weighted_mean",
     "duration",
-    "integral"
+    "integral",
+    "sample_count",
+    "point_event_count",
+    "activity_count",
+    "segment_count",
+    "sample_variance",
+    "sample_stddev",
+    "time_variance",
+    "time_stddev",
+    "sample_rms",
+    "time_rms",
+    "sample_quantile",
+    "sample_median"
   ],
-  "description": "Calculation operation, distinguishing sample statistics from time-weighted statistics. Ambiguous mean/min/max names are not accepted. Options: \"select\", records satisfying the condition; \"sample_minimum\", minimum valid sample; \"sample_maximum\", maximum valid sample; \"sample_mean\", equally weighted mean of valid samples; \"min_time\", minimum over valid time intervals; \"max_time\", maximum over valid time intervals; \"time_weighted_mean\", mean weighted by valid duration; \"duration\", total duration when the condition is true; \"integral\", integration using held previous values."
+  "description": "Calculation operation. Sample statistics weight real samples equally; time statistics use the duration for which a value is valid. select returns matching rows, duration sums true time and integral uses zero-order hold. In version 4, sample_count counts valid samples, point_event_count counts points, activity_count counts activities and segment_count counts final segments. The enum lists the available operations."
 }
 ```
 
@@ -10133,6 +11176,50 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
+### `analysis.schema.json: $.properties.calculations.items.properties.rule`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Name of the point or activity rule to count. Used only for object counts."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.properties.window`
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "description": "Name of the window whose final segments are counted. Only used by segment_count."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.properties.ddof`
+
+```json
+{
+  "type": "integer",
+  "enum": [
+    0,
+    1
+  ],
+  "description": "Degrees of freedom for sample variance and standard deviation: 0 uses the population and 1 uses N−1. Time-weighted variants accept only 0."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.properties.q`
+
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 1,
+  "description": "Exact quantile probability: 0 for the minimum, 1 for the maximum or 0.95 for P95. Only sample_quantile accepts q."
+}
+```
+
 ### `analysis.schema.json: $.properties.presets`
 
 ```json
@@ -10219,7 +11306,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "const": "1",
-  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=3."
+  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=4."
 }
 ```
 
@@ -10578,7 +11665,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "const": "1",
-  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=3."
+  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=4."
 }
 ```
 
@@ -10775,7 +11862,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "const": "1",
-  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=3."
+  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=4."
 }
 ```
 
@@ -11043,7 +12130,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "const": "1",
-  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=3."
+  "description": "Preset contract version. Optional, defaulting to the string \"1\". It controls a different object from the analysis file's integer config_version=4."
 }
 ```
 
@@ -11765,7 +12852,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 ```json
 {
   "type": "object",
-  "description": "Analysis result tables and optional signal/CAN exports. After an actual run, outputs are written to a new directory.",
+  "description": "Result tables and optional signal/CAN exports. The published output directory can be reused; each run uses distinct timestamped filenames located through its completion manifest.",
   "default": {},
   "additionalProperties": false
 }
@@ -13643,259 +14730,5 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 {
   "$ref": "analysis.schema.json#/properties/derived",
   "description": "Derived expressions declared by name, sharing the signals namespace. They cannot override same-named signals from earlier files or this file."
-}
-```
-
-## legacy-import-v1.schema.json
-
-[Original validation schema](../../../Schema/legacy-import-v1.schema.json)
-
-### `legacy-import-v1.schema.json: $`
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "旧INI的显式映射结构；跨段、原字段、单位和支持范围由导入器及计划模型检查。",
-  "title": "Chronaxis explicit legacy INI mapping schema",
-  "type": "object",
-  "required": [
-    "mapping_version",
-    "analysis"
-  ],
-  "description": "INI migration mapping shared by JSON and YAML. Sources and business parameters are explicit; unique original fields can match automatically, and CAN metadata may be supplied from DBC as needed. The original INI is preserved; failure does not return a partial plan.",
-  "additionalProperties": false
-}
-```
-
-### `legacy-import-v1.schema.json: $.$defs.name`
-
-```json
-{
-  "$ref": "analysis.schema.json#/properties/signals/items/oneOf/0/properties/name"
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.mapping_version`
-
-```json
-{
-  "const": 1,
-  "description": "Structural version of the legacy INI mapping file, currently integer 1. This is not the business version of an analysis signal mapping. Constant: 1."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.path_base`
-
-```json
-{
-  "const": "mapping_directory",
-  "description": "Optional; defaults to and currently only supports mapping_directory. Relative paths use the directory of the file that declares them; shared definitions and overrides retain their own source locations."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.io_policy`
-
-```json
-{
-  "const": "explicit_mapping",
-  "description": "Optional; defaults to and currently only supports explicit_mapping. Inputs and outputs come from analysis rather than directly reusing legacy INI INPUT/OUTPUT paths."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis`
-
-```json
-{
-  "description": "Analysis body for current config_version=3. The caller provides sources, signals, and explicit analysis settings. Node sections generated by INI conversion must remain empty."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis.allOf[0]`
-
-```json
-{
-  "$ref": "analysis.schema.json"
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis.allOf[1].properties.rules`
-
-```json
-{
-  "maxItems": 0,
-  "description": "Rules that identify events. Rule names share a unique namespace with windows, calculations, and sequences."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis.allOf[1].properties.windows`
-
-```json
-{
-  "maxItems": 0,
-  "description": "Data segments generated from events, with before/after extensions and a segment merge policy."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis.allOf[1].properties.message_calculations`
-
-```json
-{
-  "maxItems": 0,
-  "description": "Per-message accumulation for selected CAN messages. Each actual message is evaluated independently; ordinary signal holding is not applied and no extra time difference is multiplied in."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.analysis.allOf[1].properties.presets`
-
-```json
-{
-  "maxItems": 0,
-  "description": "Expand explicitly bound roles and parameters into ordinary rules, windows, and calculations. Signal names do not imply roles or thresholds."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.aliases`
-
-```json
-{
-  "type": "object",
-  "propertyNames": {
-    "type": "string",
-    "minLength": 1
-  },
-  "description": "Mapping from original INI variables to analysis signal names. Optional or partial: a uniquely matching original field is filled automatically, explicit mappings take precedence, and multiple candidates require a choice."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.aliases.additionalProperties`
-
-```json
-{
-  "$ref": "analysis.schema.json#/properties/signals/items/oneOf/0/properties/name"
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections`
-
-```json
-{
-  "type": "object",
-  "minProperties": 1,
-  "description": "Mapping from original INI sections to generated nodes and business parameters. Explicit mappings correspond section by section. single/start_only/start_end may omit the mapping entirely, generating trigger_N/window_N in order; legacy_sum and slope still require unit or mode parameters."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[0]`
-
-```json
-{
-  "type": "object",
-  "required": [
-    "name",
-    "window"
-  ],
-  "additionalProperties": false
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[0].properties.name`
-
-```json
-{
-  "$ref": "#/$defs/name",
-  "description": "Unique declaration name. Start with a non-reserved English letter or underscore, followed by letters, digits, or underscores. Names must not repeat."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[0].properties.window`
-
-```json
-{
-  "$ref": "#/$defs/name",
-  "description": "Window name generated from an original INI section. It must be unique and must not conflict with other nodes."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1]`
-
-```json
-{
-  "type": "object",
-  "required": [
-    "name",
-    "source",
-    "unit",
-    "message_policy",
-    "update_message",
-    "parameter_units"
-  ],
-  "additionalProperties": false
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.name`
-
-```json
-{
-  "$ref": "#/$defs/name",
-  "description": "Unique declaration name. Start with a non-reserved English letter or underscore, followed by letters, digits, or underscores. Names must not repeat."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.source`
-
-```json
-{
-  "$ref": "#/$defs/name",
-  "description": "name of a declared source. The reference must exist; sources are not inferred from matching field or semantic names."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.unit`
-
-```json
-{
-  "type": "string",
-  "pattern": "\\S",
-  "description": "Unit of numeric values. Units are checked during expressions and conversion and are not inferred from field or file names."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.message_policy`
-
-```json
-{
-  "const": "current_message-v1",
-  "description": "Message evaluation policy, currently fixed to current_message-v1, using only explicit fields of the current message. Constant: \"current_message-v1\"."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.update_message`
-
-```json
-{
-  "$ref": "analysis.schema.json#/properties/message_calculations/items/properties/update_message",
-  "description": "Exact CAN message that triggers this calculation, including channel, frame ID, standard/extended type, and CAN FD flag."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.parameter_units`
-
-```json
-{
-  "type": "object",
-  "propertyNames": {
-    "$ref": "#/$defs/name"
-  },
-  "description": "Explicit units for original INI numeric parameter names. Dimensions must not be guessed from names or example values."
-}
-```
-
-### `legacy-import-v1.schema.json: $.properties.sections.additionalProperties.oneOf[1].properties.parameter_units.additionalProperties`
-
-```json
-{
-  "type": "string",
-  "pattern": "\\S"
 }
 ```

@@ -1,5 +1,5 @@
 # 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
-config_version: 3                                   # 声明分析文件采用的字段结构版本；当前填写整数3
+config_version: 4                                   # 声明分析文件采用的字段结构版本；当前填写整数4
 dataset:                                            # 设置本次分析名称及可选的对象、会话和时间范围
   name: preset_example                              # 命名本次分析数据集；名称写入结果身份字段
 sources:                                            # 列出输入来源；每项规定数据位置、格式和时间解释方式
@@ -33,4 +33,4 @@ presets:                                            # 选择预先组合好的�
       max_delay: 2s                                 # 设置请求到响应的最大允许延迟；必须不小于最小延迟
       min_delay: 0s                                 # 设置请求到响应的最小允许延迟；按协议要求填写
     preset_type: command_response                   # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
-    version: '1'                                    # 选择预设定义版本；当前填写字符串"1"，与config_version的整数3分别使用
+    version: '1'                                    # 选择预设定义版本；当前填写字符串"1"，与分析配置结构版本相互独立

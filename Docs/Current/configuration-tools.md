@@ -16,7 +16,7 @@
 |--output|convert|指定尚不存在的目标文件，必填；.yaml/.yml写YAML，.json写JSON。相对路径配置应保持同目录。|
 |--output|resolve|指定尚不存在的展开文件；省略时打印到终端。文件后缀决定表示格式，父目录须可用。|
 |--format|resolve|选择yaml或json；输出到终端默认yaml。写文件时显式值须与后缀一致。|
-|--defaults|resolve|开关，不跟值；开启后写出适用的默认值，省略则保留显式声明。只展开能确定的配置默认值；缺少CAN类型、单位或枚举映射时，可能读取所指定DBC补齐。|
+|--defaults|resolve|开关，不跟值；开启后写出适用的默认值，省略则保留显式声明。只展开能确定的配置默认值；缺少CAN类型、输入／目标单位或枚举信息时，可能读取所指定DBC补齐。|
 |--fields|origins|开关，不跟值；开启后列出各个用户填写字段的位置，省略时按来源、信号、派生定义列出。|
 |--format|origins|选择text或json；默认text。json用于程序读取字段来源，不是展开后的分析配置。|
 
@@ -46,7 +46,7 @@ can-export和signal-export模板中的metadata.device_label初始为home，表�
 chronaxis config convert demo/plan.yaml --output demo/plan.json
 ```
 
-支持单任务配置3、批量配置1和INI映射配置1，三者是独立入口。convert只改变表示方式，不转换旧结构。类型、数值、键的顺序和路径文本保持；注释不保留。输出后会重新解析检查，大整数和浮点负零也必须保留。目标文件必须不存在。
+支持分析配置4和批量配置1，两者是独立文档类型。convert只改变表示方式，不转换旧结构。类型、数值、键的顺序和路径文本保持；注释不保留。输出后会重新解析检查，大整数和浮点负零也必须保留。目标文件必须不存在。
 
 含相对路径时，convert只允许在同目录输出，否则同一文本可能指向不同文件。要放到另一个目录，用下面的resolve明确固定原文件位置。
 
@@ -60,7 +60,7 @@ chronaxis config resolve demo/plan.yaml --defaults --output elsewhere/effective.
 
 resolve先按声明顺序展开一层imports，再把预设生成的派生信号、规则、窗口和计算写成普通声明，删除imports和已展开的presets，避免再次生成重复项。省略--output时，终端仅输出配置文本，默认YAML；--format json切换为JSON，方便重定向或程序读取。写文件时由扩展名确定格式；显式--format与扩展名不一致会报错。
 
---defaults额外写出适用的执行预算、后端、输出开关、诊断开关、来源解码/CSV设置、信号保持/同刻政策、规则确认设置、计算单位/覆盖门槛/继承政策、序列容量及各节点有效间隔。输出仍采用当前reader、conversion、time.clock、对象scope和节点interval结构。它不会添加无关规则字段、猜业务阈值或在未读DBC时编造周期。CAN省略dtype/unit或enum的choices时，加载计划会读取DBC补齐；显式完整声明不因本功能额外打开DBC。未指定--defaults时保留原显式值。
+--defaults额外写出适用的执行预算、后端、输出开关、诊断开关、来源解码/CSV设置、信号保持/同刻政策、规则确认设置、计算单位/覆盖门槛/继承政策、序列容量及各节点有效间隔。输出仍采用当前reader、conversion、time.clock、对象scope和节点interval结构。它不会添加无关规则字段、猜业务阈值或在未读DBC时编造周期。CAN省略dtype/unit或enum的choices时，加载计划会读取DBC补齐；版本4还会补齐省略的conversion.input_unit，按需取得枚举原始编码类型。只有这些所需信息均已明确时，才不会为补默认值而额外读取DBC。未指定--defaults时保留原显式值。
 
 所有来源文件、DBC和批量子计划路径固定为原声明文件所指的绝对路径（按声明文件所在目录拼接并规范化，不解析符号链接或目录联接的真实目标）；不读取报文或物理量数据，不复制数据，也不更改原文件。目录/通配符需要枚举文件名；缺少CAN元数据的声明可能读取DBC。导出的配置可独立重新加载，并能放到其他目录，但跨设备仍需使这些输入路径可用。显式填默认或展开预设会改变根据配置声明计算的标识哈希，这不表示算法改变。
 

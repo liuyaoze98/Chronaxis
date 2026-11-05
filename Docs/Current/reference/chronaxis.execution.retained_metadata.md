@@ -1,4 +1,4 @@
-# chronaxis.execution.retained_metadata
+# `chronaxis.execution.retained_metadata`
 
 估算一个指标结果继续留在内存中需要多少字节。这个值用于申请资源额度，与把结果转成JSON时使用的临时内存分开计算。
 
@@ -56,7 +56,7 @@ ResultFormatError为超过32层或含未支持可变/数组类型。
 - `ResultFormatError`：保留元数据类型无法估算。
 - `ResultFormatError`：保留元数据超过32层。
 
-源码：[`src/chronaxis/execution/retained_metadata.py:23`](../../../src/chronaxis/execution/retained_metadata.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/retained_metadata.py:23`](../../../src/chronaxis/execution/retained_metadata.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-reference_workspace"></a>
 ## `reference_workspace`
@@ -82,4 +82,4 @@ reference_workspace(existing_count, incoming_count)
 
 无主动异常；内部调用者保证非负原生int。
 
-源码：[`src/chronaxis/execution/retained_metadata.py:63`](../../../src/chronaxis/execution/retained_metadata.py#L63)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/retained_metadata.py:63`](../../../src/chronaxis/execution/retained_metadata.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

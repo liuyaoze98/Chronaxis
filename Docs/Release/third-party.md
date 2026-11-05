@@ -4,7 +4,7 @@ Chronaxis 采用 MIT 许可证。运行依赖独立安装，不因列在依赖�
 
 包内 `chronaxis/legacy/vendor/sclicer_functions_v1/` 的 `utils.py`、`file_processor.py`、`can_processor.py` 来自作者的历史 Sclicer 项目。维护者 liuyaoze 已确认拥有或取得按本项目许可证发布的权利。这三份文件保留原始字节，程序会检查其摘要。
 
-默认运行依赖包括 NumPy、ruamel.yaml、python-can、cantools、natsort。文档离线HTML使用 marked 渲染，并包含 highlight.js 产生的高亮样式。发布时一并检查实际打入产物的代码与样式许可；仅安装在开发环境中的工具不自动属于发行内容。
+默认运行依赖包括 NumPy、ruamel.yaml、python-can、cantools、natsort，以及用于配置多错误诊断的 jsonschema。文档离线HTML使用 marked 渲染，并包含 highlight.js 产生的高亮样式。发布时一并检查实际打入产物的代码与样式许可；仅安装在开发环境中的工具不自动属于发行内容。
 
 维护者：liuyaoze。
 
@@ -17,6 +17,7 @@ Chronaxis 采用 MIT 许可证。运行依赖独立安装，不因列在依赖�
 |python-can|4.6.1|LGPL-3.0-only|
 |cantools|39.4.3|MIT|
 |natsort|8.4.0|MIT|
+|jsonschema|4.25.1|MIT；由默认依赖安装，不把其源码复制进Chronaxis wheel|
 |highlight.js（HTML样式）|11.11.1|BSD-3-Clause；[完整许可](ThirdParty/highlight.js-LICENSE.txt)|
 |marked（构建工具）|17.0.5|MIT及其附带的Markdown条款；[完整许可](ThirdParty/marked-LICENSE.txt)|
 

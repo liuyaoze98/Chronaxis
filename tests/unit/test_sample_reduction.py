@@ -248,8 +248,8 @@ class SampleReductionTests(unittest.TestCase):
             self.assertEqual((number.value, number.unit, facts.quality), (2000.0, 'W', Q.STALE))
             self.assertIs(facts.source_refs, series.source_refs)
             self.assertIs(facts.source_refs[0], ref)
-            # 原极值完整有效，非1倍率只在finish核对精确float转换或乘法溢出。
-            for dtype, value, quality in ((D.UINT64, 2**53+1, Q.PRECISION_LOSS), (D.FLOAT64, 1e308, Q.NONFINITE)):
+            # 原极值完整有效，非1倍率只在finish核对目标整数范围或浮点乘法溢出。
+            for dtype, value, quality in ((D.UINT64, 2**64-1, Q.OVERFLOW), (D.FLOAT64, 1e308, Q.NONFINITE)):
                 bad = self.series(values=(value, value), dtype=dtype, unit='kW')
                 reducer = self.reducer(bad, 'sample_maximum', backend, spec=CalculationDefinition('bad_unit', 'sample_maximum', bad.observation, output_unit='W'))
                 facts, number = reducer.push(bad), reducer.finish()

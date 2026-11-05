@@ -3,13 +3,13 @@ from dataclasses import asdict, replace
 import csv
 import json
 from pathlib import Path
+from published_paths import published_file, export_root
 import tempfile
 import unittest
 
 from chronaxis import AnalysisRunner, load_analysis_plan, load_batch_plan, run_batch
 from chronaxis.configuration import load_configuration
 from chronaxis.configuration.template_catalog import available_templates, template_files, _relative_path
-from chronaxis.migration import load_legacy_ini
 import test_configuration_schema as schema_tests
 
 
@@ -37,7 +37,7 @@ class ConfigurationTemplateTests(unittest.TestCase):
                 try:output[table]=[asdict(row) for row in cursor]
                 finally:cursor.close()
             if plan.outputs.signal_csv is not None or plan.outputs.can_frames is not None:
-                result.write(folder/'output')
+                self.published=result.write(folder/'output')
             return output
         finally:
             result.close();self.assertEqual(result.spool.budget.ram_bytes,0)
@@ -81,7 +81,7 @@ class ConfigurationTemplateTests(unittest.TestCase):
             if template.config_type=='batch':
                 self.assertTrue(all(set(job)=={'plan'} for job in document['jobs']))
                 continue
-            plan=document['analysis'] if template.config_type=='mapping' else document
+            plan=document
             self.assertEqual(set(plan['dataset']),{'name'},template.name)
             self.assertEqual(len(plan['sources']),1,template.name)
             source=plan['sources'][0]
@@ -99,11 +99,11 @@ class ConfigurationTemplateTests(unittest.TestCase):
             else:self.assertNotIn('metadata',plan,template.name)
 
     def test_catalog_styles_and_schema_are_consistent(self):
-        """十三场景两种风格内容相同，分析/批量/映射均通过独立标准规范。参数: 无。返回: None。异常: 断言。"""
-        templates=available_templates();self.assertEqual(len(templates),13)
-        self.assertEqual(len({t.name for t in templates}),13)
+        """十二场景两种风格内容相同，分析/批量均通过独立标准规范。参数: 无。返回: None。异常: 断言。"""
+        templates=available_templates();self.assertEqual(len(templates),12)
+        self.assertEqual(len({t.name for t in templates}),12)
         schema_tests.ConfigurationSchemaTests.setUpClass()
-        schemas={'analysis':'analysis.schema.json','batch':'batch-v1.schema.json','mapping':'legacy-import-v1.schema.json'}
+        schemas={'analysis':'analysis.schema.json','batch':'batch-v1.schema.json'}
         for template in templates:
             with self.subTest(scene=template.name):
                 paths=[self.materialize(template,style) for style in ('minimal','annotated')]
@@ -113,7 +113,6 @@ class ConfigurationTemplateTests(unittest.TestCase):
                 for path in paths:
                     if template.config_type=='analysis':load_analysis_plan(path)
                     elif template.config_type=='batch':load_batch_plan(path)
-                    else:self.assertIsNotNone(load_legacy_ini(path.parent/'source.ini',path,mode='sclicer_single').plan)
         for path in ('../escape','/root','C:/file','a\\b',''):
             with self.assertRaises(ValueError):_relative_path(path)
         with self.assertRaises(ValueError):template_files('../other')
@@ -130,8 +129,8 @@ class ConfigurationTemplateTests(unittest.TestCase):
                     plan=replace(plan,execution=replace(plan.execution,backend=backend))
                     rows=self.collect(plan,path.parent);self.check_expected(template.name,rows);observed.append(rows)
                     if template.name=='signal-export':
-                        index=[json.loads(s) for s in (path.parent/'output/exports.jsonl').read_text(encoding='utf-8').splitlines()]
-                        grid=path.parent/'output/exports'/index[0]['directory']/'resampled.csv'
+                        index=[json.loads(s) for s in (published_file(self.published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
+                        grid=export_root(self.published)/index[0]['directory']/'resampled.csv'
                         with grid.open(encoding='utf-8',newline='') as stream:points=list(csv.DictReader(stream))
                         self.assertEqual([int(r['time_ns'])/1e9 for r in points],[i/2 for i in range(12)])
                         # 导出仅使用[0,6)内样本；6秒原样本在范围外，末三格缺右邻点不能外推。
@@ -139,29 +138,25 @@ class ConfigurationTemplateTests(unittest.TestCase):
                         self.assertEqual([(r['value'],r['reason']) for r in points[9:]],[('','missing_right')]*3)
                     if template.name=='can-export':
                         import can
-                        index=[json.loads(s) for s in (path.parent/'output/exports.jsonl').read_text(encoding='utf-8').splitlines()]
-                        frames=path.parent/'output/exports'/index[0]['directory']/'frames.asc'
+                        index=[json.loads(s) for s in (published_file(self.published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
+                        frames=export_root(self.published)/index[0]['directory']/'frames.asc'
                         with can.ASCReader(str(frames)) as reader:messages=list(reader)
                         self.assertEqual([bytes(m.data) for m in messages],[b'\x01\x05',b'\x03\x06',b'\x01\x07'])
             if len(observed)==2:self.assertEqual(*observed)
 
-    def test_batch_and_ini_templates_execute_without_changing_source(self):
-        """批量两项均38J，INI原字节不变且事件按[1,6)关闭。参数: 无。返回: None。异常: 断言。"""
+    def test_batch_templates_execute_without_changing_source(self):
+        """批量两项均38J，来源文件保持不变。参数: 无。返回: None。异常: 断言。"""
         templates={t.name:t for t in available_templates()}
         batch=self.materialize(templates['batch'],'annotated');output=batch.parent/'output'
         report=run_batch(load_batch_plan(batch),output,device_label='home')
-        try:self.assertEqual(json.loads((output/'batch_report.json').read_text(encoding='utf-8'))['counts'],
+        try:self.assertEqual(json.loads(report.report_path.read_text(encoding='utf-8'))['counts'],
             dict(completed=2,failed=0,cancelled=0))
         finally:report.close()
-        tables=list(output.rglob('会话结果.csv'));self.assertEqual(len(tables),2)
+        tables=[job.output_dir / entry['name'] for job in report.jobs for entry in json.loads(job.manifest_path.read_text(encoding='utf-8'))['outputs'] if entry['name'].startswith('会话结果_')];self.assertEqual(len(tables),2)
         for table in tables:
             with table.open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
             self.assertEqual(float(rows[0]['energy（J）']),38)
-        path=self.materialize(templates['ini-mapping'],'annotated');ini=path.parent/'source.ini';before=ini.read_bytes()
-        imported=load_legacy_ini(ini,path,mode='sclicer_single',device_label='home')
-        self.assertIsNotNone(imported.plan,imported.report.to_dict())
-        self.check_expected('ini-mapping',self.collect(imported.plan,path.parent))
-        self.assertEqual(ini.read_bytes(),before)
+
 
 
 if __name__=='__main__':unittest.main()

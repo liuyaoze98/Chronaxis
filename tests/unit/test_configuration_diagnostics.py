@@ -10,9 +10,7 @@ from ruamel.yaml import YAML
 from chronaxis import load_analysis_plan, load_batch_plan, PlanValidationError
 from chronaxis.configuration.diagnostics import field_path_parts
 from chronaxis.configuration.models import field_path_text
-from chronaxis.migration import load_legacy_ini
 from test_analysis_plan import config_fixture
-from test_legacy_import_sclicer import mapping_fixture
 
 
 class ConfigurationDiagnosticTests(unittest.TestCase):
@@ -39,7 +37,8 @@ class ConfigurationDiagnosticTests(unittest.TestCase):
         original=Path.open
         def selected(target,*args,**kwargs):
             """阻止意外数据/DBC读取。参数: 路径/参数。返回: FD。异常: 非选定文件断言。"""
-            self.assertEqual(target,path)
+            schemas = Path(__file__).resolve().parents[2] / 'Docs' / 'Schema'
+            self.assertIn(target, (path, schemas/'analysis.schema.json', schemas/'batch-v1.schema.json'))
             return original(target,*args,**kwargs)
         with patch.object(Path,'open',selected),self.assertRaises(PlanValidationError) as caught:
             loader(path)
@@ -111,18 +110,6 @@ class ConfigurationDiagnosticTests(unittest.TestCase):
         self.assertEqual((error.path,error.code),('$.jobs[1].name','duplicate_id'))
         self.assertEqual(error.object_name,'任务 ONE')
 
-    def test_mapping_semantic_error_points_to_mapping_and_preserves_ini_location(self):
-        """映射有效期错误关联analysis内字段；INI自身错误仍用INI行列。参数: 无。返回: None。异常: 断言。"""
-        ini=self.root/'source.ini';ini.write_text('[TRIGGER_test]\nmode=single\nexpr=OBC_OpMod==2\n',encoding='utf-8')
-        data=mapping_fixture();data['analysis']['signals'][0]['valid_for']='0ns'
-        path=self.write(data);result=load_legacy_ini(ini,path,mode='sclicer_single')
-        issue=result.report.issues[-1]
-        self.assertEqual((issue.origin,issue.path,issue.code),('mapping','$.analysis.signals[0].valid_for','invalid_duration'))
-        self.assertIsNotNone(issue.line);self.assertIn(str(path),issue.message)
-        ini.write_text('[TRIGGER_test]\nmode=single\nexpr=unknown > 0\n',encoding='utf-8')
-        path=self.write(mapping_fixture());result=load_legacy_ini(ini,path,mode='sclicer_single')
-        issue=result.report.issues[-1]
-        self.assertEqual((issue.origin,issue.path,issue.line),('ini','[TRIGGER_test].expr',3))
 
     def test_quoted_paths_round_trip_and_compound_paths_are_not_falsely_located(self):
         """含点号/引号键可逆，不将组合错误假装成一个源码字段。参数: 无。返回: None。异常: 断言。"""

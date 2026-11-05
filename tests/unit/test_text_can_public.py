@@ -16,6 +16,7 @@ import test_text_can_decode as fixtures
 from test_can_planning import can_config
 from chronaxis import AnalysisPlan,AnalysisRunner,validate_analysis_plan,explain_analysis_plan,PlanValidationError
 from pathlib import Path
+from published_paths import published_file, export_root
 from copy import deepcopy
 import subprocess
 import sys
@@ -165,17 +166,19 @@ class TextCANPublicTests(unittest.TestCase):
             'continuous':['voltage'],'period':'250ms','max_gap':'2s'}},
             'can_frames':{'source':'bus','format':'asc','resampling':{'period':'500ms','max_gap':'2s',
                 'messages':[dict(channel=1,frame_id=256,is_extended=False,is_fd=False,continuous=['Voltage'])]}}}
+        for signal in config['signals']:
+            signal['conversion']={'input_unit':signal['unit']}
         with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
             result=AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(config)),work_dir=self.root/'run-exports')
             budget=result.spool.budget
             try:
                 self.assertEqual(load.call_count,1)
                 for name in ('published','published-again'):
-                    destination=self.root/name; result.write(destination)
-                    records=[json.loads(line) for line in (destination/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+                    destination=self.root/name; published=result.write(destination)
+                    records=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
                     self.assertEqual([r['export_type'] for r in records],['signal_csv','can_frames'])
-                    signals=destination/'exports'/records[0]['directory']
-                    frames=destination/'exports'/records[1]['directory']
+                    signals=export_root(published)/records[0]['directory']
+                    frames=export_root(published)/records[1]['directory']
                     with (signals/'resampled.csv').open(encoding='utf-8',newline='') as handle:
                         rows=list(csv.DictReader(handle))
                     self.assertEqual(len(rows),8)
@@ -220,9 +223,9 @@ class TextCANPublicTests(unittest.TestCase):
         budget=result.spool.budget
         try:
             self.assertEqual(list(result.iter_calculations())[0].value,10.0)
-            destination=self.root/'clock-blf-published'; result.write(destination)
-            record=json.loads((destination/'exports.jsonl').read_text(encoding='utf-8'))
-            directory=destination/'exports'/record['directory']
+            destination=self.root/'clock-blf-published'; published=result.write(destination)
+            record=json.loads((published_file(published,'exports.jsonl')).read_text(encoding='utf-8'))
+            directory=export_root(published)/record['directory']
             with can.BLFReader(directory/'frames.blf') as reader:
                 frames=list(reader)
             self.assertEqual(len(frames),2)
@@ -265,11 +268,11 @@ class TextCANPublicTests(unittest.TestCase):
                 self.assertEqual(list(result.iter_calculations())[0].value,13.0)
                 events=list(result.iter_events())
                 self.assertEqual([(row.start_ns,row.end_ns) for row in events],[(10**9,2*10**9)])
-                destination=self.root/f'example-{name}-out'; result.write(destination)
-                records=[json.loads(line) for line in (destination/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+                destination=self.root/f'example-{name}-out'; published=result.write(destination)
+                records=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
                 self.assertEqual({row['export_type'] for row in records},{'signal_csv','can_frames'})
                 signal=next(row for row in records if row['export_type']=='signal_csv')
-                with (destination/'exports'/signal['directory']/'resampled.csv').open(encoding='utf-8',newline='') as stream:
+                with (export_root(published)/signal['directory']/'resampled.csv').open(encoding='utf-8',newline='') as stream:
                     rows=[row for row in csv.DictReader(stream) if row['status']=='observed']
                 self.assertEqual([(int(r['time_ns']),float(r['value'])) for r in rows],[(0,3.),(10**9,7.),(2*10**9,3.)])
             finally:
@@ -290,9 +293,9 @@ class TextCANPublicTests(unittest.TestCase):
             result=AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(config)),work_dir=self.root/f'asc-offset-{mode}')
             try:
                 self.assertEqual(list(result.iter_calculations())[0].value,10.0)
-                destination=self.root/f'asc-offset-out-{mode}'; result.write(destination)
-                record=json.loads((destination/'exports.jsonl').read_text(encoding='utf-8'))
-                directory=destination/'exports'/record['directory']
+                destination=self.root/f'asc-offset-out-{mode}'; published=result.write(destination)
+                record=json.loads((published_file(published,'exports.jsonl')).read_text(encoding='utf-8'))
+                directory=export_root(published)/record['directory']
                 from chronaxis.sources.asc import ASCRead, ASCSpec
                 expected=[100*10**9,101*10**9] if mode=='original' else [100*10**9,100500000000,101*10**9]
                 # 读实际导出帧核原始时钟，独立核分析区间。
@@ -322,9 +325,9 @@ class TextCANPublicTests(unittest.TestCase):
         budget=result.spool.budget
         try:
             self.assertEqual(list(result.iter_calculations())[0].value,10.0)
-            destination=self.root/'blf-output'; result.write(destination)
-            record=json.loads((destination/'exports.jsonl').read_text(encoding='utf-8'))
-            manifest=json.loads((destination/'exports'/record['directory']/'manifest.json').read_text(encoding='utf-8'))
+            destination=self.root/'blf-output'; published=result.write(destination)
+            record=json.loads((published_file(published,'exports.jsonl')).read_text(encoding='utf-8'))
+            manifest=json.loads((export_root(published)/record['directory']/'manifest.json').read_text(encoding='utf-8'))
             self.assertEqual(manifest['frames'],3)
         finally:
             result.close()
@@ -341,11 +344,11 @@ class TextCANPublicTests(unittest.TestCase):
             'can_frames':{'source':'bus','format':'asc','scope':'segments','window':'alarm'}}
         result=AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(config)),work_dir=self.root/'window-run')
         try:
-            destination=self.root/'window-published'; result.write(destination)
-            records=[json.loads(line) for line in (destination/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+            destination=self.root/'window-published'; published=result.write(destination)
+            records=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
             self.assertEqual(len(records),2)
             self.assertTrue(all(r['interval']==[10**9,2*10**9] and r['segment_id'] for r in records))
-            manifest=json.loads((destination/'exports'/records[1]['directory']/'manifest.json').read_text(encoding='utf-8'))
+            manifest=json.loads((export_root(published)/records[1]['directory']/'manifest.json').read_text(encoding='utf-8'))
             self.assertEqual(manifest['frames'],1)
         finally:
             result.close()
@@ -402,8 +405,8 @@ class TextCANPublicTests(unittest.TestCase):
         completed=subprocess.run([sys.executable,'-B','-m','chronaxis','run',str(path),'--output',str(destination),
             '--work-dir',str(self.root/'cli-run')],capture_output=True,text=True,encoding='utf-8')
         self.assertEqual(completed.returncode,0,completed.stderr[-2000:])
-        self.assertTrue((destination/'exports.jsonl').is_file())
-        manifest=json.loads((destination/'run_manifest.json').read_text(encoding='utf-8'))
+        manifest=json.loads(Path(json.loads(completed.stdout)['manifest']).read_text(encoding='utf-8'))
+        self.assertTrue((destination/manifest['exports']['index_file']).is_file())
         self.assertEqual(manifest['run']['input_diagnostics'][0]['record_count'],2)
 
     def test_output_tampering_is_detected_and_copy_can_retry(self):
@@ -421,8 +424,8 @@ class TextCANPublicTests(unittest.TestCase):
                 result.write(self.root/'tampered')
             self.assertFalse((self.root/'tampered').exists())
             original.write_bytes(payload)
-            result.write(self.root/'recovered')
-            self.assertTrue((self.root/'recovered'/'run_manifest.json').is_file())
+            published=result.write(self.root/'recovered')
+            self.assertTrue(published.manifest_path.is_file())
         finally:
             result.close()
         self.assertEqual(budget.ram_bytes,0)
@@ -531,9 +534,9 @@ class TextCANPublicTests(unittest.TestCase):
         try:
             self.assertEqual(list(result.iter_calculations()),[])
             self.assertEqual(result.metadata.input_diagnostics[0].aliases,())
-            destination=self.root/'frames-only'; result.write(destination)
-            row=json.loads((destination/'exports.jsonl').read_text(encoding='utf-8'))
-            report=json.loads((destination/'exports'/row['directory']/'manifest.json').read_text(encoding='utf-8'))
+            destination=self.root/'frames-only'; published=result.write(destination)
+            row=json.loads((published_file(published,'exports.jsonl')).read_text(encoding='utf-8'))
+            report=json.loads((export_root(published)/row['directory']/'manifest.json').read_text(encoding='utf-8'))
             self.assertEqual(report['frames'],3)
         finally:
             result.close()
@@ -546,10 +549,10 @@ class TextCANPublicTests(unittest.TestCase):
         result=AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(config)),work_dir=self.root/'empty-run')
         try:
             self.assertIsNone(list(result.iter_calculations())[0].value)
-            destination=self.root/'empty-published'; result.write(destination)
-            rows=[json.loads(line) for line in (destination/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+            destination=self.root/'empty-published'; published=result.write(destination)
+            rows=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
             self.assertEqual(len(rows),2); self.assertTrue(all(row['interval'] is None for row in rows))
-            reports=[json.loads((destination/'exports'/row['directory']/'manifest.json').read_text(encoding='utf-8')) for row in rows]
+            reports=[json.loads((export_root(published)/row['directory']/'manifest.json').read_text(encoding='utf-8')) for row in rows]
             self.assertEqual(reports[0]['rows'],0); self.assertEqual(reports[1]['frames'],0)
         finally:
             result.close()

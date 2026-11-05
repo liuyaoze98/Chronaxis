@@ -18,6 +18,7 @@ REASONS = {
     'zero_length_window': '统计范围长度为零', 'calculation_failed': '计算失败',
     'empty_selection': '条件已知，未选中数据', 'unknown_selection': '无法确定选中哪些数据',
     'no_samples': '没有可用样本', 'no_valid_selected_data': '选中范围内没有有效数据',
+    'insufficient_samples': '有效样本数不足以使用所选自由度',
     'no_evaluations': '没有参与计算的报文', 'contributed': '已计入',
     'missing_input': '缺少计算输入', 'condition_false': '不满足条件，已跳过',
     'evaluation_error': '计算失败，已跳过', 'nonfinite_input': '输入不是有限数，已跳过',

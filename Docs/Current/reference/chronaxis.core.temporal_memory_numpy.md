@@ -1,4 +1,4 @@
-# chronaxis.core.temporal_memory_numpy
+# `chronaxis.core.temporal_memory_numpy`
 
 通过NumPy保持和表达式计算内存信号的条件时间轴，再检测事件。
 
@@ -26,6 +26,7 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .enum_codes import memory_histories, aligned_column
 from .expression_numpy import evaluate_numpy
 from .normalize_numpy import memory_series_numpy
 from .numeric_numpy import NumericArray
@@ -35,6 +36,7 @@ from .temporal import ConditionTick, ConditionTimeline
 from .temporal_memory_reference import require_memory_rule
 from .temporal_numpy import detect_numpy
 from .types import QualityFlag as Q, Truth
+from .where_updates import contains_where, numpy_active, numpy_updates
 ```
 
 </details>
@@ -67,7 +69,7 @@ tuple[ConditionTick, ...]: 每个查询时刻的完整状态、质量及更新�
 TypeError、ValueError或OverflowError: 列类型、形状、计划或数值协议错误。
     MemoryError: 数组分配失败；不丢弃数据继续执行。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:33`](../../../src/chronaxis/core/temporal_memory_numpy.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:35`](../../../src/chronaxis/core/temporal_memory_numpy.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-build_timeline_numpy"></a>
 ## `build_timeline_numpy`
@@ -93,7 +95,7 @@ ConditionTimeline；计时器没有actual更新，不产生假边沿。
 
 输入/同步/类型/时间错误传播；超域deadline不会wrap。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:104`](../../../src/chronaxis/core/temporal_memory_numpy.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:121`](../../../src/chronaxis/core/temporal_memory_numpy.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-detect_memory_numpy"></a>
 ## `detect_memory_numpy`
@@ -120,4 +122,4 @@ Event tuple；结果/质量/来源/稳定ID可与独立参考比较。
 
 当前模型/时间/配置/批大小错误传播，不静默截断。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:153`](../../../src/chronaxis/core/temporal_memory_numpy.py#L153)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:170`](../../../src/chronaxis/core/temporal_memory_numpy.py#L170)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

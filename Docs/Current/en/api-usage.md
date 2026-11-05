@@ -3,8 +3,7 @@
 
 Public entry points are in `chronaxis`. Use `load_analysis_plan` for a configuration file or `AnalysisPlan.from_dict` for a programmatically constructed configuration. `AnalysisRunner` executes it; `AnalysisResult` reads and publishes the output. Complete [installation](installation.md) before running the following examples.
 
-<a id="api-table-reading"></a>
-<a id="如何读参数表"></a>
+
 ## Reading parameter tables
 
 Reference tables distinguish actual Python names, types, required arguments, defaults, and purposes. `None` means an optional object is not supplied; it does not mean zero, an empty string, or an empty list. A vertical bar in a type denotes alternatives. A `tuple` is an ordered, immutable sequence. Class fields describe stored state; constructor arguments follow the actual signature. Generated standard methods and third-party interfaces identify their origins separately.
@@ -17,31 +16,47 @@ Run this complete example from the repository root. In an offline examples direc
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan
 
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
-report = validate_analysis_plan(plan)
-if not report.valid or not report.execution_ready:
-    raise RuntimeError(report)
+def main():
+    plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+    report = validate_analysis_plan(plan)
+    if not report.valid or not report.execution_ready:
+        raise RuntimeError(report)
 
-with AnalysisRunner().run(plan) as result:
-    rows = result.iter_calculations()
-    try:
-        for row in rows:
-            print(row.calculation_id, row.value, row.unit, row.status)
-    finally:
-        rows.close()
-    result.write("new-result-directory")
+    with AnalysisRunner().run(plan) as result:
+        rows = result.iter_calculations()
+        try:
+            for row in rows:
+                print(row.calculation_id, row.value, row.unit, row.status)
+        finally:
+            rows.close()
+        result.write("new-result-directory")
+
+
+if __name__ == "__main__":
+    main()
 ```
+
+The synthetic ASC example produced the following terminal output. Each row gives the calculation name, value, unit and status.
+```text
+energy 38.0 J complete
+sample_average 6.0 W complete
+time_average 6.333333333333333 W complete
+```
+
+Power values of 2, 4, 8 and 10 W last 1, 2, 1 and 2 seconds, respectively. The integral is 2×1 + 4×2 + 8×1 + 10×2 = 38 J. The four readings average 6 W; the time-weighted mean is 38÷6 W. The write call saves these results to the example output directory.
 
 `load_analysis_plan` reads the main configuration and its explicit, single-level shared definitions. Relative paths are resolved from the file in which they are declared. `AnalysisPlan.from_dict(config, base_dir=...)` accepts a Python dictionary rather than reading a main file; omitted `base_dir` means the current directory. Both entry points may enumerate input directories and read DBC metadata to infer CAN types, units, or enumerations. They do not scan business messages or CSV records at this stage. `from_dict` rejects unexpanded `imports`: use the file loader or `chronaxis config resolve` first. Both check unknown fields, name collisions, expressions, and references.
 
 `validate_analysis_plan` returns a static `ValidationReport`. `valid` reports declaration validity; `execution_ready` reports whether the execution path supports the plan. `explain_analysis_plan` returns an `ExplainReport` containing dependencies and backend decisions. Static checks on a loaded plan do not read business records. DBC metadata read during loading is not proof that actual data is valid.
 
-`AnalysisRunner(backend=None)` uses the plan's backend. `reference` uses the independent reference implementation; `numpy` uses array calculations. Explicitly supplying either name overrides the backend for that run. `run(plan, work_dir=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with another new directory.
+`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's backend. `reference` uses the independent reference implementation; `numpy` uses array calculations. Explicitly supplying either name overrides the backend for that run. `run(plan, work_dir=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
+
+Omit extensions for built-in operations. A Python host that registers custom functions or rolling operators must pass the same extension registry when loading the plan and constructing AnalysisRunner. See [Custom analysis operators](host-extensions.md). An asterisk in a signature marks the following arguments as keyword-only.
 
 <a id="逐行读取和关闭"></a>
 ## Read rows and close resources
 
-`iter_events`, `iter_segments`, `iter_sequences`, `iter_calculations`, `iter_selections`, and `iter_input_trace` return cursors for events, windows, pairs, calculations, selected samples, and input tracing respectively. `iter_contributions` reads explicitly requested per-message contributions. Unrequested details are not generated by default. Rows use the fields described under [results](results.md).
+`iter_events`, `iter_segments`, `iter_sequences`, `iter_calculations`, `iter_selections`, and `iter_input_trace` return cursors for events, windows, pairs, calculations, selected samples, and input tracing respectively. `iter_aggregations` reads grouped statistics over calculation rows. `iter_contributions` reads explicitly requested per-message contributions. Unrequested details are not generated by default. Rows use the fields described under [results](results.md).
 
 Close a cursor whether you exhaust it or stop early. Manage the result with `with`, or call `close` in `finally`. Reading a closed result raises `ResultClosedError`. Resource failures and cancellation are not empty results; failed publication or cleanup must not be reported as completion.
 
@@ -50,12 +65,12 @@ Close a cursor whether you exhaust it or stop early. Manage the result with `wit
 
 | Entry point | Return value and effects |
 |---|---|
-| `load_analysis_plan(path)` | Reads the main file and imports, then builds an `AnalysisPlan`; enumerates directories and reads DBC metadata as needed. |
-| `AnalysisPlan.from_dict(config, base_dir=None)` | Builds a plan from a dictionary; may enumerate directories or read DBC metadata, but does not scan business records. |
+| `load_analysis_plan(path, *, extensions=None)` | Reads the main file and imports, then builds an `AnalysisPlan`; enumerates directories and reads DBC metadata as needed. |
+| `AnalysisPlan.from_dict(config, *, base_dir=None, extensions=None)` | Builds a plan from a dictionary; may enumerate directories or read DBC metadata, but does not scan business records. |
 | `validate_analysis_plan(plan)` | Returns a static validation report without running the task. |
 | `explain_analysis_plan(plan)` | Returns dependencies, interval choices, and resource declarations without running the task. |
 | `AnalysisRunner(...).run(plan, work_dir=None)` | Reads inputs, calculates, and uses temporary storage; returns a result that must be closed. |
-| `AnalysisResult.write(output_dir)` | Publishes tables and a manifest to a new directory; returns an `OutputManifest`. |
+| `AnalysisResult.write(output_dir)` | Publishes timestamped tables and a manifest to a reusable directory; returns an `OutputManifest`. |
 | `load_batch_plan(path)`, `run_batch(...)` | Load and execute independent tasks. Each child plan is loaded when its task starts. |
 | `build_preset(...)`, `resolve_preset_roles(...)` | Check preset roles and generate ordinary declarations. Usually, declare `presets` in configuration. |
 
@@ -86,7 +101,7 @@ print(explain_analysis_plan(plan))
 | Execution | `AnalysisError`, preserving the original cause | Check paths, timestamps, decoding, and budgets. Do not treat failure as empty output. |
 | Creating or reading a result cursor | `ResultClosedError`, `BudgetExceededError`, `ResultFormatError`, `OSError` | Close the cursor and retain the exception. Check lifetime, budgets, or temporary files; consult the method reference for exact exceptions. |
 | Reading unrequested details | `ContributionsUnavailableError`; `AnalysisError` if input tracing is disabled | Enable `outputs.contributions` or `diagnostics.trace` only if required, and rerun. |
-| Publication | `AnalysisError` or `ResultClosedError` | Check the new directory, platform, and original cause chain. If the result remains usable, retry `write` to another new directory. |
+| Publication | `AnalysisError` or `ResultClosedError` | Check the path, write permissions, platform, and original cause chain. If the result remains usable, retry `write` to the same or another directory. |
 | Batch tasks | `failed` or `cancelled` in the report | Inspect every task status. A normal return from `run_batch` does not mean every task succeeded. |
 
 Import `AnalysisError` and `ResultClosedError` from `chronaxis`. Other result exceptions are defined in [chronaxis.results.errors](../reference/chronaxis.results.errors.md), a Chinese implementation reference. Results and cursors own resources independently: use `with` for the result and `finally` for cursors. After closing a result, its `run_manifest` still provides a small diagnostic snapshot, but data cannot be read or published again.
@@ -113,10 +128,10 @@ For programmatic role checks or composition, the complete call sequence is `Sign
 
 Import `SignalDefinition` from `chronaxis.core.binding`; it is not exported under the same name from the root package. `resolve_preset_roles` returns binding checks, not samples. `build_preset` also checks roles itself. A fragment contains rules, windows, derived expressions, and calculations; supply `dataset`, `sources`, and `signals` separately. Do not merge a fragment and also place the same preset in `presets`, which would expand it twice.
 
-The complete script is [preset_api_example.py](../examples/preset_api_example.py). From the examples directory, run `python preset_api_example.py --output preset-api-result` with a new output directory. It produces `heat_duration=9.0s`, `complete`. Dictionaries here are Python function arguments; users need not rewrite YAML as JSON.
+The complete script is [preset_api_example.py](../examples/preset_api_example.py). From the examples directory, run `python preset_api_example.py --output preset-api-result` with a new output directory. This example script creates that parent directory for both its temporary work and published results. It produces `heat_duration=9.0s`, `complete`. Dictionaries here are Python function arguments; users need not rewrite YAML as JSON.
 
 ```python
-"""Build a preset from typed signals and run it. --output selects a new directory."""
+"""Build a preset from typed signals and run it. --output selects a new directory for work and published results."""
 from pathlib import Path
 import argparse
 from chronaxis import (PresetSpec, resolve_preset_roles,
@@ -137,7 +152,7 @@ def run(output):
     assert roles[0].definition is temperature and roles[0].resolution=='explicit'
     fragment=build_preset(spec,signals)  # Also checks roles; returns a PlanFragment.
     nodes=fragment.to_dict()            # Nodes only; no sources, signals, or results.
-    raw=dict(config_version=3,dataset=dict(name='preset_api'),
+    raw=dict(config_version=4,dataset=dict(name='preset_api'),
         sources=[dict(name='table',source_type='memory',
             rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
         signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])
@@ -153,7 +168,7 @@ def run(output):
 
 
 def main():
-    """Read a new CLI output directory; propagate validation, execution, and I/O errors."""
+    """Read a CLI result directory; propagate validation, execution, and I/O errors."""
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,required=True)
     output=parser.parse_args().output;output.mkdir(parents=True,exist_ok=False)
     for row in run(output):print(row.calculation_id,row.value,row.unit,row.status)
@@ -163,3 +178,27 @@ if __name__=='__main__':main()
 ```
 
 When merging into an existing plan, merge `derived` by name and append each node list, then let `AnalysisPlan` check names and references. Do not use `update` to overwrite existing business lists. This example uses it because the base has no such nodes. See the [public API](api.md) for complete signatures and parameters.
+
+## Python example: result aggregation
+
+Run this code from the repository root. The plan first measures mean power during each load. `AnalysisResult.iter_aggregations()` then reads P95 across the load means, one row per group. Publishing to CSV is optional. [Power test and downloadable inputs](calculations.md#v4-power-statistics)
+
+Save the code as a .py file and run it from the repository root. The main guard prevents Windows reader processes from running the script again. The first example prints load_mean_p95 19.5 W complete 2 2. The two activity means are 10 W and 20 W, whose linear-interpolated P95 is 19.5 W.
+
+```python
+from chronaxis import AnalysisRunner, load_analysis_plan
+
+def main():
+    plan = load_analysis_plan("Docs/Current/examples/power-statistics.yaml")
+    with AnalysisRunner().run(plan) as result:
+        for row in result.iter_aggregations():
+            print(row.aggregation_id, row.value, row.unit, row.status,
+                  row.included_count, row.candidate_count)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+<a id="api-table-reading"></a>
+<a id="如何读参数表"></a>

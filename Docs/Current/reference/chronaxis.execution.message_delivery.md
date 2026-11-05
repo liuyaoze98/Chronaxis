@@ -1,4 +1,4 @@
-# chronaxis.execution.message_delivery
+# `chronaxis.execution.message_delivery`
 
 在读取器已有预算内同步交付必要消息，不建立额外历史或结果副本。
 
@@ -49,4 +49,4 @@ None，非目标帧不构造消息。
 
 预算/值/消费者及清理错误原样传播。
 
-源码：[`src/chronaxis/execution/message_delivery.py:7`](../../../src/chronaxis/execution/message_delivery.py#L7)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/message_delivery.py:7`](../../../src/chronaxis/execution/message_delivery.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

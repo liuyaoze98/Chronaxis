@@ -1,4 +1,4 @@
-"""从封口暂存提供流式结果，并在完整关闭输出后原子发布新目录。
+"""从封口暂存提供流式结果，关闭文件后按时间命名发布，完成清单最后出现。
 
 输入是已排序ResultSpool与运行元数据，输出是行迭代器和OutputManifest。
 CSV与JSONL使用同一套平坦摘要字段，不保留旧row_json或结果包装副本。
@@ -10,7 +10,7 @@ close关闭所有活跃迭代器且幂等；默认清理自有暂存，保留原
 上述重试保证只覆盖托管的结果资源，不覆盖任意局部文件句柄的持续关闭失败。
 """
 
-# 发布只操作新目录；标准库逐行读写，禁止全量结果列表或目录覆盖。
+# 发布只新增本次文件；标准库逐行读写，不覆盖已有结果。
 import csv
 from contextlib import nullcontext
 from collections.abc import Iterator
@@ -29,7 +29,7 @@ from .manifest import RunMetadata, OutputManifest
 from .artifact_exports import ArtifactExportStore
 from .rows import ResultRow, row_table
 from .summary import (SummaryCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow,
-                      SummaryContributionRow, SummarySelectionRow, SummaryInputRow,
+                      SummaryContributionRow, SummarySelectionRow, SummaryInputRow, SummaryAggregationRow,
                       summary_fields, SUMMARY_MODELS, SUMMARY_COLUMNS)
 from .owned_directory import directory_identity, remove_owned_directory
 from .spool import ResultSpool, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
@@ -54,8 +54,9 @@ def _row_fields(row) -> dict:
     """
     try:
         result = summary_fields(row)
-        if 'parent_event_ids' in result:
-            result['parent_event_ids'] = _json(result['parent_event_ids'])
+        for name in ('parent_event_ids','group_keys','group_values'):
+            if name in result:
+                result[name] = _json(result[name])
         return result
     finally:
         row = result = None
@@ -194,7 +195,7 @@ class AnalysisResult:
     """保存一次分析的结果，提供可关闭的逐行迭代器和结果发布方法。
 
     内部状态初始analysis_complete，发布失败为output_failed/cancelled。
-    write可重新导出到全新目录；每次都只读暂存，不重读旧输入。
+    write可重复导出到同一结果目录；每次只读暂存，不重读旧输入。
     单线程使用；执行输入和旧writer成功关闭的前置条件由AnalysisRunner负责。
     _metadata_cost/_writer_cost为实际已付费用；自有读取器各自持有读槽，spool持有其
     固定/缓冲/归并费用。close进入_closing后拒绝读取或发布，所有层成功关闭才_closed。
@@ -392,6 +393,10 @@ class AnalysisResult:
             raise ContributionsUnavailableError('本次未生成贡献明细；请将outputs.contributions设为full后重新运行')
         return _RowIterator(self, 'contributions')
 
+    def iter_aggregations(self) -> Iterator['SummaryAggregationRow']:
+        """按组读取聚合行及总体计数。参数: 无。返回: 受结果生命周期约束的迭代器。异常: 关闭或解码错误。"""
+        return _RowIterator(self,'aggregations')
+
     def iter_selections(self) -> Iterator[SummarySelectionRow]:
         """读取明确请求的真实样本选择行。参数: 无。返回: 有预算游标，未请求为空。异常: ResultClosedError表示结果关闭；BudgetExceededError表示游标预算不足；
             迭代时ResultFormatError表示暂存格式损坏，OSError表示文件读取失败。"""
@@ -433,7 +438,10 @@ class AnalysisResult:
                 if (self.metadata.integrity_diagnostics):
                     digest_output=_DigestOutput(output);output=digest_output
                 columns = SUMMARY_COLUMNS[table]
-                if (10 in self.spool._summary_versions.get(table,())):
+                versions=self.spool._summary_versions.get(table,())
+                if 16 in versions:
+                    columns=columns+('extension_version',)
+                if 10 in versions or 16 in versions:
                     columns=columns+('coverage_status',)
                 writer = csv.DictWriter(output, fieldnames=columns) if mode == 'x' else None
                 if writer is not None:
@@ -492,13 +500,13 @@ class AnalysisResult:
         return {'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
 
     def _install_directory(self, temporary: Path, destination: Path) -> None:
-        """在Windows同文件系统安装，短暂占用时有限等待并始终拒绝覆盖。
+        """在Windows同文件系统安装单个文件或目录，短暂占用时有限等待且拒绝覆盖。
 
         参数: temporary为目标父目录临时目录，destination为全新目标。
         返回: None。异常: AnalysisError为未支持平台；FileExistsError/IO错误为安装失败。
         边界: 仅原rename的Win5/32最多尝试六次，五次等待合计0.77秒；
         系统调用本身不受该等待时长约束。其他错误立即传播，最终保留原异常与源目录。
-        副作用: 只重试目录安装，不重新读取、分析或生成任何输出文件。
+        副作用: 只重试当前路径安装，不重新读取、分析或生成任何输出文件。
         """
         # Windows rename对已存在目录拒绝；POSIX普通rename可覆盖空目录，不能静默复用。
         if os.name != 'nt':
@@ -516,14 +524,14 @@ class AnalysisResult:
                 if getattr(exc, 'winerror', None) not in (5, 32):
                     raise
                 if attempt == len(delays):
-                    exc.add_note('Windows目录安装六次均被拒绝；已等待0.77秒，保留临时目录供诊断')
+                    exc.add_note('Windows输出安装六次均被拒绝；已等待0.77秒，保留临时目录供诊断')
                     raise
                 time.sleep(delays[attempt])
 
     def write(self, output_dir: str | Path) -> OutputManifest:
-        """从暂存导出到全新目录，completed最后写入并原子安装。
+        """从暂存发布带时间文件名的结果，完成清单最后安装。
 
-        参数: output_dir为新输出目录；格式取本结果table_format。
+        参数: output_dir为可复用输出目录；格式取本结果table_format。
         返回: 安装成功后的OutputManifest。异常: AnalysisError包含原错误链；关闭异常独立。
         副作用: 成功时创建正式输出目录；失败时按retain_work决定是否保留本次临时目录。
             不覆盖已有目标，不重新读取输入日志；关闭后的结果不能发布。
@@ -531,21 +539,22 @@ class AnalysisResult:
         self._require_open()
         temporary = None
         temporary_identity = None
+        publication = None
+        manifest = None
         failure = None
         try:
             destination = Path(output_dir).absolute()
             if (not self.metadata.retain_work) and (destination.resolve().is_relative_to(Path(self._owned_work[0]).resolve())):
                 raise ValueError('发布目录不能放在关闭后删除的本次私有工作目录内')
-            if destination.exists():
-                raise FileExistsError(destination)
+            from .publication import PublicationNames, output_root
+            destination = output_root(destination)
             if os.name != 'nt':
                 raise AnalysisError('当前未实现该平台的不覆盖原子目录安装')
             # 转换/CSV/质量/hash临时对象也计入账本，不只计算读取数组。
             _reserve_owned_ram(self, self.spool.reader_cost, '_writer_cost')
             destination.parent.mkdir(parents=True, exist_ok=True)
             temporary = Path(tempfile.mkdtemp(prefix=f'.{destination.name}.incomplete-', dir=destination.parent))
-            if (not self.metadata.retain_work):
-                temporary_identity = directory_identity(temporary)
+            temporary_identity = directory_identity(temporary)
             coverage = {}
             suffix = '.' + self.table_format
             # 仅发布实际请求的表；none不写空贡献文件，也不会打开其内部空暂存。
@@ -576,21 +585,40 @@ class AnalysisResult:
             # 所有表和质量句柄已成功关闭；清单作为最后写入内容。
             infos = tuple(written_infos[path.name] if path.name in written_infos else self._file_info(path)
                           for path in (*paths, *quality_paths, *extra_paths))
+            # 文件全部关闭后分配本次名称；只改清单中的路径，不回读或改写数据行。
+            publication = PublicationNames(destination, (*[p.name for p in temporary.iterdir()], 'run_manifest.json'))
+            infos = tuple(dict(info, name=publication.names[info['name']]) for info in infos)
             completed = self._manifest('completed', infos, coverage)
-            completed['manifest_file'] = 'run_manifest.json'
+            if 'exports' in completed:
+                completed['exports'].update(index_file=publication.names['exports.jsonl'], directory=publication.names['exports'])
+            completed['manifest_file'] = publication.names['run_manifest.json']
             with (temporary / 'run_manifest.json').open('x', encoding='utf-8', newline='') as handle:
                 handle.write((json.dumps(completed, ensure_ascii=False, allow_nan=False, indent=2)
                               if self.table_format == 'readable_csv' else _json(completed)) + '\n')
             # 返回模型也在安装前完成校验；安装成功后仅返回，避免校验错误遗留已发布completed。
-            manifest = OutputManifest(self.metadata.run_id, destination, destination / 'run_manifest.json',
-                                      tuple(destination / path.name for path in (*paths, *quality_paths, *extra_paths)),
+            manifest = OutputManifest(self.metadata.run_id, destination, destination / publication.names['run_manifest.json'],
+                                      tuple(destination / publication.names[path.name] for path in (*paths, *quality_paths, *extra_paths)),
                                       tuple(self._published_counts.items()) if self.table_format == 'readable_csv'
                                       else tuple((table, self.spool.counts[table]) for table in self._output_tables))
-            self._install_directory(temporary, destination)
+            publication.publish(temporary, 'run_manifest.json', self._install_directory)
+            try:
+                temporary.rmdir()
+            except OSError:
+                # 正式清单已发布；空暂存交给已有close责任重试，不将结果谎报为未发布。
+                self._pending_output_cleanup = (temporary, temporary_identity)
+                self._closing = True
             self.status = 'analysis_complete'
             return manifest
         except BaseException as exc:
             failure = exc
+            if publication is not None:
+                try:
+                    publication.close()
+                except BaseException as cleanup:
+                    exc.add_note('输出命名锁释放失败：' + str(cleanup))
+            published_manifest = manifest if publication is not None and publication.completed else None
+            if published_manifest is not None:
+                exc.completed_manifest = published_manifest
             if self._readable_writer is not None:
                 try:
                     self._readable_writer.close()
@@ -605,7 +633,8 @@ class AnalysisResult:
             if raw_failure:
                 # 取消也必须保最高结果owner；不能到普通异常包装后才补这条真实责任。
                 exc.analysis_result_cleanup_owner = self
-            self.status = 'cancelled' if isinstance(exc, (KeyboardInterrupt, SystemExit)) else 'output_failed'
+            self.status = ('analysis_complete' if published_manifest is not None else
+                           'cancelled' if isinstance(exc, (KeyboardInterrupt, SystemExit)) else 'output_failed')
             self._failure_count += 1
             # 安装失败时移除临时completed名称，把现存清单改标incomplete；只操作本次新文件。
             if (temporary is not None) and (not self.metadata.retain_work):
@@ -639,6 +668,8 @@ class AnalysisResult:
             if isinstance(exc, (KeyboardInterrupt, SystemExit)):
                 raise
             error = AnalysisError(f'结果发布失败，状态{self.status}')
+            if published_manifest is not None:
+                error.completed_manifest = published_manifest
             if raw_failure or self._pending_output_cleanup is not None or self._readable_writer is not None:
                 # 原始复制的实际FD仍由本结果的仓持有；包装不得丢最高恢复入口。
                 error.analysis_result_cleanup_owner = self
@@ -649,6 +680,8 @@ class AnalysisResult:
             try:
                 _release_owned_ram(self, self._writer_cost, '_writer_cost')
             except BaseException as cleanup:
+                if publication is not None and publication.completed:
+                    cleanup.completed_manifest = manifest
                 if self._writer_cost:
                     self._closing = True
                     target = cleanup if failure is None else failure

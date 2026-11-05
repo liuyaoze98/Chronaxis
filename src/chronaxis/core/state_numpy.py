@@ -223,7 +223,8 @@ class AlignedArray:
             object.__setattr__(self, name, _readonly(getattr(self, name)))
 
 
-def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = False, strict_before: bool = False) -> AlignedArray:
+def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = False,
+                strict_before: bool = False, left_limit: bool = False) -> AlignedArray:
     """批量取最新样本，结合整数有效期及观测范围计算保持结果。
 
     参数:
@@ -232,6 +233,8 @@ def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = Fal
         point (bool): 默认False，连续范围左闭右开；True包含真实观测末端。
         strict_before (bool): 默认False；True只取sample_time < t的样本，
             在当前t检查有效期和来源范围，不计算可能溢出的t-1。
+        left_limit (bool): 仅可用于 strict_before，检查 t 的左侧保持；到期恰为 t 时
+            旧值仍覆盖左邻域。不会改变普通查询的有效期和来源端点。
     返回:
         AlignedArray: 等长值列、有效掩码、质量原因、原索引及实际更新证据。
         值类型保持原声明，最新无效更新仍覆盖旧值；无历史使用索引-1。
@@ -240,14 +243,16 @@ def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = Fal
         MemoryError: 输出或临时数组分配失败。
     处理流程:
         用searchsorted查最新更新，先排除会话外索引，再按整数差计算有效期，
-        最后叠加来源缺失原因。有效期始终要求age < valid_for_ns。
+        最后叠加来源缺失原因；点/右侧保持要求 age < valid_for_ns。
     副作用:
         输入只读使用，结果列由模型复制持有；输出和临时列占用O(N)空间。
     """
     # 数组入口不接受参考结果或随意字典。
-    if not isinstance(history, SignalArray) or type(point) is not bool or type(strict_before) is not bool:
+    if not isinstance(history, SignalArray) or any(type(flag) is not bool for flag in (point, strict_before, left_limit)):
         # bool与数值开关区分，避免端点契约误用。
         raise TypeError("数组对齐需要SignalArray及bool point")
+    if left_limit and not strict_before:
+        raise ValueError('左侧保持须排除同刻更新')
     # 查询时间不cast，避免大整数精度损失。
     _require_axis(times_ns)
     # 最新历史包含invalid更新，不能先过滤有效点。
@@ -256,6 +261,8 @@ def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = Fal
     series, session = history.series, history.series.bindings.session
     # 连续末端排除；点模式显式包含真实末端。
     domain = (times_ns >= session.domain_start_ns) & ((times_ns <= session.domain_end_ns) if point else (times_ns < session.domain_end_ns))
+    if left_limit:
+        domain = (times_ns > session.domain_start_ns) & (times_ns <= session.domain_end_ns)
     # 会话外没有输入引用，保持-1哨兵。
     indices[~domain] = -1
     # -1绝不能直接取数组末元素。
@@ -283,11 +290,14 @@ def align_numpy(history: SignalArray, times_ns: np.ndarray, *, point: bool = Fal
     # TTL边界始终排除，批量比较不先把绝对时间转float。
     stale = np.zeros(times_ns.shape, dtype=np.bool_)
     # 仅有历史位置产生到期诊断。
-    stale[has_sample] = ages >= series.bindings.resolve(series.name).valid_for_ns
+    ttl = series.bindings.resolve(series.name).valid_for_ns
+    stale[has_sample] = ages > ttl if left_limit else ages >= ttl
     # STALE叠加而非覆盖上游无效原因。
     quality[stale] |= np.uint16(QualityFlag.STALE)
     # 来源观测域同样区分连续/点模式。
     source = (times_ns >= series.observation_start_ns) & ((times_ns <= series.observation_end_ns) if point else (times_ns < series.observation_end_ns))
+    if left_limit:
+        source = (times_ns > series.observation_start_ns) & (times_ns <= series.observation_end_ns)
     # 来源结束只影响这一信号列，并保留并列质量。
     quality[has_sample & ~source] |= np.uint16(QualityFlag.MISSING)
     # 基础质量策略全部非零禁止，不以isfinite替代整数/状态有效性。

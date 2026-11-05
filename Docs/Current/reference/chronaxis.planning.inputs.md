@@ -1,4 +1,4 @@
-# chronaxis.planning.inputs
+# `chronaxis.planning.inputs`
 
 检查来源和信号配置，建立静态定位与显式转换声明。
 
@@ -29,12 +29,14 @@ CAN支持既有单BLF profile与新ASC/原始CSV静态规格，完整原定位�
 from hashlib import sha256
 from pathlib import Path
 from ..core.binding import SignalDefinition
+from ..core.unit_conversion import affine_conversion, converted_dtype, require_config_version
 from ..core.models import MemoryRow, SourceSpec, TimebaseSpec
 from ..core.types import SignalDType, TimeType
 from ..sources.csv_spec import SignalCSVSpec
 from ..sources.can_spec import LegacyCANSpec
 from ..sources.text_can_spec import CANTextSpec
 from ..legacy.records import PROFILE_ID, field_from_dict
+from .diagnostic_collection import usable_node, collect_node_error
 from .checks import PlanValidationError, absolute_path, array_at, canonical, choice_at, coordinate_at, duration_at, metadata_at, model_at, number_at, object_at, text_at, timezone_at
 from .models import SignalPlan, SourcePlan
 from .signal_validity import declared_valid_for
@@ -77,7 +79,7 @@ PlanValidationError: 字段、格式、名称、时序、时间基准或来源�
 
 返回类型：tuple[[SourcePlan](chronaxis.planning.models.md#api-SourcePlan), ...]。
 
-源码：[`src/chronaxis/planning/inputs.py:34`](../../../src/chronaxis/planning/inputs.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/inputs.py:36`](../../../src/chronaxis/planning/inputs.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_signals"></a>
 ## `parse_signals`
@@ -85,7 +87,7 @@ PlanValidationError: 字段、格式、名称、时序、时间基准或来源�
 检查原字段到简单别名的转换与有效期声明。
 
 ```python
-parse_signals(value, sources: tuple[SourcePlan, ...]) -> tuple[SignalPlan, ...]
+parse_signals(value, sources: tuple[SourcePlan, ...], *, config_version: int=4, enum_codes=()) -> tuple[SignalPlan, ...]
 ```
 
 ### 参数
@@ -94,6 +96,8 @@ parse_signals(value, sources: tuple[SourcePlan, ...]) -> tuple[SignalPlan, ...]
 |---|---|---|---|---|
 |`value`|list|是|无|位置或关键字。signals配置数组，显式声明来源、原字段、类型、单位和valid_for。|
 |`sources`|tuple[[SourcePlan](chronaxis.planning.models.md#api-SourcePlan), ...]|是|无|位置或关键字。当前计划已经解析的来源。|
+|`config_version`|int|否|4|仅关键字。当前仅支持4；只在两个系数都缺省时自动推导。|
+|`enum_codes`|tuple|否|()|仅关键字。被 enum_code 明确引用的枚举别名；普通标签比较不需要原码。|
 
 ### 返回说明
 
@@ -111,4 +115,4 @@ PlanValidationError: 结构、来源、字段、类型、单位、有效期或�
 
 返回类型：tuple[[SignalPlan](chronaxis.planning.models.md#api-SignalPlan), ...]。
 
-源码：[`src/chronaxis/planning/inputs.py:209`](../../../src/chronaxis/planning/inputs.py#L209)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/inputs.py:217`](../../../src/chronaxis/planning/inputs.py#L217)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

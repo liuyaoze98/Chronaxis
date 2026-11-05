@@ -1,0 +1,83 @@
+# 合成 CAN 功率试验 / Synthetic CAN power test. Times are seconds; decoded Power is in watts.
+config_version: 4                           # 统计与结果聚合使用版本 4 / v4 statistics and result aggregations
+dataset:                                    # 分析的身份与范围 / identity and time range
+  name: power_bench                         # 这次试验的名称 / bench run name
+  domain:                                   # 左闭右开 / half-open range
+    start: 0s                               # 第一条功率报文 / first power frame
+    end: 9s                                 # 末帧确定观测终点 / observation end
+sources:                                    # ASC 与解码用 DBC / recording and decoder
+  - paths: data/can/power-statistics.asc    # 路径相对本文件 / relative to this file
+    dbc_by_channel:                         # 每个通道的 DBC / per-channel decoder
+      '1': data/can/teaching.dbc            # 合成试验的通道 1 / channel 1
+signals:                                    # 可在表达式中引用的量 / expression inputs
+  - name: power                             # 功率别名 / power alias
+    field:                                  # DBC 报文与信号 / DBC message and signal
+      frame_id: '0x100'                     # 功率报文 / power frame
+      signal: Power                         # DBC 的物理值，W / physical watts
+    valid_for: 4s                           # 覆盖最长的 3 秒间隔 / covers the longest gap of 3 s
+rules:                                      # 分别识别上升沿及整段加载 / load starts and loaded intervals
+  - name: load_start                        # 从 0 W 升到正功率 / transition from zero to positive
+    rule_type: rising_edge                  # 生成点事件 / point event
+    condition: power > 0                    # 加载条件 / load condition
+  - name: loaded                            # 每一段连续加载 / each uninterrupted load
+    rule_type: condition_duration           # 生成活动区间 / activity event
+    condition: power > 0                    # 使用同一功率条件 / same power condition
+    minimum_duration: 0s                    # 加载即开始 / accept immediately
+windows:                                    # 将接近的加载视为一次试验 / join nearby loads
+  - name: test_cycle                        # 合并后的试验片段 / merged test segment
+    rule: loaded                            # 基于加载活动 / from loaded activities
+    anchor: activity                        # 取整个区间 / use the activity interval
+    merge: exit_delay                       # 等待是否重新加载 / wait for another load
+    exit_delay: 1.5s                        # 两次加载间隔仅 1 秒 / the two loads are 1 s apart
+calculations:                               # 信号统计和对象计数 / signal statistics and object counts
+  - name: readings                          # 半开范围内共有五条读数 / five readings in the range
+    operation: sample_count                 # 按真实有效更新计数 / count actual valid updates
+    expr: power                             # 统计功率报文 / measure power
+  - name: starts                            # 两次加载起点 / two starts
+    operation: point_event_count            # 数已发现的点事件 / count point events
+    rule: load_start                        # 引用上升沿规则 / rising-edge rule
+  - name: loads                             # 两段加载 / two loads
+    operation: activity_count               # 数活动身份 / count activities
+    rule: loaded                            # 引用活动规则 / activity rule
+  - name: cycles                            # 一个试验片段 / one test segment
+    operation: segment_count                # 合并后再计数 / count final segments
+    window: test_cycle                      # 引用窗口定义 / named window
+  - name: reading_variance                  # 五个读数，除以 4 / five readings, divide by four
+    operation: sample_variance              # 样本方差 / variance of readings
+    expr: power                             # 单位是平方瓦特 / output in squared watts
+    ddof: 1                                 # 分母为 N−1 / Bessel correction
+  - name: reading_spread                    # 读数的总体标准差 / population standard deviation
+    operation: sample_stddev                # 每条读数等权 / each reading has equal weight
+    expr: power                             # 输出 W / output in watts
+  - name: reading_rms                       # 按读数求有效值 / RMS of readings
+    operation: sample_rms                   # 均方根 / root mean square
+    expr: power                             # 输出 W / output in watts
+  - name: held_variance                     # 保持功率的总体方差 / variance over elapsed time
+    operation: time_variance                # 按有效时长加权 / weight by valid duration
+    expr: power                             # 输出 W² / output in squared watts
+  - name: held_spread                       # 保持功率的标准差 / deviation over elapsed time
+    operation: time_stddev                  # 时间总体标准差 / duration-weighted spread
+    expr: power                             # 输出 W / output in watts
+  - name: held_rms                          # 按持续时间求有效值 / duration-weighted RMS
+    operation: time_rms                     # 按有效时长加权 / weight by valid duration
+    expr: power                             # 输出 W / output in watts
+  - name: reading_p95                       # 单条报文功率的 P95 / P95 of individual readings
+    operation: sample_quantile              # 排序后线性插值 / sort and interpolate
+    q: 0.95                                 # 95% 分位数 / 95th percentile
+    expr: power                             # 输出 W / output in watts
+  - name: reading_median                    # 单条报文功率的中位数 / median of individual readings
+    operation: sample_median                # 固定 q=0.5 / fixed probability of 0.5
+    expr: power                             # 输出 W / output in watts
+  - name: load_mean                         # 每次加载的均值 / one mean per load
+    operation: time_weighted_mean           # 活动内的时间均值 / mean over time in the activity
+    expr: power                             # 输入功率 / input power
+    scope:                                  # 每段活动一行 / one row per activity
+      rule: loaded                          # 加载活动 / loaded rule
+aggregations:                               # 在已有结果行上再统计 / reduce the resulting rows
+  - name: load_mean_p95                     # 两个活动均值的 P95 / P95 across load means
+    source:                                 # 指定已有结果 / named result
+      calculation: load_mean                # 每段加载贡献一行 / one candidate per load
+    field: value                            # 指标数值 / calculation value
+    operation: quantile                     # 精确分位数 / exact quantile
+    q: 0.95                                 # 结果应为 19.5 W / expect 19.5 W
+    group_by: [session_id]                  # 本次会话一组 / one group in this session

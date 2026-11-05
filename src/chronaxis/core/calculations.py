@@ -17,13 +17,14 @@ BOOL仅用于duration与select，ENUM仅用于保留标签的select行流。mini
 """
 
 # 冻结协议及默认元数据；不会持有可变任务全局状态。
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 # 输出数值必须有限，配置单位转换也不猜测。
 from math import isfinite
 # 精确静态单位因子来自已验证转换表。
-from .units import UNIT_TABLE
 # 已实现半开区间/来源引用结构。
 from .models import Interval, SourceRef
+from .moments import MOMENTS, moment_ddof, moment_source_unit
+from .quantiles import SAMPLE_QUANTILES, quantile_probability
 # 标量结果仅用于typed输入协议，不共享参考计算。
 from .numeric import ScalarValue
 # 类型/质量严格区分，BOOL只允许TRUE时长或原值行流。
@@ -44,7 +45,8 @@ class CalculationDefinition:
     scope说明窗口属于会话、活动或片段；本类不负责寻找或绑定对应活动。
     实例不可重新赋值，不持有计算进度。
     minimum_coverage为0—1有限比例；只有三种覆盖均达到门槛时覆盖质量充分。
-    select输出SelectionRow迭代器，不形成CalculationResult标量或隐式单位转换。
+    select输出SelectionRow迭代器，不形成CalculationResult标量；
+    同一量种目标单位同步转换行值、类型与质量。
     """
 
     calculation_id: str  # 当前任务指标唯一简单名称。
@@ -54,6 +56,9 @@ class CalculationDefinition:
     output_unit: str | None = None  # 明确单位转换，省略时按输入推导。
     scope: str = 'session'  # 区间含义，不将上下文指标写成event指标。
     minimum_coverage: float = 0.0  # 0—1质量门槛，不删除report可核实诊断值。
+    config_version: int = field(default=4, kw_only=True)  # 单位规则版本，不改变旧位置参数。
+    ddof: int | None = field(default=None, kw_only=True)  # 只对方差/标准差有含义。
+    q: int | float | None = field(default=None, kw_only=True)  # 仅sample_quantile显式指定概率。
 
     def __post_init__(self):
         """验证指标类型/政策/范围，不隐式选择mean口径。
@@ -64,8 +69,19 @@ class CalculationDefinition:
         """
         # 指标身份遵循当前简单名称规则。
         require_identifier(self.calculation_id, 'calculation_id')
+        # 版本是计划身份，不从单位文字猜测或修改全局默认。
+        if type(self.config_version) is not int or self.config_version != 4:
+            raise ValueError('CalculationDefinition仅支持config_version=4')
         # 未实现算子不能仅声明名就称支持。
-        if self.operation not in ('integral', 'sample_minimum', 'sample_maximum', 'sample_mean', 'min_time', 'max_time', 'time_weighted_mean', 'duration', 'select') or not isinstance(self.window, Interval):
+        supported = ('integral', 'sample_minimum', 'sample_maximum', 'sample_mean', 'min_time', 'max_time',
+                     'time_weighted_mean', 'duration', 'select')
+        supported += ('sample_count', *MOMENTS, *SAMPLE_QUANTILES)
+        if self.operation in SAMPLE_QUANTILES:
+            quantile_probability(self.operation,self.q)
+        elif self.q is not None:
+            raise ValueError('q仅适用于sample_quantile')
+        object.__setattr__(self, 'ddof', moment_ddof(self.operation, self.ddof))
+        if self.operation not in supported or not isinstance(self.window, Interval):
             # 只有已接线口径才接受，不开放模糊mean或线性模型。
             raise ValueError('指标需明确已实现算子及Interval')
         # 部分政策必须显式受支持，不默认猜UNKNOWN处理。
@@ -260,57 +276,115 @@ class CalculationResult:
             raise TypeError('结果来源需tuple SourceRef')
 
 
-def calculation_unit(spec, input_unit):
-    """根据算子和输入单位推导结果单位，并给出一次输出转换因子。
+@dataclass(frozen=True)
+class CalculationConversion:
+    """保存归约结束后的一次单位转换，不保存样本或额外结果副本。
 
-    参数:
-        spec: CalculationDefinition，提供算子和可选output_unit；input_unit为当前分析值单位。
-    返回:
-        (unit, factor)元组。unit为输出标签，factor为最终结果需乘的float因子。
-        积分按秒累计；未注册单位保留input_unit + '*s'，不猜测工程意义。
-    异常:
-        ValueError: 要求的单位不在同一已知维度，转换未注册或因子非有限。
-    边界:
-        例如功率积分推导能量单位；输入工程单位已由上游完成转换，本函数
-        不重复DBC缩放。转换仅在最终结果处应用一次，方向符号不在这里推断。
+    factor和offset为输出值=归约值*factor+offset，整数系数保持精确整数。
+    version固定为当前规则；实例在一次计划中不可修改。
     """
-    # 零阶保持积分将区间值乘以时长（秒），常见结果单位按数学维度推导。
-    base = input_unit
-    # 输入单位已是分析值单位；乘秒的维度转换不重复输入factor。
-    input_factor = 1.0
-    # TRUE时长只输出秒，布尔值不能借数值单位转换形成电量或面积。
+
+    unit: str  # 输出单位，与转换后的数值一起使用。
+    factor: int | float  # 一次乘法系数，不重复上游DBC或绑定缩放。
+    offset: int | float = 0  # 绝对温度归约可用；积分输出不允许偏移。
+    version: int = 4  # 当前单位规则，旧版本明确拒绝。
+
+    def __post_init__(self):
+        """检查不可变转换描述符，拒绝无效版本和不可执行系数。
+
+        参数: 无，读取unit、factor、offset和version。
+        返回: None。异常: TypeError/ValueError为文本、类型、有限性或版本错误。
+        """
+        # 精确整数可超过float范围；其数值可用性由目标dtype及仿射核判断。
+        require_text(self.unit, 'calculation_conversion.unit')
+        if type(self.version) is not int or self.version != 4:
+            raise ValueError('单位转换版本必须为4')
+        if any(type(item) not in (int, float) or type(item) is float and not isfinite(item)
+               for item in (self.factor, self.offset)) or self.factor <= 0:
+            raise ValueError('单位倍率须为正，倍率与偏移须为有限数值')
+
+    def dtype(self, input_dtype):
+        """在执行前确定输出类型，不根据某条样本是否整除改变类型。
+
+        参数: input_dtype为归约值或select原列的SignalDType。
+        返回: 保持原类型，或在小数倍率/偏移时返回FLOAT64。
+        异常: ValueError为BOOL/ENUM请求数值单位变换。
+        """
+        # 恒等变换保留布尔/枚举；其余变换只作用于数值。
+        if self.factor == 1 and self.offset == 0:
+            return input_dtype
+        if input_dtype not in (D.INT64, D.UINT64, D.FLOAT64):
+            raise ValueError('BOOL/ENUM不支持数值单位换算')
+        if input_dtype is D.FLOAT64:
+            return D.FLOAT64
+        return input_dtype if type(self.factor) is int and type(self.offset) is int else D.FLOAT64
+
+
+def calculation_conversion(spec, input_unit):
+    """取得完整输出换算，包括均值/极值允许的绝对温度偏移。
+
+    参数: spec为CalculationDefinition；input_unit为表达式当前值的单位。
+    返回: CalculationConversion，数值后端在归约后应用一次；空结果不转换。
+    异常: ValueError为不兼容量种、偏移积分或未知单位转换；TypeError为模型错误。
+    """
+    # 只接受已验证的当前计算定义，不为旧版本选择另一套单位解释。
+    if not isinstance(spec, CalculationDefinition):
+        raise TypeError('单位换算需要CalculationDefinition')
+    # 注册表只在编译边界使用，运行不为每个样本创建单位对象。
+    from .unit_registry import resolve_unit, canonical_unit, conversion, multiply, output_label
+    if spec.operation == 'sample_count':
+        # 计数没有输入物理量纲，不允许把个数换成工程单位。
+        if spec.output_unit not in (None, '1'):
+            raise ValueError('样本计数的输出单位只能是1')
+        return CalculationConversion('1', 1, version=4)
     if spec.operation == 'duration':
         if input_unit != '1' or spec.output_unit not in (None, 's'):
             raise ValueError('duration需无量纲BOOL输入及s输出')
-        return 's', 1.0
-    # 积分仅对已注册类别推导，其他保留明确乘秒标签。
+        return CalculationConversion('s', 1, version=4)
+    source = resolve_unit(input_unit)
+    if spec.operation in MOMENTS:
+        source = moment_source_unit(spec.operation, source)
+    if source is None:
+        # 不通过相同未知标签推断新的物理关系；保持原保守单位处理。
+        unit = input_unit + '*s' if spec.operation == 'integral' else input_unit
+        if spec.output_unit not in (None, unit):
+            raise ValueError(f'未知单位不能转换：{unit}→{spec.output_unit}')
+        return CalculationConversion(unit, 1, version=4)
     if spec.operation == 'integral':
-        # 已核实power/current/dimensionless类别的基准面积单位。
-        category = UNIT_TABLE[input_unit][0] if input_unit in UNIT_TABLE else None
-        # 同类别明确单位因子来自静态Fraction表，不凭文本前缀猜测。
-        base = {'power': 'J', 'current': 'A·s', 'dimensionless': 's'}.get(category, input_unit + '*s')
-        # 只有已推导的数学类别需要乘基准倍率。
-        if category in ('power', 'current', 'dimensionless'):
-            # 例如kW*s→J为1000，不是再对原行重复DBC缩放。
-            input_factor = float(UNIT_TABLE[input_unit][1])
-    # 缺省按声明维度输出，不猜Ah或充放电名称。
-    target = spec.output_unit if spec.output_unit is not None else base
-    # 相同单位没有多余转换。
-    if target == base:
-        # 不重复旧DBC缩放。
-        return target, input_factor
-    # 已知维度才能转换，未知文本不当已核实单位。
-    if base not in UNIT_TABLE or target not in UNIT_TABLE or UNIT_TABLE[base][0] != UNIT_TABLE[target][0]:
-        # 不静默猜测输入已经积分或单位前缀。
-        raise ValueError(f'指标单位不能明确转换：{base}→{target}')
-    # 静态Fraction比例只做显式配置转换。
-    factor = input_factor * float(UNIT_TABLE[base][1] / UNIT_TABLE[target][1])
-    # 配置因子也必须正常有限。
-    if not isfinite(factor):
-        # 不让坏配置进入数值UNKNOWN。
-        raise ValueError('指标单位转换非有限')
-    # 输出转换仅在最终值处一次应用。
-    return target, factor
+        # degC*s必须先明确改用绝对尺度，不能给面积最后只加273.15。
+        source = multiply(source, resolve_unit('s'))
+    target = resolve_unit(spec.output_unit) if spec.output_unit is not None else (
+        source if spec.operation in MOMENTS else canonical_unit(source))
+    if target is None:
+        raise ValueError(f'指标目标单位未登记：{spec.output_unit}')
+    scale, shift = conversion(source, target)
+    if spec.operation in MOMENTS and shift:
+        raise ValueError('方差、标准差和RMS输出不允许偏移换算')
+    # 整数比例与偏移保留整数，防止2**53以上的整数极值无故转float。
+    factor = int(scale.factor) if scale.pi_power == 0 and scale.factor.denominator == 1 else scale.to_float()
+    offset = int(shift) if shift.denominator == 1 else float(shift)
+    if spec.operation == 'integral' and offset:
+        raise ValueError('积分结果不支持带偏移的单位转换')
+    if spec.operation == 'integral' or spec.operation in MOMENTS:
+        # 浮点归约的目标倍率必须可以表示；显式目标只转换一次。
+        factor = scale.to_float()
+    # 原子别名归一，倍率1的复合单位用规范名；不把内部括号描述作为输出标签。
+    label = output_label(target, spec.output_unit or target.symbol)
+    return CalculationConversion(label, factor, offset, 4)
+
+
+def calculation_unit(spec, input_unit):
+    """提供没有加法偏移的单位/倍率接口，兼容旧调用和积分归约。
+
+    参数: spec为CalculationDefinition，input_unit为当前值单位。
+    返回: (输出单位, 一次乘法系数)。
+    异常: ValueError为需要加法偏移或单位关系非法；不静默丢弃偏移。
+    """
+    # 均值/极值/select使用完整描述符；旧二元消费者不能忽略摄氏偏移。
+    result = calculation_conversion(spec, input_unit)
+    if result.offset:
+        raise ValueError('该单位转换含偏移，请使用calculation_conversion')
+    return result.unit, float(result.factor)
 
 
 def merge_ranges(ranges):
@@ -336,7 +410,7 @@ def merge_ranges(ranges):
 
 
 def classify_calculation_value(spec, value, observed_duration_ns, known_duration_ns, selected_duration_ns,
-                          selected_unknown_duration_ns, *, all_false=False, calculation_failed=False):
+                          selected_unknown_duration_ns, *, all_false=False, calculation_failed=False, sample_count=0):
     """按既有政策分类数值，供完整结果和精简内部结果共用。
 
     参数: spec为已校验请求；各时长参数均为实际覆盖整数纳秒，value为候选值；
@@ -363,10 +437,18 @@ def classify_calculation_value(spec, value, observed_duration_ns, known_duration
         # 保留覆盖/原因，但数值不能使用。
         value, status, reason = None, 'indeterminate', 'calculation_failed'
     # 完整观测且条件始终为FALSE时，积分为零，样本统计保留None。
+    elif spec.operation == 'sample_count':
+        # 真实样本计数可恰为0。只要有确定的选择范围（含明确FALSE）就有
+        # 部分计数依据，全部条件未知或全部所选值未知时不能宣称完整空集。
+        from .counts_v4 import classify_count
+        value, status, reason, _ = classify_count(value or 0, spec.partial_policy,
+            observed=True, determinate=known_duration_ns > selected_unknown_duration_ns, complete=not incomplete)
     elif all_false and observed_duration_ns == requested_duration_ns:
         # 输入数值无效诊断仍保留，不是结果需要的选中值未知。
         value, reason = (0.0, 'empty_selection') if spec.operation in ('integral', 'duration') else (None, 'empty_selection')
     # 没有可核实选中数据，不区分真假补零。
+    elif spec.ddof == 1 and sample_count == 1:
+        value, status, reason = None, 'indeterminate', 'insufficient_samples'
     elif value is None:
         # 已知无样本/全未知/条件未知原因明确。
         status, reason = 'indeterminate', 'unknown_selection' if known_duration_ns < observed_duration_ns else 'no_samples' if spec.operation != 'integral' and selected_duration_ns > 0 else 'no_valid_selected_data'
@@ -421,7 +503,8 @@ def make_calculation_result(spec, series, value, unit, actual, value_duration_ns
     requested_duration_ns = spec.window.end_ns - spec.window.start_ns
     observed_duration_ns = 0 if actual is None else actual.end_ns - actual.start_ns
     value, status, reason = classify_calculation_value(spec, value, observed_duration_ns, known_duration_ns,
-        selected_duration_ns, selected_unknown_duration_ns, all_false=all_false, calculation_failed=calculation_failed)
+        selected_duration_ns, selected_unknown_duration_ns, all_false=all_false, calculation_failed=calculation_failed,
+        sample_count=sample_count)
     # 三种既定覆盖率同时满足质量门槛才充分；零分母保持无法判断。
     coverages = (value_duration_ns / observed_duration_ns if observed_duration_ns else None,
                  known_duration_ns / observed_duration_ns if observed_duration_ns else None,

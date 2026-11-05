@@ -9,12 +9,15 @@ valid与execution_ready表示当前声明使用已接入的公共执行路径；
 """
 
 # 冻结报告与只读映射，不维护跨任务状态。
+from ..core.moments import MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 from types import MappingProxyType
 from collections.abc import Mapping
 # 报告只消费已经静态校验的计划。
 from .plan import AnalysisPlan
 from .models import MessageCalculationPlan
+from ..core.counts_v4 import COUNT_OPERATIONS, OBJECT_COUNTS
 from .message_calculations import require_message_calculation
 from .legacy_execution import require_can_decode_scope
 from .input_requirements import InputRequirements, collect_input_requirements
@@ -126,8 +129,8 @@ def _static_errors(plan: AnalysisPlan) -> tuple[str, ...]:
     """
     # 当前只执行配置3和两个已接入后端；不以原raw_config覆盖typed替换。
     errors = []
-    if type(plan.config_version) is not int or plan.config_version != 3:
-        errors.append('当前执行只支持config_version=3')
+    if type(plan.config_version) is not int or plan.config_version != 4:
+        errors.append('当前执行只支持config_version=4')
     try:
         require_interval_declarations(plan)
         require_export_options(plan)
@@ -188,8 +191,17 @@ def _static_errors(plan: AnalysisPlan) -> tuple[str, ...]:
             errors.append(f'{window.window_id}：未支持的窗口merge/anchor或规则引用')
     # 数值与选择仅有明确九种口径，积分固定使用左侧保持；不接受legacy_sum或新插值。
     for calculation in plan.calculations:
-        if calculation.operation not in _CALCULATIONS:
+        if (calculation.operation not in _CALCULATIONS + (COUNT_OPERATIONS + MOMENTS + SAMPLE_QUANTILES)
+                and (plan.extensions is None or calculation.operation not in plan.extensions.reductions)):
             errors.append(f'{calculation.calculation_id}：未支持的指标operation：{calculation.operation}')
+        if calculation.operation in OBJECT_COUNTS:
+            # typed计划同样须引用存在且对象类型相符的规则或窗口。
+            target = calculation.count_target
+            rule = rules.get(target)
+            if (calculation.scope != 'session' or calculation.signal is not None or calculation.condition is not None
+                    or calculation.unit != '1' or (target not in windows if calculation.operation == 'segment_count'
+                    else rule is None or (rule.temporal_rule_type == 'condition_duration') != (calculation.operation == 'activity_count'))):
+                errors.append(f'{calculation.calculation_id}：对象计数来源或范围不合法')
         if calculation.method != ('zoh' if calculation.operation == 'integral' else None):
             errors.append(f'{calculation.calculation_id}：未支持的指标method：{calculation.method}')
         # 未知范围不进入explain的字典索引，不能让unsupported报告变成KeyError。
@@ -228,6 +240,44 @@ def _static_errors(plan: AnalysisPlan) -> tuple[str, ...]:
     return tuple(errors)
 
 
+def _extension_backend_errors(plan):
+    """检查此次输出实际用到的宿主操作。参数: 已构建计划。返回: 后端诊断。异常: 非法计划。
+
+    在打开日志前检查，只查看编译好的表达式与变换。未引用的函数不要求提供当前后端。
+    """
+    registry = plan.extensions
+    if registry is None:
+        return ()
+    from .transforms import active_transforms
+    expressions = [expr for rule in plan.rules for expr in rule.expressions]
+    expressions.extend(expr for item in plan.calculations for expr in (item.condition, item.signal) if expr is not None)
+    expressions.extend(item.expr for item in plan.message_calculations)
+    names = {alias for expr in expressions for alias in expr.dependencies}
+    active = active_transforms(plan, names)
+    expressions.extend(item.expression for item in active)
+    required = {item.operation: registry.reductions[item.operation] for item in plan.calculations
+                if item.operation in registry.reductions}
+    required.update({item.operation: registry.transforms[item.operation] for item in active
+                     if item.operation in registry.transforms})
+    todo = [expr.root for expr in expressions]
+    seen = set()
+    while todo:
+        node = todo.pop()
+        if id(node) in seen:
+            continue
+        seen.add(id(node))
+        if node.operator == 'host_function':
+            required[node.name] = registry.functions[node.name]
+        todo.extend(node.args)
+    errors = []
+    for name, spec in sorted(required.items()):
+        try:
+            spec.require_backend(plan.execution.backend)
+        except ValueError as error:
+            errors.append(f'{name}: {error}')
+    return tuple(errors)
+
+
 def validate_analysis_plan(plan: AnalysisPlan) -> ValidationReport:
     """报告静态配置有效性及当前读取、执行和发布能力限制。
 
@@ -247,7 +297,7 @@ def validate_analysis_plan(plan: AnalysisPlan) -> ValidationReport:
         # 用户应先调用严格构建入口。
         raise TypeError('validate_analysis_plan需要AnalysisPlan')
     # 限制逐来源保留，不以dataset.domain冒充观测范围。
-    errors, warnings = _static_errors(plan), []
+    errors, warnings = _static_errors(plan) + _extension_backend_errors(plan), []
     # 明示待查周期，静态报告不能把None误解为无限保持或完成了DBC核实。
     pending_validity = tuple(item.definition.name for item in plan.signals
                              if item.definition.valid_for_ns is None)
@@ -400,10 +450,16 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
     # 节点依赖由实际白名单编译结果提供；有效view仅覆盖backend，不重建声明身份。
     nodes = []
     backend = plan.execution.backend if plan.execution.backend in _BACKENDS else 'unavailable'
+    for transform in plan.transforms:
+        nodes.append(ExplainNode(transform.name,'transform:'+transform.operation,transform.expression.dependencies,
+                                 transform.output.unit,backend))
     # 派生运算使用已实现标量/真实数组核，但当前树仍是静态声明。
     for item, expression in zip(plan.derived, plan.derived_expressions):
         # 不把semantic名称当原依赖。
         nodes.append(ExplainNode(item.definition.name, 'derived', expression.dependencies, expression.root.unit, backend))
+    for aggregation in plan.aggregations:
+        nodes.append(ExplainNode(aggregation.name,'aggregation:'+aggregation.operation,
+                                 (aggregation.source_id,),aggregation.unit,'state_driver'))
     # 活动/边沿生命周期允许状态驱动，不伪称数组ufunc。
     for rule in plan.rules:
         # 已接线规则保持state_driver，未知typed kind不能被名称占位冒充真实检测器。
@@ -433,7 +489,14 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
         # 值/条件依赖在报告中保留，不包含其他无关来源。
         used = {name for expression in (calculation.signal, calculation.condition) if expression is not None for name in expression.dependencies}
         # event/segment范围条件也是指标的真实依赖。
-        available = calculation.operation in _CALCULATIONS and calculation.method == ('zoh' if calculation.operation == 'integral' else None)
+        available = (calculation.operation in _CALCULATIONS + (COUNT_OPERATIONS + MOMENTS + SAMPLE_QUANTILES)
+                     or plan.extensions is not None and calculation.operation in plan.extensions.reductions) and calculation.method == ('zoh' if calculation.operation == 'integral' else None)
+        if calculation.operation in OBJECT_COUNTS:
+            target = calculation.count_target
+            window = windows.get(target) if calculation.operation == 'segment_count' else None
+            rule = rules.get(window.event if window is not None else target)
+            if rule is not None:
+                used.update(rule.dependencies)
         if calculation.scope != 'session':
             # 正常配置已验证；typed负例仍报告unavailable及errors，不以缺引用触发KeyError。
             scope, _, target = calculation.scope.partition(':') if type(calculation.scope) is str else ('', '', '')
@@ -480,6 +543,21 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
     ordinary = () if requirements is None else requirements.ordinary_sample_aliases
     history = {item.definition.name: item.definition.valid_for_ns for item in plan.signals
                if item.definition.name in ordinary}
+    if requirements is not None and requirements.transform_names:
+        # 级联实际窗口的前史相加；固定周期的实际跨度需读到相邻原帧才确定。
+        choices=dict(plan.intervals.resolved)
+        horizons={}
+        for t in plan.transforms:
+            if t.name not in requirements.transform_names:
+                continue
+            own=t.max_gap_ns if t.max_gap_ns is not None else t.window_ns
+            inherited=[horizons[n] for n in t.expression.dependencies if n in horizons]
+            unknown=any(v is None for v in inherited) or (t.window_ns is not None and choices[t.name].mode!='actual')
+            horizon=None if unknown else own+max(inherited,default=0)
+            horizons[t.name]=horizon
+            for n in t.physical:
+                if n in history:
+                    history[n]=None if history[n] is None or horizon is None else max(history[n],horizon)
     # 回看窗口也是必要历史，不能只报告TTL而漏掉新条件保留的片段。
     for rule in plan.rules:
         if rule.rule_type == 'window_delta':

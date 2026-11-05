@@ -8,6 +8,7 @@ import csv
 from dataclasses import replace
 import json
 from pathlib import Path
+from published_paths import published_file
 import unittest
 from unittest.mock import Mock, patch
 from uuid import uuid4
@@ -127,15 +128,15 @@ class SignalGridTests(unittest.TestCase):
         for backend in ('reference','numpy'):
             path=export_signal_csv(iter(records),spec,Interval(0,131),self.root/backend,self.budget,
                 device_label='home',definitions=(self.definition,),backend=backend)
-            with (path/'original.csv').open(encoding='utf-8',newline='') as stream:
+            with (published_file(path,'original.csv')).open(encoding='utf-8',newline='') as stream:
                 original=list(csv.DictReader(stream))
             self.assertEqual([r['time_ns'] for r in original],['5','65'])
-            with (path/'resampled.csv').open(encoding='utf-8',newline='') as stream:
+            with (published_file(path,'resampled.csv')).open(encoding='utf-8',newline='') as stream:
                 grid=list(csv.DictReader(stream))
             outputs.append(grid)
             row=next(r for r in grid if r['time_ns']=='100')
             self.assertEqual((row['value'],row['status'],row['left_time_ns'],row['right_time_ns']),('100.0','estimated','10','120'))
-            manifest=json.loads((path/'manifest.json').read_text(encoding='utf-8'))
+            manifest=json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))
             self.assertFalse(manifest['resampling']['causal'])
             self.assertEqual(manifest['resampled_counts'],{'estimated':10,'observed':2,'missing':2})
             self.assertEqual(self.budget.ram_bytes,0)

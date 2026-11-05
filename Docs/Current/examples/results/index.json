@@ -1,7 +1,7 @@
 {
   "device_label": "home",
-  "generated_at": "2026-11-02T09:14:49+08:00",
-  "runnable_configurations": 74,
+  "generated_at": "2026-11-05T13:56:25+08:00",
+  "runnable_configurations": 76,
   "non_runnable_definitions": [
     "teaching-base.yaml",
     "electrical-base.yaml",
@@ -10,28 +10,28 @@
   "cases": [
     {
       "config": "activity.yaml",
-      "config_semantic_sha256": "6ee921e846254a039484ef735a177cd5926097652fa2ce7d124c2aa6fe070818",
+      "config_semantic_sha256": "bfb08d6cb76662b79a57046943a7d67491de34abadb4bf912afba121901a867f",
       "anchor": "activity-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "analysis-imports.yaml",
-      "config_semantic_sha256": "fa196a80dd2c532558002b6cf152a2b81a410fb85eec8ade09717b5f826ac6c2",
+      "config_semantic_sha256": "9233cf0bbfe11fb2d6cf549e3c259b65d6a8c986c2b0d37e83a687bf3b7c4df1",
       "anchor": "analysis-imports-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "analysis.json",
-      "config_semantic_sha256": "fbdc1d05c5e53929a5d10df6908f33063e783f85abc98c29ea6f52ec353ff882",
+      "config_semantic_sha256": "a73740237fff0e9f6b8e565604e4f430c149413b6f5cedcf0a77a6aa0a1a2770",
       "anchor": "analysis-json",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "analysis.yaml",
-      "config_semantic_sha256": "fbdc1d05c5e53929a5d10df6908f33063e783f85abc98c29ea6f52ec353ff882",
+      "config_semantic_sha256": "a73740237fff0e9f6b8e565604e4f430c149413b6f5cedcf0a77a6aa0a1a2770",
       "anchor": "analysis-yaml",
       "kind": "analysis",
       "jobs": null
@@ -52,492 +52,506 @@
     },
     {
       "config": "calculation-minimal.yaml",
-      "config_semantic_sha256": "99da5b28367ecb0a8304847bd047244c2ffd030e02421bf247ba91724ef289c2",
+      "config_semantic_sha256": "12eda525024355f47578598dfa9e9fbd5c9b62a7221b8c00e7f9342cd6424f2f",
       "anchor": "calculation-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "calculation-operations.yaml",
-      "config_semantic_sha256": "855bc560b109e39940abc37af20d995142bcbb391ab65c306f3ae0c767924815",
+      "config_semantic_sha256": "17dc6e77cda855bda7b8c67b4248ecb0f902e35da4151e2f32c25e6458b5fc08",
       "anchor": "calculation-operations-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "can-joint-analysis.yaml",
-      "config_semantic_sha256": "316b7db2139c674d9bf2f8dddedf0183de8bdc006691d9b006f9c6945c6ad359",
+      "config_semantic_sha256": "49fa760f8ccc3661ff9e9db795818158463f5dffe10741d495892e7d744f769b",
       "anchor": "can-joint-analysis-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "conditional-energy.yaml",
-      "config_semantic_sha256": "701fca9f21d341f7259f84c6b6846d656d6d471c108ed77edb9a36df0d76734c",
+      "config_semantic_sha256": "de39c3c5b83034ba76cb34c5e4ddb08693f4b3814e8dae54b220382f6fbe5e8d",
       "anchor": "conditional-energy-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "dual-grid.yaml",
-      "config_semantic_sha256": "01020b5206ce22e14d63e283f7962c1c9728fbd3b56712f598a2a83fe88d768f",
+      "config_semantic_sha256": "6b474cbe1555e102396a1f40a9fcc27073a2e47173d7c9cebde58e2657e7c0dc",
       "anchor": "dual-grid-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "execution-comparison.json",
-      "config_semantic_sha256": "205f7fb1c91e4ae1718e87c29d7a14f16d816a230fcca65dc4520605d4442584",
+      "config_semantic_sha256": "2f49187eed984950d635c53d264ffa93891d52c8712440bc91715b568a8f21fe",
       "anchor": "execution-comparison-json",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "execution-diagnostics.yaml",
-      "config_semantic_sha256": "d9b921a20557e02c652e0b13006c02143667c178d1dc69f0df933b9f35d292c8",
+      "config_semantic_sha256": "0cc4ac083e3435ca4a4cde18e846ffd3a437daaa6803a521a2775f243db43de5",
       "anchor": "execution-diagnostics-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "execution-report.yaml",
-      "config_semantic_sha256": "e7269a00b67a497ada51c9d08d144f839f881aa731f53301b9c0a9259b980bdb",
+      "config_semantic_sha256": "62169033141202db8a80860c9f3d0e1caf16dd605ff8f229c30aa351e0f5dd7b",
       "anchor": "execution-report-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "execution-strict.yaml",
-      "config_semantic_sha256": "e200ce9f6597103518545cfc7a441cd35a2dafc7993ccbc917d09a5f2cd94525",
+      "config_semantic_sha256": "c75a6cabc6f326ae9112b953f19bd0a67bd9170bd825d39b0c5e93c9affe1ee1",
       "anchor": "execution-strict-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "export-can-all-windows.yaml",
-      "config_semantic_sha256": "f68d0a9be832ec14b20f34b4eb5ecc7a7f267111b42509a3292cdc5c2587c292",
+      "config_semantic_sha256": "295856fec2c5dc3047b2a9dc2b6cad9025db0953588c49c0ca7b63af7d264a60",
       "anchor": "export-can-all-windows-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "export-can-grid.yaml",
-      "config_semantic_sha256": "0d10a43af952fbc1e02dfb5659bbdd502a9d78e88ad18ac5855fb61c420aa90d",
+      "config_semantic_sha256": "43ca3b6f156e379ea651d76230e96cf1f96cf9ebf4cbeb88ad6ff0e32caa90af",
       "anchor": "export-can-grid-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "export-can-minimal.yaml",
-      "config_semantic_sha256": "f3284969746212ba798c02c6db971d60a790f9ae155d77e1fd019880e1c24554",
+      "config_semantic_sha256": "caad7d32f2189b8d2c7fcc7e3a03477503dd5ebec986c2c3b6627f86be5e6a9c",
       "anchor": "export-can-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "export-signal-grid.yaml",
-      "config_semantic_sha256": "33b678a1e91b67f8425b645c097b6f30ef6f5f4d0fd288367539d0c421f08bb4",
+      "config_semantic_sha256": "535ee9195edb87ce2022d8c1c52b87cc88e2f1e1617ee7d39fa3c0c5529e1f26",
       "anchor": "export-signal-grid-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "export-signal-minimal.yaml",
-      "config_semantic_sha256": "8521b489f44278eac91dd464518bb71c40167440a44316573fb43d45461f452c",
+      "config_semantic_sha256": "4fc6373d919fd32af549dac74aecc9509d73c61b54f858bdd4914379738c8332",
       "anchor": "export-signal-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "expression-extended.yaml",
-      "config_semantic_sha256": "ce2d0a6312c422b925e7d1e64066e1427bc3e3b524a618c632cf76d79c49bf79",
+      "config_semantic_sha256": "1b10dd4f5586bd904cc0895ca78fcf9fbb76e71e72a263e81713bbbd18e77053",
       "anchor": "expression-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "expression-minimal.yaml",
-      "config_semantic_sha256": "e77abd976f355811596555ced643c2ca9a312ef7e589811581d4954ba5f2cb54",
+      "config_semantic_sha256": "43e4c6701c2267cee226dc74867b00f8876746813ad3779e645d2247dd901c25",
       "anchor": "expression-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-asc-minimal.yaml",
-      "config_semantic_sha256": "563a7a66e5dfd2d493f57e3f131372b5a890f24a0cff97d0e591ec36fdb001aa",
+      "config_semantic_sha256": "f15a4ef304987f2c4c4b7c04a44bac9ec12c57bf98549e637add48df3b70a655",
       "anchor": "input-asc-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-can-directory.yaml",
-      "config_semantic_sha256": "1bf1f94afb664a326739ed4b055b88f7ce4e03501376f67c177a2fb5fe552885",
+      "config_semantic_sha256": "2c3facb52a2e090a0da2666bb196c2ec66b3fe556a4e866b5ba85ddc51a036c0",
       "anchor": "input-can-directory-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-csv-minimal.yaml",
-      "config_semantic_sha256": "715fefb1191621f5f562a9c5189b2029083997fc0a29ae6199de4d98d074049a",
+      "config_semantic_sha256": "42fbbac23fcc42d149ac27cff5463104c75c85b09f2bc54a45c45c2822273e2b",
       "anchor": "input-csv-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-csv-offset.yaml",
-      "config_semantic_sha256": "46495ae7f5f6cf70270aa937e6988b4161f25d2a4ed9191ccce66426869481a1",
+      "config_semantic_sha256": "9e194c8b7ea8fb5ae1340917b0711046d423e62b8032a78330a794d9e5ee2971",
       "anchor": "input-csv-offset-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-memory-minimal.yaml",
-      "config_semantic_sha256": "392899ce116addeb14c15202b118d290dda00e224959156faaea2e007fd1465a",
+      "config_semantic_sha256": "71488dc2c27fa0c5b2ab579b17bec7ad622cc6595aefbbd5162493ffee68bd86",
       "anchor": "input-memory-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-raw-csv-mapping.yaml",
-      "config_semantic_sha256": "d4a2bfad90cd490987f14740dd4cbfad3b3877097c06718bb5f9e88e4d83eba2",
+      "config_semantic_sha256": "fdf18693c3708468f4f7c58f204f097f62803036d80dec3e31e5a0d7b046f41e",
       "anchor": "input-raw-csv-mapping-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "input-raw-csv-minimal.yaml",
-      "config_semantic_sha256": "ed35804d6a21830f008879251befe65d82eb237ea8a02a40467183b8d2a9200a",
+      "config_semantic_sha256": "676d803bffc596d885ba782176020255ab013620298b99695e9749a56f6cbd96",
       "anchor": "input-raw-csv-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "interval-actual.yaml",
-      "config_semantic_sha256": "1cd9d743b6581552448b562bce0a87c4fb5bf2f3fe446a6d1531a4fd1b8c9952",
+      "config_semantic_sha256": "2b86743e06505ca5c4a34a686ed199e9ae95f6eef9960a7c03b571c8bff83fef",
       "anchor": "interval-actual-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "interval-fixed.yaml",
-      "config_semantic_sha256": "5023ce6349119155e2c03a32ce49872e4f67caa5af6dd3d767a1e1cb22ec64f1",
+      "config_semantic_sha256": "2c07d6a3911374ff0cab020c447e2d3f51cb0c4c0fb782d0931c066b14e5f849",
       "anchor": "interval-fixed-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
+      "config": "lookup-power.yaml",
+      "config_semantic_sha256": "abd7cb1bbaf86ba6c8662bd16e1da6fed8e8dcf56a081afde26d0fcee7571275",
+      "anchor": "lookup-power-yaml",
+      "kind": "analysis",
+      "jobs": null
+    },
+    {
       "config": "message-directions.yaml",
-      "config_semantic_sha256": "29d92aee81ae3b61f4a61a9fa8f88ba87d94ec54086bf97bfc5ec173de950bad",
+      "config_semantic_sha256": "9e3e5921dbc88750e5081f9ecbf3c31fefa57d1420ab1a22edfcde4c1a060dec",
       "anchor": "message-directions-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "message-energy.yaml",
-      "config_semantic_sha256": "5ade7c00de1b432993942a34e13b5567fb0eae986fbe8e0d34e571996f40782f",
+      "config_semantic_sha256": "baa4c58115734fa1c674766f8ea2ab78dd4cebb959211e0f4eda5f94eed19077",
       "anchor": "message-energy-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "message-minimal.yaml",
-      "config_semantic_sha256": "1bc1db6c92fc0fb9051bec062d75e7e403a1c26e954a5a0d50e1391a60a90aa5",
+      "config_semantic_sha256": "6684cd646434d6a675c43b416317e956e18130204e8dfd11e7b20eb80a645fa5",
       "anchor": "message-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
+      "config": "power-statistics.yaml",
+      "config_semantic_sha256": "32f37c1d154b8bcfe391d6a81e655dd3c8add7e3e90d3f302133f0b5a5c01509",
+      "anchor": "power-statistics-yaml",
+      "kind": "analysis",
+      "jobs": null
+    },
+    {
       "config": "preset-charge-energy.yaml",
-      "config_semantic_sha256": "fb0f96b4b6c64e6bca07585290b12a1d468e4ff357758b5832693627c4c9c258",
+      "config_semantic_sha256": "0c36d9a4fd8b91aeb68c0fa5330e79d480d6e4d6fdc147e338c198e3d461a2ca",
       "anchor": "preset-charge-energy-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-charge-minimal.yaml",
-      "config_semantic_sha256": "5979f988025bc49a33ae440cf0238d6186b319abc47849e9390a5a82e7515a6b",
+      "config_semantic_sha256": "2e2f92f9568d5a91ddb6dd4f0500bc1a46bdea5ac6b59c4c25cae631d0a35033",
       "anchor": "preset-charge-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-command-automatic.yaml",
-      "config_semantic_sha256": "a39de706bfac2ee3aec74f366798a6bb90f62851eca8abcd66719de22aab87ff",
+      "config_semantic_sha256": "0a8afb92854ef0c7e29b6b6d35f330326e0654d7bc64a8d5815ad08986f7b1c0",
       "anchor": "preset-command-automatic-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-command-minimal.yaml",
-      "config_semantic_sha256": "5bb1db95ea836687d860cf54980d5784f12639dc50a3b9b26d626cc286113fd4",
+      "config_semantic_sha256": "4220961c73ab70c51d6bba83b696c05aa87774fc3b490bd2b272b87f7c940364",
       "anchor": "preset-command-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-fault-context.yaml",
-      "config_semantic_sha256": "5a68005e1e680b104f38cd6c8f117d099aaad1e06d593798d1756188f47a1912",
+      "config_semantic_sha256": "68955dd191d03098c35ec93d7f659b835c2efb35d4276d2df14839f9e573a9b2",
       "anchor": "preset-fault-context-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-fault-minimal.yaml",
-      "config_semantic_sha256": "68ad6dc5960347f7c51f9c35c64f458bdae971f3c12ceb4b4fcfdfb69e572086",
+      "config_semantic_sha256": "a2de14014ceda315257fb9b9305e08d7da717bf72957a3fdcac0910640d60c90",
       "anchor": "preset-fault-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-threshold-delay.yaml",
-      "config_semantic_sha256": "8b6a2218cfd05e7b9b1a97822a7a3c2ae466344d40d917d5076f303b4e2dc186",
+      "config_semantic_sha256": "f1333e7da6d165a1b332670875ac78c7a7b3e0f7fec40a8c87035dbaf4f6e905",
       "anchor": "preset-threshold-delay-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-threshold-minimal.yaml",
-      "config_semantic_sha256": "7f478014db1aaebacea217645a919dec42ba541b7e51c52127bc3c08c592d06c",
+      "config_semantic_sha256": "e6152890211c17dc7452829072d158147e85ad2353a651d2124d36605c66e77d",
       "anchor": "preset-threshold-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "preset-threshold-partial.yaml",
-      "config_semantic_sha256": "89f7d77e7f8c558d460eb6f2766728f66086d31891fd1842bae4cf26664f9c01",
+      "config_semantic_sha256": "75cc91fe069bc43ce1b7446befc589c3183fe7c396196c3d572ae0af1ae69279",
       "anchor": "preset-threshold-partial-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "quality.yaml",
-      "config_semantic_sha256": "a88677c98324294c850c6d74a2d72c65df3ea3fd14f62d54f822f3cf60fb7ea3",
+      "config_semantic_sha256": "855735ab8a45627f88b065ef1ba104db820759c50dfc554d9db004a5d0864b9d",
       "anchor": "quality-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-condition_duration-extended.yaml",
-      "config_semantic_sha256": "5740ef094ab6c70e73769d21e692982e1f9d479c283d2efc2e9b60d2dbd93c62",
+      "config_semantic_sha256": "a5f41ceeacadb567bbdddf1288305ecbf7bffb8b9f17286d13d24ee0ca3d9e67",
       "anchor": "rule-condition_duration-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-condition_duration-minimal.yaml",
-      "config_semantic_sha256": "41c3f4a24c79365360050ebbb2bac307c046b58f0a99a5dfc6a6e15090839c8e",
+      "config_semantic_sha256": "9c37770c981db4c72f2e0d98b34822bf4bb0ecf872f58d3a4e6592dc4440084e",
       "anchor": "rule-condition_duration-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-debounce-extended.yaml",
-      "config_semantic_sha256": "cca4208690d88507d88f7c125388ea1a69f2bf98dbf196c7c36e417f94a63aa1",
+      "config_semantic_sha256": "9746108f5bb8e808cd607c49196dfa238fdea61a715cf79ba3588189c57ad865",
       "anchor": "rule-debounce-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-debounce-minimal.yaml",
-      "config_semantic_sha256": "1831fad0be6e8e8098d2fe075e0ff14d6599d5e63919f6439f99bbfd1028da46",
+      "config_semantic_sha256": "ce7fcb302a1788de0341eb790d203865ae1edd7e2bde2ab0a28939698c357b78",
       "anchor": "rule-debounce-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-falling_edge-extended.yaml",
-      "config_semantic_sha256": "418d22d798634a083b1a2e6bbcd9a12d1f4e878c1fe0ec3ec1c925dc69eabf6d",
+      "config_semantic_sha256": "b67a67d0397a6361a02e51fec6b88ae382fa60eac9dbecd1f6f1382666b98ff0",
       "anchor": "rule-falling_edge-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-falling_edge-minimal.yaml",
-      "config_semantic_sha256": "ff0301f8242f4eb0ed6192db6490eaa191ec4cc9867ca7092726cc04d32711f4",
+      "config_semantic_sha256": "ee9298ca9402a3dd5ceaf7f16a07e4df3f0b6ea6e310392f0697e1ae21683a19",
       "anchor": "rule-falling_edge-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-hysteresis-extended.yaml",
-      "config_semantic_sha256": "fa683d829723e04c7364c45781da76232802fe4695693bb4c5dfe374c14701cc",
+      "config_semantic_sha256": "e0847affd539590221da7840d0014bb8bf0145e3c2a479858b4e0aba3a5fd0d7",
       "anchor": "rule-hysteresis-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-hysteresis-minimal.yaml",
-      "config_semantic_sha256": "7dc5a8d4fcddd5649bcc1b554f5e6cb1cff27ed9f340ce17756a7b1050f4a82d",
+      "config_semantic_sha256": "0814a302e4c41e4029be0a8adc1d4a2f3d499e97b6c5cc5e5ed71f4d46359d25",
       "anchor": "rule-hysteresis-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-rising_edge-extended.yaml",
-      "config_semantic_sha256": "1805aed462aa62707400828ccfb47a93a980de04ea3ca0a11bc8d5a3d8cbd860",
+      "config_semantic_sha256": "591b18bebadda5b80e4ffbddc21aef307c1eb66d6e742a6c68876239eda2a8c6",
       "anchor": "rule-rising_edge-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-rising_edge-minimal.yaml",
-      "config_semantic_sha256": "d3f5927aaaacb78a248fc57d5da9c099f6d97d994b4d6c82b6ed99c8272ece9b",
+      "config_semantic_sha256": "e1563994a56a8994b4e8d7c599c46a494540030be6e819513301a49e68603bb7",
       "anchor": "rule-rising_edge-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-start_end-extended.yaml",
-      "config_semantic_sha256": "7990f02dd8a79dddfb68e9c14bd6ca1716bcb5d7cfebd38fdf0945942bb9ac8a",
+      "config_semantic_sha256": "50ee5160ec2aec696602fc94407d7e13a83087334c72b929eb77cd27e22e2b23",
       "anchor": "rule-start_end-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-start_end-minimal.yaml",
-      "config_semantic_sha256": "8d8c0be0201d3fe5af5cd6f1dae7155724eb35d5605b73f23a3ed06b0351cc36",
+      "config_semantic_sha256": "cff0d63693f275d50bb694126f98cc01eecfda522c484fee17c2e390c46dff4a",
       "anchor": "rule-start_end-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-start_only-extended.yaml",
-      "config_semantic_sha256": "f24d3892ada425e82f05d7a85ca089227d71756e4691c6dfad0ff7099ac5844b",
+      "config_semantic_sha256": "2adc7a98d2828414135acda114b4392788b6506e03d472d18ec6a098f13ba7b2",
       "anchor": "rule-start_only-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-start_only-minimal.yaml",
-      "config_semantic_sha256": "7235e1d7b07a9a1a709141501f5bc026fe3dcda8e782ea9bcf90fe5af9d92544",
+      "config_semantic_sha256": "3bea08d4abb429789b16e6f8229a522ea54dd20fab50a2e7d2f2d213278a74bc",
       "anchor": "rule-start_only-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-window_delta-extended.yaml",
-      "config_semantic_sha256": "c7769ab7610a4373be8f91760149ca7c5420a80325ac4a5fd7f8c456a53603db",
+      "config_semantic_sha256": "0a3e647d405192b9f971763a173759520ca0dd59acb4d1f4ac97e19fcc31592d",
       "anchor": "rule-window_delta-extended-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "rule-window_delta-minimal.yaml",
-      "config_semantic_sha256": "c1675a0249159680e3b79d01869c80b0ea893a0a47f38c5bdcaa19ff5bd23d5b",
+      "config_semantic_sha256": "c9af8bdf5632b69447b4d275b7309c5af1325031ea60681b13ac19c8a0d1d566",
       "anchor": "rule-window_delta-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "sequence-minimal.yaml",
-      "config_semantic_sha256": "afcee85dba0c12886e9f1438e5441eab633678eae6021fefdecd580065f63160",
+      "config_semantic_sha256": "5d5fd870f59c26ab26855c3a8a8373cdea7f9a38f4be79d4e60e5540b90c524a",
       "anchor": "sequence-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "sequence-outcomes.yaml",
-      "config_semantic_sha256": "563a9888ee8638da3a28f7ef3015bc9f3296c73f1d7d4c28ef06ad39b129b3bd",
+      "config_semantic_sha256": "1cb766cfe0580fd064731dec9c70d5f57a559f553f6b794095468ed0262bd2bd",
       "anchor": "sequence-outcomes-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "signal-bool-minimal.yaml",
-      "config_semantic_sha256": "4c084e5588f7f2dd426cdab7ebba9cecc21c4671ab60590e932d2a6ff72f0622",
+      "config_semantic_sha256": "404394c5801c2ca86effd7c2c00ec52fb73c5d72d8e0f64f13817454cf3b1904",
       "anchor": "signal-bool-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "signal-enum-minimal.yaml",
-      "config_semantic_sha256": "b329582eacf4cc789c41e74e5b8fc64efbe1f39d4aba25fc0a1c2e59bcc54aaf",
+      "config_semantic_sha256": "5e9eb5bc817d9498d8af329d23d83a4d729881d423aaff58dbac4af3636ff9b2",
       "anchor": "signal-enum-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "signal-number-conversion.yaml",
-      "config_semantic_sha256": "4a124da12813d59791545e54d4682c36ff4a8875a1b9048ff4c116836ca581f2",
+      "config_semantic_sha256": "4d265780215b0a2899d25fa074964c461276b7a11ea3870b07fcd60520a0daa9",
       "anchor": "signal-number-conversion-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "signal-number-minimal.yaml",
-      "config_semantic_sha256": "27d7230cef48ebf9d3a2e240cb208ff75b0b0a442d9b217c1482a42e16519a2a",
+      "config_semantic_sha256": "47d90ce4b02392c0e9b803fbdaad82cbacf9084ead9fa04ce968370f3fe8f5ad",
       "anchor": "signal-number-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "signal-state-combined.yaml",
-      "config_semantic_sha256": "51e9b4e1d7e444bfc9ceb2faf73caef915d04a1576fda4b1e3c7a6746839a774",
+      "config_semantic_sha256": "c736c24ade2ab35d0775a7d189fb99f7911afffc56529e57cf08f729bdcae8a0",
       "anchor": "signal-state-combined-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "start-end.yaml",
-      "config_semantic_sha256": "c499b6f1049b5489b1c091aa2c2debeb1bf48bd57ef1d743e624543c1ac323be",
+      "config_semantic_sha256": "4190c7857dea731744c2fd34fbe6e1b103689c2d35e8df5937c89e0b7a8464fc",
       "anchor": "start-end-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "timing-actual.yaml",
-      "config_semantic_sha256": "397b8e1a986b94192eb4871e29b869b12a64abe68784d2a41162a3737f646f82",
+      "config_semantic_sha256": "d897b2a9fb09375b1d460f0d558ec50b70911833567d44ed4f9fd1eb5e85a12b",
       "anchor": "timing-actual-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "timing-dbc.yaml",
-      "config_semantic_sha256": "263ad218e783b323af661d515d3c0fcc774300793efac5da21f8e0fda631267e",
+      "config_semantic_sha256": "38bf92621f66d4a1eba93bc4ef09f7f0646071fe61a3367e99864d015ddd5a75",
       "anchor": "timing-dbc-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "timing-fixed.yaml",
-      "config_semantic_sha256": "3a3cd8b96b79c46149592580b412a9f4acd9bedf5554c7300ac8a6deae13e409",
+      "config_semantic_sha256": "d1903c1f8364cb10f05d7e47c17be7220d30feb47f829b39fc0f9c70eeaa97da",
       "anchor": "timing-fixed-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "window-exit-delay.yaml",
-      "config_semantic_sha256": "6b0b517e863313fac170d3b98ea34fe82f0e629827fbb0db345c17ea9edb8db7",
+      "config_semantic_sha256": "b6ef0c55dd8fcaccddf3d3163f8b855f59264f61c0ca69b53579cdb9d7570e85",
       "anchor": "window-exit-delay-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "window-merged.yaml",
-      "config_semantic_sha256": "3a41c40bbdb59fc4ad2821e7cc8f22592e385b5995087667bd2ade9c4f5f2479",
+      "config_semantic_sha256": "533d0d03538fba2e8d01afa69e5cd001913612152feec2815b9822da8ea86bf3",
       "anchor": "window-merged-yaml",
       "kind": "analysis",
       "jobs": null
     },
     {
       "config": "window-minimal.yaml",
-      "config_semantic_sha256": "06117b23c7b86456b1c2f53bde1c24576e24fb53f5ba7d0f6b44ed886e88a7b3",
+      "config_semantic_sha256": "cc4ac9214897724a0d5a16835dcc781390126c7987aff959ac898583e2f56e63",
       "anchor": "window-minimal-yaml",
       "kind": "analysis",
       "jobs": null
     }
   ],
   "inputs": {
-    "activity.yaml": "6ee921e846254a039484ef735a177cd5926097652fa2ce7d124c2aa6fe070818",
-    "analysis-imports.yaml": "fa196a80dd2c532558002b6cf152a2b81a410fb85eec8ade09717b5f826ac6c2",
-    "analysis.json": "fbdc1d05c5e53929a5d10df6908f33063e783f85abc98c29ea6f52ec353ff882",
-    "analysis.yaml": "fbdc1d05c5e53929a5d10df6908f33063e783f85abc98c29ea6f52ec353ff882",
+    "activity.yaml": "bfb08d6cb76662b79a57046943a7d67491de34abadb4bf912afba121901a867f",
+    "analysis-imports.yaml": "9233cf0bbfe11fb2d6cf549e3c259b65d6a8c986c2b0d37e83a687bf3b7c4df1",
+    "analysis.json": "a73740237fff0e9f6b8e565604e4f430c149413b6f5cedcf0a77a6aa0a1a2770",
+    "analysis.yaml": "a73740237fff0e9f6b8e565604e4f430c149413b6f5cedcf0a77a6aa0a1a2770",
     "batch-extended.yaml": "5b76a75651807d426c80b92ec7305973bc906d920603c0fd78daae6874a0909f",
     "batch-minimal.yaml": "7f1a68eda3caf218c2c31cfd3d8faed4b84bfaaf6133d4f9bab1095f71b8aee7",
-    "calculation-minimal.yaml": "99da5b28367ecb0a8304847bd047244c2ffd030e02421bf247ba91724ef289c2",
-    "calculation-operations.yaml": "855bc560b109e39940abc37af20d995142bcbb391ab65c306f3ae0c767924815",
-    "can-joint-analysis.yaml": "316b7db2139c674d9bf2f8dddedf0183de8bdc006691d9b006f9c6945c6ad359",
-    "conditional-energy.yaml": "701fca9f21d341f7259f84c6b6846d656d6d471c108ed77edb9a36df0d76734c",
+    "calculation-minimal.yaml": "12eda525024355f47578598dfa9e9fbd5c9b62a7221b8c00e7f9342cd6424f2f",
+    "calculation-operations.yaml": "17dc6e77cda855bda7b8c67b4248ecb0f902e35da4151e2f32c25e6458b5fc08",
+    "can-joint-analysis.yaml": "49fa760f8ccc3661ff9e9db795818158463f5dffe10741d495892e7d744f769b",
+    "conditional-energy.yaml": "de39c3c5b83034ba76cb34c5e4ddb08693f4b3814e8dae54b220382f6fbe5e8d",
     "data/activity.csv": "ca3a62a95315034acc7c56b0e1be069b5e8f69b648869c73a8478dac1e3abc33",
     "data/can/activity.asc": "704f2ad00602ea08ad8f798db6b45f0c46ffa99e6b3a81bcd14c89b57d082c8c",
     "data/can/calculation-minimal.asc": "84a9061e5111d3777021cae852677d2a938d07c98b2fa15cae09b7b7e89d9580",
@@ -548,6 +562,7 @@
     "data/can/execution-report.asc": "20353acc406d291cd8b6f322c285b2c664e2af1317ddb0aa5c7d194903b56f8a",
     "data/can/expression-extended.asc": "e5843b939549ac87b2645c201c0f5598da7750c484a91ef5d77bb7970d7e1bf0",
     "data/can/interval-actual.asc": "e5a7c582320606c0ad6828a9116a9345bc7047a2e0faef1115f28d8901a39544",
+    "data/can/power-statistics.asc": "de3b8a08d2074be4fdc1b06c697359c8d46fa0109d2a4aff7f9dee2703d83396",
     "data/can/preset-charge-energy.asc": "3325270f9c3735452b4ecabec1fde00474819156db41c522ad74985f4840e852",
     "data/can/preset-charge-minimal.asc": "2970f5158f5672536f062a2fa887d984dce0750229c33d71eb3d10aab5296fa9",
     "data/can/preset-command-automatic.asc": "ace833c5c17674cdc52c4eaadc755f28db9e034a5874841044307289fd892eba",
@@ -585,74 +600,76 @@
     "data/signals.csv": "6e9629082c850de98d26075a58d49b96871a3603f6bae79d3bf4691970dcca98",
     "data/timing.asc": "254e8643b7d75246e3eec618cc708be2aaea243b41a3dfbd7552043dcd098f6b",
     "data/timing.dbc": "1e459a27afe80f7df4a5830c121ae41710f600a1c1c09437a61b998af059b876",
-    "dual-grid.yaml": "01020b5206ce22e14d63e283f7962c1c9728fbd3b56712f598a2a83fe88d768f",
-    "electrical-base.yaml": "484af60382a205474e4c0b723cad4715227e84bc109e9636677b9c089054855e",
-    "execution-comparison.json": "205f7fb1c91e4ae1718e87c29d7a14f16d816a230fcca65dc4520605d4442584",
-    "execution-diagnostics.yaml": "d9b921a20557e02c652e0b13006c02143667c178d1dc69f0df933b9f35d292c8",
-    "execution-report.yaml": "e7269a00b67a497ada51c9d08d144f839f881aa731f53301b9c0a9259b980bdb",
-    "execution-strict.yaml": "e200ce9f6597103518545cfc7a441cd35a2dafc7993ccbc917d09a5f2cd94525",
-    "export-can-all-windows.yaml": "f68d0a9be832ec14b20f34b4eb5ecc7a7f267111b42509a3292cdc5c2587c292",
-    "export-can-grid.yaml": "0d10a43af952fbc1e02dfb5659bbdd502a9d78e88ad18ac5855fb61c420aa90d",
-    "export-can-minimal.yaml": "f3284969746212ba798c02c6db971d60a790f9ae155d77e1fd019880e1c24554",
-    "export-signal-grid.yaml": "33b678a1e91b67f8425b645c097b6f30ef6f5f4d0fd288367539d0c421f08bb4",
-    "export-signal-minimal.yaml": "8521b489f44278eac91dd464518bb71c40167440a44316573fb43d45461f452c",
-    "expression-extended.yaml": "ce2d0a6312c422b925e7d1e64066e1427bc3e3b524a618c632cf76d79c49bf79",
-    "expression-minimal.yaml": "e77abd976f355811596555ced643c2ca9a312ef7e589811581d4954ba5f2cb54",
-    "input-asc-minimal.yaml": "563a7a66e5dfd2d493f57e3f131372b5a890f24a0cff97d0e591ec36fdb001aa",
-    "input-can-directory.yaml": "1bf1f94afb664a326739ed4b055b88f7ce4e03501376f67c177a2fb5fe552885",
-    "input-csv-minimal.yaml": "715fefb1191621f5f562a9c5189b2029083997fc0a29ae6199de4d98d074049a",
-    "input-csv-offset.yaml": "46495ae7f5f6cf70270aa937e6988b4161f25d2a4ed9191ccce66426869481a1",
-    "input-memory-minimal.yaml": "392899ce116addeb14c15202b118d290dda00e224959156faaea2e007fd1465a",
-    "input-raw-csv-mapping.yaml": "d4a2bfad90cd490987f14740dd4cbfad3b3877097c06718bb5f9e88e4d83eba2",
-    "input-raw-csv-minimal.yaml": "ed35804d6a21830f008879251befe65d82eb237ea8a02a40467183b8d2a9200a",
-    "interval-actual.yaml": "1cd9d743b6581552448b562bce0a87c4fb5bf2f3fe446a6d1531a4fd1b8c9952",
-    "interval-fixed.yaml": "5023ce6349119155e2c03a32ce49872e4f67caa5af6dd3d767a1e1cb22ec64f1",
-    "message-directions.yaml": "29d92aee81ae3b61f4a61a9fa8f88ba87d94ec54086bf97bfc5ec173de950bad",
-    "message-energy.yaml": "5ade7c00de1b432993942a34e13b5567fb0eae986fbe8e0d34e571996f40782f",
-    "message-minimal.yaml": "1bc1db6c92fc0fb9051bec062d75e7e403a1c26e954a5a0d50e1391a60a90aa5",
+    "dual-grid.yaml": "6b474cbe1555e102396a1f40a9fcc27073a2e47173d7c9cebde58e2657e7c0dc",
+    "electrical-base.yaml": "4bd33b8873320270da29284635df0293e7ebc618e35f0224a5137d927a515fee",
+    "execution-comparison.json": "2f49187eed984950d635c53d264ffa93891d52c8712440bc91715b568a8f21fe",
+    "execution-diagnostics.yaml": "0cc4ac083e3435ca4a4cde18e846ffd3a437daaa6803a521a2775f243db43de5",
+    "execution-report.yaml": "62169033141202db8a80860c9f3d0e1caf16dd605ff8f229c30aa351e0f5dd7b",
+    "execution-strict.yaml": "c75a6cabc6f326ae9112b953f19bd0a67bd9170bd825d39b0c5e93c9affe1ee1",
+    "export-can-all-windows.yaml": "295856fec2c5dc3047b2a9dc2b6cad9025db0953588c49c0ca7b63af7d264a60",
+    "export-can-grid.yaml": "43ca3b6f156e379ea651d76230e96cf1f96cf9ebf4cbeb88ad6ff0e32caa90af",
+    "export-can-minimal.yaml": "caad7d32f2189b8d2c7fcc7e3a03477503dd5ebec986c2c3b6627f86be5e6a9c",
+    "export-signal-grid.yaml": "535ee9195edb87ce2022d8c1c52b87cc88e2f1e1617ee7d39fa3c0c5529e1f26",
+    "export-signal-minimal.yaml": "4fc6373d919fd32af549dac74aecc9509d73c61b54f858bdd4914379738c8332",
+    "expression-extended.yaml": "1b10dd4f5586bd904cc0895ca78fcf9fbb76e71e72a263e81713bbbd18e77053",
+    "expression-minimal.yaml": "43e4c6701c2267cee226dc74867b00f8876746813ad3779e645d2247dd901c25",
+    "input-asc-minimal.yaml": "f15a4ef304987f2c4c4b7c04a44bac9ec12c57bf98549e637add48df3b70a655",
+    "input-can-directory.yaml": "2c3facb52a2e090a0da2666bb196c2ec66b3fe556a4e866b5ba85ddc51a036c0",
+    "input-csv-minimal.yaml": "42fbbac23fcc42d149ac27cff5463104c75c85b09f2bc54a45c45c2822273e2b",
+    "input-csv-offset.yaml": "9e194c8b7ea8fb5ae1340917b0711046d423e62b8032a78330a794d9e5ee2971",
+    "input-memory-minimal.yaml": "71488dc2c27fa0c5b2ab579b17bec7ad622cc6595aefbbd5162493ffee68bd86",
+    "input-raw-csv-mapping.yaml": "fdf18693c3708468f4f7c58f204f097f62803036d80dec3e31e5a0d7b046f41e",
+    "input-raw-csv-minimal.yaml": "676d803bffc596d885ba782176020255ab013620298b99695e9749a56f6cbd96",
+    "interval-actual.yaml": "2b86743e06505ca5c4a34a686ed199e9ae95f6eef9960a7c03b571c8bff83fef",
+    "interval-fixed.yaml": "2c07d6a3911374ff0cab020c447e2d3f51cb0c4c0fb782d0931c066b14e5f849",
+    "lookup-power.yaml": "abd7cb1bbaf86ba6c8662bd16e1da6fed8e8dcf56a081afde26d0fcee7571275",
+    "message-directions.yaml": "9e3e5921dbc88750e5081f9ecbf3c31fefa57d1420ab1a22edfcde4c1a060dec",
+    "message-energy.yaml": "baa4c58115734fa1c674766f8ea2ab78dd4cebb959211e0f4eda5f94eed19077",
+    "message-minimal.yaml": "6684cd646434d6a675c43b416317e956e18130204e8dfd11e7b20eb80a645fa5",
+    "power-statistics.yaml": "32f37c1d154b8bcfe391d6a81e655dd3c8add7e3e90d3f302133f0b5a5c01509",
     "power.csv": "c86d390f140544f62dac590bb8f558fabcb4b2ac8174f9d4fd775384070833fa",
-    "preset-charge-energy.yaml": "fb0f96b4b6c64e6bca07585290b12a1d468e4ff357758b5832693627c4c9c258",
-    "preset-charge-minimal.yaml": "5979f988025bc49a33ae440cf0238d6186b319abc47849e9390a5a82e7515a6b",
-    "preset-command-automatic.yaml": "a39de706bfac2ee3aec74f366798a6bb90f62851eca8abcd66719de22aab87ff",
-    "preset-command-minimal.yaml": "5bb1db95ea836687d860cf54980d5784f12639dc50a3b9b26d626cc286113fd4",
-    "preset-fault-context.yaml": "5a68005e1e680b104f38cd6c8f117d099aaad1e06d593798d1756188f47a1912",
-    "preset-fault-minimal.yaml": "68ad6dc5960347f7c51f9c35c64f458bdae971f3c12ceb4b4fcfdfb69e572086",
-    "preset-threshold-delay.yaml": "8b6a2218cfd05e7b9b1a97822a7a3c2ae466344d40d917d5076f303b4e2dc186",
-    "preset-threshold-minimal.yaml": "7f478014db1aaebacea217645a919dec42ba541b7e51c52127bc3c08c592d06c",
-    "preset-threshold-partial.yaml": "89f7d77e7f8c558d460eb6f2766728f66086d31891fd1842bae4cf26664f9c01",
-    "quality.yaml": "a88677c98324294c850c6d74a2d72c65df3ea3fd14f62d54f822f3cf60fb7ea3",
-    "rule-condition_duration-extended.yaml": "5740ef094ab6c70e73769d21e692982e1f9d479c283d2efc2e9b60d2dbd93c62",
-    "rule-condition_duration-minimal.yaml": "41c3f4a24c79365360050ebbb2bac307c046b58f0a99a5dfc6a6e15090839c8e",
-    "rule-debounce-extended.yaml": "cca4208690d88507d88f7c125388ea1a69f2bf98dbf196c7c36e417f94a63aa1",
-    "rule-debounce-minimal.yaml": "1831fad0be6e8e8098d2fe075e0ff14d6599d5e63919f6439f99bbfd1028da46",
-    "rule-falling_edge-extended.yaml": "418d22d798634a083b1a2e6bbcd9a12d1f4e878c1fe0ec3ec1c925dc69eabf6d",
-    "rule-falling_edge-minimal.yaml": "ff0301f8242f4eb0ed6192db6490eaa191ec4cc9867ca7092726cc04d32711f4",
-    "rule-hysteresis-extended.yaml": "fa683d829723e04c7364c45781da76232802fe4695693bb4c5dfe374c14701cc",
-    "rule-hysteresis-minimal.yaml": "7dc5a8d4fcddd5649bcc1b554f5e6cb1cff27ed9f340ce17756a7b1050f4a82d",
-    "rule-rising_edge-extended.yaml": "1805aed462aa62707400828ccfb47a93a980de04ea3ca0a11bc8d5a3d8cbd860",
-    "rule-rising_edge-minimal.yaml": "d3f5927aaaacb78a248fc57d5da9c099f6d97d994b4d6c82b6ed99c8272ece9b",
-    "rule-start_end-extended.yaml": "7990f02dd8a79dddfb68e9c14bd6ca1716bcb5d7cfebd38fdf0945942bb9ac8a",
-    "rule-start_end-minimal.yaml": "8d8c0be0201d3fe5af5cd6f1dae7155724eb35d5605b73f23a3ed06b0351cc36",
-    "rule-start_only-extended.yaml": "f24d3892ada425e82f05d7a85ca089227d71756e4691c6dfad0ff7099ac5844b",
-    "rule-start_only-minimal.yaml": "7235e1d7b07a9a1a709141501f5bc026fe3dcda8e782ea9bcf90fe5af9d92544",
-    "rule-window_delta-extended.yaml": "c7769ab7610a4373be8f91760149ca7c5420a80325ac4a5fd7f8c456a53603db",
-    "rule-window_delta-minimal.yaml": "c1675a0249159680e3b79d01869c80b0ea893a0a47f38c5bdcaa19ff5bd23d5b",
-    "sequence-minimal.yaml": "afcee85dba0c12886e9f1438e5441eab633678eae6021fefdecd580065f63160",
-    "sequence-outcomes.yaml": "563a9888ee8638da3a28f7ef3015bc9f3296c73f1d7d4c28ef06ad39b129b3bd",
+    "preset-charge-energy.yaml": "0c36d9a4fd8b91aeb68c0fa5330e79d480d6e4d6fdc147e338c198e3d461a2ca",
+    "preset-charge-minimal.yaml": "2e2f92f9568d5a91ddb6dd4f0500bc1a46bdea5ac6b59c4c25cae631d0a35033",
+    "preset-command-automatic.yaml": "0a8afb92854ef0c7e29b6b6d35f330326e0654d7bc64a8d5815ad08986f7b1c0",
+    "preset-command-minimal.yaml": "4220961c73ab70c51d6bba83b696c05aa87774fc3b490bd2b272b87f7c940364",
+    "preset-fault-context.yaml": "68955dd191d03098c35ec93d7f659b835c2efb35d4276d2df14839f9e573a9b2",
+    "preset-fault-minimal.yaml": "a2de14014ceda315257fb9b9305e08d7da717bf72957a3fdcac0910640d60c90",
+    "preset-threshold-delay.yaml": "f1333e7da6d165a1b332670875ac78c7a7b3e0f7fec40a8c87035dbaf4f6e905",
+    "preset-threshold-minimal.yaml": "e6152890211c17dc7452829072d158147e85ad2353a651d2124d36605c66e77d",
+    "preset-threshold-partial.yaml": "75cc91fe069bc43ce1b7446befc589c3183fe7c396196c3d572ae0af1ae69279",
+    "quality.yaml": "855735ab8a45627f88b065ef1ba104db820759c50dfc554d9db004a5d0864b9d",
+    "rule-condition_duration-extended.yaml": "a5f41ceeacadb567bbdddf1288305ecbf7bffb8b9f17286d13d24ee0ca3d9e67",
+    "rule-condition_duration-minimal.yaml": "9c37770c981db4c72f2e0d98b34822bf4bb0ecf872f58d3a4e6592dc4440084e",
+    "rule-debounce-extended.yaml": "9746108f5bb8e808cd607c49196dfa238fdea61a715cf79ba3588189c57ad865",
+    "rule-debounce-minimal.yaml": "ce7fcb302a1788de0341eb790d203865ae1edd7e2bde2ab0a28939698c357b78",
+    "rule-falling_edge-extended.yaml": "b67a67d0397a6361a02e51fec6b88ae382fa60eac9dbecd1f6f1382666b98ff0",
+    "rule-falling_edge-minimal.yaml": "ee9298ca9402a3dd5ceaf7f16a07e4df3f0b6ea6e310392f0697e1ae21683a19",
+    "rule-hysteresis-extended.yaml": "e0847affd539590221da7840d0014bb8bf0145e3c2a479858b4e0aba3a5fd0d7",
+    "rule-hysteresis-minimal.yaml": "0814a302e4c41e4029be0a8adc1d4a2f3d499e97b6c5cc5e5ed71f4d46359d25",
+    "rule-rising_edge-extended.yaml": "591b18bebadda5b80e4ffbddc21aef307c1eb66d6e742a6c68876239eda2a8c6",
+    "rule-rising_edge-minimal.yaml": "e1563994a56a8994b4e8d7c599c46a494540030be6e819513301a49e68603bb7",
+    "rule-start_end-extended.yaml": "50ee5160ec2aec696602fc94407d7e13a83087334c72b929eb77cd27e22e2b23",
+    "rule-start_end-minimal.yaml": "cff0d63693f275d50bb694126f98cc01eecfda522c484fee17c2e390c46dff4a",
+    "rule-start_only-extended.yaml": "2adc7a98d2828414135acda114b4392788b6506e03d472d18ec6a098f13ba7b2",
+    "rule-start_only-minimal.yaml": "3bea08d4abb429789b16e6f8229a522ea54dd20fab50a2e7d2f2d213278a74bc",
+    "rule-window_delta-extended.yaml": "0a3e647d405192b9f971763a173759520ca0dd59acb4d1f4ac97e19fcc31592d",
+    "rule-window_delta-minimal.yaml": "c9af8bdf5632b69447b4d275b7309c5af1325031ea60681b13ac19c8a0d1d566",
+    "sequence-minimal.yaml": "5d5fd870f59c26ab26855c3a8a8373cdea7f9a38f4be79d4e60e5540b90c524a",
+    "sequence-outcomes.yaml": "1cb766cfe0580fd064731dec9c70d5f57a559f553f6b794095468ed0262bd2bd",
     "shared/definitions.yaml": "e8534ee30b784a795ebffc5fe5119e4254cbb59fe3d66e59964f900d841660ac",
-    "signal-bool-minimal.yaml": "4c084e5588f7f2dd426cdab7ebba9cecc21c4671ab60590e932d2a6ff72f0622",
-    "signal-enum-minimal.yaml": "b329582eacf4cc789c41e74e5b8fc64efbe1f39d4aba25fc0a1c2e59bcc54aaf",
-    "signal-number-conversion.yaml": "4a124da12813d59791545e54d4682c36ff4a8875a1b9048ff4c116836ca581f2",
-    "signal-number-minimal.yaml": "27d7230cef48ebf9d3a2e240cb208ff75b0b0a442d9b217c1482a42e16519a2a",
-    "signal-state-combined.yaml": "51e9b4e1d7e444bfc9ceb2faf73caef915d04a1576fda4b1e3c7a6746839a774",
-    "start-end.yaml": "c499b6f1049b5489b1c091aa2c2debeb1bf48bd57ef1d743e624543c1ac323be",
-    "teaching-base.yaml": "453910810d4d26fde4cae4bd69ae1359e31fabc02adfb8805398e8a5a1507935",
-    "timing-actual.yaml": "397b8e1a986b94192eb4871e29b869b12a64abe68784d2a41162a3737f646f82",
-    "timing-dbc.yaml": "263ad218e783b323af661d515d3c0fcc774300793efac5da21f8e0fda631267e",
-    "timing-fixed.yaml": "3a3cd8b96b79c46149592580b412a9f4acd9bedf5554c7300ac8a6deae13e409",
-    "window-exit-delay.yaml": "6b0b517e863313fac170d3b98ea34fe82f0e629827fbb0db345c17ea9edb8db7",
-    "window-merged.yaml": "3a41c40bbdb59fc4ad2821e7cc8f22592e385b5995087667bd2ade9c4f5f2479",
-    "window-minimal.yaml": "06117b23c7b86456b1c2f53bde1c24576e24fb53f5ba7d0f6b44ed886e88a7b3"
+    "signal-bool-minimal.yaml": "404394c5801c2ca86effd7c2c00ec52fb73c5d72d8e0f64f13817454cf3b1904",
+    "signal-enum-minimal.yaml": "5e9eb5bc817d9498d8af329d23d83a4d729881d423aaff58dbac4af3636ff9b2",
+    "signal-number-conversion.yaml": "4d265780215b0a2899d25fa074964c461276b7a11ea3870b07fcd60520a0daa9",
+    "signal-number-minimal.yaml": "47d90ce4b02392c0e9b803fbdaad82cbacf9084ead9fa04ce968370f3fe8f5ad",
+    "signal-state-combined.yaml": "c736c24ade2ab35d0775a7d189fb99f7911afffc56529e57cf08f729bdcae8a0",
+    "start-end.yaml": "4190c7857dea731744c2fd34fbe6e1b103689c2d35e8df5937c89e0b7a8464fc",
+    "teaching-base.yaml": "42851e3836568843e10848b9d54a5eba376ccf80c7b1d0e0f21d870ab065612b",
+    "timing-actual.yaml": "d897b2a9fb09375b1d460f0d558ec50b70911833567d44ed4f9fd1eb5e85a12b",
+    "timing-dbc.yaml": "38bf92621f66d4a1eba93bc4ef09f7f0646071fe61a3367e99864d015ddd5a75",
+    "timing-fixed.yaml": "d1903c1f8364cb10f05d7e47c17be7220d30feb47f829b39fc0f9c70eeaa97da",
+    "window-exit-delay.yaml": "b6ef0c55dd8fcaccddf3d3163f8b855f59264f61c0ca69b53579cdb9d7570e85",
+    "window-merged.yaml": "533d0d03538fba2e8d01afa69e5cd001913612152feec2815b9822da8ea86bf3",
+    "window-minimal.yaml": "cc4ac9214897724a0d5a16835dcc781390126c7987aff959ac898583e2f56e63"
   },
   "independent_expectation_checks": {
     "rule_examples": 18,
@@ -756,6 +773,8 @@
     "interval-actual-yaml/会话结果.csv": "6b1be1004b3fc494a863f9e1b9fdb0d2bfdfaf4125947a7d1fae351d82f05d02",
     "interval-fixed-yaml/result-summary.json": "90aad9d64115855d514a3d84735f719b39108f191f09273eae8b0cab473e0a58",
     "interval-fixed-yaml/会话结果.csv": "921f7283036e6b79ebb5c7e72ebaed8860233f4cca11f0c3469b8350a698aa8e",
+    "lookup-power-yaml/result-summary.json": "614f2df0e6ef5b67a93293ecf3216ae37ef648e66cf75e0077f173029091ac90",
+    "lookup-power-yaml/会话结果.csv": "debc5858ca958fb593a1e7f3ccb83788b24ec10904b121d3a53a65344a454df0",
     "message-directions-yaml/result-summary.json": "5fcf30a86d5cde16f77fb20dc8cdf651efc6655311c4eb00cab6ec072b2b7485",
     "message-directions-yaml/会话结果.csv": "12f6e4ed9e6e3142ed23b26abe14e8465f1ebb4568544b3ac5b71b79368a008b",
     "message-directions-yaml/贡献明细.csv": "b4b0cf469f748678d59f5da265d5fd6c8172d3fe0e8b783978cbd5039af2b74c",
@@ -764,6 +783,11 @@
     "message-energy-yaml/贡献明细.csv": "0f008a51ba31b731a5cf57f74050b92206af511054fd8c7bee74b446bb0059ce",
     "message-minimal-yaml/result-summary.json": "848b619fdc7cd5eda2b407f3e5cb907cf4597c36fd8f6ce80ea5aa1650620a87",
     "message-minimal-yaml/会话结果.csv": "921f7283036e6b79ebb5c7e72ebaed8860233f4cca11f0c3469b8350a698aa8e",
+    "power-statistics-yaml/result-summary.json": "47f2b51199303502a0becff2b4ae71fe5152a66dac86a407a8243dd262d4d305",
+    "power-statistics-yaml/事件结果.csv": "6290e15bbd8714c8b715d79fe2e344a56db26fce26a7588c7b5750ff16880193",
+    "power-statistics-yaml/会话结果.csv": "0851a5290bf3543e9e1cac951654afcaf177a85f65fcf1d0989db02e46a8e26d",
+    "power-statistics-yaml/窗口结果.csv": "bf8ada7c7418794efe5b269c4c80d211f9f3f3cd0c875c435f94fea1de421145",
+    "power-statistics-yaml/聚合结果.csv": "5eb2313c81ed64c14191bef2eb21a3d60d4bea26613e179344835ac44b5a3fd4",
     "preset-charge-energy-yaml/result-summary.json": "a82b7bfbf9e22bae25375b870f9a50407bccb14e658f6ec6d89f0581e6f6aa08",
     "preset-charge-energy-yaml/事件结果.csv": "0baa1948db65c0023c118f7e78cfb4d104d8bb8204b02ad19f446c9d74eb1957",
     "preset-charge-minimal-yaml/result-summary.json": "23d6b2c3f008b63fecb706109fdb28dd56ca7587f5e139f401e52b568f2f39aa",

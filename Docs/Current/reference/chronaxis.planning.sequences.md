@@ -1,4 +1,4 @@
-# chronaxis.planning.sequences
+# `chronaxis.planning.sequences`
 
 检查请求/响应点事件配对的公开声明，不读取信号或执行配对。
 
@@ -10,7 +10,7 @@
 
 ## 相关类型
 
-[TimeType](chronaxis.core.types.md#api-TimeType)
+[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)、[TimeType](chronaxis.core.types.md#api-TimeType)
 
 ## 对象导航
 
@@ -25,6 +25,8 @@
 
 ```python
 from dataclasses import dataclass
+from .diagnostic_collection import usable_node, collect_node_error
+from .checks import PlanValidationError
 from .checks import array_at, duration_at, model_at, number_at, object_at, text_at
 from .nodes import register_id
 from ..core.validation import require_identifier
@@ -54,7 +56,7 @@ class SequencePlan
 |`max_delay_ns`|int|是|无|不小于min_delay_ns的整数纳秒最大延迟，边界包含。|
 |`max_pending`|int|否|65536|限制本配对规则同时等待响应的请求数量；按可接受的并发请求上限选正整数，默认65536。它不是总请求数或等待时长。|
 
-源码：[`src/chronaxis/planning/sequences.py:17`](../../../src/chronaxis/planning/sequences.py#L17)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/sequences.py:19`](../../../src/chronaxis/planning/sequences.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SequencePlan-__post_init__"></a>
 ### `SequencePlan.__post_init__`
@@ -85,7 +87,7 @@ TypeError/ValueError为名称或整数边界错误。
 - `TypeError`：sequence延迟和容量须为原生整数。
 - `ValueError`：sequence需要0<=min_delay<=max_delay及正max_pending。
 
-源码：[`src/chronaxis/planning/sequences.py:27`](../../../src/chronaxis/planning/sequences.py#L27)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/sequences.py:29`](../../../src/chronaxis/planning/sequences.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-sequence_dependencies"></a>
 ## `sequence_dependencies`
@@ -116,7 +118,7 @@ TypeError/ValueError为不支持的引用或时钟。
 
 - `TypeError`：sequences需要SequencePlan。
 
-源码：[`src/chronaxis/planning/sequences.py:42`](../../../src/chronaxis/planning/sequences.py#L42)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/sequences.py:44`](../../../src/chronaxis/planning/sequences.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-parse_sequences"></a>
 ## `parse_sequences`
@@ -144,4 +146,4 @@ SequencePlan tuple。
 
 PlanValidationError保留非法字段或引用的位置。
 
-源码：[`src/chronaxis/planning/sequences.py:73`](../../../src/chronaxis/planning/sequences.py#L73)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/sequences.py:75`](../../../src/chronaxis/planning/sequences.py#L75)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

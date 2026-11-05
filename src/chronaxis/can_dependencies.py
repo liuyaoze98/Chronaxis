@@ -8,7 +8,7 @@ from importlib import import_module
 
 CAN_INSTALL_HINT = (
     '请在运行分析的同一个 Python 环境重新安装本地 wheel，默认会安装 CAN 依赖：'
-    'python -m pip install "./chronaxis-0.1.0.dev1-py3-none-any.whl"。'
+    'python -m pip install "./chronaxis-0.1.0.dev2-py3-none-any.whl"。'
     '将文件路径替换为实际收到的安装包；离线时需备齐该 wheel 声明版本的依赖。'
     '不要通过修改信号字段解决环境缺依赖，也不要仅安装未核实版本的 cantools。'
 )

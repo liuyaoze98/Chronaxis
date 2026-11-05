@@ -12,7 +12,10 @@ min/max保留原整数；duration精确累计纳秒；mean第一遍只查有效�
 
 # 参考核不导入NumPy；复用同后端已验证的原序误差状态，不复用数组算法。
 from math import isfinite
+from .calculation_output_reference import convert_result_reference
 from .integral_sum_reference import ReferenceIntegralSum
+from .moments import TIME_MOMENTS
+from .moments_reference import ReferenceMoments
 from .models import Interval
 from .numeric import ScalarValue, to_float_reference
 from .types import QualityFlag as Q
@@ -40,8 +43,10 @@ class ReferenceTimeReduction:
             partial_limit为误差容量；step_ns可选周期；周期均值第二遍使用
             selected_weight_seconds。返回: None。异常: 配置或分配错误原样传播。
         """
-        self._unit, self._factor = require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_limit,
+        self._conversion = require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_limit,
             step_ns=step_ns, selected_weight_seconds=selected_weight_seconds)
+        self._unit, self._factor = self._conversion.unit, self._conversion.factor
+        self._moments = ReferenceMoments(spec.operation) if spec.operation in TIME_MOMENTS else None
         self._spec, self._input_unit, self._dtype = spec, input_unit, dtype
         self._step_ns = step_ns
         self._denominator = selected_duration_ns if step_ns is None else selected_weight_seconds
@@ -91,13 +96,14 @@ class ReferenceTimeReduction:
             raise ValueError('时间归约不能跨绑定身份累计')
         self._identity = series.binding_identity
         # 仅mean需要浮点精度门槛，极值不把大整数无声转成浮点数。
-        values = tuple(to_float_reference(value) for value in series.values) if self._spec.operation == 'time_weighted_mean' else series.values
+        values = tuple(to_float_reference(value) for value in series.values) if self._spec.operation == 'time_weighted_mean' or self._moments is not None else series.values
         start = actual.start_ns if actual is not None else 0
         end = actual.end_ns if actual is not None else 0
         value_duration = selected_duration = samples = terms = 0
         unknown, weighted = [], []
         period_weights = [] if self._weight_sum is not None else None
-        mean_values = [] if self._spec.operation == 'time_weighted_mean' and (self._denominator is not None or retain_mean_terms) else None
+        mean_values = [] if self._moments is not None or (self._spec.operation == 'time_weighted_mean' and
+                            (self._denominator is not None or retain_mean_terms)) else None
         mean_weights = [] if mean_values is not None else None
         quality, weight_quality = Q.NONE, Q.NONE
         # 逐正区间独立计算整数裁剪差与有效性，完全不调用NumPy。
@@ -124,10 +130,11 @@ class ReferenceTimeReduction:
             # FALSE是有效主BOOL，仍提供零时长证据；只有TRUE增加选择时长。
             selected_duration += dt if self._spec.operation != 'duration' or value.value else 0
             measure = dt
-            if period_weights is not None and (self._spec.operation != 'duration' or value.value):
+            if (period_weights is not None or (self._step_ns is not None and self._moments is not None)) and (self._spec.operation != 'duration' or value.value):
                 measure = clipped_record_seconds(series.times_ns[index], series.times_ns[index + 1],
                                                  Interval(left, value_end), step_ns=self._step_ns)
-                period_weights.append(measure)
+                if period_weights is not None:
+                    period_weights.append(measure)
             if self._spec.operation in ('min_time', 'max_time'):
                 if self._candidate is None:
                     self._candidate = value.value
@@ -150,6 +157,8 @@ class ReferenceTimeReduction:
         # 原序状态只接受正常权重项；任一权重失败使整次均值失败，覆盖仍完整保留。
         if self._denominator is not None:
             weighted, weight_quality = normalized_mean_terms(mean_values, mean_weights, self._denominator)
+        if self._moments is not None:
+            self._moments.push(mean_values, mean_weights)
         self._numeric_quality |= weight_quality
         if period_weights is not None:
             self._weight_sum.push_values(tuple(period_weights), (True,) * len(period_weights))
@@ -170,6 +179,9 @@ class ReferenceTimeReduction:
         异常: RuntimeError为mean第一遍；ValueError为第二遍有效时长与分母不符；
             配置/分配错误传播，数值范围错误按calculation_failed返回。
         """
+        if self._moments is not None:
+            value, quality = self._moments.finish(self._spec.ddof, self._conversion.factor)
+            return TimeReductionResult(value, self._unit, quality != Q.NONE, quality, self._terms)
         if self._spec.operation == 'time_weighted_mean':
             if self._denominator is None:
                 raise RuntimeError('时间均值第一遍只收事实，不能生成数值')
@@ -179,8 +191,12 @@ class ReferenceTimeReduction:
             if self._numeric_quality != Q.NONE:
                 return TimeReductionResult(None, self._unit, True, self._numeric_quality, self._terms)
             # 本参考原序核finish直接执行一次转换；输出映射不再乘因子。
-            number = self._sum.finish(self._unit, self._factor)
-            return TimeReductionResult(number.value, number.unit, number.calculation_failed, number.quality, self._terms)
+            number = self._sum.finish(self._input_unit,
+                                      1.0)
+            if not number.calculation_failed:
+                value, quality = convert_result_reference(number.value, self._dtype, self._conversion)
+                return TimeReductionResult(value, self._unit, quality != Q.NONE, quality, self._terms)
+            return TimeReductionResult(number.value, self._unit, number.calculation_failed, number.quality, self._terms)
         # 没有有效正区间不能借sum空输入产生正常零。
         if self._terms == 0:
             return TimeReductionResult(None, self._unit, False, Q.NONE, 0)
@@ -188,16 +204,8 @@ class ReferenceTimeReduction:
                  if self._spec.operation == 'duration' else self._candidate)
         quality = Q.NONE
         # 非1倍率的整数极值先校验精确float表示，再转换；倍率1保持原生整数。
-        if self._factor != 1 and type(value) is int:
-            converted = to_float_reference(ScalarValue(value, self._dtype))
-            if not converted.valid:
-                quality |= converted.quality
-            else:
-                value = converted.value
+        # v4换算包含偏移；输入/归约故障不能被正常单位结果覆盖。
         if quality == Q.NONE:
-            original = value
-            value = value * self._factor if self._factor != 1 else value
-            if type(value) is float and (not isfinite(value) or value == 0 and original != 0):
-                quality |= Q.NONFINITE if not isfinite(value) else Q.PRECISION_LOSS
+            value, quality = convert_result_reference(value, self._dtype, self._conversion)
         return TimeReductionResult(None if quality != Q.NONE else value, self._unit,
                                    quality != Q.NONE, quality, self._terms)

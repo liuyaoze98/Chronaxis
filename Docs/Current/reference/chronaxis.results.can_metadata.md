@@ -1,4 +1,4 @@
-# chronaxis.results.can_metadata
+# `chronaxis.results.can_metadata`
 
 保存一次CAN读取的记录：使用的输入和DBC、原始报文暂存信息、声明单位与DBC单位的比较结果。记录来自实际执行；仅仅构造这些对象不会重新读取或验证文件。
 
@@ -58,7 +58,7 @@ _integer(value, name, minimum=0)
 
 TypeError为非原生int，ValueError为小于下限。
 
-源码：[`src/chronaxis/results/can_metadata.py:19`](../../../src/chronaxis/results/can_metadata.py#L19)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:19`](../../../src/chronaxis/results/can_metadata.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_sha256"></a>
 ## `_sha256`
@@ -84,7 +84,7 @@ None，保大小写原值。
 
 TypeError/ValueError为类型、长度或非hex字符；不读取文件证明实际内容。
 
-源码：[`src/chronaxis/results/can_metadata.py:31`](../../../src/chronaxis/results/can_metadata.py#L31)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:31`](../../../src/chronaxis/results/can_metadata.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_pairs"></a>
 ## `_pairs`
@@ -111,7 +111,7 @@ _pairs(value, name, hashes=False)
 
 TypeError/ValueError为结构、空文本、重复键或非法SHA。
 
-源码：[`src/chronaxis/results/can_metadata.py:43`](../../../src/chronaxis/results/can_metadata.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:43`](../../../src/chronaxis/results/can_metadata.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANUnitCheck"></a>
 ## `CANUnitCheck`
@@ -131,7 +131,7 @@ class CANUnitCheck
 |`dbc_unit`|str &#124; None|是|无|同次公开signal.unit原值，None/空字符串均原样保留。|
 |`status`|str|是|无|verified或declared；不表示物理测量已验。|
 
-源码：[`src/chronaxis/results/can_metadata.py:65`](../../../src/chronaxis/results/can_metadata.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:65`](../../../src/chronaxis/results/can_metadata.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANUnitCheck-__post_init__"></a>
 ### `CANUnitCheck.__post_init__`
@@ -164,7 +164,7 @@ TypeError/ValueError为字段类型或状态与原单位冲突。
 - `ValueError`：verified需要非空DBC单位与原input_unit完全相同。
 - `ValueError`：declared仅用于DBC单位None或空字符串。
 
-源码：[`src/chronaxis/results/can_metadata.py:73`](../../../src/chronaxis/results/can_metadata.py#L73)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:73`](../../../src/chronaxis/results/can_metadata.py#L73)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANFrameFormatNotice"></a>
 ## `CANFrameFormatNotice`
@@ -191,7 +191,7 @@ class CANFrameFormatNotice
 |`requested_is_fd`|bool|是|无|兼容处理中选中的经典CAN，固定False；既可能来自显式选择，也可能是自动识别结果。|
 |`code`|str|否|'dbc_fd_classic_selector'|稳定机器码，不接受其他自由兼容政策。|
 
-源码：[`src/chronaxis/results/can_metadata.py:92`](../../../src/chronaxis/results/can_metadata.py#L92)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:92`](../../../src/chronaxis/results/can_metadata.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANFrameFormatNotice-__post_init__"></a>
 ### `CANFrameFormatNotice.__post_init__`
@@ -223,7 +223,7 @@ TypeError/ValueError为非法类型、方向或固定code。
 - `ValueError`：仅兼容DBC FD声明与显式经典CAN定位。
 - `ValueError`：CAN帧型提示code非法。
 
-源码：[`src/chronaxis/results/can_metadata.py:108`](../../../src/chronaxis/results/can_metadata.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:108`](../../../src/chronaxis/results/can_metadata.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANSourceMetadata"></a>
 ## `CANSourceMetadata`
@@ -267,7 +267,7 @@ class CANSourceMetadata
 |`selected_first_ns`|int &#124; None|否|None|仅selected提供目标首时间。 None表示没有选中的目标时间或本路径不采集selected时间。|
 |`selected_last_ns`|int &#124; None|否|None|目标末时间，不是文件末时间。 None表示没有选中的目标时间或本路径不采集selected时间。|
 
-源码：[`src/chronaxis/results/can_metadata.py:125`](../../../src/chronaxis/results/can_metadata.py#L125)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:125`](../../../src/chronaxis/results/can_metadata.py#L125)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CANSourceMetadata-__post_init__"></a>
 ### `CANSourceMetadata.__post_init__`
@@ -294,4 +294,4 @@ CANSourceMetadata.__post_init__()
 TypeError/ValueError为类型、范围或内部事实冲突，
     OverflowError为非空首末超int64；不把声明校验写成实际EOF/哈希验证成功。
 
-源码：[`src/chronaxis/results/can_metadata.py:157`](../../../src/chronaxis/results/can_metadata.py#L157)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/can_metadata.py:157`](../../../src/chronaxis/results/can_metadata.py#L157)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

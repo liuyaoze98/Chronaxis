@@ -1,4 +1,4 @@
-# chronaxis.execution.record_event_durations
+# `chronaxis.execution.record_event_durations`
 
 按需计算每段事件的持续时长，只为周期模式保存必要驱动时间。
 
@@ -53,7 +53,7 @@ RecordEventDurations(plan, budget, work_dir, steps, consumer, *, indexes=None)
 ```
 
 
-源码：[`src/chronaxis/execution/record_event_durations.py:20`](../../../src/chronaxis/execution/record_event_durations.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:20`](../../../src/chronaxis/execution/record_event_durations.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-__init__"></a>
 ### `RecordEventDurations.__init__`
@@ -83,7 +83,7 @@ owner。
 
 原构造错误。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:23`](../../../src/chronaxis/execution/record_event_durations.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:23`](../../../src/chronaxis/execution/record_event_durations.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-_open"></a>
 ### `RecordEventDurations._open`
@@ -109,7 +109,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:40`](../../../src/chronaxis/execution/record_event_durations.py#L40)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:40`](../../../src/chronaxis/execution/record_event_durations.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-observe_group"></a>
 ### `RecordEventDurations.observe_group`
@@ -134,7 +134,7 @@ None。
 
 查询原错。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:45`](../../../src/chronaxis/execution/record_event_durations.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:45`](../../../src/chronaxis/execution/record_event_durations.py#L45)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-observe_event"></a>
 ### `RecordEventDurations.observe_event`
@@ -159,7 +159,7 @@ None。
 
 预算/求值原错。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:50`](../../../src/chronaxis/execution/record_event_durations.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:50`](../../../src/chronaxis/execution/record_event_durations.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-_calculate"></a>
 ### `RecordEventDurations._calculate`
@@ -167,7 +167,7 @@ None。
 只借取事件两侧及区间内的驱动点，复用原两后端时长核。
 
 ```python
-RecordEventDurations._calculate(request, event_id, start_ns, end_ns)
+RecordEventDurations._calculate(request, event_id, start_ns, end_ns, estimated=False)
 ```
 
 #### 参数
@@ -178,6 +178,7 @@ RecordEventDurations._calculate(request, event_id, start_ns, end_ns)
 |`event_id`|str|是|无|位置或关键字。本次事件的稳定id，用于指标、窗口及配对结果引用。|
 |`start_ns`|int|是|无|位置或关键字。本次查询或计算的实际开始时刻，单位纳秒。|
 |`end_ns`|int|是|无|位置或关键字。本次查询或计算的实际结束时刻，单位纳秒；按具体函数保留必要右端点供半开范围计算。|
+|`estimated`|bool|否|False|位置或关键字。父事件或片段是否已经依赖部分估值；只给实际归属该父范围的结果传递估算质量。|
 
 #### 返回说明
 
@@ -187,7 +188,7 @@ None，结果交回调。
 
 构造/数值/发布原错。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:66`](../../../src/chronaxis/execution/record_event_durations.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:67`](../../../src/chronaxis/execution/record_event_durations.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-_flush_ready"></a>
 ### `RecordEventDurations._flush_ready`
@@ -212,7 +213,7 @@ None。
 
 原查询错，费用留到close。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:98`](../../../src/chronaxis/execution/record_event_durations.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:102`](../../../src/chronaxis/execution/record_event_durations.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-finish"></a>
 ### `RecordEventDurations.finish`
@@ -238,7 +239,7 @@ None。
 
 原计算错。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:123`](../../../src/chronaxis/execution/record_event_durations.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:127`](../../../src/chronaxis/execution/record_event_durations.py#L127)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-closed"></a>
 ### `RecordEventDurations.closed`
@@ -266,7 +267,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:129`](../../../src/chronaxis/execution/record_event_durations.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:133`](../../../src/chronaxis/execution/record_event_durations.py#L133)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordEventDurations-close"></a>
 ### `RecordEventDurations.close`
@@ -292,4 +293,4 @@ None。
 
 原关闭错可重试。
 
-源码：[`src/chronaxis/execution/record_event_durations.py:133`](../../../src/chronaxis/execution/record_event_durations.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_event_durations.py:137`](../../../src/chronaxis/execution/record_event_durations.py#L137)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

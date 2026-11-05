@@ -1,276 +1,1814 @@
 {
   "device_label": "home",
-  "updated_at": "2026-11-01T23:39:59+08:00",
+  "updated_at": "2026-11-05T23:05:01+08:00",
   "objects": [
     {
-      "name": "AnalysisPlan",
-      "module": "chronaxis.planning.plan",
-      "qualified": "AnalysisPlan",
-      "group": "Loading and checking plans",
-      "kind": "class",
-      "signature": "(config_version: int, dataset: chronaxis.planning.models.DatasetPlan, sources: tuple[chronaxis.planning.models.SourcePlan, ...], signals: tuple[chronaxis.planning.models.SignalPlan, ...], derived: tuple[chronaxis.planning.models.DerivedPlan, ...], rules: tuple[chronaxis.planning.models.RulePlan, ...], windows: tuple[chronaxis.planning.models.WindowPlan, ...], calculations: tuple[chronaxis.planning.models.CalculationPlan, ...], presets: tuple[chronaxis.planning.preset_models.PresetSpec, ...], preset_bindings: tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...], execution: chronaxis.planning.models.ExecutionPlan, outputs: chronaxis.planning.models.OutputPlan, bindings: chronaxis.core.declarations.DeclarationBindings, derived_expressions: tuple[chronaxis.core.expression.StaticExpression, ...], metadata: collections.abc.Mapping, raw_config: collections.abc.Mapping, base_dir: pathlib.Path, identity: str, message_calculations: tuple[chronaxis.planning.models.MessageCalculationPlan, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = (), intervals: 'IntervalPlan | None' = None, diagnostics: 'DiagnosticPlan | None' = None) -> None",
-      "target": "public-api/AnalysisPlan.md#api-AnalysisPlan"
-    },
-    {
-      "name": "load_analysis_plan",
-      "module": "chronaxis.planning.plan",
-      "qualified": "load_analysis_plan",
-      "group": "Loading and checking plans",
-      "kind": "function",
-      "signature": "(path: pathlib.Path | str) -> chronaxis.planning.plan.AnalysisPlan",
-      "target": "public-api/load_analysis_plan.md#api-load_analysis_plan"
-    },
-    {
-      "name": "validate_analysis_plan",
-      "module": "chronaxis.planning.reports",
-      "qualified": "validate_analysis_plan",
-      "group": "Loading and checking plans",
-      "kind": "function",
-      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ValidationReport",
-      "target": "public-api/validate_analysis_plan.md#api-validate_analysis_plan"
-    },
-    {
-      "name": "explain_analysis_plan",
-      "module": "chronaxis.planning.reports",
-      "qualified": "explain_analysis_plan",
-      "group": "Loading and checking plans",
-      "kind": "function",
-      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ExplainReport",
-      "target": "public-api/explain_analysis_plan.md#api-explain_analysis_plan"
-    },
-    {
-      "name": "PlanValidationError",
-      "module": "chronaxis.planning.checks",
-      "qualified": "PlanValidationError",
-      "group": "Loading and checking plans",
-      "kind": "class",
-      "signature": "(path: str, message: str, code: str = 'invalid_config', *, hint=None, source=None, location=None, object_name=None, value=None)",
-      "target": "public-api/PlanValidationError.md#api-PlanValidationError"
-    },
-    {
-      "name": "AnalysisRunner",
-      "module": "chronaxis.runner",
-      "qualified": "AnalysisRunner",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": "(backend=None)",
-      "target": "public-api/AnalysisRunner.md#api-AnalysisRunner"
-    },
-    {
-      "name": "AnalysisResult",
-      "module": "chronaxis.results.result",
-      "qualified": "AnalysisResult",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": "(spool: chronaxis.results.spool.ResultSpool, metadata: chronaxis.results.manifest.RunMetadata, table_format: str = 'csv', *, artifact_exports=None, owned_work=None)",
-      "target": "public-api/AnalysisResult.md#api-AnalysisResult"
-    },
-    {
-      "name": "OutputManifest",
-      "module": "chronaxis.results.manifest",
-      "qualified": "OutputManifest",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": "(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Path, output_files: tuple[pathlib.Path, ...], row_counts: tuple[tuple[str, int], ...], status: str = 'completed') -> None",
-      "target": "public-api/OutputManifest.md#api-OutputManifest"
-    },
-    {
-      "name": "RunMetadata",
-      "module": "chronaxis.results.manifest",
-      "qualified": "RunMetadata",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev1', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None) -> None",
-      "target": "public-api/RunMetadata.md#api-RunMetadata"
-    },
-    {
-      "name": "AnalysisError",
-      "module": "chronaxis.results.errors",
-      "qualified": "AnalysisError",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": null,
-      "target": "public-api/AnalysisError.md#api-AnalysisError"
-    },
-    {
-      "name": "ResultClosedError",
-      "module": "chronaxis.results.errors",
-      "qualified": "ResultClosedError",
-      "group": "Execution and results",
-      "kind": "class",
-      "signature": null,
-      "target": "public-api/ResultClosedError.md#api-ResultClosedError"
-    },
-    {
-      "name": "BatchPlan",
-      "module": "chronaxis.batch.models",
-      "qualified": "BatchPlan",
-      "group": "Batch tasks",
-      "kind": "class",
-      "signature": "(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int = 1, fail_fast: bool = False, backend: str | None = None) -> None",
-      "target": "public-api/BatchPlan.md#api-BatchPlan"
-    },
-    {
-      "name": "BatchJob",
-      "module": "chronaxis.batch.models",
-      "qualified": "BatchJob",
-      "group": "Batch tasks",
-      "kind": "class",
-      "signature": "(job_id: str, plan: chronaxis.planning.plan.AnalysisPlan | pathlib.Path) -> None",
-      "target": "public-api/BatchJob.md#api-BatchJob"
-    },
-    {
-      "name": "BatchJobResult",
-      "module": "chronaxis.batch.models",
-      "qualified": "BatchJobResult",
-      "group": "Batch tasks",
-      "kind": "class",
-      "signature": "(job_id: str, status: str, plan_path: str | None = None, plan_identity: str | None = None, dataset_id: str | None = None, entity_id: str | None = None, session_id: str | None = None, input_identity: str | None = None, run_id: str | None = None, output_dir: pathlib.Path | None = None, error_type: str | None = None, error_message: str | None = None, error_chain: tuple[str, ...] = (), elapsed_seconds: float = 0.0, memory_budget_bytes: int | None = None, worker_pid: int | None = None, recovery: chronaxis.batch.models.CleanupHandle | None = None) -> None",
-      "target": "public-api/BatchJobResult.md#api-BatchJobResult"
-    },
-    {
-      "name": "BatchReport",
-      "module": "chronaxis.batch.models",
-      "qualified": "BatchReport",
-      "group": "Batch tasks",
-      "kind": "class",
-      "signature": "(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJobResult, ...], process_count: int, fail_fast: bool, cancel_requested: bool, device_label: str, worker_process_count: int = 0, infrastructure_error: str | None = None) -> None",
-      "target": "public-api/BatchReport.md#api-BatchReport"
-    },
-    {
-      "name": "BatchRunner",
-      "module": "chronaxis.batch.runner",
-      "qualified": "BatchRunner",
-      "group": "Batch tasks",
-      "kind": "class",
-      "signature": "(process_count=1, *, fail_fast=False, backend=None)",
-      "target": "public-api/BatchRunner.md#api-BatchRunner"
-    },
-    {
-      "name": "load_batch_plan",
-      "module": "chronaxis.batch.config",
-      "qualified": "load_batch_plan",
-      "group": "Batch tasks",
-      "kind": "function",
-      "signature": "(path: str | pathlib.Path) -> chronaxis.batch.models.BatchPlan",
-      "target": "public-api/load_batch_plan.md#api-load_batch_plan"
-    },
-    {
-      "name": "run_batch",
-      "module": "chronaxis.batch.api",
-      "qualified": "run_batch",
-      "group": "Batch tasks",
-      "kind": "function",
-      "signature": "(plan: chronaxis.batch.models.BatchPlan, output_dir, *, process_count: int | None = None, cancel_event=None, device_label='pending')",
-      "target": "public-api/run_batch.md#api-run_batch"
-    },
-    {
-      "name": "PresetSpec",
-      "module": "chronaxis.planning.preset_models",
-      "qualified": "PresetSpec",
-      "group": "Domain presets",
-      "kind": "class",
-      "signature": "(id: str, preset_type: str, version: str, role_bindings: collections.abc.Mapping, parameters: collections.abc.Mapping) -> None",
-      "target": "public-api/PresetSpec.md#api-PresetSpec"
-    },
-    {
-      "name": "PlanFragment",
-      "module": "chronaxis.planning.preset_models",
-      "qualified": "PlanFragment",
-      "group": "Domain presets",
-      "kind": "class",
-      "signature": "(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = (), rules: tuple[chronaxis.planning.preset_models.PresetRule, ...] = (), windows: tuple[chronaxis.core.windows.WindowSpec, ...] = (), calculations: tuple[chronaxis.planning.preset_models.PresetCalculation, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = ()) -> None",
-      "target": "public-api/PlanFragment.md#api-PlanFragment"
-    },
-    {
-      "name": "build_preset",
-      "module": "chronaxis.presets",
-      "qualified": "build_preset",
-      "group": "Domain presets",
-      "kind": "function",
-      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> chronaxis.planning.preset_models.PlanFragment",
-      "target": "public-api/build_preset.md#api-build_preset"
-    },
-    {
-      "name": "resolve_preset_roles",
-      "module": "chronaxis.presets",
-      "qualified": "resolve_preset_roles",
-      "group": "Domain presets",
-      "kind": "function",
-      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> tuple[chronaxis.planning.preset_models.RoleBinding, ...]",
-      "target": "public-api/resolve_preset_roles.md#api-resolve_preset_roles"
-    },
-    {
       "name": "TimeConversion",
+      "import_module": "chronaxis",
+      "import_name": "TimeConversion",
       "module": "chronaxis.timebase.conversion",
       "qualified": "TimeConversion",
       "group": "Time conversion",
       "kind": "class",
       "signature": "(time_ns: int, input_representation: str, input_unit: str, input_text: str, quantized: bool, precision_limited: bool = False, rounding: str = 'round_half_even', source_timezone: str | None = None) -> None",
+      "parameters": [
+        {
+          "name": "time_ns",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input_representation",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input_unit",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input_text",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "quantized",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "precision_limited",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "rounding",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'round_half_even'"
+        },
+        {
+          "name": "source_timezone",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        }
+      ],
       "target": "public-api/TimeConversion.md#api-TimeConversion"
     },
     {
       "name": "TimeOverflowError",
+      "import_module": "chronaxis",
+      "import_name": "TimeOverflowError",
       "module": "chronaxis.timebase.conversion",
       "qualified": "TimeOverflowError",
       "group": "Time conversion",
       "kind": "class",
       "signature": null,
+      "parameters": [],
       "target": "public-api/TimeOverflowError.md#api-TimeOverflowError"
     },
     {
       "name": "checked_add_ns",
+      "import_module": "chronaxis",
+      "import_name": "checked_add_ns",
       "module": "chronaxis.timebase.conversion",
       "qualified": "checked_add_ns",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(time_ns: int, offset_ns: int) -> int",
+      "parameters": [
+        {
+          "name": "time_ns",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "offset_ns",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        }
+      ],
       "target": "public-api/checked_add_ns.md#api-checked_add_ns"
     },
     {
       "name": "convert_time",
+      "import_module": "chronaxis",
+      "import_name": "convert_time",
       "module": "chronaxis.timebase.conversion",
       "qualified": "convert_time",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(value: int | float | str | decimal.Decimal, unit: str) -> chronaxis.timebase.conversion.TimeConversion",
+      "parameters": [
+        {
+          "name": "value",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int | float | str | decimal.Decimal",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "unit",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        }
+      ],
       "target": "public-api/convert_time.md#api-convert_time"
     },
     {
       "name": "parse_datetime_ns",
+      "import_module": "chronaxis",
+      "import_name": "parse_datetime_ns",
       "module": "chronaxis.timebase.conversion",
       "qualified": "parse_datetime_ns",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(text: str, source_timezone: datetime.tzinfo | None = None) -> chronaxis.timebase.conversion.TimeConversion",
+      "parameters": [
+        {
+          "name": "text",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "source_timezone",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "datetime.tzinfo | None",
+          "required": false,
+          "default": "None"
+        }
+      ],
       "target": "public-api/parse_datetime_ns.md#api-parse_datetime_ns"
     },
     {
       "name": "parse_duration",
+      "import_module": "chronaxis",
+      "import_name": "parse_duration",
       "module": "chronaxis.timebase.conversion",
       "qualified": "parse_duration",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(text: str) -> chronaxis.timebase.conversion.TimeConversion",
+      "parameters": [
+        {
+          "name": "text",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        }
+      ],
       "target": "public-api/parse_duration.md#api-parse_duration"
     },
     {
       "name": "shift_times_reference",
+      "import_module": "chronaxis",
+      "import_name": "shift_times_reference",
       "module": "chronaxis.timebase.conversion",
       "qualified": "shift_times_reference",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(times: Sequence[int], offset_ns: int) -> tuple[int, ...]",
+      "parameters": [
+        {
+          "name": "times",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "Sequence[int]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "offset_ns",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        }
+      ],
       "target": "public-api/shift_times_reference.md#api-shift_times_reference"
     },
     {
       "name": "time_deltas_reference",
+      "import_module": "chronaxis",
+      "import_name": "time_deltas_reference",
       "module": "chronaxis.timebase.conversion",
       "qualified": "time_deltas_reference",
       "group": "Time conversion",
       "kind": "function",
       "signature": "(times: Sequence[int]) -> tuple[int, ...]",
+      "parameters": [
+        {
+          "name": "times",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "Sequence[int]",
+          "required": true,
+          "default": null
+        }
+      ],
       "target": "public-api/time_deltas_reference.md#api-time_deltas_reference"
+    },
+    {
+      "name": "AnalysisPlan",
+      "import_module": "chronaxis",
+      "import_name": "AnalysisPlan",
+      "module": "chronaxis.planning.plan",
+      "qualified": "AnalysisPlan",
+      "group": "Loading and checking plans",
+      "kind": "class",
+      "signature": "(config_version: int, dataset: chronaxis.planning.models.DatasetPlan, sources: tuple[chronaxis.planning.models.SourcePlan, ...], signals: tuple[chronaxis.planning.models.SignalPlan, ...], derived: tuple[chronaxis.planning.models.DerivedPlan, ...], rules: tuple[chronaxis.planning.models.RulePlan, ...], windows: tuple[chronaxis.planning.models.WindowPlan, ...], calculations: tuple[chronaxis.planning.models.CalculationPlan, ...], presets: tuple[chronaxis.planning.preset_models.PresetSpec, ...], preset_bindings: tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...], execution: chronaxis.planning.models.ExecutionPlan, outputs: chronaxis.planning.models.OutputPlan, bindings: chronaxis.core.declarations.DeclarationBindings, derived_expressions: tuple[chronaxis.core.expression.StaticExpression, ...], metadata: collections.abc.Mapping, raw_config: collections.abc.Mapping, base_dir: pathlib.Path, identity: str, message_calculations: tuple[chronaxis.planning.models.MessageCalculationPlan, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = (), intervals: 'IntervalPlan | None' = None, diagnostics: 'DiagnosticPlan | None' = None, aggregations: tuple[chronaxis.planning.aggregations.AggregationPlan, ...] = (), transforms: tuple[chronaxis.planning.transforms.TemporalTransformPlan, ...] = ()) -> None",
+      "parameters": [
+        {
+          "name": "config_version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "dataset",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.models.DatasetPlan",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "sources",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.SourcePlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "signals",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.SignalPlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "derived",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.DerivedPlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "rules",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.RulePlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "windows",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.WindowPlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "calculations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.CalculationPlan, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "presets",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.preset_models.PresetSpec, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "preset_bindings",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[chronaxis.planning.preset_models.RoleBinding, ...], ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "execution",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.models.ExecutionPlan",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "outputs",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.models.OutputPlan",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "bindings",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.core.declarations.DeclarationBindings",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "derived_expressions",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.expression.StaticExpression, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "metadata",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "collections.abc.Mapping",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "raw_config",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "collections.abc.Mapping",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "base_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "identity",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "message_calculations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.models.MessageCalculationPlan, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "sequences",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.sequences.SequencePlan, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "intervals",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "'IntervalPlan | None'",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "diagnostics",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "'DiagnosticPlan | None'",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "aggregations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.aggregations.AggregationPlan, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "transforms",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.transforms.TemporalTransformPlan, ...]",
+          "required": false,
+          "default": "()"
+        }
+      ],
+      "target": "public-api/AnalysisPlan.md#api-AnalysisPlan"
+    },
+    {
+      "name": "PlanValidationError",
+      "import_module": "chronaxis",
+      "import_name": "PlanValidationError",
+      "module": "chronaxis.planning.checks",
+      "qualified": "PlanValidationError",
+      "group": "Loading and checking plans",
+      "kind": "class",
+      "signature": "(path: str, message: str, code: str = 'invalid_config', *, hint=None, source=None, location=None, object_name=None, value=None)",
+      "parameters": [
+        {
+          "name": "path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "code",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'invalid_config'"
+        },
+        {
+          "name": "hint",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "source",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "location",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "object_name",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "value",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/PlanValidationError.md#api-PlanValidationError"
+    },
+    {
+      "name": "load_analysis_plan",
+      "import_module": "chronaxis",
+      "import_name": "load_analysis_plan",
+      "module": "chronaxis.planning.plan",
+      "qualified": "load_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(path: pathlib.Path | str, *, extensions=None) -> chronaxis.planning.plan.AnalysisPlan",
+      "parameters": [
+        {
+          "name": "path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path | str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "extensions",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/load_analysis_plan.md#api-load_analysis_plan"
+    },
+    {
+      "name": "validate_analysis_plan",
+      "import_module": "chronaxis",
+      "import_name": "validate_analysis_plan",
+      "module": "chronaxis.planning.reports",
+      "qualified": "validate_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ValidationReport",
+      "parameters": [
+        {
+          "name": "plan",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.plan.AnalysisPlan",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/validate_analysis_plan.md#api-validate_analysis_plan"
+    },
+    {
+      "name": "explain_analysis_plan",
+      "import_module": "chronaxis",
+      "import_name": "explain_analysis_plan",
+      "module": "chronaxis.planning.reports",
+      "qualified": "explain_analysis_plan",
+      "group": "Loading and checking plans",
+      "kind": "function",
+      "signature": "(plan: chronaxis.planning.plan.AnalysisPlan) -> chronaxis.planning.reports.ExplainReport",
+      "parameters": [
+        {
+          "name": "plan",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.plan.AnalysisPlan",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/explain_analysis_plan.md#api-explain_analysis_plan"
+    },
+    {
+      "name": "PresetSpec",
+      "import_module": "chronaxis",
+      "import_name": "PresetSpec",
+      "module": "chronaxis.planning.preset_models",
+      "qualified": "PresetSpec",
+      "group": "Domain presets",
+      "kind": "class",
+      "signature": "(id: str, preset_type: str, version: str, role_bindings: collections.abc.Mapping, parameters: collections.abc.Mapping) -> None",
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "preset_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "role_bindings",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "collections.abc.Mapping",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "parameters",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "collections.abc.Mapping",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/PresetSpec.md#api-PresetSpec"
+    },
+    {
+      "name": "PlanFragment",
+      "import_module": "chronaxis",
+      "import_name": "PlanFragment",
+      "module": "chronaxis.planning.preset_models",
+      "qualified": "PlanFragment",
+      "group": "Domain presets",
+      "kind": "class",
+      "signature": "(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = (), rules: tuple[chronaxis.planning.preset_models.PresetRule, ...] = (), windows: tuple[chronaxis.core.windows.WindowSpec, ...] = (), calculations: tuple[chronaxis.planning.preset_models.PresetCalculation, ...] = (), sequences: tuple[chronaxis.planning.sequences.SequencePlan, ...] = ()) -> None",
+      "parameters": [
+        {
+          "name": "derived",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.expression.DerivedDefinition, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "rules",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.preset_models.PresetRule, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "windows",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.windows.WindowSpec, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "calculations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.preset_models.PresetCalculation, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "sequences",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.planning.sequences.SequencePlan, ...]",
+          "required": false,
+          "default": "()"
+        }
+      ],
+      "target": "public-api/PlanFragment.md#api-PlanFragment"
+    },
+    {
+      "name": "build_preset",
+      "import_module": "chronaxis",
+      "import_name": "build_preset",
+      "module": "chronaxis.presets",
+      "qualified": "build_preset",
+      "group": "Domain presets",
+      "kind": "function",
+      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> chronaxis.planning.preset_models.PlanFragment",
+      "parameters": [
+        {
+          "name": "spec",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.preset_models.PresetSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "signals",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.binding.SignalDefinition, ...]",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/build_preset.md#api-build_preset"
+    },
+    {
+      "name": "resolve_preset_roles",
+      "import_module": "chronaxis",
+      "import_name": "resolve_preset_roles",
+      "module": "chronaxis.presets",
+      "qualified": "resolve_preset_roles",
+      "group": "Domain presets",
+      "kind": "function",
+      "signature": "(spec: chronaxis.planning.preset_models.PresetSpec, signals: tuple[chronaxis.core.binding.SignalDefinition, ...]) -> tuple[chronaxis.planning.preset_models.RoleBinding, ...]",
+      "parameters": [
+        {
+          "name": "spec",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.preset_models.PresetSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "signals",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.binding.SignalDefinition, ...]",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/resolve_preset_roles.md#api-resolve_preset_roles"
+    },
+    {
+      "name": "AnalysisResult",
+      "import_module": "chronaxis",
+      "import_name": "AnalysisResult",
+      "module": "chronaxis.results.result",
+      "qualified": "AnalysisResult",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(spool: chronaxis.results.spool.ResultSpool, metadata: chronaxis.results.manifest.RunMetadata, table_format: str = 'csv', *, artifact_exports=None, owned_work=None)",
+      "parameters": [
+        {
+          "name": "spool",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.results.spool.ResultSpool",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "metadata",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.results.manifest.RunMetadata",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "table_format",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'csv'"
+        },
+        {
+          "name": "artifact_exports",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "owned_work",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/AnalysisResult.md#api-AnalysisResult"
+    },
+    {
+      "name": "OutputManifest",
+      "import_module": "chronaxis",
+      "import_name": "OutputManifest",
+      "module": "chronaxis.results.manifest",
+      "qualified": "OutputManifest",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Path, output_files: tuple[pathlib.Path, ...], row_counts: tuple[tuple[str, int], ...], status: str = 'completed') -> None",
+      "parameters": [
+        {
+          "name": "run_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "manifest_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output_files",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[pathlib.Path, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "row_counts",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[str, int], ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'completed'"
+        }
+      ],
+      "target": "public-api/OutputManifest.md#api-OutputManifest"
+    },
+    {
+      "name": "ExportManifest",
+      "import_module": "chronaxis",
+      "import_name": "ExportManifest",
+      "module": "chronaxis.results.manifest",
+      "qualified": "ExportManifest",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(output_dir: pathlib.Path, manifest_path: pathlib.Path, output_files: tuple[pathlib.Path, ...]) -> None",
+      "parameters": [
+        {
+          "name": "output_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "manifest_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output_files",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[pathlib.Path, ...]",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/ExportManifest.md#api-ExportManifest"
+    },
+    {
+      "name": "RunMetadata",
+      "import_module": "chronaxis",
+      "import_name": "RunMetadata",
+      "module": "chronaxis.results.manifest",
+      "qualified": "RunMetadata",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev2', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None",
+      "parameters": [
+        {
+          "name": "run_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input_identity",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "plan_hash",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "backend",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "config_version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "source_time_interpretation",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "session_boundaries",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[str, int, int], ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "started_at",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "mapping_hashes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "dbc_hashes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "parsing_policy",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'decoded-results'"
+        },
+        {
+          "name": "worker_config",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'single-thread'"
+        },
+        {
+          "name": "dependency_versions",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[str, str], ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "limitations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "software_version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'0.1.0.dev2'"
+        },
+        {
+          "name": "device_label",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": false,
+          "default": "'pending'"
+        },
+        {
+          "name": "signal_bindings",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.core.binding.SignalDefinition, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "preset_bindings",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "can_sources",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "session_ids",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "text_can_sources",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "threshold_durations",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "detailed_diagnostics",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "retain_work",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "input_diagnostics",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "trace_requested",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "integrity_diagnostics",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "frame_format_notices",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "analysis_outcome",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.results.analysis_outcome.AnalysisOutcome | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "aggregation_definitions",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple",
+          "required": false,
+          "default": "()"
+        }
+      ],
+      "target": "public-api/RunMetadata.md#api-RunMetadata"
+    },
+    {
+      "name": "AnalysisError",
+      "import_module": "chronaxis",
+      "import_name": "AnalysisError",
+      "module": "chronaxis.results.errors",
+      "qualified": "AnalysisError",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": null,
+      "parameters": [],
+      "target": "public-api/AnalysisError.md#api-AnalysisError"
+    },
+    {
+      "name": "ResultClosedError",
+      "import_module": "chronaxis",
+      "import_name": "ResultClosedError",
+      "module": "chronaxis.results.errors",
+      "qualified": "ResultClosedError",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": null,
+      "parameters": [],
+      "target": "public-api/ResultClosedError.md#api-ResultClosedError"
+    },
+    {
+      "name": "AnalysisRunner",
+      "import_module": "chronaxis",
+      "import_name": "AnalysisRunner",
+      "module": "chronaxis.runner",
+      "qualified": "AnalysisRunner",
+      "group": "Execution and results",
+      "kind": "class",
+      "signature": "(backend=None, *, extensions=None)",
+      "parameters": [
+        {
+          "name": "backend",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "extensions",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/AnalysisRunner.md#api-AnalysisRunner"
+    },
+    {
+      "name": "BatchJob",
+      "import_module": "chronaxis",
+      "import_name": "BatchJob",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchJob",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(job_id: str, plan: chronaxis.planning.plan.AnalysisPlan | pathlib.Path) -> None",
+      "parameters": [
+        {
+          "name": "job_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "plan",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.planning.plan.AnalysisPlan | pathlib.Path",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/BatchJob.md#api-BatchJob"
+    },
+    {
+      "name": "BatchJobResult",
+      "import_module": "chronaxis",
+      "import_name": "BatchJobResult",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchJobResult",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(job_id: str, status: str, plan_path: str | None = None, plan_identity: str | None = None, dataset_id: str | None = None, entity_id: str | None = None, session_id: str | None = None, input_identity: str | None = None, run_id: str | None = None, output_dir: pathlib.Path | None = None, manifest_path: pathlib.Path | None = None, error_type: str | None = None, error_message: str | None = None, error_chain: tuple[str, ...] = (), elapsed_seconds: float = 0.0, memory_budget_bytes: int | None = None, worker_pid: int | None = None, recovery: chronaxis.batch.models.CleanupHandle | None = None) -> None",
+      "parameters": [
+        {
+          "name": "job_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "plan_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "plan_identity",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "dataset_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "entity_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "session_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "input_identity",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "run_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "output_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "manifest_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "error_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "error_message",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "error_chain",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "elapsed_seconds",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "float",
+          "required": false,
+          "default": "0.0"
+        },
+        {
+          "name": "memory_budget_bytes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "worker_pid",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "recovery",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.batch.models.CleanupHandle | None",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/BatchJobResult.md#api-BatchJobResult"
+    },
+    {
+      "name": "BatchReport",
+      "import_module": "chronaxis",
+      "import_name": "BatchReport",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchReport",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJobResult, ...], process_count: int, fail_fast: bool, cancel_requested: bool, device_label: str, worker_process_count: int = 0, infrastructure_error: str | None = None, report_path: pathlib.Path | None = None, _publication: object = None) -> None",
+      "parameters": [
+        {
+          "name": "output_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "jobs",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.batch.models.BatchJobResult, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "fail_fast",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "cancel_requested",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "device_label",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "worker_process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "0"
+        },
+        {
+          "name": "infrastructure_error",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "report_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "pathlib.Path | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "_publication",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/BatchReport.md#api-BatchReport"
+    },
+    {
+      "name": "BatchRunner",
+      "import_module": "chronaxis",
+      "import_name": "BatchRunner",
+      "module": "chronaxis.batch.runner",
+      "qualified": "BatchRunner",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(process_count=1, *, fail_fast=False, backend=None)",
+      "parameters": [
+        {
+          "name": "process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": false,
+          "default": "1"
+        },
+        {
+          "name": "fail_fast",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "backend",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/BatchRunner.md#api-BatchRunner"
+    },
+    {
+      "name": "BatchPlan",
+      "import_module": "chronaxis",
+      "import_name": "BatchPlan",
+      "module": "chronaxis.batch.models",
+      "qualified": "BatchPlan",
+      "group": "Batch tasks",
+      "kind": "class",
+      "signature": "(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int = 1, fail_fast: bool = False, backend: str | None = None) -> None",
+      "parameters": [
+        {
+          "name": "jobs",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.batch.models.BatchJob, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "1"
+        },
+        {
+          "name": "fail_fast",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        },
+        {
+          "name": "backend",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | None",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/BatchPlan.md#api-BatchPlan"
+    },
+    {
+      "name": "load_batch_plan",
+      "import_module": "chronaxis",
+      "import_name": "load_batch_plan",
+      "module": "chronaxis.batch.config",
+      "qualified": "load_batch_plan",
+      "group": "Batch tasks",
+      "kind": "function",
+      "signature": "(path: str | pathlib.Path) -> chronaxis.batch.models.BatchPlan",
+      "parameters": [
+        {
+          "name": "path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str | pathlib.Path",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/load_batch_plan.md#api-load_batch_plan"
+    },
+    {
+      "name": "run_batch",
+      "import_module": "chronaxis",
+      "import_name": "run_batch",
+      "module": "chronaxis.batch.api",
+      "qualified": "run_batch",
+      "group": "Batch tasks",
+      "kind": "function",
+      "signature": "(plan: chronaxis.batch.models.BatchPlan, output_dir, *, process_count: int | None = None, cancel_event=None, device_label='pending')",
+      "parameters": [
+        {
+          "name": "plan",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.batch.models.BatchPlan",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "process_count",
+          "kind": "KEYWORD_ONLY",
+          "type": "int | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "cancel_event",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "device_label",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "'pending'"
+        }
+      ],
+      "target": "public-api/run_batch.md#api-run_batch"
+    },
+    {
+      "name": "fast.run",
+      "import_module": "chronaxis.fast",
+      "import_name": "run",
+      "module": "chronaxis.fast.run",
+      "qualified": "run",
+      "group": "High-performance integrator",
+      "kind": "function",
+      "signature": "(config, output)",
+      "parameters": [
+        {
+          "name": "config",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": true,
+          "default": null
+        }
+      ],
+      "target": "public-api/fast.run.md#api-run"
+    },
+    {
+      "name": "fast.batch.run_batch",
+      "import_module": "chronaxis.fast.batch",
+      "import_name": "run_batch",
+      "module": "chronaxis.fast.batch",
+      "qualified": "run_batch",
+      "group": "High-performance integrator",
+      "kind": "function",
+      "signature": "(plan_path, output, *, process_count=None, cancel_event=None, total=False)",
+      "parameters": [
+        {
+          "name": "plan_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "process_count",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "cancel_event",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "total",
+          "kind": "KEYWORD_ONLY",
+          "type": "",
+          "required": false,
+          "default": "False"
+        }
+      ],
+      "target": "public-api/fast.batch.run_batch.md#api-run_batch"
+    },
+    {
+      "name": "ExtensionRegistry",
+      "import_module": "chronaxis.extensions",
+      "import_name": "ExtensionRegistry",
+      "module": "chronaxis.extensions",
+      "qualified": "ExtensionRegistry",
+      "group": "Host extensions",
+      "kind": "class",
+      "signature": "(functions=(), reductions=(), transforms=())",
+      "parameters": [
+        {
+          "name": "functions",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "reductions",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "transforms",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "",
+          "required": false,
+          "default": "()"
+        }
+      ],
+      "target": "public-api/ExtensionRegistry.md#api-ExtensionRegistry"
+    },
+    {
+      "name": "FunctionSpec",
+      "import_module": "chronaxis.extensions",
+      "import_name": "FunctionSpec",
+      "module": "chronaxis.extensions",
+      "qualified": "FunctionSpec",
+      "group": "Host extensions",
+      "kind": "class",
+      "signature": "(name: str, version: str, inputs: tuple[chronaxis.extensions.ValueSpec, ...], output: chronaxis.extensions.ValueSpec, reference: object = None, numpy: object = None) -> None",
+      "parameters": [
+        {
+          "name": "name",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "inputs",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[chronaxis.extensions.ValueSpec, ...]",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.extensions.ValueSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "reference",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "numpy",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        }
+      ],
+      "target": "public-api/FunctionSpec.md#api-FunctionSpec"
+    },
+    {
+      "name": "ReductionSpec",
+      "import_module": "chronaxis.extensions",
+      "import_name": "ReductionSpec",
+      "module": "chronaxis.extensions",
+      "qualified": "ReductionSpec",
+      "group": "Host extensions",
+      "kind": "class",
+      "signature": "(name: str, version: str, input: chronaxis.extensions.ValueSpec, output: chronaxis.extensions.ValueSpec, reference: object = None, numpy: object = None, state_bytes: int = 0, mergeable: bool = False) -> None",
+      "parameters": [
+        {
+          "name": "name",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.extensions.ValueSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.extensions.ValueSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "reference",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "numpy",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "state_bytes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "0"
+        },
+        {
+          "name": "mergeable",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "bool",
+          "required": false,
+          "default": "False"
+        }
+      ],
+      "target": "public-api/ReductionSpec.md#api-ReductionSpec"
+    },
+    {
+      "name": "TransformSpec",
+      "import_module": "chronaxis.extensions",
+      "import_name": "TransformSpec",
+      "module": "chronaxis.extensions",
+      "qualified": "TransformSpec",
+      "group": "Host extensions",
+      "kind": "class",
+      "signature": "(name: str, version: str, input: chronaxis.extensions.ValueSpec, output: chronaxis.extensions.ValueSpec, reference: object = None, numpy: object = None, state_bytes: int = 0, history_ns: int = 0, interval_modes: tuple[str, ...] = ('actual', 'fixed', 'dbc')) -> None",
+      "parameters": [
+        {
+          "name": "name",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "version",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "str",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "input",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.extensions.ValueSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "output",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "chronaxis.extensions.ValueSpec",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "reference",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "numpy",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "object",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "state_bytes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "0"
+        },
+        {
+          "name": "history_ns",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "0"
+        },
+        {
+          "name": "interval_modes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[str, ...]",
+          "required": false,
+          "default": "('actual', 'fixed', 'dbc')"
+        }
+      ],
+      "target": "public-api/TransformSpec.md#api-TransformSpec"
     }
   ],
   "cfg_simple_01": {
@@ -280,5 +1818,6 @@
     "unchanged": true,
     "note": "另3个继承内建异常类没有inspect.signature，沿用异常类入口，不捏造签名。"
   },
+  "baseline": "e65c920526335247bcc1ed25852bcc967f55f2fd",
   "language": "en"
 }

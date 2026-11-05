@@ -1,12 +1,12 @@
 # chronaxis.parse_datetime_ns
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
+使用`from chronaxis import parse_datetime_ns`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [parse_datetime_ns](#api-parse_datetime_ns)
+- [`parse_datetime_ns`](#api-parse_datetime_ns)
 
 <a id="api-parse_datetime_ns"></a>
 ## `parse_datetime_ns`
@@ -40,4 +40,4 @@ TypeError/ValueError: 文本/时区非法、naive缺时区、本地时刻模糊�
 
 返回类型：[TimeConversion](TimeConversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:236`](../../../src/chronaxis/timebase/conversion.py#L236)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/conversion.py:236`](../../../src/chronaxis/timebase/conversion.py#L236)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

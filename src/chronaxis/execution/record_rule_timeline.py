@@ -37,7 +37,17 @@ class RecordRuleTimeline:
         self._delta_emitted=False
         # 常量大小的业务概况，不保留条件轨迹；关闭仍由原固定预算负责。
         self._seen_true=self._seen_false=self._seen_unknown=False
+        # 仅对象计数请求需要发现缺口的原因，并忽略EOF人为封口的UNKNOWN状态。
+        self._count_quality = Q.NONE
+        self._track_count = any(c.count_target == request.rule_id for c in plan.calculations
+                                if c.operation in ('point_event_count', 'activity_count')) or any(
+            w.event == request.rule_id and any(c.operation == 'segment_count' and c.count_target == w.window_id
+                                               for c in plan.calculations) for w in plan.windows)
         self._event_count=0
+        if plan.aggregations and not self._track_count:
+            from .result_aggregations import discovery_rules
+            self._track_count=any(request.rule_id in discovery_rules(plan,agg) for agg in plan.aggregations)
+        self._required_aliases=set()
         self._pending=None
         self._next_expiry=self._last_driver=None
         self._start=None
@@ -54,6 +64,8 @@ class RecordRuleTimeline:
                     self._pending_owner=getattr(error,'driver_expression_cleanup_owner',None)
                     raise
                 self._expressions.append(owner)
+                if not owner._has_where:
+                    self._required_aliases.update(expression.dependencies)
             if request.rule_type=='window_delta':
                 try:
                     self._delta=RecordDeltaCondition(budget,request.window_delta,
@@ -61,8 +73,9 @@ class RecordRuleTimeline:
                 except BaseException as error:
                     self._delta=getattr(error,'record_delta_cleanup_owner',None)
                     raise
-            self.sources=frozenset(state.definitions[name].source for name in
-                set(request.dependencies)|({driver} if driver else set()))
+            from ..planning.transforms import physical_dependencies
+            names=physical_dependencies(plan,set(request.dependencies)|({driver} if driver else set()))
+            self.sources=frozenset(state.definitions[name].source for name in names)
             if not self.sources:
                 self.sources=frozenset(source.name for source in plan.sources)
             if request.stability is not None and request.stability.track_duration:
@@ -123,13 +136,12 @@ class RecordRuleTimeline:
         """收齐进出条件的点/右侧值，保一个必要组。参数: 实际时间/更新/EOF。返回: None。异常: 求值原错。"""
         ticks=[]
         deadlines=[]
-        actual_names={name for name in self._request.dependencies if
-            self._state.get(name) is not None and self._state.get(name).time_ns==time_ns} if actual else set()
         selected=self._state.get(self._driver) if self._driver else None
         is_driver=actual and selected is not None and selected.time_ns==time_ns
         for expression in self._expressions:
-            point,_=expression.evaluate_at(time_ns,continuous=False)
-            right,deadline=expression.evaluate_at(time_ns)
+            evidence=self._required_aliases if expression._has_where else None
+            point,_=expression.evaluate_at(time_ns,continuous=False,unobserved=evidence)
+            right,deadline=expression.evaluate_at(time_ns,unobserved=evidence if not terminal else None)
             if self._delta is not None:
                 point,right=self._delta.update(time_ns,point,right,deadline,driver=is_driver)
                 deadline=self._delta.next_deadline
@@ -138,11 +150,17 @@ class RecordRuleTimeline:
             point_quality=Q.NONE if point.valid else point.quality
             quality=Q.NONE if right.valid else right.quality
             observed_end=any(self._ends.get(source)==time_ns for source in self.sources)
-            updated=self._delta is not None or bool(actual_names & set(expression._static.dependencies))
+            if observed_end and expression._has_where:
+                observed_end=expression.active_end_at(time_ns)
+            updated=self._delta is not None or (actual and expression.actual_update_at(time_ns))
+            actual_unknown=updated and not point.valid
+            if actual_unknown and expression._has_where and self._delta is None:
+                actual_unknown=expression.actual_unknown_at(time_ns,point)
             ticks.append(ConditionTick(time_ns,T.UNKNOWN if terminal else right_state,
                 quality|Q.MISSING if terminal else quality,actual_update=updated,
                 observation_end=observed_end,terminal=terminal,point_state=point_state,point_quality=point_quality,
-                actual_unknown=updated and not point.valid,diagnostic_quality=point.quality|right.quality))
+                actual_unknown=actual_unknown,diagnostic_quality=point.quality|right.quality|
+                (Q.ESTIMATED if point.partial or right.partial and not terminal else Q.NONE)))
             if deadline is not None:
                 deadlines.append(deadline)
         advance=None
@@ -171,6 +189,14 @@ class RecordRuleTimeline:
         tick=ticks[0]
         truths=(tick.point_state,) if tick.terminal else (tick.state,tick.point_state)
         self._seen_true |= T.TRUE in truths
+        if self._track_count:
+            for item in ticks:
+                self._count_quality |= item.diagnostic_quality & Q.ESTIMATED
+            for item in ticks:
+                if item.point_state == T.UNKNOWN:
+                    self._count_quality |= item.point_quality
+                if not item.terminal and item.state == T.UNKNOWN:
+                    self._count_quality |= item.quality
         self._seen_false |= T.FALSE in truths
         self._seen_unknown |= any(T.UNKNOWN in ((item.point_state,) if item.terminal
                                   else (item.state,item.point_state)) for item in ticks)
@@ -296,7 +322,9 @@ class RecordRuleTimeline:
         if not self._finished and self._start is not None:
             raise ValueError('规则未结束，不能报告结果概况')
         from ..results.analysis_outcome import RuleOutcome
-        missing=tuple(name for name in self._request.dependencies if self._state.get(name) is None)
+        # 无观测只报告实际求值需要且一直没有观测的别名。静态绑定仍校验两个分支。
+        missing=tuple(name for name in self._request.dependencies if self._state.get(name) is None
+                      and (self._start is None or name in self._required_aliases))
         # 已产生的事件与未观测/未知事实并存；无事件时才用数据充分性解释原因。
         if self._event_count:
             status='events_found'
@@ -311,6 +339,24 @@ class RecordRuleTimeline:
         else:
             status='no_event'
         return RuleOutcome(self._request.rule_id,status,self._event_count,self._seen_unknown,missing)
+
+    def count_evidence(self, domain):
+        """判定规则实际观测是否覆盖整个目标会话，保留发现是否完整的证据。
+
+        参数: domain为最终会话域。返回: 已观测、至少部分可判定、完整、质量位。
+        异常: 规则尚未结束或已关闭时沿outcome检查传播。
+        """
+        outcome = self.outcome()
+        observed = self._start is not None and outcome.status != 'no_observation'
+        known = self._seen_true or self._seen_false
+        # 已确认的末点可以产生点事件；显式请求域超出来源实际首末时仍有缺口。
+        covers_request = (observed and domain is not None
+                          and self._start <= domain.start_ns and self._end >= domain.end_ns)
+        complete = covers_request and not self._seen_unknown and not outcome.unobserved_signals and not self._count_quality & Q.ESTIMATED
+        quality = self._count_quality
+        if not covers_request or outcome.unobserved_signals:
+            quality |= Q.MISSING
+        return observed, known, complete, quality
 
     @property
     def duration_result(self):
@@ -339,6 +385,6 @@ class RecordRuleTimeline:
         for index,owner in enumerate(self._expressions):
             if owner is not None:
                 owner.close();self._expressions[index]=None
-        self._pending=self._consumer=self._step_consumer=self._state=self._plan=self._ends=None
+        self._pending=self._consumer=self._step_consumer=self._state=self._plan=self._ends=self._required_aliases=None
         _release_owned_ram(self,self._fixed_cost,'_fixed_cost')
         self._closed=True

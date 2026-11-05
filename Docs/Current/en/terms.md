@@ -45,7 +45,7 @@ Business metadata records meaning. For example, `sign_convention: positive_is_ch
 | Signal validity (`valid_for`) | How long the previous observation may still be used. | A 10 A observation at 0 seconds with a 2-second validity cannot be used at or after 2 seconds without an update. |
 | Unknown (`UNKNOWN`) | Insufficient data to decide whether a condition is true or false. | Expired current cannot establish `current > 5`. |
 | Event | One detected activity or instantaneous change. | Operation from 0 to 1 seconds is an activity; an alarm changing from false to true is a point event. |
-| Segment | A range selected around an event for context. | Five seconds before an alarm and ten seconds after; it can include non-alarm time. |
+| Segment | An analysis or export range generated from events by a window definition, with optional expansion (including zero), merging, and per-segment calculations. | Five seconds before an alarm and ten seconds after; adjacent ranges can merge, or a segment can match the original activity. See [windows and segments](windows.md). |
 | Calculation | A value or selection calculated for a range. | Operating duration, maximum current, energy, or matching rows. |
 | Scope | Selects the whole session, each event, or each segment for a calculation. | Event energy differs from window energy when the window includes idle time. |
 | Coverage | The calculable part as a proportion of the required range. | Eight observed seconds out of twelve requested seconds gives `8 / 12` request coverage. |
@@ -65,7 +65,7 @@ Coverage has several meanings: whether logs cover the requested time, whether si
 | Buffer | Data temporarily retained in memory to reduce frequent reads or writes. | Accumulate result rows before writing them together. |
 | Budget | A permitted resource amount measured in bytes or rows, not money. | `memory_budget_bytes=268435456` manages the new analysis components within 256 MiB. |
 | Spool | Intermediate data or results written to a working directory for later calculation, sorting, or export. | Results may already be on disk before final CSV publication. |
-| Publish (`write`) | Write a complete result to a new local directory, not upload it to the internet. | Publish selected result tables and `run_manifest.json`; interchange CSV can include `events.csv` and `calculations.csv`. |
+| Publish (`write`) | Write a complete result as timestamped files in a local directory, not upload it to the internet. | Publish selected result tables and `run_manifest_<timestamp>.json`; interchange CSV can include `events.csv` and `calculations.csv`. |
 | Manifest | JSON recording inputs, configuration, calculation settings, and output files. | Check whether two results use the same inputs and settings. |
 | Cursor/iterator | An object that returns the next row without loading a whole table. | `for row in result.iter_calculations()`. |
 | Close | Release file handles, iterators, and related resources. | Closed objects cannot be read again. Default cleanup removes temporary data created by the run, preserving published outputs and original inputs. |
@@ -105,7 +105,7 @@ Keep the default execution settings initially. See [choosing execution settings]
 | CAN FD | A CAN frame format supporting longer payloads and related capabilities. `is_fd` distinguishes it from classic CAN; it is not a file descriptor. |
 | RSS | Resident physical memory reported by the operating system, not the same as the managed `memory_budget_bytes` amount. |
 | Lazy/on-demand reading | Read or calculate more when the caller requests another item, avoiding an all-results list. |
-| Atomic publication | Write a complete temporary output directory, then rename it to the final directory so partially written output is not mistaken for completion. |
+| Atomic publication | Prepare the run’s outputs, publish without overwriting existing files, then publish its manifest last as the completion marker. The output directory is reusable; its existence alone does not mean completion. See [result publication](results.md#result-publication). |
 | Native Python number | Built-in types such as `int`, `float`, and `bool`. Some low-level objects require these rather than unconverted array scalars. |
 | Snapshot | Content fixed at a particular point, such as source code at a Git commit; later changes do not alter that version. |
 
@@ -121,7 +121,7 @@ Keep the default execution settings initially. See [choosing execution settings]
 | Complete window | Data allows evaluation throughout the entire window. | Two samples inside a 4-second window do not prove all 4 seconds are valid. |
 | Independent batch tasks | Schedule separate plans that do not share analysis state. | Run three vehicles independently, rather than divide one file into three pieces. |
 | Resampling | Produce records at specified times; use configured estimation when no actual sample exists there. | Output voltage every 100 ms. |
-| Time grid | Equally spaced output times determined by `resampling.start` and `resampling.period`. | Start 50 ms, period 100 ms: 50, 150, 250 ms, etc. |
+| Time grid | Equally spaced output times. Exports use `resampling.start` and `resampling.period`; temporal transforms use `origin` and `step`. | Start 50 ms, period 100 ms: 50, 150, 250 ms, etc. |
 | Linear interpolation | Estimate along the straight line between two known values. | 0 V at 0 seconds and 10 V at 2 seconds gives 5 V at 1 second. |
 | Continuous/state quantity | A continuous quantity has meaningful intermediate values; a state represents a category. | Voltage can be interpolated; gears 1 and 2 do not imply a gear 1.5. |
 | Nearest neighbor | Choose the actual record closest to the requested time. | Equidistant records at 0 and 2 seconds select the earlier frame at 0. |

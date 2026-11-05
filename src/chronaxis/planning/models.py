@@ -9,7 +9,7 @@
 """
 
 # 冻结数据类及明确元数据映射接口。
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from collections.abc import Mapping
 # 核心模型提供信号契约、静态表达式、时钟和内存来源声明。
 from ..core.binding import SignalDefinition
@@ -242,6 +242,9 @@ class CalculationPlan:
     partial_policy: str  # report或strict。
     minimum_coverage: int | float  # 0—1质量判断阈值，不补未知。
     method: str | None  # 仅integral为zoh。
+    count_target: str | None = None  # v4对象计数显式引用的规则或窗口名。
+    ddof: int | None = field(default=None, kw_only=True)  # 样本/时间方差和标准差的分母选择。
+    q: int | float | None = field(default=None, kw_only=True)  # 仅sample_quantile显式指定概率。
 
 
 @dataclass(frozen=True)

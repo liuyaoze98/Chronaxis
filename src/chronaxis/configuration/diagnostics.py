@@ -67,6 +67,15 @@ def locate_error(error,document):
 
     不保存document、原字典或位置表；只复制源码名、单一位置、对象名和短值。
     """
+    # 集合的每项分别通过导入来源表定位，不把首项位置套到整份报告。
+    if getattr(error, '_diagnostics', None) is not None:
+        for item in error.diagnostics:
+            locate_error(item, document)
+        first = error.diagnostics[0]
+        for name in ('path','source','location','object_name','value_preview','hint'):
+            setattr(error, name, getattr(first, name))
+        error.refresh_text()
+        return error
     # 导入器可能已经把异常定位到另一个文件；外层不得用主文件覆盖真实来源。
     if error.source is not None:return error
     parts=field_path_parts(error.path)

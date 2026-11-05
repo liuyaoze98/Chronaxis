@@ -11,7 +11,7 @@
 
 从单独导出的清洁源码树构建发行包。内部开发仓库包含历史资料，不直接推送整个开发历史；导出不删除或重写原仓库。
 
-具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev1](release-notes-0.1.0.dev1.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
+具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev2](release-notes-0.1.0.dev2.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
 
 ## 发布前检查
 

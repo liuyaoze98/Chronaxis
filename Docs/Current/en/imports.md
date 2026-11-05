@@ -17,9 +17,10 @@ examples/
   data/can/teaching.dbc
 ```
 
-Open [the analysis configuration](../examples/analysis-imports.yaml) and [shared definitions](../examples/shared/definitions.yaml). Run these commands from the repository root, using new output paths:
+Open [the analysis configuration](../examples/analysis-imports.yaml) and [shared definitions](../examples/shared/definitions.yaml). Run these commands from the repository root. The resolved configuration file must be new; the analysis result directory can be reused:
 
 ```powershell
+New-Item -ItemType Directory -Force work | Out-Null
 python -m chronaxis validate Docs/Current/examples/analysis-imports.yaml
 python -m chronaxis explain Docs/Current/examples/analysis-imports.yaml
 python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
@@ -39,7 +40,7 @@ python Docs/Current/examples/imports_example.py
 Add this root field to the analysis configuration:
 
 ```yaml
-imports: [shared/definitions.yaml]
+imports: [shared/definitions.yaml]    # Reusable definition files to load before this plan
 ```
 
 `imports` is an optional list of explicit local paths; an empty list means no imports. Supported suffixes are `.json`, `.yaml`, and `.yml`, matched without case sensitivity. JSON and YAML files can be mixed. Paths can be absolute or relative to the file containing `imports`. URLs, globs, environment substitution, and directory scanning are not supported here.
@@ -47,19 +48,19 @@ imports: [shared/definitions.yaml]
 The shared file can contain:
 
 ```yaml
-sources:
-  - name: bus
-    paths: ../data/can/quickstart.asc
-    dbc_by_channel:
-      '1': ../data/can/teaching.dbc
-signals:
-  - name: power
-    field:
-      frame_id: '0x100'
-      signal: Power
-derived:
-  double_power:
-    expr: power * 2
+sources:                                 # Input sources used by this analysis
+  - name: bus                            # Name used to identify and reference this object
+    paths: ../data/can/quickstart.asc    # File, continuous file list or directory; relative to this configuration
+    dbc_by_channel:                      # DBC files indexed by user-facing CAN channel
+      '1': ../data/can/teaching.dbc      # DBC for channel 1; channel keys are strings
+signals:                                 # Signals available to expressions
+  - name: power                          # Name used to identify and reference this object
+    field:                               # Locate the original input field
+      frame_id: '0x100'                  # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Power                      # Exact signal name defined in the DBC
+derived:                                 # Named formulas that can be referenced by other expressions
+  double_power:                          # Name of this derived expression
+    expr: power * 2                      # Formula using the declared signal or derived names
 ```
 
 Shared sources and signals require explicit names so they can be referenced and overridden. With a single source, a signal's `source` can be inferred. In this example, ASC uses relative seconds, and signal type and unit come from the DBC.
@@ -79,11 +80,11 @@ An error points to the second definition and identifies the first. To change a s
 For example, a DBC period of 1 second gives the signal a default validity of 3 seconds. To use 1 second in this analysis, add:
 
 ```yaml
-imports: [shared/definitions.yaml]
-overrides:
-  signals:
-    power:
-      valid_for: 1s
+imports: [shared/definitions.yaml]    # Reusable definition files to load before this plan
+overrides:                            # Explicit replacements for imported definitions
+  signals:                            # Signals available to expressions
+    power:                            # Power value or named power signal settings in this example
+      valid_for: 1s                   # Maximum time for retaining the latest valid reading
 ```
 
 The nested keys identify existing definitions by name; this is a mapping, not a list.
@@ -131,7 +132,7 @@ The default report lists definition origins. `--fields` lists explicit fields th
 
 `config convert` changes the file format only. It preserves imports and path text, so a relative-path output must stay in the same directory as the input.
 
-An INI mapping can use imports inside its `analysis` block when loaded through `load_legacy_ini`. The bytes-based `import_legacy_ini` entry point does not perform implicit file I/O. A batch root has no `imports` field, although each child analysis can use imports; batch origin reporting describes batch paths rather than expanding child analyses.
+A batch root has no `imports` field, although each child analysis can use imports; batch origin reporting describes batch paths rather than expanding child analyses.
 
 Use file-based `load_analysis_plan` for imports. `AnalysisPlan.from_dict` expects an already expanded dictionary and rejects unresolved imports. The resulting plan does not retain another full copy of the raw configuration and its locations.
 

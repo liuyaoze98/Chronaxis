@@ -31,20 +31,20 @@ Chronaxis 希望把日志读取、条件筛选和指标计算整理成可复用�
 
 ## 安装与运行环境
 
-当前版本为 **0.1.0.dev1**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，升级说明见[版本规则](Docs/Release/versioning.md)。
+当前版本为 **0.1.0.dev2**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev2.md)。
 
 从 PyPI 安装：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev1"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
 从源码安装时，在包含 `pyproject.toml` 的仓库根目录执行 `python -m pip install .`。若取得的是发行 wheel，将上面的安装命令替换为：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
 ```
 
 安装时会自动安装 CAN 读取、DBC 解码等所需依赖。离线安装请提前准备依赖包，具体方法见[安装说明](Docs/Current/installation.md)。
@@ -68,9 +68,9 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m chronaxis run Docs/Current/examples/conditional-energy.yaml --output result-cli
 ```
 
-`result-cli` 必须是新目录。命令行中的路径相对当前工作目录；配置内部的数据路径相对配置文件所在目录。
+`result-cli` 可以重复使用，每次文件名自动增加时间后缀。命令行中的路径相对当前工作目录；配置内部的数据路径相对配置文件所在目录。
 
-本例实际运行得到一个合格事件，`result-cli/事件结果.csv` 中的关键结果为：
+本例实际运行得到一个合格事件，`result-cli/事件结果_<timestamp>.csv` 中的关键结果为：
 
 | 开始时间（s） | 结束时间（s） | energy_kwh（kWh） | energy_kwh：状态 |
 |---|---|---|---|
@@ -82,7 +82,7 @@ py -3.12 -m venv .venv
 
 ## 快速开始：调用 Python API
 
-下面用同一份配置执行同一个任务。将代码保存为仓库根目录中的 `example_energy.py`，使用上述虚拟环境运行；`result-python` 同样必须是新目录。
+下面用同一份配置执行同一个任务。将代码保存为仓库根目录中的 `example_energy.py`，使用上述虚拟环境运行；`result-python` 同样可以重复使用。
 
 ```python
 from contextlib import closing

@@ -45,7 +45,7 @@ def configuration(blf, dbc, backend, batch_rows, tables):
     参数: blf/dbc为本例路径，backend/batch_rows/tables为显式选项。
     返回: 可交load_analysis_plan的JSON字典。异常: 本函数无输入I/O；配置错误由公开校验拒绝。
     """
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='message_energy', entity='synthetic_device', session='session',
             domain=dict(start='0s', end='4s')),
         sources=[dict(name='bus', source_type='can_blf', path=str(blf),

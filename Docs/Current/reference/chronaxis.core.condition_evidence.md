@@ -1,4 +1,4 @@
-# chronaxis.core.condition_evidence
+# `chronaxis.core.condition_evidence`
 
 整理事件检测器需要的条件结果。对同一个时刻，分别保存更新前、更新后以及该时刻本身的真假状态，并标明是否收到真实更新、是否结束读取。这样可以区分“条件变假”“数据失效”和“文件读完”。输出是ConditionTick序列；本模块不重新计算表达式。
 
@@ -51,7 +51,7 @@ Truth.TRUE、Truth.FALSE或Truth.UNKNOWN。
 
 无主动异常；调用者必须先完成带有明确类型的结果校验。
 
-源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-condition_ticks_reference"></a>
 ## `condition_ticks_reference`
@@ -88,7 +88,7 @@ TypeError为容器、原生元素、模型或非BOOL；ValueError为长度、回
 
 只创建当前有限输入的输出模型，不修改任何输入；申请预算由调用者负责。
 
-源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-condition_ticks_numpy"></a>
 ## `condition_ticks_numpy`
@@ -126,4 +126,4 @@ TypeError为数组布局、模型或非BOOL；ValueError为shape、非递增时�
 
 临时状态/quality/因果/诊断列均为(N,)，不修改借用的输入；预算须由调用者先申请。
 
-源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -14,7 +14,7 @@ from dataclasses import FrozenInstanceError, replace
 # 导入实际core入口同时覆盖BUG-M1-005的错误导入回归。
 from chronaxis.core import (MemoryRow, SessionSpec, SignalBindings, SignalDefinition, SignalDType,
                             SourceSpec, SynchronizationEvidence, TimebaseSpec, TimeType)
-from chronaxis.core.units import UNIT_TABLE
+from chronaxis.core.unit_registry import ATOMIC_UNITS
 
 
 def _session(**changes) -> SessionSpec:
@@ -171,7 +171,7 @@ class BindingTests(unittest.TestCase):
         # 单位表自身不可原地修改。
         with self.assertRaises(TypeError):
             # 防止缓存已验证关系后来发生变化。
-            UNIT_TABLE["A"] = ("wrong", 1)
+            ATOMIC_UNITS["A"] = ("wrong", 1)
 
     def test_unknown_units_and_metadata_are_unverified(self):
         """未知单位保留显式转换，版本声明不冒充语义契约验证。

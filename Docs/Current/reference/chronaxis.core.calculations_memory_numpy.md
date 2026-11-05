@@ -1,4 +1,4 @@
-# chronaxis.core.calculations_memory_numpy
+# `chronaxis.core.calculations_memory_numpy`
 
 把已有内存行的表达式与三值条件接入NumPy指标计算。
 
@@ -33,6 +33,7 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .enum_codes import memory_histories, aligned_column
 from .expression_numpy import evaluate_numpy
 from .calculations import CalculationSeries
 from .calculations_numpy import compute_numpy, select_numpy
@@ -44,6 +45,7 @@ from .numeric_numpy import NumericArray
 from .state import common_timeline
 from .state_numpy import align_numpy, build_signal_array
 from .types import QualityFlag as Q
+from .where_updates import contains_where, numpy_updates
 ```
 
 </details>
@@ -79,7 +81,7 @@ CalculationSeries。所有列使用形状(N,)的共同纳秒轴，真实更新�
 独立归一化各依赖列，加入域内窗口边界，对齐后整列计算数值与条件。
     输出模型复制并冻结本次结果，保留完整历史，不广播或额外读取旧链。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:44`](../../../src/chronaxis/core/calculations_memory_numpy.py#L44)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:46`](../../../src/chronaxis/core/calculations_memory_numpy.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-select_memory_numpy"></a>
 ## `select_memory_numpy`
@@ -110,7 +112,7 @@ SelectionRow迭代器；值、标签与未知诊断完整保留。
 
 完整输入/中间数组占用内存，输出不攒列表，不改旧I/O或原输入。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:106`](../../../src/chronaxis/core/calculations_memory_numpy.py#L106)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:113`](../../../src/chronaxis/core/calculations_memory_numpy.py#L113)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-compute_memory_numpy"></a>
 ## `compute_memory_numpy`
@@ -118,7 +120,7 @@ SelectionRow迭代器；值、标签与未知诊断完整保留。
 从已有内存行执行数组表达式及指标计算，返回可追溯结果。
 
 ```python
-compute_memory_numpy(compiled, spec, *, condition=None)
+compute_memory_numpy(compiled, spec, *, condition=None, budget=None)
 ```
 
 ### 参数
@@ -128,6 +130,7 @@ compute_memory_numpy(compiled, spec, *, condition=None)
 |`compiled`|CalculationDefinition|是|无|位置或关键字。当前表达式；spec为数值统计或BOOL duration的CalculationDefinition。|
 |`spec`|CalculationDefinition|是|无|位置或关键字。spec为数值统计或BOOL duration的CalculationDefinition。     condition: 可选同绑定身份的BOOL表达式。|
 |`condition`|CompiledExpression &#124; None|否|None|仅关键字。可选同绑定身份的BOOL表达式。|
+|`budget`|ResourceBudget &#124; None|否|None|仅关键字。可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。|
 
 ### 返回说明
 
@@ -142,4 +145,4 @@ CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆�
 先用数组转换、对齐和表达式生成CalculationSeries，再调用独立数组指标内核。
     只创建本次结果，不修改原行，也不调用参考数值计算。
 
-源码：[`src/chronaxis/core/calculations_memory_numpy.py:119`](../../../src/chronaxis/core/calculations_memory_numpy.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_memory_numpy.py:126`](../../../src/chronaxis/core/calculations_memory_numpy.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

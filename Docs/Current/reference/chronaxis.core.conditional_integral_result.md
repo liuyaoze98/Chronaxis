@@ -1,4 +1,4 @@
-# chronaxis.core.conditional_integral_result
+# `chronaxis.core.conditional_integral_result`
 
 把已经算出的条件积分、有效时长和缺失区间整理成CalculationResult。只有完整观察到请求范围、且条件始终为假时，才能返回“没有选中数据”的零值。数据不足时按report或strict处理。数值和统计信息必须来自同一次计算，本模块不会再次积分或换算单位。
 
@@ -56,4 +56,4 @@ TypeError/ValueError为类型、单位或样本/面积项数矛盾；分配错�
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/core/conditional_integral_result.py:16`](../../../src/chronaxis/core/conditional_integral_result.py#L16)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/conditional_integral_result.py:16`](../../../src/chronaxis/core/conditional_integral_result.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

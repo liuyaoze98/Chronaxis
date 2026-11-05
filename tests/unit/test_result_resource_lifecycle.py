@@ -272,7 +272,7 @@ class ResultResourceLifecycleTests(unittest.TestCase):
                 with self.assertRaises(AnalysisError) as caught:
                     result.write(destination)
             self.assertIs(caught.exception.__cause__, original)
-            self.assertFalse(destination.exists())
+            self.assertFalse(tuple(destination.iterdir()) if destination.exists() else ())
             self.assertGreaterEqual(readers_released, 4)
             self.assertTrue(handles)
             self.assertTrue(all(handle.closed for handle in handles))

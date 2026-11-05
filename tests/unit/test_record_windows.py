@@ -1,4 +1,6 @@
 """从公开AnalysisRunner核周期选窗、跨批合并和片段指标；预期均由原记录手算。"""
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 from itertools import product
@@ -83,15 +85,15 @@ class RawRecordWindowTests(unittest.TestCase):
                 self.assertAlmostEqual(calculation.value,680.)
                 output=self.root/uuid4().hex
                 result.table_format = 'csv'  # 本项继续验收原交换字段及schema。
-                result.write(output)
-                manifest=json.loads((output/'run_manifest.json').read_text(encoding='utf-8'))
+                published=result.write(output)
+                manifest=json.loads((published_file(published,'run_manifest.json')).read_text(encoding='utf-8'))
                 self.assertEqual(manifest['row_schema_versions']['segments'],11)
-                with (output/'segments.csv').open(encoding='utf-8-sig',newline='') as stream:
+                with (published_file(published,'segments.csv')).open(encoding='utf-8-sig',newline='') as stream:
                     row,=tuple(csv.DictReader(stream))
                 self.assertNotIn('row_json',row)
                 self.assertNotIn('requested_start_ns',row)
                 self.assertEqual(len(json.loads(row['parent_event_ids'])),1)
-                self.assertFalse((output/'quality.jsonl').exists())
+                self.assertFalse(any(p.name.startswith('quality_') for p in published.output_files))
 
     def test_cancel_after_segment_cleans_input_indexes_and_finished_events(self):
         """最终事件表已就绪但片段发布取消时，整个任务仍失败清理。"""
@@ -123,7 +125,7 @@ class MergedRecordWindowTests(unittest.TestCase):
             window=dict(name='merged',rule='alarm',anchor='activity',pre='0s',post='0.1s',merge=merge)
             if merge=='exit_delay':
                 window.update(post='0s',exit_delay='0.1s')
-            raw=dict(config_version=3,
+            raw=dict(config_version=4,
                 dataset=dict(name='data',entity='device',session='session',domain=dict(start='0s',end='1s')),
                 sources=[dict(name='input',source_type='memory',time=dict(time_type='relative',unit='s',origin='clock'),
                     rows=[dict(time=t,values=dict(v=v)) for t,v in zip(('0s','0.12s','0.3s','0.45s','0.7s','0.9s'),(1,0,1,0,1,0))])],

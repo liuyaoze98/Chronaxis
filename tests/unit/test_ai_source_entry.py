@@ -41,12 +41,13 @@ class AISourceEntryTests(unittest.TestCase):
                 target = link.split("#", 1)[0]
                 if target and not target.startswith(("https://", "http://")):
                     self.assertTrue((path.parent / target).is_file(), (path, link))
-        tasks = json.loads((GUIDE / "tasks.json").read_bytes())["tasks"]
-        for row in tasks:
-            path = (GUIDE / row["example"]).resolve()
-            self.assertTrue(path.is_relative_to(ROOT / "Docs/Current/examples"), row)
-            self.assertTrue(path.is_file(), row)
-            self.assertIn(row["example"], row["verify"])
+        for directory in (GUIDE, GUIDE / "en"):
+            tasks = json.loads((directory / "tasks.json").read_bytes())["tasks"]
+            for row in tasks:
+                path = (directory / row["example"]).resolve()
+                self.assertTrue(path.is_relative_to(ROOT / "Docs/Current/examples"), row)
+                self.assertTrue(path.is_file(), row)
+                self.assertIn(row["example"], row["verify"])
 
     def test_task_and_api_queries_return_current_layout_paths(self):
         """核对查询命中内容和可打开路径。参数: 无。返回: None。异常: 路径或任务不一致。"""
@@ -80,6 +81,17 @@ class AISourceEntryTests(unittest.TestCase):
                 for name, expected in row["constraints"].items():
                     self.assertEqual(node[name], expected)
 
+    def test_enum_code_constraint_indexes_direct_and_grouped_signals(self):
+        """按分析规范本身检索原码触发条件。参数：无。返回：无。异常：遗漏路径或错误标注触发字段。"""
+        dependency = "/dependentSchemas/code_dtype"
+        for language in ("zh", "en"):
+            hits = self.bundle_query("field", "dtype", "analysis", "conditions", language)
+            selected = [row for row in hits if row["source"].endswith(dependency + "/properties/dtype")]
+            self.assertCountEqual([row["path"] for row in selected], ["signals.dtype", "signals.signals.dtype"])
+            for row in selected:
+                self.assertEqual(row["constraints"]["const"], "enum")
+                self.assertIn(row["source"].rsplit("/properties/", 1)[0], row["conditions"])
+
     def test_bundle_has_no_source_directory_dependency(self):
         """完整独立ZIP不留下仓库路径。参数: 无。返回: None。异常: 逃逸或缺文件。"""
         for name in ("README.md", "workflow.md", "semantics.md", "tasks.json"):
@@ -93,7 +105,12 @@ class AISourceEntryTests(unittest.TestCase):
             for path in self.bundle.rglob("*"):
                 if path.is_file():
                     stream.write(path, path.relative_to(self.bundle).as_posix())
-        self.assertEqual(check(archive)["tasks"], 15)
+        published = check(archive)
+        source_ids = [item["id"] for item in json.loads((GUIDE / "tasks.json").read_bytes())["tasks"]]
+        self.assertTrue({"HOST_EXTENSION", "TEMPORAL_CURRENT", "POWER_STATISTICS", "CALIBRATION"} <= set(source_ids))
+        for tasks in (self.bundle / "tasks.json", self.bundle / "en/tasks.json"):
+            self.assertEqual([item["id"] for item in json.loads(tasks.read_bytes())["tasks"]], source_ids)
+        self.assertEqual((published["tasks"], published["english_tasks"]), (len(source_ids), len(source_ids)))
 
 
 if __name__ == "__main__":

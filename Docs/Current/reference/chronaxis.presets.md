@@ -1,4 +1,4 @@
-# chronaxis.presets
+# `chronaxis.presets`
 
 把四种预设展开为普通规则、窗口、指标或请求响应配对。检查角色对应的信号类型、单位和必要语义，不读取输入；全部参数见[预设](../presets.md)。
 
@@ -57,7 +57,7 @@ _parameters(spec, signals=())
 
 PlanValidationError为缺项、未知参数、bool伪数值、非有限或错误范围。
 
-源码：[`src/chronaxis/presets.py:23`](../../../src/chronaxis/presets.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:23`](../../../src/chronaxis/presets.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_mismatches"></a>
 ## `_mismatches`
@@ -84,7 +84,7 @@ tuple[str, ...]，空表示字段契约通过，不证明真实数据正确。
 
 无主动异常；输入类型由公共解析入口证明。
 
-源码：[`src/chronaxis/presets.py:78`](../../../src/chronaxis/presets.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:78`](../../../src/chronaxis/presets.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-resolve_preset_roles"></a>
 ## `resolve_preset_roles`
@@ -120,7 +120,7 @@ PlanValidationError为类型、重复别名、未知角色、缺项、候选歧�
 
 返回类型：tuple[[RoleBinding](chronaxis.planning.preset_models.md#api-RoleBinding), ...]。
 
-源码：[`src/chronaxis/presets.py:104`](../../../src/chronaxis/presets.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:104`](../../../src/chronaxis/presets.py#L104)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-build_preset"></a>
 ## `build_preset`
@@ -155,7 +155,7 @@ PlanValidationError为参数/角色契约、模式编码范围及生成ID与信�
 
 返回类型：[PlanFragment](chronaxis.planning.preset_models.md#api-PlanFragment)。
 
-源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-expand_presets"></a>
 ## `expand_presets`
@@ -188,4 +188,4 @@ PlanValidationError为预设/用户结构或生成ID与用户/其他预设重名
 
 仅修改传入的局部derived/rules/windows/calculations/sequences；不修改raw_config快照或来源。
 
-源码：[`src/chronaxis/presets.py:219`](../../../src/chronaxis/presets.py#L219)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/presets.py:219`](../../../src/chronaxis/presets.py#L219)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

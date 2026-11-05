@@ -4,8 +4,8 @@ Import this object from `chronaxis`. This page covers directly public members an
 
 ## Members
 
-- [PlanFragment](#api-PlanFragment)
-- [to_dict](#api-PlanFragment-to_dict)
+- [`PlanFragment`](#api-PlanFragment)
+- [`to_dict`](#api-PlanFragment-to_dict)
 
 <a id="api-PlanFragment"></a>
 ## `PlanFragment`
@@ -18,13 +18,13 @@ PlanFragment(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = 
 
 The linked lower-level types are Chinese implementation references.
 
-| Field | Type | Required / default | Meaning |
-|---|---|---|---|
-| `derived` | tuple[[DerivedDefinition](../../reference/chronaxis.core.expression.md#api-DerivedDefinition), ...] | Optional; () | Generated derived definitions; empty means none. |
-| `rules` | tuple[[PresetRule](../../reference/chronaxis.planning.preset_models.md#api-PresetRule), ...] | Optional; () | Generated detection rules; empty means none. |
-| `windows` | tuple[[WindowSpec](../../reference/chronaxis.core.windows.md#api-WindowSpec), ...] | Optional; () | Generated event windows; empty means none. |
-| `calculations` | tuple[[PresetCalculation](../../reference/chronaxis.planning.preset_models.md#api-PresetCalculation), ...] | Optional; () | Generated calculation definitions; empty means none. |
-| `sequences` | tuple[[SequencePlan](../../reference/chronaxis.planning.sequences.md#api-SequencePlan), ...] | Optional; () | Generated pairings. Nonempty values become a sequences list in to_dict(); no pairings means empty. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`derived`|tuple[[DerivedDefinition](../../reference/chronaxis.core.expression.md#api-DerivedDefinition), ...]|No|()|Generated derived definitions; empty means none.|
+|`rules`|tuple[[PresetRule](../../reference/chronaxis.planning.preset_models.md#api-PresetRule), ...]|No|()|Generated detection rules; empty means none.|
+|`windows`|tuple[[WindowSpec](../../reference/chronaxis.core.windows.md#api-WindowSpec), ...]|No|()|Generated event windows; empty means none.|
+|`calculations`|tuple[[PresetCalculation](../../reference/chronaxis.planning.preset_models.md#api-PresetCalculation), ...]|No|()|Generated calculation definitions; empty means none.|
+|`sequences`|tuple[[SequencePlan](../../reference/chronaxis.planning.sequences.md#api-SequencePlan), ...]|No|()|Generated pairings. Nonempty values become a sequences list in to_dict(); no pairings means empty.|
 
 <a id="api-PlanFragment-to_dict"></a>
 ### `PlanFragment.to_dict`
@@ -39,5 +39,5 @@ No explicit parameters; reads the immutable generated declarations. Returns a di
 
 ## Source locations
 
-- [`src/chronaxis/planning/preset_models.py:154`](../../../../src/chronaxis/planning/preset_models.py#L154) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
-- [`src/chronaxis/planning/preset_models.py:167`](../../../../src/chronaxis/planning/preset_models.py#L167) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/planning/preset_models.py:154`](../../../../src/chronaxis/planning/preset_models.py#L154) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/planning/preset_models.py:167`](../../../../src/chronaxis/planning/preset_models.py#L167) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

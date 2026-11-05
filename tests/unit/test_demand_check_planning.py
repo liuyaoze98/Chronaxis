@@ -273,7 +273,7 @@ class DemandCheckPlanningTests(unittest.TestCase):
         from pathlib import Path
         from tempfile import TemporaryDirectory
         from uuid import uuid4
-        config=dict(config_version=3,dataset=dict(name='observed'),
+        config=dict(config_version=4,dataset=dict(name='observed'),
             sources=[dict(name='meter',source_type='memory',rows=[
                 dict(time=str(t)+'s',values=dict(power=v)) for t,v in ((0,3),(1,1),(2,3))])],
             signals=[dict(name='power',source='meter',field='power',dtype='float64',unit='W',valid_for='3s')],

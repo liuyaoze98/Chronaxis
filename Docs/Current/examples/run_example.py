@@ -37,8 +37,11 @@ def main():
     for operation in ('validate','explain'):
         assert command(operation,plan).strip()
         json.loads(command(operation,plan,'--format','json'))
-    command('run',plan,'--output',output/'published')
-    with (output/'published/会话结果.csv').open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
+    summary=json.loads(command('run',plan,'--output',output/'published'))
+    manifest_path=Path(summary['manifest'])
+    manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
+    table=next(manifest_path.parent/item['name'] for item in manifest['outputs'] if item['name'].startswith('会话结果_'))
+    with table.open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
     assert len(rows)==1 and float(rows[0]['energy（J）'])==38
     report=dict(device_label=label,status='passed',api_runs=4,cli_commands=5,energy_j=38,sample_mean_w=6,time_weighted_mean_w=38/6)
     (output/'verification.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')

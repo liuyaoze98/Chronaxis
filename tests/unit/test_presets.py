@@ -221,7 +221,7 @@ class PresetIntegrationTests(unittest.TestCase):
                     'unit': item.unit, 'valid_for': '10s'} for item in definitions()]
         signals[1].update(sign_convention='positive_is_charge', measurement_location='pack_terminal')
         signals[2]['measurement_location'] = 'pack_terminal'
-        return current_fixture({'config_version': 3,
+        return current_fixture({'config_version': 4,
                 'dataset': {'name': 'demo', 'entity': 'synthetic', 'session': 'session', 'domain': {'start': '0s', 'end': '4s'}},
                 'sources': [{'name': 'sensor', 'source_type': 'memory', 'time': {'time_type': 'relative', 'unit': 's', 'origin': 'synthetic'}, 'rows': rows}],
                 'signals': signals, 'execution': {'partial_policy': 'strict'},

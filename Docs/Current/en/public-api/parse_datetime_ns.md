@@ -11,10 +11,10 @@ Convert a complete ISO date/time to UTC integer nanoseconds, preserving sub-micr
 parse_datetime_ns(text: str, source_timezone: tzinfo | None=None) -> TimeConversion
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `text` | str | Required | Positional or keyword. `YYYY-MM-DDTHH:MM:SS[.fraction][Z/±HH:MM]`; a space separator is also allowed. |
-| `source_timezone` | tzinfo &#124; None | Optional; None | Positional or keyword. A tzinfo instance for text without an offset, such as `timezone.utc` or `timezone(timedelta(hours=8))` from datetime. YAML timezone strings are not accepted. An explicit offset in the text takes precedence. Text without an offset and a None timezone is an error. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`text`|str|Yes|No default|Positional or keyword. `YYYY-MM-DDTHH:MM:SS[.fraction][Z/±HH:MM]`; a space separator is also allowed.|
+|`source_timezone`|tzinfo &#124; None|No|None|Positional or keyword. A tzinfo instance for text without an offset, such as `timezone.utc` or `timezone(timedelta(hours=8))` from datetime. YAML timezone strings are not accepted. An explicit offset in the text takes precedence. Text without an offset and a None timezone is an error.|
 
 Returns [TimeConversion](TimeConversion.md#api-TimeConversion) containing UTC epoch nanoseconds, quantization information, and the timezone actually used, never an assumed machine default.
 
@@ -24,4 +24,4 @@ No side effects: it does not consult the system timezone, load IANA timezone nam
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:236`](../../../../src/chronaxis/timebase/conversion.py#L236) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/timebase/conversion.py:236`](../../../../src/chronaxis/timebase/conversion.py#L236) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

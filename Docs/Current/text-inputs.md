@@ -27,7 +27,7 @@ chronaxis run input-raw-csv-minimal.yaml --output raw-csv-result
 chronaxis run input-raw-csv-mapping.yaml --output raw-mapping-result
 ```
 
-三个配置都包含来源、信号和计算的全部定义，并逐字段注释；输出目录须尚不存在。下文片段用于替换真实输入格式，不能代替这些完整任务。
+三个配置都包含来源、信号和计算的全部定义，并逐字段注释；结果目录可重复使用，文件名自动增加时间后缀。下文片段用于替换真实输入格式，不能代替这些完整任务。
 
 ## 完整来源字段
 

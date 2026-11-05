@@ -23,7 +23,7 @@
 下面使用YAML：没有缩进的键位于根级，缩进两格表示属于上一层，`-`表示列表中的一项。例如`name`缩进在`dataset`下，字段参考把它写成`dataset.name`；不要把这个点号路径直接复制成配置键。第一次编辑请先看[字段路径怎样写成配置](configuration-language.md#field-paths)。
 
 ```yaml
-config_version: 3                     # 声明分析文件采用的字段结构版本；当前填写整数3
+config_version: 4                     # 当前分析配置版本
 dataset:                              # 设置本次分析名称及可选的对象、会话和时间范围
   name: energy                        # 命名本次分析数据集；名称写入结果身份字段
 sources:                              # 列出输入来源；每项规定数据位置、格式和时间解释方式
@@ -56,11 +56,11 @@ chronaxis validate analysis.yaml
 chronaxis run analysis.yaml --output new-result
 ```
 
-输出目录必须尚不存在。validate检查配置并在需要时读取DBC定义；run才读业务日志、计算并发布结果。虚拟环境未激活时，可使用安装页中的`python -m chronaxis`入口。
+结果目录可以重复使用，每次输出增加时间后缀。validate检查配置并在需要时读取DBC定义；run才读业务日志、计算并发布结果。虚拟环境未激活时，可使用安装页中的`python -m chronaxis`入口。
 
 ## 核对结果
 
-打开new-result/会话结果.csv。也可以直接看随册保存的[本例实际运行结果与逐列解释](example-results.md#analysis-yaml)，不必先安装程序才能知道输出长什么样。三项结果应为：
+从本轮清单找到 `new-result/会话结果_<timestamp>.csv`。也可以直接看随册保存的[本例实际运行结果与逐列解释](example-results.md#analysis-yaml)，不必先安装程序才能知道输出长什么样。三项结果应为：
 
 |计算名|手工计算|结果|
 |---|---|---|

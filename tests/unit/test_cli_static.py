@@ -135,7 +135,7 @@ def static_configuration(backend='numpy', *, can=False):
     source = {'name': 'table', 'source_type': 'signal_csv', 'path': 'absent/table.csv', 'time_column': 't',
               'time': {'time_type': 'relative', 'unit': 's', 'origin': 'synthetic_common'}}
     signals = [{'name': name, 'source': 'table', 'field': raw, 'dtype': 'float64',
-                'unit': unit, 'valid_for': '3s'} for name, raw, unit in (
+                'input_unit': unit, 'unit': unit, 'valid_for': '3s'} for name, raw, unit in (
                     ('voltage', 'Voltage', 'V'), ('current', 'Current', 'A'))]
     if can:
         source = {'name': 'table', 'source_type': 'can_blf', 'path': 'absent/input.blf',
@@ -144,7 +144,7 @@ def static_configuration(backend='numpy', *, can=False):
         for signal in signals:
             signal['field'] = {'channel': 1,  'signal': signal['field'],
                                'frame_id': 256, 'is_extended': False, 'is_fd': False}
-    return public_configuration({'config_version': 3,
+    return public_configuration({'config_version': 4,
         'dataset': {'name': 'static_cli', 'entity': 'synthetic', 'session': 'trial',
                     'domain': {'start': '0s', 'end': '10s'}},
         'sources': [source], 'signals': signals, 'derived': {'power': {'expr': 'voltage * current', 'unit': 'W'}},
@@ -339,8 +339,8 @@ class StaticCLITests(unittest.TestCase):
                 self.assertEqual(completed.returncode, 1, completed.stderr)
                 payload=json.loads(completed.stdout)
                 self.assertFalse(payload['valid'])
-                self.assertEqual(payload['error']['source'],str(missing))
-                self.assertEqual(payload['error']['code'],'load_error')
+                self.assertEqual(payload['errors'][0]['source'],str(missing))
+                self.assertEqual(payload['errors'][0]['code'],'load_error')
                 self.assertEqual(completed.stderr,'')
                 self.assertNotIn('Traceback', completed.stderr)
 
@@ -361,7 +361,7 @@ class StaticCLITests(unittest.TestCase):
                     self.assertEqual(completed.returncode, 2, completed.stderr)
                     payload=json.loads(completed.stdout)
                     self.assertFalse(payload['valid'])
-                    self.assertIn(path,payload['error']['source']+' '+payload['error']['path'])
+                    self.assertIn(path,payload['errors'][0]['source']+' '+payload['errors'][0]['path'])
                     self.assertEqual(completed.stderr,'')
                     self.assertNotIn('Traceback', completed.stderr)
                     self.assertEqual(self.config.read_bytes(), content)
@@ -379,7 +379,7 @@ class StaticCLITests(unittest.TestCase):
                 self.assertTrue(completed.stderr.strip())
                 self.assertNotIn('Traceback', completed.stderr)
                 self.assertEqual(json.loads(audit.read_text(encoding='utf-8')),
-                                 {'hit': True, 'fd_closed': True, 'config_version': 3})
+                                 {'hit': True, 'fd_closed': True, 'config_version': 4})
                 self.assertEqual(self.config.read_bytes(), encoded)
                 self.assertEqual(set(self.work.iterdir()), {self.inputs, self.logs})
 

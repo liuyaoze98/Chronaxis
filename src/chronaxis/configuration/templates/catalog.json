@@ -177,27 +177,6 @@
       ]
     },
     {
-      "name": "ini-mapping",
-      "title": "旧INI导入与唯一信号自动映射",
-      "config_type": "mapping",
-      "entrypoint": "mapping.yaml",
-      "expected": "以sclicer_single导入source.ini，原文保持；Power>3的活动为[1s,6s)，窗口相同；会话积分仍38J。",
-      "files": [
-        {
-          "source": "shared/power.asc",
-          "target": "data/power.asc"
-        },
-        {
-          "source": "shared/teaching.dbc",
-          "target": "data/teaching.dbc"
-        },
-        {
-          "source": "shared/source.ini",
-          "target": "source.ini"
-        }
-      ]
-    },
-    {
       "name": "raw-can-csv",
       "title": "原始CAN CSV显式布局",
       "config_type": "analysis",

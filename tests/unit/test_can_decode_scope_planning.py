@@ -107,7 +107,7 @@ class CANDecodeScopePlanningTests(unittest.TestCase):
         old_source['dbc_by_channel'] = {'1': str(ROOT / old_source['dbc_by_channel']['1'])}
         source_identity = canonical(old_source)
         self.assertEqual(plan.sources[0].input_identity, source_identity)
-        self.assertEqual(plan.identity, sha256(canonical({'plan_version': 'config3-static-v1',
+        self.assertEqual(plan.identity, sha256(canonical({'plan_version': 'config4-static-v1',
             'config': config, 'sources': [source_identity]}).encode('utf-8')).hexdigest())
         self.assertNotIn('decode_scope', plan.raw_config['sources'][0])
         self.assertEqual(config, untouched)
@@ -123,7 +123,7 @@ class CANDecodeScopePlanningTests(unittest.TestCase):
         explicit_source['decode_scope'] = 'all'
         explicit_identity = canonical(explicit_source)
         self.assertEqual(declared.sources[0].input_identity, explicit_identity)
-        self.assertEqual(declared.identity, sha256(canonical({'plan_version': 'config3-static-v1',
+        self.assertEqual(declared.identity, sha256(canonical({'plan_version': 'config4-static-v1',
             'config': explicit, 'sources': [explicit_identity]}).encode('utf-8')).hexdigest())
         self.assertNotEqual(declared.identity, plan.identity)
 

@@ -11,9 +11,9 @@ Parse a nonnegative duration with a unit, including explicit zero.
 parse_duration(text: str) -> TimeConversion
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `text` | str | Required | Positional or keyword. Complete value with suffix, for example `500ms`, `3s`, or `0ns`. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`text`|str|Yes|No default|Positional or keyword. Complete value with suffix, for example `500ms`, `3s`, or `0ns`.|
 
 Returns [TimeConversion](TimeConversion.md#api-TimeConversion) with a nanosecond duration and the original unit-bearing text.
 
@@ -21,4 +21,4 @@ Raises `TypeError` for non-text input; `ValueError` for missing units, invalid s
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:204`](../../../../src/chronaxis/timebase/conversion.py#L204) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/timebase/conversion.py:204`](../../../../src/chronaxis/timebase/conversion.py#L204) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

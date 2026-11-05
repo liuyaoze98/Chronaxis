@@ -7,6 +7,7 @@ writer进程及python-can reader。只写work；没有DBC解码或原日志再�
 from dataclasses import replace
 import json
 from pathlib import Path
+from published_paths import published_file
 import unittest
 from unittest.mock import Mock, patch
 from uuid import uuid4
@@ -52,11 +53,11 @@ class FrameExportTests(unittest.TestCase):
                  raw(3,3,data=bytes(range(12)),is_fd=True,bitrate_switch=True,error_state_indicator=True),
                  raw(4,4,data=b'',dlc=8,is_remote_frame=True)]
         path=self.export(iter(records))
-        with ASCRead(ASCSpec(path/'frames.asc'),self.budget) as reader:
+        with ASCRead(ASCSpec(published_file(path,'frames.asc')),self.budget) as reader:
             actual=tuple(reader)
         self.assertEqual([r.time_ns for r in actual],[r.time_ns for r in records])
         self.assertEqual([r.frame for r in actual],[r.frame for r in records])
-        index=[json.loads(line) for line in (path/'frames.jsonl').read_text(encoding='utf-8').splitlines()]
+        index=[json.loads(line) for line in (published_file(path,'frames.jsonl')).read_text(encoding='utf-8').splitlines()]
         self.assertEqual([r['sequence'] for r in index],[0,1,2,3,4])
         self.assertEqual(index[1]['frame']['arbitration_id'],0x777)
         self.assertEqual(self.budget.ram_bytes,0)
@@ -67,17 +68,17 @@ class FrameExportTests(unittest.TestCase):
         import can
         records=[raw(10**9,0),raw(2*10**9,1,data=b'',identifier=0,is_error_frame=True,is_rx=False)]
         path=self.export(records,interval=Interval(0,3*10**9))
-        reader=can.ASCReader(path/'frames.asc')
+        reader=can.ASCReader(published_file(path,'frames.asc'))
         try:
             rows=list(reader)
         finally:
             reader.stop()
         self.assertEqual((len(rows),rows[0].timestamp,rows[0].data),(2,1.0,b'\x01\x02'))
         self.assertTrue(rows[1].is_error_frame)
-        index=[json.loads(line) for line in (path/'frames.jsonl').read_text(encoding='utf-8').splitlines()]
+        index=[json.loads(line) for line in (published_file(path,'frames.jsonl')).read_text(encoding='utf-8').splitlines()]
         self.assertFalse(index[1]['frame']['is_rx'])
         self.assertIn('is_rx',index[1]['format_limits'])
-        self.assertEqual(json.loads((path/'manifest.json').read_text(encoding='utf-8'))['format_limited_frames'],1)
+        self.assertEqual(json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))['format_limited_frames'],1)
 
     def test_half_open_overlapping_and_empty_ranges(self):
         """每个片段内原帧只写一次，重叠片段各自保记录。参数: 无。返回: None。异常: 断言失败。
@@ -85,7 +86,7 @@ class FrameExportTests(unittest.TestCase):
         records=[raw(t,t) for t in (0,1,2,3)]
         for start,end,expected in ((0,2,[0,1]),(1,3,[1,2]),(2,2,[]),(5,7,[])):
             path=self.export(iter(records),interval=Interval(start,end),target=f'{start}-{end}')
-            rows=[json.loads(line) for line in (path/'frames.jsonl').read_text(encoding='utf-8').splitlines()]
+            rows=[json.loads(line) for line in (published_file(path,'frames.jsonl')).read_text(encoding='utf-8').splitlines()]
             self.assertEqual([r['sequence'] for r in rows],expected)
         self.assertEqual(self.budget.ram_bytes,0)
 
@@ -96,7 +97,7 @@ class FrameExportTests(unittest.TestCase):
         base=1700000000*10**9
         source=[StoredRawFrame(i,i*10**9,raw(base+i*10**9,i,identifier=0x100+i).frame) for i in range(3)]
         path=self.export(source,format='blf',interval=Interval(0,2*10**9),reference='epoch')
-        reader=can.BLFReader(path/'frames.blf')
+        reader=can.BLFReader(published_file(path,'frames.blf'))
         try:
             rows=list(reader)
         finally:
@@ -114,7 +115,7 @@ class FrameExportTests(unittest.TestCase):
         records=[raw(base,0,data=bytes(range(12)),is_fd=True,bitrate_switch=True,is_rx=False),
                  raw(base,1,identifier=0x777)]
         path=self.export(records,format='blf',interval=Interval(base,base+1),reference='epoch')
-        reader=can.BLFReader(path/'frames.blf')
+        reader=can.BLFReader(published_file(path,'frames.blf'))
         try:
             rows=list(reader)
         finally:
@@ -123,10 +124,10 @@ class FrameExportTests(unittest.TestCase):
         self.assertTrue(rows[0].is_fd and rows[0].bitrate_switch)
         self.assertFalse(rows[0].is_rx)
         self.assertEqual(bytes(rows[0].data),bytes(range(12)))
-        manifest=json.loads((path/'manifest.json').read_text(encoding='utf-8'))
+        manifest=json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))
         self.assertGreater(manifest['max_float_conversion_error_ns'],0)
         self.assertLessEqual(abs(round(rows[0].timestamp*10**9)-base),1000)
-        index=[json.loads(line) for line in (path/'frames.jsonl').read_text(encoding='utf-8').splitlines()]
+        index=[json.loads(line) for line in (published_file(path,'frames.jsonl')).read_text(encoding='utf-8').splitlines()]
         self.assertEqual([r['output_time_ns'] for r in index],[base,base])
 
     def test_empty_blf_and_missing_date_do_not_fabricate_epoch(self):
@@ -134,7 +135,7 @@ class FrameExportTests(unittest.TestCase):
         """
         import can
         path=self.export([],format='blf',target='empty',reference='epoch')
-        reader=can.BLFReader(path/'frames.blf')
+        reader=can.BLFReader(published_file(path,'frames.blf'))
         try:
             self.assertEqual(list(reader),[])
         finally:
@@ -150,7 +151,7 @@ class FrameExportTests(unittest.TestCase):
         """明确平移只改输出时间，范围筛选仍按原分析坐标。参数: 无。返回: None。异常: 断言失败。
         """
         path=self.export([raw(-1,0),raw(0,1),raw(1,2)],interval=Interval(-1,1),offset=10)
-        with ASCRead(ASCSpec(path/'frames.asc'),self.budget) as reader:
+        with ASCRead(ASCSpec(published_file(path,'frames.asc')),self.budget) as reader:
             self.assertEqual([r.time_ns for r in reader],[9,10])
         self.assertEqual(self.budget.ram_bytes,0)
 
@@ -187,15 +188,15 @@ class FrameExportTests(unittest.TestCase):
         import can
         time=(6*3600+13*60+20)*10**9+123
         path=self.export([raw(time,0)],format='blf',interval=Interval(time,time+1),date='2023-11-15',zone=480)
-        reader=can.BLFReader(path/'frames.blf')
+        reader=can.BLFReader(published_file(path,'frames.blf'))
         try:
             rows=list(reader)
         finally:
             reader.stop()
         self.assertLessEqual(abs(rows[0].timestamp-1700000000.000000123),1e-6)
-        info=json.loads((path/'manifest.json').read_text(encoding='utf-8'))
+        info=json.loads((published_file(path,'manifest.json')).read_text(encoding='utf-8'))
         self.assertEqual((info['capture_date'],info['timezone_offset_minutes']),('2023-11-15',480))
-        packet=json.loads((path/'frames.jsonl').read_text(encoding='utf-8'))
+        packet=json.loads((published_file(path,'frames.jsonl')).read_text(encoding='utf-8'))
         self.assertEqual((packet['source_time_ns'],packet['output_time_ns']),(time,1700000000*10**9+123))
         for date,zone,reference in (('2023-02-29',0,'relative'),('2023-11-15',None,'relative'),
                 ('2023-11-15',1440,'relative'),('2023-11-15',0,'epoch')):

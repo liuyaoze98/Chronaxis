@@ -53,13 +53,13 @@ class RecordDeltaCondition:
         if self._spans:
             last=self._spans[-1]
             if last.start_ns==time_ns:
-                self._spans[-1]=DeltaSpan(time_ns,time_ns,value,cq,pq)
+                self._spans[-1]=DeltaSpan(time_ns,time_ns,value,cq,pq,right.partial,point.partial)
                 return
             self._spans[-1]=replace(last,end_ns=time_ns)
-            if last.value==value and last.quality==cq==pq:
+            if last.value==value and last.quality==cq==pq and last.partial==right.partial==point.partial:
                 return
         _reserve_owned_ram(self,2048,'_span_cost')
-        self._spans.append(DeltaSpan(time_ns,time_ns,value,cq,pq))
+        self._spans.append(DeltaSpan(time_ns,time_ns,value,cq,pq,right.partial,point.partial))
 
     def _left(self,time_ns):
         """只根据当前窗口需要的驱动记录确定左端。参数: 实际时刻。返回: 左端或不足时None。异常: 无。"""
@@ -128,7 +128,7 @@ class RecordDeltaCondition:
                 _release_owned_ram(self,2048,'_span_cost')
             _reserve_owned_ram(self,65536+4096*(len(self._spans)+1),'_work_cost')
             tail=DeltaSpan(time_ns,time_ns,point.value if point.valid else None,
-                Q.NONE if right.valid else right.quality,Q.NONE if point.valid else point.quality)
+                Q.NONE if right.valid else right.quality,Q.NONE if point.valid else point.quality,right.partial,point.partial)
             spans=tuple(self._spans)
             spans=spans if spans[-1].start_ns==time_ns else spans+(tail,)
             spec=self._spec if self._step is None else replace(self._spec,window_ns=time_ns-left)
@@ -137,6 +137,15 @@ class RecordDeltaCondition:
             if tail.point_quality!=tail.quality:
                 right_result=self._kernel(spec,spans[:-1]+(replace(tail,point_quality=tail.quality),),time_ns,self._dtype)
             self._point,self._right=self._condition(point_result),self._condition(right_result)
+            # 净变化只依赖端点数值，要求单调时中间实际观测值也参与判断。
+            history_partial=any((s.point_partial if s.start_ns==left else s.partial)
+                                for s in spans if s.start_ns<=left<s.end_ns)
+            if spec.monotonic:
+                history_partial|=any(s.point_partial for s in spans if left<s.start_ns<time_ns)
+            if self._point.valid and (history_partial or point.partial):
+                self._point=replace(self._point,partial=True)
+            if self._right.valid and (history_partial or right.partial):
+                self._right=replace(self._right,partial=True)
             if self._step is None:
                 candidates=[span.start_ns+self._spec.window_ns for span in self._spans
                             if time_ns<span.start_ns+self._spec.window_ns<(1<<63)]

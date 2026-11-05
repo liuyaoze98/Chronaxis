@@ -1,6 +1,6 @@
 """维护英文参考及译文来源清单，复用中文手册的接口和配置定义。
 
-输入为四份原始Schema、人工英文说明和已审阅的翻译文件；输出英文字段参考、
+输入为三份原始Schema、人工英文说明和已审阅的翻译文件；输出英文字段参考、
 公开API导航及来源摘要。只翻译title/description，不生成第二份运行规范。
 """
 import argparse
@@ -15,8 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 reading_text = run_path(str(ROOT / "tools/public_docs.py"))["reading_text"]
 CURRENT = ROOT / "Docs/Current"
 ENGLISH = CURRENT / "en"
-SCHEMAS = ("analysis.schema.json", "batch-v1.schema.json", "definitions.schema.json",
-           "legacy-import-v1.schema.json")
+SCHEMAS = ("analysis.schema.json", "batch-v1.schema.json", "definitions.schema.json")
 
 
 def translate_schema(schema, translations):
@@ -45,7 +44,7 @@ def description_map():
 
 
 def translated_schemas():
-    """读取四份原规范并翻译说明。返回: 文件名到规范对象。异常: 缺译/文件错误。"""
+    """读取三份原规范并翻译说明。返回: 文件名到规范对象。异常: 缺译/文件错误。"""
     translations = description_map()
     return {name: translate_schema(json.loads((ROOT / "Docs/Schema" / name).read_bytes()), translations)
             for name in SCHEMAS}
@@ -101,10 +100,13 @@ def build_references():
     # Object identities, signatures, and targets stay identical between languages.
     public["language"] = "en"
     groups = {"业务预设": "Domain presets", "执行与结果": "Execution and results",
-              "批量任务": "Batch tasks", "时间转换": "Time conversion", "计划加载与检查": "Loading and checking plans"}
+              "批量任务": "Batch tasks", "时间转换": "Time conversion", "计划加载与检查": "Loading and checking plans",
+              "高性能积分器": "High-performance integrator", "宿主扩展": "Host extensions"}
     for row in public["objects"]:
         row["group"] = groups[row["group"]]
     (ENGLISH / "public-api.json").write_text(json.dumps(public, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    from public_api_english import synchronize
+    synchronize(CURRENT)
     return count
 
 

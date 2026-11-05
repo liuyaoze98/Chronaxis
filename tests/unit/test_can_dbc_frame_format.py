@@ -130,7 +130,7 @@ class CANDBCFrameFormatTests(unittest.TestCase):
                        is_extended=False, is_fd=selector_fd)
         locator.update(locator_changes or {})
         # 全量解码仍由当前strict长度政策执行，观察器透传真实v5协议。
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='can_format', entity='synthetic', session='session',
                          domain=dict(start='0s', end='3s')),
             sources=[dict(name='bus', source_type='can_blf', path=str(blf),
@@ -138,7 +138,7 @@ class CANDBCFrameFormatTests(unittest.TestCase):
                 dbc_by_channel={'1': str(dbc)},
                 time=dict(time_type='relative', unit='s', origin='synthetic_clock', offset='-1700000000s'))],
             signals=[dict(name='voltage', source='bus', field=locator,
-                          dtype='float64', unit='V', valid_for='10s')],
+                          dtype='float64', input_unit='V', unit='V', valid_for='10s')],
             rules=[], windows=[], calculations=[dict(name='samples', scope='session', operation='select', expr='voltage')],
             outputs=dict(tables='jsonl' if backend == 'reference' else 'csv', manifest='json'),
             execution=dict(backend=backend, batch_rows=size, memory_budget_bytes=256 * 1024**2),

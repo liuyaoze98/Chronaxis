@@ -280,6 +280,7 @@ class SignalSample:
     quality: QualityFlag  # 可以组合的原因，NONE不替代valid。
     source_ref: SourceRef  # typed会话/来源/字段，不复用跨会话绑定。
     sequence: int  # 来源内稳定原序号。
+    code: 'ScalarValue | None' = None  # 仅请求枚举原码时保留独立类型与质量。
 
     def __post_init__(self) -> None:
         """拒绝类型/质量自相矛盾的样本，保留非法观测的诊断值。

@@ -2,7 +2,7 @@
 
 <a id="分析配置结构"></a>
 
-Use YAML for hand-written configurations and JSON for exchange between tools. Both use the same fields. An analysis configuration requires integer `config_version: 3`; missing or older versions are rejected rather than silently migrated. JSON Schema describes the accepted structure; it is not another configuration format.
+Use YAML for hand-written configurations and JSON for exchange between tools. Both use the same fields. Analysis configurations require the integer `config_version: 4`. A missing or unsupported version is rejected. JSON Schema describes the accepted structure; it is not another configuration format.
 
 The root sections below are siblings. For example, `signals` is not nested inside `sources`, and `calculations` is not nested inside `dataset`.
 
@@ -11,13 +11,16 @@ The root sections below are siblings. For example, `signals` is not nested insid
 
 | Field | What it controls and what omission means |
 |---|---|
-| `config_version` | Required integer `3`. |
+| `config_version` | Required integer: `4`. Other analysis configuration versions are rejected. |
 | `dataset` | Required analysis identity, normally just `name`. `entity` and `session` inherit that name. Omit `domain` to use the actual observed range. |
 | `sources` | Input definitions. At least one must exist after shared definitions are expanded. ASC/BLF can be detected automatically; CSV and memory sources need their appropriate source type and reader settings. |
 | `signals` | Signal definitions, which may come from shared definitions. CAN data can obtain `dtype` and `unit` from the DBC; decoded CSV and memory inputs need explicit definitions. See the signal chapter for `valid_for` defaults. |
 | `imports` | Optional ordered list of local shared files. They can supply `sources`, `signals`, and `derived`, one level deep. Duplicate definitions are rejected; intentional changes use `overrides`. |
 | `overrides` | Optional changes to allowed fields of existing named definitions. It cannot create new definitions. |
+| `lookups` | Optional. Map an input to a value from calibration points; see the [lookup and interpolation field reference](expressions.md#lookup-reference) and [voltage example](../examples/lookup-power.yaml). |
 | `derived` | Optional named expressions; defaults to empty. Units are inferred, and an explicitly supplied unit is checked. |
+| `transforms` | Optional. Produce a new time series such as a rolling mean or rate; see [time-series transforms](temporal-transforms.md). |
+| `aggregations` | Optional. Summarize scalar calculation results for sessions, events or segments and request/response delays, or count events and final window segments within this analysis; for example, P95 across load means. See [Result aggregation](aggregations.md). |
 | `rules` | Event rules, each selected by `rule_type`. |
 | `presets` | Optional ready-made combinations selected by `preset_type`, including charging, fault pairing, and threshold alarms. |
 | `windows` | Time ranges around events. |
@@ -40,17 +43,17 @@ Omit a field when its documented default, inheritance, or reliable detection alr
 For example, replace the existing calculation list with the following to integrate an already defined `power` signal over the dataset:
 
 ```yaml
-calculations:
-  - name: energy
-    operation: integral
-    expr: power
+calculations:              # Requested statistics or selected rows
+  - name: energy           # Name used to identify and reference this object
+    operation: integral    # Calculation to apply to the expression
+    expr: power            # Formula using the declared signal or derived names
 ```
 
 The surrounding source and signal definitions are still required. Specify a calculation scope or an interval only when this task needs a choice other than the defaults.
 
 Reader settings are grouped under `reader`; value conversions are grouped under `conversion`. `time.clock` identifies a shared time origin, whereas `resampling.start` identifies the start of a sampling grid. These names describe different choices.
 
-A dotted path such as `dataset.domain.start` identifies where a field belongs. It is not a literal YAML key; see [Configuration syntax](configuration-language.md#field-paths). Omitting a field does not mean that an explicit `null` is accepted: the individual field's rules still apply.
+A dotted path such as `dataset.domain.start` identifies where a field belongs. It is not a literal YAML key; see [Configuration syntax](configuration-language.md#field-paths). Omission uses the documented default. Whether explicit `null` is accepted depends on the field: for example, `execution.spool_quota_bytes: null` sets no additional spool disk quota. Invalid types and values are rejected.
 
 Ordinary execution checks, calculates, and retains what the requested results require. Additional diagnostics are enabled explicitly.
 

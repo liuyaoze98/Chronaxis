@@ -3,6 +3,8 @@
 手算两桶结果；额外追溯由测试明确请求，原帧数量只从实际read完成时观察。
 不把所需记录摘要当成全输入内容证明，不保留旧版本结果入口。
 """
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -46,7 +48,7 @@ class DemandCheckExecutionTests(unittest.TestCase):
             rows=drain(result.iter_calculations())
             for row in rows:
                 self.assertEqual(decode_row(encode_row(row,1<<20),1<<20),row)
-            result.write(root/(name+'-output'))
+            self.published=result.write(root/(name+'-output'))
             metadata=result.metadata
         finally:
             result.close()
@@ -108,11 +110,11 @@ class DemandCheckExecutionTests(unittest.TestCase):
         root,config=self.fixture();del config['dataset']['domain']
         config['outputs']['tables']='csv'
         self.run_case(root,config,'csv')
-        with (root/'csv-output/calculations.csv').open(encoding='utf-8-sig',newline='') as stream:
+        with (published_file(self.published,'calculations.csv')).open(encoding='utf-8-sig',newline='') as stream:
             rows=list(csv.DictReader(stream))
         self.assertEqual([float(row['value']) for row in rows],[700.,-200.])
         self.assertTrue(all('time_scope' not in row and 'row_json' not in row for row in rows))
-        document=json.loads((root/'csv-output/run_manifest.json').read_text(encoding='utf-8'))
+        document=json.loads((self.published.manifest_path).read_text(encoding='utf-8'))
         fact=document['run']['input_diagnostics'][0]
         self.assertEqual((fact['time_scope'],fact['input_check']),('none','auto'))
 

@@ -1,4 +1,4 @@
-# chronaxis.planning.legacy_execution
+# `chronaxis.planning.legacy_execution`
 
 在读取前校验逐消息计划的时间域与CAN读取策略；不选择历史兼容路径。
 
@@ -57,4 +57,4 @@ PlanValidationError定位时间域、陈旧绑定或来源策略错误；其他�
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

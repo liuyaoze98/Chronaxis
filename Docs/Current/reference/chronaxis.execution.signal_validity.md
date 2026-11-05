@@ -1,4 +1,4 @@
-# chronaxis.execution.signal_validity
+# `chronaxis.execution.signal_validity`
 
 从本次已经加载的DBC元数据补全必要信号的有效期。
 
@@ -53,4 +53,4 @@ ValueError：缺少唯一周期；PlanValidationError：周期3倍超出纳秒�
 
 无，不修改原声明或游标，不读取文件。
 
-源码：[`src/chronaxis/execution/signal_validity.py:14`](../../../src/chronaxis/execution/signal_validity.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/signal_validity.py:14`](../../../src/chronaxis/execution/signal_validity.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

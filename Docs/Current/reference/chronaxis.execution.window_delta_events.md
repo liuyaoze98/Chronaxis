@@ -1,4 +1,4 @@
-# chronaxis.execution.window_delta_events
+# `chronaxis.execution.window_delta_events`
 
 从封存信号历史逐窗计算变化量，交付已有点事件模型。
 
@@ -59,7 +59,7 @@ WindowDeltaEvents(history, context, bindings, plan, compiled_rules, scopes=None)
 ```
 
 
-源码：[`src/chronaxis/execution/window_delta_events.py:25`](../../../src/chronaxis/execution/window_delta_events.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:25`](../../../src/chronaxis/execution/window_delta_events.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-__init__"></a>
 ### `WindowDeltaEvents.__init__`
@@ -89,7 +89,7 @@ Event迭代owner。
 
 预算或取消，持续清理失败附window_delta_events_cleanup_owner。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:28`](../../../src/chronaxis/execution/window_delta_events.py#L28)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:28`](../../../src/chronaxis/execution/window_delta_events.py#L28)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-__iter__"></a>
 ### `WindowDeltaEvents.__iter__`
@@ -115,7 +115,7 @@ WindowDeltaEvents.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:49`](../../../src/chronaxis/execution/window_delta_events.py#L49)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:49`](../../../src/chronaxis/execution/window_delta_events.py#L49)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-_start_rule"></a>
 ### `WindowDeltaEvents._start_rule`
@@ -141,7 +141,7 @@ bool表示已创建规则。
 
 构造、预算和实际范围错误。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:53`](../../../src/chronaxis/execution/window_delta_events.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:53`](../../../src/chronaxis/execution/window_delta_events.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-_capture_value"></a>
 ### `WindowDeltaEvents._capture_value`
@@ -166,7 +166,7 @@ WindowDeltaEvents._capture_value(result)
 
 上游结构错误。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:79`](../../../src/chronaxis/execution/window_delta_events.py#L79)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:79`](../../../src/chronaxis/execution/window_delta_events.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-_capture_frame"></a>
 ### `WindowDeltaEvents._capture_frame`
@@ -192,7 +192,7 @@ WindowDeltaEvents._capture_frame()
 
 预算、类型和上游错误。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:90`](../../../src/chronaxis/execution/window_delta_events.py#L90)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:90`](../../../src/chronaxis/execution/window_delta_events.py#L90)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-_evaluate"></a>
 ### `WindowDeltaEvents._evaluate`
@@ -218,7 +218,7 @@ Event或None，借至下一次迭代/关闭。
 
 数值契约、预算或取消。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:103`](../../../src/chronaxis/execution/window_delta_events.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:103`](../../../src/chronaxis/execution/window_delta_events.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-__next__"></a>
 ### `WindowDeltaEvents.__next__`
@@ -248,7 +248,7 @@ StopIteration正常结束；失败后需close。
 
 - `ResultClosedError`：窗口变化量已关闭或失败。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:151`](../../../src/chronaxis/execution/window_delta_events.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:151`](../../../src/chronaxis/execution/window_delta_events.py#L151)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-_close_rule"></a>
 ### `WindowDeltaEvents._close_rule`
@@ -274,7 +274,7 @@ WindowDeltaEvents._close_rule()
 
 子关闭或预算取消，可再次调用。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:193`](../../../src/chronaxis/execution/window_delta_events.py#L193)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:193`](../../../src/chronaxis/execution/window_delta_events.py#L193)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-WindowDeltaEvents-close"></a>
 ### `WindowDeltaEvents.close`
@@ -300,4 +300,4 @@ WindowDeltaEvents.close()
 
 子层或账本清理错误。
 
-源码：[`src/chronaxis/execution/window_delta_events.py:209`](../../../src/chronaxis/execution/window_delta_events.py#L209)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/window_delta_events.py:209`](../../../src/chronaxis/execution/window_delta_events.py#L209)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

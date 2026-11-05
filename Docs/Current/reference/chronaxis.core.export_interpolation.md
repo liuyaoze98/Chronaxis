@@ -1,4 +1,4 @@
-# chronaxis.core.export_interpolation
+# `chronaxis.core.export_interpolation`
 
 计算离线导出的线性值；不改变分析中的向后保持、事件或积分语义。
 
@@ -57,7 +57,7 @@ float tuple。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-linear_numpy"></a>
 ## `linear_numpy`
@@ -91,4 +91,4 @@ shape(N,) float64 ndarray。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

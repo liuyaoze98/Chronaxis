@@ -13,6 +13,8 @@ context、绑定或请求。默认None兼容原domain及原预算，本身不证
 """
 
 # 只组合已有协议及回读，不复制原指标算法或改变数值后端。
+from ..core.moments import MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from ..core.decoded_binding import DecodedBindings
 from ..core.expression import CompiledExpression
 from ..core.calculations import CalculationSeries, CalculationDefinition
@@ -134,14 +136,11 @@ class HistoricalCalculationBlocks:
             raise ValueError('指标分块需合法后端及正整数batch_intervals')
         # samples/select复用相同保持列，只有actual_value_updates标记的半开真实更新才计样本/行。
         if spec.operation not in ('integral', 'min_time', 'max_time', 'time_weighted_mean', 'duration',
-                           'sample_minimum', 'sample_maximum', 'sample_mean', 'select'):
+                           'sample_count', 'sample_minimum', 'sample_maximum', 'sample_mean', 'select', *MOMENTS, *SAMPLE_QUANTILES):
             raise ValueError('当前历史指标分块只支持已接线的时间、样本与select输入')
-        # select原值/BOOL/ENUM按原单位交付，不在行流边界隐式换算工程单位。
-        if spec.operation == 'select' and spec.output_unit not in (None, compiled.root.unit):
-            raise ValueError('select历史输入必须保留原表达式单位')
         if compiled.bindings.identity != bindings.identity:
             raise ValueError('指标表达式与当前实际绑定不同')
-        # 仅共享类型和同步门槛，数值仍由后续各自指标核处理。
+        # 共享类型、选择输出单位和同步门槛，块仍保留表达式原值供后续核使用。
         require_calculation_plan(compiled, spec, None)
         # 计算域与原请求取交集；保持context及其完整来源身份不变。
         observed = _calculation_observation(context, observation)

@@ -1,4 +1,4 @@
-# chronaxis.execution.state
+# `chronaxis.execution.state`
 
 保存每个信号最新的值。同一时刻的全部更新收齐后一起写入状态，表达式不会看到“电压已更新、电流还未更新”的半成品。状态还保存时间、有效期和质量原因。
 
@@ -6,7 +6,7 @@
 
 ## 相关类型
 
-[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[HistorySample](chronaxis.execution.history_records.md#api-HistorySample)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)
+[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[HistorySample](chronaxis.execution.history_records.md#api-HistorySample)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)
 
 ## 对象导航
 
@@ -30,6 +30,7 @@
 |[`LatestSignalState.revision`](#api-LatestSignalState-revision)|读取成功完整组的提交版本，失败提交不推进该版本。|
 |[`LatestSignalState._ensure_open`](#api-LatestSignalState-_ensure_open)|拒绝关闭后访问。|
 |[`LatestSignalState.get`](#api-LatestSignalState-get)|返回当前原样规范观测；无更新是None，无效更新不会回退旧值。|
+|[`LatestSignalState._before_group`](#api-LatestSignalState-_before_group)|查组前标量。|
 |[`LatestSignalState.apply`](#api-LatestSignalState-apply)|整个组检查/选择成功后一次替换最新状态，任何失败保持旧状态。|
 |[`LatestSignalState.close`](#api-LatestSignalState-close)|丢弃自有声明与最新记录，抵销账本，不删除历史或修改返回对象。|
 |[`_sequence`](#api-_sequence)|选定稳定原序号。|
@@ -37,10 +38,11 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import isnan
 from types import MappingProxyType
 from ..core.binding import SignalDefinition
+from ..core.numeric import ScalarValue
 from ..core.types import SignalDType
 from ..core.validation import require_identifier
 from ..results.budget import ResourceBudget
@@ -69,7 +71,7 @@ class CommittedUpdates
 |`updates`|tuple[[HistorySample](chronaxis.execution.history_records.md#api-HistorySample), ...]|是|无|当前时刻完整原子提交的别名到更新映射，不能拆开同时刻更新。|
 |`conflict_count`|int|是|无|同一时刻冲突的显式累计/本次计数，按当前模型范围解释，不隐藏丢弃。|
 
-源码：[`src/chronaxis/execution/state.py:26`](../../../src/chronaxis/execution/state.py#L26)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:27`](../../../src/chronaxis/execution/state.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-CommittedUpdates-__post_init__"></a>
 ### `CommittedUpdates.__post_init__`
@@ -99,7 +101,7 @@ TypeError/ValueError为非法结果。
 
 - `ValueError`：提交结果需唯一别名与非负原生冲突数。
 
-源码：[`src/chronaxis/execution/state.py:33`](../../../src/chronaxis/execution/state.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:34`](../../../src/chronaxis/execution/state.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_same_fact"></a>
 ## `_same_fact`
@@ -127,7 +129,7 @@ bool事实一致。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/state.py:43`](../../../src/chronaxis/execution/state.py#L43)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:44`](../../../src/chronaxis/execution/state.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_StateSnapshot"></a>
 ## `_StateSnapshot`
@@ -147,8 +149,9 @@ class _StateSnapshot
 |`conflict_count`|int|是|无|同一时刻冲突的显式累计/本次计数，按当前模型范围解释，不隐藏丢弃。|
 |`retained_cost`|int|是|无|该状态快照持有并计入预算的字节数。|
 |`revision`|int|是|无|成功完整组提交次数，仅用于内部两段查询证明提交顺序。|
+|`prior`|dict &#124; None|否|None|仅v4最近一组被替换的(时间,规范标量)，无原记录定位。|
 
-源码：[`src/chronaxis/execution/state.py:56`](../../../src/chronaxis/execution/state.py#L56)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:57`](../../../src/chronaxis/execution/state.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState"></a>
 ## `LatestSignalState`
@@ -160,7 +163,7 @@ LatestSignalState(budget: ResourceBudget, definitions: tuple[SignalDefinition, .
 ```
 
 
-源码：[`src/chronaxis/execution/state.py:66`](../../../src/chronaxis/execution/state.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:68`](../../../src/chronaxis/execution/state.py#L68)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-__init__"></a>
 ### `LatestSignalState.__init__`
@@ -188,7 +191,7 @@ LatestSignalState.__init__(budget: ResourceBudget, definitions: tuple[SignalDefi
 配置/预算/取消；保留原异常并清理成功申请，包括申请返回取消。
     持续清理失败时，原异常的state_cleanup_owner提供本次状态的恢复close入口。
 
-源码：[`src/chronaxis/execution/state.py:69`](../../../src/chronaxis/execution/state.py#L69)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:71`](../../../src/chronaxis/execution/state.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-budget"></a>
 ### `LatestSignalState.budget`
@@ -218,7 +221,7 @@ ResourceBudget。
 
 返回类型：[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)。
 
-源码：[`src/chronaxis/execution/state.py:119`](../../../src/chronaxis/execution/state.py#L119)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:121`](../../../src/chronaxis/execution/state.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-session_id"></a>
 ### `LatestSignalState.session_id`
@@ -248,7 +251,7 @@ str。
 
 返回类型：str。
 
-源码：[`src/chronaxis/execution/state.py:124`](../../../src/chronaxis/execution/state.py#L124)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:126`](../../../src/chronaxis/execution/state.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-closed"></a>
 ### `LatestSignalState.closed`
@@ -278,7 +281,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/state.py:129`](../../../src/chronaxis/execution/state.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:131`](../../../src/chronaxis/execution/state.py#L131)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-definitions"></a>
 ### `LatestSignalState.definitions`
@@ -308,7 +311,7 @@ ResultClosedError为关闭。
 
 返回类型：MappingProxyType。
 
-源码：[`src/chronaxis/execution/state.py:134`](../../../src/chronaxis/execution/state.py#L134)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:136`](../../../src/chronaxis/execution/state.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-latest"></a>
 ### `LatestSignalState.latest`
@@ -340,7 +343,7 @@ ResultClosedError为关闭。
 
 返回类型：MappingProxyType。
 
-源码：[`src/chronaxis/execution/state.py:140`](../../../src/chronaxis/execution/state.py#L140)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:142`](../../../src/chronaxis/execution/state.py#L142)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-fixed_cost"></a>
 ### `LatestSignalState.fixed_cost`
@@ -370,7 +373,7 @@ int bytes，关闭后0。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/state.py:149`](../../../src/chronaxis/execution/state.py#L149)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:151`](../../../src/chronaxis/execution/state.py#L151)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-retained_cost"></a>
 ### `LatestSignalState.retained_cost`
@@ -400,7 +403,7 @@ int bytes，关闭后0。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/state.py:154`](../../../src/chronaxis/execution/state.py#L154)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:156`](../../../src/chronaxis/execution/state.py#L156)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-last_time_ns"></a>
 ### `LatestSignalState.last_time_ns`
@@ -430,7 +433,7 @@ int ns或None。
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/execution/state.py:159`](../../../src/chronaxis/execution/state.py#L159)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:161`](../../../src/chronaxis/execution/state.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-conflict_count"></a>
 ### `LatestSignalState.conflict_count`
@@ -460,7 +463,7 @@ int，关闭后0。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/state.py:164`](../../../src/chronaxis/execution/state.py#L164)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:166`](../../../src/chronaxis/execution/state.py#L166)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-revision"></a>
 ### `LatestSignalState.revision`
@@ -490,7 +493,7 @@ ResultClosedError为状态关闭；不能通过此属性修改快照。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/state.py:169`](../../../src/chronaxis/execution/state.py#L169)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:171`](../../../src/chronaxis/execution/state.py#L171)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-_ensure_open"></a>
 ### `LatestSignalState._ensure_open`
@@ -522,7 +525,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/state.py:179`](../../../src/chronaxis/execution/state.py#L179)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:181`](../../../src/chronaxis/execution/state.py#L181)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-get"></a>
 ### `LatestSignalState.get`
@@ -549,7 +552,32 @@ KeyError为未知别名；ResultClosedError为关闭。不检查TTL或观测范�
 
 返回类型：[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; None。
 
-源码：[`src/chronaxis/execution/state.py:184`](../../../src/chronaxis/execution/state.py#L184)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:186`](../../../src/chronaxis/execution/state.py#L186)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-LatestSignalState-_before_group"></a>
+### `LatestSignalState._before_group`
+
+查组前标量。
+
+```python
+LatestSignalState._before_group(name)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`name`|str|是|无|位置或关键字。要查询最近一次原子更新之前保持状态的已声明信号别名。|
+
+#### 返回说明
+
+(时间,标量)或None。
+
+#### 异常说明
+
+未声明别名。
+
+源码：[`src/chronaxis/execution/state.py:195`](../../../src/chronaxis/execution/state.py#L195)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-apply"></a>
 ### `LatestSignalState.apply`
@@ -586,7 +614,7 @@ CommittedUpdates，选定更新按别名排序、每别名一次，冲突数遵�
 
 返回类型：[CommittedUpdates](chronaxis.execution.state.md#api-CommittedUpdates)。
 
-源码：[`src/chronaxis/execution/state.py:193`](../../../src/chronaxis/execution/state.py#L193)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:203`](../../../src/chronaxis/execution/state.py#L203)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-LatestSignalState-close"></a>
 ### `LatestSignalState.close`
@@ -614,7 +642,7 @@ LatestSignalState.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/state.py:259`](../../../src/chronaxis/execution/state.py#L259)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:293`](../../../src/chronaxis/execution/state.py#L293)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_sequence"></a>
 ## `_sequence`
@@ -641,4 +669,4 @@ int sequence。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/state.py:278`](../../../src/chronaxis/execution/state.py#L278)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/state.py:312`](../../../src/chronaxis/execution/state.py#L312)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

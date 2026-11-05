@@ -16,6 +16,7 @@ from contextlib import contextmanager
 from hashlib import sha256
 import json
 from pathlib import Path
+from published_paths import published_file, export_root
 import unittest
 from unittest.mock import patch
 
@@ -266,10 +267,10 @@ class CANRawRunnerTests(unittest.TestCase):
                             manifest = result.write(output)
                             packed = json.loads(manifest.manifest_path.read_text(encoding='utf-8'))
                             self.assertEqual((packed['status'],packed['exports']['record_count']),('completed',2))
-                            public = [json.loads(line) for line in (output/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+                            public = [json.loads(line) for line in (published_file(manifest,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
                             self.assertEqual([row['segment_id'] for row in public],[row.segment_id for row in segments])
                             for record, frames in zip(public, expected_frames):
-                                copied=output/'exports'/record['directory']/'frames.blf'
+                                copied=export_root(manifest)/record['directory']/'frames.blf'
                                 fact=next(f for f in record['files'] if f['name']=='frames.blf')
                                 self.assertEqual(sha256(copied.read_bytes()).hexdigest(),fact['sha256'])
                                 self.assertEqual(self.logical_frames(copied),frames)
@@ -292,7 +293,7 @@ class CANRawRunnerTests(unittest.TestCase):
                     published = result.write(work / 'published-empty')
                 packed = json.loads(published.manifest_path.read_text(encoding='utf-8'))
                 self.assertEqual((packed['status'],packed['exports']['record_count']),('completed',0))
-                self.assertEqual((published.output_dir/'exports.jsonl').read_bytes(),b'')
+                self.assertEqual((published_file(published,'exports.jsonl')).read_bytes(),b'')
                 self.assert_closed_budget(result)
 
     def test_real_eof_start_only_point_exports_no_endpoint_frame(self):
@@ -410,6 +411,6 @@ class CANRawRunnerTests(unittest.TestCase):
         completed = json.loads(retry.manifest_path.read_text(encoding='utf-8'))
         self.assertEqual((completed['status'], completed['exports']['record_count']), ('completed', 2))
         self.assertEqual(completed['error_counts']['output'], 1)
-        self.assertEqual(sha256((retry.output_dir / 'exports' / first['directory'] / 'frames.blf').read_bytes()).hexdigest(), next(f for f in first['files'] if f['name']=='frames.blf')['sha256'])
+        self.assertEqual(sha256((export_root(retry) / first['directory'] / 'frames.blf').read_bytes()).hexdigest(), next(f for f in first['files'] if f['name']=='frames.blf')['sha256'])
         marker.analysis_result_cleanup_owner.close()
         self.assert_closed_budget(result)

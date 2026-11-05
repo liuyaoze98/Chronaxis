@@ -51,6 +51,8 @@ class DeltaSpan:
     value: int | float | None  # 规范后的原生数值，未知可为None。
     quality: Q = Q.NONE  # 连续区间无效原因。
     point_quality: Q | None = None  # 默认与连续质量相同。
+    partial: bool = False  # 连续数值依赖部分滚动结果。
+    point_partial: bool = False  # 起点值的独立部分性。
 
     def __post_init__(self):
         """规范纳秒和点质量，并检查有值证据。

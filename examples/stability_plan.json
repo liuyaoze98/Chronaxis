@@ -1,5 +1,5 @@
 {
-  "config_version": 3,
+  "config_version": 4,
   "dataset": {
     "name": "sample",
     "entity": "device",
@@ -98,7 +98,8 @@
       "scope": {
         "rule": "alarm"
       },
-      "expr": "temperature"
+      "expr": "temperature",
+      "unit": "degC"
     },
     {
       "name": "segment_mean",
@@ -106,7 +107,8 @@
       "scope": {
         "window": "window"
       },
-      "expr": "temperature"
+      "expr": "temperature",
+      "unit": "degC"
     }
   ]
 }

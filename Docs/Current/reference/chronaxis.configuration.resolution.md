@@ -1,4 +1,4 @@
-# chronaxis.configuration.resolution
+# `chronaxis.configuration.resolution`
 
 按请求生成可独立加载的有效配置；只读配置，不读取业务输入。
 
@@ -14,7 +14,7 @@
 |---|---|
 |[`_duration`](#api-_duration)|纳秒用整数文本输出，不经浮点。|
 |[`_interval`](#api-_interval)|输出合法间隔对象，不为actual/dbc补伪周期。|
-|[`_signal_defaults`](#api-_signal_defaults)|复用当前编译的信号事实；只在展开或内部复核副本填写，不再读DBC。|
+|[`_signal_defaults`](#api-_signal_defaults)|复用当前编译的信号事实，不为导出配置再次读取DBC。|
 |[`_analysis_defaults`](#api-_analysis_defaults)|显式化已编译模型的适用默认值。|
 |[`resolved_configuration`](#api-resolved_configuration)|展开预设并固定路径。|
 |[`resolve_configuration`](#api-resolve_configuration)|显示或导出有效配置。|
@@ -54,7 +54,7 @@ _duration(value)
 
 无。
 
-源码：[`src/chronaxis/configuration/resolution.py:10`](../../../src/chronaxis/configuration/resolution.py#L10)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/resolution.py:10`](../../../src/chronaxis/configuration/resolution.py#L10)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_interval"></a>
 ## `_interval`
@@ -79,15 +79,15 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/configuration/resolution.py:15`](../../../src/chronaxis/configuration/resolution.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/resolution.py:15`](../../../src/chronaxis/configuration/resolution.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_signal_defaults"></a>
 ## `_signal_defaults`
 
-复用当前编译的信号事实；只在展开或内部复核副本填写，不再读DBC。
+复用当前编译的信号事实，不为导出配置再次读取DBC。
 
 ```python
-_signal_defaults(raw, plan)
+_signal_defaults(raw, plan, *, normalized=False)
 ```
 
 ### 参数
@@ -96,8 +96,17 @@ _signal_defaults(raw, plan)
 |---|---|---|---|---|
 |`raw`|dict|是|无|位置或关键字。待输出当前公共配置副本。|
 |`plan`|AnalysisPlan|是|无|位置或关键字。已编译计划，提供每条信号的实际默认类型、单位与定位。|
+|`normalized`|bool|否|False|仅关键字。normalized表示转换字段已展开为内部平铺形式。|
 
-源码：[`src/chronaxis/configuration/resolution.py:23`](../../../src/chronaxis/configuration/resolution.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+### 返回说明
+
+None；只补入可重复加载的原类型、单位及映射。
+
+### 异常说明
+
+KeyError为内部配置与计划不匹配；不修改用户原文件。
+
+源码：[`src/chronaxis/configuration/resolution.py:23`](../../../src/chronaxis/configuration/resolution.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_analysis_defaults"></a>
 ## `_analysis_defaults`
@@ -125,7 +134,7 @@ None。
 
 只填写实际有含义且可重新加载的字段；不猜单位/方向/阈值，不写无关规则参数或DBC周期。
 
-源码：[`src/chronaxis/configuration/resolution.py:33`](../../../src/chronaxis/configuration/resolution.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/resolution.py:45`](../../../src/chronaxis/configuration/resolution.py#L45)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-resolved_configuration"></a>
 ## `resolved_configuration`
@@ -153,7 +162,7 @@ resolved_configuration(source, *, defaults=False)
 
 原配置不写回；省略defaults时保原显式值。公开预设构建器只在独立副本执行。
 
-源码：[`src/chronaxis/configuration/resolution.py:99`](../../../src/chronaxis/configuration/resolution.py#L99)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/resolution.py:135`](../../../src/chronaxis/configuration/resolution.py#L135)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-resolve_configuration"></a>
 ## `resolve_configuration`
@@ -183,4 +192,4 @@ resolve_configuration(source, *, output=None, format=None, defaults=False)
 
 无输出文件时默认YAML写给调用者；有文件时扩展名定格式，显式格式不一致则拒绝。
 
-源码：[`src/chronaxis/configuration/resolution.py:139`](../../../src/chronaxis/configuration/resolution.py#L139)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/resolution.py:172`](../../../src/chronaxis/configuration/resolution.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,6 +1,6 @@
 """用有限缓冲写新导出目录，全部文件真正关闭后才独占发布。
 
-供信号CSV及新报文导出共用：输入是已编码的有限bytes，输出为文件摘要和新目录。
+供信号CSV及新报文导出共用：输入是已编码的有限bytes，输出为按模式返回的目录或实际路径清单。
 临时文件保留供排查；失败不覆盖用户目录、不删除已有数据。累计spool先预约，
 RAM按自有槽释放；关闭失败保真实句柄供重试。沿用项目已验证的Windows rename
 语义，其他平台预先拒绝。此层不读取原始日志、不解码，也不计算插值。
@@ -19,8 +19,8 @@ from .errors import ResultClosedError, ResultFormatError
 class ExportFiles:
     """拥有当前/挂起的有限输出文件、消费游标及可选处理owner，最多16文件。"""
 
-    def __init__(self, destination, budget, *, integrity=True):
-        """预检输出并创建独占临时目录。参数: destination新目录、budget共享账本，integrity控制摘要（旧入口默认开启）。
+    def __init__(self, destination, budget, *, integrity=True, timestamped=False):
+        """预检输出并创建独占临时目录。参数: destination输出根、budget共享账本，integrity控制摘要，timestamped为内部选择的公开时间命名模式。
 
         返回: owner。异常: 路径/平台/预算/I/O错；清理失败附export_cleanup_owner。
         """
@@ -29,6 +29,9 @@ class ExportFiles:
         if type(integrity) is not bool:
             raise TypeError('integrity必须为bool')
         self._integrity=integrity
+        self._timestamped = timestamped
+        self._failed = False
+        self._temporary_identity = None
         self.destination = Path(destination).absolute()
         # 检查词法及解析路径，防止通过链接写回历史项目；已有目标不复用。
         if any(p.casefold()=='refprojects' for p in (*self.destination.parts,*self.destination.resolve().parts)):
@@ -40,7 +43,8 @@ class ExportFiles:
         except FileNotFoundError:
             pass
         else:
-            raise FileExistsError(self.destination)
+            if not timestamped or not self.destination.is_dir() or self.destination.is_symlink():
+                raise FileExistsError(self.destination)
         self._budget = budget
         self._held_cost = self._fixed_cost = self._row_cost = 0
         self._closed = False
@@ -54,7 +58,10 @@ class ExportFiles:
             self.destination.parent.mkdir(parents=True,exist_ok=True)
             self.temporary = self.destination.parent/('.'+self.destination.name+'.'+uuid4().hex+'.incomplete')
             self.temporary.mkdir(exist_ok=False)
+            from .owned_directory import directory_identity
+            self._temporary_identity = directory_identity(self.temporary)
         except BaseException as error:
+            self._failed = True
             _cleanup_owner(self,error,'export_cleanup_owner','导出目录构造')
             raise
 
@@ -168,7 +175,7 @@ class ExportFiles:
         self.files.append({'name':name,'sha256':digest.hexdigest(),'bytes':size})
 
     def finish(self, metadata):
-        """写完成清单并原子安装目录。参数: metadata有界JSON事实。返回: 已发布目录Path。
+        """写完成清单并原子安装目录。参数: metadata有界JSON事实。返回: 内部目录Path或公开ExportManifest。
 
         异常: 序列化/配额/关闭/竞态目标错误；失败保.incomplete目录，不冒报发布成功。
         """
@@ -182,26 +189,57 @@ class ExportFiles:
             self.verifier.close()
             self.verifier=None
         self.close_files()
-        _reserve_owned_ram(self,65536+_metadata_bytes(metadata)*16,'_row_cost')
+        publication = None
+        result = None
         try:
-            document = dict(metadata,export_version=1,status='completed',files=tuple(self.files))
-            payload = (json.dumps(document,ensure_ascii=False,allow_nan=False,sort_keys=True)+'\n').encode('utf-8')
-            self.open_file('manifest.json')
-            # 清单受声明规模和RAM预算约束，按有限块写出，不把CSV单行上限误用为总清单上限。
-            for start in range(0,len(payload),65536):
-                self.append(payload[start:start+65536])
-            self.close_file()
-        finally:
-            _release_owned_ram(self,self._row_cost,'_row_cost')
-        # 关闭及费用释放失败时也不能安装；Windows rename拒绝竞态产生的已有目标。
-        self.close()
-        self.temporary.rename(self.destination)
-        return self.destination
+            # 内部导出仍使用新目录；公开调用在已有根下使用同次时间文件名。
+            if self._timestamped:
+                from .publication import PublicationNames
+                publication = PublicationNames(self.destination, (*[f['name'] for f in self.files], 'manifest.json'))
+                metadata = dict(metadata)
+                if 'exact_source_index' in metadata:
+                    metadata['exact_source_index'] = publication.names[metadata['exact_source_index']]
+            _reserve_owned_ram(self,65536+_metadata_bytes(metadata)*16,'_row_cost')
+            try:
+                files = tuple(dict(f, name=publication.names[f['name']]) if publication else dict(f) for f in self.files)
+                document = dict(metadata,export_version=1,status='completed',files=files)
+                payload = (json.dumps(document,ensure_ascii=False,allow_nan=False,sort_keys=True)+'\n').encode('utf-8')
+                self.open_file('manifest.json')
+                # 清单受声明规模和RAM预算约束，按有限块写出。
+                for start in range(0,len(payload),65536):
+                    self.append(payload[start:start+65536])
+                self.close_file()
+            finally:
+                _release_owned_ram(self,self._row_cost,'_row_cost')
+            self.close()
+            if publication is None:
+                self.temporary.rename(self.destination)
+                return self.destination
+            from .manifest import ExportManifest
+            result = ExportManifest(self.destination, self.destination/publication.names['manifest.json'],
+                                    tuple(self.destination/f['name'] for f in files))
+            publication.publish(self.temporary, 'manifest.json')
+            self.temporary.rmdir()
+            return result
+        except BaseException as error:
+            if publication is not None and publication.completed:
+                error.completed_manifest = result
+            if publication is not None:
+                try:
+                    publication.close()
+                except BaseException as cleanup:
+                    error.add_note('导出命名锁释放失败：' + str(cleanup))
+            raise
 
     def close(self):
         """只关闭自有资源，保留诊断文件。参数: 无。返回: None。异常: 原关闭/释放错，允许重试。
         """
         if self._closed:
+            try:
+                self._cleanup_failed_output()
+            except BaseException:
+                self._closed = False
+                raise
             return
         self.close_reader()
         if self.worker is not None:
@@ -213,4 +251,11 @@ class ExportFiles:
         self.close_files()
         _release_owned_ram(self,self._row_cost,'_row_cost')
         _release_owned_ram(self,self._fixed_cost,'_fixed_cost')
+        self._cleanup_failed_output()
         self._closed = True
+
+    def _cleanup_failed_output(self):
+        """公开导出失败时清理本次临时目录。参数: 无。返回: None。异常: 身份或IO错误，可重试close。"""
+        if self._failed and self._timestamped and self.temporary is not None:
+            from .owned_directory import remove_owned_directory
+            remove_owned_directory(self.temporary, self._temporary_identity)

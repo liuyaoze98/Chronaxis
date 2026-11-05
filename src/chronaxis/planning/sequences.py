@@ -6,6 +6,8 @@
 """
 
 from dataclasses import dataclass
+from .diagnostic_collection import usable_node, collect_node_error
+from .checks import PlanValidationError
 from .checks import array_at, duration_at, model_at, number_at, object_at, text_at
 from .nodes import register_id
 from ..core.validation import require_identifier
@@ -79,13 +81,19 @@ def parse_sequences(value, rules, bindings, ids):
     result = []
     for index, raw in enumerate(array_at(value, '$.sequences')):
         path = f'$.sequences[{index}]'
-        raw = object_at(raw, path, ('name', 'start', 'response', 'max_delay'), ('min_delay', 'max_pending'))
-        item = model_at(SequencePlan, path, register_id(raw['name'], path + '.name', ids),
-            text_at(raw['start'], path + '.start', identifier=True),
-            text_at(raw['response'], path + '.response', identifier=True),
-            duration_at(raw.get('min_delay', '0s'), path + '.min_delay'),
-            duration_at(raw['max_delay'], path + '.max_delay'),
-            number_at(raw.get('max_pending', 65536), path + '.max_pending', integer=True, minimum=1))
-        model_at(sequence_dependencies, path, item, rules, bindings)
-        result.append(item)
+        if not usable_node(path, raw):
+            continue
+        try:
+            path = f'$.sequences[{index}]'
+            raw = object_at(raw, path, ('name', 'start', 'response', 'max_delay'), ('min_delay', 'max_pending'))
+            item = model_at(SequencePlan, path, register_id(raw['name'], path + '.name', ids),
+                text_at(raw['start'], path + '.start', identifier=True),
+                text_at(raw['response'], path + '.response', identifier=True),
+                duration_at(raw.get('min_delay', '0s'), path + '.min_delay'),
+                duration_at(raw['max_delay'], path + '.max_delay'),
+                number_at(raw.get('max_pending', 65536), path + '.max_pending', integer=True, minimum=1))
+            model_at(sequence_dependencies, path, item, rules, bindings)
+            result.append(item)
+        except PlanValidationError as error:
+            collect_node_error(error, path, raw)
     return tuple(result)

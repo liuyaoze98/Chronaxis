@@ -6,6 +6,7 @@ DBC周期只在运行初始化读取；这里检查来源种类和完整报文�
 当前配置3支持这些声明；执行是否就绪由公共能力报告判断。
 """
 
+from ..core.moments import TIME_MOMENTS
 from dataclasses import dataclass, replace
 
 from ..core.validation import require_identifier
@@ -136,8 +137,9 @@ def _consumers(plan):
     entries.extend((item.sequence_id, sequence_dependencies(item, plan.rules, plan.bindings))
                    for item in plan.sequences)
     entries.extend((item.window_id, rules[item.event].dependencies) for item in plan.windows)
+    entries.extend((t.name, t.physical) for t in plan.transforms)
     for item in plan.calculations:
-        if item.operation not in ('integral', 'duration', 'time_weighted_mean', 'min_time', 'max_time'):
+        if item.operation not in ('integral', 'duration', 'time_weighted_mean', 'min_time', 'max_time', *TIME_MOMENTS):
             continue
         aliases = {alias for expression in (item.signal, item.condition)
                    if expression is not None for alias in expression.dependencies}
@@ -147,6 +149,9 @@ def _consumers(plan):
             event = target if scope == 'event' else next(window.event for window in plan.windows if window.window_id == target)
             aliases.update(rules[event].dependencies)
         entries.append((item.calculation_id, tuple(sorted(aliases))))
+    if plan.transforms:
+        from .transforms import physical_dependencies
+        return tuple((name,physical_dependencies(plan,aliases)) for name,aliases in entries)
     return tuple(entries)
 
 
@@ -212,6 +217,12 @@ def resolve_intervals(plan, default, overrides) -> IntervalPlan:
     lookup = dict(declared.overrides)
     resolved = tuple((name, _resolve(plan, lookup.get(name, default), aliases,
                                     '$.intervals.overrides.' + name)) for name, aliases in consumers)
+    # 每个宿主实现声明自己的周期能力，固定及DBC与内置变换使用同一驱动和折算权重。
+    modes = dict(resolved)
+    for transform in plan.transforms:
+        if transform.host_spec is not None and modes[transform.name].mode not in transform.host_spec.interval_modes:
+            raise PlanValidationError('$.intervals.overrides.'+transform.name,
+                                      f'宿主时序扩展 {transform.operation} 不支持所选间隔，支持 {transform.host_spec.interval_modes}')
     return IntervalPlan(default, overrides, resolved)
 
 

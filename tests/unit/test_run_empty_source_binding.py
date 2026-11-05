@@ -82,7 +82,7 @@ class RunEmptySourceBindingTests(unittest.TestCase):
         work.mkdir(parents=True)
         path = work / 'times.csv'
         path.write_text('ns\n'+''.join(str(time)+'\n' for time in times), encoding='utf-8', newline='')
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='empty_binding', entity='synthetic', session='session', domain=dict(start='0ns', end='20ns')),
             sources=[dict(name=name, source_type='signal_csv', path=path.name, time_column='ns',
                 time=dict(time_type='relative', unit='ns', origin='empty-source-home', offset='4ns'))],

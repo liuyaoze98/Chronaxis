@@ -1,0 +1,24 @@
+# 合成教学数据；输入文件与此配置保持示例中的目录结构。
+config_version: 4                      # 声明分析配置结构版本；当前必须填写整数4
+dataset:                               # 设置本次分析名称及可选的对象、会话和时间范围
+  name: energy_demo                    # 命名本次分析数据集；名称写入结果身份字段
+sources:                               # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/run2.asc               # 指定本任务唯一ASC/BLF文件；相对路径基于本配置，展开后须恰好一个文件
+    dbc_by_channel:                    # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/power.dbc              # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                               # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: power                        # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                             # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: 0x100                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Power                    # 填写DBC中的信号名称，大小写须一致
+    period: 100ms                      # 声明本信号正常更新周期；从设备/采集规范取得，省略valid_for时按其3倍确定有效期
+message_calculations:                  # 按每条目标CAN报文计算贡献再累计；与按实际时间积分分别配置
+  - name: energy                       # 为逐消息累计结果取唯一名称；用于识别对应结果行
+    update_message:                    # 指定触发一次求值的目标报文；通道和ID从日志/DBC取得
+      frame_id: 0x100                  # 指定每到一条便求值的报文ID；从DBC取得
+    parameters:                        # 定义逐消息公式使用的固定参数；名称由公式引用，值来自采集/业务规范
+      period: {value: 0.1, unit: s}    # 提供名为period的公式参数；在本例表示每条消息计入的时间；value：填写每条消息代表的时间数值；从消息周期或业务规则取得；unit：声明该公式参数的单位；本例s表示秒
+    expr: power * period               # 定义单条目标消息的贡献；使用该报文信号和parameters常量
+    unit: J                            # 声明累计结果的单位；须与表达式量纲相符
+outputs:                               # 选择额外导出的数据及格式；默认结果表由运行入口提供
+  contributions: full                  # 选择是否导出每次贡献明细；用于检查逐消息求值及跳过原因

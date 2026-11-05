@@ -31,20 +31,20 @@ The project originated from automotive and battery test analysis. Its intended a
 
 ## Installation and environment
 
-The current version is **0.1.0.dev1**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) for upgrade guidance.
+The current version is **0.1.0.dev2**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev2.en.md) before upgrading.
 
 Install from PyPI:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev1"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
 To install from source, run `python -m pip install .` at the repository root containing `pyproject.toml`. If you have a release wheel, replace the installation command with:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev1-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
 ```
 
 Installation automatically includes the dependencies needed for CAN reading, DBC decoding, and other features. For offline installation, prepare the dependency packages in advance; see the [installation guide](Docs/Current/en/installation.md).
@@ -68,9 +68,9 @@ Keep the source directory structure and run from the repository root:
 .\.venv\Scripts\python.exe -m chronaxis run Docs/Current/examples/conditional-energy.yaml --output result-cli
 ```
 
-`result-cli` must be a new directory. Command-line paths are relative to the working directory; data paths inside a configuration are relative to that configuration file.
+`result-cli` can be reused; each publication uses timestamped filenames. Command-line paths are relative to the working directory; data paths inside a configuration are relative to that configuration file.
 
-The example produces one qualifying event. The key columns in `result-cli/事件结果.csv` are shown below; the current readable output uses these Chinese headers:
+The example produces one qualifying event. The key columns in `result-cli/事件结果_<timestamp>.csv` are shown below; the current readable output uses these Chinese headers:
 
 | 开始时间（s） / Start | 结束时间（s） / End | energy_kwh（kWh） | energy_kwh：状态 / Status |
 |---|---|---|---|
@@ -82,7 +82,7 @@ For your own logs, adjust the signal bindings, conditions, and time settings to 
 
 ## Quick start: Python API
 
-This code runs the same task with the same configuration. Save it as `example_energy.py` at the repository root and run it using the virtual environment above. `result-python` must also be a new directory.
+This code runs the same task with the same configuration. Save it as `example_energy.py` at the repository root and run it using the virtual environment above. `result-python` can also be reused.
 
 ```python
 from contextlib import closing

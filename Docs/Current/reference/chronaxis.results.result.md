@@ -1,4 +1,4 @@
-# chronaxis.results.result
+# `chronaxis.results.result`
 
 管理一次已完成的分析结果。游标逐行读取平坦摘要，write向新目录发布；close关闭读取资源，默认清理本次程序为本次运行创建的临时数据，原输入与已发布结果保留。
 
@@ -6,7 +6,7 @@
 
 ## 相关类型
 
-[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[ArtifactExportStore](chronaxis.results.artifact_exports.md#api-ArtifactExportStore)、[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[ContributionsUnavailableError](chronaxis.results.errors.md#api-ContributionsUnavailableError)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ResultSpool](chronaxis.results.spool.md#api-ResultSpool)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)、[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[SummaryContributionRow](chronaxis.results.summary.md#api-SummaryContributionRow)、[SummaryEventRow](chronaxis.results.summary.md#api-SummaryEventRow)、[SummaryInputRow](chronaxis.results.summary.md#api-SummaryInputRow)、[SummarySegmentRow](chronaxis.results.summary.md#api-SummarySegmentRow)、[SummarySelectionRow](chronaxis.results.summary.md#api-SummarySelectionRow)、[SummarySequenceRow](chronaxis.results.summary.md#api-SummarySequenceRow)
+[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[ArtifactExportStore](chronaxis.results.artifact_exports.md#api-ArtifactExportStore)、[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[ContributionsUnavailableError](chronaxis.results.errors.md#api-ContributionsUnavailableError)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ResultSpool](chronaxis.results.spool.md#api-ResultSpool)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)、[SummaryAggregationRow](chronaxis.results.aggregation_row.md#api-SummaryAggregationRow)、[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[SummaryContributionRow](chronaxis.results.summary.md#api-SummaryContributionRow)、[SummaryEventRow](chronaxis.results.summary.md#api-SummaryEventRow)、[SummaryInputRow](chronaxis.results.summary.md#api-SummaryInputRow)、[SummarySegmentRow](chronaxis.results.summary.md#api-SummarySegmentRow)、[SummarySelectionRow](chronaxis.results.summary.md#api-SummarySelectionRow)、[SummarySequenceRow](chronaxis.results.summary.md#api-SummarySequenceRow)
 
 ## 对象导航
 
@@ -34,13 +34,14 @@
 |[`AnalysisResult.iter_segments`](#api-AnalysisResult-iter_segments)|创建独立片段流，保留全部父事件关联。|
 |[`AnalysisResult.iter_calculations`](#api-AnalysisResult-iter_calculations)|逐行读取计算摘要。检查scope区分会话、事件或片段，同时读取value、unit、status、reason及quality；select样本通过iter_selections读取。|
 |[`AnalysisResult.iter_contributions`](#api-AnalysisResult-iter_contributions)|逐行回查真实贡献与skip，原序号和新求值序号分别保留。|
+|[`AnalysisResult.iter_aggregations`](#api-AnalysisResult-iter_aggregations)|在结果打开期间，逐组读取本次请求的统计值、群组身份及候选参与和排除计数。|
 |[`AnalysisResult.iter_selections`](#api-AnalysisResult-iter_selections)|读取明确请求的真实样本选择行。|
 |[`AnalysisResult.iter_input_trace`](#api-AnalysisResult-iter_input_trace)|读取显式请求的所需输入追溯。|
 |[`AnalysisResult.contributions_available`](#api-AnalysisResult-contributions_available)|说明本结果是否允许查询逐消息贡献，不将未生成和零行混为一谈。|
 |[`AnalysisResult._write_table`](#api-AnalysisResult-_write_table)|逐行生成单表和质量记录，异常或EOF关闭读取句柄。|
 |[`AnalysisResult._file_info`](#api-AnalysisResult-_file_info)|以固定读取块计算新输出哈希，不保留全文件内容。|
-|[`AnalysisResult._install_directory`](#api-AnalysisResult-_install_directory)|在Windows同文件系统安装，短暂占用时有限等待并始终拒绝覆盖。|
-|[`AnalysisResult.write`](#api-AnalysisResult-write)|把暂存中的结果写到全新目录。所有文件完成后写入completed状态，再把临时目录重命名为正式目录；已有目标不会被覆盖。|
+|[`AnalysisResult._install_directory`](#api-AnalysisResult-_install_directory)|在Windows同文件系统安装单个文件或目录，短暂占用时有限等待且拒绝覆盖。|
+|[`AnalysisResult.write`](#api-AnalysisResult-write)|把暂存结果写入可复用目录，本次表和清单使用统一时间后缀。关闭文件后发布，完成清单最后出现；已有文件不覆盖。|
 |[`AnalysisResult.close`](#api-AnalysisResult-close)|关闭游标并释放资源；默认清理本次程序为本次运行创建的临时数据，retain_work为true时保留现场。原始输入及正式输出保留。|
 |[`AnalysisResult.__enter__`](#api-AnalysisResult-__enter__)|进入结果上下文，不再次执行输入读取。|
 |[`AnalysisResult.__exit__`](#api-AnalysisResult-__exit__)|退出上下文时释放资源，保留业务原异常。|
@@ -57,7 +58,7 @@ from .errors import AnalysisError, BudgetExceededError, ResultClosedError, Resul
 from .manifest import RunMetadata, OutputManifest
 from .artifact_exports import ArtifactExportStore
 from .rows import ResultRow, row_table
-from .summary import SummaryCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummarySelectionRow, SummaryInputRow, summary_fields, SUMMARY_MODELS, SUMMARY_COLUMNS
+from .summary import SummaryCalculationRow, SummaryEventRow, SummarySequenceRow, SummarySegmentRow, SummaryContributionRow, SummarySelectionRow, SummaryInputRow, SummaryAggregationRow, summary_fields, SUMMARY_MODELS, SUMMARY_COLUMNS
 from .owned_directory import directory_identity, remove_owned_directory
 from .spool import ResultSpool, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 ```
@@ -89,7 +90,7 @@ ValueError为非法数值。
 
 返回类型：str。
 
-源码：[`src/chronaxis/results/result.py:38`](../../../src/chronaxis/results/result.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:38`](../../../src/chronaxis/results/result.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_row_fields"></a>
 ## `_row_fields`
@@ -116,7 +117,7 @@ _row_fields(row) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/result.py:50`](../../../src/chronaxis/results/result.py#L50)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:50`](../../../src/chronaxis/results/result.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_DigestOutput"></a>
 ## `_DigestOutput`
@@ -128,7 +129,7 @@ _DigestOutput(stream)
 ```
 
 
-源码：[`src/chronaxis/results/result.py:64`](../../../src/chronaxis/results/result.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:65`](../../../src/chronaxis/results/result.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_DigestOutput-__init__"></a>
 ### `_DigestOutput.__init__`
@@ -153,7 +154,7 @@ owner。
 
 哈希构造错。
 
-源码：[`src/chronaxis/results/result.py:66`](../../../src/chronaxis/results/result.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:67`](../../../src/chronaxis/results/result.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_DigestOutput-write"></a>
 ### `_DigestOutput.write`
@@ -178,7 +179,7 @@ _DigestOutput.write(payload)
 
 短写/IO。
 
-源码：[`src/chronaxis/results/result.py:70`](../../../src/chronaxis/results/result.py#L70)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:71`](../../../src/chronaxis/results/result.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_DigestOutput-info"></a>
 ### `_DigestOutput.info`
@@ -203,7 +204,7 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/results/result.py:78`](../../../src/chronaxis/results/result.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:79`](../../../src/chronaxis/results/result.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_RowIterator"></a>
 ## `_RowIterator`
@@ -219,7 +220,7 @@ _RowIterator(owner, table: str)
 ```
 
 
-源码：[`src/chronaxis/results/result.py:83`](../../../src/chronaxis/results/result.py#L83)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:84`](../../../src/chronaxis/results/result.py#L84)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_RowIterator-__init__"></a>
 ### `_RowIterator.__init__`
@@ -250,7 +251,7 @@ _RowIterator.__init__(owner, table: str)
 - `ValueError`：内部认证发布仅接受两类legacy表。
 - `ValueError`：未注册结果表。
 
-源码：[`src/chronaxis/results/result.py:91`](../../../src/chronaxis/results/result.py#L91)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:92`](../../../src/chronaxis/results/result.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_RowIterator-__iter__"></a>
 ### `_RowIterator.__iter__`
@@ -276,7 +277,7 @@ _RowIterator.__iter__()
 
 无。
 
-源码：[`src/chronaxis/results/result.py:121`](../../../src/chronaxis/results/result.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:122`](../../../src/chronaxis/results/result.py#L122)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_RowIterator-__next__"></a>
 ### `_RowIterator.__next__`
@@ -311,7 +312,7 @@ StopIteration/关闭/格式/IO错误。
 
 返回类型：ResultRow &#124; dict。
 
-源码：[`src/chronaxis/results/result.py:128`](../../../src/chronaxis/results/result.py#L128)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:129`](../../../src/chronaxis/results/result.py#L129)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_RowIterator-close"></a>
 ### `_RowIterator.close`
@@ -339,7 +340,7 @@ _RowIterator.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/result.py:168`](../../../src/chronaxis/results/result.py#L168)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:169`](../../../src/chronaxis/results/result.py#L169)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult"></a>
 ## `AnalysisResult`
@@ -351,7 +352,7 @@ AnalysisResult(spool: chronaxis.results.spool.ResultSpool, metadata: chronaxis.r
 ```
 
 
-源码：[`src/chronaxis/results/result.py:193`](../../../src/chronaxis/results/result.py#L193)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:194`](../../../src/chronaxis/results/result.py#L194)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-__init__"></a>
 ### `AnalysisResult.__init__`
@@ -380,7 +381,7 @@ None；初始化实例状态。
 
 传入模型/表格式错误时拒绝构造；预算、暂存或内部清单写入失败可抛AnalysisError并保留cause。构造失败且仍有资源待关时，异常analysis_result_cleanup_owner提供close重试入口。一般调用者应取得AnalysisRunner.run返回的对象，避免自行接管spool。
 
-源码：[`src/chronaxis/results/result.py:203`](../../../src/chronaxis/results/result.py#L203)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:204`](../../../src/chronaxis/results/result.py#L204)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_require_open"></a>
 ### `AnalysisResult._require_open`
@@ -412,7 +413,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/result.py:269`](../../../src/chronaxis/results/result.py#L269)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:270`](../../../src/chronaxis/results/result.py#L270)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_manifest"></a>
 ### `AnalysisResult._manifest`
@@ -441,7 +442,7 @@ dict；元数据转换成本已申请。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/result.py:277`](../../../src/chronaxis/results/result.py#L277)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:278`](../../../src/chronaxis/results/result.py#L278)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-run_manifest"></a>
 ### `AnalysisResult.run_manifest`
@@ -471,7 +472,7 @@ AnalysisResult.run_manifest: dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/result.py:325`](../../../src/chronaxis/results/result.py#L325)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:326`](../../../src/chronaxis/results/result.py#L326)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_write_state"></a>
 ### `AnalysisResult._write_state`
@@ -503,7 +504,7 @@ AnalysisResult._write_state(path: Path, status: str) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/result.py:332`](../../../src/chronaxis/results/result.py#L332)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:333`](../../../src/chronaxis/results/result.py#L333)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_events"></a>
 ### `AnalysisResult.iter_events`
@@ -531,7 +532,7 @@ ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取
 
 返回类型：Iterator[[SummaryEventRow](chronaxis.results.summary.md#api-SummaryEventRow)]。
 
-源码：[`src/chronaxis/results/result.py:350`](../../../src/chronaxis/results/result.py#L350)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:351`](../../../src/chronaxis/results/result.py#L351)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_sequences"></a>
 ### `AnalysisResult.iter_sequences`
@@ -559,7 +560,7 @@ ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取
 
 返回类型：Iterator[[SummarySequenceRow](chronaxis.results.summary.md#api-SummarySequenceRow)]。
 
-源码：[`src/chronaxis/results/result.py:358`](../../../src/chronaxis/results/result.py#L358)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:359`](../../../src/chronaxis/results/result.py#L359)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_segments"></a>
 ### `AnalysisResult.iter_segments`
@@ -587,7 +588,7 @@ ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取
 
 返回类型：Iterator[[SummarySegmentRow](chronaxis.results.summary.md#api-SummarySegmentRow)]。
 
-源码：[`src/chronaxis/results/result.py:366`](../../../src/chronaxis/results/result.py#L366)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:367`](../../../src/chronaxis/results/result.py#L367)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_calculations"></a>
 ### `AnalysisResult.iter_calculations`
@@ -615,7 +616,7 @@ ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取
 
 返回类型：Iterator[[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)]。
 
-源码：[`src/chronaxis/results/result.py:374`](../../../src/chronaxis/results/result.py#L374)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:375`](../../../src/chronaxis/results/result.py#L375)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_contributions"></a>
 ### `AnalysisResult.iter_contributions`
@@ -643,7 +644,35 @@ ContributionsUnavailableError：outputs.contributions没有请求full，需要�
 
 返回类型：Iterator[[SummaryContributionRow](chronaxis.results.summary.md#api-SummaryContributionRow)]。
 
-源码：[`src/chronaxis/results/result.py:383`](../../../src/chronaxis/results/result.py#L383)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:384`](../../../src/chronaxis/results/result.py#L384)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-AnalysisResult-iter_aggregations"></a>
+### `AnalysisResult.iter_aggregations`
+
+在结果打开期间，逐组读取本次请求的统计值、群组身份及候选参与和排除计数。
+
+```python
+AnalysisResult.iter_aggregations() -> Iterator['SummaryAggregationRow']
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+可关闭的独立迭代器，逐行给出 SummaryAggregationRow。未配置聚合时为空。读取中止可关闭迭代器或所属结果。
+
+#### 异常说明
+
+ResultClosedError 表示所属结果已关闭或正在清理。预算不足、暂存读取失败及行格式损坏可分别引发 BudgetExceededError、OSError 和 ResultFormatError。
+
+返回类型：Iterator['[SummaryAggregationRow](chronaxis.results.aggregation_row.md#api-SummaryAggregationRow)']。
+
+源码：[`src/chronaxis/results/result.py:396`](../../../src/chronaxis/results/result.py#L396)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_selections"></a>
 ### `AnalysisResult.iter_selections`
@@ -671,7 +700,7 @@ ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取
 
 返回类型：Iterator[[SummarySelectionRow](chronaxis.results.summary.md#api-SummarySelectionRow)]。
 
-源码：[`src/chronaxis/results/result.py:395`](../../../src/chronaxis/results/result.py#L395)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:400`](../../../src/chronaxis/results/result.py#L400)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-iter_input_trace"></a>
 ### `AnalysisResult.iter_input_trace`
@@ -699,7 +728,7 @@ ResultClosedError：结果已关闭。AnalysisError：本次未生成输入追�
 
 返回类型：Iterator[[SummaryInputRow](chronaxis.results.summary.md#api-SummaryInputRow)]。
 
-源码：[`src/chronaxis/results/result.py:400`](../../../src/chronaxis/results/result.py#L400)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:405`](../../../src/chronaxis/results/result.py#L405)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-contributions_available"></a>
 ### `AnalysisResult.contributions_available`
@@ -729,7 +758,7 @@ bool；默认未配置逐消息指标仍允许原空游标。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/results/result.py:410`](../../../src/chronaxis/results/result.py#L410)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:415`](../../../src/chronaxis/results/result.py#L415)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_write_table"></a>
 ### `AnalysisResult._write_table`
@@ -761,7 +790,7 @@ AnalysisResult._write_table(table: str, destination: Path, quality_handle, cover
 
 - `ResultFormatError`：输出表行数与分析暂存不一致。
 
-源码：[`src/chronaxis/results/result.py:418`](../../../src/chronaxis/results/result.py#L418)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:423`](../../../src/chronaxis/results/result.py#L423)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_file_info"></a>
 ### `AnalysisResult._file_info`
@@ -788,12 +817,12 @@ IO错误；调用侧已预留发布临时槽位。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/result.py:480`](../../../src/chronaxis/results/result.py#L480)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:488`](../../../src/chronaxis/results/result.py#L488)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-_install_directory"></a>
 ### `AnalysisResult._install_directory`
 
-在Windows同文件系统安装，短暂占用时有限等待并始终拒绝覆盖。
+在Windows同文件系统安装单个文件或目录，短暂占用时有限等待且拒绝覆盖。
 
 ```python
 AnalysisResult._install_directory(temporary: Path, destination: Path) -> None
@@ -820,7 +849,7 @@ AnalysisError为未支持平台；FileExistsError/IO错误为安装失败。
 
 #### 副作用说明
 
-只重试目录安装，不重新读取、分析或生成任何输出文件。
+只重试当前路径安装，不重新读取、分析或生成任何输出文件。
 
 #### 边界说明
 
@@ -829,12 +858,12 @@ AnalysisError为未支持平台；FileExistsError/IO错误为安装失败。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/result.py:494`](../../../src/chronaxis/results/result.py#L494)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:502`](../../../src/chronaxis/results/result.py#L502)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-write"></a>
 ### `AnalysisResult.write`
 
-把暂存中的结果写到全新目录。所有文件完成后写入completed状态，再把临时目录重命名为正式目录；已有目标不会被覆盖。
+把暂存结果写入可复用目录，本次表和清单使用统一时间后缀。关闭文件后发布，完成清单最后出现；已有文件不覆盖。
 
 ```python
 AnalysisResult.write(output_dir: str | Path) -> OutputManifest
@@ -844,7 +873,7 @@ AnalysisResult.write(output_dir: str | Path) -> OutputManifest
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。指定新建的结果目录，传str或Path，例如Path("results/run_01")。按本次输出位置填写；目录已存在时拒绝覆盖。完成后返回OutputManifest，结果对象仍需关闭。|
+|`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。可重复使用的结果目录，传str或Path，例如Path("results")。本次文件统一增加时间后缀，不覆盖已有文件。返回OutputManifest包含实际manifest_path；结果仍需关闭。|
 
 #### 返回说明
 
@@ -852,15 +881,15 @@ AnalysisResult.write(output_dir: str | Path) -> OutputManifest
 
 #### 异常说明
 
-ResultClosedError：结果已关闭或正在关闭。AnalysisError：目标已存在、目标位于将清理的自有工作目录内、平台不支持安全发布、预算/格式/文件写入失败；原错误通过__cause__保留。修正输出位置或环境后，可向另一新目录重试，不会重读输入。
+ResultClosedError：结果已关闭或正在关闭。AnalysisError：输出不是可用目录、位于将清理的自有工作目录内、平台不支持安全发布、预算/格式/文件写入失败；原错误通过__cause__保留。修正环境后，可向同一或其他目录重试，不会重读输入。
 
 #### 副作用说明
 
-发布到全新输出目录，不覆盖既有目录。失败时按retain_work决定是否保留本次临时目录；诊断可从异常及run_manifest查看。
+发布带时间后缀的结果文件，完成清单最后发布。失败只清理本次文件；retain_work控制临时现场保留。断电或强制结束遗留的无清单文件不表示完成。
 
 返回类型：[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)。
 
-源码：[`src/chronaxis/results/result.py:523`](../../../src/chronaxis/results/result.py#L523)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:531`](../../../src/chronaxis/results/result.py#L531)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-close"></a>
 ### `AnalysisResult.close`
@@ -888,7 +917,7 @@ None。可重复调用；失败后仍可重试未完成的清理。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/result.py:660`](../../../src/chronaxis/results/result.py#L660)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:693`](../../../src/chronaxis/results/result.py#L693)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-__enter__"></a>
 ### `AnalysisResult.__enter__`
@@ -916,7 +945,7 @@ ResultClosedError为已关闭。
 
 返回类型：'[AnalysisResult](chronaxis.results.result.md#api-AnalysisResult)'。
 
-源码：[`src/chronaxis/results/result.py:711`](../../../src/chronaxis/results/result.py#L711)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:744`](../../../src/chronaxis/results/result.py#L744)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisResult-__exit__"></a>
 ### `AnalysisResult.__exit__`
@@ -943,4 +972,4 @@ False，异常会继续传给调用者。
 
 正常离开with时close失败会传播关闭错误；with内已有业务异常时保留该业务异常，关闭问题附加到诊断信息，避免掩盖真正失败原因。
 
-源码：[`src/chronaxis/results/result.py:719`](../../../src/chronaxis/results/result.py#L719)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/result.py:752`](../../../src/chronaxis/results/result.py#L752)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,17 +1,17 @@
 # chronaxis.AnalysisRunner
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.runner.md)。
+使用`from chronaxis import AnalysisRunner`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.runner.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [AnalysisRunner](#api-AnalysisRunner)
-- [AnalysisRunner.__init__](#api-AnalysisRunner-__init__)
-- [AnalysisRunner.backend](#api-AnalysisRunner-backend)
-- [AnalysisRunner.validate](#api-AnalysisRunner-validate)
-- [AnalysisRunner.explain](#api-AnalysisRunner-explain)
-- [AnalysisRunner.run](#api-AnalysisRunner-run)
+- [`AnalysisRunner`](#api-AnalysisRunner)
+- [`AnalysisRunner.__init__`](#api-AnalysisRunner-__init__)
+- [`AnalysisRunner.backend`](#api-AnalysisRunner-backend)
+- [`AnalysisRunner.validate`](#api-AnalysisRunner-validate)
+- [`AnalysisRunner.explain`](#api-AnalysisRunner-explain)
+- [`AnalysisRunner.run`](#api-AnalysisRunner-run)
 
 <a id="api-AnalysisRunner"></a>
 ## `AnalysisRunner`
@@ -19,11 +19,11 @@
 配置单次分析的执行器。backend可覆盖计划设置；run创建独立资源，返回需关闭的AnalysisResult。通常复用执行器，分别管理每次结果。
 
 ```python
-AnalysisRunner(backend=None)
+AnalysisRunner(backend=None, *, extensions=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -31,7 +31,7 @@ AnalysisRunner(backend=None)
 选择是否覆盖计划后端，不读取任何来源或配置文件。
 
 ```python
-AnalysisRunner.__init__(backend=None)
+AnalysisRunner.__init__(backend=None, *, extensions=None)
 ```
 
 #### 参数
@@ -39,6 +39,7 @@ AnalysisRunner.__init__(backend=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`backend`|str &#124; None|否|None|位置或关键字。`"reference"`使用独立参考计算；`"numpy"`使用NumPy数组计算。None沿用计划中的选择。|
+|`extensions`|[ExtensionRegistry](ExtensionRegistry.md#api-ExtensionRegistry) &#124; None|否|None|仅关键字。实际执行或检查计划时传入的宿主注册，必须与创建计划时使用的对象相同。|
 
 #### 返回说明
 
@@ -53,7 +54,7 @@ TypeError为非文本覆盖；ValueError为未知后端。
 - `TypeError`：AnalysisRunner backend需要reference、numpy或None。
 - `ValueError`：AnalysisRunner仅支持reference与numpy后端。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -81,7 +82,7 @@ None/reference/numpy。
 
 无。
 
-源码：[`src/chronaxis/runner.py:45`](../../../src/chronaxis/runner.py#L45)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:51`](../../../src/chronaxis/runner.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -110,7 +111,7 @@ TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正�
 
 无来源I/O或目录创建。
 
-源码：[`src/chronaxis/runner.py:65`](../../../src/chronaxis/runner.py#L65)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:73`](../../../src/chronaxis/runner.py#L73)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -139,7 +140,7 @@ TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏带�
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:75`](../../../src/chronaxis/runner.py#L75)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:83`](../../../src/chronaxis/runner.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -173,7 +174,7 @@ TypeError为错误plan；验证或运行错误为AnalysisError，保原cause和�
 #### 调用示例
 
 ```python
-"""从YAML配置执行分析并逐行读取结果；输入为配置路径，可选输出新目录。"""
+"""从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。"""
 import argparse
 from pathlib import Path
 
@@ -184,7 +185,7 @@ def main():
     """检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')
-    parser.add_argument('--output', type=Path, help='尚不存在的正式输出目录；省略则只打印结果')
+    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')
     args = parser.parse_args()
     plan = load_analysis_plan(args.plan)
     report = validate_analysis_plan(plan)
@@ -207,4 +208,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:86`](../../../src/chronaxis/runner.py#L86)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/runner.py:94`](../../../src/chronaxis/runner.py#L94)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

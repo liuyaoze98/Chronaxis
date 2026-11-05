@@ -59,18 +59,19 @@ class RecordEventDurations:
             start=event.confirmed_ns if rule.selection_origin=='confirmed' else event.start_ns
             cost=8192+16*_metadata_bytes(event.event_id)
             _reserve_owned_ram(self,cost,'_pending_cost')
-            heapq.heappush(self._queue,(end,self._serial,request,event.event_id,start,cost))
+            heapq.heappush(self._queue,(end,self._serial,request,event.event_id,start,cost,
+                                        bool(event.dependency_quality & Q.ESTIMATED)))
             self._serial+=1
         self._flush_ready()
 
-    def _calculate(self,request,event_id,start_ns,end_ns):
+    def _calculate(self,request,event_id,start_ns,end_ns,estimated=False):
         """只借取事件两侧及区间内的驱动点，复用原两后端时长核。
 
         参数: 请求/父ID/真实端点。返回: None，结果交回调。异常: 构造/数值/发布原错。
         """
         step=self._steps[request.calculation_id]
         spec=CalculationDefinition(request.calculation_id,'duration',Interval(start_ns,end_ns),request.partial_policy,
-                        request.unit,'event',request.minimum_coverage)
+                        request.unit,'event',request.minimum_coverage,config_version=self._plan.config_version)
         try:
             self._calculation=RecordTimeCalculation(self._budget,spec,'1',D.BOOL,step,
                 backend=self._plan.execution.backend,batch_intervals=64)
@@ -92,6 +93,9 @@ class RecordEventDurations:
                 for index in range(first,last+1):
                     self._calculation.consume(((self._indexes.at(driver,index),value),))
         result=self._calculation.finish()
+        if estimated:
+            from .transform_partial import partial_result
+            result=partial_result(result,request.partial_policy)
         self._consumer(request,event_id,result)
         self._calculation.close();self._calculation=None
 
@@ -104,13 +108,13 @@ class RecordEventDurations:
         try:
             while self._queue:
                 item=heapq.heappop(self._queue)
-                end,serial,request,event_id,start,cost=item
+                end,serial,request,event_id,start,cost,estimated=item
                 driver=self._choices[request.calculation_id].driver
                 last=None if self._indexes is None or driver is None else self._indexes.last(driver)
                 if not final and self._steps[request.calculation_id] is not None and (last is None or last<end):
                     pending.append(item)
                     continue
-                self._calculate(request,event_id,start,end)
+                self._calculate(request,event_id,start,end,estimated)
                 item=None
                 _release_owned_ram(self,cost,'_pending_cost')
         except BaseException:

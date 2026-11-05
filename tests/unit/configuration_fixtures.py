@@ -11,7 +11,7 @@ def current_fixture(value):
 
     错误形状夹具仍交产品入口检查，不能在这里替它修复业务字段。
     """
-    if type(value) is not dict or value.get('config_version') != 3:
+    if type(value) is not dict or value.get('config_version') != 4:
         return value
     if type(value.get('sources')) is not list or type(value.get('signals')) is not list:
         return value

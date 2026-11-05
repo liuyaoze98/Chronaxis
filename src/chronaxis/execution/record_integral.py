@@ -81,6 +81,7 @@ class RecordIntegral(RecordPointBuffer):
         self._covered_ns = 0
         self._known_ns = self._selected_ns = self._selected_unknown_ns = self._false_ns = 0
         self._quality = Q.NONE
+        self._transform_partial = False
         self._coverage_value_ns=0 if spec.minimum_coverage>0 else None
         try:
             # 固定费覆盖误差求和的有限候选及点缓冲，不按总记录数扩大。
@@ -124,6 +125,9 @@ class RecordIntegral(RecordPointBuffer):
                                   retain_unknown_ranges=False, valid_until_ns=deadlines, **options)
             self._sum.push_values(terms.areas, terms.valid)
             facts = terms.facts
+            from .transform_partial import partial_in_block
+            if partial_in_block(self._rows,self._spec.window,samples=False):
+                self._transform_partial=True
             if self._coverage_value_ns is not None:
                 self._coverage_value_ns+=facts.value_valid_duration_ns
             if facts.actual_window is not None:
@@ -171,6 +175,9 @@ class RecordIntegral(RecordPointBuffer):
             coverage=None if self._coverage_value_ns is None else classify_coverage(
                 self._spec,self._covered_ns,self._coverage_value_ns,self._known_ns)
             self._result = RecordIntegralResult(value, self._unit, status, reason, self._quality | number.quality,coverage)
+            if self._transform_partial:
+                from .transform_partial import partial_result
+                self._result=partial_result(self._result,self._spec.partial_policy)
             self._finished = True
             return self._result
         except BaseException:

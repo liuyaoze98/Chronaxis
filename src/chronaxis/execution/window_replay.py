@@ -187,7 +187,12 @@ class HistoricalWindowReplay:
                         or given_completion != completion):
                     raise ValueError('窗口运行绑定与当前封存历史身份不同')
             # 当前固定费已覆盖真实投影元数据；回读只持实际样本别名，不补未读取声明的空状态。
-            self._state = LatestSignalState(self._budget, bindings.projected_signals, context.session_id)
+            from dataclasses import replace
+            from ..core.enum_codes import code_dependencies
+            codes = code_dependencies(compiled.root)
+            definitions = tuple(replace(item, capture_code=True) if item.name in codes else item
+                                for item in bindings.projected_signals)
+            self._state = LatestSignalState(self._budget, definitions, context.session_id)
             self._holds = HoldQueries(self._state, context)
             self._expressions = ExpressionQueries(self._holds, bindings, (compiled,))
             self._boundaries = BoundaryQueries(self._expressions)

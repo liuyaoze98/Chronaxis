@@ -4,6 +4,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+from published_paths import published_file, export_root
 from uuid import uuid4
 import unittest
 from unittest.mock import patch
@@ -44,8 +45,8 @@ class RecordPublicationTests(unittest.TestCase):
                 with AnalysisRunner().run(self.config(kind,path),self.root/uuid4().hex) as result:
                     self.assertEqual(calls,[])
                     for repeat in range(2):
-                        output=self.root/uuid4().hex;result.write(output)
-                        records=[json.loads(line) for line in (output/'exports.jsonl').read_text(encoding='utf-8').splitlines()]
+                        output=self.root/uuid4().hex;published=result.write(output)
+                        records=[json.loads(line) for line in (published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()]
                         self.assertEqual(len(calls),4*(repeat+1))
                         self.assertTrue(all(dst is not None for src,dst in calls))
                         self.assertTrue(all('sha256' not in f and '_identity' not in f for r in records for f in r['files']))
@@ -58,12 +59,12 @@ class RecordPublicationTests(unittest.TestCase):
             with AnalysisRunner().run(self.config('can_asc',path,True,format),self.root/uuid4().hex) as result:
                 with patch.object(AnalysisResult,'_file_info',side_effect=AssertionError('不应重新扫描表')):
                     for repeat in range(2):
-                        output=self.root/uuid4().hex;result.write(output)
-                        manifest=json.loads((output/'run_manifest.json').read_text(encoding='utf-8'))
+                        output=self.root/uuid4().hex;published=result.write(output)
+                        manifest=json.loads((published_file(published,'run_manifest.json')).read_text(encoding='utf-8'))
                         for info in manifest['outputs']:
                             self.assertEqual(info['sha256'],sha256((output/info['name']).read_bytes()).hexdigest())
-                        for record in map(json.loads,(output/'exports.jsonl').read_text(encoding='utf-8').splitlines()):
-                            root=output/'exports'/record['directory']
+                        for record in map(json.loads,(published_file(published,'exports.jsonl')).read_text(encoding='utf-8').splitlines()):
+                            root=export_root(published)/record['directory']
                             for info in record['files']:
                                 self.assertEqual(info['sha256'],sha256((root/info['name']).read_bytes()).hexdigest())
                                 self.assertNotIn('_identity',info)
@@ -81,7 +82,7 @@ class RecordPublicationTests(unittest.TestCase):
                     # 同长快速写入可能保留mtime；明确构造默认策略可观察的变化。
                     os.utime(file,ns=(before.st_atime_ns,before.st_mtime_ns+1_000_000_000))
                 output=self.root/uuid4().hex
-                with self.assertRaises(AnalysisError):result.write(output)
+                with self.assertRaises(AnalysisError):published=result.write(output)
                 self.assertFalse(output.exists())
                 self.assertFalse(list(output.parent.glob('.'+output.name+'.incomplete-*')))
                 # 恢复自己的夹具后同一结果可再次发布，不重算输入。
@@ -95,6 +96,6 @@ class RecordPublicationTests(unittest.TestCase):
         self.addCleanup(result.close);budget=result.spool.budget
         output=self.root/uuid4().hex
         with patch('chronaxis.results.artifact_exports._write_all',side_effect=KeyboardInterrupt('copy cancel')):
-            with self.assertRaises(KeyboardInterrupt):result.write(output)
+            with self.assertRaises(KeyboardInterrupt):published=result.write(output)
         self.assertFalse(output.exists());self.assertFalse(list(output.parent.glob('.'+output.name+'.incomplete-*')))
         result.write(self.root/uuid4().hex);result.close();self.assertEqual(budget.ram_bytes,0)

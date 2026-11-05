@@ -8,11 +8,9 @@
 临时对象及身份材料预付费用；失败时清理本层借用引用，原异常交给阶段处理。
 """
 
-from hashlib import sha256
-
 from ..core.decoded_binding import DecodedBindings
 from ..core.expression import (
-    CompiledExpression, StaticExpression, _Compiler, _identity, validate_expression)
+    CompiledExpression, StaticExpression, _create_compiler, expression_identity, validate_expression)
 
 
 def compile_required_expression(static, bindings, *, derived=(), unit=None):
@@ -39,12 +37,10 @@ def compile_required_expression(static, bindings, *, derived=(), unit=None):
         # 同时核根树和身份；仅比较别名或单位不能发现合法文本/常量被typed替换。
         if checked != static:
             raise ValueError('按需运行编译与原完整静态表达式不一致')
-        compiler = _Compiler(bindings, derived)
+        compiler = _create_compiler(bindings, derived)
         root, normalized = compiler.parse(static.text, unit)
         bindings.require_synchronized(root.aliases)
-        payload = ('expression-v1', 'reference+numpy-v1', bindings.identity, normalized,
-            repr(root), tuple((item.name, item.expr, item.unit) for item in derived))
-        identity = sha256(_identity(payload).encode('utf-8')).hexdigest()
+        identity = expression_identity(bindings, root, normalized, derived)
         return CompiledExpression(static.text, bindings, root, root.aliases, normalized, identity)
     finally:
         # 阶段退款后，异常栈不得额外保活本层编译器及其全部声明索引。

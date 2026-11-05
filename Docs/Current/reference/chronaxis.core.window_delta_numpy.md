@@ -1,4 +1,4 @@
-# chronaxis.core.window_delta_numpy
+# `chronaxis.core.window_delta_numpy`
 
 用数组掩码计算窗口覆盖、首尾位置和整窗单调性。
 
@@ -53,4 +53,4 @@ WindowDeltaResult。
 
 输入错误；数值失败记录质量。
 
-源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

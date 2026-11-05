@@ -1,6 +1,6 @@
 """验证用户1基通道到内部0基模型的唯一转换，以及原始文件布局保持原约定。
 
-通过公共计划、配置展开和INI入口检查，合成文件只写临时目录，不读取私人日志。
+通过公共计划、配置展开和通道校验函数检查，合成文件只写临时目录，不读取私人日志。
 静态配置夹具保留完整类型，避免为通道验证额外加载DBC。
 """
 from copy import deepcopy
@@ -12,6 +12,7 @@ import unittest
 from chronaxis import AnalysisPlan, PlanValidationError
 from chronaxis.configuration.resolution import resolved_configuration
 from chronaxis.legacy.records import field_from_dict
+from chronaxis.planning.channels import channel_index
 from chronaxis.sources.can_spec import can_field_from_key
 from test_can_planning import can_config
 from test_plan_message_calculations import legacy_config
@@ -47,7 +48,7 @@ class PublicCANChannelTests(unittest.TestCase):
                         self.assertEqual(raw, original)
 
     def test_zero_and_noncanonical_values_rejected(self):
-        """参数: 无。返回: None。异常: 断言失败；旧0不自动猜成第一路。"""
+        """参数: 无。返回: None。异常: 断言失败；零编号与非规范写法均不作为合法通道接受。"""
         for key in ('0', '00', '01', '-1', '+1', ' 1', '1\n', '0x1', True, 1):
             raw = can_config()
             raw['sources'][0]['dbc_by_channel'] = {key: 'not-read.dbc'}
@@ -58,6 +59,27 @@ class PublicCANChannelTests(unittest.TestCase):
             raw['signals'][0]['field']['channel'] = value
             with self.subTest(value=value), self.assertRaisesRegex(PlanValidationError, '从1开始'):
                 AnalysisPlan.from_dict(raw)
+
+    def test_channel_hints_describe_current_input(self):
+        """错误提示直接说明当前填写方法，合法首通道仍转换为内部0。
+
+        参数: 无。返回: None。异常: 断言失败，诊断缺少填写依据、字段位置不正确或转换改变。
+        """
+        cases = (
+            (0, False, '$.signals[0].field.channel',
+             '填写从1开始的整数，第一路写1；省略时采用所选来源的唯一通道'),
+            ('0', True, '$.sources[0].dbc_by_channel.0',
+             '按采集通道编号填写无前导零的正整数文本；第一路写字符串"1"，原始文件中的通道列保持原样'),
+        )
+        for value, key, path, hint in cases:
+            with self.subTest(key=key), self.assertRaises(PlanValidationError) as caught:
+                channel_index(value, path, key=key)
+            self.assertEqual(caught.exception.path, path)
+            self.assertEqual(caught.exception.hint, hint)
+            self.assertNotIn('旧', str(caught.exception))
+        # 输入1和文本键"1"各自遵守公开类型要求，均只减去一次编号起点。
+        self.assertEqual(channel_index(1, '$.channel'), 0)
+        self.assertEqual(channel_index('1', '$.dbc_by_channel.1', key=True), 0)
 
     def test_group_and_message_selector_share_public_number(self):
         """参数: 无。返回: None。异常: 断言失败；集中信号与逐报文使用公共2。"""

@@ -179,6 +179,7 @@ class ScannedSignalProofTests(unittest.TestCase):
         work, _ = self.fixture(unused=True)
         config = json.loads((work / 'plan.json').read_text(encoding='utf-8'))
         config['signals'][1]['unit'] = 'A'
+        config['signals'][1]['conversion'] = {'input_unit':'A'}
         plan = AnalysisPlan.from_dict(current_fixture(config), base_dir=work)
         case = self.scan(work, plan)
         with self.assertRaises(SourceReadError) as caught:

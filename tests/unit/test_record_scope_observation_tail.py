@@ -32,7 +32,7 @@ BO_ 256 Reading: 2 Node
 
     def config(self, *, age='4s', fixed=False):
         """给出当前公开配置；有效期与固定周期只用于所测试的差异。"""
-        raw = dict(config_version=3, dataset=dict(name='scope_tail'),
+        raw = dict(config_version=4, dataset=dict(name='scope_tail'),
             sources=[dict(path='meter.asc', dbc_by_channel={'1': 'meter.dbc'})],
             signals=[dict(name=name, field=dict(frame_id='0x100', signal=signal), valid_for=ttl)
                 for name, signal, ttl in [('power', 'Power', age), ('temperature', 'Temperature', '4s')]],

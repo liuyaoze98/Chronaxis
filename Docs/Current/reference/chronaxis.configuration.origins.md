@@ -1,10 +1,11 @@
-# chronaxis.configuration.origins
+# `chronaxis.configuration.origins`
 
 按请求说明定义或叶字段来自哪个配置文件；不作为执行计划的持久状态。
 
 只读主配置与明确的一层公共定义，先复用静态校验再生成小型来源记录。
 默认报告定义位置及来源文件路径；fields模式列全部用户实际写入的最终取值字段，不虚构默认值来源。
-既不读取CSV/DBC等业务输入，也不写报告文件；调用者决定显示或重定向。
+不读取ASC/BLF/CSV中的数据记录；校验可能读取显式DBC以补齐信号元数据。
+不写报告文件；调用者决定显示或重定向。
 
 这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
@@ -57,7 +58,7 @@ _at(data, path)
 
 无。
 
-源码：[`src/chronaxis/configuration/origins.py:15`](../../../src/chronaxis/configuration/origins.py#L15)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/origins.py:16`](../../../src/chronaxis/configuration/origins.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_record"></a>
 ## `_record`
@@ -84,7 +85,7 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/configuration/origins.py:25`](../../../src/chronaxis/configuration/origins.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/origins.py:26`](../../../src/chronaxis/configuration/origins.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-configuration_origins"></a>
 ## `configuration_origins`
@@ -99,7 +100,7 @@ configuration_origins(source, *, fields=False)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`source`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|是|无|位置或关键字。主分析、批量或INI映射配置文件；只读取该配置及明确的一层公共定义。|
+|`source`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|是|无|位置或关键字。当前分析或批量配置文件；读取该配置及明确的一层公共定义，静态信号推导可能读取声明的DBC，不读取数据记录。|
 |`fields`|bool|否|False|仅关键字。默认False列定义；True列所有用户实际写入的最终取值字段及原文件行列，不复制字段值，也不虚构默认值来源。|
 
 ### 返回说明
@@ -110,10 +111,10 @@ configuration_origins(source, *, fields=False)
 
 配置/读取错误。
 
-分析和映射都列其定义；批量只列本文件的任务，不读取子计划。省略的默认字段
+分析配置列其定义；批量只列本文件的任务，不读取子计划。省略的默认字段
 不在报告内。fields只保位置而不复制值；路径声明单独说明最终指向。
 
-源码：[`src/chronaxis/configuration/origins.py:36`](../../../src/chronaxis/configuration/origins.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/origins.py:37`](../../../src/chronaxis/configuration/origins.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-render_origins"></a>
 ## `render_origins`
@@ -138,4 +139,4 @@ str。
 
 内部报告结构错误。
 
-源码：[`src/chronaxis/configuration/origins.py:81`](../../../src/chronaxis/configuration/origins.py#L81)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/origins.py:81`](../../../src/chronaxis/configuration/origins.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

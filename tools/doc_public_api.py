@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import json
 import os
+from public_api_notes import NOTES, render_note
 
 SPECIAL={'__init__','__enter__','__exit__','__iter__','__next__'}
 
@@ -31,9 +32,10 @@ def public_page(item, record, content, routes, anchor):
         end=markers[i+1].start() if i+1<len(markers) else len(content)
         sections[m[1]]=re.split(r'\n## (?:内部匿名回调|变更履历)',content[m.start():end],maxsplit=1)[0]
     selected={anchor(name) for name in chosen}
-    out=[f'# chronaxis.{item["name"]}\n\n从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/{record["module"]}.md)。\n\n',
+    module, symbol = item.get('import_module', 'chronaxis'), item.get('import_name', item['name'])
+    out=[f'# {module}.{symbol}\n\n使用`from {module} import {symbol}`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/{record["module"]}.md)。\n\n',
          '返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。\n\n',
-         '## 成员导航\n\n'+ '\n'.join(f'- [{name}](#{anchor(name)})' for name in chosen)+'\n\n']
+         '## 成员导航\n\n'+ '\n'.join(f'- [`{name}`](#{anchor(name)})' for name in chosen)+'\n\n']
     def rewrite(m):
         """参数: Markdown目标。返回: 保持公开路由或明确指向开发参考。异常: 无。"""
         target=m[1]
@@ -60,6 +62,8 @@ def build_public(doc, public, records, anchor):
     for item in public['objects']:
         record=by_module[item['module']];content=(doc/'reference'/(item['module']+'.md')).read_text(encoding='utf8')
         text=public_page(item,record,content,routes,anchor)
+        if item['name'] in NOTES:
+            text = render_note(item, text, 'zh')
         metadata=json.loads((doc/'documentation.json').read_text(encoding='utf8'))
         if os.environ.get('CHRONAXIS_DOC_SOURCE_TREE') != '1':
             text+='\n## 变更履历\n\n'+f'- {metadata["updated_at"]} | {metadata["task"]} | 从固定源码{metadata["baseline"]}生成公开视图；liuyaoze。\n'

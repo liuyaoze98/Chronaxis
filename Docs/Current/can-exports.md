@@ -8,7 +8,7 @@
 
 [export-can-grid.yaml](examples/export-can-grid.yaml)只增加500ms报文网格，重建DBC字段Voltage，其他位取基础帧。6个目标位置中，0、0.5、1、1.5、2秒可写出共5帧，2.5秒因范围内没有右端帧而跳过；积分仍为13V*s。
 
-[export-can-all-windows.yaml](examples/export-can-all-windows.yaml)先定义电压大于5V的活动[1,2)，再定义活动窗口和向前1秒的窗口；can_frames使用scope: {windows: all}，分别导出两个窗口的片段。运行命令为`chronaxis run 文件名.yaml --output 新目录`，在exports.jsonl中按窗口/片段身份核对。
+[export-can-all-windows.yaml](examples/export-can-all-windows.yaml)先定义电压大于5V的活动[1,2)，再定义活动窗口和向前1秒的窗口；can_frames使用scope: {windows: all}，分别导出两个窗口的片段。运行命令为`chronaxis run 文件名.yaml --output 结果目录`，从本次 manifest 的 `exports.index_file` 找到带时间后缀的导出索引，再按窗口/片段身份核对。
 
 ## 原CAN报文导出
 

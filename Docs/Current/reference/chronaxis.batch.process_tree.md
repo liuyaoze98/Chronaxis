@@ -1,4 +1,4 @@
-# chronaxis.batch.process_tree
+# `chronaxis.batch.process_tree`
 
 将批量工作进程及其CAN读取子进程纳入同一个Windows作业对象。
 
@@ -42,7 +42,7 @@ class _BasicLimits(ctypes.Structure)
 |---|---|---|---|---|
 |`_fields_`|list[tuple[str, type]]|类成员，不作为构造参数填写|[('per_process', ctypes.c_longlong), ('per_job', ctypes.c_longlong), ('flags', wintypes.DWORD), ('min_ws', ctypes.c_size_t), ('max_ws', ctypes.c_size_t), ('active_limit', wintypes.DWORD), ('affinity', ctypes.c_size_t), ('priority', wintypes.DWORD), ('scheduling', wintypes.DWORD)]|Windows作业结构的固定ABI布局；由ctypes使用，不是用户配置参数，不能按字段名称随意调整次序或宽度。|
 
-源码：[`src/chronaxis/batch/process_tree.py:12`](../../../src/chronaxis/batch/process_tree.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_tree.py:12`](../../../src/chronaxis/batch/process_tree.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_ExtendedLimits"></a>
 ## `_ExtendedLimits`
@@ -61,7 +61,7 @@ class _ExtendedLimits(ctypes.Structure)
 |---|---|---|---|---|
 |`_fields_`|list[tuple[str, type]]|类成员，不作为构造参数填写|[('basic', _BasicLimits), ('io', ctypes.c_ulonglong * 6), ('process_memory', ctypes.c_size_t), ('job_memory', ctypes.c_size_t), ('peak_process', ctypes.c_size_t), ('peak_job', ctypes.c_size_t)]|Windows作业结构的固定ABI布局；由ctypes使用，不是用户配置参数，不能按字段名称随意调整次序或宽度。|
 
-源码：[`src/chronaxis/batch/process_tree.py:22`](../../../src/chronaxis/batch/process_tree.py#L22)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_tree.py:22`](../../../src/chronaxis/batch/process_tree.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessTree"></a>
 ## `ProcessTree`
@@ -73,7 +73,7 @@ ProcessTree(pid)
 ```
 
 
-源码：[`src/chronaxis/batch/process_tree.py:30`](../../../src/chronaxis/batch/process_tree.py#L30)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_tree.py:30`](../../../src/chronaxis/batch/process_tree.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessTree-__init__"></a>
 ### `ProcessTree.__init__`
@@ -98,7 +98,7 @@ ProcessTree.__init__(pid)
 
 平台或系统错误。
 
-源码：[`src/chronaxis/batch/process_tree.py:33`](../../../src/chronaxis/batch/process_tree.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_tree.py:33`](../../../src/chronaxis/batch/process_tree.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ProcessTree-close"></a>
 ### `ProcessTree.close`
@@ -124,4 +124,4 @@ None。
 
 关闭失败仍保留句柄供重试。
 
-源码：[`src/chronaxis/batch/process_tree.py:67`](../../../src/chronaxis/batch/process_tree.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/process_tree.py:67`](../../../src/chronaxis/batch/process_tree.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

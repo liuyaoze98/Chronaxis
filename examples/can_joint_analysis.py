@@ -81,7 +81,7 @@ def configuration(blf, dbc, csv, backend, batch_rows):
     返回: load_analysis_plan可读取的配置dict。异常: 无I/O，错误选项由main及公开计划校验拒绝。
     """
     origin = 'synthetic_joint_clock'
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='joint_example', entity='synthetic_device', session='joint_session',
             domain=dict(start='0s', end='10s')),
         sources=[dict(name='bus', source_type='can_blf', path=str(blf), legacy_profile='sclicer-functions-v1',

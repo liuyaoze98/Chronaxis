@@ -102,7 +102,7 @@ class ConfigurationSignalGroupsTests(unittest.TestCase):
     def test_derived_inference_chains_and_explicit_errors(self):
         """V乘A得到W再积分为J；省略单位仍检查错误、循环和未知单位组合。"""
         raw=deepcopy(self.raw)
-        raw['signals'][1].update(dtype='float64',unit='A')
+        raw['signals'][1].update(dtype='float64',unit='A',conversion={'input_unit':'A'})
         raw['derived']={'power':dict(expr='voltage * state'),'twice':dict(expr='power * 2')}
         raw['calculations']=[dict(name='energy',operation='integral',expr='twice')]
         self.validate_schema(raw)
@@ -113,7 +113,7 @@ class ConfigurationSignalGroupsTests(unittest.TestCase):
                 energy=next(result.iter_calculations())
                 self.assertEqual((energy.value,energy.unit),(4.,'J'))
         for change in ({'expr':'voltage * state','unit':'V'},{'expr':'twice * 2'},
-                       {'expr':'voltage * voltage'},{'expr':'voltage','unit':None}):
+                       {'expr':'voltage + current'},{'expr':'voltage','unit':None}):
             wrong=deepcopy(raw);wrong['derived']['power']=change
             with self.subTest(change=change),self.assertRaises(PlanValidationError):AnalysisPlan.from_dict(wrong)
 

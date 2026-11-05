@@ -13,7 +13,7 @@ memory_series_reference从已有内存行生成信号历史，保留来源和纳
 """
 
 # 数据类只保存不可变逻辑结果，math检查有限与精度，不恢复源浮点已丢信息。
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 # 有限性/配置端点辅助只使用标准库，不替代数组数值内核。
 from math import isfinite
 # 静态内建比较仅用于参考白名单，不接自由函数。
@@ -60,6 +60,8 @@ class ScalarValue:
     valid: bool = True  # 无效不代表正常0。
     quality: QualityFlag = QualityFlag.NONE  # 输入原因和计算失败原因。
     labels: tuple[str, ...] = ()  # 仅enum有固定公开逻辑域。
+    code: 'ScalarValue | None' = None  # 仅 enum_code 需要的原整数，可与标签有不同有效性。
+    partial: bool = field(default=False,kw_only=True,repr=False)  # 有限变换窗口仅有部分输入时仍可估算的数值。
 
     def __post_init__(self) -> None:
         """检查值与声明类型是否一致，并核对有效性和质量原因。
@@ -75,11 +77,16 @@ class ScalarValue:
         """
         # 原诊断也需不可变原生标量。
         require_scalar(self.value)
+        if type(self.partial) is not bool or self.partial and not self.valid:
+            raise ValueError('部分结果标志仅用于实际可用的数值')
         # dtype和质量都必须是真实已定义枚举。
         if not isinstance(self.dtype, SignalDType) or not isinstance(self.quality, QualityFlag) or type(self.valid) is not bool:
             # 不接受字符串类型名，也不把任意数值按Python真假规则当作valid。
             raise TypeError("ScalarValue需要typed dtype/quality及bool valid")
         # 逻辑域只能由明确冻结标签构成。
+        if self.code is not None and (self.dtype is not SignalDType.ENUM or not isinstance(self.code, ScalarValue)
+                                      or self.code.dtype not in INTEGER_BOUNDS):
+            raise TypeError('只有枚举可附带整数原码')
         if not isinstance(self.labels, tuple) or (self.dtype is not SignalDType.ENUM and self.labels):
             # 数值不携带隐式业务枚举含义。
             raise TypeError("labels仅支持enum tuple域")
@@ -434,7 +441,7 @@ def normalize_reference(definition: SignalDefinition, value, quality: QualityFla
     return ScalarValue(result, definition.dtype)
 
 
-def memory_series_reference(bindings: SignalBindings, name: str) -> SignalSeries:
+def memory_series_reference(bindings: SignalBindings, name: str, *, capture_code=False) -> SignalSeries:
     """从当前内存来源提取一个字段，转换后生成信号历史。
 
     参数:
@@ -464,9 +471,11 @@ def memory_series_reference(bindings: SignalBindings, name: str) -> SignalSeries
         original = row.values[definition.field]
         # 独立参考归一化，不调用被测NumPy核。
         value = normalize_reference(definition, original)
+        from .enum_codes import original_code
         # 输出样本保留原诊断、稳定身份与显式时间offset。
         samples.append(SignalSample(name, checked_add_ns(row.time_ns, source.offset_ns),
                                     value.value if value.valid else original, value.valid, value.quality,
-                                    bindings.source_ref(name), row.sequence))
+                                    bindings.source_ref(name), row.sequence,
+                                    original_code(definition, original) if capture_code else None))
     # 交给SignalSeries检查同时间更新、原行身份和声明类型，不调整输入顺序。
     return SignalSeries(bindings, name, tuple(samples))

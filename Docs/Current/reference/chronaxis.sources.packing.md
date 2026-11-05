@@ -1,4 +1,4 @@
-# chronaxis.sources.packing
+# `chronaxis.sources.packing`
 
 把一批已解码标量归一化为可传送的独立信号列。
 
@@ -76,7 +76,7 @@ TypeError或ValueError: 原值不合法；调用者已校验声明、tuple与后
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/sources/packing.py:36`](../../../src/chronaxis/sources/packing.py#L36)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/sources/packing.py:36`](../../../src/chronaxis/sources/packing.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-pack_message_values"></a>
 ## `pack_message_values`
@@ -111,7 +111,7 @@ TypeError或ValueError: 声明、后端、tuple或原值不合法。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/sources/packing.py:108`](../../../src/chronaxis/sources/packing.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/sources/packing.py:108`](../../../src/chronaxis/sources/packing.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-pack_decoded"></a>
 ## `pack_decoded`
@@ -149,4 +149,4 @@ TypeError或ValueError: 输入结构、后端、原值、列布局或身份不�
 
 返回类型：[SignalSeries](chronaxis.sources.models.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/sources/packing.py:132`](../../../src/chronaxis/sources/packing.py#L132)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/sources/packing.py:133`](../../../src/chronaxis/sources/packing.py#L133)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

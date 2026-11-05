@@ -1,4 +1,4 @@
-# chronaxis.execution.timeline_multi
+# `chronaxis.execution.timeline_multi`
 
 在同一完整组两侧推进一个数据集会话的多条件/多规则。
 
@@ -94,7 +94,7 @@ class TimelineRule
 |`exit_compiled`|[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression) &#124; None|否|None|迟滞退出或start_end结束BOOL；防抖可省略。|
 |`start_end`|[StartEndSpec](chronaxis.core.start_end.md#api-StartEndSpec) &#124; None|否|None|开始/结束专用时限；与迟滞互斥。 None表示不采用start_end检测方式。|
 
-源码：[`src/chronaxis/execution/timeline_multi.py:33`](../../../src/chronaxis/execution/timeline_multi.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:33`](../../../src/chronaxis/execution/timeline_multi.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-TimelineRule-__post_init__"></a>
 ### `TimelineRule.__post_init__`
@@ -127,7 +127,7 @@ TypeError为非规则/BOOL/SourceRef tuple或非法迟滞声明。
 - `TypeError`：start_end需要独立结束条件且不能混用迟滞。
 - `TypeError`：独立结束/退出条件需要已编译BOOL和对应状态声明。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:46`](../../../src/chronaxis/execution/timeline_multi.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:46`](../../../src/chronaxis/execution/timeline_multi.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-TimelineRule-expressions"></a>
 ### `TimelineRule.expressions`
@@ -155,7 +155,7 @@ TimelineRule.expressions
 
 无。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:67`](../../../src/chronaxis/execution/timeline_multi.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:67`](../../../src/chronaxis/execution/timeline_multi.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-TimelineRule-dependencies"></a>
 ### `TimelineRule.dependencies`
@@ -183,7 +183,7 @@ TimelineRule.dependencies
 
 无。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:72`](../../../src/chronaxis/execution/timeline_multi.py#L72)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:72`](../../../src/chronaxis/execution/timeline_multi.py#L72)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep"></a>
 ## `MultiTimelineStep`
@@ -198,7 +198,7 @@ MultiTimelineStep(owner, cost, time_ns, consumed, conditions, batches)
 ```
 
 
-源码：[`src/chronaxis/execution/timeline_multi.py:77`](../../../src/chronaxis/execution/timeline_multi.py#L77)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:77`](../../../src/chronaxis/execution/timeline_multi.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-__init__"></a>
 ### `MultiTimelineStep.__init__`
@@ -228,7 +228,7 @@ None；初始化实例状态；子句柄移交到此对象。
 
 构造错误由外层关闭局部句柄。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:84`](../../../src/chronaxis/execution/timeline_multi.py#L84)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:84`](../../../src/chronaxis/execution/timeline_multi.py#L84)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-_ensure_open"></a>
 ### `MultiTimelineStep._ensure_open`
@@ -258,7 +258,7 @@ ResultClosedError。
 
 - `ResultClosedError`：多规则时间步已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:98`](../../../src/chronaxis/execution/timeline_multi.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:98`](../../../src/chronaxis/execution/timeline_multi.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-closed"></a>
 ### `MultiTimelineStep.closed`
@@ -286,7 +286,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:104`](../../../src/chronaxis/execution/timeline_multi.py#L104)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:104`](../../../src/chronaxis/execution/timeline_multi.py#L104)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-time_ns"></a>
 ### `MultiTimelineStep.time_ns`
@@ -314,7 +314,7 @@ int ns。
 
 对象处于下列状态时抛ResultClosedError：多规则时间步已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:109`](../../../src/chronaxis/execution/timeline_multi.py#L109)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:109`](../../../src/chronaxis/execution/timeline_multi.py#L109)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-consumed_group"></a>
 ### `MultiTimelineStep.consumed_group`
@@ -342,7 +342,7 @@ True表示本步骤已经处理了预先读到的下一组更新；False表示�
 
 对象处于下列状态时抛ResultClosedError：多规则时间步已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:115`](../../../src/chronaxis/execution/timeline_multi.py#L115)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:115`](../../../src/chronaxis/execution/timeline_multi.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-condition_slots"></a>
 ### `MultiTimelineStep.condition_slots`
@@ -370,7 +370,7 @@ int tuple。
 
 对象处于下列状态时抛ResultClosedError：多规则时间步已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:121`](../../../src/chronaxis/execution/timeline_multi.py#L121)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:121`](../../../src/chronaxis/execution/timeline_multi.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-ticks"></a>
 ### `MultiTimelineStep.ticks`
@@ -398,7 +398,7 @@ ConditionTick tuple。
 
 对象处于下列状态时抛ResultClosedError：多规则时间步已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:127`](../../../src/chronaxis/execution/timeline_multi.py#L127)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:127`](../../../src/chronaxis/execution/timeline_multi.py#L127)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-source_refs"></a>
 ### `MultiTimelineStep.source_refs`
@@ -426,7 +426,7 @@ MultiTimelineStep.source_refs
 
 关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:133`](../../../src/chronaxis/execution/timeline_multi.py#L133)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:133`](../../../src/chronaxis/execution/timeline_multi.py#L133)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-rule_keys"></a>
 ### `MultiTimelineStep.rule_keys`
@@ -454,7 +454,7 @@ MultiTimelineStep.rule_keys
 
 关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:139`](../../../src/chronaxis/execution/timeline_multi.py#L139)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:139`](../../../src/chronaxis/execution/timeline_multi.py#L139)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-events_by_rule"></a>
 ### `MultiTimelineStep.events_by_rule`
@@ -482,7 +482,7 @@ Event tuple的tuple。
 
 关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:145`](../../../src/chronaxis/execution/timeline_multi.py#L145)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:145`](../../../src/chronaxis/execution/timeline_multi.py#L145)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-_discard"></a>
 ### `MultiTimelineStep._discard`
@@ -508,7 +508,7 @@ MultiTimelineStep._discard()
 
 脱链取消传播，finally仍关闭；owner随后只清理残留链。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:150`](../../../src/chronaxis/execution/timeline_multi.py#L150)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:150`](../../../src/chronaxis/execution/timeline_multi.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiTimelineStep-close"></a>
 ### `MultiTimelineStep.close`
@@ -534,7 +534,7 @@ MultiTimelineStep.close()
 
 子结果/预算/取消传播，已扣workspace最小关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:162`](../../../src/chronaxis/execution/timeline_multi.py#L162)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:162`](../../../src/chronaxis/execution/timeline_multi.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline"></a>
 ## `MultiRuleTimeline`
@@ -551,7 +551,7 @@ MultiRuleTimeline(evidence, boundaries, rules: tuple[TimelineRule, ...])
 ```
 
 
-源码：[`src/chronaxis/execution/timeline_multi.py:185`](../../../src/chronaxis/execution/timeline_multi.py#L185)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:185`](../../../src/chronaxis/execution/timeline_multi.py#L185)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-__init__"></a>
 ### `MultiRuleTimeline.__init__`
@@ -579,7 +579,7 @@ MultiRuleTimeline.__init__(evidence, boundaries, rules: tuple[TimelineRule, ...]
 配置/已有起点/预算/取消原错误传播；
     部分构造接管未返回Detector，持续清理失败从multi_rule_timeline_cleanup_owner恢复。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:194`](../../../src/chronaxis/execution/timeline_multi.py#L194)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:194`](../../../src/chronaxis/execution/timeline_multi.py#L194)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-closed"></a>
 ### `MultiRuleTimeline.closed`
@@ -607,7 +607,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:250`](../../../src/chronaxis/execution/timeline_multi.py#L250)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:250`](../../../src/chronaxis/execution/timeline_multi.py#L250)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-failed"></a>
 ### `MultiRuleTimeline.failed`
@@ -635,7 +635,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:255`](../../../src/chronaxis/execution/timeline_multi.py#L255)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:255`](../../../src/chronaxis/execution/timeline_multi.py#L255)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-cursor_ns"></a>
 ### `MultiRuleTimeline.cursor_ns`
@@ -667,7 +667,7 @@ ResultClosedError。
 
 - `ResultClosedError`：多规则游标已关闭。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:260`](../../../src/chronaxis/execution/timeline_multi.py#L260)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:260`](../../../src/chronaxis/execution/timeline_multi.py#L260)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-_ensure_active"></a>
 ### `MultiRuleTimeline._ensure_active`
@@ -698,7 +698,7 @@ MultiRuleTimeline._ensure_active()
 - `ResultClosedError`：多规则游标已关闭。
 - `AnalysisError`：多规则游标已失败，禁止重试。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:266`](../../../src/chronaxis/execution/timeline_multi.py#L266)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:266`](../../../src/chronaxis/execution/timeline_multi.py#L266)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-_construct"></a>
 ### `MultiRuleTimeline._construct`
@@ -727,7 +727,7 @@ MultiTimelineStep。
 
 分配/取消。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:275`](../../../src/chronaxis/execution/timeline_multi.py#L275)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:275`](../../../src/chronaxis/execution/timeline_multi.py#L275)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-step"></a>
 ### `MultiRuleTimeline.step`
@@ -755,7 +755,7 @@ MultiRuleTimeline.step(next_group: DecodedTimeGroup | None=None) -> MultiTimelin
 
 返回类型：[MultiTimelineStep](chronaxis.execution.timeline_multi.md#api-MultiTimelineStep) &#124; None。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:279`](../../../src/chronaxis/execution/timeline_multi.py#L279)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:279`](../../../src/chronaxis/execution/timeline_multi.py#L279)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-duration_summaries"></a>
 ### `MultiRuleTimeline.duration_summaries`
@@ -787,7 +787,7 @@ MultiRuleTimeline.duration_summaries
 
 - `ResultClosedError`：失败或关闭的时间线不能读取累计。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:368`](../../../src/chronaxis/execution/timeline_multi.py#L368)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:368`](../../../src/chronaxis/execution/timeline_multi.py#L368)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-MultiRuleTimeline-close"></a>
 ### `MultiRuleTimeline.close`
@@ -814,4 +814,4 @@ MultiRuleTimeline.close()
 子结果/预算/取消传播；子句柄成功close才清字段，未释放可重试。
     固定已释放时最小关闭，不对借用查询或上游state调用close。
 
-源码：[`src/chronaxis/execution/timeline_multi.py:383`](../../../src/chronaxis/execution/timeline_multi.py#L383)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/timeline_multi.py:383`](../../../src/chronaxis/execution/timeline_multi.py#L383)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

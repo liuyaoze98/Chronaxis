@@ -4,7 +4,10 @@
 窗口尚未确定前只接事件，默认会话统计不创建这个所有者。
 """
 import heapq
+from ..core.moments import SAMPLE_MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from functools import partial as bind_consumer
+from ..core.types import QualityFlag as Q
 from dataclasses import replace
 from ..core.models import Interval
 from ..core.calculations import CalculationDefinition
@@ -37,7 +40,8 @@ class RecordScopeCalculations:
             _reserve_owned_ram(self,131072+64*_metadata_bytes(requests),'_fixed_cost')
             choices=dict(plan.intervals.resolved)
             from ..planning.intervals import IntervalChoice
-            sample_ops=('sample_minimum','sample_maximum','sample_mean','select')
+            self._hosted=plan.extensions.reductions if plan.extensions is not None else {}
+            sample_ops=('sample_count','sample_minimum','sample_maximum','sample_mean','select', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES,*self._hosted)
             for request in requests:
                 if request.operation in sample_ops:choices[request.calculation_id]=IntervalChoice('actual')
             sample_keys={(r.signal.identity,None if r.condition is None else r.condition.identity,None)
@@ -92,8 +96,7 @@ class RecordScopeCalculations:
             if row is not None:
                 if condition is not None and (selected is None or selected[0]!=row[0]):
                     raise ValueError('事件值和条件必须共用驱动')
-                actual=history._sample_updates and any((sample:=value._state.get(name)) is not None
-                    and sample.time_ns==row[0] for name in value._static.dependencies)
+                actual=history._sample_updates and value.actual_update_at(row[0])
                 history.append(row,selected,actual_update=actual)
         self._flush()
 
@@ -108,7 +111,8 @@ class RecordScopeCalculations:
             start=event.confirmed_ns if rule.selection_origin=='confirmed' else event.start_ns
             cost=8192+16*_metadata_bytes(event.event_id)+128*len(requests)
             _reserve_owned_ram(self,cost,'_queue_cost')
-            heapq.heappush(self._queue,(end,self._serial,requests,event.event_id,start,cost))
+            heapq.heappush(self._queue,(end,self._serial,requests,event.event_id,start,cost,
+                                        bool(event.dependency_quality & Q.ESTIMATED)))
             self._serial+=1
         self._flush()
 
@@ -125,9 +129,9 @@ class RecordScopeCalculations:
         start=self._plan.dataset.domain.start_ns if actual is None else actual.start_ns
         end=start if actual is None else actual.end_ns
         self._calculate(requests,segment.segment_id,start,end,partial=segment.status!='complete',
-            parent_coverage=segment.coverage)
+            parent_coverage=segment.coverage,estimated=bool(segment.quality & Q.ESTIMATED))
 
-    def _calculate(self,requests,parent,start_ns,end_ns,*,partial=False,parent_coverage=None):
+    def _calculate(self,requests,parent,start_ns,end_ns,*,partial=False,parent_coverage=None,estimated=False):
         """同范围、同表达式的相邻指标共读一次；预算余量不足时缩为单项。
 
         参数: 原声明顺序的请求tuple/父ID/实际范围及覆盖。返回: None。异常: 原查询、预算或输出错误。
@@ -141,21 +145,26 @@ class RecordScopeCalculations:
             width=max(1,min(8,available//(32*1024*1024)))
             for offset in range(0,len(items),width):
                 chunk=items[offset:offset+width]
-                self._calculate_chunk(key,chunk,parent,start_ns,end_ns,partial,parent_coverage)
+                self._calculate_chunk(key,chunk,parent,start_ns,end_ns,partial,parent_coverage,estimated)
 
-    def _calculate_chunk(self,key,requests,parent,start_ns,end_ns,partial,parent_coverage):
+    def _calculate_chunk(self,key,requests,parent,start_ns,end_ns,partial,parent_coverage,estimated):
         """建立有限计算器组并共享一次回读。参数: 流key/请求/范围/质量。返回: None。异常: 原错误保留owner。
         """
         history,expression,condition=self._streams[key][2:5]
         for request in requests:
-            spec=CalculationDefinition(request.calculation_id,request.operation,Interval(start_ns,end_ns),request.partial_policy,
-                            request.unit,request.scope.split(':',1)[0],request.minimum_coverage)
+            descriptor=self._hosted.get(request.operation)
+            spec=CalculationDefinition(request.calculation_id,'sample_minimum' if descriptor else request.operation,Interval(start_ns,end_ns),request.partial_policy,
+                            request.unit,request.scope.split(':',1)[0],request.minimum_coverage,config_version=self._plan.config_version, ddof=request.ddof, q=request.q)
             factory=RecordIntegral if request.operation=='integral' else RecordTimeCalculation
             recovery='record_integral_cleanup_owner' if request.operation=='integral' else 'record_time_cleanup_owner'
             extra={'work_dir':self._path} if request.operation=='time_weighted_mean' else {}
+            if descriptor:
+                extra={'hosted':descriptor}
             if request.operation=='select':
                 factory,recovery=RecordSelection,'record_selection_cleanup_owner'
                 extra={'consumer':bind_consumer(self._selection_consumer,request,parent)}
+                if estimated:
+                    extra['consumer']=bind_consumer(self._estimated_selection,request,parent)
             self._calculation=self._new(factory,recovery,self._budget,spec,expression.root.unit,expression.root.dtype,
                 self._steps[request.calculation_id],backend=self._plan.execution.backend,
                 batch_intervals=min(self._plan.execution.batch_rows,4096),conditioned=condition is not None,
@@ -173,7 +182,10 @@ class RecordScopeCalculations:
             if request.operation=='select':
                 calculation.close()
                 continue
-            if partial and result.value is not None:
+            if estimated:
+                from .transform_partial import partial_result
+                result=partial_result(result,request.partial_policy)
+            elif partial and result.value is not None:
                 result=replace(result,value=None if request.partial_policy=='strict' else result.value,
                     status='indeterminate' if request.partial_policy=='strict' else 'partial',reason='partial_input')
             if request.scope.startswith('segment:') and request.minimum_coverage>0 and (
@@ -182,6 +194,12 @@ class RecordScopeCalculations:
             self._consumer(request,parent,result)
             calculation.close()
         self._calculators.clear()
+
+    def _estimated_selection(self,request,parent,row):
+        """给部分父区间中的选中行标明估算。参数: 请求、父ID和行。返回: None。异常: 发布错误。"""
+        from ..core.selection import partial_selection
+        value,quality=partial_selection(row.value,row.quality,request)
+        self._selection_consumer(request,parent,replace(row,value=value,quality=quality))
 
     def _finish_observation_tail(self,key,calculation,end_ns):
         """用真实来源终点补查询尾段，既不补固定周期也不增加真实样本。
@@ -230,12 +248,15 @@ class RecordScopeCalculations:
         try:
             while self._queue:
                 item=heapq.heappop(self._queue)
-                end,_,requests,parent,start,cost=item
+                end,_,requests,parent,start,cost,estimated=item
                 histories=(self._streams[self._request_stream[request.calculation_id]][2] for request in requests)
                 if not final and any(history.last_time is None or history.last_time<end for history in histories):
                     pending.append(item)
                     continue
-                self._calculate(requests,parent,start,end)
+                if estimated:
+                    self._calculate(requests,parent,start,end,estimated=True)
+                else:
+                    self._calculate(requests,parent,start,end)
                 item=None
                 _release_owned_ram(self,cost,'_queue_cost')
         except BaseException:

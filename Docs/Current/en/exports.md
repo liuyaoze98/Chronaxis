@@ -2,7 +2,7 @@
 
 <a id="输出配置与结果发布"></a>
 
-Root `outputs` selects result table formats, per-message contributions, and additional data exports. `AnalysisRunner.run()` performs the analysis and prepares staged output; `result.write(new_directory)` publishes it. CLI `run` performs both steps.
+Root `outputs` selects result table formats, per-message contributions, and additional data exports. `AnalysisRunner.run()` performs the analysis and prepares staged output; `result.write(output_directory)` publishes it. CLI `run` performs both steps.
 
 Analysis tables describe what happened and the calculated values. Signal CSV files contain timestamps and values. ASC/BLF files contain CAN message bytes. These outputs serve different purposes and can be requested together. Input and output formats need not match: ASC input can be exported as BLF.
 
@@ -55,10 +55,12 @@ Each export chooses its own scope independently. Ranges include the start and ex
 
 `run` first prepares exports in the work directory. After `result.write()`, they appear beside the analysis tables in the final output directory.
 
-Read `exports.jsonl` there to find each export's time range, source, and file paths. Data files are under `exports/export-XXXXXXXX/`. Content digests are retained only with `diagnostics.integrity: true`; default checks cover necessary file identity and size.
+Read the timestamped index named by the run manifest's `exports.index_file` there to find each export's time range, source, and file paths. Data files are under `exports_<timestamp>/export-XXXXXXXX/`. Content digests are retained only with `diagnostics.integrity: true`; default checks cover necessary file identity and size.
 
-Writing the same open result to another new directory checks and copies already generated files; it does not reread or decode the original logs.
+Writing the same open result to the same or another output directory checks and copies already generated files; it does not reread or decode the original logs.
 
 The accompanying example holds 3 V, 7 V, and 3 V for one second each, giving **13 V·s**, with voltage above 5 V over `[1,2)`. Requesting a 250 ms signal grid and a 500 ms CAN grid together leaves those analysis results unchanged. See [Examples](examples.md), especially the [dual-grid example](examples.md#dual-grid).
 
 Full classes, functions, and arguments are available in [signal_exports](../reference/chronaxis.results.signal_exports.md), [signal_grid](../reference/chronaxis.results.signal_grid.md), [frame_exports](../reference/chronaxis.results.frame_exports.md), and [frame_rebuild](../reference/chronaxis.results.frame_rebuild.md) (Chinese implementation references).
+
+Direct Python calls to export_signal_csv or export_can_frames return ExportManifest with output_dir, manifest_path and output_files. The directory is reusable and files are timestamped. Read these properties instead of treating the return value as a Path. Exports requested through a plan are located through the run manifest exports entry.

@@ -183,10 +183,10 @@ def _asc_line(record,output_ns):
 def export_can_frames(records,spec,interval,destination,budget,*,source,device_label,check_cancel=None,compact=False,integrity=True,file_consumer=None):
     """逐条筛选并写出原始范围，完整消费新暂存后发布。
 
-    参数: records同次可关闭原帧流；spec格式/偏移；interval半开分析范围；destination新目录；
+    参数: records同次可关闭原帧流；spec格式/偏移；interval半开分析范围；destination可复用公开输出根，内部file_consumer仍独占新目录；
         budget共享账本；source来源名；device_label设备；check_cancel取消回调；
         compact关闭逐帧副本/三时间/误差计算，仅保目标帧和必要清单。
-    返回: 已发布目录Path，含frames.asc/blf和manifest.json；旧完整模式另有frames.jsonl。
+    返回: 公开ExportManifest含实际目录/清单/文件路径；内部file_consumer模式返回Path。
     异常: 格式/时间/原历史/I/O/预算/取消错；持续清理失败保export_cleanup_owner。
     """
     if type(compact) is not bool:
@@ -200,7 +200,7 @@ def export_can_frames(records,spec,interval,destination,budget,*,source,device_l
     output_offset=checked_add_ns(date_origin,spec.output_offset_ns)
     if file_consumer is not None and not callable(file_consumer):
         raise TypeError('file_consumer须为回调')
-    owner=ExportFiles(destination,budget,integrity=integrity)
+    owner=ExportFiles(destination,budget,integrity=integrity,timestamped=file_consumer is None)
     try:
         if not compact:
             owner.open_file('frames.jsonl')
@@ -295,5 +295,6 @@ def export_can_frames(records,spec,interval,destination,budget,*,source,device_l
         if file_consumer is not None: file_consumer(tuple(owner.files))
         return output
     except BaseException as error:
+        owner._failed = True
         _cleanup_owner(owner,error,'export_cleanup_owner','原始报文导出')
         raise

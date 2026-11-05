@@ -1,6 +1,6 @@
-"""从源码或解压资料运行用户给定计划并发布到全新目录。
+"""从源码或解压资料运行用户给定计划并发布到可重复使用的结果目录。
 
-输入：分析YAML/JSON和新输出路径；输出：计算行与已发布的结果文件。
+输入：分析YAML/JSON和结果目录路径；输出：计算行与已发布的结果文件。
 只使用已安装库的公开接口。夹具及结果留在用户目录；不依赖源码或Git。
 """
 import argparse
@@ -27,7 +27,8 @@ def main():
         with closing(result.iter_calculations()) as rows:
             for row in rows:
                 print(row.calculation_id, row.value, row.unit, row.status, row.reason)
-        result.write(args.output)
+        publication = result.write(args.output)
+        print(publication.manifest_path)
 
 
 if __name__ == "__main__":

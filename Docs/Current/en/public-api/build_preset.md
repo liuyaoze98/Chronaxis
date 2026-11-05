@@ -11,10 +11,10 @@ Validate a version-1 preset and expand public declarations, without I/O or numer
 build_preset(spec: PresetSpec, signals: tuple[SignalDefinition, ...]) -> PlanFragment
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `spec` | [PresetSpec](PresetSpec.md#api-PresetSpec) | Required | Positional or keyword. Create through PresetSpec.from_dict using required name/preset_type/parameters and optional version/role_bindings. See the preset API examples. |
-| `signals` | tuple[[SignalDefinition](../../reference/chronaxis.core.binding.md#api-SignalDefinition), ...] | Required | Positional or keyword. Signal definitions for this plan, such as `tuple(item.definition for item in plan.signals)` after load_analysis_plan. Roles refer to definition names, not directly to CSV columns. Type link is a Chinese implementation reference. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`spec`|[PresetSpec](PresetSpec.md#api-PresetSpec)|Yes|No default|Positional or keyword. Create through PresetSpec.from_dict using required name/preset_type/parameters and optional version/role_bindings. See the preset API examples.|
+|`signals`|tuple[[SignalDefinition](../../reference/chronaxis.core.binding.md#api-SignalDefinition), ...]|Yes|No default|Positional or keyword. Signal definitions for this plan, such as `tuple(item.definition for item in plan.signals)` after load_analysis_plan. Roles refer to definition names, not directly to CSV columns. Type link is a Chinese implementation reference.|
 
 Returns [PlanFragment](PlanFragment.md#api-PlanFragment), generating the requested power/Wh/Ah, alarm context, threshold hysteresis/per-activity durations, or response pairing.
 
@@ -24,4 +24,4 @@ Processing checks roles, generates an expression using simple aliases, construct
 
 ## Source locations
 
-- [`src/chronaxis/presets.py:158`](../../../../src/chronaxis/presets.py#L158) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/presets.py:158`](../../../../src/chronaxis/presets.py#L158) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

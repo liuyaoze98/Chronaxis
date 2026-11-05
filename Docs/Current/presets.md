@@ -22,7 +22,7 @@
 
 ## 完整最小例与扩展例
 
-以下文件均引用随附的0～4秒合成CAN输入，包含所需来源、信号和预设，可以独立运行。先读最小例，再比较扩展例；无须复制后文的教学基础文件。命令为`chronaxis run 文件名.yaml --output 新目录`。
+以下文件均引用随附的0～4秒合成CAN输入，包含所需来源、信号和预设，可以独立运行。先读最小例，再比较扩展例；无须复制后文的教学基础文件。命令为`chronaxis run 文件名.yaml --output 结果目录`。
 
 | 功能 | 最小文件与输入 | 扩展文件及新增内容 | 核对结果 |
 |---|---|---|---|
@@ -96,7 +96,12 @@ signals:                                   # 把输入字段定义为有名称�
 
 普通规则的`selection_origin`默认就是`onset`，包含达到持续门槛之前已经连续成立的部分；显式选择`confirmed`才从确认时刻开始。覆盖率门槛按需求填写，不因为这是充电任务就自动补上95%。
 
-## 充电时段：charge_session.parameters
+## 各预设参数
+
+<a id="preset-charge-parameters"></a>
+### 充电时段：charge_session.parameters
+
+[对应完整示例](#preset-charge-example)。
 
 这里的charge_session是preset_type取值，不是父键。本表字段位于`presets[].parameters`，例如parameters对象内填写下列参数。
 
@@ -121,7 +126,10 @@ signals:                                   # 把输入字段定义为有名称�
 
 把预设name换成其他名字，生成名称的前缀也随之改变。
 
-## 故障前后数据：fault_context.parameters
+<a id="preset-fault-parameters"></a>
+### 故障前后数据：fault_context.parameters
+
+[对应完整示例](#preset-fault-example)。
 
 这里的fault_context是preset_type取值，不是父键。本表字段位于`presets[].parameters`，例如parameters对象内填写下列参数。
 
@@ -133,7 +141,10 @@ signals:                                   # 把输入字段定义为有名称�
 
 生成`<name>_alarm`上升沿规则和`<name>_context`窗口。相邻故障的窗口各自保留，不自动合并。
 
-## 请求与响应：command_response.parameters
+<a id="preset-command-parameters"></a>
+### 请求与响应：command_response.parameters
+
+[对应完整示例](#preset-command-example)。
 
 这里的command_response是preset_type取值，不是父键。本表字段位于`presets[].parameters`，例如parameters对象内填写下列参数。
 
@@ -146,7 +157,10 @@ signals:                                   # 把输入字段定义为有名称�
 
 生成`<name>_request`、`<name>_response`上升沿和`<name>_pair`配对。排队、缺失数据和超时处理见[请求与响应](sequences.md)。
 
-## 超阈值时段：threshold_excursion.parameters
+<a id="preset-threshold-parameters"></a>
+### 超阈值时段：threshold_excursion.parameters
+
+[对应完整示例](#preset-threshold-example)。
 
 这里的threshold_excursion是preset_type取值，不是父键。本表字段位于`presets[].parameters`，例如parameters对象内填写下列参数。
 
@@ -190,11 +204,16 @@ signals:                                   # 把输入字段定义为有名称�
 | 预设省略某个角色，由程序查找 | 填上表该角色规定的字符串，如command.request | 填字符串`"1"`，来自本版角色约定 | 在signals中必须恰有一条候选同时满足所有条件；0条或多条合格候选均报PlanValidationError |
 | threshold_excursion | 不用它寻找角色 | 不用它寻找角色 | signal角色必须显式指定 |
 
-例如扩展请求响应配置在request信号上增加`semantic_id: command.request`和`semantic_contract_version: "1"`，response信号对应填`command.response`和`"1"`。它们表示按本页第1版请求/响应角色规则使用这两条信号；不是给整个分析文件升级版本。整个文件仍写`config_version: 3`，预设实例省略version时采用`"1"`，三者控制不同对象。
+例如扩展请求响应配置在request信号上增加`semantic_id: command.request`和`semantic_contract_version: "1"`，response信号对应填`command.response`和`"1"`。它们表示按本页第1版请求/响应角色规则使用这两条信号；不是给整个分析文件升级版本。整个文件仍写`config_version: 4`，预设实例省略version时采用`"1"`，三者控制不同对象。
 
 原始绑定`signals`中的可选业务文本可以省略或填null；若提供semantic_contract_version必须同时提供semantic_id。`derived`中的可选业务文本应省略或填非空文本，不能填null。派生结果的这些声明用于描述和追溯，不会使其成为本版预设的角色候选；显式绑定也只在signals中选择。具体派生字段见[表达式](expressions.md)。
 
-## 请求响应
+## 各预设完整示例
+
+<a id="preset-command-example"></a>
+### 请求响应
+
+[对应参数](#preset-command-parameters)。
 
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`presets`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
@@ -211,7 +230,10 @@ presets:                             # 选择预先组合好的规则与计算�
 
 会生成`cmd_request`、`cmd_response`两条上升沿和`cmd_pair`配对。设置`emit_initial=true`同时允许两端初始为真时产生点；不要重复写同ID普通规则。配对结果和缺失处理见[请求响应](sequences.md)。
 
-## 阈值报警和总持续时间
+<a id="preset-threshold-example"></a>
+### 阈值报警和总持续时间
+
+[对应参数](#preset-threshold-parameters)。
 
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`presets`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
@@ -226,9 +248,9 @@ presets:                                # 选择预先组合好的规则与计�
     preset_type: threshold_excursion    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
 ```
 
-固定使用“值≥80进入，值≤75退出”；进入阈值必须严格大于退出阈值。不能用此预设直接表示“过低报警”，那种需求应写自己的hysteresis条件。例子的温度单位degC在本版作为相同原单位使用，输入单位必须也是degC，不能同时做比例、偏移或方向转换后宣称已核实换算。
+固定使用“值≥80进入，值≤75退出”；进入阈值必须严格大于退出阈值。不能用此预设直接表示“过低报警”，那种需求应写自己的hysteresis条件。本例输入与分析单位都为degC。也可先在信号定义中按已知单位关系换算（例如degC转K），预设阈值再使用换算后的信号单位；阈值不能仍填摄氏温度数值。
 
-生成`hot_activity`和`hot_duration`。逐段时长通过`iter_calculations()`读取；总时长在`result.metadata.threshold_durations`，发布后在`run_manifest.json`的`run.threshold_durations`。当前公开摘要用value和unit表示时长，unit固定为s；不会同时提供纳秒字段。
+生成`hot_activity`和`hot_duration`。逐段时长通过`iter_calculations()`读取；总时长在`result.metadata.threshold_durations`，发布后在`run_manifest_<timestamp>.json`的`run.threshold_durations`。当前公开摘要用value和unit表示时长，unit固定为s；不会同时提供纳秒字段。
 
 |观测情况|总时长结果|为什么|
 |---|---|---|
@@ -255,7 +277,10 @@ presets:                                # 选择预先组合好的规则与计�
 
 摘要描述的是实际观测到的时间。若请求到12秒但日志只到9秒，还须查看运行清单中的观测范围；这个摘要不能证明第9～12秒没有报警。
 
-## 充电与故障前后文
+<a id="preset-charge-example"></a>
+### 充电活动与能量示例
+
+[对应参数](#preset-charge-parameters)。
 
 充电预设的条件是模式匹配且电流严格大于声明门槛，持续到指定时间后确认活动。例如下列片段要求模式1、电流大于5A、持续3秒，并按电压×电流计算能量：
 
@@ -275,6 +300,11 @@ presets:                           # 选择预先组合好的规则与计算，�
       compute_energy: true         # 选择是否计算充电能量；true需要电压角色，false不生成能量项
     preset_type: charge_session    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
 ```
+
+<a id="preset-fault-example"></a>
+### 故障前后窗口示例
+
+[对应参数](#preset-fault-parameters)。
 
 `fault_context`用于查看故障刚出现前后的数据。例如故障在第10秒出现，pre填2s、post填3s，就取第8秒到第13秒的数据。日志没有覆盖完整范围时，结果会说明实际取到了哪部分。
 

@@ -18,7 +18,8 @@ examples/
 
 这里的examples指[当前手册的examples目录](examples.md)。在仓库根执行：
 
-~~~text
+~~~powershell
+New-Item -ItemType Directory -Force work | Out-Null
 python -m chronaxis validate Docs/Current/examples/analysis-imports.yaml
 python -m chronaxis explain Docs/Current/examples/analysis-imports.yaml
 python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
@@ -26,7 +27,7 @@ python -m chronaxis config resolve Docs/Current/examples/analysis-imports.yaml -
 python -m chronaxis run work/independent.yaml --output work/imports-result
 ~~~
 
-两个输出路径必须尚不存在。已运行过时请换新路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（数组实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；执行命令为python Docs/Current/examples/imports_example.py。
+两次分析的结果目录可以复用，自动增加时间文件名；后面的config resolve导出配置仍需使用新文件路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（数组实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；执行命令为python Docs/Current/examples/imports_example.py。
 
 ## 主配置怎样引用
 
@@ -123,7 +124,7 @@ python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml -
 
 config resolve展开全部导入和预设，去掉imports、已应用的overrides与已展开的presets，固定数据/DBC的绝对路径（不解析符号链接或目录联接的真实目标），重新校验后写新文件。导出的配置不再依赖公共定义文件；它仍需要原业务输入可访问，也不会复制原始日志或DBC。跨设备使用时须让相应数据路径可用。config convert只改变JSON/YAML表示，保留imports及路径文本，因此仍依赖公共文件；含相对路径时只能输出到同目录。
 
-INI映射把imports放在analysis对象内，使用load_legacy_ini读取；纯字节import_legacy_ini不隐式读文件。批量配置本身不支持imports，每个子计划可以独立使用；批量的origins列出批量声明的任务或模板路径，不代替各分析配置的来源报告。
+批量配置本身不支持imports，每个子计划可以独立使用；批量的origins列出批量声明的任务或模板路径，不代替各分析配置的来源报告。
 
 Python的load_analysis_plan读取主文件与显式公共定义。AnalysisPlan.from_dict只接收已展开的原生字典；遇到imports会拒绝并提示使用文件入口或config resolve。成功计划保存普通展开声明，不保存行列表或第二份配置原文。
 

@@ -1,6 +1,6 @@
 """声明有限样本统计事实、数值快照与结构门槛，不执行样本归约。
 
-支持sample_minimum/sample_maximum/sample_mean，BOOL条件可省略为全TRUE。值有效与条件
+支持样本极值、均值、计数、方差、标准差、RMS及精确分位数。BOOL条件可省略为全TRUE。值有效与条件
 已知分别完整划分实际窗口；FALSE不选择，UNKNOWN不当FALSE。真实样本仅计半开
 窗口内原值实际更新且有效/TRUE，TTL、条件更新和裁剪保持边界不能成为样本。
 mean的值覆盖包含整数转float精度门槛，求和、除法和单位故障单独记数值失败。
@@ -8,10 +8,12 @@ mean的值覆盖包含整数转float精度门槛，求和、除法和单位故�
 """
 
 # 两数值后端仅共享冻结协议、单位和几何校验，数值与覆盖计算各自独立。
+from .moments import SAMPLE_MOMENTS
+from .quantiles import SAMPLE_QUANTILES
 from dataclasses import dataclass
 from math import isfinite
 from .integral_sum import require_partial_limit
-from .calculations import CalculationSeries, CalculationDefinition, calculation_unit
+from .calculations import CalculationSeries, CalculationDefinition, calculation_conversion
 from .models import Interval, SourceRef
 from .types import QualityFlag as Q, SignalDType as D
 from .validation import require_text
@@ -106,6 +108,7 @@ class SampleReductionResult:
     calculation_failed: bool  # 原序和、除法或最终转换失败。
     quality: Q  # 仅数值故障，输入原因另存facts。
     valid_sample_count: int  # 实际参与候选的有效真实样本数。
+    insufficient_samples: bool = False  # 单个样本无法定义ddof=1的离散度。
 
     def __post_init__(self):
         """拒绝样本数、正常数值和失败状态之间的矛盾。
@@ -121,7 +124,12 @@ class SampleReductionResult:
                 or type(self.valid_sample_count) is not int or self.valid_sample_count < 0):
             raise TypeError('样本结果需要真实失败状态、质量和非负原生int计数')
         # 空样本只能无值；有效失败须有样本及原因，成功不带数值故障位。
-        if self.calculation_failed:
+        if type(self.insufficient_samples) is not bool:
+            raise TypeError('不足样本标志需要bool')
+        if self.insufficient_samples:
+            if self.valid_sample_count != 1 or self.value is not None or self.calculation_failed or self.quality != Q.NONE:
+                raise ValueError('自由度不足必须保留一个有效样本及无数值状态')
+        elif self.calculation_failed:
             if self.value is not None or self.quality == Q.NONE or self.valid_sample_count == 0:
                 raise ValueError('样本数值失败需要有效样本、None与明确原因')
         elif self.quality != Q.NONE or (self.valid_sample_count == 0) != (self.value is None):
@@ -132,16 +140,16 @@ def require_sample_config(spec, input_unit, dtype, partial_limit):
     """校验三samples能力、数值dtype与明确单位，不计算样本。
 
     参数: 原spec/input_unit/dtype及正原生int误差容量partial_limit。
-    返回: (output_unit, factor)。异常: TypeError/ValueError为类型、能力、单位或容量。
+    返回: CalculationConversion。异常: TypeError/ValueError为类型、能力、单位或容量。
     """
     # BOOL/ENUM与时间算子各有独立口径，不在本核中暗自提升或扩展。
-    if not isinstance(spec, CalculationDefinition) or spec.operation not in ('sample_minimum', 'sample_maximum', 'sample_mean'):
-        raise TypeError('样本归约仅支持sample_minimum/sample_maximum/sample_mean')
+    if not isinstance(spec, CalculationDefinition) or spec.operation not in ('sample_count', 'sample_minimum', 'sample_maximum', 'sample_mean', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES):
+        raise TypeError('样本归约需要已支持的样本统计操作')
     if not isinstance(dtype, D) or dtype not in (D.INT64, D.UINT64, D.FLOAT64):
         raise ValueError('样本统计只接受数值dtype')
     require_text(input_unit, 'sample.input_unit')
     require_partial_limit(partial_limit)
-    return calculation_unit(spec, input_unit)
+    return calculation_conversion(spec, input_unit)
 
 
 def require_sample_series(series, spec, input_unit, dtype):

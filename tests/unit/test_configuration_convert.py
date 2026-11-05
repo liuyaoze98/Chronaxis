@@ -1,6 +1,9 @@
 """格式互转保原生类型、路径和新文件保护，不把格式转换当旧结构迁移。"""
 from copy import deepcopy
+import io
 import json
+from importlib.util import find_spec
+import sys
 import os
 from pathlib import Path
 import unittest
@@ -21,15 +24,38 @@ class ConfigurationConvertTests(unittest.TestCase):
 
     def test_all_three_entrypoints_roundtrip_and_keep_order_types_and_paths(self):
         """13场景往返均相同，路径/元数据不变，转换不打开业务输入。参数: 无。返回: None。异常: 断言。"""
+        package = Path(find_spec('chronaxis').origin).parent
+        schemas = {root / name for root in (package / 'schemas', package.parents[1] / 'Docs' / 'Schema')
+                   for name in ('analysis.schema.json', 'batch-v1.schema.json')}
+        library_schemas = Path(find_spec('jsonschema_specifications').origin).parent / 'schemas'
+        import_roots = {Path(entry).absolute() for entry in sys.path if entry}
         for template in available_templates():
             source=initialize_configuration(template.name,self.root/template.name)
             before=source.read_bytes();raw=load_configuration(source).data
             intermediate=source.with_suffix('.json');last=source.with_name('roundtrip.yml')
-            original=Path.open
-            def guard(path,*args,**kwargs):
-                """仅准三个配置文件打开。参数: 原打开参数。返回: FD。异常: 断言。"""
-                self.assertIn(path,(source,intermediate,last));return original(path,*args,**kwargs)
-            with patch.object(Path,'open',guard):
+            analysis = raw.get('analysis', raw)
+            declarations = {source.parent / filename for entry in analysis.get('sources', ())
+                            for filename in entry.get('dbc_by_channel', {}).values()}
+
+            def guarded(open_file):
+                """限制输入、输出与解码器的只读资源。参数: 打开函数。返回: 受检函数。异常: 越界断言。"""
+                def guard(file, mode='r', *args, **kwargs):
+                    """核文件、模式和发布目的地。参数: 原打开参数。返回: 文件。异常: 意外访问。"""
+                    path = Path(file).absolute()
+                    self.assertNotIn(path.suffix.lower(), ('.asc', '.blf', '.csv'), str(path))
+                    if mode in ('r', 'rb', 'rt'):
+                        metadata = (path.parent.parent in import_roots
+                                    and path.parent.name.endswith(('.dist-info', '.egg-info'))
+                                    and path.name in ('entry_points.txt', 'METADATA'))
+                        self.assertTrue(path in (source, intermediate) or path in declarations or path in schemas
+                                        or path.is_relative_to(library_schemas) or metadata, str(path))
+                    else:
+                        self.assertEqual(mode, 'x')
+                        self.assertIn(path, (intermediate, last))
+                    return open_file(file, mode, *args, **kwargs)
+                return guard
+
+            with patch('io.open', guarded(io.open)), patch('builtins.open', guarded(open)):
                 convert_configuration(source,intermediate);convert_configuration(intermediate,last)
             self.assertTrue(same_native_value(raw,load_configuration(last).data))
             self.assertEqual(source.read_bytes(),before)

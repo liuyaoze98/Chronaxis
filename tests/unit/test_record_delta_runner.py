@@ -14,7 +14,7 @@ class RecordDeltaTests(unittest.TestCase):
     """真实坐标保持不变，固定周期只随驱动记录推进窗口。"""
     def run_config(self,raw,backend='reference'):
         """用独立自有目录运行并注册关闭。参数: 配置/后端。返回: 结果。异常: 原运行错。"""
-        raw.update(config_version=3)
+        raw.update(config_version=4)
         plan=AnalysisPlan.from_dict(current_fixture(raw))
         self.assertTrue(validate_analysis_plan(plan).execution_ready)
         result=AnalysisRunner(backend).run(plan,ROOT/uuid4().hex)

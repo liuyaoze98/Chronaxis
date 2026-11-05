@@ -1,4 +1,4 @@
-# chronaxis.core.binding
+# `chronaxis.core.binding`
 
 把分析中使用的名称对应到实际信号。例如把current对应到来源pack的电流字段，随后表达式就可以使用current。模块检查名称冲突、字段是否存在、单位转换和多个来源的时间关系，再生成SignalBindings。绑定标识还包含输入内容及转换设置，用来识别两次计算是否使用了相同输入。
 
@@ -6,7 +6,7 @@
 
 ## 相关类型
 
-[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[SessionSpec](chronaxis.core.models.md#api-SessionSpec)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[SourceSpec](chronaxis.core.models.md#api-SourceSpec)、[TimeType](chronaxis.core.types.md#api-TimeType)、[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)
+[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry)、[LookupTablePlan](chronaxis.core.lookup.md#api-LookupTablePlan)、[SessionSpec](chronaxis.core.models.md#api-SessionSpec)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[SourceSpec](chronaxis.core.models.md#api-SourceSpec)、[TimeType](chronaxis.core.types.md#api-TimeType)、[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)
 
 ## 对象导航
 
@@ -17,6 +17,7 @@
 |[`SignalDefinition`](#api-SignalDefinition)|给一个原始字段建立分析用的名字，并声明数值类型、单位、有效期和转换方式。例如把来源table的Voltage列命名为u，再在表达式中写u*i。方向和测量位置等标签供预设检查含义；只填写标签不会自动改变数值。|
 |[`SignalDefinition.__post_init__`](#api-SignalDefinition-__post_init__)|校验完整声明并冻结默认输入单位及精确有效期。|
 |[`SignalDefinition.identity`](#api-SignalDefinition-identity)|返回声明字段完整身份，供执行计划缓存和追溯使用。|
+|[`SignalDefinition.unit_conversion_promoted`](#api-SignalDefinition-unit_conversion_promoted)|说明浮点类型是否由已知整数输入的单位换算引起。|
 |[`SynchronizationEvidence`](#api-SynchronizationEvidence)|保存来源使用固定时间偏移进入公共分析时基的核实说明。|
 |[`SynchronizationEvidence.__post_init__`](#api-SynchronizationEvidence-__post_init__)|校验显式来源和时基证据结构。|
 |[`SignalBindings`](#api-SignalBindings)|检查并冻结一个会话的信号定义、实际来源和同步证据。|
@@ -31,8 +32,11 @@
 from dataclasses import dataclass, field as dataclass_field
 from hashlib import sha256
 from .models import SessionSpec, SourceRef, SourceSpec, TimebaseSpec
-from .types import QualityFlag, SignalDType, TimeType
-from .units import require_number, validate_conversion
+from .types import BASE_FORBIDDEN_QUALITY, SignalDType, TimeType
+from .units import require_number
+from .unit_conversion import binding_version, converted_dtype, require_config_version, validate_conversion_v4
+from .unit_registry import REGISTRY_VERSION
+from .lookup import LookupTablePlan, validate_lookups
 from .validation import require_identifier, require_scalar, require_text
 from ..timebase.conversion import require_int64_ns
 ```
@@ -68,7 +72,7 @@ TypeError为内部未声明结构；不读取文件或执行任意对象repr。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/binding.py:23`](../../../src/chronaxis/core/binding.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:26`](../../../src/chronaxis/core/binding.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_source_identity"></a>
 ## `_source_identity`
@@ -95,7 +99,7 @@ TypeError为内部结构错误；无文件或旧reader副作用。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/binding.py:60`](../../../src/chronaxis/core/binding.py#L60)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:63`](../../../src/chronaxis/core/binding.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalDefinition"></a>
 ## `SignalDefinition`
@@ -131,9 +135,13 @@ class SignalDefinition
 |`measurement_location`|str &#124; None|否|None|测量位置。充电预设要求 `"pack_terminal"`，即电池包端；普通分析可以使用自己的明确位置文字。 None表示未声明测量位置，要求该位置的预设因此可能无法匹配。|
 |`input_sign_convention`|str &#124; None|否|None|转换前方向证据，core 带有明确类型的元数据。 None表示没有提供转换前的方向说明。|
 |`direction_factor`|int|否|1|方向不变1，显式反转-1。|
+|`config_version`|int|否|dataclass_field(default=4, kw_only=True)|规则版本；低层系数已确定，不按省略推导。|
+|`input_dtype`|[SignalDType](chronaxis.core.types.md#api-SignalDType) &#124; None|否|dataclass_field(default=None, kw_only=True)|配置推导前类型；不新增用户字段。|
+|`code_dtype`|[SignalDType](chronaxis.core.types.md#api-SignalDType) &#124; None|否|dataclass_field(default=None, kw_only=True)|仅 v4 枚举的原始整数类型。|
+|`capture_code`|bool|否|dataclass_field(default=False, kw_only=True, compare=False, repr=False)|当前执行投影要求。|
 |`unit_status`|str|不填写|构造时计算|`"verified"`表示单位及换算关系已通过程序的单位表检查；`"unverified"`表示使用未登记的单位文字，程序未验证其物理换算关系。|
 
-源码：[`src/chronaxis/core/binding.py:78`](../../../src/chronaxis/core/binding.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:81`](../../../src/chronaxis/core/binding.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalDefinition-__post_init__"></a>
 ### `SignalDefinition.__post_init__`
@@ -162,7 +170,7 @@ TypeError为字段结构；ValueError为缺项/策略/映射/转换冲突；
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:113`](../../../src/chronaxis/core/binding.py#L113)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:120`](../../../src/chronaxis/core/binding.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalDefinition-identity"></a>
 ### `SignalDefinition.identity`
@@ -190,7 +198,37 @@ tuple；含实际定位、转换、有效期、质量及语义/版本元数据�
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/core/binding.py:247`](../../../src/chronaxis/core/binding.py#L247)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:275`](../../../src/chronaxis/core/binding.py#L275)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-SignalDefinition-unit_conversion_promoted"></a>
+### `SignalDefinition.unit_conversion_promoted`
+
+说明浮点类型是否由已知整数输入的单位换算引起。
+
+```python
+SignalDefinition.unit_conversion_promoted: bool
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+仅有整数输入证据且实际提升时为True。
+
+#### 异常说明
+
+无；不依据样本数值猜类型。
+
+返回类型：bool。
+
+源码：[`src/chronaxis/core/binding.py:297`](../../../src/chronaxis/core/binding.py#L297)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SynchronizationEvidence"></a>
 ## `SynchronizationEvidence`
@@ -213,7 +251,7 @@ class SynchronizationEvidence
 |`analysis_timebase`|[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)|是|无|offset映射后的公共分析基准。|
 |`evidence`|str|是|无|调用者声明的核实依据，不自动生成业务事实。|
 
-源码：[`src/chronaxis/core/binding.py:264`](../../../src/chronaxis/core/binding.py#L264)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:311`](../../../src/chronaxis/core/binding.py#L311)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SynchronizationEvidence-__post_init__"></a>
 ### `SynchronizationEvidence.__post_init__`
@@ -245,7 +283,7 @@ TypeError/ValueError为无效声明。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:276`](../../../src/chronaxis/core/binding.py#L276)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:323`](../../../src/chronaxis/core/binding.py#L323)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalBindings"></a>
 ## `SignalBindings`
@@ -269,9 +307,12 @@ class SignalBindings
 |`signals`|tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]|是|无|已声明原字段到别名的关联。|
 |`derived_names`|tuple[str, ...]|否|()|实际派生定义由表达式层提供，此处只检查名称冲突。|
 |`synchronization`|tuple[[SynchronizationEvidence](chronaxis.core.binding.md#api-SynchronizationEvidence), ...]|否|()|明示固定offset依据。|
+|`config_version`|int &#124; None|否|dataclass_field(default=None, kw_only=True)|缺省继承定义；空绑定默认4。|
+|`extensions`|[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry) &#124; None|否|dataclass_field(default=None, kw_only=True, repr=False)|宿主交给信号绑定的不可变注册表，运行表达式时用它核对函数身份。|
+|`lookups`|tuple[[LookupTablePlan](chronaxis.core.lookup.md#api-LookupTablePlan), ...]|否|dataclass_field(default=(), kw_only=True)|数值标定表声明。|
 |`identity`|str|不填写|构造时计算|实际校验所得完整绑定SHA。|
 
-源码：[`src/chronaxis/core/binding.py:294`](../../../src/chronaxis/core/binding.py#L294)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:341`](../../../src/chronaxis/core/binding.py#L341)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalBindings-__post_init__"></a>
 ### `SignalBindings.__post_init__`
@@ -307,7 +348,7 @@ TypeError为结构；ValueError为名称、来源字段或证据冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:309`](../../../src/chronaxis/core/binding.py#L309)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:359`](../../../src/chronaxis/core/binding.py#L359)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalBindings-resolve"></a>
 ### `SignalBindings.resolve`
@@ -334,7 +375,7 @@ ValueError为非法或未知别名；不访问Python对象属性。
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/binding.py:386`](../../../src/chronaxis/core/binding.py#L386)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:449`](../../../src/chronaxis/core/binding.py#L449)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalBindings-source_ref"></a>
 ### `SignalBindings.source_ref`
@@ -361,7 +402,7 @@ ValueError为未定义或非法别名。
 
 返回类型：[SourceRef](chronaxis.core.models.md#api-SourceRef)。
 
-源码：[`src/chronaxis/core/binding.py:404`](../../../src/chronaxis/core/binding.py#L404)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:467`](../../../src/chronaxis/core/binding.py#L467)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalBindings-require_synchronized"></a>
 ### `SignalBindings.require_synchronized`
@@ -392,4 +433,4 @@ TypeError为容器；ValueError为未知别名或同步缺项。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:416`](../../../src/chronaxis/core/binding.py#L416)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/binding.py:479`](../../../src/chronaxis/core/binding.py#L479)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

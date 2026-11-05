@@ -1,8 +1,6 @@
-"""验证外部审查确认的INI资源风险、事件诊断与公开错误提示。
+"""验证事件诊断、观测边界和公开错误提示的审查回归。
 
-使用合成INI和核心时间组，不读真实报文。指数测试在模块的format入口设置保护，
-防止回归时真的分配巨大字符串；正常结果和拒绝报告仍通过公开迁移入口取得。
-同时锁定观测域与int64末点的不变量，避免为不可达反例放宽产品契约。
+只用合成核心时间组，不读真实报文；已移除的INI入口不再作为测试依赖。
 """
 import unittest
 from dataclasses import replace
@@ -10,8 +8,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 from chronaxis import AnalysisPlan
-from chronaxis.migration import import_legacy_ini
-from chronaxis.migration import sclicer, start_end
 from chronaxis.core.calculations import CalculationDefinition, CalculationSeries
 from chronaxis.core.models import Interval
 from chronaxis.core.numeric import ScalarValue
@@ -21,8 +17,6 @@ from chronaxis.core.temporal_numpy import NumpyTemporalDetector
 from chronaxis.core.types import Truth as T, QualityFlag as Q, SignalDType as D
 from chronaxis.core.conditional_time_reduction_reference import ReferenceConditionalTimeReduction
 from chronaxis.core.conditional_time_reduction_numpy import NumpyConditionalTimeReduction
-from test_legacy_import_sclicer import mapping_fixture
-from test_legacy_import_start_end import mapping_fixture as start_mapping, ini_fixture
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -30,44 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 class AuditRegressionTests(unittest.TestCase):
     """核对审查修复和已排除反例；每次构造独立输入，不修改共享夹具。"""
 
-    def test_extreme_ini_exponents_fail_without_fixed_expansion(self):
-        """巨大正指数返回完整拒绝报告。参数: 无。返回: None。异常: 断言失败。"""
-        # 即使修复被撤回也先在format处失败，不让测试本身触发十亿字符分配。
-        with patch.object(sclicer, 'format', side_effect=AssertionError('禁止定点展开'), create=True), \
-                patch.object(start_end, 'format', side_effect=AssertionError('禁止定点展开'), create=True):
-            for field in ('pre_sec', 'post_sec'):
-                content = ('[TRIGGER_test]\nmode=single\nexpr=OBC_OpMod==2\n'
-                           + field + '=1E+999999999\n').encode()
-                result = import_legacy_ini(content, mapping_fixture(), mode='sclicer_single', base_dir=ROOT)
-                self.assertIsNone(result.plan)
-                self.assertEqual(result.report.status, 'failed')
-                self.assertTrue(any(x.code == 'invalid_duration' and x.path.endswith(field)
-                                    for x in result.report.issues))
-                self.assertEqual(result.original_ini, content)
-            # 起止规则的超时走另一条转换路径，必须同样先拒绝再输出报告。
-            result = import_legacy_ini(ini_fixture('1E+999999999'), start_mapping(),
-                                       mode='sclicer_start_end', base_dir=ROOT)
-            self.assertIsNone(result.plan)
-            self.assertTrue(any(x.code == 'invalid_duration' for x in result.report.issues))
 
-    def test_compact_seconds_preserve_units_rounding_and_unlimited_timeout(self):
-        """指数表示保留原时长与不限时政策。参数: 无。返回: None。异常: 断言失败。"""
-        with patch.object(sclicer, 'format', side_effect=AssertionError('禁止定点展开'), create=True), \
-                patch.object(start_end, 'format', side_effect=AssertionError('禁止定点展开'), create=True):
-            for raw, expected in (('1E-1', 100000000), ('0E+999999999', 0), ('1E-999999999', 0)):
-                content = ('[TRIGGER_test]\nmode=single\nexpr=OBC_OpMod==2\npre_sec=' + raw + '\n').encode()
-                result = import_legacy_ini(content, mapping_fixture(), mode='sclicer_single', base_dir=ROOT)
-                self.assertIsNotNone(result.plan, result.report.to_dict())
-                self.assertEqual(result.plan.windows[0].pre_ns, expected)
-            for raw, expected in (('5E-9', 5), ('0E+999999999', None), ('-1E+999999999', None)):
-                result = import_legacy_ini(ini_fixture(raw), start_mapping(), mode='sclicer_start_end', base_dir=ROOT)
-                self.assertIsNotNone(result.plan, result.report.to_dict())
-                self.assertEqual(result.plan.rules[0].start_end.timeout_ns, expected)
-            # 正超时不能舍为零；小数舍入规则不因资源修复被放宽。
-            result = import_legacy_ini(ini_fixture('1E-999999999'), start_mapping(),
-                                       mode='sclicer_start_end', base_dir=ROOT)
-            self.assertIsNone(result.plan)
-            self.assertTrue(any(x.code == 'invalid_duration' for x in result.report.issues))
 
     def test_candidate_onset_quality_survives_batches_and_clock_modes(self):
         """起点点质量参与诊断且不改变区间。参数: 无。返回: None。异常: 断言失败。"""
@@ -127,7 +84,8 @@ class AuditRegressionTests(unittest.TestCase):
 
     def test_csv_error_names_the_public_delimiter(self):
         """错误指出实际字段。参数: 无。返回: None。异常: 断言失败。"""
-        config = AnalysisPlan.from_dict(mapping_fixture()['analysis'], base_dir=ROOT).sources[0].config
+        from chronaxis import load_analysis_plan
+        config = load_analysis_plan(ROOT / 'Docs/Current/examples/input-csv-minimal.yaml').sources[0].config
         with self.assertRaisesRegex(ValueError, 'csv.delimiter'):
             replace(config, delimiter=';;')
 

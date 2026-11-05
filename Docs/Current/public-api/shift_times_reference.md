@@ -1,12 +1,12 @@
 # chronaxis.shift_times_reference
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
+使用`from chronaxis import shift_times_reference`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.timebase.conversion.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [shift_times_reference](#api-shift_times_reference)
+- [`shift_times_reference`](#api-shift_times_reference)
 
 <a id="api-shift_times_reference"></a>
 ## `shift_times_reference`
@@ -38,4 +38,4 @@ TypeError/TimeOverflowError: 参数类型或任一坐标/结果超界。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/timebase/conversion.py:319`](../../../src/chronaxis/timebase/conversion.py#L319)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/timebase/conversion.py:319`](../../../src/chronaxis/timebase/conversion.py#L319)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

@@ -1,4 +1,4 @@
-# chronaxis.core.decoded_binding
+# `chronaxis.core.decoded_binding`
 
 把读取到的信号对应回分析计划。输入包含计划中的信号定义，以及实际读取的字段、样本数量、结束状态和内容摘要；输出供表达式执行使用的DecodedBindings。调用方必须先核实读取记录，单独填写一个合法的摘要字符串并不代表文件已经读过。
 
@@ -17,6 +17,8 @@
 |[`DecodedSourceEvidence.__post_init__`](#api-DecodedSourceEvidence-__post_init__)|检查固定身份、摘要格式、全源计数、投影和精确观测端点。|
 |[`DecodedBindings`](#api-DecodedBindings)|冻结当前声明与实际解码历史证据，供编译和两个数值context入口使用。|
 |[`DecodedBindings.__post_init__`](#api-DecodedBindings-__post_init__)|检查来源/会话/投影归属，再生成与完整实际证据关联的身份。|
+|[`DecodedBindings.extensions`](#api-DecodedBindings-extensions)|读取宿主注册。|
+|[`DecodedBindings.lookups`](#api-DecodedBindings-lookups)|读取原声明标定表。|
 |[`DecodedBindings.signals`](#api-DecodedBindings-signals)|读取当前冻结信号声明，不创建原始行或数值历史。|
 |[`DecodedBindings.projected_signals`](#api-DecodedBindings-projected_signals)|按原声明顺序返回实际历史投影中的定义，不把未读取声明当作运行状态。|
 |[`DecodedBindings.derived_names`](#api-DecodedBindings-derived_names)|读取当前统一名称空间中的派生别名。|
@@ -30,6 +32,7 @@ from dataclasses import dataclass, field
 from hashlib import sha256
 from .binding import SignalDefinition, _identity
 from .declarations import DeclarationBindings
+from .unit_conversion import require_config_version
 from .validation import require_identifier
 from ..timebase.conversion import require_int64_ns
 ```
@@ -62,7 +65,7 @@ TypeError为非原生str；ValueError为长度或字符不符。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:21`](../../../src/chronaxis/core/decoded_binding.py#L21)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:22`](../../../src/chronaxis/core/decoded_binding.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedSourceEvidence"></a>
 ## `DecodedSourceEvidence`
@@ -94,7 +97,7 @@ class DecodedSourceEvidence
 |`observation_end_ns`|int &#124; None|是|无|最终EOF中的已知会话坐标终点；未知不补周期。|
 |`source_eof`|bool|是|无|必须为True，表示整个配置来源已完成。|
 
-源码：[`src/chronaxis/core/decoded_binding.py:37`](../../../src/chronaxis/core/decoded_binding.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:38`](../../../src/chronaxis/core/decoded_binding.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedSourceEvidence-__post_init__"></a>
 ### `DecodedSourceEvidence.__post_init__`
@@ -135,7 +138,7 @@ TypeError/ValueError为结构或事实矛盾；时间溢出发生异常时直接
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:58`](../../../src/chronaxis/core/decoded_binding.py#L58)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:59`](../../../src/chronaxis/core/decoded_binding.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings"></a>
 ## `DecodedBindings`
@@ -155,11 +158,12 @@ class DecodedBindings
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
+|`config_version`|int &#124; None|否|None|缺省继承声明，显式不得冲突。|
 |`declarations`|[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings)|是|无|原配置关系与同步依据；其身份仍只是声明证明。|
 |`sources`|tuple[[DecodedSourceEvidence](chronaxis.core.decoded_binding.md#api-DecodedSourceEvidence), ...]|是|无|已核对来源事实，保留工厂的固定顺序。|
 |`identity`|str|不填写|构造时计算|声明加实际证据的独立SHA-256运行身份。|
 
-源码：[`src/chronaxis/core/decoded_binding.py:100`](../../../src/chronaxis/core/decoded_binding.py#L100)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:101`](../../../src/chronaxis/core/decoded_binding.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-__post_init__"></a>
 ### `DecodedBindings.__post_init__`
@@ -194,7 +198,63 @@ TypeError/ValueError为模型、重复/缺少来源、会话或投影冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:113`](../../../src/chronaxis/core/decoded_binding.py#L113)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:115`](../../../src/chronaxis/core/decoded_binding.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-DecodedBindings-extensions"></a>
+### `DecodedBindings.extensions`
+
+读取宿主注册。
+
+```python
+DecodedBindings.extensions
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+冻结注册或None。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/core/decoded_binding.py:149`](../../../src/chronaxis/core/decoded_binding.py#L149)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-DecodedBindings-lookups"></a>
+### `DecodedBindings.lookups`
+
+读取原声明标定表。
+
+```python
+DecodedBindings.lookups
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+冻结tuple。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/core/decoded_binding.py:154`](../../../src/chronaxis/core/decoded_binding.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-signals"></a>
 ### `DecodedBindings.signals`
@@ -224,7 +284,7 @@ SignalDefinition tuple。
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:142`](../../../src/chronaxis/core/decoded_binding.py#L142)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:159`](../../../src/chronaxis/core/decoded_binding.py#L159)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-projected_signals"></a>
 ### `DecodedBindings.projected_signals`
@@ -255,7 +315,7 @@ DecodedBindings.projected_signals: tuple[SignalDefinition, ...]
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:150`](../../../src/chronaxis/core/decoded_binding.py#L150)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:167`](../../../src/chronaxis/core/decoded_binding.py#L167)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-derived_names"></a>
 ### `DecodedBindings.derived_names`
@@ -285,7 +345,7 @@ str tuple。
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:166`](../../../src/chronaxis/core/decoded_binding.py#L166)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:183`](../../../src/chronaxis/core/decoded_binding.py#L183)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-resolve"></a>
 ### `DecodedBindings.resolve`
@@ -312,7 +372,7 @@ ValueError为非法或未声明名称；查找本身不证明该别名已投影�
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/decoded_binding.py:173`](../../../src/chronaxis/core/decoded_binding.py#L173)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:190`](../../../src/chronaxis/core/decoded_binding.py#L190)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedBindings-require_synchronized"></a>
 ### `DecodedBindings.require_synchronized`
@@ -343,4 +403,4 @@ TypeError为错误容器；ValueError为未知/未投影依赖或同步缺项。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:181`](../../../src/chronaxis/core/decoded_binding.py#L181)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/decoded_binding.py:198`](../../../src/chronaxis/core/decoded_binding.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

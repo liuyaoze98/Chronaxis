@@ -1,4 +1,4 @@
-# chronaxis.planning.input_defaults
+# `chronaxis.planning.input_defaults`
 
 补齐来源的常用声明，只有唯一候选时自动选择引用。
 
@@ -52,7 +52,7 @@ source_defaults(raw, index, *, inferred_type=None)
 
 PlanValidationError表示未知格式、显式空时间或非法名称。
 
-源码：[`src/chronaxis/planning/input_defaults.py:12`](../../../src/chronaxis/planning/input_defaults.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/input_defaults.py:12`](../../../src/chronaxis/planning/input_defaults.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-source_reference"></a>
 ## `source_reference`
@@ -80,4 +80,4 @@ source_reference(raw, sources, path, *, can_only=False)
 
 PlanValidationError表示无候选、多候选或非法显式名称。
 
-源码：[`src/chronaxis/planning/input_defaults.py:48`](../../../src/chronaxis/planning/input_defaults.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/input_defaults.py:48`](../../../src/chronaxis/planning/input_defaults.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

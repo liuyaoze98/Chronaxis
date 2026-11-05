@@ -1,4 +1,4 @@
-# chronaxis.results.signal_grid
+# `chronaxis.results.signal_grid`
 
 把明确选中的连续信号整理为等间隔记录：实测点保留，可靠相邻点之间线性估计，其余位置输出缺失原因。分析规则不会使用这些估计值。
 
@@ -62,7 +62,7 @@ class SignalGridSpec
 |`origin_ns`|int|是|无|整数纳秒网格起点；位置按origin_ns+k*period_ns计算。|
 |`max_gap_ns`|int|是|无|正整数纳秒；两条实际端点相隔超过该值时不插值。|
 
-源码：[`src/chronaxis/results/signal_grid.py:24`](../../../src/chronaxis/results/signal_grid.py#L24)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:24`](../../../src/chronaxis/results/signal_grid.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGridSpec-__post_init__"></a>
 ### `SignalGridSpec.__post_init__`
@@ -95,7 +95,7 @@ SignalGridSpec.__post_init__()
 - `ValueError`：网格周期和最大间隔必须为正。
 - `TypeError`：网格时间需要原生int纳秒。
 
-源码：[`src/chronaxis/results/signal_grid.py:32`](../../../src/chronaxis/results/signal_grid.py#L32)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:32`](../../../src/chronaxis/results/signal_grid.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-GridRow"></a>
 ## `GridRow`
@@ -120,7 +120,7 @@ class GridRow
 |`left`|[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; None|是|无|目标时间左侧的实际样本；缺少端点时为None，不创建虚构样本。|
 |`right`|[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; None|是|无|目标时间右侧的实际样本；缺少端点时为None，不向范围外寻找端点。|
 
-源码：[`src/chronaxis/results/signal_grid.py:52`](../../../src/chronaxis/results/signal_grid.py#L52)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:52`](../../../src/chronaxis/results/signal_grid.py#L52)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_same_fact"></a>
 ## `_same_fact`
@@ -146,7 +146,7 @@ True表示两条样本的有效性、质量标记、值的类型和内容都相�
 
 模型属性错误。
 
-源码：[`src/chronaxis/results/signal_grid.py:66`](../../../src/chronaxis/results/signal_grid.py#L66)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:66`](../../../src/chronaxis/results/signal_grid.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid"></a>
 ## `SignalGrid`
@@ -158,7 +158,7 @@ SignalGrid(spec, definitions, interval, budget, *, backend='numpy', check_cancel
 ```
 
 
-源码：[`src/chronaxis/results/signal_grid.py:74`](../../../src/chronaxis/results/signal_grid.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:74`](../../../src/chronaxis/results/signal_grid.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-__init__"></a>
 ### `SignalGrid.__init__`
@@ -193,7 +193,7 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 - `TypeError`：线性导出需要明确网格、范围和后端。
 - `TypeError`：线性导出需要原绑定定义tuple。
 
-源码：[`src/chronaxis/results/signal_grid.py:77`](../../../src/chronaxis/results/signal_grid.py#L77)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:77`](../../../src/chronaxis/results/signal_grid.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-_row"></a>
 ### `SignalGrid._row`
@@ -224,7 +224,7 @@ GridRow。
 
 无。
 
-源码：[`src/chronaxis/results/signal_grid.py:107`](../../../src/chronaxis/results/signal_grid.py#L107)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:107`](../../../src/chronaxis/results/signal_grid.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-_until"></a>
 ### `SignalGrid._until`
@@ -252,7 +252,7 @@ GridRow迭代。
 
 数值/取消错误。
 
-源码：[`src/chronaxis/results/signal_grid.py:114`](../../../src/chronaxis/results/signal_grid.py#L114)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:114`](../../../src/chronaxis/results/signal_grid.py#L114)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-_resolve"></a>
 ### `SignalGrid._resolve`
@@ -277,7 +277,7 @@ GridRow迭代。
 
 数值/预算/取消错误。
 
-源码：[`src/chronaxis/results/signal_grid.py:148`](../../../src/chronaxis/results/signal_grid.py#L148)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:148`](../../../src/chronaxis/results/signal_grid.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-push"></a>
 ### `SignalGrid.push`
@@ -310,7 +310,7 @@ SignalGrid.push(sample)
 - `ValueError`：网格输入同信号时间回退。
 - `ValueError`：网格同一时刻原序号重复。
 
-源码：[`src/chronaxis/results/signal_grid.py:166`](../../../src/chronaxis/results/signal_grid.py#L166)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:166`](../../../src/chronaxis/results/signal_grid.py#L166)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-finish"></a>
 ### `SignalGrid.finish`
@@ -340,7 +340,7 @@ GridRow迭代。
 
 - `ResultClosedError`：网格不可再次完成。
 
-源码：[`src/chronaxis/results/signal_grid.py:201`](../../../src/chronaxis/results/signal_grid.py#L201)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:201`](../../../src/chronaxis/results/signal_grid.py#L201)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-SignalGrid-close"></a>
 ### `SignalGrid.close`
@@ -366,4 +366,4 @@ SignalGrid.close()
 
 原预算释放错误。
 
-源码：[`src/chronaxis/results/signal_grid.py:211`](../../../src/chronaxis/results/signal_grid.py#L211)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/results/signal_grid.py:211`](../../../src/chronaxis/results/signal_grid.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

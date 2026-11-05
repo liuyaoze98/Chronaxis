@@ -1,4 +1,6 @@
 """验证精简指标的独立版本、按需发布和自有目录清理，旧格式单独回归。"""
+from published_paths import published_file
+
 
 from configuration_fixtures import current_fixture
 
@@ -51,8 +53,8 @@ class SummaryResultTests(unittest.TestCase):
         result=AnalysisResult(spool,metadata,table_format='csv')
         self.addCleanup(result.close)
         output=self.root/'published-coverage'
-        result.write(output)
-        with (output/'calculations.csv').open(encoding='utf-8-sig',newline='') as handle:
+        publication=result.write(output)
+        with (published_file(publication,'calculations.csv')).open(encoding='utf-8-sig',newline='') as handle:
             rows=list(csv.DictReader(handle))
         self.assertEqual(len(rows[0]),len(SUMMARY_FIELDS)+1)
         self.assertEqual({r['calculation_id']:r['coverage_status'] for r in rows},{'peak':'','covered':'sufficient'})
@@ -114,15 +116,15 @@ class SummaryResultTests(unittest.TestCase):
         result=AnalysisResult(spool,metadata,'csv')
         self.addCleanup(result.close)
         out=self.root/'published'
-        result.write(out)
-        manifest=json.loads((out/'run_manifest.json').read_text(encoding='utf-8'))
+        publication=result.write(out)
+        manifest=json.loads((published_file(publication,'run_manifest.json')).read_text(encoding='utf-8'))
         self.assertEqual(manifest['row_schema_versions'],dict(events=8,sequences=9))
         for table in ('events','sequences'):
-            with (out/(table+'.csv')).open(encoding='utf-8-sig',newline='') as stream:
+            with (published_file(publication,table+'.csv')).open(encoding='utf-8-sig',newline='') as stream:
                 reader=csv.DictReader(stream)
                 self.assertEqual(tuple(reader.fieldnames),SUMMARY_COLUMNS[table])
                 self.assertEqual(len(tuple(reader)),1)
-        self.assertFalse((out/'quality.jsonl').exists())
+        self.assertFalse(any(p.name.startswith('quality_') for p in publication.output_files))
         result.close()
         self.assertEqual(budget.ram_bytes,0)
 
@@ -133,15 +135,17 @@ class SummaryResultTests(unittest.TestCase):
         self.assertIsNone(result.manifest_path)
         self.assertEqual(tuple(result.iter_calculations()), (summary(), summary(1, calculation_id='missing', value=None,
             status='indeterminate', reason='no_observation', quality=Q.MISSING))[::-1])  # 按calculation_id排序。
+        published_runs=[]
         for name in ('first', 'second'):
             with patch('chronaxis.results.result.hashlib.sha256', side_effect=AssertionError('未请求输出哈希')):
-                result.write(self.root/name)
-            self.assertEqual({p.name for p in (self.root/name).iterdir()}, {'calculations.csv', 'run_manifest.json'})
-            with (self.root/name/'calculations.csv').open(encoding='utf-8', newline='') as handle:
+                publication=result.write(self.root/name)
+            published_runs.append(publication)
+            self.assertEqual(set((self.root/name).iterdir()), {*publication.output_files, publication.manifest_path})
+            with (published_file(publication,'calculations.csv')).open(encoding='utf-8', newline='') as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(set(rows[0]), set(SUMMARY_FIELDS))
             self.assertEqual(rows[1]['value'], str(2**63+17))
-            manifest = json.loads((self.root/name/'run_manifest.json').read_text('utf-8'))
+            manifest = json.loads((published_file(publication,'run_manifest.json')).read_text('utf-8'))
             self.assertNotIn('spool_files', manifest)
             self.assertNotIn('coverage', manifest)
             self.assertNotIn('input_identity', manifest['run'])
@@ -149,7 +153,7 @@ class SummaryResultTests(unittest.TestCase):
         path = result.spool.path
         result.close()
         self.assertFalse(path.exists())
-        self.assertTrue((self.root/'first/calculations.csv').exists())
+        self.assertTrue((published_file(published_runs[0],'calculations.csv')).exists())
         self.assertEqual(result.spool.budget.ram_bytes, 0)
         with self.assertRaises(ResultClosedError):
             result.iter_calculations()
@@ -159,11 +163,11 @@ class SummaryResultTests(unittest.TestCase):
         for detailed in (False, True):
             name = str(detailed)
             result = self.result(name='spool'+name, table_format='jsonl', diagnostic=detailed, retain=True)
-            result.write(self.root/name)
-            with (self.root/name/'calculations.jsonl').open('rb') as handle:
+            publication=result.write(self.root/name)
+            with (published_file(publication,'calculations.jsonl')).open('rb') as handle:
                 rows = tuple(decode_row(line, 4096) for line in handle)
             self.assertEqual(len(rows), 2)
-            self.assertEqual((self.root/name/'quality.jsonl').exists(), detailed)
+            self.assertEqual(any(p.name.startswith('quality_') for p in publication.output_files), detailed)
             result.close()
             self.assertTrue(result.spool.path.exists())
 
@@ -172,14 +176,15 @@ class SummaryResultTests(unittest.TestCase):
         result = self.result()
         with patch.object(result, '_install_directory', side_effect=OSError('安装失败')):
             with self.assertRaises(AnalysisError):
-                result.write(self.root/'out')
+                publication=result.write(self.root/'out')
         self.assertEqual(list(self.root.glob('.out.incomplete-*')), [])
         self.assertFalse(list(result.spool.path.glob('*failure*')))
-        result.write(self.root/'out')
-        before = (self.root/'out/calculations.csv').read_bytes()
-        with self.assertRaises(AnalysisError):
-            result.write(self.root/'out')
-        self.assertEqual((self.root/'out/calculations.csv').read_bytes(), before)
+        publication=result.write(self.root/'out')
+        first=publication
+        before=published_file(first,'calculations.csv').read_bytes()
+        second=result.write(self.root/'out')
+        self.assertNotEqual(first.manifest_path,second.manifest_path)
+        self.assertEqual(published_file(first,'calculations.csv').read_bytes(),before)
 
     def test_delete_failure_keeps_close_retry_and_replaced_directory_is_safe(self):
         """删除失败不得假报关闭；同名被替换的目录不删除。参数: 无。返回: None。异常: 断言失败。"""
@@ -208,11 +213,11 @@ class SummaryResultTests(unittest.TestCase):
         with patch.object(result, '_install_directory', side_effect=OSError('安装失败')):
             with patch('chronaxis.results.result.remove_owned_directory', side_effect=OSError('目录暂时被占用')):
                 with self.assertRaises(AnalysisError) as caught:
-                    result.write(self.root/'out')
+                    publication=result.write(self.root/'out')
         self.assertIs(caught.exception.analysis_result_cleanup_owner, result)
         self.assertIsNotNone(result._pending_output_cleanup)
         with self.assertRaises(ResultClosedError):
-            result.write(self.root/'retry')
+            publication=result.write(self.root/'retry')
         result.close()
         self.assertEqual(list(self.root.glob('.out.incomplete-*')), [])
         self.assertEqual(result.spool.budget.ram_bytes, 0)
@@ -244,12 +249,12 @@ class SummaryResultTests(unittest.TestCase):
             spool.seal()
             result=AnalysisResult(spool,replace(run_metadata(),detailed_diagnostics=True),fmt)
             self.addCleanup(result.close)
-            output=self.root/('diagnostics-'+fmt);result.write(output)
-            quality=[json.loads(line) for line in (output/'quality.jsonl').read_text(encoding='utf-8').splitlines()]
+            output=self.root/('diagnostics-'+fmt);publication=result.write(output)
+            quality=[json.loads(line) for line in (published_file(publication,'quality.jsonl')).read_text(encoding='utf-8').splitlines()]
             self.assertEqual([(r['table'],r.get('selection',r.get('reason',r.get('record_type')))) for r in quality],
                 [('selections','unknown'),('contributions','missing_input'),('input_trace','signal_sample')])
             self.assertTrue(all('status' not in row for row in quality))
-            manifest=json.loads((output/'run_manifest.json').read_text(encoding='utf-8'))
+            manifest=json.loads((published_file(publication,'run_manifest.json')).read_text(encoding='utf-8'))
             self.assertEqual(manifest['coverage'],{'selections:unknown':1,'contributions:missing_input':1,'input_trace:signal_sample':1})
             result.close()
             self.assertEqual(spool.budget.ram_bytes,0)

@@ -52,8 +52,8 @@ class RecordDiagnosticsTests(unittest.TestCase):
                 else:self.assertNotIn('input_trace',result.spool.tables)
                 output=self.root/uuid4().hex
                 result.write(output)
-                self.assertEqual((output/'输入追溯.csv').exists(),trace)
-                self.assertFalse((output/'quality.jsonl').exists())
+                self.assertEqual(bool(tuple(output.glob('输入追溯_*.csv'))),trace)
+                self.assertFalse(bool(tuple(output.glob('quality_*.jsonl'))))
                 budget=result.spool.budget;result.close()
                 self.assertEqual(budget.ram_bytes,0)
 

@@ -1,16 +1,19 @@
 # 分析配置结构
 
-手写以YAML为主，程序交换可用JSON，两种格式使用同一套字段。当前只接受整数config_version: 3；省略或填写旧版本都会报错，不静默迁移。逐项用途、类型、条件、范围和默认值从[字段参考](configuration-reference.md)查询。Schema是供软件读取的“配置结构规范”：列明允许字段、类型和必填条件，供编辑器或校验器使用，不是另一种业务配置格式。这里说明填写顺序和各段负责什么。初次使用先读[字段、缩进和列表](configuration-language.md#先认识字段映射和列表)。下表的“段”都是文件根级字段，彼此并列；不要因表格顺序把后一段缩进到前一段中。
+手写以YAML为主，程序交换可用JSON，两种格式使用同一套字段。当前配置使用整数 `config_version: 4`。缺少版本或填写其他版本时会报错。逐项用途、类型、条件、范围和默认值从[字段参考](configuration-reference.md)查询。Schema是供软件读取的“配置结构规范”：列明允许字段、类型和必填条件，供编辑器或校验器使用，不是另一种业务配置格式。这里说明填写顺序和各段负责什么。初次使用先读[字段、缩进和列表](configuration-language.md#先认识字段映射和列表)。下表的“段”都是文件根级字段，彼此并列；不要因表格顺序把后一段缩进到前一段中。
 
 | 段 | 是否必填 | 用途 |
 |---|---|---|
-| config_version | 是 | 声明这份分析文件按哪一版字段结构解释；当前固定填整数3，值来自本项目配置版本规定。不是日志日期或预设版本 |
+| config_version | 是 | 声明这份分析文件按哪一版字段结构解释；填写整数4。不是日志日期或预设版本 |
 | dataset | 是 | [数据集与分析范围](dataset.md)：name命名本任务，entity/session默认沿用name；domain可省略，按实际观测范围分析 |
 | sources | 展开后必须有至少一项，可由imports提供 | 按顺序列出输入；默认识别ASC/BLF，CSV和内存须明确source_type；读取参数集中在reader |
 | signals | 展开后必须有数组，可由imports提供 | 给原始列或报文字段一个表达式使用的名称；CAN类型与单位默认由DBC推导，CSV/内存才需明确声明；valid_for可省略，默认规则见[信号](signals.md) |
 | imports | 否，缺省不导入 | 按顺序读取本地一层公共sources/signals/derived；重名默认拒绝；需要局部替换时显式用overrides，见[公共定义](imports.md) |
 | overrides | 否，缺省不覆盖 | 对导入后的来源、信号或派生定义按名称明确覆盖允许字段；不创建新对象 |
+| lookups | 否 | 用标定点把输入值换成输出值，见[一维查表与插值字段参考](expressions.md#lookup-reference)及[电压查表示例](examples/lookup-power.yaml) |
 | derived | 否，缺省为空 | 由信号表达式计算的新信号，键是新名称，expr是表达式；unit可按表达式推导，明确填写时仍检查一致性 |
+| transforms | 否 | 将信号变为滚动均值、变化率等新序列，见[时序变换](temporal-transforms.md) |
+| aggregations | 否 | 汇总本次分析的会话、事件或片段标量计算结果、请求响应延迟，或统计事件及最终片段数量；例如求每段平均功率的P95，见[结果聚合](aggregations.md) |
 | rules | 否，缺省为空 | 事件规则；rule_type明确说明是哪种时间判断 |
 | presets | 否，缺省为空 | 常用规则组合；preset_type选择充电、故障、请求响应或阈值方案 |
 | windows | 否，缺省为空 | 从事件生成需要分析或导出的片段 |
@@ -44,13 +47,13 @@ calculations:              # 列出希望获得的统计或积分结果，每项
 
 本页的 `field.signal`、`time.clock` 等点号写法表示父子位置，不是字面键名；实际文件须展开为对应缩进，见[完整对照](configuration-language.md#field-paths)。
 
-来源的读取参数放在`reader`；信号额外换算放在`conversion`；相对时间共同起点叫`time.clock`，重采样网格起点叫`resampling.start`。同一份含义只填写一处。省略字段采用已列明的默认值；显式null或错误值仍报错。
+来源的读取参数放在`reader`；信号额外换算放在`conversion`；相对时间共同起点叫`time.clock`，重采样网格起点叫`resampling.start`。同一份含义只填写一处。省略字段采用已列明的默认值；显式null是否允许以具体字段说明为准，不能普遍代替省略。例如execution.spool_quota_bytes允许null，表示不另设暂存磁盘配额。类型或取值不合法时报错。
 
 分析默认只解析、检查和保留本次计算需要的内容。完整信号检查、逐条贡献与追溯、原帧副本和额外导出均按请求启用；不为了之后可能排错而默认构造、扫描或保存这些数据。
 
 ## 配置语言
 
-完整语法和不同版本字段见[配置文件语法](configuration-language.md)。
+完整语法和当前字段见[配置文件语法](configuration-language.md)。
 
 支持一个文档、字符串键、映射、列表、注释、多行文本，以及JSON原生的字符串、有限数字、布尔和空值。true/false是布尔值，yes/no是普通字符串。时长写成500ms或2s这样的字符串，原始数据中的整数、浮点和文本类型保持区分。
 

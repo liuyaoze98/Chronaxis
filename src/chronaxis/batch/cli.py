@@ -41,7 +41,7 @@ def run_batch_cli(arguments) -> int:
         print('批量结果清理失败：' + type(error).__name__ + ': ' + str(error), file=sys.stderr)
     document = report.to_dict()
     print(json.dumps(dict(status=report.status, counts=document['counts'],
-        output=str(report.output_dir), report=str(report.output_dir/'batch_report.json'),
+        output=str(report.output_dir), report=str(report.report_path),
         cleanup_pending=cleanup_failed, device_label=label), ensure_ascii=False, allow_nan=False))
     if cleanup_failed or report.status == 'failed':
         return 1

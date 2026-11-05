@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-config_version: 3               # 配置格式版本，不是业务参数
+config_version: 4               # 配置格式版本，不是业务参数
 dataset:                        # 只保留本次任务名称；省略domain表示读取完整输入
   name: batch_energy_example    # 为此分析对象取名称，供表达式、规则或结果引用
 sources:                        # 输入报文路径与对应DBC；格式按扩展名识别

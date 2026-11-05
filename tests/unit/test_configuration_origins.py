@@ -15,10 +15,8 @@ from chronaxis.configuration import load_configuration
 from chronaxis.configuration.initialization import initialize_configuration
 from chronaxis.configuration.origins import configuration_origins
 from chronaxis.configuration.resolution import resolve_configuration, resolved_configuration
-from chronaxis.migration import load_legacy_ini
 import test_configuration_imports as import_cases
 import test_configuration_resolve as resolve_cases
-from test_legacy_import_sclicer import mapping_fixture
 
 
 class ConfigurationOriginsTests(unittest.TestCase):
@@ -149,23 +147,6 @@ class ConfigurationOriginsTests(unittest.TestCase):
             self.assertEqual(command.returncode,0,command.stderr)
             self.assertIn('signals.json',command.stdout)
 
-    def test_mapping_origin_and_standalone_export(self):
-        """映射中的导入错误与独立导出仍回到原文件，INI内容不动。参数: 无。返回: None。异常: 断言。"""
-        mapping=mapping_fixture();analysis=mapping['analysis']
-        fragment={key:analysis.pop(key) for key in ('sources','signals')}
-        definition=self.write('definitions.json',fragment);analysis['imports']=['definitions.json']
-        path=self.write('mapping.yaml',mapping)
-        ini=self.folder/'source.ini';content=b'[TRIGGER_test]\nmode=single\nexpr=BMS_BatPackHiResSOC > 1\npre_sec=0\npost_sec=0\n';ini.write_bytes(content)
-        target=self.root/'mapping-effective.yaml';resolve_configuration(path,output=target)
-        definition.unlink()
-        self.assertEqual(load_legacy_ini(ini,target,mode='sclicer_single').report.status,'success')
-        self.assertEqual(ini.read_bytes(),content)
-        fragment['signals'][0]['valid_for']='0s';self.write('definitions.json',fragment)
-        result=load_legacy_ini(ini,path,mode='sclicer_single')
-        self.assertEqual(result.report.status,'failed')
-        issue=next(issue for issue in result.report.issues if 'valid_for' in issue.path)
-        self.assertIn(str(definition),issue.message)
-        self.assertEqual(issue.path,'$.signals[0].valid_for')
 
     def test_batch_child_imports_and_origins_do_not_preload_children(self):
         """批量按原隔离规则加载子计划，origins仅列子路径。参数: 无。返回: None。异常: 断言。"""

@@ -6,15 +6,14 @@
 
 from dataclasses import replace
 import multiprocessing
-import os
 from pathlib import Path
-import signal
-from threading import Event
+from time import monotonic
 
 from ..planning.plan import AnalysisPlan
 from ..planning.checks import json_value
 from .models import BatchJob, BatchJobResult, CleanupHandle
 from .process_tree import ProcessTree
+from .._batch_worker import worker_main
 
 
 def job_packet(job):
@@ -35,60 +34,23 @@ def restore_job(packet):
     return BatchJob(packet['job_id'], plan)
 
 
-def worker_main(connection):
-    """处理run/cleanup/close命令。参数: 私有管道。返回: None。异常: 断管退出，父进程负责树清理。"""
-    from .runner import _run_job, _diagnostics
-    # Ctrl+C只由调度主进程接收，正在写结果的工作进程继续完整收尾。
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    recovery = None
-    try:
-        while True:
-            command = connection.recv()
-            if command[0] == 'close':
-                if recovery is not None:
-                    recovery.close()
-                return
-            if command[0] == 'cleanup':
-                try:
-                    if recovery is not None:
-                        recovery.close()
-                    recovery = None
-                    connection.send(('cleaned', None))
-                except BaseException as error:
-                    connection.send(('cleanup_failed', _diagnostics(error)))
-                continue
-            if recovery is not None:
-                raise RuntimeError('存在未关闭资源的工作进程不能接收新任务')
-            _, packet, directory, backend = command
-            try:
-                job = restore_job(packet)
-                outcome = _run_job(job, Path(directory), backend, Event(), Event())
-            except BaseException as error:
-                outcome = BatchJobResult(packet['job_id'], 'failed',
-                    plan_path=packet.get('path'), error_type=type(error).__name__,
-                    error_message=str(error), error_chain=_diagnostics(error))
-            recovery = outcome.recovery
-            pending = recovery is not None and not recovery.closed
-            # 只发送冻结的纯结果字段；CleanupHandle的原资源必须留在拥有它的进程。
-            connection.send(('result', replace(outcome, recovery=None, worker_pid=os.getpid()), pending))
-    except EOFError:
-        if recovery is not None:
-            recovery.close()
-    finally:
-        connection.close()
-
-
 class ProcessWorker:
     """保存一个可复用工作进程、私有管道及其后代的清理责任。"""
 
-    def __init__(self):
+    def __init__(self, *, fast=False):
         """启动等待命令的spawn进程。参数: 无。返回: 新对象。异常: 启动/树登记失败立即回收。"""
         context = multiprocessing.get_context('spawn')
         self.connection, child = context.Pipe()
-        self.process = context.Process(target=worker_main, args=(child,), daemon=False)
+        self.fast_cancel = context.Event() if fast else None
+        self.cancel_deadline = None
+        self.fast_rows = None
+        args = (child, self.fast_cancel) if fast else (child,)
+        self.process = context.Process(target=worker_main, args=args, daemon=False)
         self.tree = None
         self.closed = False
         self.pending = False
+        self._pipe_lost = False
+        self._stop_requested = False
         try:
             self.process.start()
             self.tree = ProcessTree(self.process.pid)
@@ -107,21 +69,49 @@ class ProcessWorker:
         """发送独立任务。参数: job/目录/后端。返回: None。异常: 转换或通信错误。"""
         self.connection.send(('run', job_packet(job), str(directory), backend))
 
+    def submit_fast(self, job, directory, spec, total):
+        """只传准备完成的文件参数，工作进程不重新解析模板或建立下层进程。"""
+        packet = dict(job_id=job.job_id, spec=spec, total=total,
+                      path=str(job.plan) if isinstance(job.plan, Path) else None)
+        self.connection.send(('fast', packet, str(directory), None))
+
+    def cancel_fast(self):
+        """通知在途文件，协作退出超过五秒才结束本次拥有的进程树。返回是否已强制回收。"""
+        if self.cancel_deadline is None:
+            self.fast_cancel.set()
+            self.cancel_deadline = monotonic() + 5
+        elif monotonic() >= self.cancel_deadline:
+            self._pipe_lost = True
+            self.close()
+            return True
+        return False
+
     def ready(self):
         """查询结果或异常退出。参数: 无。返回: bool。异常: 原管道错误。"""
         try:
             return self.connection.poll() or not self.process.is_alive()
         except (EOFError, OSError) as error:
+            if isinstance(error, (EOFError, BrokenPipeError)):
+                self._pipe_lost = True
             raise ChildProcessError('分析工作进程管道已断开，PID=' + str(self.pid)) from error
 
     def receive(self):
         """取结果并挂远程恢复句柄。参数: 无。返回: BatchJobResult。异常: 进程死亡或协议错误。"""
-        if not self.connection.poll():
-            raise ChildProcessError('分析工作进程异常退出，PID=' + str(self.pid))
         try:
-            kind, result, self.pending = self.connection.recv()
-        except EOFError as error:
+            # Windows 同伴退出时，探测或随后的读取都可能先报告断管。
+            if not self.connection.poll():
+                raise ChildProcessError('分析工作进程异常退出，PID=' + str(self.pid))
+            message = self.connection.recv()
+        except (EOFError, BrokenPipeError) as error:
+            self._pipe_lost = True
             raise ChildProcessError('分析工作进程断开，PID=' + str(self.pid)) from error
+        if len(message) == 4 and getattr(self,'fast_cancel',None) is not None:
+            kind, result, self.pending, self.fast_rows = message
+        else:
+            kind, result, self.pending = message
+        if kind == 'fast_result' and getattr(self,'fast_cancel',None) is not None and isinstance(result,dict):
+            result = BatchJobResult(**result)
+            kind = 'result'
         if kind != 'result' or not isinstance(result, BatchJobResult):
             raise RuntimeError('批量工作进程返回无效结果')
         return replace(result, recovery=CleanupHandle(self) if self.pending else None)
@@ -130,20 +120,36 @@ class ProcessWorker:
         """重试远程清理后关闭进程树。参数: 无。返回: None。异常: 清理失败保留全部所有者。"""
         if self.closed:
             return
-        if self.process.is_alive():
-            if self.pending:
-                self.connection.send(('cleanup',))
-                kind, detail = self.connection.recv()
-                if kind != 'cleaned':
-                    raise RuntimeError('工作进程资源尚未关闭：' + '; '.join(detail))
-                self.pending = False
-            self.connection.send(('close',))
-            self.process.join()
+        if not self._pipe_lost and not self._stop_requested and self.process.is_alive():
+            try:
+                if self.pending:
+                    self.connection.send(('cleanup',))
+                    kind, detail = self.connection.recv()
+                    if kind != 'cleaned':
+                        raise RuntimeError('工作进程资源尚未关闭：' + '; '.join(detail))
+                    self.pending = False
+                self.connection.send(('close',))
+                self._stop_requested = True
+            except (EOFError, BrokenPipeError):
+                self._pipe_lost = True
+        if self._pipe_lost:
+            # 管道可先于进程退出；无法再握手时由父进程先结束本次拥有的树。
+            if not self._stop_requested:
+                if self.tree is not None:
+                    self.tree.close()
+                    self.tree = None
+                elif self.process.is_alive():
+                    self.process.kill()
+                self._stop_requested = True
+            self.process.join(timeout=5)
+            if self.process.is_alive():
+                raise TimeoutError('等待断管工作进程退出超时，PID=' + str(self.pid))
         else:
             self.process.join()
-        # 工作进程已退出后关闭作业，清除故障残余的CAN读取后代。
+        # 正常停止也需关闭作业，清除残余后代；前一步失败时保留所有者供重试。
         if self.tree is not None:
             self.tree.close()
+            self.tree = None
         self.connection.close()
         self.process.close()
-        self.closed = True
+        self.pending, self.closed = False, True

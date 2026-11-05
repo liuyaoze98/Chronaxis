@@ -20,14 +20,14 @@ This binds only Voltage and integrates it. The DBC applies `2 × raw + 1`: bytes
 
 [input-raw-csv-minimal.yaml](../examples/input-raw-csv-minimal.yaml) reads [raw-can-example.csv](../examples/data/raw-can-example.csv) using the same DBC and signal definition, also producing 13 V·s. Explicit `id_base: 16` reads text `100` as hexadecimal, matching decimal DBC ID 256. Payload text such as `01 05` is bytes, not a voltage value.
 
-[input-raw-csv-mapping.yaml](../examples/input-raw-csv-mapping.yaml) changes direction from a fixed true value to the `direction` column. Its `value_map` maps Rx→true and Tx→false. `strip: true` removes the leading/trailing spaces in the first row's ` Rx ` before matching. All rows are Rx here, so energy remains 13 V·s. Unlisted text produces a mapping error rather than becoming transmit or receive automatically.
+[input-raw-csv-mapping.yaml](../examples/input-raw-csv-mapping.yaml) changes direction from a fixed true value to the `direction` column. Its `value_map` maps Rx→true and Tx→false. `strip: true` removes the leading/trailing spaces in the first row's ` Rx ` before matching. All rows are Rx here, so the voltage integral remains 13 V·s. Unlisted text produces a mapping error rather than becoming transmit or receive automatically.
 
 ```powershell
 chronaxis run input-raw-csv-minimal.yaml --output raw-csv-result
 chronaxis run input-raw-csv-mapping.yaml --output raw-mapping-result
 ```
 
-All three annotated files contain complete source, signal, and calculation declarations. Output directories must be new. The excerpts below adapt real input formats and do not replace those complete examples.
+All three annotated files contain complete source, signal, and calculation declarations. Analysis output directories can be reused; filenames receive a timestamp suffix. The excerpts below adapt real input formats and do not replace those complete examples.
 
 <a id="完整来源字段"></a>
 ## Complete source fields
@@ -60,10 +60,10 @@ Explicit files retain order; matched files use natural order. Default sources ma
 This excerpt replaces the root `sources` list of a complete analysis. Supply actual `sample.asc` and `sample.dbc`; do not insert a second `sources` parent inside an existing item.
 
 ```yaml
-sources:
-  - path: sample.asc
-    dbc_by_channel:
-      '1': sample.dbc
+sources:                 # Input sources used by this analysis
+  - path: sample.asc     # Input file path, relative to the configuration
+    dbc_by_channel:      # DBC files indexed by user-facing CAN channel
+      '1': sample.dbc    # DBC for channel 1; channel keys are strings
 ```
 
 Fields below are inside `sources[].reader`.
@@ -99,21 +99,21 @@ Without a reliable acquisition date, use relative analysis time. Do not substitu
 This partial root `sources` section needs your actual input and DBC plus the rest of the analysis:
 
 ```yaml
-sources:
-  - path: sample.csv
-    source_type: raw_can_csv
-    dbc_by_channel:
-      '1': sample.dbc
-    time:
-      unit: s
-    reader:
-      time_format: numeric
-      id_base: 16                          # Unprefixed ID text is hexadecimal
-      layout:
-        fields:
-          timestamp: time                 # Original CSV time header
-          frame_id: id                    # Original CSV ID header
-          data: data                      # Payload bytes, not decoded values
+sources:                        # Input sources used by this analysis
+  - path: sample.csv            # Input file path, relative to the configuration
+    source_type: raw_can_csv    # Input adapter; CSV or memory must be declared explicitly
+    dbc_by_channel:             # DBC files indexed by user-facing CAN channel
+      '1': sample.dbc           # DBC for channel 1; channel keys are strings
+    time:                       # Input timestamp interpretation
+      unit: s                   # Unit of the input timestamp values
+    reader:                     # Input-format parsing options
+      time_format: numeric      # Format used to parse timestamp text
+      id_base: 16               # Unprefixed ID text is hexadecimal
+      layout:                   # Columns and fixed values in the raw message table
+        fields:                 # Column names used to read each raw message field
+          timestamp: time       # Original CSV time header
+          frame_id: id          # Original CSV ID header
+          data: data            # Payload bytes, not decoded values
 ```
 
 <a id="reader时间id和数据字节怎样读取"></a>
@@ -146,20 +146,20 @@ For a continuous log moving from `23:59:59` to `00:00:01`, the clock drops nearl
 Common tables need only time, ID, and payload mappings; each column need not be wrapped in `column`:
 
 ```yaml
-sources:
-  - source_type: raw_can_csv
-    path: data/raw.csv
-    dbc_by_channel:
-      '1': network.dbc
-    time:
-      unit: s
-    reader:
-      time_format: numeric
-      layout:
-        fields:
-          timestamp: time
-          frame_id: id
-          data: data
+sources:                        # Input sources used by this analysis
+  - source_type: raw_can_csv    # Input adapter; CSV or memory must be declared explicitly
+    path: data/raw.csv          # Input file path, relative to the configuration
+    dbc_by_channel:             # DBC files indexed by user-facing CAN channel
+      '1': network.dbc          # DBC for channel 1; channel keys are strings
+    time:                       # Input timestamp interpretation
+      unit: s                   # Unit of the input timestamp values
+    reader:                     # Input-format parsing options
+      time_format: numeric      # Format used to parse timestamp text
+      layout:                   # Columns and fixed values in the raw message table
+        fields:                 # Column names used to read each raw message field
+          timestamp: time       # Column containing the original timestamp
+          frame_id: id          # CAN message identifier; decimal or prefixed hexadecimal/binary
+          data: data            # Column containing payload bytes
 ```
 
 `timestamp: time` equals `timestamp: {column: time}`. Integer shorthand such as `timestamp: 1` selects the first column. Constants require `{fixed: VALUE}`. The unique DBC channel is supplied automatically; frames default to `frame_kind: data`, with length from actual bytes. Omitted direction remains unknown, allowing ordinary numeric analysis; complete raw-frame export needs actual direction. Standard/extended and CAN/FD flags may be omitted only when bindings and DBC identify them uniquely. Explicit lengths, kinds, and flags are strictly checked rather than replaced by defaults.

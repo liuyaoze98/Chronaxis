@@ -37,7 +37,7 @@ def definition(alias='power', source_name='bus', frame_id=256, channel=0):
 
 def metadata(can_sources, bindings=()):
     """关联实际所需字段与CAN事实。参数: 来源、定义及可选明细事实。返回: 清单。异常: 原校验错误。"""
-    return RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 3,
+    return RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 4,
         'explicit synthetic seconds', (('session', 0, 12),), '2026-10-20T22:00:00+08:00',
         device_label='home', signal_bindings=bindings, can_sources=can_sources,
         detailed_diagnostics=True)

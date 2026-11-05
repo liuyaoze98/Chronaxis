@@ -8,7 +8,7 @@ import re
 
 def reading_text(text):
     """返回正文；履历之后出现章节标题时抛出ValueError。"""
-    parts = re.split(r"(?m)^## (?:变更履历|版本记录)\s*$", text)
+    parts = re.split(r"(?m)^## (?:变更履历|版本记录|Change history|Revision history)\s*$", text)
     if len(parts) > 1 and re.search(r"(?m)^#{1,6} ", "\n".join(parts[1:])):
         raise ValueError("履历后包含正文标题；请将正文移到履历前")
     return parts[0].rstrip() + "\n"

@@ -1,4 +1,4 @@
-# chronaxis.execution.batch_signal_groups
+# `chronaxis.execution.batch_signal_groups`
 
 将已校验的解析信号批按watermark归为同一时刻组，不创建磁盘历史。
 
@@ -47,7 +47,7 @@ BatchSignalGroups(budget, definitions, session_id, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchSignalGroups-__init__"></a>
 ### `BatchSignalGroups.__init__`
@@ -75,7 +75,7 @@ owner。
 
 预算/取消原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchSignalGroups-consume"></a>
 ### `BatchSignalGroups.consume`
@@ -100,7 +100,7 @@ None。
 
 预算/模型/回退，失败后只清理。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchSignalGroups-_flush"></a>
 ### `BatchSignalGroups._flush`
@@ -126,7 +126,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:68`](../../../src/chronaxis/execution/batch_signal_groups.py#L68)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:68`](../../../src/chronaxis/execution/batch_signal_groups.py#L68)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchSignalGroups-finish"></a>
 ### `BatchSignalGroups.finish`
@@ -152,7 +152,7 @@ None。
 
 失败拒绝完成。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:101`](../../../src/chronaxis/execution/batch_signal_groups.py#L101)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:101`](../../../src/chronaxis/execution/batch_signal_groups.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-BatchSignalGroups-close"></a>
 ### `BatchSignalGroups.close`
@@ -178,4 +178,4 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:114`](../../../src/chronaxis/execution/batch_signal_groups.py#L114)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:114`](../../../src/chronaxis/execution/batch_signal_groups.py#L114)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

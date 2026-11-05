@@ -2,7 +2,7 @@
 
 <a id="python公开api索引"></a>
 
-Find an entry point by task. Each linked object page gives its full constructor signature, public methods/properties, parameters, return values, and exceptions. All names below can be imported from `chronaxis`. See the [result row models](../reference/chronaxis.results.summary.md) and [developer reference](../reference/index.md) (Chinese implementation references). For a complete file-based workflow, start with [Python quick start](api-usage.md).
+Find an entry point by task. Each linked object page gives its full constructor signature, public methods/properties, parameters, return values, and exceptions. General analysis, batch, preset and time entries are imported from `chronaxis`; the integrator and custom operator sections state their respective import modules. See the [result row models](../reference/chronaxis.results.summary.md) and [developer reference](../reference/index.md) (Chinese implementation references). For a complete file-based workflow, start with [Python quick start](api-usage.md).
 
 <a id="计划加载与检查"></a>
 ## Load and check a plan
@@ -23,6 +23,7 @@ Find an entry point by task. Each linked object page gives its full constructor 
 | `chronaxis.AnalysisRunner` | [AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner): Stores an optional backend override, uses the same static validation, and creates independent resources for each run. |
 | `chronaxis.AnalysisResult` | [AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult): Stores staging paths and small metadata objects; it does not hold full lists of events, segments, or calculations. |
 | `chronaxis.OutputManifest` | [OutputManifest](public-api/OutputManifest.md#api-OutputManifest): Stores the successfully published directory, manifest, and row counts for the fixed table whitelist; legacy entries appear only when enabled. |
+| `chronaxis.ExportManifest` | [ExportManifest](public-api/ExportManifest.md#api-ExportManifest): Provides the actual directory, completion manifest, and data-file paths returned by direct signal-CSV or raw-message exports. |
 | `chronaxis.RunMetadata` | [RunMetadata](public-api/RunMetadata.md#api-RunMetadata): Stores run identity, actual backend, time interpretation, session boundaries, and compatibility limitations. |
 | `chronaxis.AnalysisError` | [AnalysisError](public-api/AnalysisError.md#api-AnalysisError): Signals an analysis or result-publication failure. The exception alone does not guarantee that old output was rolled back. |
 | `chronaxis.ResultClosedError` | [ResultClosedError](public-api/ResultClosedError.md#api-ResultClosedError): Signals that the result has been closed and can no longer create iterators, be read, or be published. |
@@ -41,6 +42,28 @@ Find an entry point by task. Each linked object page gives its full constructor 
 | `chronaxis.run_batch` | [run_batch](public-api/run_batch.md#api-run_batch): Runs the batch and publishes its report. |
 
 <a id="业务预设"></a>
+## High-performance integrator
+
+| Public entry | When to use it |
+|---|---|
+| [chronaxis.fast.run](public-api/fast.run.md) | Same-frame per-message accumulation; include the time factor in an energy formula. See [the integrator guide](fast-energy.md). |
+| [chronaxis.fast.batch.run_batch](public-api/fast.batch.run_batch.md) | Apply that calculation to independent files with optional compatible totals. |
+
+Import these entries with `from chronaxis.fast import run` and `from chronaxis.fast.batch import run_batch`.
+
+## Custom analysis operators
+
+Import `ExtensionRegistry`, `FunctionSpec`, `ReductionSpec` and `TransformSpec` from `chronaxis.extensions`.
+
+| Public entry | When to use it |
+|---|---|
+| [ExtensionRegistry](public-api/ExtensionRegistry.md) | Pass the same registry when loading and running a plan. |
+| [FunctionSpec](public-api/FunctionSpec.md) | Register an element-wise expression function. |
+| [ReductionSpec](public-api/ReductionSpec.md) | Register a statistic over the rows in one scope. |
+| [TransformSpec](public-api/TransformSpec.md) | Register a time-window calculation. |
+
+Complete contracts and examples are in [custom analysis operators](host-extensions.md).
+
 ## Task presets
 
 | Public name | Reference and purpose |

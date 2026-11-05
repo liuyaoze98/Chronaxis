@@ -1,5 +1,11 @@
 {
   "_metadata": {
+    "doc_review_04": {
+      "updated_at": "2026-11-05T19:36:47+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "DOC-REVIEW-04/N01：当前配置帮助和参数说明只列analysis/batch；删除旧INI包装用途说明，保留公共定义、来源及业务映射。"
+    },
     "baseline": "f19d537",
     "device_label": "home",
     "updated_at": "2026-10-25T23:59:54+08:00",
@@ -53,6 +59,39 @@
       "device_label": "home",
       "author": "liuyaoze",
       "note": "按实际可读导出补充有限关联及精确时间参数。"
+    },
+    "next_ux_02_statistics": {
+      "device_label": "home",
+      "author": "liuyaoze",
+      "task": "NEXT-UX-02/C",
+      "change": "按实际实现补正计数、稳定中心矩、精确排序、聚合分组及发布模型的参数和字段。 并按实际调用为前序 B 组的单位、表达式、查表、枚举与活动依赖补记类型和独立参数用途，校准匿名回调位置。"
+    },
+    "next_ux_02_temporal_host": {
+      "updated_at": "2026-11-04T18:57:41+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "baseline": "c85882907d86ce45c03e6319f0350b3613e21269",
+      "change": "对照产品源码及调用方逐项补足时序变换、变化率、宿主表达式/归约/窗口及预算生命周期的245条参数或字段说明；核对匿名回调源码行号并迁移5条已有说明。"
+    },
+    "batch_pipe_close_review": {
+      "baseline": "f6410fbeda27449bd8e9d774d50e44e5c76f1a67",
+      "updated_at": "2026-11-04T19:53:47+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "按工作进程断管复现和修复后的代码逐个核对 ready、receive、close 的错误类型、关作业顺序、等待上限与可重试阶段。"
+    },
+    "next_ux_03_fast": {
+      "baseline": "8af5fe82fc53582666f9d64c842c96e2471f3b55",
+      "updated_at": "2026-11-04T23:54:04+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "核对 fast 单文件/批量的计算、解码、失败与取消行为。补齐新增参数、字段和 8 个匿名数值回调的解释。"
+    },
+    "doc_review_05": {
+      "updated_at": "2026-11-05T21:16:26+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "F02：source_prefix按当前主分析及公共定义根级调用解释，仅更新维护说明。"
     }
   },
   "chronaxis.legacy.vendor.sclicer_functions_v1.can_processor": {
@@ -114,58 +153,6 @@
       }
     },
     "返回": "返回None，不返回额外的计算值。"
-  },
-  "chronaxis.core.expression._Compiler._units": {
-    "parameters": {
-      "left": {
-        "type": "ExprNode",
-        "description": "已经静态检查的左操作数ExprNode。",
-        "type_evidence": "named model in description"
-      },
-      "right": {
-        "type": "ExprNode",
-        "description": "已经静态检查的右操作数ExprNode。",
-        "type_evidence": "named model in description"
-      },
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      },
-      "declared_unit": {
-        "type": "str | None",
-        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
-      },
-      "operator": {
-        "type": "str",
-        "description": "单位推导使用的运算类别：`add`相加、`sub`相减、`compare`比较、`mul`相乘、`div`相除。比较类别还用于isclose的两个被比较值。"
-      }
-    }
-  },
-  "chronaxis.core.expression._Compiler._binary": {
-    "parameters": {
-      "left": {
-        "type": "ExprNode",
-        "description": "已经静态检查的左操作数ExprNode。",
-        "type_evidence": "named model in description"
-      },
-      "right": {
-        "type": "ExprNode",
-        "description": "已经静态检查的右操作数ExprNode。",
-        "type_evidence": "named model in description"
-      },
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      },
-      "declared_unit": {
-        "type": "str | None",
-        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
-      },
-      "operator": {
-        "type": "str",
-        "description": "本入口支持`add`相加、`sub`相减、`mul`相乘、`div`相除，以及`eq`等于、`ne`不等于、`lt`小于、`le`小于或等于、`gt`大于、`ge`大于或等于。填写这些内部名称，不填写符号或任意函数名。"
-      }
-    }
   },
   "chronaxis.core.calculations.merge_ranges": {
     "parameters": {
@@ -1190,524 +1177,13 @@
       "ts": "当前解析出的秒时间戳；absolute头策略可加基准，relative保持原值。"
     }
   },
-  "chronaxis.migration.api._arguments": {
-    "parameters": {
-      "content": {
-        "type": "bytes",
-        "description": "旧INI的原始bytes，保留BOM与换行，不先转成已改写配置。",
-        "type_evidence": "type check"
-      },
-      "mapping": {
-        "type": "dict",
-        "description": "INI映射对象，必填mapping_version和analysis。path_base、io_policy采用固定默认值；aliases可由唯一原字段名推导，single/start_only/start_end的sections可省略并生成名称；legacy_sum和slope仍需计算单位或模式参数。见[迁移字段表](../migration.md)。"
-      },
-      "mode": {
-        "type": "str",
-        "description": "选择legacy_sum、sclicer_single、sclicer_start_only、sclicer_start_end或sclicer_slope。每种模式转换的内容和必填映射见[迁移](../migration.md)。"
-      },
-      "base_dir": {
-        "type": "str | Path",
-        "description": "mapping中相对来源路径的解析基准目录。",
-        "type_evidence": "type check"
-      },
-      "source_name": {
-        "type": "str",
-        "description": "报告中记录的原配置名称；只是来源标识，不参与信号选择。"
-      },
-      "device_label": {
-        "type": "str",
-        "description": "产出记录的设备标签，例如已核实的\"home\"或\"work\"；未确定时用\"pending\"。这是来源说明，不参与数值计算，也不根据文件路径猜测。"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。",
-    "异常": "TypeError为原生类型错误；ValueError为未知mode。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：content需要bytes，mapping需要原生dict。\n- `TypeError`：mode/source_name/device_label需要原生str。\n- `TypeError`：base_dir需要str或Path。"
-  },
-  "chronaxis.migration.api._report": {
-    "parameters": {
-      "content": {
-        "type": "bytes",
-        "description": "旧INI文件的原始字节，保留BOM和换行，用于记录原文及其摘要。"
-      },
-      "mode": {
-        "type": "str",
-        "description": "选择legacy_sum、sclicer_single、sclicer_start_only、sclicer_start_end或sclicer_slope。每种模式转换的内容和必填映射见[迁移](../migration.md)。"
-      },
-      "source_name": {
-        "type": "str",
-        "description": "报告中记录的原配置名称；只是来源标识，不参与信号选择。"
-      },
-      "device_label": {
-        "type": "str",
-        "description": "产出记录的设备标签，例如已核实的\"home\"或\"work\"；未确定时用\"pending\"。这是来源说明，不参与数值计算，也不根据文件路径猜测。"
-      },
-      "mapping_identity": {
-        "type": "str",
-        "description": "规范化迁移mapping的身份摘要，表示采用了哪份映射；不表示实际日志已经读取。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      },
-      "plan": {
-        "type": "AnalysisPlan",
-        "description": "本次冻结AnalysisPlan，提供来源、规则、范围与执行预算。",
-        "type_evidence": "named model in description"
-      }
-    }
-  },
-  "chronaxis.migration.ini.problem": {
-    "parameters": {
-      "code": {
-        "type": "str",
-        "description": "报告中的问题代码，便于程序分类处理；对应原因写在message中。"
-      },
-      "origin": {
-        "type": "str",
-        "description": "原字段所在材料，例如\"ini\"或\"mapping\"；与path合起来定位问题来源。"
-      },
-      "path": {
-        "type": "str",
-        "description": "原INI或mapping内部的字段位置，例如节名和键名，用于回查需要修改的配置。"
-      },
-      "message": {
-        "type": "str",
-        "description": "面向使用者的问题或迁移差异说明文本。",
-        "type_evidence": "explicit value form"
-      },
-      "line": {
-        "type": "str | None",
-        "description": "原文本1起始行号；无法归属实际文本位置时为None。",
-        "type_evidence": "explicit value form"
-      },
-      "column": {
-        "type": "str | None",
-        "description": "原文本1起始列号；无法确定时为None。",
-        "type_evidence": "explicit value form"
-      }
-    }
-  },
-  "chronaxis.migration.ini.field_path": {
-    "parameters": {
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      }
-    }
-  },
-  "chronaxis.migration.ini.locate": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str | None",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。 None仅定位整个INI节，不定位节内某个键。"
-      }
-    }
-  },
-  "chronaxis.migration.ini.mark": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "target": {
-        "type": "str",
-        "description": "该旧字段转换后对应的新配置路径，例如rules中的某项字段。"
-      },
-      "status": {
-        "type": "str",
-        "description": "本次迁移状态，区分成功、拒绝或该字段的处理去向；不是分析运行成功证明。",
-        "type_evidence": "default value"
-      },
-      "message": {
-        "type": "str",
-        "description": "面向使用者的问题或迁移差异说明文本。",
-        "type_evidence": "explicit value form"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
-  "chronaxis.migration.legacy_sum._reject": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "code": {
-        "type": "str",
-        "description": "本次转换失败的问题代码，写入报告供调用方识别具体失败类别。"
-      },
-      "message": {
-        "type": "str",
-        "description": "面向使用者的问题或迁移差异说明文本。",
-        "type_evidence": "explicit value form"
-      }
-    }
-  },
-  "chronaxis.migration.legacy_sum._targets": {
-    "parameters": {
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "message": {
-        "type": "str",
-        "description": "面向使用者的问题或迁移差异说明文本。",
-        "type_evidence": "explicit value form"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "targets": {
-        "type": "list",
-        "description": "fields局部报告列表、原位置、targets目标tuple和说明。",
-        "type_evidence": "explicit value form"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
-  "chronaxis.migration.legacy_sum._constant": {
-    "parameters": {
-      "text": {
-        "type": "str",
-        "description": "待检查的原文本；JSON常量入口拒绝NaN/Infinity，其余函数按白名单解析常量或公式。",
-        "type_evidence": "explicit value form"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "float_only": {
-        "type": "bool",
-        "description": "float_only限定旧period/factor。",
-        "type_evidence": "default value"
-      }
-    },
-    "异常": "ImportProblem为非法、过大、非有限或除零；资源/取消原错传播。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：参数必须能精确表示为有限FLOAT64。"
-  },
-  "chronaxis.migration.legacy_sum._constant.evaluate": {
-    "parameters": {
-      "node": {
-        "type": "ast.AST",
-        "description": "常量表达式中当前待求值的语法节点；检查节点是否属于支持的常量和运算。"
-      },
-      "depth": {
-        "type": "int",
-        "description": "当前AST递归深度，用于拒绝过深的常量表达式。",
-        "type_evidence": "default value"
-      }
-    },
-    "异常": "ValueError/算术错误。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：常量AST超过32层。\n- `ValueError`：常量中间值非有限或整数过大。\n- `ValueError`：常量仅允许有限数字、括号、正负及加减乘除。\n- `ValueError`：常量中间整数超过4096位。"
-  },
-  "chronaxis.migration.legacy_sum._formula": {
-    "parameters": {
-      "text": {
-        "type": "str",
-        "description": "待检查的原文本；JSON常量入口拒绝NaN/Infinity，其余函数按白名单解析常量或公式。",
-        "type_evidence": "explicit value form"
-      },
-      "signals": {
-        "type": "dict[str, str]",
-        "description": "旧配置中的信号名到字段表达式的映射；本函数检查键名被公式引用，并按aliases替换这些名称。"
-      },
-      "parameters": {
-        "type": "dict[str, int | float]",
-        "description": "旧公式常量参数名到已读取数值的映射；这些名称不通过aliases改名。"
-      },
-      "aliases": {
-        "type": "Mapping[str, str]",
-        "description": "旧表达式名称到新信号别名的映射，例如{\"Voltage\": \"u\"}；表达式中的Voltage据此改成u。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      }
-    }
-  },
-  "chronaxis.migration.legacy_sum._io_fields": {
-    "parameters": {
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
-  "chronaxis.migration.legacy_sum.convert_legacy_sum": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      },
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "mapping": {
-        "type": "dict",
-        "description": "INI映射对象，必填mapping_version和analysis。path_base、io_policy采用固定默认值；aliases可由唯一原字段名推导，single/start_only/start_end的sections可省略并生成名称；legacy_sum和slope仍需计算单位或模式参数。见[迁移字段表](../migration.md)。"
-      },
-      "analysis": {
-        "type": "dict",
-        "description": "根据mapping.analysis复制出的新分析配置；转换器把生成的规则、窗口或指标写入此副本。"
-      }
-    }
-  },
-  "chronaxis.migration.models.LegacyImportIssue": {
-    "fields": {
-      "code": "可机读的问题代码，供报告分类。",
-      "origin": "问题/字段来自INI还是mapping的来源标识。",
-      "path": "原INI或mapping内的字段定位路径，不是文件内容已验证的证明。",
-      "message": "面向使用者的问题或迁移差异说明文本。",
-      "line": "原文本1起始行号；无法归属实际文本位置时为None。",
-      "column": "原文本1起始列号；无法确定时为None。",
-      "level": "问题等级文本，区分error与warning。"
-    }
-  },
-  "chronaxis.migration.models.LegacyFieldMapping": {
-    "fields": {
-      "origin": "问题/字段来自INI还是mapping的来源标识。",
-      "path": "原INI或mapping内的字段定位路径，不是文件内容已验证的证明。",
-      "value": "保留原INI字段的原始文本，不因迁移覆盖它。",
-      "line": "原文本1起始行号；无法归属实际文本位置时为None。",
-      "column": "原文本1起始列号；无法确定时为None。",
-      "target": "该原字段对应的新配置路径。",
-      "status": "本次迁移状态，区分成功、拒绝或该字段的处理去向；不是分析运行成功证明。",
-      "message": "面向使用者的问题或迁移差异说明文本。"
-    }
-  },
-  "chronaxis.migration.models.LegacyImportReport": {
-    "fields": {
-      "status": "本次迁移状态，区分成功、拒绝或该字段的处理去向；不是分析运行成功证明。",
-      "mode": "五种迁移模式：legacy_sum累计当前消息公式；sclicer_single找持续活动；sclicer_start_only找触发点；sclicer_start_end明确开始和结束；sclicer_slope转换窗口变化条件。各模式的必填映射和差异见[迁移](../migration.md)。",
-      "source_name": "报告中的原INI来源文件名称，用于错误定位。",
-      "source_sha256": "旧INI原始字节的SHA-256摘要。",
-      "mapping_identity": "规范迁移mapping的身份摘要；不证明数据文件已读取。",
-      "device_label": "实际内容来源设备标签；不能根据文件所在路径猜home/work。",
-      "fields": "本次局部字段映射记录列表，保留每个原INI键的定位和值与处理去向。",
-      "issues": "本次局部问题列表，保留拒绝或明确差异的原因与位置。",
-      "plan_identity": "转换成功的计划身份；失败无计划时为None。"
-    }
-  },
-  "chronaxis.migration.models.LegacyImportResult": {
-    "fields": {
-      "plan": "本次冻结AnalysisPlan，提供来源、规则、范围与执行预算。",
-      "report": "本次LegacyImportReport，包含完整字段映射、问题和转换结果。",
-      "original_ini": "不可变的原INI bytes，保原编码、BOM与换行。"
-    }
-  },
-  "chronaxis.migration.publication.LegacyImportFiles": {
-    "fields": {
-      "original": "已发布原INI副本的绝对Path。",
-      "report": "迁移报告的已发布绝对Path。",
-      "plan": "读取成功发布的计划文件绝对Path；转换失败时为None，此时只有original和report两个辅助文件。"
-    }
-  },
-  "chronaxis.migration.sclicer._boolean": {
-    "parameters": {
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "default": {
-        "type": "bool",
-        "description": "原INI未提供此开关时明确采用的布尔默认值。",
-        "type_evidence": "explicit value form"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer._AliasTransformer.__init__": {
-    "parameters": {
-      "aliases": {
-        "type": "Mapping[str, str]",
-        "description": "旧表达式名称到新信号别名的映射，例如{\"Voltage\": \"u\"}；表达式中的Voltage据此改成u。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
-  "chronaxis.migration.sclicer._AliasTransformer.visit_Name": {
-    "parameters": {
-      "node": {
-        "type": "ast.Name",
-        "description": "旧表达式中的变量名节点，按aliases映射替换成新信号别名。"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer._AliasTransformer.visit_Call": {
-    "parameters": {
-      "node": {
-        "type": "ast.Call",
-        "description": "旧表达式中的函数调用节点，检查支持的函数并转换其中参数。"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer._expression": {
-    "parameters": {
-      "text": {
-        "type": "str",
-        "description": "待检查的原文本；JSON常量入口拒绝NaN/Infinity，其余函数按白名单解析常量或公式。",
-        "type_evidence": "explicit value form"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "aliases": {
-        "type": "Mapping[str, str]",
-        "description": "旧表达式名称到新信号别名的映射，例如{\"Voltage\": \"u\"}；表达式中的Voltage据此改成u。"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer.convert_sclicer": {
-    "parameters": {
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "headers": {
-        "type": "dict[str, int]",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      },
-      "mapping": {
-        "type": "dict",
-        "description": "INI映射对象，必填mapping_version和analysis。path_base、io_policy采用固定默认值；aliases可由唯一原字段名推导，single/start_only/start_end的sections可省略并生成名称；legacy_sum和slope仍需计算单位或模式参数。见[迁移字段表](../migration.md)。"
-      },
-      "analysis": {
-        "type": "dict",
-        "description": "根据mapping.analysis复制出的新分析配置；转换器把生成的规则、窗口或指标写入此副本。"
-      },
-      "mode": {
-        "type": "str",
-        "description": "选择legacy_sum、sclicer_single、sclicer_start_only、sclicer_start_end或sclicer_slope。每种模式转换的内容和必填映射见[迁移](../migration.md)。"
-      }
-    }
-  },
   "chronaxis.results.manifest.RunMetadata": {
     "fields": {
       "run_id": "本次运行唯一标识，与发布清单及资源事实关联。",
       "input_identity": "读取实际输入的追溯摘要；None表示本运行没有提供该摘要，不能据此判断输入内容已核验。",
       "plan_hash": "计划声明的SHA-256身份，实际后端覆盖另行记录。",
       "backend": "读取本次实际采用的计算后端：reference为参考实现，numpy为数组实现。由Runner的有效运行设置记录，用户通常不手工构造这个结果字段。",
-      "config_version": "本次实际分析配置的结构版本，必须是原生整数3；不是预设version，也不是软件版本。版本1及布尔值均被拒绝。",
+      "config_version": "本次实际分析配置的结构版本，仅接受原生整数4；不是预设version，也不是软件版本。版本1及布尔值均被拒绝。",
       "source_time_interpretation": "来源时间解释文本，说明坐标、单位及转换约定。",
       "mapping_hashes": "实际映射身份摘要元组；不涉及时为空，空值不等于已验。",
       "dbc_hashes": "实际DBC摘要元组；不涉及时为空。",
@@ -1725,7 +1201,11 @@
       "integrity_diagnostics": "记录本次是否请求输入完整性摘要：True对应diagnostics.integrity开启，False不请求；它与逐条追溯开关独立。",
       "can_sources": "保存CANSourceMetadata对象元组，每项描述sclicer-functions-v1单BLF读取的来源名、原文件与DBC路径、通道、帧数、首末时间和单位检查等。由构造RunMetadata的调用方显式传入，当前公开AnalysisRunner不填充，默认()表示未提供此类明细，不表示没有CAN输入。确有元素时可用metadata.can_sources[0].source和.frame_count读取；先检查元组非空。",
       "text_can_sources": "保存TextCANSourceMetadata对象元组，每项描述can-text-v1读取的来源、inputs中的(path, parser, offset_ns)、DBC摘要、记录数和观测时间。由调用方显式提供，当前公开AnalysisRunner不填充；默认()表示未提供此类明细。确有元素时可用metadata.text_can_sources[0].inputs和.record_count读取；不能把空元组理解为输入为空。",
-      "analysis_outcome": "同次执行累计的AnalysisOutcome或None：逐规则说明有事件、条件未成立、未达到时长、无观测或数据不足，并分别统计complete/partial/indeterminate指标行。None表示该路径未提供概况，不能当作无事件；completed只说明执行结束。无二次输入扫描或逐条追溯。"
+      "analysis_outcome": "同次执行累计的AnalysisOutcome或None：逐规则说明有事件、条件未成立、未达到时长、无观测或数据不足，并分别统计complete/partial/indeterminate指标行。None表示该路径未提供概况，不能当作无事件；completed只说明执行结束。无二次输入扫描或逐条追溯。",
+      "aggregation_definitions": {
+        "type": "tuple[AggregationPlan, ...]",
+        "description": "本次运行使用的聚合定义及总体政策。非空时随清单序列化，省略时不增加该字段。"
+      }
     },
     "summary": "保存一次运行的身份、实际计算后端、时间解释及诊断摘要。通常从仍打开的AnalysisResult.metadata读取，不需要自行构造。来源明细字段是可选模型：只有调用方提供真实读取明细时才有内容。当前AnalysisRunner没有填充can_sources和text_can_sources，两者保持空元组；这不表示没有读取CAN文件，也不表示DBC已经校验。to_dict的摘要与详细模式见下方方法说明。"
   },
@@ -1733,7 +1213,7 @@
     "fields": {
       "run_id": "本次运行唯一标识，与发布清单及资源事实关联。",
       "output_dir": "已经成功发布的结果目录绝对Path。",
-      "manifest_path": "已发布run_manifest.json的绝对Path。",
+      "manifest_path": "本次实际运行清单的绝对Path，文件名含时间后缀；读取它而不是拼固定文件名。",
       "output_files": "本次实际发布的文件路径元组。",
       "row_counts": "各固定结果表的实际行数记录。",
       "status": "本次发布结果状态，成功为completed。"
@@ -1898,7 +1378,7 @@
     "返回": "返回None，不返回额外的计算值。"
   },
   "chronaxis.runner": {
-    "summary": "这是大多数应用只需要调用的执行入口。先用load_analysis_plan读取配置，再用AnalysisRunner.validate检查声明、AnalysisRunner.explain查看将用哪些信号，最后AnalysisRunner.run实际读取数据并计算。run返回的AnalysisResult可逐行读取，也可write到新目录；用with语句保证文件和游标及时关闭。"
+    "summary": "这是大多数应用只需要调用的执行入口。先用load_analysis_plan读取配置，再用AnalysisRunner.validate检查声明、AnalysisRunner.explain查看将用哪些信号，最后AnalysisRunner.run实际读取数据并计算。run返回的AnalysisResult可逐行读取，也可write到可复用的结果目录；用with语句保证文件和游标及时关闭。"
   },
   "chronaxis.runner.AnalysisRunner": {
     "summary": "配置单次分析的执行器。backend可覆盖计划设置；run创建独立资源，返回需关闭的AnalysisResult。通常复用执行器，分别管理每次结果。"
@@ -1919,7 +1399,7 @@
     "parameters": {
       "arguments": {
         "type": "argparse.Namespace",
-        "description": "命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../migration.md)生成，通常直接使用命令行入口。"
+        "description": "命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。"
       }
     },
     "fields": {},
@@ -1954,6 +1434,7 @@
       "output_dir": {
         "description": "发布成功后记录的正式目录；尚未发布成功为None。发布后关闭失败仍保留该路径，任务状态为failed。"
       },
+      "manifest_path": "本任务实际发布的带时间后缀完成清单路径；尚未发布为None。按清单outputs定位本次表，不猜固定文件名。",
       "error_type": {
         "description": "失败异常类名或未启动取消标识not_started；正常完成时为None。结合status和error_chain查看。"
       },
@@ -3296,12 +2777,6 @@
       }
     }
   },
-  "chronaxis.migration.ini.ImportProblem.__init__": {
-    "parameters": {
-      "issue": "具体MigrationIssue，包含旧配置位置、问题代码和需要修正的说明。"
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
   "chronaxis.planning.export_options._typed_scope": {
     "parameters": {
       "scope": {
@@ -3667,6 +3142,10 @@
       },
       "operator": {
         "description": "节点执行的操作。`const`保存常量；`name`读取信号；`add/sub/mul/div`分别加、减、乘、除；`eq/ne/lt/le/gt/ge`分别等于、不等于、小于、小于或等于、大于、大于或等于；`and/or/not`为且、或、非；`abs/neg`取绝对值、相反数；`isclose`按给定容差比较；`to_float`转成浮点数；`int_literal_eq/ne/lt/le/gt/ge`按精确整数字面量边界作对应的六种比较。节点由编译器生成，普通用户在配置中填写表达式。"
+      },
+      "host_function": {
+        "type": "FunctionSpec | None",
+        "description": "宿主逐点调用编译出的函数契约，保存输出规范、回调及实现身份。普通表达式节点省略。"
       }
     }
   },
@@ -3685,7 +3164,11 @@
   },
   "chronaxis.core.numeric.ScalarValue": {
     "fields": {
-      "dtype": "SignalDType枚举成员：INT64是有符号64位整数，UINT64是无符号64位整数，FLOAT64是双精度浮点，BOOL是真/假，ENUM是预先声明的状态标签。这里传枚举成员，不传字符串；当前运算支持哪些类型仍见本对象的约束。"
+      "dtype": "SignalDType枚举成员：INT64是有符号64位整数，UINT64是无符号64位整数，FLOAT64是双精度浮点，BOOL是真/假，ENUM是预先声明的状态标签。这里传枚举成员，不传字符串；当前运算支持哪些类型仍见本对象的约束。",
+      "partial": {
+        "type": "bool",
+        "description": "此值是否使用了可估算但覆盖不全的变换输入；有效数值可以同时携带这个标志。"
+      }
     }
   },
   "chronaxis.core.numeric_numpy.NumericArray": {
@@ -4106,6 +3589,10 @@
       "partial_limit": {
         "type": "int",
         "description": "大于0的整数，限制浮点累加时保留的误差补偿项数量。默认4096；它不是样本数上限，也不是允许出现多少次错误。超过容量会报错。"
+      },
+      "quantile_budget": {
+        "type": "ResourceBudget | None",
+        "description": "可选的共享排序预算，仅配置精确分位数或中位数时用于保存所选样本。"
       }
     },
     "返回": "返回None，不返回额外的计算值。"
@@ -4115,6 +3602,10 @@
       "series": {
         "type": "CalculationSeries",
         "description": "本次要处理的一块时间和值，单位、dtype和绑定必须与构造时一致。带条件的计算还需要与值对齐的BOOL条件；push处理当前块后保留累计结果，下一块可继续调用。"
+      },
+      "sample_consumer": {
+        "type": "Callable[[NumericArray], None] | None",
+        "description": "可选宿主数组消费入口；把同一真实更新掩码选中的行组成typed列传入。"
       }
     },
     "异常": "结构、身份、容量、分配或取消传播；异常后外层只能清理owner。\n内存: 新列形状N/N-1或当前所选样本数，当前push存活，不修改输入列。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：样本归约不能跨绑定身份累计。"
@@ -4136,6 +3627,10 @@
       "partial_limit": {
         "type": "int",
         "description": "大于0的整数，限制浮点累加时保留的误差补偿项数量。默认4096；它不是样本数上限，也不是允许出现多少次错误。超过容量会报错。"
+      },
+      "quantile_budget": {
+        "type": "ResourceBudget | None",
+        "description": "可选的共享排序预算，仅配置精确分位数或中位数时用于保存所选样本。"
       }
     },
     "返回": "返回None，不返回额外的计算值。"
@@ -4145,6 +3640,10 @@
       "series": {
         "type": "CalculationSeries",
         "description": "本次要处理的一块时间和值，单位、dtype和绑定必须与构造时一致。带条件的计算还需要与值对齐的BOOL条件；push处理当前块后保留累计结果，下一块可继续调用。"
+      },
+      "sample_consumer": {
+        "type": "Callable[[tuple[ScalarValue, ...]], None] | None",
+        "description": "可选的宿主消费入口，只收到本块实际更新且通过选择和质量检查的数值。"
       }
     },
     "summary": "处理下一块数据，更新数值和条件的覆盖统计，并累计真实更新的样本；保持出来的时间段不增加样本数。",
@@ -4210,7 +3709,7 @@
       },
       "output_dir": {
         "type": "str | Path",
-        "description": "新批量结果目录，每个任务按id创建子目录；目标已经存在时拒绝覆盖。"
+        "description": "可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。"
       },
       "cancel_event": {
         "type": "threading.Event | None",
@@ -4223,16 +3722,9 @@
       }
     },
     "异常": "TypeError：plan不是BatchPlan或取消对象类型不合法。ValueError：并发/后端/任务声明不合法。目录创建、调度或报告发布失败按具体异常类型抛出；若已产生报告，异常batch_report保存实际进度，调用者仍须close处理cleanup_pending。单任务失败通常保存在报告jobs中，不作为整个函数抛错。见[按阶段处理错误](../troubleshooting.md#api-errors)。",
-    "example": "from chronaxis import load_batch_plan, run_batch\n# batch.yaml须已按批量指南准备；batch-output必须不存在。\nreport = run_batch(load_batch_plan(\"batch.yaml\"), \"batch-output\")\ntry:\n    print(report.to_dict())\nfinally:\n    report.close()",
-    "summary": "执行一批独立分析并写出批量报告。使用spawn工作进程，各任务单独加载、分析、发布和清理；在Python脚本的main保护内调用。"
-  },
-  "chronaxis.batch.runner._diagnostics": {
-    "parameters": {
-      "error": {
-        "type": "BaseException",
-        "description": "本次操作产生的原异常对象；用于保留原因链、附加清理失败信息或继续抛出，不应换成一段字符串。"
-      }
-    }
+    "example": "from chronaxis import load_batch_plan, run_batch\n\ndef main():\n    # 先准备batch.yaml；batch-output可以已有结果。\n    report = run_batch(load_batch_plan(\"batch.yaml\"), \"batch-output\")\n    try:\n        print(report.report_path)\n    finally:\n        report.close()\n\nif __name__ == \"__main__\":\n    main()",
+    "summary": "执行一批独立分析并写出批量报告。使用spawn工作进程，各任务单独加载、分析、发布和清理；在Python脚本的main保护内调用。",
+    "返回": "BatchReport；report_path为本次实际报告，jobs各项的manifest_path为实际完成清单。failed/cancelled保留在报告，不伪装全部成功。"
   },
   "chronaxis.batch.runner._run_job": {
     "parameters": {
@@ -4284,7 +3776,7 @@
       },
       "output_dir": {
         "type": "str | Path",
-        "description": "新批量结果目录，每个任务按id创建子目录；目标已经存在时拒绝覆盖。"
+        "description": "可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。"
       },
       "cancel_event": {
         "type": "threading.Event | None",
@@ -4296,7 +3788,8 @@
         "type_evidence": "type check"
       }
     },
-    "异常": "声明/路径错误在创建工作进程前拒绝；工作进程调度器等基础设施错误收尾后传播。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：批量任务需要BatchJob tuple。\n- `ValueError`：批量job_id不能重复，大小写冲突也拒绝。\n- `TypeError`：cancel_event需要threading.Event。\n- `ValueError`：device_label需要非空文本。"
+    "异常": "声明/路径错误在创建工作进程前拒绝；工作进程调度器等基础设施错误收尾后传播。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：批量任务需要BatchJob tuple。\n- `ValueError`：批量job_id不能重复，大小写冲突也拒绝。\n- `TypeError`：cancel_event需要threading.Event。\n- `ValueError`：device_label需要非空文本。",
+    "返回": "BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写批量报告，report_path为None；close可重试未完成清理。"
   },
   "chronaxis.core.stability.StabilityDetector.__init__": {
     "parameters": {
@@ -5235,55 +4728,6 @@
       }
     }
   },
-  "chronaxis.migration.api.import_legacy_ini": {
-    "parameters": {
-      "device_label": {
-        "type": "str",
-        "description": "产出记录的设备标签，例如已核实的\"home\"或\"work\"；未确定时用\"pending\"。这是来源说明，不参与数值计算，也不根据文件路径猜测。"
-      },
-      "mapping": {
-        "type": "dict",
-        "description": "INI映射对象，必填mapping_version和analysis。path_base、io_policy采用固定默认值；aliases可由唯一原字段名推导，single/start_only/start_end的sections可省略并生成名称；legacy_sum和slope仍需计算单位或模式参数。见[迁移字段表](../migration.md)。"
-      },
-      "mode": {
-        "type": "str",
-        "description": "选择legacy_sum、sclicer_single、sclicer_start_only、sclicer_start_end或sclicer_slope。每种模式转换的内容和必填映射见[迁移](../migration.md)。"
-      },
-      "source_name": {
-        "type": "str",
-        "description": "报告中记录的原配置名称；只是来源标识，不参与信号选择。"
-      },
-      "base_dir": {
-        "type": "str | Path",
-        "description": "base_dir 为mapping目录",
-        "type_evidence": "forwarded to typed function"
-      },
-      "content": {
-        "description": "原INI文件的完整bytes内容。保留原字节用于摘要和迁移报告，不传已经拆分的配置字典。"
-      }
-    }
-  },
-  "chronaxis.migration.api.load_legacy_ini": {
-    "parameters": {
-      "device_label": {
-        "type": "str",
-        "description": "产出记录的设备标签，例如已核实的\"home\"或\"work\"；未确定时用\"pending\"。这是来源说明，不参与数值计算，也不根据文件路径猜测。"
-      },
-      "ini_path": {
-        "type": "str | Path",
-        "description": "原INI文件路径；读取原字节并保留它，不覆盖原文件。"
-      },
-      "mapping_path": {
-        "type": "str | Path",
-        "description": "映射JSON/YAML路径；支持analysis内的imports和受限覆盖，来源路径按声明文件解释。按需要枚举目录及读取缺省信号的DBC元数据，不读取业务报文。"
-      },
-      "mode": {
-        "type": "str",
-        "description": "选择legacy_sum、sclicer_single、sclicer_start_only、sclicer_start_end或sclicer_slope。每种模式转换的内容和必填映射见[迁移](../migration.md)。"
-      }
-    },
-    "异常": "API类型、未知mode、文件读取OSError、MemoryError及取消按原接口传播；配置语义错误进入迁移报告。目录和DBC访问取决于声明，不承诺加载完全无I/O。"
-  },
   "chronaxis.results.budget._cleanup_owner": {
     "parameters": {
       "exc": {
@@ -5327,7 +4771,7 @@
       },
       "destination": {
         "type": "str | pathlib.Path",
-        "description": "本次报文导出的新目录，写入报文文件及质量说明。"
+        "description": "可重复使用的导出目录；公开直接调用生成带统一时间后缀的文件，内部file_consumer交接仍使用独占目录。"
       },
       "check_cancel": {
         "type": "Callable[[], None] | None",
@@ -5346,7 +4790,8 @@
         "type": "Callable | None"
       }
     },
-    "异常": "格式/时间/原历史/I/O/预算/取消错；持续清理失败保export_cleanup_owner。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：帧导出需要FrameExportSpec和Interval。\n- `ValueError`：帧导出需要实际设备及可选取消回调。\n- `ValueError`：导出帧时间回退，不能重排原记录。\n- `ValueError`：未生成帧记录时间回退。\n- `ValueError`：现有BLF写库不支持1990年以前的日期，不能改写为固定参考日期。\n- `ValueError`：BLF需要0至65534的明确整数通道，避免写库隐式改通道。"
+    "异常": "格式/时间/原历史/I/O/预算/取消错；持续清理失败保export_cleanup_owner。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：帧导出需要FrameExportSpec和Interval。\n- `ValueError`：帧导出需要实际设备及可选取消回调。\n- `ValueError`：导出帧时间回退，不能重排原记录。\n- `ValueError`：未生成帧记录时间回退。\n- `ValueError`：现有BLF写库不支持1990年以前的日期，不能改写为固定参考日期。\n- `ValueError`：BLF需要0至65534的明确整数通道，避免写库隐式改通道。",
+    "返回": "公开直接调用返回ExportManifest，包含output_dir、manifest_path及output_files。不要把返回值直接当Path；通过这些属性取得实际文件。内部file_consumer交接返回原Path。"
   },
   "chronaxis.results.raw_exports.RawExportStore.__init__": {
     "parameters": {
@@ -5430,7 +4875,7 @@
       },
       "destination": {
         "type": "str | pathlib.Path",
-        "description": "本次信号CSV导出的新目录，保存信号表和质量说明。"
+        "description": "可重复使用的导出目录；公开直接调用生成带统一时间后缀的文件，内部file_consumer交接仍使用独占目录。"
       },
       "check_cancel": {
         "type": "Callable[[], None] | None",
@@ -5453,7 +4898,8 @@
         "type": "Callable | None"
       }
     },
-    "异常": "声明/历史/I/O/预算/取消错误；持续关闭失败附export_cleanup_owner可重试。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：信号导出需要选择及明确Interval。\n- `ValueError`：导出需要实际设备标签及可选取消回调。\n- `TypeError`：信号导出只接受已解码历史记录。"
+    "异常": "声明/历史/I/O/预算/取消错误；持续关闭失败附export_cleanup_owner可重试。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：信号导出需要选择及明确Interval。\n- `ValueError`：导出需要实际设备标签及可选取消回调。\n- `TypeError`：信号导出只接受已解码历史记录。",
+    "返回": "公开直接调用返回ExportManifest，包含output_dir、manifest_path及output_files。不要把返回值直接当Path；通过这些属性取得实际文件。内部file_consumer交接返回原Path。"
   },
   "chronaxis.results.spool.ResultSpool.__init__": {
     "parameters": {
@@ -5488,6 +4934,10 @@
       "enable_contributions": {
         "type": "bool",
         "description": "是否构造并保存逐消息贡献行；False从生成处跳过。"
+      },
+      "enable_aggregations": {
+        "type": "bool",
+        "description": "是否为请求的组统计启用独立的暂存结果表，未配置聚合时无需该表。"
       }
     }
   },
@@ -5496,6 +4946,10 @@
       "backend": {
         "type": "str | None",
         "description": "`\"reference\"`使用独立参考计算；`\"numpy\"`使用NumPy数组计算。None沿用计划中的选择。"
+      },
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "实际执行或检查计划时传入的宿主注册，必须与创建计划时使用的对象相同。"
       }
     },
     "异常": "TypeError为非文本覆盖；ValueError为未知后端。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：AnalysisRunner backend需要reference、numpy或None。\n- `ValueError`：AnalysisRunner仅支持reference与numpy后端。"
@@ -5512,7 +4966,7 @@
         "type_evidence": "named model in description"
       }
     },
-    "example": "\"\"\"从YAML配置执行分析并逐行读取结果；输入为配置路径，可选输出新目录。\"\"\"\nimport argparse\nfrom pathlib import Path\n\nfrom chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan\n\n\ndef main():\n    \"\"\"检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。\"\"\"\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')\n    parser.add_argument('--output', type=Path, help='尚不存在的正式输出目录；省略则只打印结果')\n    args = parser.parse_args()\n    plan = load_analysis_plan(args.plan)\n    report = validate_analysis_plan(plan)\n    if not report.valid or not report.execution_ready:\n        raise RuntimeError(report)\n    with AnalysisRunner().run(plan) as result:\n        rows = result.iter_calculations()\n        try:\n            for row in rows:\n                print(row.calculation_id, row.value, row.unit, row.status, row.reason)\n        finally:\n            rows.close()\n        if args.output is not None:\n            manifest = result.write(args.output)\n            print(manifest)\n\n\nif __name__ == '__main__':\n    main()\n"
+    "example": "\"\"\"从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。\"\"\"\nimport argparse\nfrom pathlib import Path\n\nfrom chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan\n\n\ndef main():\n    \"\"\"检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。\"\"\"\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')\n    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')\n    args = parser.parse_args()\n    plan = load_analysis_plan(args.plan)\n    report = validate_analysis_plan(plan)\n    if not report.valid or not report.execution_ready:\n        raise RuntimeError(report)\n    with AnalysisRunner().run(plan) as result:\n        rows = result.iter_calculations()\n        try:\n            for row in rows:\n                print(row.calculation_id, row.value, row.unit, row.status, row.reason)\n        finally:\n            rows.close()\n        if args.output is not None:\n            manifest = result.write(args.output)\n            print(manifest)\n\n\nif __name__ == '__main__':\n    main()\n"
   },
   "chronaxis.sources.asc.ASCRead.__exit__": {
     "parameters": {
@@ -5941,152 +5395,6 @@
         "type_evidence": "named model in description"
       }
     }
-  },
-  "chronaxis.migration.api._prepare_mapping": {
-    "parameters": {
-      "mapping": {
-        "type": "dict",
-        "description": "INI映射对象，必填mapping_version和analysis。path_base、io_policy采用固定默认值；aliases可由唯一原字段名推导，single/start_only/start_end的sections可省略并生成名称；legacy_sum和slope仍需计算单位或模式参数。见[迁移字段表](../migration.md)。"
-      },
-      "base": {
-        "type": "Path",
-        "description": "base词法绝对目录。",
-        "type_evidence": "forwarded to typed function"
-      }
-    }
-  },
-  "chronaxis.migration.ini.parse_ini": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "text": {
-        "type": "str",
-        "description": "text原文本",
-        "type_evidence": "explicit value form"
-      },
-      "preserve_case": {
-        "type": "bool",
-        "description": "preserve_case选择ChrgInfo大小写及分号口径。",
-        "type_evidence": "default value"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer._ini_problem": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "headers": {
-        "type": "dict[str, int] | None",
-        "description": "旧INI段名到所在行号的对应表，用来把错误指向原文件位置。 None表示没有可用行号索引，仍保留节名和键名定位。"
-      },
-      "message": {
-        "type": "str",
-        "description": "准备写入迁移问题报告的中文原因说明，与code共同说明该字段为什么无法转换。",
-        "type_evidence": "forwarded to typed function"
-      },
-      "code": {
-        "type": "str",
-        "description": "迁移问题代码，与message一起描述不能转换的原因；section和key定位旧字段。"
-      }
-    }
-  },
-  "chronaxis.migration.sclicer._seconds": {
-    "parameters": {
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "key": {
-        "type": "str",
-        "description": "当前段内的旧配置键，例如expr或duration_sec，用于读取值和定位错误。"
-      },
-      "positive": {
-        "type": "bool",
-        "description": "positive限定正值。",
-        "type_evidence": "default value"
-      },
-      "default": {
-        "type": "int | float | None",
-        "description": "旧配置省略该时长字段时采用的秒数；None表示没有可采用的默认时长。"
-      }
-    },
-    "异常": "ImportProblem为非法或不能精确表示的时长。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：时长必须有限且非负，固定窗口须大于零。"
-  },
-  "chronaxis.migration.slope.slope_rule": {
-    "parameters": {
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      },
-      "selected": {
-        "type": "dict",
-        "description": "selected 为 段映射",
-        "type_evidence": "type check"
-      },
-      "text": {
-        "type": "str",
-        "description": "旧配置中的斜率判断表达式，解析后生成window_delta规则；不执行任意Python代码。"
-      },
-      "aliases": {
-        "type": "Mapping[str, str]",
-        "description": "旧表达式名称到新信号别名的映射，例如{\"Voltage\": \"u\"}；表达式中的Voltage据此改成u。"
-      }
-    },
-    "异常": "ImportProblem 表示有定位的\n配置问题；内存错误及取消原样传播。阈值沿用信号单位，不除以窗口时长。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：窗口必须大于零。\n- `ValueError`：阈值须为十进制数值。\n- `ValueError`：阈值必须有限且非负。\n- `ValueError`：阈值超出可表示的数值范围。"
-  },
-  "chronaxis.migration.start_end.start_end_options": {
-    "parameters": {
-      "parser": {
-        "type": "configparser.ConfigParser",
-        "description": "已经解析的旧INI，用它读取原段落和键值；不在这里重新读取文件。"
-      },
-      "fields": {
-        "type": "list[LegacyFieldMapping]",
-        "description": "按原INI顺序保存的字段记录，含段名、键、值、行列和转换去向；转换过程会补充处理状态。"
-      },
-      "section": {
-        "type": "str",
-        "description": "当前正在转换的旧INI段名，例如TRIGGER_1；必须能在原配置中找到。"
-      },
-      "issues": {
-        "type": "list[LegacyImportIssue]",
-        "description": "接收本次转换的差异、警告和拒绝原因；调用者随后将它们写入迁移报告。"
-      },
-      "selected": {
-        "type": "dict",
-        "description": "selected为段映射",
-        "type_evidence": "type check"
-      }
-    },
-    "异常": "ImportProblem为配置非法；取消和内存错误原样传播。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：duration_sec必须有限。\n- `ValueError`：正时限不能小于可表示的纳秒。"
   },
   "chronaxis.planning.message_calculations.parse_message_calculations": {
     "parameters": {
@@ -7986,42 +7294,6 @@
     },
     "异常": "TypeError/ValueError为类型、重叠、反序或越界。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：条件时间未知范围需要tuple。\n- `ValueError`：条件时间未知范围必须有序、不重叠且在实际窗口内。"
   },
-  "chronaxis.core.expression._Compiler.__init__": {
-    "parameters": {
-      "bindings": {
-        "type": "MessageBindings | MessageDeclarations | SignalBindings | DecodedBindings | DeclarationBindings",
-        "description": "bindings为明确typed普通/消息运行绑定或各自静态声明",
-        "type_evidence": "type check"
-      },
-      "derived": {
-        "type": "tuple",
-        "description": "derived为tuple DerivedDefinition，数值执行仍由公开入口的类型门槛控制。",
-        "type_evidence": "type check"
-      }
-    },
-    "异常": "TypeError/ValueError为类型/缺项/重复/名称空间不一致。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：解析需要typed真实/声明绑定及tuple DerivedDefinition。\n- `ValueError`：derived声明与bindings名称不一致或重复。"
-  },
-  "chronaxis.core.expression._Compiler._context": {
-    "parameters": {
-      "arithmetic": {
-        "type": "int",
-        "description": "arithmetic     表示算术字面量必须能在目标整数类型表示。",
-        "type_evidence": "explicit value form"
-      },
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      },
-      "literal": {
-        "type": "ExprNode",
-        "description": "纯常量子树，用来检查常量在当前比较或运算中的类型和单位。"
-      },
-      "other": {
-        "type": "ExprNode",
-        "description": "与常量进行运算的另一棵表达式子树，提供其已知类型和单位。"
-      }
-    }
-  },
   "chronaxis.core.expression_numpy.evaluate_numpy": {
     "parameters": {
       "context": {
@@ -8178,6 +7450,10 @@
         "type": "CompiledExpression | None",
         "description": "可选同绑定身份的BOOL表达式。",
         "type_evidence": "forwarded to typed function"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。"
       }
     }
   },
@@ -8217,6 +7493,10 @@
         "type": "CompiledExpression | None",
         "description": "可选且关联同一真实输入的BOOL表达式。",
         "type_evidence": "forwarded to typed function"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。"
       }
     }
   },
@@ -8249,6 +7529,10 @@
       "step_ns": {
         "description": "所选固定或DBC周期，单位纳秒且大于0；None表示采用实际时间间隔，不生成第二套时间坐标。",
         "type": "int | None"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。"
       }
     }
   },
@@ -8298,6 +7582,10 @@
       "step_ns": {
         "description": "所选固定或DBC周期，单位纳秒且大于0；None表示采用实际时间间隔，不生成第二套时间坐标。",
         "type": "int | None"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。"
       }
     }
   },
@@ -9710,51 +8998,6 @@
     },
     "异常": "ValueError为ID/消息/帧型/信号歧义或不符，TypeError为单位不受支持。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：原DBC消息名称或标准/FD帧型与定位不同。\n- `TypeError`：原DBC公开unit需要文本或None。"
   },
-  "chronaxis.migration.publication._require_result": {
-    "parameters": {
-      "result": {
-        "type": "LegacyImportResult",
-        "description": "result为LegacyImportResult。",
-        "type_evidence": "type check"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。",
-    "异常": "TypeError为非固定模型；ValueError为状态、原SHA或计划身份不一致。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：发布需要LegacyImportResult、LegacyImportReport及原生INI bytes。\n- `ValueError`：发布原INI bytes与转换报告SHA不一致。\n- `ValueError`：无计划时仅接受失败转换报告，plan_identity必须为None。\n- `ValueError`：成功转换报告必须关联同一完整AnalysisPlan。"
-  },
-  "chronaxis.migration.publication._targets": {
-    "parameters": {
-      "output_path": {
-        "type": "Path | str",
-        "description": "output_path为.json文件Path/str",
-        "type_evidence": "type check"
-      },
-      "source_paths": {
-        "type": "tuple",
-        "description": "source_paths为INI及mapping的Path/str tuple。",
-        "type_evidence": "type check"
-      }
-    },
-    "异常": "TypeError为路径容器；ValueError为后缀/Ref/源冲突；FileExistsError为任一已有目标。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：output_path需要Path/str，source_paths需要tuple。\n- `TypeError`：source_paths每项需要Path/str。\n- `ValueError`：导入计划输出必须使用.json后缀。\n- `ValueError`：导入输出禁止位于RefProjects。\n- `ValueError`：导入输出不能与原INI或mapping配置同路径。"
-  },
-  "chronaxis.migration.publication._PublicationOwner.write": {
-    "parameters": {
-      "original": {
-        "type": "bool",
-        "description": "original选择二进制原文。",
-        "type_evidence": "default value"
-      },
-      "index": {
-        "type": "int",
-        "description": "当前记录或文件槽的序号，从0开始，按原有顺序定位。"
-      },
-      "value": {
-        "type": "bytes | JSON值",
-        "description": "原文槽写入原始bytes；报告和计划槽写入JSON结构，编码为UTF-8后写入临时文件。"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。",
-    "异常": "原open/write/flush/close/JSON/内存或取消错误，不隐式重试写入。\n\n本函数直接报告的具体错误：\n\n- `OSError`：原INI临时文件写入不完整。"
-  },
   "chronaxis.planning.checks.object_at": {
     "parameters": {
       "required": {
@@ -9896,7 +9139,8 @@
         "type": "list",
         "description": "signals配置数组，显式声明来源、原字段、类型、单位和valid_for。",
         "type_evidence": "docstring"
-      }
+      },
+      "enum_codes": "被 enum_code 明确引用的枚举别名；普通标签比较不需要原码。"
     }
   },
   "chronaxis.planning.legacy_execution.require_can_decode_scope": {
@@ -10537,7 +9781,7 @@
     "parameters": {
       "arguments": {
         "type": "argparse.Namespace",
-        "description": "命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../migration.md)生成，通常直接使用命令行入口。"
+        "description": "命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。"
       }
     }
   },
@@ -10554,20 +9798,6 @@
       }
     },
     "异常": "PlanValidationError定位非法字段、重名、缺少模板输入或来源歧义。jobs可为空；jobs只保留计划路径，template会读取模板、展开文件集合并按需读取DBC元数据，不扫描业务报文。"
-  },
-  "chronaxis.core.expression._Compiler.parse": {
-    "parameters": {
-      "text": {
-        "type": "str",
-        "description": "text为非空DSL",
-        "type_evidence": "forwarded to typed function"
-      },
-      "unit": {
-        "type": "str | None",
-        "description": "unit为可选显式结果单位。",
-        "type_evidence": "forwarded to typed function"
-      }
-    }
   },
   "chronaxis.core.calculations_memory_numpy.build_calculation_series_numpy": {
     "parameters": {
@@ -10789,19 +10019,6 @@
     },
     "返回": "返回None，不返回额外的计算值。"
   },
-  "chronaxis.migration.publication.write_legacy_import": {
-    "parameters": {
-      "output_path": {
-        "type": "Path | str",
-        "description": "output_path为新.json目标",
-        "type_evidence": "forwarded to typed function"
-      },
-      "source_paths": {
-        "type": "tuple[str | pathlib.Path, ...]",
-        "description": "原INI和mapping路径，用于检查输出不能覆盖输入；省略时沿用函数默认空元组。"
-      }
-    }
-  },
   "chronaxis.planning.text_inputs.parse_text_source": {
     "parameters": {
       "base": {
@@ -10859,47 +10076,7 @@
     "parameters": {
       "arguments": {
         "type": "argparse.Namespace",
-        "description": "命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。"
-      }
-    }
-  },
-  "chronaxis.cli._run_import": {
-    "parameters": {
-      "arguments": {
-        "type": "argparse.Namespace",
-        "description": "命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。"
-      }
-    }
-  },
-  "chronaxis.core.expression._Compiler._error": {
-    "parameters": {
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      },
-      "message": {
-        "type": "str",
-        "description": "向用户解释配置错误的文字；与node中的行列位置一起组成错误信息。"
-      }
-    }
-  },
-  "chronaxis.core.expression._Compiler._name": {
-    "parameters": {
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      }
-    }
-  },
-  "chronaxis.core.expression._Compiler.visit": {
-    "parameters": {
-      "node": {
-        "type": "ast.AST",
-        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
-      },
-      "declared_unit": {
-        "type": "str | None",
-        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
+        "description": "命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。"
       }
     }
   },
@@ -10907,10 +10084,10 @@
     "parameters": {
       "value": {
         "type": "str | pathlib.Path",
-        "description": "本批任务的根输出目录，必须是尚不存在的新目录；创建后各任务在其中使用独立子目录。"
+        "description": "本批任务的根输出目录，可以已有；任务在其中使用带本批时间后缀的独立子目录。"
       }
     },
-    "异常": "类型/已有/只读路径错误。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：批量输出需要str或Path。\n- `ValueError`：批量输出不能位于RefProjects。"
+    "异常": "类型、不可用目录或受保护路径错误。"
   },
   "chronaxis.batch.runner._facts": {
     "parameters": {
@@ -10934,26 +10111,6 @@
       "reason": {
         "type": "str",
         "description": "取消原因，写入该任务结果，便于区分主动取消和前序失败后停止。"
-      }
-    }
-  },
-  "chronaxis.cli._brief": {
-    "parameters": {
-      "result": {
-        "type": "LegacyImportResult",
-        "description": "INI迁移的完整结果，包含问题清单、转换计划和原始配置记录。"
-      },
-      "files": {
-        "type": "LegacyImportFiles",
-        "description": "已经发布的原文、报告和计划文件路径；用于命令行输出实际文件位置。"
-      }
-    }
-  },
-  "chronaxis.cli._issue_text": {
-    "parameters": {
-      "issue": {
-        "type": "LegacyImportIssue",
-        "description": "迁移发现的一条问题，包含级别、位置、代码和说明；转换为便于阅读的一行文字。"
       }
     }
   },
@@ -11825,32 +10982,6 @@
     },
     "异常": "原错误尽力发ERROR后以SystemExit(1)退出；连接/生成器附加关闭错误也非零。\n\n本函数直接报告的具体错误：\n\n- `ValueError`：未知旧CAN控制操作。\n- `ValueError`：PULL许可必须从0严格连续。\n- `ValueError`：ACK仅接受确认最近返回ITEM。"
   },
-  "chronaxis.migration.publication._mapping_json": {
-    "parameters": {
-      "value": {
-        "type": "object",
-        "description": "JSON编码器遇到的不可直接序列化对象；本函数处理冻结映射等迁移模型使用的结构，其他类型报错。"
-      }
-    },
-    "异常": "TypeError为非MappingProxyType；MemoryError保持原生异常。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：导入计划JSON仅允许固定MappingProxyType扩展。"
-  },
-  "chronaxis.migration.publication._PublicationOwner.__init__": {
-    "parameters": {
-      "targets": {
-        "type": "tuple[pathlib.Path, pathlib.Path, pathlib.Path]",
-        "description": "原文、迁移报告、转换计划的三个绝对目标路径，必须事先检查且彼此不同。"
-      }
-    }
-  },
-  "chronaxis.migration.publication._PublicationOwner.install": {
-    "parameters": {
-      "index": {
-        "type": "int",
-        "description": "当前记录或文件槽的序号，从0开始，按原有顺序定位。"
-      }
-    },
-    "返回": "返回None，不返回额外的计算值。"
-  },
   "chronaxis.planning.checks.array_at": {
     "parameters": {
       "value": {
@@ -12657,7 +11788,9 @@
       "process_count": {
         "type": "int",
         "description": "控制最多启动几个分析工作进程。填正整数，例如4；默认1。任务少于该值时按任务数启动，空批次不启动。此数量不包含调度主进程和CAN读取子进程。"
-      }
+      },
+      "output_dir": "可复用的批量输出根目录。",
+      "report_path": "已发布的实际批量报告路径；BatchRunner.run尚未写报告时为None，run_batch写完报告后提供。"
     }
   },
   "chronaxis.execution.message_bindings.bind_message_store": {
@@ -13757,10 +12890,6 @@
     "返回": "返回None，不返回额外的计算值。",
     "异常": "ResultClosedError为已关闭或正在清理。\n\n本函数直接报告的具体错误：\n\n- `ResultClosedError`：legacy累计器已关闭或正在清理。"
   },
-  "chronaxis.migration.publication._PublicationOwner._close_handle": {
-    "返回": "返回None，不返回额外的计算值。",
-    "异常": "原close错误；未真实关闭则OSError。\n\n本函数直接报告的具体错误：\n\n- `OSError`：导入临时文件FD尚未关闭。"
-  },
   "chronaxis.planning.export_options.SignalCSVOutput.__post_init__": {
     "返回": "返回None，不返回额外的计算值。",
     "异常": "类型/范围错。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：signal_csv需要SignalCSVExportSpec。"
@@ -14136,11 +13265,11 @@
     "异常": "ResultClosedError：结果已关闭或正在关闭，不能创建或继续读取游标。BudgetExceededError：无法为游标保留预算。OSError：创建或迭代期间读取暂存文件失败。ResultFormatError：迭代时发现行格式、类型或长度不合法。先关闭游标；不要将读取失败当成空结果。"
   },
   "chronaxis.results.result.AnalysisResult.write": {
-    "summary": "把暂存中的结果写到全新目录。所有文件完成后写入completed状态，再把临时目录重命名为正式目录；已有目标不会被覆盖。",
-    "异常": "ResultClosedError：结果已关闭或正在关闭。AnalysisError：目标已存在、目标位于将清理的自有工作目录内、平台不支持安全发布、预算/格式/文件写入失败；原错误通过__cause__保留。修正输出位置或环境后，可向另一新目录重试，不会重读输入。",
-    "副作用": "发布到全新输出目录，不覆盖既有目录。失败时按retain_work决定是否保留本次临时目录；诊断可从异常及run_manifest查看。",
+    "summary": "把暂存结果写入可复用目录，本次表和清单使用统一时间后缀。关闭文件后发布，完成清单最后出现；已有文件不覆盖。",
+    "异常": "ResultClosedError：结果已关闭或正在关闭。AnalysisError：输出不是可用目录、位于将清理的自有工作目录内、平台不支持安全发布、预算/格式/文件写入失败；原错误通过__cause__保留。修正环境后，可向同一或其他目录重试，不会重读输入。",
+    "副作用": "发布带时间后缀的结果文件，完成清单最后发布。失败只清理本次文件；retain_work控制临时现场保留。断电或强制结束遗留的无清单文件不表示完成。",
     "parameters": {
-      "output_dir": "指定新建的结果目录，传str或Path，例如Path(\"results/run_01\")。按本次输出位置填写；目录已存在时拒绝覆盖。完成后返回OutputManifest，结果对象仍需关闭。"
+      "output_dir": "可重复使用的结果目录，传str或Path，例如Path(\"results\")。本次文件统一增加时间后缀，不覆盖已有文件。返回OutputManifest包含实际manifest_path；结果仍需关闭。"
     }
   },
   "chronaxis.core.conditional_integral_terms.ConditionalIntegralFacts": {
@@ -14395,10 +13524,22 @@
     "异常": "TypeError/ValueError为模型、重复/缺少来源、会话或投影冲突。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：解码绑定需要DeclarationBindings和DecodedSourceEvidence tuple。\n- `ValueError`：解码证据来源必须唯一且与声明完全对应。\n- `ValueError`：解码证据会话与当前声明不一致。\n- `ValueError`：解码投影包含其他来源或未声明别名。"
   },
   "chronaxis.core.expression.compile_expression": {
-    "异常": "TypeError、ValueError: 输入结构、语法、名称、类型、单位、循环依赖\n    或多来源同步依据不满足要求。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：可执行编译需要真实SignalBindings、DecodedBindings或MessageBindings。"
+    "异常": "TypeError、ValueError: 输入结构、语法、名称、类型、单位、循环依赖\n    或多来源同步依据不满足要求。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：可执行编译需要真实SignalBindings、DecodedBindings或MessageBindings。",
+    "parameters": {
+      "extensions": {
+        "type": "None",
+        "description": "此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。"
+      }
+    }
   },
   "chronaxis.core.expression.validate_expression": {
-    "异常": "TypeError、ValueError: 声明结构、语法、名称、单位、循环依赖或同步缺项。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：静态校验需要DeclarationBindings或MessageDeclarations。"
+    "异常": "TypeError、ValueError: 声明结构、语法、名称、单位、循环依赖或同步缺项。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：静态校验需要DeclarationBindings或MessageDeclarations。",
+    "parameters": {
+      "extensions": {
+        "type": "None",
+        "description": "此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。"
+      }
+    }
   },
   "chronaxis.core.expression_numpy.ArrayEvaluation.__post_init__": {
     "异常": "TypeError/ValueError为结构/长度/未知位。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：ArrayEvaluation诊断需1维uint16列。\n- `ValueError`：ArrayEvaluation诊断长度/原因不合法。"
@@ -14962,9 +14103,6 @@
   "chronaxis.execution.windows.WindowQueries.close": {
     "返回": "返回None。关闭成功后再次调用不会重复释放同一份资源。"
   },
-  "chronaxis.migration.publication._PublicationOwner.close": {
-    "返回": "返回None。关闭成功后再次调用不会重复释放同一份资源。"
-  },
   "chronaxis.execution.temporal_buffer._BatchRegistry.__bool__": {
     "返回": "True表示仍登记着未释放的结果批；False表示没有。"
   },
@@ -15280,6 +14418,10 @@
       "continuous": {
         "type": "bool",
         "description": "是否按连续持有状态求值；False用于真实记录更新，不额外把边界当作新样本。"
+      },
+      "unobserved": {
+        "type": "set[str] | None",
+        "description": "可选的可写别名集合，仅记录此刻求值实际访问而尚未有观测的输入。"
       }
     }
   },
@@ -15584,6 +14726,10 @@
       "end_ns": {
         "description": "本次查询或计算的实际结束时刻，单位纳秒；按具体函数保留必要右端点供半开范围计算。",
         "type": "int"
+      },
+      "estimated": {
+        "type": "bool",
+        "description": "父事件或片段是否已经依赖部分估值；只给实际归属该父范围的结果传递估算质量。"
       }
     }
   },
@@ -15996,6 +15142,10 @@
       "end_ns": {
         "description": "本次查询或计算的实际结束时刻，单位纳秒；按具体函数保留必要右端点供半开范围计算。",
         "type": "int"
+      },
+      "estimated": {
+        "type": "bool",
+        "description": "父事件或片段是否已经依赖部分估值；只给实际归属该父范围的结果传递估算质量。"
       }
     }
   },
@@ -16028,6 +15178,10 @@
       "end_ns": {
         "description": "本次查询或计算的实际结束时刻，单位纳秒；按具体函数保留必要右端点供半开范围计算。",
         "type": "int"
+      },
+      "estimated": {
+        "type": "bool",
+        "description": "父事件或片段是否已经依赖部分估值；只给实际归属该父范围的结果传递估算质量。"
       }
     }
   },
@@ -16588,6 +15742,10 @@
       "spec": {
         "type": "CalculationDefinition",
         "description": "已核对的指标声明，包含算子、实际请求范围、部分结果政策和输出单位。"
+      },
+      "hosted": {
+        "type": "ReductionSpec | None",
+        "description": "按宿主操作名解析的注册描述；省略时使用内置统计实现。"
       }
     }
   },
@@ -16956,7 +16114,8 @@
       "spec": {
         "type": "SignalCSVExportSpec",
         "description": "信号CSV列和可选网格声明；必须是已核对的导出spec，不是包含scope的外层Output对象。"
-      }
+      },
+      "timestamped": "是否使用公开导出的时间文件名；内部file_consumer模式保持独占目录，调用封装按模式设置。"
     }
   },
   "chronaxis.results.signal_exports.SignalCSVWriter.observed_end": {
@@ -17448,6 +16607,10 @@
       "selected_unknown_duration_ns": {
         "type": "int",
         "description": "条件成立但数值不可用的总纳秒数，用于判定结果是否完整。"
+      },
+      "sample_count": {
+        "type": "int",
+        "description": "条件已知为真且有真实有效数值更新的次数，用于识别样本数不足和已知空集。"
       }
     }
   },
@@ -17520,6 +16683,10 @@
       "context": {
         "type": "Mapping[str, ScalarValue]",
         "description": "当前时刻各依赖别名的值与有效状态；缺失和过期必须保持无效。"
+      },
+      "unobserved": {
+        "type": "set[str] | None",
+        "description": "可选的可写别名集合，仅记录此刻求值实际访问而尚未有观测的输入。"
       }
     }
   },
@@ -18067,7 +17234,7 @@
       },
       "config_type": {
         "type": "str",
-        "description": "配置入口类别：analysis为单任务、batch为批量清单、mapping为INI显式映射。"
+        "description": "配置入口类别：analysis为当前单任务分析、batch为当前批量清单。"
       }
     }
   },
@@ -18363,11 +17530,11 @@
       },
       "config_type": {
         "type": "str",
-        "description": "配置入口类别：analysis为单任务、batch为批量清单、mapping为INI显式映射。"
+        "description": "配置入口类别：analysis为当前单任务分析、batch为当前批量清单。"
       },
       "entrypoint": {
         "type": "str",
-        "description": "模板目录内的主配置相对路径；analysis用plan.yaml，批量用batch.yaml，映射用mapping.yaml。"
+        "description": "模板目录内的主配置相对路径；分析用plan.yaml，批量用batch.yaml。"
       },
       "expected": {
         "type": "str",
@@ -18630,7 +17797,7 @@
       },
       "prefix": {
         "type": "tuple[str | int, ...]",
-        "description": "合并后定义的父路径；分析配置为()，INI映射为(analysis,)。"
+        "description": "合并后定义的父路径；当前分析配置的sources、signals和derived均从根级()开始。"
       },
       "document": {
         "type": "ConfigurationDocument",
@@ -18638,7 +17805,7 @@
       },
       "source_prefix": {
         "type": "tuple[str | int, ...]",
-        "description": "原文件中的分析父路径；公共文件为()，主映射文件为(analysis,)。"
+        "description": "原文件中sources、signals和derived定义所在的父路径，用于记录字段来源；当前主分析文件和公共定义文件均从根级开始，传入空元组()。"
       },
       "merged": {
         "type": "dict",
@@ -18706,7 +17873,7 @@
     "parameters": {
       "source": {
         "type": "Path | str",
-        "description": "主分析、批量或INI映射配置文件；只读取该配置及明确的一层公共定义。"
+        "description": "当前分析或批量配置文件；读取该配置及明确的一层公共定义，静态信号推导可能读取声明的DBC，不读取数据记录。"
       },
       "fields": {
         "type": "bool",
@@ -18738,49 +17905,21 @@
     "返回": "逐行产生SummaryInputRow的可关闭游标。",
     "异常": "ResultClosedError：结果已关闭。AnalysisError：本次未生成输入追溯，需配置diagnostics.trace后重新运行。迭代期间可能传播ResultFormatError、BudgetExceededError和OSError。"
   },
-  "chronaxis.configuration.file_tools.lambda@91": {
-    "parameter": "任意待序列化值；回调不读取其属性。",
-    "result": "恒为True，关闭YAML锚点/别名输出；函数体不主动抛异常。"
-  },
   "chronaxis.configuration.initialization.lambda@21": {
     "parameter": "模板文件的相对路径与内容二元组。",
     "result": "返回路径是否为入口文件的布尔值，使入口文件排在最后发布。"
-  },
-  "chronaxis.core.sequence_reference.lambda@140": {
-    "parameter": "本时间刻度的请求或响应事件。",
-    "result": "返回event_id，按事件标识稳定排序。"
-  },
-  "chronaxis.core.sequence_reference.lambda@146": {
-    "parameter": "本时间刻度的请求或响应事件。",
-    "result": "返回event_id，按事件标识稳定排序。"
   },
   "chronaxis.core.state.lambda@36": {
     "parameter": "已规范化的信号样本。",
     "result": "返回样本sequence以选择同刻最后更新。"
   },
-  "chronaxis.core.state.lambda@476": {
-    "parameter": "已规范化的信号样本。",
-    "result": "返回样本time_ns，以时间合并各个已排序样本流。"
-  },
   "chronaxis.execution.groups.lambda@167": {
     "parameter": "已绑定的信号样本。",
     "result": "返回来源名、原序号、信号名的元组，确定同刻提交顺序。"
   },
-  "chronaxis.execution.record_scope_calculations.lambda@137": {
-    "parameter": "已声明的计算请求。",
-    "result": "用calculation_id查询已登记的输入流，按同流分组；键缺失传播KeyError。"
-  },
   "chronaxis.results.artifact_exports.lambda@141": {
     "parameter": "包含name字段的导出文件说明映射。",
     "result": "返回文件名，使清单顺序确定；缺少name传播KeyError。"
-  },
-  "chronaxis.results.frame_rebuild.lambda@362": {
-    "parameter": "候选报文样本。",
-    "result": "返回与目标时间的绝对距离及原时间；等距离选较早帧。"
-  },
-  "chronaxis.results.frame_rebuild.lambda@245": {
-    "parameter": "已排序的报文行。",
-    "result": "取排序键中除最后两项外的报文身份，供相同报文分组。"
   },
   "chronaxis.results.frame_sort.lambda@142": {
     "parameter": "帧排序缓存条目。",
@@ -18796,7 +17935,13 @@
     "example": "from chronaxis import load_analysis_plan\nplan = load_analysis_plan(\"Docs/Current/examples/analysis.yaml\")",
     "summary": "加载JSON/YAML及显式公共定义，应用受限覆盖并编译分析计划。目录输入会展开文件名；信号缺省类型、单位或枚举映射时按需读取DBC，不扫描业务报文。",
     "返回": "AnalysisPlan：已检查并编译的计划。加载主配置与显式公共定义，按声明展开文件集合，必要时读取DBC元数据；不读取业务报文或CSV记录。",
-    "副作用": "打开指定配置及公共定义文件，按需求读取DBC或枚举目录；句柄在正常或异常返回前关闭，不创建结果文件。"
+    "副作用": "打开指定配置及公共定义文件，按需求读取DBC或枚举目录；句柄在正常或异常返回前关闭，不创建结果文件。",
+    "parameters": {
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "宿主为版本4分析显式创建的注册表；省略时没有可额外调用的宿主操作。"
+      }
+    }
   },
   "chronaxis.planning.reports.explain_analysis_plan": {
     "example": "from chronaxis import load_analysis_plan, explain_analysis_plan\nplan = load_analysis_plan(\"Docs/Current/examples/analysis.yaml\")\nprint(explain_analysis_plan(plan))",
@@ -19130,7 +18275,11 @@
     "parameters": {
       "config": {
         "type": "dict[str, object]",
-        "description": "当前公开分析配置字典，含config_version=3、dataset、sources和signals；不接受未展开imports。目录声明会枚举文件名，缺省CAN元数据时读取DBC；不读取业务记录。见[配置字段参考](../configuration-reference.md)。"
+        "description": "当前公开分析配置字典，含config_version（4）、dataset、sources和signals；不接受未展开imports。目录声明会枚举文件名，缺省CAN元数据时读取DBC；不读取业务记录。见[配置字段参考](../configuration-reference.md)。"
+      },
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "宿主为版本4分析显式创建的注册表；省略时没有可额外调用的宿主操作。"
       }
     },
     "处理流程": "检查当前公开配置并展开节点，解析来源和信号；目录声明枚举文件名，缺省CAN元数据从DBC补全。随后检查引用、类型与单位，构造独立计划；不读取业务记录或执行分析。"
@@ -19140,11 +18289,19 @@
   },
   "chronaxis.planning.plan.AnalysisPlan": {
     "fields": {
-      "config_version": "保存已加载配置的结构版本，当前为整数3。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。",
+      "config_version": "保存已加载配置的结构版本，接受整数3和4。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。",
       "message_calculations": "保存message_calculations配置解析后的逐消息计算项元组；空元组表示没有此类计算。与普通calculations分别执行。",
       "sequences": "保存sequences配置解析后的请求/响应配对元组；空元组表示不进行配对。",
       "raw_config": "解析时保存的内部只读配置快照，不是用户原文，省略字段也未必全部写回。字段可能为内部解析形式；需要可编辑的当前公共配置时使用config resolve。",
-      "preset_bindings": "保存预设角色与实际信号的对应关系。加载计划时产生，外层元组与plan.presets顺序一致；内层每个RoleBinding保存contract（角色要求）、definition（选中的原信号定义）、resolution（explicit显式指定或semantic_unique唯一语义匹配）。没有预设时外层为()。使用zip(plan.presets, plan.preset_bindings)配对，再读取binding.definition.name等；见下方调用示例。"
+      "preset_bindings": "保存预设角色与实际信号的对应关系。加载计划时产生，外层元组与plan.presets顺序一致；内层每个RoleBinding保存contract（角色要求）、definition（选中的原信号定义）、resolution（explicit显式指定或semantic_unique唯一语义匹配）。没有预设时外层为()。使用zip(plan.presets, plan.preset_bindings)配对，再读取binding.definition.name等；见下方调用示例。",
+      "aggregations": {
+        "type": "tuple[AggregationPlan, ...]",
+        "description": "本计划中已通过检查的结果聚合定义，按声明顺序保存。默认空元组表示无需订阅任何结果总体。"
+      },
+      "transforms": {
+        "type": "tuple[TemporalTransformPlan, ...]",
+        "description": "编译后的时序变换元组，所依赖的变换先于使用它的变换。"
+      }
     },
     "example": "from chronaxis import load_analysis_plan\n\n# 从仓库根目录运行；此文件已定义所需来源、信号和预设。\nplan = load_analysis_plan(\"Docs/Current/examples/preset-charge-minimal.yaml\")\nfor preset, bindings in zip(plan.presets, plan.preset_bindings):\n    for binding in bindings:\n        print(preset.id, binding.contract.role,\n              binding.definition.name, binding.resolution)\n# demo_preset mode mode explicit\n# demo_preset current current explicit"
   },
@@ -19196,7 +18353,7 @@
       },
       "prefix": {
         "type": "tuple",
-        "description": "普通分析为空元组；INI映射为analysis前缀。"
+        "description": "覆盖字段的父路径；当前分析配置从根级空元组开始。"
       },
       "locations": {
         "type": "dict",
@@ -19277,7 +18434,8 @@
       "path": {
         "type": "str",
         "description": "原声明字段路径，失败用它定位配置。"
-      }
+      },
+      "need_code": "为真时读取枚举原始整数字段的有无符号信息。"
     }
   },
   "chronaxis.planning.input_defaults.source_defaults": {
@@ -19837,14 +18995,6 @@
       }
     }
   },
-  "chronaxis.batch.process_transport.worker_main": {
-    "parameters": {
-      "connection": {
-        "type": "multiprocessing.connection.PipeConnection",
-        "description": "本次spawn建立的私有双向Windows管道，只接受所属主进程发送的run、cleanup和close命令。"
-      }
-    }
-  },
   "chronaxis.batch.process_transport.ProcessWorker.submit": {
     "parameters": {
       "directory": {
@@ -19890,6 +19040,4186 @@
       "root": {
         "type": "Path",
         "description": "已安装指南的普通目录，按其中manifest.json列出的文件生成可选压缩副本。"
+      }
+    }
+  },
+  "chronaxis.results.manifest.ExportManifest": {
+    "fields": {
+      "output_dir": "本次导出所在目录，可以含有旧结果。",
+      "manifest_path": "本次带时间后缀的完成清单Path，直接使用实际返回路径。",
+      "output_files": "本次导出的数据文件Path元组，不含由manifest_path单独提供的完成清单。"
+    }
+  },
+  "chronaxis.planning.checks.PlanValidationError.from_diagnostics": {
+    "parameters": {
+      "errors": {
+        "type": "Sequence[PlanValidationError]",
+        "description": "非空PlanValidationError序列；单项且没有阻断说明时原样返回。"
+      },
+      "blocked": {
+        "type": "Iterable[dict]",
+        "description": "可选阻断说明序列，每项是含path和reason的字典；默认空元组。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.schema_validator": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "要读取的固定JSON Schema文件名，例如analysis.schema.json；只读取包内或开发仓库的规范。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection._specific_errors": {
+    "parameters": {
+      "error": {
+        "type": "jsonschema.exceptions.ValidationError",
+        "description": "jsonschema返回的一个ValidationError；可能含oneOf或anyOf子分支错误。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.__init__": {
+    "parameters": {
+      "config": {
+        "type": "JSON值",
+        "description": "已经解析为原生字典的配置；本函数读取结构并收集独立字段错误，不修改配置。"
+      },
+      "schema_name": {
+        "type": "str",
+        "description": "当前配置使用的JSON Schema文件名，默认analysis.schema.json；批量配置使用batch-v1.schema.json。"
+      },
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "只为本次配置结构检查开放其中已登记的归约与时序操作，不修改公共规范。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.add": {
+    "parameters": {
+      "error": {
+        "type": "PlanValidationError",
+        "description": "待登记的PlanValidationError；相同path和code只保留一项。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.usable": {
+    "parameters": {
+      "path": {
+        "type": "str",
+        "description": "待检查对象的JSON路径；该位置或子字段有已知错误时返回False。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.block": {
+    "parameters": {
+      "path": {
+        "type": "str",
+        "description": "因依赖无效而暂未执行检查的字段路径。"
+      },
+      "reason": {
+        "type": "str",
+        "description": "向调用者解释依赖阻断原因的文本；不把阻断当作额外确认错误。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.stage": {
+    "parameters": {
+      "path": {
+        "type": "str",
+        "description": "本项检查对应的JSON路径。"
+      },
+      "requires": {
+        "type": "bool",
+        "description": "前置声明是否有效，默认True；False时记录阻断并跳过本项。"
+      },
+      "check": {
+        "type": "bool",
+        "description": "是否先检查path下的已知结构错误，默认True；False只跳过这一步，仍检查requires。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.collecting": {
+    "parameters": {
+      "collection": {
+        "type": "DiagnosticCollection",
+        "description": "本次同步构建使用的DiagnosticCollection；退出上下文时恢复先前集合。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.usable_node": {
+    "parameters": {
+      "path": {
+        "type": "str",
+        "description": "当前来源、信号、规则或窗口声明的JSON路径。"
+      },
+      "raw": {
+        "type": "JSON值或None",
+        "description": "可选原始声明，默认None；有name时登记坏名称，供后续依赖判断。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.collect_node_error": {
+    "parameters": {
+      "error": {
+        "type": "PlanValidationError",
+        "description": "当前节点产生的PlanValidationError；非收集模式直接抛出。"
+      },
+      "path": {
+        "type": "str",
+        "description": "发生错误节点的JSON路径。"
+      },
+      "raw": {
+        "type": "JSON值或None",
+        "description": "原始节点声明；用于登记无效名称及其依赖，不修改原配置。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.require_expression_dependencies": {
+    "parameters": {
+      "text": {
+        "type": "str",
+        "description": "待检查的表达式文本；只读取AST中的名称，不执行表达式。"
+      },
+      "path": {
+        "type": "str",
+        "description": "表达式字段的JSON路径，用于定位依赖阻断。"
+      },
+      "derived": {
+        "type": "tuple[DerivedPlan, ...]",
+        "description": "已声明的派生项序列，用于沿引用检查所需信号是否已无效。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.expression_scope": {
+    "parameters": {
+      "text": {
+        "type": "str",
+        "description": "本项表达式文本；从中确定静态诊断需要的派生项。"
+      },
+      "bindings": {
+        "type": "DeclarationBindings",
+        "description": "实际声明绑定，保留信号定义并按依赖选取派生名称。"
+      },
+      "derived": {
+        "type": "tuple[DerivedPlan, ...]",
+        "description": "全部派生项声明；只为当前诊断返回必要子集，不创建运行计划。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.diagnose_plan": {
+    "parameters": {
+      "function": {
+        "type": "Callable",
+        "description": "原计划构建方法；包装器只调用一次并在退出时恢复诊断上下文。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.diagnose_plan.checked": {
+    "parameters": {
+      "config": {
+        "type": "JSON值",
+        "description": "原配置字典，先检查可接受的JSON值，再调用原构建方法。"
+      },
+      "args": {
+        "type": "tuple",
+        "description": "原构建方法的位置参数，原样转交。"
+      },
+      "kwargs": {
+        "type": "dict",
+        "description": "原构建方法的关键字参数，原样转交。"
+      }
+    }
+  },
+  "chronaxis.planning.checks.PlanValidationError": {
+    "summary": "保存配置字段路径、原因和可选原文定位。diagnostics提供全部独立错误，单错也为一项；blocked_checks列出因上游声明无效而尚未执行的检查，其元素含path和reason，不是额外确认错误。"
+  },
+  "chronaxis.planning.checks.PlanValidationError.to_dict": {
+    "返回": "当前单项的原生dict；聚合异常的本方法只描述第一项。获取全部诊断时使用[item.to_dict() for item in error.diagnostics]。"
+  },
+  "chronaxis.results.publication.output_root": {
+    "parameters": {
+      "value": {
+        "type": "str | Path",
+        "description": "请求发布到的目录路径；允许普通已有目录，拒绝只读历史目录及已有文件。"
+      }
+    }
+  },
+  "chronaxis.results.publication._identity": {
+    "parameters": {
+      "path": {
+        "type": "Path",
+        "description": "需要登记或核对身份的实际文件或目录路径。"
+      }
+    }
+  },
+  "chronaxis.results.publication.PublicationNames.__init__": {
+    "parameters": {
+      "root": {
+        "type": "str | Path",
+        "description": "本次发布使用的可复用根目录。"
+      },
+      "names": {
+        "type": "Iterable[str]",
+        "description": "本次有限逻辑文件或目录名集合；每项只允许单层名称。"
+      }
+    }
+  },
+  "chronaxis.results.publication.PublicationNames.publish": {
+    "parameters": {
+      "temporary": {
+        "type": "str | Path",
+        "description": "已写好并关闭所有输出的本次临时目录。"
+      },
+      "last": {
+        "type": "str",
+        "description": "最后移动的完成清单逻辑文件名；必须属于本次选定名称。"
+      },
+      "installer": {
+        "type": "Callable | None",
+        "description": "可选的不覆盖移动函数，接收来源和目标Path；None使用os.rename。"
+      },
+      "only": {
+        "type": "Iterable[str] | None",
+        "description": "可选的本次发布名称子集，必须包含last；None发布全部登记名称。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._units": {
+    "parameters": {
+      "left": {
+        "type": "ExprNode",
+        "description": "二元运算的左操作数，是差值和除法的被减数或分子。"
+      },
+      "right": {
+        "type": "ExprNode",
+        "description": "二元运算的右操作数，是差值和除法的减数或分母。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      },
+      "operator": {
+        "type": "str",
+        "description": "编译器归一化的二元操作名，如加减乘除或比较，决定单位关系和结果类型。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "表达式上层声明的可选结果单位，按该算子的版本化单位规则校验。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._binary": {
+    "parameters": {
+      "left": {
+        "type": "ExprNode",
+        "description": "二元运算的左操作数，是差值和除法的被减数或分子。"
+      },
+      "right": {
+        "type": "ExprNode",
+        "description": "二元运算的右操作数，是差值和除法的减数或分母。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "表达式上层声明的可选结果单位，按该算子的版本化单位规则校验。"
+      },
+      "operator": {
+        "type": "str",
+        "description": "编译器归一化的二元操作名，如加减乘除或比较，决定单位关系和结果类型。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      }
+    }
+  },
+  "chronaxis.core.lookup._exact_f64": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "原始标定点坐标或线性表值，转为有限 float64 前先检查是否会丢失整数精度。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.LookupTablePlan": {
+    "fields": {
+      "name": "本计划中供表达式引用的唯一标定表名。",
+      "points": "按输入严格递增的标定点；每项为输入坐标与对应输出值。",
+      "input_unit": "标定点第一列的单位；查询值先换算到此单位。",
+      "unit": "标定点第二列的单位，也是查表结果的单位。",
+      "dtype": "此表在当前插值方式下返回的数值类型。",
+      "identity": "由单位、类型和点对确定的标定表标识，区分同名但内容不同的表。"
+    }
+  },
+  "chronaxis.core.lookup.LookupTablePlan.prepare": {
+    "parameters": {
+      "mode": {
+        "type": "str",
+        "description": "表内模式，linear 线性插值，previous 或 next 选相邻台阶。"
+      },
+      "bounds": {
+        "type": "str",
+        "description": "查询超出标定轴范围时的处理，invalid 返回无效，clamp 取最近端点。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.PreparedLookup": {
+    "fields": {
+      "identity": "由单位、类型和点对确定的标定表标识，区分同名但内容不同的表。",
+      "mode": "linear 在两点间线性插值；previous 和 next 分别取前后标定点。",
+      "bounds": "输入超出标定范围时，invalid 标为无效，clamp 使用最近端点。",
+      "dtype": "此表在当前插值方式下返回的数值类型。",
+      "points": "按输入严格递增的标定点；每项为输入坐标与对应输出值。",
+      "axis": "按输入单位升序排列的横坐标；紧凑表示只为实际引用的表创建。",
+      "values": "各标定横坐标对应的输出值；阶梯读取保留原整数精度。"
+    }
+  },
+  "chronaxis.core.lookup.PreparedLookup.axis_at": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "从零起算的标定点下标，用于取得该点原轴坐标。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.PreparedLookup.value_at": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "从零起算的标定点下标，用于按准备好的类型取得该点表值。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.pack_requested_lookups": {
+    "parameters": {
+      "expression": {
+        "type": "StaticExpression | CompiledExpression",
+        "description": "仅在本次准备执行的表达式树上遍历查表节点，按需建立可复用的不可变定宽列。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.pack_requested_lookups.visit": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "正在处理的已编译子节点，包含操作、参数和输入依赖。"
+      }
+    }
+  },
+  "chronaxis.core.lookup.validate_lookups": {
+    "parameters": {
+      "tables": {
+        "type": "tuple[LookupTablePlan, ...]",
+        "description": "本配置中已冻结的全部标定表声明，用于核对表名唯一性和表数上限。"
+      },
+      "version": {
+        "type": "int",
+        "description": "所属配置的整数版本，非空查表声明要求版本 4。"
+      }
+    }
+  },
+  "chronaxis.core.lookup_compiler.compile_lookup": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "负责解析输入表达式及表的物理单位、输出类型的本次编译器。"
+      },
+      "node": {
+        "type": "ast.Call",
+        "description": "原始 lookup 调用节点，其位置参数和关键字选择表名、模式及越界政策。"
+      }
+    }
+  },
+  "chronaxis.core.lookup_numpy.lookup_numpy": {
+    "parameters": {
+      "table": {
+        "type": "PreparedLookup",
+        "description": "静态校验并绑定了轴、输出类型、插值模式和越界政策的不可变表。"
+      },
+      "value": {
+        "type": "NumericArray",
+        "description": "已换算到标定轴单位的输入数值及质量，在有效输入上应用表内或越界规则。"
+      }
+    }
+  },
+  "chronaxis.core.lookup_reference.lookup_reference": {
+    "parameters": {
+      "table": {
+        "type": "PreparedLookup",
+        "description": "静态校验并绑定了轴、输出类型、插值模式和越界政策的不可变表。"
+      },
+      "value": {
+        "type": "ScalarValue",
+        "description": "已换算到标定轴单位的输入数值及质量，在有效输入上应用表内或越界规则。"
+      }
+    }
+  },
+  "chronaxis.core.normalize_numpy.memory_series_numpy": {
+    "parameters": {
+      "capture_code": "本次表达式需要 enum_code 时才保留映射前的整数。"
+    }
+  },
+  "chronaxis.core.numeric.memory_series_reference": {
+    "parameters": {
+      "capture_code": "本次表达式需要 enum_code 时才保留映射前的整数。"
+    }
+  },
+  "chronaxis.core.where_updates.contains_where": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.reference_updates": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "current": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "完整原子更新组生效后的别名输入，用于确定当前布尔条件及活动分支。"
+      },
+      "updates": {
+        "type": "Mapping[str, bool]",
+        "description": "各输入别名本次是否有真实更新的标志，未选分支的更新不会单独产生输出样本。"
+      },
+      "before": {
+        "type": "Mapping[str, ScalarValue] | None",
+        "description": "排除本次原子组后的输入，比较更新前后的分支；None 表示只判定标记来源的活动性。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.reference_updates.visit": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "正在处理的已编译子节点，包含操作、参数和输入依赖。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.numpy_updates": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "current": {
+        "type": "Mapping[str, NumericArray]",
+        "description": "完整原子更新组生效后的别名输入，用于确定当前布尔条件及活动分支。"
+      },
+      "updates": {
+        "type": "Mapping[str, numpy.ndarray]",
+        "description": "各输入别名本次是否有真实更新的标志，未选分支的更新不会单独产生输出样本。"
+      },
+      "size": {
+        "type": "int",
+        "description": "当前完整输入批的行数，所有值列和证据掩码必须对齐到这一长度。"
+      },
+      "before": {
+        "type": "Mapping[str, NumericArray] | None",
+        "description": "排除本次原子组后的输入，比较更新前后的分支；None 表示只判定标记来源的活动性。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.numpy_updates.condition_at": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "正在处理的已编译子节点，包含操作、参数和输入依赖。"
+      },
+      "inputs": {
+        "type": "Mapping[str, NumericArray]",
+        "description": "当前组或组前的原始输入列，按子批行号提取并求条件。"
+      },
+      "indices": {
+        "type": "numpy.ndarray",
+        "description": "当前活动子批在原始输入列中的行索引，筛选后保持原始坐标。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.numpy_updates.visit": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "正在处理的已编译子节点，包含操作、参数和输入依赖。"
+      },
+      "indices": {
+        "type": "numpy.ndarray",
+        "description": "当前活动子批在原始输入列中的行索引，筛选后保持原始坐标。"
+      },
+      "cache": {
+        "type": "dict[ExprNode, numpy.ndarray]",
+        "description": "仅在行集合一致的子批内复用各节点的更新掩码。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.reference_active": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "current": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "完整原子更新组生效后的别名输入，用于确定当前布尔条件及活动分支。"
+      },
+      "flags": {
+        "type": "Mapping[str, bool]",
+        "description": "按输入别名传入的待检查事件标志，如来源观测结束或原值无效。"
+      }
+    }
+  },
+  "chronaxis.core.where_updates.numpy_active": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "current": {
+        "type": "Mapping[str, NumericArray]",
+        "description": "完整原子更新组生效后的别名输入，用于确定当前布尔条件及活动分支。"
+      },
+      "flags": {
+        "type": "Mapping[str, numpy.ndarray]",
+        "description": "按输入别名传入的待检查事件标志，如来源观测结束或原值无效。"
+      },
+      "size": {
+        "type": "int",
+        "description": "当前完整输入批的行数，所有值列和证据掩码必须对齐到这一长度。"
+      }
+    }
+  },
+  "chronaxis.execution.driver_expression.DriverExpression.actual_update_at": {
+    "parameters": {
+      "time_ns": {
+        "type": "int",
+        "description": "按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。"
+      }
+    }
+  },
+  "chronaxis.execution.driver_expression.DriverExpression.active_end_at": {
+    "parameters": {
+      "time_ns": {
+        "type": "int",
+        "description": "按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。"
+      }
+    }
+  },
+  "chronaxis.execution.driver_expression.DriverExpression.actual_unknown_at": {
+    "parameters": {
+      "time_ns": {
+        "type": "int",
+        "description": "按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。"
+      },
+      "point": {
+        "type": "ScalarValue",
+        "description": "调用方在当前时刻已求出的无效点值，用于区分真实无效更新与恰好发生的过期。"
+      }
+    }
+  },
+  "chronaxis.execution.driver_expression.DriverExpression._point_evidence": {
+    "parameters": {
+      "time_ns": {
+        "type": "int",
+        "description": "按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。"
+      },
+      "kind": {
+        "type": "str",
+        "description": "请求哪一种证据，updated 询问真实更新、invalid 询问真实中断、source_end 询问活动来源结束。"
+      },
+      "point": {
+        "type": "ScalarValue | None",
+        "description": "检查 invalid 时提供当前点的实际数值及质量，其他证据种类可省略。"
+      }
+    }
+  },
+  "chronaxis.execution.driver_expression.DriverExpression._output_deadline": {
+    "parameters": {
+      "time": {
+        "type": "int",
+        "description": "当前观察时刻的纳秒坐标，只评估此刻及之后的候选截止点。"
+      },
+      "output": {
+        "type": "ScalarValue",
+        "description": "本次表达式求值结果，按当前类型、有效性与数值比较后续可见变化。"
+      },
+      "deadlines": {
+        "type": "Iterable[int]",
+        "description": "依赖输入的有效期及来源观测终点候选，依时间递增寻找第一个会影响输出的时刻。"
+      }
+    }
+  },
+  "chronaxis.execution.expressions.ExpressionQueries._where_evidence": {
+    "parameters": {
+      "compiled": {
+        "type": "CompiledExpression",
+        "description": "已登记的运行表达式，使用其完整别名依赖和编译树计算当前活动输入。"
+      },
+      "time": {
+        "type": "int",
+        "description": "与已提交原子组比较的真实纳秒时刻。"
+      },
+      "context": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "按此刻保持状态构造的表达式输入，用来取得条件并选择实际分支。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。"
+      }
+    }
+  },
+  "chronaxis.execution.expressions.ExpressionQueries._source_cutoffs": {
+    "parameters": {
+      "compiled": {
+        "type": "CompiledExpression",
+        "description": "已登记的运行表达式，使用其完整别名依赖和编译树计算当前活动输入。"
+      }
+    }
+  },
+  "chronaxis.execution.state.LatestSignalState._before_group": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "要查询最近一次原子更新之前保持状态的已声明信号别名。"
+      }
+    }
+  },
+  "chronaxis.execution.where_state.before_context": {
+    "parameters": {
+      "state": {
+        "type": "LatestSignalState",
+        "description": "已提交最近一组真实更新的状态容器，保存可回查的组前值和有效期。"
+      },
+      "names": {
+        "type": "Iterable[str]",
+        "description": "仅为当前表达式所依赖的信号别名构建反事实输入。"
+      },
+      "time": {
+        "type": "int",
+        "description": "用于组前保持和 TTL、来源观测边界检查的实际纳秒时刻。"
+      },
+      "continuous": "查询连续区间时，观测终点本身不再向后贡献时长。",
+      "left_limit": "为真时取该时刻之前的保持值，用于区分更新前后。",
+      "ends": {
+        "type": "Mapping[str, int] | None",
+        "description": "可选的来源到观测结束纳秒数映射，未提供完整起止范围时使用。"
+      },
+      "bounds": {
+        "type": "Mapping[str, tuple[int, int]] | None",
+        "description": "可选的来源到观测起止纳秒坐标映射，优先于只包含终点的 ends。"
+      }
+    }
+  },
+  "chronaxis.execution.where_state.scalar_columns": {
+    "parameters": {
+      "context": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "当前标量视图，将每个别名装成单行列供数组后端求值。"
+      }
+    }
+  },
+  "chronaxis.execution.where_state.group_updates": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "context": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "原子更新提交后的当前标量视图，选取活动条件及分支。"
+      },
+      "previous": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "同一时间坐标上排除刚提交更新的组前值，判定条件切换或恢复。"
+      },
+      "updates": {
+        "type": "Mapping[str, bool]",
+        "description": "标记哪些别名在本次原子组实际收到新观测。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。"
+      }
+    }
+  },
+  "chronaxis.execution.where_state.group_active": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "要遍历的编译表达式树，从其中定位 where 的条件和可见分支。"
+      },
+      "context": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "原子更新提交后的当前标量视图，选取活动条件及分支。"
+      },
+      "flags": {
+        "type": "Mapping[str, bool]",
+        "description": "待检查的输入标志，如结束、无效或缺失原因，只检查活动分支。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。"
+      }
+    }
+  },
+  "chronaxis.planning.lookups.parse_lookups": {
+    "parameters": {
+      "raw": {
+        "type": "list[dict]",
+        "description": "根级 lookups 的配置列表，每项按名称、输入单位、输出单位与点对检查。"
+      },
+      "version": {
+        "type": "int",
+        "description": "加载的配置版本，具名标定表仅对版本 4 开放。"
+      }
+    }
+  },
+  "chronaxis.core.counts_v4.classify_count": {
+    "parameters": {
+      "count": {
+        "type": "int",
+        "description": "本次已实际发现的目标对象数。非负整数超出 uint64 时报告溢出。"
+      },
+      "policy": {
+        "type": "str",
+        "description": "对象发现有缺口时采用的政策，report 可给出已知数，strict 隐去部分值。"
+      },
+      "observed": {
+        "type": "bool",
+        "description": "请求范围是否存在有关来源的观测。无观测时返回空值并给出 no_observation。"
+      },
+      "determinate": {
+        "type": "bool",
+        "description": "请求范围中是否有能够确定对象存在或不存在的时段；全未知时不能断言计数为零。"
+      },
+      "complete": {
+        "type": "bool",
+        "description": "证据是否足以判断整个请求范围。发现完整且计数为零时，返回完整的空选择。"
+      }
+    }
+  },
+  "chronaxis.core.moments.moment_ddof": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "已声明的计算操作。样本方差和标准差允许修正分母，时间总体只允许零，RMS 不使用该参数。"
+      },
+      "value": {
+        "type": "int | None",
+        "description": "配置中的自由度修正整数，省略传 None。适用的方差或标准差此时取默认零。"
+      }
+    }
+  },
+  "chronaxis.core.moments.moment_source_unit": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "决定自然输出量纲的操作名称，方差取平方，标准差取差量单位，RMS 保留原单位。"
+      },
+      "unit": {
+        "type": "Unit | None",
+        "description": "输入表达式经注册表解析得到的单位；未知单位无法推导，绝对摄氏需先转为开尔文才能求 RMS。"
+      }
+    }
+  },
+  "chronaxis.core.moments.compute_moment_series": {
+    "parameters": {
+      "series": {
+        "type": "CalculationSeries",
+        "description": "含区间、数值、实际更新及可选选择条件的内存时间序列。"
+      },
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "已校验的统计定义，提供操作、请求范围、选择政策和结果单位。"
+      },
+      "sample_kernel": {
+        "type": "type",
+        "description": "所选后端的真实样本归约器类，样本方差、标准差或 RMS 通过它累计。"
+      },
+      "time_kernel": {
+        "type": "type",
+        "description": "所选后端无筛选条件的时间归约器类，按有效保持时长加权。"
+      },
+      "conditioned_kernel": {
+        "type": "type",
+        "description": "所选后端带条件的时间归约器类，同时核对条件已知和有效时长。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "选定计时间隔的固定周期纳秒数；使用实际时间间隔时传 None。"
+      }
+    }
+  },
+  "chronaxis.core.moments_numpy.NumpyMoments.__init__": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "此累计器专用的方差、标准差或均方根操作名，决定跨批维护中心矩或均方。"
+      }
+    }
+  },
+  "chronaxis.core.moments_numpy.NumpyMoments.push": {
+    "parameters": {
+      "values": {
+        "type": "numpy.ndarray",
+        "description": "本批通过选择、有效性和数值精度检查的有限数值，按输入的物理尺度提交。"
+      },
+      "weights": {
+        "type": "numpy.ndarray | None",
+        "description": "与本批数值逐项对应的正权重；样本统计省略时每条读数计一次，时间统计传有效时长。"
+      }
+    }
+  },
+  "chronaxis.core.moments_numpy.NumpyMoments.finish": {
+    "parameters": {
+      "ddof": {
+        "type": "int | None",
+        "description": "已验证的分母修正，时间总体取零，样本方差或标准差可取一，RMS 省略。"
+      },
+      "factor": {
+        "type": "float",
+        "description": "自然结果单位到请求输出单位的正倍率，最终按方差或根统计的量纲应用一次。"
+      }
+    }
+  },
+  "chronaxis.core.moments_reference.ReferenceMoments.__init__": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "此累计器专用的方差、标准差或均方根操作名，决定跨批维护中心矩或均方。"
+      }
+    }
+  },
+  "chronaxis.core.moments_reference.ReferenceMoments.push": {
+    "parameters": {
+      "values": {
+        "type": "Sequence[float]",
+        "description": "本批通过选择、有效性和数值精度检查的有限数值，按输入的物理尺度提交。"
+      },
+      "weights": {
+        "type": "Sequence[int] | None",
+        "description": "与本批数值逐项对应的正权重；样本统计省略时每条读数计一次，时间统计传有效时长。"
+      }
+    }
+  },
+  "chronaxis.core.moments_reference.ReferenceMoments.finish": {
+    "parameters": {
+      "ddof": {
+        "type": "int | None",
+        "description": "已验证的分母修正，时间总体取零，样本方差或标准差可取一，RMS 省略。"
+      },
+      "factor": {
+        "type": "float",
+        "description": "自然结果单位到请求输出单位的正倍率，最终按方差或根统计的量纲应用一次。"
+      }
+    }
+  },
+  "chronaxis.core.quantiles.quantile_probability": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "精确样本统计名称，sample_quantile 使用显式概率，sample_median 固定中位数。"
+      },
+      "q": {
+        "type": "float | int | None",
+        "description": "有限概率，含端点 0 和 1。中位数必须传 None，其他分位数使用该值确定相邻秩。"
+      }
+    }
+  },
+  "chronaxis.core.quantiles.ExactQuantileBuffer.__init__": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "精确样本统计名称，sample_quantile 使用显式概率，sample_median 固定中位数。"
+      },
+      "q": {
+        "type": "float | int | None",
+        "description": "有限概率，含端点 0 和 1。中位数必须传 None，其他分位数使用该值确定相邻秩。"
+      },
+      "dtype": {
+        "type": "SignalDType",
+        "description": "经过单位与表达式类型检查的数值列类型，排序前保留原整数或浮点域。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "选择 reference 标量排序或 numpy 原类型数组排序。"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "本次运行共享的资源账本，接收样本和排序临时空间都需预付。独立调用省略时采用默认预算。"
+      }
+    }
+  },
+  "chronaxis.core.quantiles.ExactQuantileBuffer._reserve": {
+    "parameters": {
+      "amount": {
+        "type": "int",
+        "description": "本次追加进入账本的字节数，增长容量或准备排序前先预留。"
+      },
+      "slot": {
+        "type": "str",
+        "description": "当前缓冲记录本次持有的费用字段，以便按所属用途释放。"
+      }
+    }
+  },
+  "chronaxis.core.quantiles.ExactQuantileBuffer.append": {
+    "parameters": {
+      "values": {
+        "type": "Sequence[int | float] | numpy.ndarray",
+        "description": "新到的一批原类型真实样本。标量端传已选的值，数组端按同批掩码选择。"
+      },
+      "mask": {
+        "type": "numpy.ndarray | None",
+        "description": "数组后端同长布尔掩码，真值指向应参与精确排序的有效样本。标量端省略。"
+      }
+    }
+  },
+  "chronaxis.core.quantiles.compute_quantile_series": {
+    "parameters": {
+      "series": {
+        "type": "CalculationSeries",
+        "description": "含区间、数值、实际更新及可选选择条件的内存时间序列。"
+      },
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "已校验的统计定义，提供操作、请求范围、选择政策和结果单位。"
+      },
+      "sample_kernel": {
+        "type": "type",
+        "description": "与所选后端相同的真实样本归约器类，复用既有选择、覆盖与更新语义。"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "此范围共享的内存预算，在保留原值和排序之前预约，用毕释放。"
+      }
+    }
+  },
+  "chronaxis.core.quantile_numpy.ordered_numpy": {
+    "parameters": {
+      "chunks": {
+        "type": "Sequence[numpy.ndarray]",
+        "description": "此前各批保留的非重叠已选样本，按原类型合并后在全总体上排序。"
+      },
+      "index": {
+        "type": "int",
+        "description": "从零起算的下侧顺序统计位置，即 (N−1)×q 的整数部分。"
+      },
+      "remainder": {
+        "type": "int",
+        "description": "分位位置的小数部分的分子；为零时直接返回下侧的原类型值。"
+      },
+      "denominator": {
+        "type": "int",
+        "description": "插值权重的正分母，上侧顺序统计值的权重为 remainder/denominator。"
+      }
+    }
+  },
+  "chronaxis.core.quantile_reference.ordered_reference": {
+    "parameters": {
+      "chunks": {
+        "type": "Sequence[Sequence[int | float]]",
+        "description": "此前各批保留的非重叠已选样本，按原类型合并后在全总体上排序。"
+      },
+      "index": {
+        "type": "int",
+        "description": "从零起算的下侧顺序统计位置，即 (N−1)×q 的整数部分。"
+      },
+      "remainder": {
+        "type": "int",
+        "description": "分位位置的小数部分的分子；为零时直接返回下侧的原类型值。"
+      },
+      "denominator": {
+        "type": "int",
+        "description": "插值权重的正分母，上侧顺序统计值的权重为 remainder/denominator。"
+      }
+    }
+  },
+  "chronaxis.execution.record_object_counts.object_count_results": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次已校验的计划，提供请求范围及分别引用规则或窗口的计数指标。"
+      },
+      "rules": {
+        "type": "Sequence[RecordRuleTimeline]",
+        "description": "本次已完成的规则时间线，按目标规则取得已发现对象数及可判定范围。"
+      },
+      "segment_counts": {
+        "type": "Mapping[str, int]",
+        "description": "按窗口名称保存最终实际生成的片段数，已合并的多个活动只贡献一个片段。"
+      }
+    }
+  },
+  "chronaxis.execution.record_rule_timeline.RecordRuleTimeline.count_evidence": {
+    "parameters": {
+      "domain": {
+        "type": "Interval | None",
+        "description": "显式请求的分析范围；省略时按已观测范围评估对象发现的完整性。"
+      }
+    }
+  },
+  "chronaxis.execution.record_session_calculations.RecordSessionCalculations._append_aggregate_input": {
+    "parameters": {
+      "row": {
+        "type": "SummaryCalculationRow",
+        "description": "已生成的会话或父范围指标行，连同身份、数值和质量送给订阅它的结果聚合器。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.discovery_rules": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次执行的已校验计划，其中具名指标、配对、规则和窗口可供追溯发现证据。"
+      },
+      "spec": {
+        "type": "AggregationPlan",
+        "description": "已编译的单项结果聚合，确定来源、数值操作、单位、分组顺序与部分总体政策。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations._Group.accept": {
+    "parameters": {
+      "spec": {
+        "type": "AggregationPlan",
+        "description": "已编译的单项结果聚合，确定来源、数值操作、单位、分组顺序与部分总体政策。"
+      },
+      "row": {
+        "type": "SummaryCalculationRow | SummarySequenceRow | SummaryEventRow | SummarySegmentRow",
+        "description": "本组的一条实际来源行。先判定候选、定义排除或质量排除，再从可参与的行取得数值。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "本次运行共享的资源预算，按需为分组状态和精确分位数保留空间。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "当前运行的数值后端，决定精确分位数使用标量或 NumPy 样本缓冲。"
+      },
+      "dtype": {
+        "type": "SignalDType",
+        "description": "用于精确分位数的源列类型，决定排序和插值前保留的数值精度。"
+      },
+      "needs_coverage": {
+        "type": "bool",
+        "description": "来源指标是否配置了正覆盖门槛；需要该判定但结果行缺少它时，按质量排除。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations._Group.value": {
+    "parameters": {
+      "spec": {
+        "type": "AggregationPlan",
+        "description": "已编译的单项结果聚合，确定来源、数值操作、单位、分组顺序与部分总体政策。"
+      },
+      "factor": {
+        "type": "Fraction | int",
+        "description": "源结果单位换到目标单位的倍率。方差使用方差单位之间的倍率。"
+      },
+      "shift": {
+        "type": "Fraction | int",
+        "description": "源单位转换到目标单位的偏移。求和时按参与数累积偏移，其余位置统计仅应用一次。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.ResultAggregations.__init__": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次执行的已校验计划，其中具名指标、配对、规则和窗口可供追溯发现证据。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "本次运行共享的资源预算，按需为分组状态和精确分位数保留空间。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.ResultAggregations._input_dtype": {
+    "parameters": {
+      "spec": {
+        "type": "AggregationPlan",
+        "description": "已编译的单项结果聚合，确定来源、数值操作、单位、分组顺序与部分总体政策。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.ResultAggregations._group": {
+    "parameters": {
+      "spec": {
+        "type": "AggregationPlan",
+        "description": "已编译的单项结果聚合，确定来源、数值操作、单位、分组顺序与部分总体政策。"
+      },
+      "row": {
+        "type": "SummaryCalculationRow | SummarySequenceRow | SummaryEventRow | SummarySegmentRow | None",
+        "description": "实际源行提供分组身份。已知固定分组尚无候选时可传 None；父身份只能从实际行取得。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.ResultAggregations.accept": {
+    "parameters": {
+      "row": {
+        "type": "SummaryCalculationRow | SummarySequenceRow | SummaryEventRow | SummarySegmentRow",
+        "description": "刚输出的指标、配对、事件或片段行，按其类型和稳定来源名称分派到订阅组。"
+      }
+    }
+  },
+  "chronaxis.execution.result_aggregations.ResultAggregations.rows": {
+    "parameters": {
+      "rules": {
+        "type": "Sequence[RecordRuleTimeline]",
+        "description": "执行结束后保存原规则判定覆盖的时间线，用来核对候选总体是否已完整发现。"
+      },
+      "sequence": {
+        "type": "int",
+        "description": "第一条聚合结果的序号。每发出一组结果递增一次。"
+      }
+    }
+  },
+  "chronaxis.planning.aggregations.AggregationPlan": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "本聚合项的唯一名称，以 aggregation_id 写入输出结果。"
+      },
+      "source_kind": {
+        "type": "str",
+        "description": "结果来源种类，取 calculation、sequence、rule 或 window。"
+      },
+      "source_id": {
+        "type": "str",
+        "description": "此种类下的具名结果生产者，仅从该项实际产出的行收集候选。"
+      },
+      "operation": {
+        "type": "str",
+        "description": "要在组内执行的 count、sum、mean、variance、quantile 或 median。"
+      },
+      "field": {
+        "type": "str | None",
+        "description": "数值来源字段为指标 value 或配对 delay_ns。对象计数不读取数值字段。"
+      },
+      "group_by": {
+        "type": "tuple[str, ...]",
+        "description": "决定各组身份的有序键；空元组表示全体候选同属一组。"
+      },
+      "input_unit": {
+        "type": "str",
+        "description": "归约前用于解释来源数值的单位，延迟为 ns，对象计数为 1。"
+      },
+      "unit": {
+        "type": "str",
+        "description": "组结果输出使用的单位。解析时已验证可换算性，方差的单位是平方量纲。"
+      },
+      "include_partial": {
+        "type": "bool",
+        "description": "是否允许本身仍有可用数值的部分指标行参与数值聚合，默认排除。"
+      },
+      "partial_policy": {
+        "type": "str",
+        "description": "总体不完整时 report 保留可计算的部分值，strict 隐去该值。"
+      },
+      "q": {
+        "type": "int | float | None",
+        "description": "quantile 用于计算精确顺序统计位置的概率，其他操作省略。"
+      },
+      "ddof": {
+        "type": "int",
+        "description": "variance 的自由度修正，可为 0 或 1；当参与数不大于此值时方差不可定。"
+      }
+    }
+  },
+  "chronaxis.planning.aggregations.aggregation_unit": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "聚合操作名称，决定是否无量纲计数、平方单位或按来源尺度换算。"
+      },
+      "source_unit": {
+        "type": "str",
+        "description": "具名指标或延迟字段实际输出的单位，作为换算起点。"
+      },
+      "target": {
+        "type": "str | None",
+        "description": "显式配置的输出单位，省略时按操作的自然量纲输出。"
+      }
+    }
+  },
+  "chronaxis.planning.aggregations.parse_aggregations": {
+    "parameters": {
+      "raw": {
+        "type": "list[dict]",
+        "description": "配置根级 aggregations 的原始声明列表，逐项检查来源、字段、分组和计算政策。"
+      },
+      "version": {
+        "type": "int",
+        "description": "当前配置版本，只有版本 4 允许声明结果聚合。"
+      },
+      "calculations": {
+        "type": "Sequence[CalculationPlan]",
+        "description": "已编译的指标目录，核对标量来源、父范围和原输出单位。"
+      },
+      "rules": {
+        "type": "Sequence[RulePlan]",
+        "description": "已编译的事件规则目录，用于校验按规则计行的具名引用。"
+      },
+      "windows": {
+        "type": "Sequence[WindowPlan]",
+        "description": "已编译的窗口目录，用于校验按最终片段计行的窗口引用。"
+      },
+      "sequences": {
+        "type": "Sequence[SequencePlan]",
+        "description": "已编译的请求响应目录，用于校验待汇总请求及延迟的来源。"
+      },
+      "execution": {
+        "type": "ExecutionPlan",
+        "description": "本次执行设置，聚合项省略部分结果政策时从中继承。"
+      },
+      "ids": {
+        "type": "set[str]",
+        "description": "计划内已用标识集合，每个合法聚合名称登记一次以检测冲突。"
+      }
+    }
+  },
+  "chronaxis.results.aggregation_row.SummaryAggregationRow": {
+    "fields": {
+      "sequence": {
+        "type": "int",
+        "description": "本行在聚合输出中的非负稳定序号。"
+      },
+      "dataset_id": {
+        "type": "str",
+        "description": "该结果所属分析数据集的标识，与其来源行关联。"
+      },
+      "entity_id": {
+        "type": "str",
+        "description": "配置中被分析设备或对象的身份，分组可显式选用此键。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次分析会话的身份，用于区分不同会话产生的结果。"
+      },
+      "aggregation_id": {
+        "type": "str",
+        "description": "生成本行的根级聚合名称，可据此找到该项操作与总体定义。"
+      },
+      "source_kind": {
+        "type": "str",
+        "description": "提供候选的来源类型，取 calculation、sequence、rule 或 window。"
+      },
+      "source_id": {
+        "type": "str",
+        "description": "来源类型内唯一的已声明指标、配对、规则或窗口名称。"
+      },
+      "operation": {
+        "type": "str",
+        "description": "实际执行的组内运算，如 count、mean 或 quantile。"
+      },
+      "group_keys": {
+        "type": "tuple[str, ...]",
+        "description": "组身份的配置键名，顺序与 group_values 一一对应。"
+      },
+      "group_values": {
+        "type": "tuple[str, ...]",
+        "description": "本组在各分组键上取得的身份值，全体一组时为空元组。"
+      },
+      "value": {
+        "type": "int | float | None",
+        "description": "以结果单位表示的组数值；严格政策、空数值总体或无法判定时可为空。"
+      },
+      "unit": {
+        "type": "str",
+        "description": "结果数值的物理单位，计数为 1，方差为平方单位。"
+      },
+      "status": {
+        "type": "str",
+        "description": "组结果状态，complete、partial、indeterminate 或 empty，需结合原因阅读。"
+      },
+      "reason": {
+        "type": "str",
+        "description": "解释组值与完整性判定，例如 ok、empty_population、partial_population 或 insufficient_count。"
+      },
+      "candidate_count": {
+        "type": "int",
+        "description": "此组实际发现的全部候选行数，等于参与数加两类互斥的排除数。"
+      },
+      "included_count": {
+        "type": "int",
+        "description": "按该操作和质量政策实际参与的候选数，对象计数的数值等于它。"
+      },
+      "definition_excluded_count": {
+        "type": "int",
+        "description": "按业务定义不提供数值的候选数，如成功延迟总体中已确认超时的请求。"
+      },
+      "quality_excluded_count": {
+        "type": "int",
+        "description": "因质量、覆盖或缺少所需证据而被排除的候选数。"
+      },
+      "included_partial_count": {
+        "type": "int",
+        "description": "已纳入的数值指标中仍带部分状态的个数，是参与数的子集。"
+      },
+      "matched_count": {
+        "type": "int",
+        "description": "配对来源中已成功匹配响应的请求数，其他来源为零。"
+      },
+      "timeout_count": {
+        "type": "int",
+        "description": "在规定等待期有充分观测且确认超时的请求数。"
+      },
+      "insufficient_observation_count": {
+        "type": "int",
+        "description": "响应观测不足而无法判定的请求数，与已确认超时分列。"
+      },
+      "pending_count": {
+        "type": "int",
+        "description": "配对总体中未决请求的小计，本版最终聚合输出固定为零。"
+      },
+      "discovery_complete": {
+        "type": "bool",
+        "description": "是否具备发现请求范围内全部候选对象的证据，独立于已发现行的参与质量。"
+      },
+      "quality": {
+        "type": "QualityFlag",
+        "description": "本组来源证据和数值计算累积的质量位，用于解释何种数据或精度限制影响结果。"
+      }
+    }
+  },
+  "chronaxis.results.result.AnalysisResult.iter_aggregations": {
+    "summary": "在结果打开期间，逐组读取本次请求的统计值、群组身份及候选参与和排除计数。",
+    "返回": "可关闭的独立迭代器，逐行给出 SummaryAggregationRow。未配置聚合时为空。读取中止可关闭迭代器或所属结果。",
+    "异常": "ResultClosedError 表示所属结果已关闭或正在清理。预算不足、暂存读取失败及行格式损坏可分别引发 BudgetExceededError、OSError 和 ResultFormatError。"
+  },
+  "chronaxis.core.affine._validate_affine": {
+    "parameters": {
+      "source_dtype": {
+        "type": "SignalDType",
+        "description": "转换前的原数值类型，用来校验是否允许保留整数输出。"
+      },
+      "dtype": {
+        "type": "SignalDType",
+        "description": "静态确定的目标定宽数值类型，决定输出采用整数还是 float64。"
+      },
+      "scale": {
+        "type": "int | float",
+        "description": "源物理值先乘的有限倍率；整数输出要求倍率为原生整数。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "乘完倍率再加的有限偏移量；纯比例换算填零。"
+      }
+    }
+  },
+  "chronaxis.core.affine.affine_reference": {
+    "parameters": {
+      "scale": {
+        "type": "int | float",
+        "description": "源物理值先乘的有限倍率；整数输出要求倍率为原生整数。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "乘完倍率再加的有限偏移量；纯比例换算填零。"
+      }
+    }
+  },
+  "chronaxis.core.affine_numpy.affine_numpy": {
+    "parameters": {
+      "scale": {
+        "type": "int | float",
+        "description": "源物理值先乘的有限倍率；整数输出要求倍率为原生整数。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "乘完倍率再加的有限偏移量；纯比例换算填零。"
+      }
+    }
+  },
+  "chronaxis.core.calculations._legacy_calculation_unit": {
+    "parameters": {
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "已校验的算子配置，由操作、输入尺度和可选目标共同决定结果换算。"
+      },
+      "input_unit": {
+        "type": "str",
+        "description": "运算输入当前使用的物理单位标签，作为单位推导或换算起点。"
+      }
+    }
+  },
+  "chronaxis.core.calculations.calculation_conversion": {
+    "parameters": {
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "已校验的算子配置，由操作、输入尺度和可选目标共同决定结果换算。"
+      },
+      "input_unit": {
+        "type": "str",
+        "description": "运算输入当前使用的物理单位标签，作为单位推导或换算起点。"
+      }
+    }
+  },
+  "chronaxis.core.calculations.CalculationConversion.dtype": {
+    "parameters": {
+      "input_dtype": {
+        "type": "SignalDType",
+        "description": "转换前的数值类型；据此区分可保留的整数与须提升的浮点结果。"
+      }
+    }
+  },
+  "chronaxis.core.calculations_memory_reference._scalar_context": {
+    "parameters": {
+      "bindings": {
+        "type": "SignalBindings",
+        "description": "内存信号绑定，通过别名查找对应类型、枚举标签与原码设置。"
+      },
+      "aligned": {
+        "type": "Mapping[str, Sequence[StateValue]]",
+        "description": "别名到已按共同时间轴对齐的保持结果序列，保留有效性和质量。"
+      },
+      "index": {
+        "type": "int",
+        "description": "当前时刻在公共时间轴上的零基位置，从各序列取该位置的保持结果。"
+      }
+    }
+  },
+  "chronaxis.core.calculation_output_numpy.convert_result_numpy": {
+    "parameters": {
+      "value": {
+        "type": "int | float | None",
+        "description": "归约后的原数值，空值不参与换算，即使变换有温度偏移也保持为空。"
+      },
+      "input_dtype": {
+        "type": "SignalDType",
+        "description": "转换前的数值类型；据此区分可保留的整数与须提升的浮点结果。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "编译时选定的输出单位换算，提供倍率、偏移以及结果数值类型。"
+      }
+    }
+  },
+  "chronaxis.core.calculation_output_reference.convert_result_reference": {
+    "parameters": {
+      "value": {
+        "type": "int | float | None",
+        "description": "归约后的原数值，空值不参与换算，即使变换有温度偏移也保持为空。"
+      },
+      "input_dtype": {
+        "type": "SignalDType",
+        "description": "转换前的数值类型；据此区分可保留的整数与须提升的浮点结果。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "编译时选定的输出单位换算，提供倍率、偏移以及结果数值类型。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.validate_code_dtype": {
+    "parameters": {
+      "dtype": {
+        "type": "SignalDType",
+        "description": "为枚举原码声明的 INT64 或 UINT64，决定每个键允许的整数范围。"
+      },
+      "choices": {
+        "type": "Iterable[tuple[int, str]]",
+        "description": "原始整数到逻辑标签的映射对，只检验原码键类型及定宽边界。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.compile_enum_code": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.code_dependencies": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "当前已编译表达式子树的根，包含静态类型、操作和依赖。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.original_code": {
+    "parameters": {
+      "definition": {
+        "type": "SignalDefinition",
+        "description": "声明枚举标签、原码类型和无效值策略的信号定义，用于从实际输入恢复独立原码。"
+      },
+      "original": {
+        "type": "object",
+        "description": "映射到逻辑标签前的解码值，需检验缺失、原始类型、范围和用户声明的无效值。"
+      },
+      "quality": {
+        "type": "QualityFlag",
+        "description": "读取原始观测时已有的质量位，已有错误时不把原码当作有效整数。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.code_column": {
+    "parameters": {
+      "definition": {
+        "type": "SignalDefinition",
+        "description": "声明枚举标签、原码类型和无效值策略的信号定义，用于从实际输入恢复独立原码。"
+      },
+      "originals": {
+        "type": "Sequence[object]",
+        "description": "一批映射前的原输入，按记录顺序检验整数身份并组成定宽数组。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.memory_histories": {
+    "parameters": {
+      "compiled": {
+        "type": "CompiledExpression",
+        "description": "包含实际运行绑定的值表达式，遍历树确定哪些别名要保留原码。"
+      },
+      "names": {
+        "type": "Iterable[str]",
+        "description": "值表达式与条件表达式实际联合依赖的信号别名。"
+      },
+      "factory": {
+        "type": "Callable",
+        "description": "当前后端建历史的函数，按别名接收绑定及 capture_code 标志。"
+      },
+      "condition": {
+        "type": "CompiledExpression | None",
+        "description": "可选的筛选条件，条件内显式请求原码的信号也要保留该列。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.aligned_scalar": {
+    "parameters": {
+      "definition": {
+        "type": "SignalDefinition",
+        "description": "声明枚举标签、原码类型和无效值策略的信号定义，用于从实际输入恢复独立原码。"
+      },
+      "state": {
+        "type": "StateValue",
+        "description": "参考后端在某个时刻的保持值，含过期、来源边界和原码的独立质量。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.expire_value": {
+    "parameters": {
+      "value": {
+        "type": "ScalarValue",
+        "description": "当前保存的类型化标量，可能含同步保留的枚举原码。"
+      },
+      "reason": {
+        "type": "QualityFlag",
+        "description": "应同时施加到逻辑值与原码的过期、缺失或来源边界质量位。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.aligned_column": {
+    "parameters": {
+      "state": {
+        "type": "AlignedArray",
+        "description": "数组对齐器给出的保持批，保留相同时间轴的原始索引、质量及可选原码。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.history_code": {
+    "parameters": {
+      "definition": {
+        "type": "SignalDefinition",
+        "description": "声明枚举标签、原码类型和无效值策略的信号定义，用于从实际输入恢复独立原码。"
+      },
+      "sample": {
+        "type": "HistorySample | None",
+        "description": "当前回读的实际历史观测，None 表示此处尚无原始样本。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.historical_column": {
+    "parameters": {
+      "definition": {
+        "type": "SignalDefinition",
+        "description": "声明枚举标签、原码类型和无效值策略的信号定义，用于从实际输入恢复独立原码。"
+      },
+      "arrays": {
+        "type": "_HeldArrays",
+        "description": "在同一历史快照上对齐的有限数组批，提供是否有样本的掩码及时间质量。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.enum_code_reference": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。"
+      },
+      "operand": {
+        "type": "ScalarValue",
+        "description": "已求值的枚举操作数，其中的独立整数原码可直接读取，未观测时保留相应质量。"
+      }
+    }
+  },
+  "chronaxis.core.enum_codes.enum_code_numpy": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。"
+      },
+      "operand": {
+        "type": "NumericArray",
+        "description": "已求值的枚举操作数，其中的独立整数原码可直接读取，未观测时保留相应质量。"
+      }
+    }
+  },
+  "chronaxis.core.expression._create_compiler": {
+    "parameters": {
+      "bindings": {
+        "type": "SignalBindings | DecodedBindings | MessageBindings | DeclarationBindings | MessageDeclarations",
+        "description": "本次编译所用绑定容器，提供名称、输入类型与单位。运行绑定和纯声明保持各自身份。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "参与本次编译的派生定义，包含名称、表达式和可选输出单位。"
+      },
+      "config_version": {
+        "type": "int | None",
+        "description": "显式版本必须与绑定一致；省略时使用绑定记录的版本。"
+      },
+      "extensions": {
+        "type": "None",
+        "description": "此版本预留的编译参数，必须保持 None，非空对象在编译前被拒绝。"
+      }
+    }
+  },
+  "chronaxis.core.expression.expression_identity": {
+    "parameters": {
+      "bindings": {
+        "type": "SignalBindings | DecodedBindings | MessageBindings | DeclarationBindings | MessageDeclarations",
+        "description": "本次编译所用绑定容器，提供名称、输入类型与单位。运行绑定和纯声明保持各自身份。"
+      },
+      "root": {
+        "type": "ExprNode",
+        "description": "当前已编译表达式子树的根，包含静态类型、操作和依赖。"
+      },
+      "normalized": {
+        "type": "str",
+        "description": "解析后的规范 AST 文本，用于生成可复现的表达式身份。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "参与本次编译的派生定义，包含名称、表达式和可选输出单位。"
+      },
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "可执行或静态表达式所用的宿主注册；注册的名称、版本、端口和后端能力摘要参与身份计算。"
+      }
+    }
+  },
+  "chronaxis.core.expression_integer_reference.integer_reference": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。"
+      },
+      "args": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按配置位置排好的整数或显式类型转换操作数，每个保留本批数值与质量。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_reference.math_reference": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "编译器交给此核的逐点数值操作名，选择最小、最大、限幅或平方根。"
+      },
+      "args": {
+        "type": "Sequence[ScalarValue]",
+        "description": "各个已求值的数值实参，按原始调用位置顺序提交。"
+      }
+    }
+  },
+  "chronaxis.core.expression_integer_numpy.integer_numpy": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。"
+      },
+      "args": {
+        "type": "Sequence[NumericArray]",
+        "description": "按配置位置排好的整数或显式类型转换操作数，每个保留本批数值与质量。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_numpy.math_numpy": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "编译器交给此核的逐点数组操作名，选择最小、最大、限幅或平方根。"
+      },
+      "args": {
+        "type": "Sequence[NumericArray]",
+        "description": "各个已求值的数值实参，按原始调用位置顺序提交。"
+      }
+    }
+  },
+  "chronaxis.core.expression_integer_v4._require_word": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "child": {
+        "type": "ExprNode",
+        "description": "待验证的运算数，应是量纲一且倍率为一的定宽整数表达式。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_integer_v4._bit_parameter": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "child": {
+        "type": "ExprNode",
+        "description": "提供位号、起点或位宽的编译期常量整数节点，不能依赖运行数据。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_integer_v4.compile_integer": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_v4._common_unit": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "args": {
+        "type": "Sequence[ExprNode]",
+        "description": "本次数学调用的已编译实参，按声明顺序校验量种、可表示性与可用的共同类型。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_v4._common_dtype": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "args": {
+        "type": "Sequence[ExprNode]",
+        "description": "本次数学调用的已编译实参，按声明顺序校验量种、可表示性与可用的共同类型。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_v4.check_integer_leaves": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "args": {
+        "type": "Sequence[ExprNode]",
+        "description": "本次数学调用的已编译实参，按声明顺序校验量种、可表示性与可用的共同类型。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_math_v4.compile_math": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "当前 v4 编译器实例，负责验证参数、统一单位及在原配置位置报告错误。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "当前函数调用的原始语法节点，提供参数和关键字，并用于定位配置错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_numpy._where": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。"
+      },
+      "context": {
+        "type": "Mapping[str, NumericArray]",
+        "description": "当前批按别名取得的输入列，分支只在被选中的行上求值。"
+      },
+      "size": {
+        "type": "int",
+        "description": "整个当前批的行数，划分子批并恢复原行序时使用。"
+      },
+      "cache": {
+        "type": "dict[ExprNode, ArrayEvaluation]",
+        "description": "仅限当前批行坐标的求值结果缓存，不能把其他子批的数组当作对应行。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.numeric_coefficient": {
+    "parameters": {
+      "value": {
+        "type": "Fraction",
+        "description": "待转换的精确有理倍率或偏移，分母为一时保持原生整数。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler.__init__": {
+    "parameters": {
+      "bindings": {
+        "type": "SignalBindings | DecodedBindings | MessageBindings | DeclarationBindings | MessageDeclarations",
+        "description": "本次编译所用绑定容器，提供名称、输入类型与单位。运行绑定和纯声明保持各自身份。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "参与本次编译的派生定义，包含名称、表达式和可选输出单位。"
+      },
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "当前绑定允许的宿主注册；编译器据此保留函数名并逐个检查显式输入端口。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._known_node": {
+    "parameters": {
+      "result": {
+        "type": "ExprNode",
+        "description": "经过基类类型检查的表达式节点，补登记单位是否已知的状态。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._name": {
+    "parameters": {
+      "node": {
+        "type": "ast.Name",
+        "description": "含待解析别名的名称语法节点，通过当前绑定定位信号、参数或派生定义。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._convert": {
+    "parameters": {
+      "child": {
+        "type": "ExprNode",
+        "description": "待适配尺度的已编译子表达式，其当前单位和类型决定需要何种换算。"
+      },
+      "target": {
+        "type": "str",
+        "description": "本次要转换到的注册单位标签，须与输入单位兼容。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._canonical": {
+    "parameters": {
+      "child": {
+        "type": "ExprNode",
+        "description": "待适配尺度的已编译子表达式，其当前单位和类型决定需要何种换算。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._final_unit": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "当前已编译表达式子树的根，包含静态类型、操作和依赖。"
+      },
+      "unit": {
+        "type": "str | None",
+        "description": "用户明确要求的输出单位标签，省略时沿用此版本的默认表达式单位规则。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._context": {
+    "parameters": {
+      "literal": {
+        "type": "ExprNode",
+        "description": "等待按上下文解释单位或整数类型的候选裸常量。"
+      },
+      "other": {
+        "type": "ExprNode",
+        "description": "同一运算的另一侧节点，提供量种、尺度及类型基准。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      },
+      "arithmetic": {
+        "type": "bool",
+        "description": "当前适配是否用于算术运算，决定文字常量与对端类型的处理。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler._where": {
+    "parameters": {
+      "node": {
+        "type": "ast.Call",
+        "description": "where 的原始调用，包含一个布尔条件和两个数值分支。"
+      }
+    }
+  },
+  "chronaxis.core.expression_v4.UnitCompiler.visit": {
+    "parameters": {
+      "node": {
+        "type": "ast.AST",
+        "description": "待递归编译的当前语法节点，只接受已登记的表达式结构和函数。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "上层声明的输出单位标签，缺省由该节点的运算和类型推导。"
+      }
+    }
+  },
+  "chronaxis.core.numeric_numpy.NumericArray.take": {
+    "parameters": {
+      "indices": {
+        "type": "numpy.ndarray",
+        "description": "当前批中需要提取的行索引，按相同次序选取数值、质量及可选原码。"
+      }
+    }
+  },
+  "chronaxis.core.unit_conversion.binding_version": {
+    "parameters": {
+      "definitions": {
+        "type": "Iterable[SignalDefinition | ExpressionParameter]",
+        "description": "具有 config_version 的已校验定义序列，各项必须使用同一版本。"
+      }
+    }
+  },
+  "chronaxis.core.unit_conversion.affine_conversion": {
+    "parameters": {
+      "input_unit": {
+        "type": "str",
+        "description": "原始信号已解码到的单位标签，作为换算起点。"
+      },
+      "unit": {
+        "type": "str",
+        "description": "希望绑定采用的目标单位标签，须与原始物理量兼容。"
+      }
+    }
+  },
+  "chronaxis.core.unit_conversion.validate_conversion_v4": {
+    "parameters": {
+      "input_unit": {
+        "type": "str",
+        "description": "原始信号已解码到的单位标签，作为换算起点。"
+      },
+      "unit": {
+        "type": "str",
+        "description": "希望绑定采用的目标单位标签，须与原始物理量兼容。"
+      },
+      "scale": {
+        "type": "int | float",
+        "description": "已确定的完整有限倍率，先乘于解码后的原值。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "完成倍率换算后再加的有限偏移，例如摄氏到开尔文的温标差。"
+      }
+    }
+  },
+  "chronaxis.core.unit_conversion.converted_dtype": {
+    "parameters": {
+      "dtype": {
+        "type": "SignalDType",
+        "description": "换算前的声明类型，用于判断新尺度能否保留原整数类型。"
+      },
+      "scale": {
+        "type": "int | float",
+        "description": "已确定的完整有限倍率，先乘于解码后的原值。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "完成倍率换算后再加的有限偏移，例如摄氏到开尔文的温标差。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry._indices": {
+    "parameters": {
+      "value": {
+        "type": "tuple[int, ...]",
+        "description": "待核验的不可变指数向量，每一维均须为原生整数。"
+      },
+      "size": {
+        "type": "int",
+        "description": "当前单位维度体系要求的向量长度。"
+      },
+      "field": {
+        "type": "str",
+        "description": "错误报告所用的字段名称，用于区分量种或物理维度指数。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry._make": {
+    "parameters": {
+      "symbol": {
+        "type": "str",
+        "description": "显示和解析时使用的单位符号。"
+      },
+      "kind": {
+        "type": "tuple[int, ...]",
+        "description": "按固定量种基底排列的指数向量，由此推导物理维度。"
+      },
+      "scale": {
+        "type": "Scale | None",
+        "description": "相对量种基准的正倍率，省略采用单位倍率。"
+      },
+      "offset": {
+        "type": "Fraction",
+        "description": "标度转换到基准时的精确偏移量，乘积类单位不带温标偏移。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry.multiply": {
+    "parameters": {
+      "left": {
+        "type": "Unit",
+        "description": "乘积左侧的已解析单位，量种与倍率参加组合。"
+      },
+      "right": {
+        "type": "Unit",
+        "description": "乘积右侧的已解析单位，其各基底指数加到左侧单位上。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry.divide": {
+    "parameters": {
+      "left": {
+        "type": "Unit",
+        "description": "作为分子的已解析单位。"
+      },
+      "right": {
+        "type": "Unit",
+        "description": "作为分母的已解析单位，从分子各基底指数减去其对应指数。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry._power": {
+    "parameters": {
+      "unit": {
+        "type": "Unit",
+        "description": "将要按整数幂组合量种、尺度和单位标签的已解析单位。"
+      },
+      "exponent": {
+        "type": "int",
+        "description": "作用于量种指数和倍率的有界整数幂。"
+      }
+    }
+  },
+  "chronaxis.core.unit_registry.conversion": {
+    "parameters": {
+      "source": {
+        "type": "Unit",
+        "description": "原物理值的已解析单位，决定从何种尺度和温标开始换算。"
+      },
+      "target": {
+        "type": "Unit",
+        "description": "希望得到的已解析单位，须与原量种兼容。"
+      }
+    }
+  },
+  "chronaxis.planning.dbc_defaults.requested_enum_codes": {
+    "parameters": {
+      "config": {
+        "type": "Mapping",
+        "description": "尚未读取业务记录的分析声明，用来定位表达式显式要求的枚举原始代码。"
+      }
+    }
+  },
+  "chronaxis.configuration.file_tools.lambda@100": {
+    "parameter": "任意待序列化值；回调不读取其属性。",
+    "result": "恒为True，关闭YAML锚点/别名输出；函数体不主动抛异常。"
+  },
+  "chronaxis.core.state.lambda@487": {
+    "parameter": "已规范化的信号样本。",
+    "result": "返回样本time_ns，以时间合并各个已排序样本流。"
+  },
+  "chronaxis.results.frame_rebuild.lambda@370": {
+    "parameter": "候选报文样本。",
+    "result": "返回与目标时间的绝对距离及原时间；等距离选较早帧。"
+  },
+  "chronaxis.results.frame_rebuild.lambda@252": {
+    "parameter": "已排序的报文行。",
+    "result": "取排序键中除最后两项外的报文身份，供相同报文分组。"
+  },
+  "chronaxis.core.expression_math_reference.lambda@40": {
+    "parameter": "候选 ScalarValue，已核对其类型且数值有效。",
+    "result": "取该候选的原物理数值供 min 比较，数值相等时保留靠前的候选。"
+  },
+  "chronaxis.core.expression_math_reference.lambda@42": {
+    "parameter": "本次求最大值的有效标量操作数。",
+    "result": "取候选自身的原物理数值作为 max 比较键，同值时沿用首个操作数。"
+  },
+  "chronaxis.planning.diagnostic_collection.lambda@33": {
+    "parameter": "校验器传入其类型检查对象和候选 JSON 值，检查只使用后一个实参。",
+    "result": "仅原生 int 返回真，拒绝把布尔值或浮点表示当作配置整数。"
+  },
+  "chronaxis.planning.diagnostic_collection._host_validator": {
+    "parameters": {
+      "extensions": {
+        "type": "ExtensionRegistry",
+        "description": "已显式登记的宿主操作集合，只将允许的归约/时序名称加入本次检查。"
+      },
+      "validator": {
+        "type": "jsonschema.protocols.Validator",
+        "description": "已装入对应版本规范的基础验证器；在其独立副本上补入此宿主的操作名。"
+      }
+    }
+  },
+  "chronaxis.planning.reports._extension_backend_errors": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "待检查的已编译计划；遍历请求、表达式及注册描述以核对所选运行后端。"
+      }
+    }
+  },
+  "chronaxis.core.expression.contains_host_call": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "静态常量参数的候选子树；若含宿主调用，不在编译阶段运行该回调。"
+      }
+    }
+  },
+  "chronaxis.core.extension_points.compile_host_function": {
+    "parameters": {
+      "compiler": {
+        "type": "UnitCompiler",
+        "description": "本次v4编译器，负责检查每个AST参数、单位换算和常量适配。"
+      },
+      "call": {
+        "type": "ast.Call",
+        "description": "表达式里以注册名称调用函数的语法结点，实参必须按固定位置传入。"
+      },
+      "spec": {
+        "type": "FunctionSpec",
+        "description": "宿主函数的不可变注册，提供输入端口顺序、输出dtype/单位及该操作的实现。"
+      }
+    }
+  },
+  "chronaxis.core.function_contracts.BuiltinFunctionContract": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "用于DSL调用的受限函数标识，不包括参数和括号。"
+      },
+      "version": {
+        "type": "str",
+        "description": "本条说明所对应的内置函数契约版本；随配置语义版本选择。"
+      },
+      "signature": {
+        "type": "str",
+        "description": "按DSL写法显示的函数名和正式参数，包括仅限关键字的参数。"
+      },
+      "inputs": {
+        "type": "str",
+        "description": "说明可使用的输入类别、兼容关系与参数个数。"
+      },
+      "constants": {
+        "type": "str",
+        "description": "说明哪些位置要求常量，以及裸值根据哪个尺度解释。"
+      },
+      "output": {
+        "type": "str",
+        "description": "描述求值输出的逻辑类型、单位及需要提升数值类型的情况。"
+      },
+      "validity": {
+        "type": "str",
+        "description": "输入无效、越界或数值失败时如何传播质量的规则。"
+      },
+      "updates": {
+        "type": "str",
+        "description": "规定哪些真实输入变化会成为该结果的新样本。"
+      },
+      "history_ns": {
+        "type": "int",
+        "description": "该函数需要的历史长度，单位为纳秒；这些纯逐点函数不读取窗口历史。"
+      },
+      "pure": {
+        "type": "bool",
+        "description": "声明相同输入是否有确定输出且不保留上次调用的状态。"
+      },
+      "backends": {
+        "type": "tuple[str, ...]",
+        "description": "当前内置实现实际提供的后端名称。"
+      }
+    }
+  },
+  "chronaxis.core.function_contracts._catalog": {
+    "parameters": {
+      "version": {
+        "type": "int",
+        "description": "要构造能力目录的表达式版本，当前仅支持4。"
+      }
+    }
+  },
+  "chronaxis.core.function_contracts.builtin_function_specs": {
+    "parameters": {
+      "config_version": {
+        "type": "int",
+        "description": "查内置函数契约时使用的配置版本；v3只列abs和isclose。"
+      }
+    }
+  },
+  "chronaxis.core.function_contracts._catalog.add": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "用于DSL调用的受限函数标识，不包括参数和括号。"
+      },
+      "inputs": {
+        "type": "str",
+        "description": "说明可使用的输入类别、兼容关系与参数个数。"
+      },
+      "constants": {
+        "type": "str",
+        "description": "说明哪些位置要求常量，以及裸值根据哪个尺度解释。"
+      },
+      "output": {
+        "type": "str",
+        "description": "描述求值输出的逻辑类型、单位及需要提升数值类型的情况。"
+      },
+      "validity": {
+        "type": "str",
+        "description": "输入无效、越界或数值失败时如何传播质量的规则。"
+      },
+      "updates": {
+        "type": "str",
+        "description": "规定哪些真实输入变化会成为该结果的新样本。"
+      },
+      "args": {
+        "type": "str",
+        "description": "仅括号内的参数清单文本，与函数名合成公开签名。"
+      }
+    }
+  },
+  "chronaxis.core.rate_numpy._relative_column": {
+    "parameters": {
+      "samples": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按真实更新时间排列的同类型样本，拟合时每个测量点权重相同。"
+      }
+    }
+  },
+  "chronaxis.core.rate_numpy.difference_numpy": {
+    "parameters": {
+      "left": {
+        "type": "ScalarValue",
+        "description": "差分区间起点的已绑定数值及其质量，不用数组下标推断时间。"
+      },
+      "right": {
+        "type": "ScalarValue",
+        "description": "差分区间终点的同类型数值；用其减去起点值。"
+      },
+      "elapsed_ns": {
+        "type": "int | Fraction",
+        "description": "两个端点之间所选的实际或折算周期跨度，单位纳秒；合法差分必须为正。"
+      }
+    }
+  },
+  "chronaxis.core.rate_reference.difference_reference": {
+    "parameters": {
+      "left": {
+        "type": "ScalarValue",
+        "description": "差分区间起点的已绑定数值及其质量，不用数组下标推断时间。"
+      },
+      "right": {
+        "type": "ScalarValue",
+        "description": "差分区间终点的同类型数值；用其减去起点值。"
+      },
+      "elapsed_ns": {
+        "type": "int | Fraction",
+        "description": "两个端点之间所选的实际或折算周期跨度，单位纳秒；合法差分必须为正。"
+      }
+    }
+  },
+  "chronaxis.core.rate_numpy.fit_numpy": {
+    "parameters": {
+      "positions": {
+        "type": "Sequence[int | Fraction]",
+        "description": "与真实样本一一对应的精确纳秒坐标；先相对首点平移，再进行窗口拟合。"
+      },
+      "samples": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按真实更新时间排列的同类型样本，拟合时每个测量点权重相同。"
+      }
+    }
+  },
+  "chronaxis.core.rate_reference.fit_reference": {
+    "parameters": {
+      "positions": {
+        "type": "Sequence[int | Fraction]",
+        "description": "与真实样本一一对应的精确纳秒坐标；先相对首点平移，再进行窗口拟合。"
+      },
+      "samples": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按真实更新时间排列的同类型样本，拟合时每个测量点权重相同。"
+      }
+    }
+  },
+  "chronaxis.core.rate_transforms.rate_difference": {
+    "parameters": {
+      "backend": {
+        "type": "str",
+        "description": "选择reference标量核或numpy数组核；两者计算相同定义的每秒变化率。"
+      },
+      "left": {
+        "type": "ScalarValue",
+        "description": "差分区间起点的已绑定数值及其质量，不用数组下标推断时间。"
+      },
+      "right": {
+        "type": "ScalarValue",
+        "description": "差分区间终点的同类型数值；用其减去起点值。"
+      },
+      "elapsed_ns": {
+        "type": "int | Fraction",
+        "description": "两个端点之间所选的实际或折算周期跨度，单位纳秒；合法差分必须为正。"
+      }
+    }
+  },
+  "chronaxis.core.rate_transforms.rate_fit": {
+    "parameters": {
+      "backend": {
+        "type": "str",
+        "description": "选择reference标量核或numpy数组核；两者计算相同定义的每秒变化率。"
+      },
+      "samples": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按真实更新时间排列的同类型样本，拟合时每个测量点权重相同。"
+      },
+      "positions_ns": {
+        "type": "Sequence[int | Fraction]",
+        "description": "与真实样本一一对应的精确纳秒坐标；先相对首点平移，再进行窗口拟合。"
+      }
+    }
+  },
+  "chronaxis.core.rate_transforms._quality": {
+    "parameters": {
+      "backend": {
+        "type": "str",
+        "description": "选择reference标量核或numpy数组核；两者计算相同定义的每秒变化率。"
+      },
+      "samples": {
+        "type": "Sequence[ScalarValue]",
+        "description": "按真实更新时间排列的同类型样本，拟合时每个测量点权重相同。"
+      }
+    }
+  },
+  "chronaxis.core.rate_transforms.rate_unit": {
+    "parameters": {
+      "input_unit": {
+        "type": "str",
+        "description": "输入样本当前的单位文本；数值尺度决定每秒速率的自然单位，绝对温度先转为温差角色。"
+      }
+    }
+  },
+  "chronaxis.core.rate_transforms._position": {
+    "parameters": {
+      "value": {
+        "type": "int | Fraction",
+        "description": "待校验的原始纳秒或精确周期坐标，不接受浮点时间。"
+      }
+    }
+  },
+  "chronaxis.core.rate_reference._result": {
+    "parameters": {
+      "exact": {
+        "type": "Fraction",
+        "description": "在参考核中按差量和秒数计算出的最终有理斜率，最后才舍入为float64。"
+      }
+    }
+  },
+  "chronaxis.core.rate_numpy._restore": {
+    "parameters": {
+      "numerator": {
+        "type": "float | numpy.float64",
+        "description": "归一化后的变化量或中心积，是恢复斜率时的分子。"
+      },
+      "denominator": {
+        "type": "float | numpy.float64",
+        "description": "差分时为1，拟合时是归一化横坐标的平方和。"
+      },
+      "exponent": {
+        "type": "int",
+        "description": "先前对纵轴用2的幂缩放的指数，最后恢复原数值尺度。"
+      },
+      "elapsed_ns": {
+        "type": "int | Fraction",
+        "description": "两个端点之间所选的实际或折算周期跨度，单位纳秒；合法差分必须为正。"
+      }
+    }
+  },
+  "chronaxis.core.rolling_values.rolling_value": {
+    "parameters": {
+      "operation": {
+        "type": "str",
+        "description": "选择滚动时间均值、积分、最小值或最大值的一种已登记算法。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "为当前窗口选择独立的reference或numpy数值归约。"
+      },
+      "values": {
+        "type": "Sequence[int | float]",
+        "description": "窗口内有效、占有正长度保持段的原生数值，与权重逐项对应。"
+      },
+      "weights": {
+        "type": "Sequence[int | Fraction]",
+        "description": "每段覆盖的实际或周期折算纳秒，允许非整纳秒的精确重叠比例。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "将本次窗口归约的原单位结果转换到目标单位的倍率、偏移及类型规则。"
+      },
+      "dtype": {
+        "type": "SignalDType",
+        "description": "数值序列的原始整数或浮点类型，决定极值保型和精度检查。"
+      }
+    }
+  },
+  "chronaxis.core.selection.partial_selection": {
+    "parameters": {
+      "value": {
+        "type": "ScalarValue",
+        "description": "已经完成输出单位换算的选择值，保留其是否基于部分窗口的标记。"
+      },
+      "quality": {
+        "type": "QualityFlag",
+        "description": "该选择行原有的诊断位；部分输入还要携带ESTIMATED。"
+      },
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "本次select请求；report保留部分值，strict不提供一个正常数值。"
+      }
+    }
+  },
+  "chronaxis.execution.hosted_sample_reduction.HostedSampleReduction.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "本范围的统计请求，包括样本选择、窗口、输出单位及部分覆盖政策。"
+      },
+      "input_unit": {
+        "type": "str",
+        "description": "实际交给宿主样本端口之前已核对的输入单位。"
+      },
+      "dtype": {
+        "type": "SignalDType",
+        "description": "本次输入表达式的静态类型，用于覆盖计算及宿主端口检查。"
+      },
+      "descriptor": {
+        "type": "ReductionSpec",
+        "description": "与配置操作同名的宿主归约注册，包含工厂与固定输入/输出约定。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "把宿主完成的标量从其输出端口单位换成用户所需单位。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "选择实际消费tuple的reference工厂或消费数值列的numpy工厂。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "与本次分析共享的RAM账本，为宿主状态和动态空间预付、退还费用。"
+      },
+      "partial_limit": {
+        "type": "int",
+        "description": "传给样本覆盖归约器的正整数误差项容量上限，沿用既有样本归约入口。"
+      }
+    }
+  },
+  "chronaxis.execution.hosted_sample_reduction.HostedSampleReduction.push": {
+    "parameters": {
+      "series": {
+        "type": "CalculationSeries",
+        "description": "当前有限时间块的数值、条件、真实更新标志和观测范围。"
+      }
+    }
+  },
+  "chronaxis.execution.record_scope_calculations.RecordScopeCalculations._estimated_selection": {
+    "parameters": {
+      "request": {
+        "type": "CalculationPlan",
+        "description": "要发布的select请求，决定该父范围内部分值的处理政策。"
+      },
+      "parent": {
+        "type": "str",
+        "description": "实际事件或片段的稳定ID，用于选择行归属。"
+      },
+      "row": {
+        "type": "SelectionRow",
+        "description": "等待交付的核心选择行，保留真实时刻、值和质量。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_partial.partial_in_block": {
+    "parameters": {
+      "rows": {
+        "type": "Sequence[tuple]",
+        "description": "同一有限块中的时间、数值、截止、条件、条件截止及可选真实更新标志。"
+      },
+      "window": {
+        "type": "Interval",
+        "description": "判定样本或正时长区间是否属于所请求范围的半开区间。"
+      },
+      "samples": {
+        "type": "bool",
+        "description": "为真时只检查有效且被选的真实更新；为假时检查有正持续时间的参与区间。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_partial.partial_result": {
+    "parameters": {
+      "result": {
+        "type": "RecordIntegralResult | RecordTimeResult",
+        "description": "已经结算的冻结结果，若有部分输入则在副本中补上状态与质量。"
+      },
+      "policy": {
+        "type": "str",
+        "description": "当前请求的report或strict政策，决定部分数值能否作为结果保留。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage.__init__": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次实际执行的完整计划，提供后端、会话、绑定及输入依赖。"
+      },
+      "item": {
+        "type": "TemporalTransformPlan",
+        "description": "该阶段单独负责的一个时序声明，包含运算、输入、窗口和输出身份。"
+      },
+      "defs": {
+        "type": "Sequence[SignalDefinition]",
+        "description": "上游已核实的信号定义，包括本级可能消费的先前时序输出。"
+      },
+      "choice": {
+        "type": "IntervalChoice",
+        "description": "解析出的actual、fixed或dbc口径及其原报文驱动名。"
+      },
+      "period": {
+        "type": "int | None",
+        "description": "已核实的固定或DBC周期纳秒；actual模式没有替代周期。"
+      },
+      "ends": {
+        "type": "dict[str, int]",
+        "description": "父执行器共享的各来源观测结束时间表，用于界定有效保持与EOF。"
+      },
+      "cursors": {
+        "type": "Mapping[str, RecordSourceCursor]",
+        "description": "原始来源名到实际读取游标的映射，用于查询观测首末和读取是否完成。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "本会话共享账本，计入本级状态、待后帧补算的组及窗口工作数组。"
+      },
+      "emit": {
+        "type": "Callable[[DecodedTimeGroup], None]",
+        "description": "下一级唯一的组消费者，将按实际时间和原子归组顺序接收结果。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._invalid": {
+    "parameters": {
+      "quality": {
+        "type": "QualityFlag",
+        "description": "构造无效时序结果的具体原因位，未提供原因时使用MISSING。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._sample": {
+    "parameters": {
+      "t": {
+        "type": "int",
+        "description": "当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。"
+      },
+      "value": {
+        "type": "ScalarValue",
+        "description": "当前网格或实测右侧计算得到的变换值，带输出dtype和有效性。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._at_grid": {
+    "parameters": {
+      "t": {
+        "type": "int",
+        "description": "当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。"
+      },
+      "point": {
+        "type": "ScalarValue | None",
+        "description": "同一时刻可用的输入点查询结果；没有真实同刻点时可为空。"
+      },
+      "update": {
+        "type": "bool",
+        "description": "该点是否确有活动数值依赖更新，用来区分真实样本与保持/裁剪边界。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._convert_rate": {
+    "parameters": {
+      "value": {
+        "type": "ScalarValue",
+        "description": "使用输入自然尺度每秒表示的差分或拟合值，之后换为声明的速率单位。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._deliver": {
+    "parameters": {
+      "group": {
+        "type": "DecodedTimeGroup | None",
+        "description": "与输出同刻的原始组；纯定时网格输出可能没有上游组。"
+      },
+      "t": {
+        "type": "int",
+        "description": "当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。"
+      },
+      "value": {
+        "type": "ScalarValue | None",
+        "description": "此次需要附加到组中的离散变换值，若无产出则只转发原组。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._drain": {
+    "parameters": {
+      "group": {
+        "type": "DecodedTimeGroup | None",
+        "description": "等待与已定网格结果归并的上游组，EOF补齐时可为空。"
+      },
+      "point": {
+        "type": "ScalarValue | None",
+        "description": "同一时刻可用的输入点查询结果；没有真实同刻点时可为空。"
+      },
+      "update": {
+        "type": "bool",
+        "description": "该点是否确有活动数值依赖更新，用来区分真实样本与保持/裁剪边界。"
+      },
+      "through": {
+        "type": "int | None",
+        "description": "无原组时允许补网格到的实际截止纳秒，不能超出已知观测。"
+      },
+      "unresolved": {
+        "type": "bool",
+        "description": "为真表示固定/DBC驱动缺少后继帧，不能推断不完整周期的宽度。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._append_span": {
+    "parameters": {
+      "t": {
+        "type": "int",
+        "description": "当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。"
+      },
+      "pair_width": {
+        "type": "int | None",
+        "description": "相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage.push": {
+    "parameters": {
+      "group": {
+        "type": "DecodedTimeGroup",
+        "description": "来自上游的一个已原子归并的实际时间组，包括信号更新和来源。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._flush_waiting": {
+    "parameters": {
+      "width": {
+        "type": "int | None",
+        "description": "相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_stream.TransformStage._process": {
+    "parameters": {
+      "group": {
+        "type": "DecodedTimeGroup",
+        "description": "来自上游的一个已原子归并的实际时间组，包括信号更新和来源。"
+      },
+      "width": {
+        "type": "int | None",
+        "description": "相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。"
+      },
+      "unresolved": {
+        "type": "bool",
+        "description": "为真表示固定/DBC驱动缺少后继帧，不能推断不完整周期的宽度。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.TransformSpan": {
+    "fields": {
+      "start": {
+        "type": "int",
+        "description": "该段左闭起点的实际纳秒。"
+      },
+      "end": {
+        "type": "int",
+        "description": "保持段右开终点的实际纳秒；须大于start。"
+      },
+      "value": {
+        "type": "ScalarValue",
+        "description": "区间内按保持模型使用的数值、质量与部分估值标记。"
+      },
+      "deadline": {
+        "type": "int | None",
+        "description": "当前保持值失效的实际纳秒；有效时长需裁到此处。"
+      },
+      "update": {
+        "type": "bool",
+        "description": "区间左侧是否有真实输入更新，供样本拟合选择实测点。"
+      },
+      "point": {
+        "type": "ScalarValue",
+        "description": "区间起点经过同刻原子更新后的点值，与右侧连续视图分别保存。"
+      },
+      "pair_width": {
+        "type": "int | None",
+        "description": "相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.first_grid": {
+    "parameters": {
+      "start": {
+        "type": "int",
+        "description": "允许输出的实际起始纳秒，返回的网格点不会早于它。"
+      },
+      "origin": {
+        "type": "int",
+        "description": "该网格的锚点，位于分析时基上；跨块或跨文件保持不变。"
+      },
+      "step": {
+        "type": "int",
+        "description": "相邻实际网格点的正整数纳秒间隔。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.TransformWindow.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "保留窗口内原始区间时逐段预付费用的共享运行账本。"
+      },
+      "window_ns": {
+        "type": "int",
+        "description": "需要保留的回看宽度，以选定口径的纳秒计量。"
+      },
+      "period_ns": {
+        "type": "int | None",
+        "description": "原驱动的固定/DBC周期纳秒；为空时直接使用实际时长。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.TransformWindow.append": {
+    "parameters": {
+      "span": {
+        "type": "TransformSpan",
+        "description": "端点连续、长度为正且已知原驱动跨度的真实保持段，要按本窗口口径登记或计量。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.TransformWindow._weight": {
+    "parameters": {
+      "span": {
+        "type": "TransformSpan",
+        "description": "端点连续、长度为正且已知原驱动跨度的真实保持段，要按本窗口口径登记或计量。"
+      }
+    }
+  },
+  "chronaxis.execution.transform_window.TransformWindow.slices": {
+    "parameters": {
+      "time": {
+        "type": "int",
+        "description": "网格右边界的实际整数纳秒，从此刻向前裁剪到声明的回看宽度。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.ExtensionResources.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "共享RAM账本；未显式提供时使用当前宿主执行上下文，独立调用使用默认配额。"
+      },
+      "fixed": {
+        "type": "int",
+        "description": "本状态在调用工厂前必须占用的非负字节数，和回调后续动态申请分开记账。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.ExtensionResources.reserve": {
+    "parameters": {
+      "amount": {
+        "type": "int",
+        "description": "即将分配的非负字节数，先通过共享额度检查才可分配。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.ExtensionResources.release": {
+    "parameters": {
+      "amount": {
+        "type": "int",
+        "description": "本回调已付且可以退回的动态字节数，不得动用固定状态费或他人余额。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.ExtensionResources.close": {
+    "parameters": {
+      "cancelled": {
+        "type": "bool",
+        "description": "是否因上游取消而进入清理；账本在两种退出下均退还本实例费用。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime._check_scalar": {
+    "parameters": {
+      "value": {
+        "type": "ScalarValue",
+        "description": "宿主交回或送入单个参考端口的typed标量及有效性。"
+      },
+      "port": {
+        "type": "ValueSpec",
+        "description": "需要匹配的固定端口约定，特别是该数值的逻辑dtype。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime._check_values": {
+    "parameters": {
+      "values": {
+        "type": "tuple[ScalarValue, ...] | NumericArray",
+        "description": "按本次后端打包的已选有效值，标量元组或一维同型数值列。"
+      },
+      "port": {
+        "type": "ValueSpec",
+        "description": "宿主已声明的输入端口，所有值必须匹配其dtype。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.point_call": {
+    "parameters": {
+      "spec": {
+        "type": "FunctionSpec",
+        "description": "本次表达式已经绑定的宿主逐点函数描述。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。"
+      },
+      "args": {
+        "type": "tuple[ScalarValue, ...] | tuple[NumericArray, ...]",
+        "description": "按固定参数顺序排列的标量或同长数组，任一必需输入未知时传播原因。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime._HostedState.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "ReductionSpec | TransformSpec",
+        "description": "被消费的宿主状态协议，规定初始状态费用和实际后端工厂。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "共享RAM账本；未显式提供时使用当前宿主执行上下文，独立调用使用默认配额。"
+      },
+      "methods": {
+        "type": "tuple[str, ...]",
+        "description": "本类状态必须实现的方法名称，工厂返回时逐个核对。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime._HostedState.close": {
+    "parameters": {
+      "cancelled": {
+        "type": "bool",
+        "description": "上游是否取消；需要时先调用宿主cancel，再关闭状态和自有资源。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.HostedReduction.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "ReductionSpec",
+        "description": "当前样本范围的归约协议，描述端口、可选合并方法和后端工厂。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "共享RAM账本；未显式提供时使用当前宿主执行上下文，独立调用使用默认配额。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.HostedReduction.consume": {
+    "parameters": {
+      "values": {
+        "type": "tuple[ScalarValue, ...] | NumericArray",
+        "description": "按本次后端打包的已选有效值，标量元组或一维同型数值列。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.HostedReduction.merge": {
+    "parameters": {
+      "other": {
+        "type": "HostedReduction",
+        "description": "能够与自身合并的另一个未结算状态，须为同一注册对象和同一后端。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.HostedTransform.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "TransformSpec",
+        "description": "当前会话的宿主时序协议，含后端工厂、状态费用及允许的历史宽度。"
+      },
+      "backend": {
+        "type": "str",
+        "description": "实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。"
+      },
+      "budget": {
+        "type": "ResourceBudget | None",
+        "description": "共享RAM账本；未显式提供时使用当前宿主执行上下文，独立调用使用默认配额。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.HostedTransform.advance": {
+    "parameters": {
+      "time_ns": {
+        "type": "int",
+        "description": "正在推进的实际网格时间戳，单位纳秒，必须比已交付的上一格晚。"
+      },
+      "window_ns": {
+        "type": "int",
+        "description": "本次网格请求的正窗口宽度，不能超过宿主声明的最大历史宽度。"
+      },
+      "values": {
+        "type": "tuple[ScalarValue, ...] | NumericArray",
+        "description": "按本次后端打包的已选有效值，标量元组或一维同型数值列。"
+      },
+      "weights_ns": {
+        "type": "tuple[int | Fraction, ...] | numpy.ndarray",
+        "description": "与每段有效数值对应的正纳秒权重；实际间隔用整数，折算周期可包含分数。"
+      }
+    }
+  },
+  "chronaxis.extension_runtime.advance_grid": {
+    "parameters": {
+      "host": {
+        "type": "HostedTransform",
+        "description": "当前执行阶段已经创建的宿主时序状态，拥有本会话的预算责任。"
+      },
+      "time_ns": {
+        "type": "int",
+        "description": "正在推进的实际网格时间戳，单位纳秒，必须比已交付的上一格晚。"
+      },
+      "window_ns": {
+        "type": "int",
+        "description": "本次网格请求的正窗口宽度，不能超过宿主声明的最大历史宽度。"
+      },
+      "latest_first": {
+        "type": "Sequence[int | float]",
+        "description": "从窗口右向左读取到的有效原值；交给宿主前恢复为正序。"
+      },
+      "weights": {
+        "type": "Sequence[int | Fraction]",
+        "description": "与倒序值逐项对应的实际或周期折算纳秒权重。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "将宿主本格的自然单位结果换到用户指定输出单位的转换。"
+      }
+    }
+  },
+  "chronaxis.extensions.ValueSpec": {
+    "fields": {
+      "dtype": {
+        "type": "SignalDType",
+        "description": "固定端口的数值或BOOL逻辑类型；枚举应先通过enum_code取得代码。"
+      },
+      "unit": {
+        "type": "str",
+        "description": "端口读取或返回的已登记单位；BOOL端口必须使用单位1。"
+      }
+    }
+  },
+  "chronaxis.extensions._BackendSpec.require_backend": {
+    "parameters": {
+      "backend": {
+        "type": "str",
+        "description": "所选执行后端名称，只能为声明了实现的reference或numpy。"
+      }
+    }
+  },
+  "chronaxis.extensions._BackendSpec._check": {
+    "parameters": {
+      "inputs": {
+        "type": "tuple[ValueSpec, ...]",
+        "description": "当前协议的固定输入端口序列，一并检查输出端口及可调用实现。"
+      }
+    }
+  },
+  "chronaxis.extensions.FunctionSpec": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "配置DSL直接调用的唯一宿主函数名，不允许遮蔽内置能力。"
+      },
+      "version": {
+        "type": "str",
+        "description": "宿主发布的实现版本文本；变更算法或兼容行为时应更新以隔离计划身份。"
+      },
+      "inputs": {
+        "type": "tuple[ValueSpec, ...]",
+        "description": "从左到右的固定位置参数端口，决定数量、dtype及单位尺度。"
+      },
+      "output": {
+        "type": "ValueSpec",
+        "description": "函数返回值的固定dtype和单位；数组输出形状必须匹配所传行数。"
+      },
+      "reference": {
+        "type": "Callable[[tuple[ScalarValue, ...], ExtensionResources], ScalarValue] | None",
+        "description": "单点标量实现；缺失时不支持reference后端。"
+      },
+      "numpy": {
+        "type": "Callable[[tuple[NumericArray, ...], ExtensionResources], NumericArray] | None",
+        "description": "对整批有效行运行的数组实现；缺失时不支持numpy后端。"
+      }
+    }
+  },
+  "chronaxis.extensions.ReductionSpec": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "配置calculations.operation可引用的宿主样本归约名称。"
+      },
+      "version": {
+        "type": "str",
+        "description": "宿主发布的实现版本文本；变更算法或兼容行为时应更新以隔离计划身份。"
+      },
+      "input": {
+        "type": "ValueSpec",
+        "description": "归约所接收的已选有效样本的数值端口。"
+      },
+      "output": {
+        "type": "ValueSpec",
+        "description": "finalize返回标量的固定逻辑类型和自然单位。"
+      },
+      "reference": {
+        "type": "Callable[[ExtensionResources], Any] | None",
+        "description": "建立一个消费标量元组的状态，其协议包含consume、finalize、cancel和close，可按声明提供merge。"
+      },
+      "numpy": {
+        "type": "Callable[[ExtensionResources], Any] | None",
+        "description": "建立独立数组消费状态，输入为NumericArray；不借用参考实现作为隐式后备。"
+      },
+      "state_bytes": {
+        "type": "int",
+        "description": "新建本范围或会话状态前要预付的固定字节数，动态空间另由资源视图申请。"
+      },
+      "mergeable": {
+        "type": "bool",
+        "description": "是否允许在同一注册及后端下调用merge(other)合并两个未结束的状态。"
+      }
+    }
+  },
+  "chronaxis.extensions.TransformSpec": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "transforms.operation中显式引用的宿主网格算法名。"
+      },
+      "version": {
+        "type": "str",
+        "description": "宿主发布的实现版本文本；变更算法或兼容行为时应更新以隔离计划身份。"
+      },
+      "input": {
+        "type": "ValueSpec",
+        "description": "网格窗口有效保持段的数值输入端口。"
+      },
+      "output": {
+        "type": "ValueSpec",
+        "description": "advance每次交付单个网格结果时使用的dtype与自然单位。"
+      },
+      "reference": {
+        "type": "Callable[[ExtensionResources], Any] | None",
+        "description": "创建参考状态；advance接收按实际时序排列的标量元组和正纳秒权重，并须支持cancel及close。"
+      },
+      "numpy": {
+        "type": "Callable[[ExtensionResources], Any] | None",
+        "description": "创建数组状态；advance接收一维有效数值列、等长权重列，并返回当前网格标量。"
+      },
+      "state_bytes": {
+        "type": "int",
+        "description": "新建本范围或会话状态前要预付的固定字节数，动态空间另由资源视图申请。"
+      },
+      "history_ns": {
+        "type": "int",
+        "description": "该宿主时序算法支持的最大回看宽度（选定口径的正纳秒数）。"
+      },
+      "interval_modes": {
+        "type": "tuple[str, ...]",
+        "description": "本实现能够解释的间隔模式集合，可含actual、fixed和dbc且不得重复。"
+      }
+    }
+  },
+  "chronaxis.extensions.ExtensionRegistry": {
+    "fields": {
+      "functions": {
+        "type": "Mapping[str, FunctionSpec]",
+        "description": "只读名称映射，按函数名查可供DSL编译的逐点协议。"
+      },
+      "reductions": {
+        "type": "Mapping[str, ReductionSpec]",
+        "description": "只读名称映射，按计算操作查对应的样本归约工厂。"
+      },
+      "transforms": {
+        "type": "Mapping[str, TransformSpec]",
+        "description": "只读名称映射，按时序操作查网格状态和历史契约。"
+      },
+      "identity": {
+        "type": "str",
+        "description": "对协议名称、版本、端口、后端及资源规则计算的稳定SHA-256摘要。"
+      }
+    }
+  },
+  "chronaxis.extensions.ExtensionRegistry.__init__": {
+    "parameters": {
+      "functions": {
+        "type": "tuple[FunctionSpec, ...]",
+        "description": "待注册的一组逐点函数，按声明检查唯一名称后冻结。"
+      },
+      "reductions": {
+        "type": "tuple[ReductionSpec, ...]",
+        "description": "待注册的一组标量归约描述，不在注册阶段创建状态。"
+      },
+      "transforms": {
+        "type": "tuple[TransformSpec, ...]",
+        "description": "待注册的一组有状态时序描述，名称与其他两类保持互斥。"
+      }
+    }
+  },
+  "chronaxis.extensions.using_extension_budget": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "当前实际执行任务的共享账本；退出上下文时恢复调用者原来的预算关联。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms.TemporalTransformPlan": {
+    "fields": {
+      "name": {
+        "type": "str",
+        "description": "这条离散序列在统一数值名称空间中的简单别名。"
+      },
+      "operation": {
+        "type": "str",
+        "description": "已选的滚动值、变化率或宿主注册时序操作。"
+      },
+      "expression": {
+        "type": "StaticExpression",
+        "description": "已静态检查且展开依赖的输入表达式，运行前需要在实际来源上校验。"
+      },
+      "output": {
+        "type": "SignalDefinition",
+        "description": "供下游规则/计算绑定的合成输出定义，包括来源身份、dtype、单位及有效期。"
+      },
+      "conversion": {
+        "type": "CalculationConversion",
+        "description": "将变换自然结果换到最终输出尺度的静态转换描述。"
+      },
+      "physical": {
+        "type": "tuple[str, ...]",
+        "description": "将上游变换递归展开后，本序列实际需要原始输入的别名集合。"
+      },
+      "window_ns": {
+        "type": "int | None",
+        "description": "网格算法的回看宽度，单位是所选实际或周期计量的纳秒；相邻差分不需要。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "实际时间上相邻网格点之间的正纳秒间隔；相邻速率按右侧样本驱动。"
+      },
+      "origin_ns": {
+        "type": "int",
+        "description": "分析时基上建立网格的实际时间原点，归一化为整数纳秒。"
+      },
+      "max_gap_ns": {
+        "type": "int | None",
+        "description": "相邻变化率可连接的最大实际间隔纳秒；网格操作没有此参数。"
+      },
+      "partial_policy": {
+        "type": "str",
+        "description": "窗口不完整时的strict或report输出政策。"
+      },
+      "minimum_coverage": {
+        "type": "float",
+        "description": "请求窗口中有效输入所需的最低权重占比，范围0到1。"
+      },
+      "host_spec": {
+        "type": "TransformSpec | None",
+        "description": "仅自定义网格保存其宿主描述，用于选择后端并预约有界状态。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms._names": {
+    "parameters": {
+      "text": {
+        "type": "str",
+        "description": "需要从其受限表达式语法树中提取名称引用的配置文本。"
+      },
+      "path": {
+        "type": "str",
+        "description": "出现该表达式的配置路径，用于标明解析错误位置。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms.build_transforms": {
+    "parameters": {
+      "raw": {
+        "type": "list[dict]",
+        "description": "配置中transforms列表，包含显式名称、operation、expr及算法所需参数。"
+      },
+      "bindings": {
+        "type": "DeclarationBindings",
+        "description": "当前物理输入和可用定义的不可变声明，用于检查类型、单位及同步依据。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "与时序声明共同检查名称和循环的普通派生表达式表。"
+      },
+      "timezone": {
+        "type": "str | None",
+        "description": "解释带日期的绝对网格原点时使用的默认时区；相对时间不依赖此值。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms.build_transforms.visit": {
+    "parameters": {
+      "name": {
+        "type": "str",
+        "description": "当前深度优先检查的节点名；先检查依赖，再登记其拓扑位置。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms.active_transforms": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "包含已按依赖排序的全部时序声明的计划，供逆向裁剪。"
+      },
+      "aliases": {
+        "type": "Iterable[str]",
+        "description": "结果消费者实际请求的别名，作为向上追溯时序依赖的起点。"
+      }
+    }
+  },
+  "chronaxis.planning.transforms.physical_dependencies": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "含物理信号与合成时序声明的计划。"
+      },
+      "aliases": {
+        "type": "Iterable[str]",
+        "description": "需要展开的信号或时序别名，最终用于匹配实际原报文驱动。"
+      }
+    }
+  },
+  "chronaxis.results.summary.SummaryHostedCalculationRow": {
+    "fields": {
+      "extension_version": {
+        "type": "str",
+        "description": "产生这条宿主归约结果的实现版本，可在后续读取时追溯算法。"
+      },
+      "coverage_status": {
+        "type": "str | None",
+        "description": "启用覆盖判断时记录sufficient或indeterminate；没有覆盖门槛结果时可为空。"
+      }
+    }
+  },
+  "chronaxis.core.binding.SignalBindings": {
+    "fields": {
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "宿主交给信号绑定的不可变注册表，运行表达式时用它核对函数身份。"
+      }
+    }
+  },
+  "chronaxis.core.declarations.DeclarationBindings": {
+    "fields": {
+      "extensions": {
+        "type": "ExtensionRegistry | None",
+        "description": "宿主交给静态声明的不可变注册表，用于解析本计划可见的扩展。"
+      },
+      "temporal_inputs": {
+        "type": "tuple[tuple[str, tuple[str, ...]], ...]",
+        "description": "每项由变换名及其物理信号别名元组组成，联合依赖同步检查沿此表还原到采集来源。"
+      }
+    }
+  },
+  "chronaxis.core.window_delta.DeltaSpan": {
+    "fields": {
+      "partial": {
+        "type": "bool",
+        "description": "本段连续取值是否依赖覆盖不全的变换结果。"
+      },
+      "point_partial": {
+        "type": "bool",
+        "description": "此段起点单独采用的点值是否只具有部分覆盖，与段内连续值分别记录。"
+      }
+    }
+  },
+  "chronaxis.planning.input_requirements.InputRequirements": {
+    "fields": {
+      "transform_names": {
+        "type": "tuple[str, ...]",
+        "description": "按依赖顺序列出本次真正被请求的变换名。读取器投影仍使用物理信号。"
+      }
+    }
+  },
+  "chronaxis.core.sequence_reference.lambda@142": {
+    "parameter": "本时间刻度的请求或响应事件。",
+    "result": "返回event_id，按事件标识稳定排序。"
+  },
+  "chronaxis.core.sequence_reference.lambda@148": {
+    "parameter": "本时间刻度的请求或响应事件。",
+    "result": "返回event_id，按事件标识稳定排序。"
+  },
+  "chronaxis.execution.record_scope_calculations.lambda@141": {
+    "parameter": "已声明的计算请求。",
+    "result": "用calculation_id查询已登记的输入流，按同流分组；键缺失传播KeyError。"
+  },
+  "chronaxis.planning.diagnostic_collection.lambda@84": {
+    "parameter": "候选 schema 分支的分数、子错误数量优先级、分支序号及实际错误清单。",
+    "result": "只以前三项作为排序键，使分支优先级稳定，避免比较错误对象。"
+  },
+  "chronaxis.planning.diagnostic_collection.lambda@206": {
+    "parameter": "收集到的结构诊断项，含机器可读错误码。",
+    "result": "判断该项是否为 missing_field，供依赖阻断筛选使用。"
+  },
+  "chronaxis.batch.process_transport.ProcessWorker.ready": {
+    "异常": "管道探测或进程状态检查发生 EOFError 或 OSError 时抛出 ChildProcessError，携带工作进程 PID 并保留原异常。探测时确认 EOF 或断管后，关闭阶段跳过远程握手。"
+  },
+  "chronaxis.batch.process_transport.ProcessWorker.receive": {
+    "异常": "探测不到结果，或探测、读取遇到 EOF 或断管时，抛出带工作进程 PID 的 ChildProcessError。已收到的消息仍按正常协议校验，类型或种类不符报 RuntimeError，解包失败原样传播。"
+  },
+  "chronaxis.batch.process_transport.ProcessWorker.close": {
+    "summary": "停止本次工作进程并释放其作业、管道和进程句柄；再次调用时从尚未完成的阶段继续。",
+    "处理流程": "管道可用时，先让工作进程重试待办清理，再发送关闭命令并等待退出。已知断管或关闭握手时遇到 EOF、断管，则先关闭本次作业对象以结束其工作进程及后代。没有作业对象时，只终止该拥有者持有的工作进程。断管后的每次退出等待最多五秒。进程退出后关闭剩余句柄。",
+    "异常": "远程答复清理失败时抛 RuntimeError，仍可重试。断管后等待超过五秒且进程仍在运行时抛 TimeoutError。作业、管道或进程句柄关闭失败时原异常传播；此前已完成的停止步骤保留。"
+  },
+  "chronaxis.batch.process_transport.ProcessWorker.__init__": {
+    "parameters": {
+      "fast": {
+        "type": "bool",
+        "description": "启用 fast 的共享取消信号和文件级任务协议。"
+      }
+    }
+  },
+  "chronaxis.batch.process_transport.ProcessWorker.submit_fast": {
+    "parameters": {
+      "job": {
+        "type": "BatchJob",
+        "description": "待派发的独立文件任务，其名称进入报告。"
+      },
+      "directory": {
+        "type": "Path",
+        "description": "给本次任务独占的结果目录。"
+      },
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      },
+      "total": {
+        "type": "bool",
+        "description": "是否回传未舍入指标，供同一模板的成员按输入顺序相加。"
+      }
+    }
+  },
+  "chronaxis.batch.publication._write_batch_report": {
+    "parameters": {
+      "report": {
+        "type": "BatchReport",
+        "description": "本批各任务的成功、取消、失败以及发布路径。"
+      },
+      "extra": {
+        "type": "dict | None",
+        "description": "在报告根写入的 fast 执行标志和可选总量。"
+      }
+    }
+  },
+  "chronaxis.batch.runner.BatchRunner._run": {
+    "parameters": {
+      "jobs": {
+        "type": "tuple[BatchJob, ...]",
+        "description": "按配置顺序派发的独立任务。"
+      },
+      "output_dir": {
+        "type": "str | Path",
+        "description": "本批次报告和各文件发布目录的父路径。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      },
+      "device_label": {
+        "type": "str",
+        "description": "报告标记所用设备的来源名称。"
+      },
+      "fast_specs": {
+        "type": "dict | None",
+        "description": "任务名到文件级计算参数的映射，启用 fast 时传入。"
+      },
+      "fast_rows": {
+        "type": "dict | None",
+        "description": "请求总量时收集各任务未舍入行，按任务名存放。"
+      }
+    }
+  },
+  "chronaxis.fast.batch.prepare_batch": {
+    "parameters": {
+      "plan_path": {
+        "type": "str | Path",
+        "description": "声明 jobs 或 template 的批量 YAML/JSON 路径。"
+      }
+    }
+  },
+  "chronaxis.fast.batch.run_batch": {
+    "parameters": {
+      "plan_path": {
+        "type": "str | Path",
+        "description": "声明 jobs 或 template 的批量 YAML/JSON 路径。"
+      },
+      "output": {
+        "type": "str | Path",
+        "description": "接收本次结果表和完成清单的目录。"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "限制同时工作的文件进程数，省略时采用批量配置。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      },
+      "total": {
+        "type": "bool",
+        "description": "是否回传未舍入指标，供同一模板的成员按输入顺序相加。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io._Group": {
+    "fields": {
+      "message": {
+        "type": "cantools.database.can.Message",
+        "description": "此组按实际帧型选用的 DBC 报文定义。"
+      },
+      "entries": {
+        "type": "list[tuple]",
+        "description": "该报文上的指标名、独立累计器及可选的已观测身份集合。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io._prepare": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      },
+      "db": {
+        "type": "cantools.database.Database",
+        "description": "已读入的 DBC，供按 ID、信号和帧型定位报文。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io._read_all": {
+    "parameters": {
+      "reader": {
+        "type": "Iterable",
+        "description": "该文件的原始报文迭代器，关闭由外层负责。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io._read": {
+    "parameters": {
+      "path": {
+        "type": "str | Path",
+        "description": "要读取的文件路径。"
+      },
+      "groups": {
+        "type": "dict",
+        "description": "以报文 ID 和帧型索引本文件的计算项，供筛选目标及检查时间。"
+      },
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io._read.selected_time": {
+    "parameters": {
+      "frame": {
+        "type": "LegacyRawFrame",
+        "description": "ASC 中的当前帧，按通道、帧型和 ID 确认是否检查时间顺序。"
+      }
+    }
+  },
+  "chronaxis.fast.can_io.run_one": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      },
+      "database": {
+        "type": "cantools.database.Database | None",
+        "description": "预检时加载的 DBC，可交本次执行复用。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      }
+    }
+  },
+  "chronaxis.fast.cli.execute": {
+    "parameters": {
+      "args": {
+        "type": "argparse.Namespace",
+        "description": "命令行解析出的 fast 操作、配置路径、输出和总量选项。"
+      }
+    }
+  },
+  "chronaxis.fast.cli._batch": {
+    "parameters": {
+      "args": {
+        "type": "argparse.Namespace",
+        "description": "命令行解析出的 fast 操作、配置路径、输出和总量选项。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._float": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "要检查的数值，按本操作约束核验类型、精度和有限性。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._typed": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "要检查的数值，按本操作约束核验类型、精度和有限性。"
+      },
+      "dtype": {
+        "type": "str",
+        "description": "要得到的 int64、uint64 或 float64，决定合法范围与转换规则。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._number_type": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "要检查的数值，按本操作约束核验类型、精度和有限性。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._affine": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "要检查的数值，按本操作约束核验类型、精度和有限性。"
+      },
+      "scale": {
+        "type": "int | float",
+        "description": "输入值的乘数，在加偏移前应用。"
+      },
+      "offset": {
+        "type": "int | float",
+        "description": "乘倍率后增加的偏移，与输出类型一起核验。"
+      },
+      "dtype": {
+        "type": "str",
+        "description": "要得到的 int64、uint64 或 float64，决定合法范围与转换规则。"
+      }
+    }
+  },
+  "chronaxis.fast.compute.encode_program": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已通过类型和单位检查的表达式节点，编码后传给文件进程。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._syntax": {
+    "parameters": {
+      "text": {
+        "type": "str",
+        "description": "仅使用已支持算术及绑定名的逐帧公式。"
+      },
+      "signals": {
+        "type": "dict",
+        "description": "别名到本帧 DBC 信号、数值类型和线性变换的映射。"
+      },
+      "parameters": {
+        "type": "dict",
+        "description": "公式引用的有限数值常量，名称不能与信号冲突。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._syntax.literal": {
+    "parameters": {
+      "value": {
+        "type": "int | float",
+        "description": "要检查的数值，按本操作约束核验类型、精度和有限性。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._syntax.visit": {
+    "parameters": {
+      "node": {
+        "type": "ast.AST",
+        "description": "正在检查的语法树节点，仅接受数值算术和受支持的名称。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._bind": {
+    "parameters": {
+      "node": {
+        "type": "dict",
+        "description": "已经编码的数值操作、类型、参数和输入子指令。"
+      },
+      "signals": {
+        "type": "dict",
+        "description": "别名到本帧 DBC 信号、数值类型和线性变换的映射。"
+      },
+      "depth": {
+        "type": "int",
+        "description": "当前绑定的指令嵌套深度，用来限制递归。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._Metric.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个指标的绑定、公式、输出尺度和可选方向桶。"
+      },
+      "formula": {
+        "type": "Callable",
+        "description": "已绑定的数值函数，输入当前帧的物理解码字典。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._Metric.consume": {
+    "parameters": {
+      "decoded": {
+        "type": "dict",
+        "description": "当前 DBC 报文的信号名到物理值映射，供求值后按原方向分桶。"
+      }
+    }
+  },
+  "chronaxis.fast.compute.prepare_metric": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个指标的绑定、公式、输出尺度和可选方向桶。"
+      }
+    }
+  },
+  "chronaxis.fast.config._unsupported": {
+    "parameters": {
+      "path": {
+        "type": "str",
+        "description": "不受支持设置的配置字段路径，如 $.outputs.contributions。"
+      },
+      "message": {
+        "type": "str",
+        "description": "当前字段为什么不能按 fast 方式执行的具体原因。"
+      }
+    }
+  },
+  "chronaxis.fast.config._capabilities": {
+    "parameters": {
+      "raw": {
+        "type": "dict",
+        "description": "显式声明的配置字段，在加默认值前检查 fast 能力限制。"
+      }
+    }
+  },
+  "chronaxis.fast.config._source": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "公开解析器构建的计划，含静态信号绑定及逐消息计算项。"
+      }
+    }
+  },
+  "chronaxis.fast.config._flag": {
+    "parameters": {
+      "selector": {
+        "type": "MessageSelector",
+        "description": "逐消息触发报文的身份声明。"
+      },
+      "fields": {
+        "type": "Iterable",
+        "description": "本公式涉及的信号字段，用于与选择器合并帧型限制。"
+      },
+      "name": {
+        "type": "str",
+        "description": "要合并的帧型字段，取 is_extended 或 is_fd。"
+      }
+    }
+  },
+  "chronaxis.fast.config._metric": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "公开解析器构建的计划，含静态信号绑定及逐消息计算项。"
+      },
+      "item": {
+        "type": "MessageCalculationPlan",
+        "description": "一个已解析的逐消息累计项，含选择器、公式和方向规则。"
+      },
+      "database": {
+        "type": "cantools.database.Database | None",
+        "description": "预检时加载的 DBC，可交本次执行复用。"
+      }
+    }
+  },
+  "chronaxis.fast.config._compile_plan": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "公开解析器构建的计划，含静态信号绑定及逐消息计算项。"
+      },
+      "with_database": {
+        "type": "bool",
+        "description": "是否将已加载的数据库交给当前进程继续执行。"
+      }
+    }
+  },
+  "chronaxis.fast.config.compile_template_plan": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "公开解析器构建的计划，含静态信号绑定及逐消息计算项。"
+      },
+      "template_path": {
+        "type": "str | Path | None",
+        "description": "原始模板路径，用于保持显式设置和拒绝位置。"
+      },
+      "_with_database": {
+        "type": "bool",
+        "description": "启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。"
+      }
+    }
+  },
+  "chronaxis.fast.config.compile_config": {
+    "parameters": {
+      "path": {
+        "type": "str | Path",
+        "description": "要读取的文件路径。"
+      },
+      "_with_database": {
+        "type": "bool",
+        "description": "启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。"
+      }
+    }
+  },
+  "chronaxis.fast.run.run_prepared": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      },
+      "output": {
+        "type": "str | Path",
+        "description": "接收本次结果表和完成清单的目录。"
+      },
+      "engine": {
+        "type": "str",
+        "description": "写入完成清单的执行器标识。"
+      },
+      "database": {
+        "type": "cantools.database.Database | None",
+        "description": "预检时加载的 DBC，可交本次执行复用。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+      },
+      "_return_rows": {
+        "type": "bool",
+        "description": "请求跨文件总量时直接返回未舍入指标行。"
+      }
+    }
+  },
+  "chronaxis.fast.run.run": {
+    "parameters": {
+      "config": {
+        "type": "str | Path",
+        "description": "当前独立文件的分析计划路径。"
+      },
+      "output": {
+        "type": "str | Path",
+        "description": "接收本次结果表和完成清单的目录。"
+      }
+    }
+  },
+  "chronaxis.fast.totals._semantics": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+      }
+    }
+  },
+  "chronaxis.fast.totals.FastTotals": {
+    "fields": {
+      "members": {
+        "type": "tuple[str, ...]",
+        "description": "按模板声明顺序固定的成员任务名，决定跨文件求和顺序。"
+      },
+      "metrics": {
+        "type": "tuple[tuple[str, str], ...]",
+        "description": "需要在全部成员中逐项核对的计算项名和单位。"
+      }
+    }
+  },
+  "chronaxis.fast.totals.FastTotals.from_specs": {
+    "parameters": {
+      "specs": {
+        "type": "dict",
+        "description": "按任务名保存的执行参数，用于核验绑定、DBC 和计算口径。"
+      },
+      "template": {
+        "type": "bool",
+        "description": "本批是否来自同一个显式分析模板，决定能否请求固定总量。"
+      }
+    }
+  },
+  "chronaxis.fast.totals.FastTotals.finish": {
+    "parameters": {
+      "outcomes": {
+        "type": "dict",
+        "description": "成员任务映射到未舍入结果行；取消、失败或未运行记为空。"
+      }
+    }
+  },
+  "chronaxis.planning.dbc_defaults.load_dbc": {
+    "parameters": {
+      "path": {
+        "type": "str | Path",
+        "description": "要读取的文件路径。"
+      }
+    }
+  },
+  "chronaxis.fast.compute.lambda@124": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "返回准备阶段核验过的有限常量。"
+  },
+  "chronaxis.fast.compute.lambda@135": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "返回该信号在当前 DBC 帧的指定类型数值。"
+  },
+  "chronaxis.fast.compute.lambda@136": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "对已经解码的数值应用本次显式变换，并检查输出可表示性。"
+  },
+  "chronaxis.fast.compute.lambda@142": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "以双精度执行左右操作数的算术，检查精度和有限性。"
+  },
+  "chronaxis.fast.compute.lambda@143": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "按已知整数类型执行运算，溢出时拒绝。"
+  },
+  "chronaxis.fast.compute.lambda@147": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "安全转换子表达式为 float64。"
+  },
+  "chronaxis.fast.compute.lambda@150": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "执行一元操作并验证类型及溢出。"
+  },
+  "chronaxis.fast.compute.lambda@155": {
+    "parameter": "当前目标帧的 DBC 物理值字典；常量节点不读取它。",
+    "result": "换算子表达式的单位和偏移，检查输出类型。"
+  },
+  "chronaxis._batch_worker.worker_main": {
+    "parameters": {
+      "connection": {
+        "type": "multiprocessing.connection.PipeConnection",
+        "description": "本次spawn建立的私有双向Windows管道，只接受所属主进程发送的run、cleanup和close命令。"
+      },
+      "fast_cancel": {
+        "type": "multiprocessing.Event | None",
+        "description": "每个 fast 工作进程的共享取消信号，普通工作进程省略。"
+      }
+    }
+  },
+  "chronaxis.fast.worker._run_file": {
+    "parameters": {
+      "packet": {
+        "type": "dict",
+        "description": "主进程发送的任务名、文件路径、执行参数及总量请求。"
+      },
+      "directory": {
+        "type": "Path",
+        "description": "给本次任务独占的结果目录。"
+      },
+      "cancel": {
+        "type": "multiprocessing.Event",
+        "description": "由父进程设置的在途任务取消信号。"
+      }
+    }
+  },
+  "chronaxis.fast.worker._dbc_digest": {
+    "parameters": {
+      "path": {
+        "type": "str | Path",
+        "description": "要读取的文件路径。"
+      }
+    }
+  },
+  "chronaxis._batch_worker._diagnostics": {
+    "parameters": {
+      "error": {
+        "type": "BaseException",
+        "description": "本次操作产生的原异常对象；用于保留原因链、附加清理失败信息或继续抛出，不应换成一段字符串。"
+      }
+    }
+  },
+  "chronaxis.fast.worker.file_response": {
+    "parameters": {
+      "packet": {
+        "type": "dict",
+        "description": "主进程发送的任务名、文件路径、执行参数及总量请求。"
+      },
+      "directory": {
+        "type": "Path",
+        "description": "给本次任务独占的结果目录。"
+      },
+      "cancel": {
+        "type": "multiprocessing.Event",
+        "description": "由父进程设置的在途任务取消信号。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler._units": {
+    "parameters": {
+      "left": {
+        "type": "ExprNode",
+        "description": "已经静态检查的左操作数ExprNode。",
+        "type_evidence": "named model in description"
+      },
+      "right": {
+        "type": "ExprNode",
+        "description": "已经静态检查的右操作数ExprNode。",
+        "type_evidence": "named model in description"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
+      },
+      "operator": {
+        "type": "str",
+        "description": "单位推导使用的运算类别：`add`相加、`sub`相减、`compare`比较、`mul`相乘、`div`相除。比较类别还用于isclose的两个被比较值。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler._binary": {
+    "parameters": {
+      "left": {
+        "type": "ExprNode",
+        "description": "已经静态检查的左操作数ExprNode。",
+        "type_evidence": "named model in description"
+      },
+      "right": {
+        "type": "ExprNode",
+        "description": "已经静态检查的右操作数ExprNode。",
+        "type_evidence": "named model in description"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
+      },
+      "operator": {
+        "type": "str",
+        "description": "本入口支持`add`相加、`sub`相减、`mul`相乘、`div`相除，以及`eq`等于、`ne`不等于、`lt`小于、`le`小于或等于、`gt`大于、`ge`大于或等于。填写这些内部名称，不填写符号或任意函数名。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler.__init__": {
+    "parameters": {
+      "bindings": {
+        "type": "MessageBindings | MessageDeclarations | SignalBindings | DecodedBindings | DeclarationBindings",
+        "description": "bindings为明确typed普通/消息运行绑定或各自静态声明",
+        "type_evidence": "type check"
+      },
+      "derived": {
+        "type": "tuple",
+        "description": "derived为tuple DerivedDefinition，数值执行仍由公开入口的类型门槛控制。",
+        "type_evidence": "type check"
+      }
+    },
+    "异常": "TypeError/ValueError为类型/缺项/重复/名称空间不一致。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：解析需要typed真实/声明绑定及tuple DerivedDefinition。\n- `ValueError`：derived声明与bindings名称不一致或重复。"
+  },
+  "chronaxis.core.expression._SyntaxCompiler._context": {
+    "parameters": {
+      "arithmetic": {
+        "type": "int",
+        "description": "arithmetic     表示算术字面量必须能在目标整数类型表示。",
+        "type_evidence": "explicit value form"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      },
+      "literal": {
+        "type": "ExprNode",
+        "description": "纯常量子树，用来检查常量在当前比较或运算中的类型和单位。"
+      },
+      "other": {
+        "type": "ExprNode",
+        "description": "与常量进行运算的另一棵表达式子树，提供其已知类型和单位。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler.parse": {
+    "parameters": {
+      "text": {
+        "type": "str",
+        "description": "text为非空DSL",
+        "type_evidence": "forwarded to typed function"
+      },
+      "unit": {
+        "type": "str | None",
+        "description": "unit为可选显式结果单位。",
+        "type_evidence": "forwarded to typed function"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler._error": {
+    "parameters": {
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      },
+      "message": {
+        "type": "str",
+        "description": "向用户解释配置错误的文字；与node中的行列位置一起组成错误信息。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler._name": {
+    "parameters": {
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler.visit": {
+    "parameters": {
+      "node": {
+        "type": "ast.AST",
+        "description": "当前正在检查的Python表达式语法节点；保留行列位置，出错时可指出原表达式的具体位置。支持的语法见[表达式](../expressions.md)。"
+      },
+      "declared_unit": {
+        "type": "str | None",
+        "description": "表达式根节点声明的结果单位；None表示未额外提供标签。声明单位不负责自动改变输入数值或把错误量纲改正确。"
+      }
+    }
+  },
+  "chronaxis.core.expression._SyntaxCompiler._final_unit": {
+    "parameters": {
+      "root": {
+        "type": "ExprNode",
+        "description": "当前已编译表达式子树的根，包含静态类型、操作和依赖。"
+      },
+      "unit": {
+        "type": "str | None",
+        "description": "用户明确要求的输出单位标签，省略时沿用此版本的默认表达式单位规则。"
+      },
+      "node": {
+        "type": "ast.AST",
+        "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
       }
     }
   }

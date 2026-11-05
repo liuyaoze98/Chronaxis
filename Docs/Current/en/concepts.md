@@ -26,7 +26,7 @@ Keep original field names, expression aliases and semantic identifiers separate.
 
 `current > 5 and mode == 1` means current exceeds 5 A and mode equals 1. Define both names under `signals`; an unbound input column cannot be referenced directly.
 
-The [expression guide](expressions.md) lists all supported operators and the two functions: unary signs, four arithmetic operations, six comparisons, `and/or/not`, chained comparisons, parentheses, constants, enums, and type/unit restrictions. This page explains how those values behave over time.
+The [expression guide](expressions.md) lists all supported operators and the functions available in each configuration version: unary signs, four arithmetic operations, six comparisons, `and/or/not`, chained comparisons, parentheses, constants, enums, and type/unit restrictions. This page explains how those values behave over time.
 
 <a id="unknown不是false"></a>
 ## UNKNOWN is not False
@@ -69,9 +69,9 @@ Sample means and time means use different weights. Ordinary integration and per-
 
 `partial_policy="report"` keeps the known part; `"strict"` withholds the number when required data is incomplete. `minimum_coverage` specifies the minimum coverage required by the user; it cannot fill missing data. See [execution settings](execution.md) for numeric comparisons. Read `value`, `unit`, `status`, `reason` and `quality` together.
 
-Ordinary scalar `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum` and `sample_mean` return `coverage_status` when `minimum_coverage > 0`. `sufficient` means observation, valid-value and known-condition coverage all meet the threshold; `indeterminate` means insufficient or undetermined. This is not a numeric coverage ratio and does not turn sample statistics into time-weighted statistics. `select` details and per-message accumulation are not in this scalar group. Public summaries do not expose numeric `requested_coverage`, `value_coverage` or `condition_coverage`. See the [implementation summary reference (Chinese)](../reference/chronaxis.results.summary.md).
+Ordinary scalar `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum`, `sample_mean`, and v4 sample counts, variance, standard deviation, RMS and sample quantiles return `coverage_status` when `minimum_coverage > 0`. `sufficient` means observation, valid-value and known-condition coverage all meet the threshold; `indeterminate` means insufficient or undetermined. This is not a numeric coverage ratio and does not turn sample statistics into time-weighted statistics. `select` details and per-message accumulation are not in this scalar group. Public summaries do not expose numeric `requested_coverage`, `value_coverage` or `condition_coverage`. See the [implementation summary reference (Chinese)](../reference/chronaxis.results.summary.md).
 
 <a id="时间积分与逐消息累计的区别"></a>
 ## Time integration versus per-message accumulation
 
-Actual-time integration uses elapsed time. `legacy_sum` adds each matching message's expression result. If the expression already contains `power * period`, 4000 W × 0.1 s is 400 J and two messages at the same timestamp still contribute 800 J; do not multiply by dt again. Messages with missing values are skipped with a reason, without borrowing the previous value. See [migration and message energy](migration.md).
+Actual-time integration uses elapsed time. `legacy_sum` adds each matching message's expression result. If the expression already contains `power * period`, 4000 W × 0.1 s is 400 J and two messages at the same timestamp still contribute 800 J; do not multiply by dt again. Messages with missing values are skipped with a reason, without borrowing the previous value. See [per-message calculations](message-calculations.md).

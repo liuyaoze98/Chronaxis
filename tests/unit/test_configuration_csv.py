@@ -24,7 +24,7 @@ class ConfigurationCSVTests(unittest.TestCase):
         self.path = self.root / 'input.csv'
         self.path.write_text('time,id,data\n0,0x100,01 00\n1,0b100000000,00 00\n2,256,01 00\n',encoding='utf-8')
         dbc = Path(__file__).parents[2] / 'src/chronaxis/configuration/templates/shared/sample.dbc'
-        self.raw = dict(config_version=3,dataset=dict(name='csv',domain=dict(start='0s',end='2s')),
+        self.raw = dict(config_version=4,dataset=dict(name='csv',domain=dict(start='0s',end='2s')),
             sources=[dict(source_type='raw_can_csv',path=str(self.path),time=dict(unit='s'),
                 dbc_by_channel={'1':str(dbc)},reader=dict(time_format='numeric',layout=dict(fields={
                     'timestamp':'time','frame_id':'id','data':'data'})))],

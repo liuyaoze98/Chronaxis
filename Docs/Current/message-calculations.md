@@ -1,6 +1,8 @@
 # 逐消息累计
 
-根级`message_calculations`对每条目标CAN消息计算一次表达式并累计。它使用当前消息携带的值，适用于按已知周期计算单次贡献的任务；普通信号时间积分使用`calculations`，二者的时间依据不同。
+根级`message_calculations`对每条目标CAN消息计算一次表达式并累计。它使用当前消息携带的值，直接相加各条消息的`expr`结果。公式需要常量时才声明`parameters`，参数名称由用户选择；用功率求能量时在公式中包含时间因子，输入已是能量贡献时直接累计。普通信号时间积分使用`calculations`，二者的时间依据不同。
+
+本页使用通用`run`。若每个文件独立、输入为单一ASC/BLF且公式全部取当条报文的值，可按[高性能积分器选型](fast-energy.md)判断是否使用`fast`。需要连续分卷或逐帧贡献明细时使用通用入口；两种入口的支持范围和输出须分别核对。
 
 ## 完整最小例与方向分组扩展
 
@@ -8,7 +10,7 @@
 
 [message-directions.yaml](examples/message-directions.yaml)使用[方向输入](examples/data/message-direction.asc)和[方向DBC](examples/data/message-direction.dbc)，先将Power绑定为power、Direction绑定为direction，再分别声明正方向与负方向计算。0、1、2秒方向值为1、-1、0，各条功率4000W；前两条分别贡献400J到正/负组，0方向不进入任一组。完整输出同时保留贡献明细，可按计算项ID核对跳过原因。
 
-两例命令：`chronaxis run 文件名.yaml --output 新目录`。所有公式参数和方向信号均在同一完整文件中定义。下方已有BLF例另演示一条缺值报文，不是本最小ASC例的数据。
+两例命令：`chronaxis run 文件名.yaml --output 结果目录`。所有公式参数和方向信号均在同一完整文件中定义。下方已有BLF例另演示一条缺值报文，不是本最小ASC例的数据。
 
 本例还在signals中声明`period: 100ms`：当前公开运行入口会初始化已使用信号的有效期，DBC没有报文周期时需显式提供period或valid_for。这里不会把100ms再乘到消息贡献上；实际每条消息的乘数仍由公式中的`parameters.period`明确指定，两处字段不会自动关联。
 
@@ -19,11 +21,11 @@
 应用位置：以[message-energy.yaml](examples/message-energy.yaml)为基础，在文件根级加入或替换`message_calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-message_calculations:       # 按每条目标CAN报文计算贡献再累计；与按实际时间积分分别配置
-  - name: energy            # 为逐消息累计结果取唯一名称；用于识别对应结果行
-    update_message:         # 指定触发一次求值的目标报文；通道和ID从日志/DBC取得
-      frame_id: 0x100       # 指定每到一条便求值的报文ID；从DBC取得
-    parameters:             # 定义逐消息公式使用的固定参数；名称由公式引用，值来自采集/业务规范
+message_calculations:       # 每条目标报文计算一次并累计
+  - name: energy            # 结果表中的累计名称
+    update_message:         # 触发公式的报文
+      frame_id: 0x100       # 每来一条此 ID 的报文就计算
+    parameters:             # 每条报文使用的固定参数
       period:               # 提供名为period的公式参数；在本例表示每条消息计入的时间
         value: 0.1          # 填写每条消息代表的时间数值；从消息周期或业务规则取得
         unit: s             # 声明该公式参数的单位；本例s表示秒
@@ -33,6 +35,7 @@ message_calculations:       # 按每条目标CAN报文计算贡献再累计；�
 
 两条同刻4000W消息各贡献400J；第三条缺值记missing_input；非目标ID不算尝试。总计800J、3次尝试、2次贡献、1次跳过。period是明确给定的固定周期，不从时间间隔推断，也不再乘实际报文之间的时间间隔。
 
+<a id="message-fields"></a>
 ### message_calculations每一项的全部字段
 
 主表相对于`message_calculations[]`；下方三个子表分别位于`message_calculations[].update_message`、`message_calculations[].parameters.<参数名>`和`message_calculations[].split_by_sign`。参数名由公式引用，例如period，不能把value直接放在parameters层。
@@ -43,7 +46,7 @@ message_calculations:       # 按每条目标CAN报文计算贡献再累计；�
 |source|字符串|多个候选来源时必填|唯一原始报文来源|选择提供原始报文的来源；从sources[].name取得。已声明的asc_or_blf、can_blf、can_asc或raw_can_csv来源名；本计算仅引用同一来源的目标报文。|
 |profile|字符串|否|从所选来源确定|选择与输入格式对应的消息计算配置规范；根据source_type填写下列精确名称。can_blf填`"sclicer-functions-v1"`并与来源采用的实现一致；通常省略profile；asc_or_blf、can_asc和raw_can_csv填`"can-text-v1"`。|
 |operation|字符串|否|legacy_sum|选择如何合并每次计算的结果；目前仅支持求和。填`"legacy_sum"`，把每次成功求值的结果相加。|
-|message_policy|字符串|否|current_message-v1|选择每次求值使用哪些信号更新；目前只允许当前消息。填`"current_message-v1"`，每次只取当前报文的值。不能增加cache_policy来启用旧缓存。|
+|message_policy|字符串|否|current_message-v1|选择每次求值使用哪些信号更新；目前只允许当前消息。填`"current_message-v1"`，每次只取当前报文的值。不支持`cache_policy`；缺失的输入值不从其他报文补取。|
 |update_message|对象|是|无|指定触发求值的报文身份；从日志通道和DBC报文定义取得。指定哪一种报文触发计算，四个字段见下表。|
 |expr|字符串|是|无|规定每条目标消息贡献多少；根据业务公式组合当前消息信号与已声明参数。每条报文计算一次的表达式，例如`"power * period"`。信号须来自本来源、本报文；参数须在本指标parameters里声明；不能引用普通derived信号或另一报文的值。算符见[表达式](expressions.md)。|
 |unit|字符串|是|无|声明单次贡献及累加结果的单位；按公式量纲取得。公式结果单位，例如`"J"`；它不会自动增加一次时间积分。|
@@ -82,6 +85,6 @@ message_calculations:       # 按每条目标CAN报文计算贡献再累计；�
 
 如果只要总数、不需要逐条核对，设置 `outputs.contributions="none"`。公开计算结果保留value、unit、status、reason、quality及计算项身份，不提供参与/跳过次数或逐原因计数。需要逐次贡献与跳过原因时选择full并读取contributions；配置和输入信息的详细程度由诊断设置决定。
 
-[省略domain](dataset.md)时，可以累计所引用CAN来源的全部文件；默认reader.input_check=auto不会为这个不需要时间的计算额外建立时间范围。如果仍填写domain，就按该范围筛选消息。
+省略 [`dataset.domain`](dataset.md) 时，可以累计所引用 CAN 来源的全部文件；`dataset` 本身仍需保留，并填写 `name`。默认 `reader.input_check: auto` 不会为这个不需要时间的计算额外建立时间范围。如果填写 `dataset.domain`，则按其中的起止时间筛选消息。
 
 `full`保留每次尝试，适合追溯错误；`none`适合已明确只需汇总的任务。它是输出/执行策略选择，不是对性能目标的承诺。性能取决于输入和计算组合，需要用实际任务测量。

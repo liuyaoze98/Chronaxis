@@ -60,7 +60,7 @@ class CANRunMetadataTests(unittest.TestCase):
         异常: 被测清单校验原错误；不会执行来源。
         """
         values = {'run_id': 'synthetic-run', 'input_identity': 'synthetic-input', 'plan_hash': 'synthetic-plan',
-            'backend': 'reference', 'config_version': 3, 'source_time_interpretation': 'explicit synthetic seconds',
+            'backend': 'reference', 'config_version': 4, 'source_time_interpretation': 'explicit synthetic seconds',
             'session_boundaries': (('session', 0, 12),), 'started_at': '2026-10-16T08:18:50+08:00',
             'device_label': 'home', 'detailed_diagnostics': True, 'signal_bindings': (self.signal(),), 'can_sources': (self.source(),)}
         values.update(changes)
@@ -71,7 +71,7 @@ class CANRunMetadataTests(unittest.TestCase):
 
         参数: 无。返回: None。异常: 新空字段泄漏、旧字段变化或默认费用增加断言失败。
         """
-        run = RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 3,
+        run = RunMetadata('synthetic-run', 'synthetic-input', 'synthetic-plan', 'reference', 4,
             'explicit synthetic seconds', (('session', 0, 12),), '2026-10-16T08:18:50+08:00', device_label='home')
         self.assertEqual(run.can_sources, ())
         document = run.to_dict()

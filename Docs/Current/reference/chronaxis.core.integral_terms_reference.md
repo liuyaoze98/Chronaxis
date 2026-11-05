@@ -1,4 +1,4 @@
-# chronaxis.core.integral_terms_reference
+# `chronaxis.core.integral_terms_reference`
 
 逐段计算当前区间时沿用的最近值保持积分面积，供NumPy实现对照。每段先确定落在请求范围内的实际时长，再乘以左端有效值。未知数据不会补成零；无法精确转成浮点数、面积溢出或下溢时记录原因。
 
@@ -55,4 +55,4 @@ ReferenceIntegralTerms，areas/valid长度N-1；面积单位为input_unit乘秒�
 
 输入/单位/时间/分配错误传播；数值精度/溢出/下溢写入质量并使面积无效。
 
-源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

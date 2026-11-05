@@ -1,4 +1,4 @@
-# chronaxis.batch
+# `chronaxis.batch`
 
 公开独立批量任务模型和调度器，不自动创建进程或读取输入。
 

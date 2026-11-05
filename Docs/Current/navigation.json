@@ -73,7 +73,7 @@
       "pages": [
         {
           "path": "expressions.md",
-          "title": "表达式"
+          "title": "表达式、一维查表与插值"
         },
         {
           "path": "rules.md",
@@ -100,8 +100,24 @@
           "title": "统计与积分"
         },
         {
+          "path": "aggregations.md",
+          "title": "结果聚合"
+        },
+        {
+          "path": "temporal-transforms.md",
+          "title": "时序变换"
+        },
+        {
+          "path": "host-extensions.md",
+          "title": "自定义分析算子（Python扩展）"
+        },
+        {
           "path": "message-calculations.md",
           "title": "逐消息累计"
+        },
+        {
+          "path": "fast-energy.md",
+          "title": "高性能积分器（同帧逐报文累计）"
         }
       ]
     },
@@ -194,10 +210,6 @@
         {
           "path": "example-results.md",
           "title": "示例运行结果与解析"
-        },
-        {
-          "path": "migration.md",
-          "title": "旧INI导入"
         }
       ]
     },

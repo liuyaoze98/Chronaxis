@@ -11,15 +11,15 @@ Run independent analyses and write a batch report. Spawn workers load, analyze, 
 run_batch(plan: BatchPlan, output_dir, *, process_count: int | None=None, cancel_event=None, device_label='pending')
 ```
 
-| Parameter | Type | Required / default | Meaning |
-|---|---|---|---|
-| `plan` | [BatchPlan](BatchPlan.md#api-BatchPlan) | Required | Positional or keyword. BatchPlan from `load_batch_plan("batch.yaml")`, not a filename or an ordinary analysis plan. |
-| `output_dir` | str &#124; Path | Required | Positional or keyword. New batch output directory with job-ID subdirectories. Existing targets cannot be overwritten. |
-| `process_count` | int &#124; None | Optional; None | Keyword-only positive worker-count override; None uses BatchPlan.process_count without modifying the original plan. |
-| `cancel_event` | [threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None | Optional; None | Keyword-only optional signal. set() from another thread stops new dispatch while running jobs finish cleanup. |
-| `device_label` | str | Optional; `'pending'` | Keyword-only verified device label, such as home/work, or pending when unknown. Descriptive only; not inferred from paths. |
+| Name | Type | Required | Default | Purpose, choices, and effect |
+|---|---|---|---|---|
+|`plan`|[BatchPlan](BatchPlan.md#api-BatchPlan)|Yes|No default|Positional or keyword. BatchPlan from `load_batch_plan("batch.yaml")`, not a filename or an ordinary analysis plan.|
+|`output_dir`|str &#124; Path|Yes|No default|Positional or keyword. Reusable batch output directory with timestamped job subdirectories. Existing results are preserved.|
+|`process_count`|int &#124; None|No|None|Keyword-only positive worker-count override; None uses BatchPlan.process_count without modifying the original plan.|
+|`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|No|None|Keyword-only optional signal. set() from another thread stops new dispatch while running jobs finish cleanup.|
+|`device_label`|str|No|'pending'|Keyword-only verified device label, such as home/work, or pending when unknown. Descriptive only; not inferred from paths.|
 
-Returns [BatchReport](BatchReport.md#api-BatchReport), retaining failed/cancelled statuses rather than reporting universal success.
+Returns [BatchReport](BatchReport.md#api-BatchReport). Its report_path is the actual report for this batch; each job's manifest_path identifies its completion manifest. Failed/cancelled statuses remain in the report.
 
 Raises `TypeError` for a non-BatchPlan or invalid cancellation type and `ValueError` for invalid concurrency, backend, or job declarations. Directory, scheduling, and report-publication failures retain their specific exception types. If a report already exists, the exception's `batch_report` stores actual progress; the caller must still close it to handle cleanup_pending. Individual job failures normally remain in report.jobs rather than failing the entire function. See [errors by execution stage](../troubleshooting.md#api-errors).
 
@@ -27,10 +27,10 @@ Raises `TypeError` for a non-BatchPlan or invalid cancellation type and `ValueEr
 from chronaxis import load_batch_plan, run_batch
 
 def main():
-    # Prepare batch.yaml first; batch-output must not already exist.
+    # Prepare batch.yaml first; batch-output may contain previous results.
     report = run_batch(load_batch_plan("batch.yaml"), "batch-output")
     try:
-        print(report.to_dict())
+        print(report.report_path)
     finally:
         report.close()
 
@@ -40,4 +40,4 @@ if __name__ == "__main__":
 
 ## Source locations
 
-- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `66a66ec751da79d6562f341e646dd7f47c726f68`.
+- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.

@@ -73,7 +73,7 @@
       "pages": [
         {
           "path": "expressions.md",
-          "title": "Expressions"
+          "title": "Expressions, lookup and interpolation"
         },
         {
           "path": "rules.md",
@@ -97,11 +97,27 @@
         },
         {
           "path": "calculations.md",
-          "title": "Statistics and integration"
+          "title": "Statistics and integrals"
+        },
+        {
+          "path": "aggregations.md",
+          "title": "Result aggregation"
+        },
+        {
+          "path": "temporal-transforms.md",
+          "title": "Temporal transforms"
+        },
+        {
+          "path": "host-extensions.md",
+          "title": "Custom analysis operators (Python extensions)"
         },
         {
           "path": "message-calculations.md",
           "title": "Per-message accumulation"
+        },
+        {
+          "path": "fast-energy.md",
+          "title": "High-performance integrator (same-frame per-message accumulation)"
         }
       ]
     },
@@ -194,10 +210,6 @@
         {
           "path": "example-results.md",
           "title": "Example results explained"
-        },
-        {
-          "path": "migration.md",
-          "title": "Legacy INI import"
         }
       ]
     },

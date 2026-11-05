@@ -1,4 +1,4 @@
-"""展开明确列出的一层本地公共定义，供分析文件和INI映射文件加载使用。
+"""展开分析配置明确列出的一层本地公共定义。
 
 主配置按imports顺序引入sources/signals/derived，最后追加本地声明；重复名称
 直接拒绝。导入文件不能再导入文件，也不能声明运行、规则或输出字段。
@@ -96,23 +96,23 @@ def _append_definitions(data, prefix, document, source_prefix, merged, locations
 
 
 def expand_document_imports(document):
-    """展开分析配置或映射中analysis的公共定义。参数: 已解析文档。返回: 可直接静态检查的文档。异常: 配置/读取错误。
+    """展开当前分析配置的公共定义。参数: 已解析文档。返回: 可直接静态检查的文档。异常: 配置/读取错误。
 
     未声明imports时原样返回，不增加复制或文件读取。批量文件通过每个子计划
     自行使用imports；纯字典API不调用此函数。版本错误由原入口拒绝，不读其导入。
     """
     data=document.data
     if type(data) is not dict:return document
-    prefix=('analysis',) if 'mapping_version' in data else ()
-    analysis=data.get('analysis') if prefix else data
+    prefix=()
+    analysis=data
     if type(analysis) is not dict or 'imports' not in analysis:return document
-    if type(analysis.get('config_version')) is not int or analysis['config_version']!=3:return document
+    if type(analysis.get('config_version')) is not int or analysis['config_version'] != 4:return document
     entries=analysis['imports']
     if type(entries) is not list:
         _reject(document,(*prefix,'imports'),'imports必须为本地配置路径数组')
     # 定义数组重新构造；先清除被移动数组的旧位置，避免缺失字段误用旧索引行列。
     raw=deepcopy(data)
-    target=raw['analysis'] if prefix else raw
+    target=raw
     merged={'sources':[],'signals':[],'derived':{}}
     locations={path:location for path,location in document.locations.items()
                if not (path[:len(prefix)]==prefix and len(path)>len(prefix)+1

@@ -2,7 +2,8 @@
 
 只读主配置与明确的一层公共定义，先复用静态校验再生成小型来源记录。
 默认报告定义位置及来源文件路径；fields模式列全部显式叶字段，不虚构默认值来源。
-既不读取CSV/DBC等业务输入，也不写报告文件；调用者决定显示或重定向。
+不读取ASC/BLF/CSV中的数据记录；校验可能读取显式DBC以补齐信号元数据。
+不写报告文件；调用者决定显示或重定向。
 """
 from pathlib import Path
 
@@ -36,7 +37,7 @@ def _record(document, path, name=None):
 def configuration_origins(source, *, fields=False):
     """读取实际定义或叶字段的声明位置。参数: 配置路径、是否逐字段。返回: 来源报告dict。异常: 配置/读取错误。
 
-    分析和映射都列其定义；批量只列本文件的任务，不读取子计划。省略的默认字段
+    分析配置列其定义；批量只列本文件的任务，不读取子计划。省略的默认字段
     不在报告内。fields只保位置而不复制值；路径声明单独说明最终指向。
     """
     path=Path(source).absolute()
@@ -48,8 +49,7 @@ def configuration_origins(source, *, fields=False):
             exists,value=_at(document.data,parts)
             if exists and type(value) not in (dict,list):items.append(_record(document,parts))
     else:
-        prefix=('analysis',) if kind=='mapping' else ()
-        analysis=document.data['analysis'] if prefix else document.data
+        analysis=document.data
         if kind=='batch' and 'template' in analysis:
             item=_record(document,('template',),'template')
             item['resolved_paths']=[str((path.parent/analysis['template']).absolute())]
@@ -62,10 +62,10 @@ def configuration_origins(source, *, fields=False):
             for key,value in entries:
                 if section=='signals' and 'signals' in value:
                     for child_index,child in enumerate(value['signals']):
-                        items.append(_record(document,(*prefix,section,key,'signals',child_index),child['name']))
+                        items.append(_record(document,(section,key,'signals',child_index),child['name']))
                     continue
                 name=key if section=='derived' else value.get('name')
-                item=_record(document,(*prefix,section,key),name)
+                item=_record(document,(section,key),name)
                 # 文件位置只按已知路径字段说明；metadata内路径文字不解释。
                 if section=='sources':
                     from ..planning.input_paths import source_path_fields
@@ -81,7 +81,7 @@ def configuration_origins(source, *, fields=False):
 def render_origins(report):
     """将有限来源记录显示为中文文本。参数: configuration_origins报告。返回: str。异常: 内部报告结构错误。"""
     lines=['配置来源：'+report['configuration'],
-           '只列显式声明；未读取业务输入。批量任务的子配置需单独查看。']
+           '只列显式声明；未读取数据记录。批量任务的子配置需单独查看。']
     for item in report['items']:
         place=item['file']
         if item['line'] is not None:place+=f":{item['line']}:{item['column']}"

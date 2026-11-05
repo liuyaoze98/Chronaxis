@@ -44,7 +44,7 @@ class CANRunnerTests(unittest.TestCase):
                     arbitration_id=256, is_extended_id=False, channel=0, data=payload))
         finally:
             writer.stop()
-        config = dict(config_version=3,
+        config = dict(config_version=4,
             dataset=dict(name='can_real', entity='synthetic', session='session',
                 domain=dict(start='0s', end='4s')),
             sources=[dict(name='bus', source_type='can_blf', path=str(blf),
@@ -53,7 +53,7 @@ class CANRunnerTests(unittest.TestCase):
                     offset='-1700000000s'))],
             signals=[dict(name='voltage', source='bus', field=dict(channel=1,
                 signal='Voltage', frame_id=256, is_extended=False, is_fd=False),
-                dtype='float64', unit=unit, valid_for='10s', same_time_policy=policy)] if signals else [],
+                dtype='float64', input_unit=unit, unit=unit, valid_for='10s', same_time_policy=policy)] if signals else [],
             rules=[dict(name='active', rule_type='condition_duration', condition='voltage > 0' if signals else 'True',
                 minimum_duration='0s')],
             windows=[], calculations=[dict(name='samples', scope='session', operation='select', expr='voltage')]

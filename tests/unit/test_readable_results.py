@@ -8,6 +8,7 @@ import csv
 import json
 import tempfile
 import unittest
+from publication_fixtures import published_path
 from pathlib import Path
 from dataclasses import replace
 from unittest.mock import patch
@@ -50,7 +51,7 @@ def make_result(root, rows, tables=('events', 'calculations'), **metadata):
 
 def read_csv(path):
     """读取小型测试结果。参数: CSV路径。返回: 行列表。异常: IO/CSV传播。"""
-    with path.open(encoding='utf-8-sig', newline='') as handle:
+    with (path if path.is_file() else published_path(path)).open(encoding='utf-8-sig', newline='') as handle:
         return list(csv.DictReader(handle))
 
 
@@ -71,7 +72,7 @@ class ReadableEnergyTests(unittest.TestCase):
                 self.assertEqual(rows[0]['energy_kwh：状态'], '完整')
                 self.assertNotIn('确认时间（s）', rows[0])
                 self.assertEqual(dict(published.row_counts), {'events': 1})
-                self.assertEqual({p.name for p in (root / 'output').iterdir()}, {'事件结果.csv', 'run_manifest.json'})
+                self.assertEqual({p.name for p in (root / 'output').iterdir()}, {path.name for path in (*published.output_files, published.manifest_path)})
                 manifest = json.loads(published.manifest_path.read_text(encoding='utf-8'))
                 self.assertEqual(manifest['presentation']['common_identity']['entity_id'], 'entity')
                 self.assertEqual(manifest['row_counts'], {'events': 1})
@@ -222,7 +223,7 @@ class ReadableRelationsTests(unittest.TestCase):
                 trace = read_csv(root / 'output' / '输入追溯.csv')[0]
                 self.assertEqual(trace['时间（s）'], '-0.000000001')
                 self.assertEqual(trace['字段值'], '{"Voltage":null}')
-                quality = (root / 'output' / 'quality.jsonl').read_text(encoding='utf-8').splitlines()
+                quality = published_path(root / 'output' / 'quality.jsonl').read_text(encoding='utf-8').splitlines()
                 self.assertEqual(len(quality), 2)
                 manifest = json.loads(published.manifest_path.read_text(encoding='utf-8'))
                 self.assertEqual(manifest['coverage']['contributions:missing_input'], 1)
@@ -282,7 +283,7 @@ class ReadablePublicContractTests(unittest.TestCase):
                     result.table_format = format_name
                     published = result.write(root / 'output')
                     self.assertEqual(dict(published.row_counts), {'events': 1, 'calculations': 1})
-                    path = root / 'output' / ('events.' + format_name)
+                    path = published_path(root / 'output' / ('events.' + format_name))
                     if format_name == 'csv':
                         row = read_csv(path)[0]
                         self.assertEqual(row['start_ns'], '862346858000')
@@ -340,8 +341,8 @@ class ReadableResourceTests(unittest.TestCase):
             marker = output / 'user.txt'
             marker.write_text('keep', encoding='utf-8')
             with make_result(root, [sample_event(), sample_calculation()]) as result:
-                with self.assertRaises(AnalysisError):
-                    result.write(output)
+                published = result.write(output)
+                self.assertTrue(published.manifest_path.is_file())
                 self.assertEqual(marker.read_text(encoding='utf-8'), 'keep')
 
     def test_stream_only_does_not_create_sqlite(self):

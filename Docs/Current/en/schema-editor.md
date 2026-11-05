@@ -9,10 +9,9 @@ JSON Schema describes fields for editors and validators. The schema files are JS
 
 | Configuration | Downloadable local schema |
 |---|---|
-| Analysis, `config_version: 3` | [analysis.schema.json](../../Schema/analysis.schema.json) |
+| Analysis, `config_version: 4` | [analysis.schema.json](../../Schema/analysis.schema.json) |
 | Batch, `batch_version: 1` | [batch-v1.schema.json](../../Schema/batch-v1.schema.json) |
 | Shared `sources` / `signals` / `derived` definitions | [definitions.schema.json](../../Schema/definitions.schema.json) |
-| INI mapping, `mapping_version: 1` | [legacy-import-v1.schema.json](../../Schema/legacy-import-v1.schema.json) |
 
 Keep all four files in the same directory with their original names so their relative references work. The offline HTML package also includes them; it does not depend on paths on the author's computer.
 
@@ -25,7 +24,7 @@ Add the first comment line to the start of your existing complete configuration.
 
 ```yaml
 # yaml-language-server: $schema=schemas/analysis.schema.json
-config_version: 3    # Analysis configuration structure version; use integer 3.
+config_version: 4    # Current analysis configuration version; use integer 4.
 ```
 
 The comment's path is relative to `plan.yaml`; adjust it if you move the file. For JSON, select the schema through your editor's file-association settings. Do not add `$schema` as a business configuration field: Chronaxis rejects unknown fields.

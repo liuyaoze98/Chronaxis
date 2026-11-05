@@ -1,4 +1,5 @@
 """把同一报文的集中声明展开为既有信号绑定，不增加运行时分组或重复读取。"""
+from .diagnostic_collection import usable_node, collect_node_error
 from .checks import array_at, object_at, choice_at, text_at, model_at, PlanValidationError
 
 
@@ -39,17 +40,23 @@ def signal_entries(value):
         model_at(field_from_dict, path, checked)
         for child_index, child in enumerate(children):
             child_path = f'{path}.signals[{child_index}]'
-            if type(child) is not dict:
-                raise PlanValidationError(child_path, '信号必须为对象')
-            forbidden = set(child) & ({'field', 'source', 'signals'} | set(LOCATOR))
-            if forbidden:
-                raise PlanValidationError(child_path, '组内信号不能重复声明报文定位：' + ', '.join(sorted(forbidden)))
-            if 'signal' not in child:
-                raise PlanValidationError(child_path + '.signal', '需要DBC信号名称')
-            text_at(child['signal'], child_path + '.signal')
-            expanded = dict(common, **child)
-            expanded['field'] = dict(locator, signal=expanded.pop('signal'))
-            yield expanded, child_path
+            if not usable_node(child_path, child):
+                continue
+            try:
+                child_path = f'{path}.signals[{child_index}]'
+                if type(child) is not dict:
+                    raise PlanValidationError(child_path, '信号必须为对象')
+                forbidden = set(child) & ({'field', 'source', 'signals'} | set(LOCATOR))
+                if forbidden:
+                    raise PlanValidationError(child_path, '组内信号不能重复声明报文定位：' + ', '.join(sorted(forbidden)))
+                if 'signal' not in child:
+                    raise PlanValidationError(child_path + '.signal', '需要DBC信号名称')
+                text_at(child['signal'], child_path + '.signal')
+                expanded = dict(common, **child)
+                expanded['field'] = dict(locator, signal=expanded.pop('signal'))
+                yield expanded, child_path
+            except PlanValidationError as error:
+                collect_node_error(error, child_path, child)
 
 
 def declared_signals(value):

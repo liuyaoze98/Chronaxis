@@ -1,4 +1,4 @@
-# chronaxis.execution.condition_evidence
+# `chronaxis.execution.condition_evidence`
 
 在同一时刻的全部更新处理前后，分别计算条件状态，供事件检测器判断持续成立、边沿和未知中断。计算前先从资源限额中申请所需内存；返回对象负责归还自己占用的额度。
 
@@ -67,7 +67,7 @@ PreparedConditionEvidence(owner, cost, slot, time_ns, revision, before, axis)
 ```
 
 
-源码：[`src/chronaxis/execution/condition_evidence.py:29`](../../../src/chronaxis/execution/condition_evidence.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:29`](../../../src/chronaxis/execution/condition_evidence.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-__init__"></a>
 ### `PreparedConditionEvidence.__init__`
@@ -98,7 +98,7 @@ None；初始化实例状态。
 
 分配失败由prepare清理。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:37`](../../../src/chronaxis/execution/condition_evidence.py#L37)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:37`](../../../src/chronaxis/execution/condition_evidence.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-_ensure_open"></a>
 ### `PreparedConditionEvidence._ensure_open`
@@ -128,7 +128,7 @@ ResultClosedError。
 
 - `ResultClosedError`：预备条件证据已关闭。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:53`](../../../src/chronaxis/execution/condition_evidence.py#L53)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:53`](../../../src/chronaxis/execution/condition_evidence.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-closed"></a>
 ### `PreparedConditionEvidence.closed`
@@ -156,7 +156,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:59`](../../../src/chronaxis/execution/condition_evidence.py#L59)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:59`](../../../src/chronaxis/execution/condition_evidence.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-failed"></a>
 ### `PreparedConditionEvidence.failed`
@@ -184,7 +184,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:64`](../../../src/chronaxis/execution/condition_evidence.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:64`](../../../src/chronaxis/execution/condition_evidence.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-completed"></a>
 ### `PreparedConditionEvidence.completed`
@@ -212,7 +212,7 @@ True表示条件结果已经计算完成；False表示尚未完成。
 
 无。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:69`](../../../src/chronaxis/execution/condition_evidence.py#L69)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:69`](../../../src/chronaxis/execution/condition_evidence.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-time_ns"></a>
 ### `PreparedConditionEvidence.time_ns`
@@ -240,7 +240,7 @@ PreparedConditionEvidence.time_ns
 
 对象处于下列状态时抛ResultClosedError：预备条件证据已关闭。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:74`](../../../src/chronaxis/execution/condition_evidence.py#L74)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:74`](../../../src/chronaxis/execution/condition_evidence.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-ticks"></a>
 ### `PreparedConditionEvidence.ticks`
@@ -272,7 +272,7 @@ ConditionTick tuple。
 
 - `AnalysisError`：条件证据尚未完成。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:80`](../../../src/chronaxis/execution/condition_evidence.py#L80)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:80`](../../../src/chronaxis/execution/condition_evidence.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-source_refs"></a>
 ### `PreparedConditionEvidence.source_refs`
@@ -304,7 +304,7 @@ SourceRef tuple。
 
 - `AnalysisError`：条件证据尚未完成。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:89`](../../../src/chronaxis/execution/condition_evidence.py#L89)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:89`](../../../src/chronaxis/execution/condition_evidence.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-binding_identity"></a>
 ### `PreparedConditionEvidence.binding_identity`
@@ -332,7 +332,7 @@ SHA文本。
 
 对象处于下列状态时抛ResultClosedError：预备条件证据已关闭。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:97`](../../../src/chronaxis/execution/condition_evidence.py#L97)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:97`](../../../src/chronaxis/execution/condition_evidence.py#L97)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-compiled_identity"></a>
 ### `PreparedConditionEvidence.compiled_identity`
@@ -360,7 +360,7 @@ SHA文本。
 
 对象处于下列状态时抛ResultClosedError：预备条件证据已关闭。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:103`](../../../src/chronaxis/execution/condition_evidence.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:103`](../../../src/chronaxis/execution/condition_evidence.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-_close_views"></a>
 ### `PreparedConditionEvidence._close_views`
@@ -386,7 +386,7 @@ None，成功字段清空。
 
 查询关闭错误原样传播。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:108`](../../../src/chronaxis/execution/condition_evidence.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:108`](../../../src/chronaxis/execution/condition_evidence.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-_charge_refs"></a>
 ### `PreparedConditionEvidence._charge_refs`
@@ -411,7 +411,7 @@ None，成功金额计入_cost。
 
 预算拒绝/取消传播；已记账的返回取消仍保有申请直到close。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:120`](../../../src/chronaxis/execution/condition_evidence.py#L120)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:120`](../../../src/chronaxis/execution/condition_evidence.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-complete"></a>
 ### `PreparedConditionEvidence.complete`
@@ -442,7 +442,7 @@ None，之后通过ticks/source_refs读取快照。
 - `AnalysisError`：条件证据不能重复完成或从失败恢复。
 - `ValueError`：预备条件两段之间只能提交一次目标完整组。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:137`](../../../src/chronaxis/execution/condition_evidence.py#L137)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:137`](../../../src/chronaxis/execution/condition_evidence.py#L137)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-_discard"></a>
 ### `PreparedConditionEvidence._discard`
@@ -468,7 +468,7 @@ None，结果关闭。
 
 脱链错误传播，finally仍关闭；owner重试可清理残留链。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:189`](../../../src/chronaxis/execution/condition_evidence.py#L189)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:192`](../../../src/chronaxis/execution/condition_evidence.py#L192)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PreparedConditionEvidence-close"></a>
 ### `PreparedConditionEvidence.close`
@@ -494,7 +494,7 @@ PreparedConditionEvidence.close()
 
 查询/预算关闭错误传播，未扣账可重试，已扣账取消最小收尾。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:206`](../../../src/chronaxis/execution/condition_evidence.py#L206)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:209`](../../../src/chronaxis/execution/condition_evidence.py#L209)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries"></a>
 ## `ConditionEvidenceQueries`
@@ -509,7 +509,7 @@ ConditionEvidenceQueries(expressions: ExpressionQueries, *, backend='numpy', obs
 ```
 
 
-源码：[`src/chronaxis/execution/condition_evidence.py:225`](../../../src/chronaxis/execution/condition_evidence.py#L225)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:228`](../../../src/chronaxis/execution/condition_evidence.py#L228)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-__init__"></a>
 ### `ConditionEvidenceQueries.__init__`
@@ -537,7 +537,7 @@ ConditionEvidenceQueries.__init__(expressions: ExpressionQueries, *, backend='nu
 类型/关闭/预算/取消原错误传播；部分构造关闭自有申请，持续清理失败
     从原异常的condition_evidence_queries_cleanup_owner恢复close，不关闭上游。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:232`](../../../src/chronaxis/execution/condition_evidence.py#L232)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:235`](../../../src/chronaxis/execution/condition_evidence.py#L235)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-closed"></a>
 ### `ConditionEvidenceQueries.closed`
@@ -565,7 +565,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:279`](../../../src/chronaxis/execution/condition_evidence.py#L279)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:282`](../../../src/chronaxis/execution/condition_evidence.py#L282)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-_ensure_open"></a>
 ### `ConditionEvidenceQueries._ensure_open`
@@ -595,7 +595,7 @@ ResultClosedError。
 
 - `ResultClosedError`：条件证据查询已关闭。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:283`](../../../src/chronaxis/execution/condition_evidence.py#L283)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:286`](../../../src/chronaxis/execution/condition_evidence.py#L286)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-_construct"></a>
 ### `ConditionEvidenceQueries._construct`
@@ -625,7 +625,7 @@ PreparedConditionEvidence。
 
 构造/返回取消由prepare清理。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:289`](../../../src/chronaxis/execution/condition_evidence.py#L289)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:292`](../../../src/chronaxis/execution/condition_evidence.py#L292)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-prepare"></a>
 ### `ConditionEvidenceQueries.prepare`
@@ -661,7 +661,7 @@ ConditionEvidenceQueries.prepare(compiled, time_ns: int) -> PreparedConditionEvi
 
 返回类型：[PreparedConditionEvidence](chronaxis.execution.condition_evidence.md#api-PreparedConditionEvidence)。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:297`](../../../src/chronaxis/execution/condition_evidence.py#L297)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:300`](../../../src/chronaxis/execution/condition_evidence.py#L300)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ConditionEvidenceQueries-close"></a>
 ### `ConditionEvidenceQueries.close`
@@ -687,4 +687,4 @@ ConditionEvidenceQueries.close()
 
 子结果/预算关闭错误传播，已释放固定空间的取消最小收尾。
 
-源码：[`src/chronaxis/execution/condition_evidence.py:350`](../../../src/chronaxis/execution/condition_evidence.py#L350)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/condition_evidence.py:353`](../../../src/chronaxis/execution/condition_evidence.py#L353)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

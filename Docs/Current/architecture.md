@@ -6,7 +6,7 @@
 
 文中的“绑定”是把字段对应到表达式名称，“后端”是计算实现，“暂存”是先写入工作目录的中间文件，完整解释见[术语表](terms.md)。
 
-## 从输入记录到计算结果
+## 通用分析从输入记录到计算结果
 
 ```text
 Python调用 / CLI
@@ -30,10 +30,12 @@ runner.AnalysisRunner → execution.run_session.RunSession
    ▼
 ResultSpool：按资源上限把结果写入工作目录并排序
    ▼
-AnalysisResult：行迭代器 → write → 表格、导出文件、数据问题记录、运行清单 → 写入新输出目录
+AnalysisResult：行迭代器 → write → 表格、导出文件、数据问题记录、运行清单 → 写入结果目录，文件名带本次时间后缀
 ```
 
-逐消息累计还有独立路线：匹配目标报文 → 只用当条解码值求值 → 累加贡献。纯汇总场景可直接累计，在没有其他规则或指标需要时，省去普通信号历史；旧ChrgInfo可能保留先前报文解出的值，供后续报文使用；此处只用当条目标报文解出的值，缺少所需值就跳过，不沿用上一条补算，也不重复乘真实时间差。模式区别见[迁移与消息能量](migration.md)。
+通用入口的逐消息累计还有独立路线：匹配目标报文 → 只用当条解码值求值 → 累加贡献。纯汇总场景可直接累计，在没有其他规则或指标需要时，省去普通信号历史；旧ChrgInfo可能保留先前报文解出的值，供后续报文使用；此处只用当条目标报文解出的值，缺少所需值就跳过，不沿用上一条补算，也不重复乘真实时间差。模式区别见[逐消息计算](message-calculations.md)。
+
+显式 fast 入口面向独立 ASC/BLF 文件，读取和同帧公式累计在每个文件的工作进程内完成。目标帧缺少公式所需值或公式求值失败时，该文件失败。配置、输入及实际结果见[高性能积分器](fast-energy.md)。
 
 ## 每一层解决什么问题
 
@@ -47,7 +49,6 @@ AnalysisResult：行迭代器 → write → 表格、导出文件、数据问题
 |[core](reference/chronaxis.core.md)|已绑定信号/条件→事件、片段、数值和质量|了解数学与时间边界；不负责打开CAN文件|
 |[execution](reference/chronaxis.execution.md)|分析计划和分批输入→最终结果行|查看如何接着上一批继续计算、按时间合并多来源、回读历史数据及释放资源|
 |[legacy](reference/chronaxis.legacy.md)|固定版本的旧读取及解码函数→消息记录/原始导出|定位CAN适配、逐消息表达式、读取进程及其数据交接格式|
-|[migration](reference/chronaxis.migration.md)|INI原文+显式映射→计划或拒绝报告|迁移旧配置；不实际运行分析|
 |[results](reference/chronaxis.results.md)|已算好的结果行→工作目录中的暂存文件→最终输出目录|查看结果字段、输出顺序、逐行读取，以及写文件失败时的处理|
 
 例如[execution.record_session_calculations](reference/chronaxis.execution.record_session_calculations.md)按会话调度所需计算，[execution.record_scope_calculations](reference/chronaxis.execution.record_scope_calculations.md)处理事件/片段范围。应用程序调用AnalysisRunner即可完成这些步骤。
@@ -64,11 +65,11 @@ AnalysisResult：行迭代器 → write → 表格、导出文件、数据问题
 
 读文件、记录活动是否已经开始、管理内存和关闭文件，仍由Python控制。`explain`会列出各个计算步骤采用的实现；选择numpy不代表整个流程的每一步都由NumPy执行。
 
-`AnalysisRunner(backend="reference")`可以覆盖本次计算方式。输出目录的run_manifest.json中，run.plan_hash仍标识原配置，run.backend记录本次实际采用的计算后端；不能仅凭plan_hash相同就认为两次采用了相同后端。批次边界是内存安排，不是业务结束：一次持续活动跨过多个批次仍是同一活动。
+`AnalysisRunner(backend="reference")`可以覆盖本次计算方式。本次运行清单中，run.plan_hash仍标识原配置，run.backend记录本次实际采用的计算后端；不能仅凭plan_hash相同就认为两次采用了相同后端。批次边界是内存安排，不是业务结束：一次持续活动跨过多个批次仍是同一活动。
 
 ## 与历史项目的关系
 
-vendor中的三个固定版本文件来自Sclicer已有读写/解码函数；新计划、时序规则、预算与结果发布在外层完成。CSVConvert、Filter和ChrgInfo的全部入口并未整体变成公共能力。公开配置支持的迁移范围见[迁移说明](migration.md)。
+vendor中的三个固定版本文件来自Sclicer已有读写/解码函数；新计划、时序规则、预算与结果发布在外层完成。CSVConvert、Filter和ChrgInfo的全部入口并未整体变成公共能力。逐消息累计使用[逐消息计算](message-calculations.md)。
 
 按需解码与字段裁剪由计划依赖决定，实际读取和检查范围可通过explain查看。固定读取实现与每次任务请求的字段范围分别记录。
 

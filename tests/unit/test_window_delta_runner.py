@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def delta_config():
     """给出4ns窗两次上升5V的样例。参数: 无。返回: 配置字典。异常: 无。"""
     values = [(0, 0), (2, 0), (4, 5), (6, 5), (8, 0), (10, 0), (12, 5), (14, 5)]
-    return dict(config_version=3,
+    return dict(config_version=4,
         dataset=dict(name='sample', entity='device', session='session', domain=dict(start='0ns', end='14ns')),
         sources=[dict(name='input', source_type='memory', time=dict(time_type='relative', unit='ns', origin='clock'),
             rows=[dict(time=f'{time}ns', values={'voltage': value}) for time, value in values])],

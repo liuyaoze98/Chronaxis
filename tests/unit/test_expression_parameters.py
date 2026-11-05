@@ -256,7 +256,7 @@ class ExpressionParameterTests(unittest.TestCase):
                 self.assertEqual(parameter.unit_status, 'verified')
                 with self.assertRaises(FrozenInstanceError):
                     parameter.value = 99.0
-        self.assertEqual(ExpressionParameter('factor', 1, 'unregistered-unit').unit_status, 'unverified')
+        self.assertEqual(ExpressionParameter('factor', 1, 'unregistered_unit').unit_status, 'unverified')
         for value in (True, None, '0.1', np.float64(0.1), np.int64(1)):
             with self.subTest(type_error=repr(value)), self.assertRaises(TypeError):
                 ExpressionParameter('factor', value, '1')

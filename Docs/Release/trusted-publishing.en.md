@@ -20,6 +20,8 @@ Enter only the workflow filename, without `.github/workflows/`. The environment 
 
 ## Verify and upload
 
+Publish and verify the release assets first. The current workflow uses `contents:read` and cannot read draft releases.
+
 Open [GitHub Actions](https://github.com/liuyaoze98/Chronaxis/actions/workflows/pypi-publish.yml), select Run workflow, and choose main.
 
 1. Run without selecting the upload option: download the two release files and check the source tag and SHA256 values. Nothing is uploaded to PyPI.

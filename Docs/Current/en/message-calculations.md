@@ -1,7 +1,9 @@
 <a id="逐消息累计"></a>
 # Per-message accumulation
 
-Root-level `message_calculations` evaluates an expression once per target CAN message and adds the contributions. It uses values in the current message and suits tasks with an explicitly known contribution period. Ordinary signal-time integration uses `calculations`; its timing basis is different.
+Root-level `message_calculations` evaluates an expression once per target CAN message and adds the contributions. It uses values in the current message and directly adds each message's `expr` result. Declare `parameters` only when the formula needs constants, using names of your choice. Include a time factor when deriving energy from power; add an existing energy contribution directly. Ordinary signal-time integration uses `calculations`; its timing basis is different.
+
+This page uses the general `run` entry point. For independent files with a single ASC/BLF source and formula inputs entirely from the current message, check the [high-performance integrator guide](fast-energy.md) before choosing `fast`. Use the general entry point for continuous file sequences or per-message contribution details; check each entry point's supported inputs and outputs.
 
 <a id="完整最小例与方向分组扩展"></a>
 ## Complete examples and direction groups
@@ -21,21 +23,22 @@ The examples declare signal `period: 100ms` because the public runner initialize
 Use [message-energy.yaml](../examples/message-energy.yaml), which defines power and has one CAN source, selected automatically. Replace its root `message_calculations` list with this block; do not nest the parent key inside a list item.
 
 ```yaml
-message_calculations:     # Evaluate and accumulate each target message
-  - name: energy          # Calculation name in results
-    update_message:       # Message that triggers one evaluation
-      frame_id: 0x100     # ID from the DBC
-    parameters:           # Constants referenced by the formula
-      period:             # Duration represented by one message
-        value: 0.1        # Period from protocol or business rules
-        unit: s           # Seconds
-    expr: power * period  # Contribution from this message
-    unit: J               # Contribution and total unit
+message_calculations:       # Evaluate and accumulate each target message
+  - name: energy            # Calculation name in results
+    update_message:         # Message that triggers one evaluation
+      frame_id: 0x100       # ID from the DBC
+    parameters:             # Constants referenced by the formula
+      period:               # Duration represented by one message
+        value: 0.1          # Period from protocol or business rules
+        unit: s             # Seconds
+    expr: power * period    # Contribution from this message
+    unit: J                 # Contribution and total unit
 ```
 
 Two simultaneous 4000 W messages contribute 400 J each; a third missing-value message is skipped as `missing_input`. Non-target IDs are not attempts. The total is 800 J from 3 attempts, 2 contributions and 1 skip. This period is explicit and fixed; it is neither inferred from nor multiplied by actual inter-message time.
 
 <a id="message_calculations每一项的全部字段"></a>
+<a id="message-fields"></a>
 ## All calculation fields
 
 The main table describes `message_calculations[]`. Nested tables describe `update_message`, `parameters.<parameter_name>` and `split_by_sign` inside each item. A parameter name such as period is used in the formula; do not place value directly under parameters.
@@ -46,7 +49,7 @@ The main table describes `message_calculations[]`. Nested tables describe `updat
 | source | String | Required when multiple sources qualify; otherwise the unique raw-message source | Existing asc_or_blf, can_blf, can_asc or raw_can_csv source name. All referenced target signals must belong to this source and message. |
 | profile | String | Inferred from source | Normally omit. can_blf uses `sclicer-functions-v1`, consistent with its implementation; asc_or_blf, can_asc and raw_can_csv use `can-text-v1`. |
 | operation | String | Default `legacy_sum` | Only `legacy_sum` is supported: add successful evaluations. |
-| message_policy | String | Default `current_message-v1` | Only current-message values are used. Do not add cache_policy to enable historical caching. |
+| message_policy | String | Default `current_message-v1` | Only current-message values are used. `cache_policy` is not supported; missing inputs are not taken from other messages. |
 | update_message | Object | Required | Message identity triggering evaluation; fields below. |
 | expr | Expression string | Required | Contribution per target message, e.g. `power * period`. Uses this message's signals and this calculation's parameters, not ordinary derived signals or values from another message. See [Expressions](expressions.md). |
 | unit | String | Required | Physical unit of each contribution and the total, such as J. It does not add another time integration. |
@@ -84,6 +87,6 @@ The direction signal selects the group; the expression determines the amount. A 
 
 Use `outputs.contributions: none` when only totals are needed. Public calculation results retain value, unit, status, reason, quality and calculation identity, without attempt/skip counts or per-reason counts. Choose full and read contributions when individual contributions and skips are needed. Diagnostics separately controls detailed input/configuration information.
 
-Omitting [dataset.domain](dataset.md) accumulates all files from the referenced CAN source. Default `reader.input_check: auto` does not create a time range solely for this time-independent task. An explicit domain filters messages to that range.
+Omitting [`dataset.domain`](dataset.md) accumulates all files from the referenced CAN source. Keep the required `dataset` object and its `name` field. Default `reader.input_check: auto` does not create a time range solely for this time-independent task. When `dataset.domain` is specified, its start and end times filter the messages.
 
 `full` records each attempt; `none` avoids unnecessary details. Performance still depends on the actual input and calculation combination.

@@ -143,6 +143,29 @@ class HistoricalSelectionRowsTests(unittest.TestCase):
                         self.assertEqual(tuple(rows), expected)
                         self.close_and_check(fixture, owner, baseline)
 
+    def test_historical_voltage_selection_respects_version_and_converts_once(self):
+        """从真实封存历史回读1000mV，v4单路与条件选择均交付1V。
+
+        参数: 无。返回: None。异常: 目标单位、数值、类型、版本门槛或归还预算错误。
+        """
+        window = Interval(0, 4_000_000_000)
+        rows = {'table': (MemoryRow(0, {'raw.a': 1000}, 0), MemoryRow(window.end_ns, {'raw.a': 999}, 1)),
+                'other': (MemoryRow(0, {'raw.b': 1}, 0), MemoryRow(window.end_ns, {'raw.b': 1}, 1))}
+        for version in (4,):
+            definitions = (SignalDefinition('a', 'table', 'raw.a', D.INT64, 'mV', window.end_ns, config_version=version),
+                           SignalDefinition('b', 'other', 'raw.b', D.INT64, '1', window.end_ns, config_version=version))
+            for backend in ('reference', 'numpy'):
+                for joint in (False, True):
+                    with self.subTest(version=version, backend=backend, joint=joint):
+                        spec = CalculationDefinition('rows', 'select', window, config_version=version,
+                                                     output_unit='V')
+                        fixture, owner, baseline = self.prepare(backend=backend, joint=joint, spec=spec,
+                                                               definitions=definitions, rows_by_source=rows)
+                        row, = tuple(owner)
+                        expected = (1.0, D.FLOAT64, 'V')
+                        self.assertEqual((row.value.value, row.value.dtype, row.unit), expected)
+                        self.close_and_check(fixture, owner, baseline)
+
     def test_bool_enum_and_uint64_preserve_original_typed_value_and_labels(self):
         """BOOL与ENUM编码按声明解码，uint64最大值精确保留；select不做浮点数值归约。
 
@@ -214,7 +237,7 @@ class HistoricalSelectionRowsTests(unittest.TestCase):
             'other': (MemoryRow(0, {'raw.b': 1}, 0), MemoryRow(4_000_000_000, {'raw.b': 1}, 1))})
         self.close_and_check(other, second, other_baseline)
         with patch.object(fixture.history, 'iter_groups', side_effect=AssertionError('invalid-read')) as opened:
-            for kwargs in ({'spec': CalculationDefinition('bad', 'select', fixture.domain, output_unit='kW')},
+            for kwargs in ({'spec': CalculationDefinition('bad', 'select', fixture.domain, output_unit='V')},
                     {'spec': CalculationDefinition('bad', 'time_weighted_mean', fixture.domain)}, {'condition': fixture.compiled[0]},
                     {'condition': other.compiled[1]}, {'size': True}, {'size': 0}, {'backend': 'bad'}):
                 spec = kwargs.pop('spec', CalculationDefinition('rows', 'select', fixture.domain))

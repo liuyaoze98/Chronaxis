@@ -7,16 +7,21 @@
 import json
 from pathlib import Path
 import platform
-from uuid import uuid4
+import tempfile
 from .models import BatchReport
 
 
 def write_batch_report(report: BatchReport) -> Path:
-    """发布固定汇总文件。参数: report实际结果。返回: batch_report.json路径。
+    """发布带本批时间的汇总文件。参数: report实际结果。返回: 实际报告路径。
 
     异常: 类型、只读路径、未支持平台、已有目标或原文件错误；关闭失败不安装正式文件。
     副作用: 只写本批目录的唯一暂存文件，失败不删除任务结果或覆盖已有报告。
     """
+    return _write_batch_report(report, {})
+
+
+def _write_batch_report(report, extra):
+    """先完成可选的 fast 总量计算，再一次发布同一批报告。"""
     if not isinstance(report, BatchReport):
         raise TypeError('需要BatchReport')
     root = report.output_dir.absolute()
@@ -25,17 +30,32 @@ def write_batch_report(report: BatchReport) -> Path:
         raise ValueError('批量报告不能位于RefProjects')
     if platform.system() != 'Windows':
         raise NotImplementedError('批量报告原子发布目前只验收Windows')
-    destination = root / 'batch_report.json'
-    try:
-        destination.lstat()
-    except FileNotFoundError:
-        pass
-    else:
-        raise FileExistsError('批量报告已存在，拒绝覆盖：' + str(destination))
-    temporary = root / ('.batch-report-' + uuid4().hex + '.incomplete.json')
+    from ..results.publication import PublicationNames
+    publication = report._publication or PublicationNames(root, ('batch_report.json',))
+    destination = root / publication.names['batch_report.json']
+    from ..results.owned_directory import directory_identity, remove_owned_directory
+    temporary = identity = None
     # 编码、写入和真实close全部成功才安装；Windows rename在目标已存在时拒绝。
-    with temporary.open('x', encoding='utf-8', newline='') as stream:
-        json.dump(report.to_dict(), stream, ensure_ascii=False, allow_nan=False, indent=2)
-        stream.write('\n')
-    temporary.rename(destination)
-    return destination
+    try:
+        temporary = Path(tempfile.mkdtemp(prefix='.batch-report-', suffix='.incomplete', dir=root))
+        identity = directory_identity(temporary)
+        with (temporary/'batch_report.json').open('x', encoding='utf-8', newline='') as stream:
+            json.dump(dict(report.to_dict(), **extra), stream, ensure_ascii=False, allow_nan=False, indent=2)
+            stream.write('\n')
+        publication.publish(temporary, 'batch_report.json', only=('batch_report.json',))
+        temporary.rmdir()
+        return destination
+    except BaseException as error:
+        if publication.completed:
+            error.published_report_path = destination
+        # 不撤销已完成任务；只清理本次报告临时目录，保留最初的写出错误。
+        try:
+            if temporary is not None and identity is not None:
+                remove_owned_directory(temporary, identity)
+        except BaseException as cleanup:
+            error.add_note('批量报告暂存清理失败：' + str(cleanup))
+        try:
+            publication.close()
+        except BaseException as cleanup:
+            error.add_note('批量命名锁释放失败：' + str(cleanup))
+        raise

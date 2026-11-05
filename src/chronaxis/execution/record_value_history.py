@@ -70,9 +70,10 @@ class RecordValueHistory:
                     self._file=TemporaryFile(mode='w+b',dir=self._path,prefix='calculation-values-')
                 t,v,d,c,cd=self._last[:5]
                 number=self._labels.index(v.value) if self._dtype is D.ENUM and v.valid else v.value if v.valid else 0
-                fields=(t,number,v.valid,int(v.quality),d or 0,d is not None)
+                # 本执行私有暂存中的高位携带部分状态，永不混入 ScalarValue 的有效性质量。
+                fields=(t,number,v.valid,int(v.quality) | (int(v.partial)<<31),d or 0,d is not None)
                 if self._conditioned:
-                    fields+=(bool(c.value) if c.valid else False,c.valid,int(c.quality),cd or 0,cd is not None)
+                    fields+=(bool(c.value) if c.valid else False,c.valid,int(c.quality) | (int(c.partial)<<31),cd or 0,cd is not None)
                 if self._sample_updates:fields+=(self._last[5],)
                 payload=self._codec.pack(*fields)
                 self._budget.reserve_spool(len(payload))
@@ -111,11 +112,11 @@ class RecordValueHistory:
         fields=self._codec.unpack(payload)
         t,v,valid,quality,deadline,has_deadline=fields[:6]
         value=ScalarValue((self._labels[v] if self._dtype is D.ENUM else v) if valid else None,
-                         self._dtype,valid,Q(quality),self._labels)
+                         self._dtype,valid,Q(quality & 0x7fffffff),self._labels,partial=bool(quality>>31))
         selected=selected_deadline=None
         if self._conditioned:
             c,valid,quality,selected_deadline,has_end=fields[6:11]
-            selected=ScalarValue(c if valid else None,D.BOOL,valid,Q(quality))
+            selected=ScalarValue(c if valid else None,D.BOOL,valid,Q(quality & 0x7fffffff),partial=bool(quality>>31))
             if not has_end:
                 selected_deadline=None
         return (t,value,deadline if has_deadline else None,selected,selected_deadline)+((fields[-1],) if self._sample_updates else ())

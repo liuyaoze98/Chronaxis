@@ -13,7 +13,7 @@
 
 [window-merged.yaml](examples/window-merged.yaml)只增加`merge: overlap_and_adjacent`，把重叠或相接范围合成[1,9)。规则仍产生三个点，片段保留三个父事件ID。[window-exit-delay.yaml](examples/window-exit-delay.yaml)则把按钮按下定义为活动，用`merge: exit_delay`在每次活动结束后等待2秒；原活动为[1,2)、[3,4)、[6,7)，片段合为[1,9)；原活动与合并后片段分别保留。
 
-运行方式：`chronaxis run window-minimal.yaml --output 新目录`。配置都包含来源和信号，不依赖后文的活动教程。
+运行方式：`chronaxis run window-minimal.yaml --output 结果目录`。配置都包含来源和信号，不依赖后文的活动教程。
 
 ## 窗口配置：windows
 
@@ -28,22 +28,22 @@
 
 ```yaml
 windows:                     # 围绕已定义规则的事件选取时间片段，供计算或导出使用
-  - name: hot_context        # 为窗口定义取唯一名称；计算或导出通过此名选择产生的片段
-    rule: hot                # 选择生成窗口的事件规则；填写前面rules中的name
+  - name: hot_context        # 计算或导出引用的窗口名称
+    rule: hot                # 引用前面定义的事件规则
     pre: 1s                  # 设置起点之前保留多久上下文；0s表示不提前
     post: 1s                 # 设置结束点之后保留多久上下文；0s表示不延长
-calculations:                # 列出希望获得的统计或积分结果，每项独立选择范围和算法
-  - name: context_energy     # 为这项计算结果取唯一名称；结果表用它区分计算项
+calculations:                # 本例的统计结果
+  - name: context_energy     # 结果表中的计算名称
     scope:                   # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
       window: hot_context    # 按指定窗口的每个片段分别计算；填写前面windows中的name
-    operation: integral      # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
-    expr: power              # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+    operation: integral      # 按有效持续时间积分
+    expr: power              # 使用已定义的信号或公式
 ```
 
 这是完整计划中的两部分配置；`hot` 规则和 `power` 信号须已定义。每个设置各做一件事：
 
 - `rule: "hot"`：使用hot规则找到的活动。
-- `anchor: "activity"`：从活动实际开始和结束的时刻向两边扩展。
+- 自动推导的 `anchor: "activity"`：从活动实际开始和结束的时刻向两边扩展。
 - `pre: "1s"`、`post: "1s"`：开始前取1秒、结束后取1秒，所以本例窗口为第0秒到第7秒。
 - `scope: {window: hot_context}`：对这个窗口中的数据计算能量，每个窗口分别得到一个结果。
 

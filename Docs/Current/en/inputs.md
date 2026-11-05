@@ -26,7 +26,7 @@ Start with the supplied ASC and DBC in the [BLF/ASC quick start](quickstart.md) 
 chronaxis run analysis.yaml --output can-result
 ```
 
-Run from the examples directory with a new output directory. [CSV](../examples/input-csv-minimal.yaml) and [memory](../examples/input-memory-minimal.yaml) examples serve decoded tables and programmatic records; they are not prerequisites for CAN analysis.
+Run from the examples directory with an output directory that can be reused. [CSV](../examples/input-csv-minimal.yaml) and [memory](../examples/input-memory-minimal.yaml) examples serve decoded tables and programmatic records; they are not prerequisites for CAN analysis.
 
 The [offset example](../examples/input-csv-offset.yaml) demonstrates a known 2-second shift: original 0 becomes 2 seconds, while energy remains 38 J. Set common `clock` and `offset` values only from established synchronization evidence; defaults do not synchronize clocks.
 
@@ -52,10 +52,10 @@ Paths below are relative to `sources[]`. Thus `sources[].paths` means the `paths
 ## Directories and continuous files
 
 ```yaml
-sources:
-  - paths: data/can                        # Directory, relative to this configuration
-    dbc_by_channel:
-      '1': network.dbc                     # DBC for public channel 1
+sources:                  # Input sources used by this analysis
+  - paths: data/can       # Directory, relative to this configuration
+    dbc_by_channel:       # DBC files indexed by user-facing CAN channel
+      '1': network.dbc    # DBC for public channel 1
 ```
 
 Files `part1.asc`, `part2.blf`, and `part10.asc` are read in order 1, 2, 10. Use `paths: data/can/*.asc` for ASC only and explicit `data/can/**/*.asc` for subdirectories. Empty directories or unmatched patterns are errors, not silently skipped. Explicit `[part10.asc, part2.asc]` retains that order.
@@ -83,18 +83,18 @@ The field is always `sources[].time.timezone`, though accepted values depend on 
 Place the first excerpt in root `sources`, the second in root `signals`. These are partial configurations, requiring your actual `trial.blf`, `network.dbc`, and remaining task declarations. Replace existing lists rather than nesting a second parent key inside an item.
 
 ```yaml
-sources:
-  - path: trial.blf                        # Replace with your actual input
-    dbc_by_channel:
-      '1': network.dbc
+sources:                  # Input sources used by this analysis
+  - path: trial.blf       # Replace with your actual input
+    dbc_by_channel:       # DBC files indexed by user-facing CAN channel
+      '1': network.dbc    # DBC for channel 1; channel keys are strings
 ```
 
 ```yaml
-signals:
-  - name: voltage
-    field:
-      frame_id: 0x100
-      signal: PackVoltage                 # Actual case-sensitive DBC name
+signals:                     # Signals available to expressions
+  - name: voltage            # Name used to identify and reference this object
+    field:                   # Locate the original input field
+      frame_id: 0x100        # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: PackVoltage    # Actual case-sensitive DBC name
 ```
 
 This assumes the DBC supplies a unit and message period. Numeric type, unit, and frame type are inferred; validity defaults to three periods. Add `period` or `valid_for` when the needed period is unavailable. Add location fields only when multiple channels/frame candidates cannot be distinguished.
@@ -106,7 +106,7 @@ Fields are in `sources[]` and apply to BLF, ASC, and raw-message CSV. `signal_cs
 
 | Field | Type and requirement | Default | Meaning |
 |---|---|---|---|
-| `dbc_by_channel` | Required object | None | Maps decimal channel strings without leading zeros to DBC paths, such as `{"1":"network.dbc"}`. Public numbering starts at 1 and maps internally to 0. Add 1 to all channels in old zero-based configuration. Each source currently uses one channel and its DBC. |
+| `dbc_by_channel` | Required object | None | Maps decimal channel strings without leading zeros to DBC paths. Identify the input channel from the log display or acquisition-device configuration; configuration channel numbers start at 1. For the first channel, write `{"1":"network.dbc"}`; the program handles internal numbering. Each source currently uses one channel and its DBC. |
 | `reader` | Object; required for raw CSV, otherwise optional | Format defaults | Reader options. Common `decode_policy` defaults to `strict`. See [text input](text-inputs.md) for layouts; not every format accepts every reader field. |
 | `reader.input_check` | Optional string | `"auto"` | `auto` checks timestamps according to dependencies; `full` requires whole-source time order. Applies to all four CAN source types. Ordinary ASC checks needed channels/IDs while collecting earliest/latest source time during the same read. |
 
@@ -127,8 +127,8 @@ Only the `can_blf` entry point accepts these options: explicit `source_type: can
 This child of each CAN source's `reader` controls DBC decoding in `asc_or_blf`, `can_blf`, `can_asc`, and `raw_can_csv`. It is neither interval selection nor signal conversion. The excerpt belongs inside a source item, replacing its reader mapping where appropriate:
 
 ```yaml
-reader:
-  decode_policy: strict                   # Length checks and decoding-failure behavior
+reader:                    # Input-format parsing options
+  decode_policy: strict    # Length checks and decoding-failure behavior
 ```
 
 | Policy | Purpose and behavior |
@@ -197,14 +197,14 @@ Rules, windows, calculations, and exports can omit `dataset.domain` and use actu
 This partial root `sources` section requires actual `part1.csv` and `part2.csv` files containing `time_ms` and the referenced signal columns. Replace the existing root list; do not nest another `sources` key inside an item.
 
 ```yaml
-sources:
-  - paths: [part1.csv, part2.csv]
-    source_type: signal_csv
-    time_column: time_ms                   # Exact header
-    time:
-      unit: ms
-    reader:
-      missing_values: ['', NA]             # Invalid updates, not zero
+sources:                             # Input sources used by this analysis
+  - paths: [part1.csv, part2.csv]    # File, continuous file list or directory; relative to this configuration
+    source_type: signal_csv          # Input adapter; CSV or memory must be declared explicitly
+    time_column: time_ms             # Exact header
+    time:                            # Input timestamp interpretation
+      unit: ms                       # Unit of the input timestamp values
+    reader:                          # Input-format parsing options
+      missing_values: ['', NA]       # Invalid updates, not zero
 ```
 
 | Field relative to `sources[]` | Type and requirement | Default | Meaning |
@@ -221,15 +221,15 @@ With the example missing tokens, current 5 A followed by `NA` becomes unknown at
 Bind original `Current_mA` as `current` with this root `signals` excerpt:
 
 ```yaml
-signals:
-  - name: current
-    field: Current_mA
-    dtype: float64
-    unit: A
-    valid_for: 200ms                       # Example; establish for actual acquisition
-    conversion:
-      input_unit: mA
-      scale: 0.001                        # Explicit mA-to-A conversion
+signals:                 # Signals available to expressions
+  - name: current        # Name used to identify and reference this object
+    field: Current_mA    # Locate the original input field
+    dtype: float64       # Analysis value type
+    unit: A              # Unit in which this value is interpreted or the result is displayed
+    valid_for: 200ms     # Example; establish for actual acquisition
+    conversion:          # Optional unit conversion after decoding
+      input_unit: mA     # Unit of the parsed or decoded input value
+      scale: 0.001       # Explicit mA-to-A conversion
 ```
 
 This explicitly converts milliamperes to amperes. `valid_for` is illustrative and needs an acquisition-based choice in a real task. Expressions use `current` even though the column has another name.
@@ -240,21 +240,21 @@ This explicitly converts milliamperes to amperes. `valid_for` is illustrative an
 Memory `rows` contains original times and values, useful for hand-checkable examples. The following root `sources` section needs no external files; add signals and calculations in a complete plan.
 
 ```yaml
-sources:
-  - source_type: memory
-    rows:
-      - time: 0s
-        values:
-          power: 4000
-          active: 1
-      - time: 1s
-        values:
-          power: 4000
-          active: 0
-      - time: 8s
-        values:
-          power: 4000
-          active: 0
+sources:                   # Input sources used by this analysis
+  - source_type: memory    # Input adapter; CSV or memory must be declared explicitly
+    rows:                  # Explicit input records for the memory source
+      - time: 0s           # Timestamp of this explicit input record
+        values:            # Signal values in this input record
+          power: 4000      # Power value or named power signal settings in this example
+          active: 1        # Activity state in this input record
+      - time: 1s           # Timestamp of this explicit input record
+        values:            # Signal values in this input record
+          power: 4000      # Power value or named power signal settings in this example
+          active: 0        # Activity state in this input record
+      - time: 8s           # Timestamp of this explicit input record
+        values:            # Signal values in this input record
+          power: 4000      # Power value or named power signal settings in this example
+          active: 0        # Activity state in this input record
 ```
 
 | Field relative to `sources[]` | Type and requirement | Meaning |
@@ -272,18 +272,23 @@ Memory timestamps require units, or an explicit absolute date/time/timezone. The
 
 Subtract 2 seconds from CSV time to combine them. Conversion first changes units, then adds `offset`, so use `offset: -2s`. If the instrument started 2 seconds later, add 2 seconds instead.
 
-The labels below explain two separate `time` objects; they are not configuration field names. Copy each object's children into its source's `time`, not the labels:
+Put this block inside the CAN source item, beside `paths`, replacing its existing `time`:
 
 ```yaml
-CAN source time:
-  clock: test_button                       # Established common origin
-CSV source time:
-  unit: ms
-  clock: test_button
-  offset: -2s                             # Clock correction, not value conversion
+time:                   # Time settings for the CAN source
+  clock: test_button    # Established common origin
 ```
 
-This is not a complete `sources` list. CSV 5000 ms first becomes 5 seconds, then shifts to common time 3 seconds.
+Put this separate block inside the CSV source item, beside `time_column`, replacing its existing `time`:
+
+```yaml
+time:                   # Time settings for the CSV source
+  unit: ms              # Input time column uses milliseconds
+  clock: test_button    # Same established origin as CAN
+  offset: -2s           # Instrument started 2 seconds earlier
+```
+
+Each block belongs to one source; neither is a complete `sources` list. CSV 5000 ms first becomes 5 seconds, then shifts to common time 3 seconds. See the [CAN/CSV example](examples.md#can-joint-analysis) for a complete configuration.
 
 `clock` declares a known common origin. Assigning the same name to unrelated origins does not synchronize them. Derive offsets from known acquisition starts, synchronization records, or an identifiable simultaneous event. If the offset is unknown, analyze separately rather than combine arbitrarily to calculate power.
 

@@ -15,7 +15,7 @@
 |含ID和十六进制字节的原始CSV|填写raw_can_csv|DBC、时间格式，以及时间/ID/数据列的映射|
 |Python中已整理好的时间和值|填写memory|内存记录及信号定义|
 
-AnalysisRunner支持上表五种显式来源，也支持默认的`asc_or_blf`来源：按扩展名识别ASC/BLF，同一来源可依次读取两种格式。`signal_csv`专门读取已解码的物理量列；它不能直接把报文字节当成电压或电流。
+AnalysisRunner支持表中的BLF、ASC、原始CAN CSV、信号CSV和内存来源，也支持默认的`asc_or_blf`来源：按扩展名识别ASC/BLF，同一来源可依次读取两种格式。`signal_csv`专门读取已解码的物理量列；它不能直接把报文字节当成电压或电流。
 
 ### 先运行一个完整任务
 
@@ -25,7 +25,7 @@ AnalysisRunner支持上表五种显式来源，也支持默认的`asc_or_blf`来
 chronaxis run analysis.yaml --output can-result
 ```
 
-从随册examples目录执行，输出目录须尚不存在。[CSV最小配置](examples/input-csv-minimal.yaml)和[内存最小配置](examples/input-memory-minimal.yaml)分别用于已经解码的信号表和程序内记录，不是CAN分析的前置步骤。
+从随册examples目录执行，结果目录可以重复使用，文件名自动增加时间后缀。[CSV最小配置](examples/input-csv-minimal.yaml)和[内存最小配置](examples/input-memory-minimal.yaml)分别用于已经解码的信号表和程序内记录，不是CAN分析的前置步骤。
 
 [时间平移示例](examples/input-csv-offset.yaml)专门演示已知2秒偏移：原0秒变成2秒，能量仍为38J。多来源只有在确知同步关系时才设置共同clock与offset，默认值不自动校时。
 
@@ -104,7 +104,7 @@ signals:                     # 把输入字段定义为有名称、类型、单�
 
 |字段|数据类型|必填|默认值|可填写的值与含义|
 |---|---|---|---|---|
-|dbc_by_channel|对象|是|无|决定每个通道用哪个DBC解码。键从日志通道取得，写十进制编号文本且无前导零；值是实际DBC路径。例如{"1":"network.dbc"}为第一路通道选择文件。配置从1开始，程序自动对应内部0；旧0基配置的所有通道编号需加1。当前每个来源使用一个通道及其DBC。|
+|dbc_by_channel|对象|是|无|决定每个通道用哪个DBC解码。根据日志显示或采集设备配置确定输入所在通道，配置编号从1开始，键写成无前导零的十进制文本；值是实际DBC路径。例如第一路通道填写{"1":"network.dbc"}，程序自动完成内部编号匹配。当前每个来源使用一个通道及其DBC。|
 |reader|对象|原始CSV必填；其他CAN可省略|按格式取默认值|组织读取选项。共同的reader.decode_policy默认strict；文本格式及列布局见[文本输入](text-inputs.md)。reader中的各字段并非每种来源都接受。|
 |reader.input_check|字符串|否|`"auto"`|auto按任务依赖检查时间；full要求完整来源时间顺序。适用于can_blf、can_asc、asc_or_blf和raw_can_csv。普通ASC只检查所需通道/ID的顺序，来源最早/最晚时间仍在同次读取中统计；详见下方检查范围。|
 
@@ -225,7 +225,7 @@ signals:                 # 把输入字段定义为有名称、类型、单位�
   - name: current        # 给分析信号取名称；后续表达式和计算通过此名称引用它
     field: Current_mA    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
     dtype: float64       # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-    unit: A              # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；仅标签不执行换算
+    unit: A              # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；按已知单位关系推导换算
     valid_for: 200ms     # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
     conversion:          # 设置读取后额外的单位换算；不重复DBC已执行的缩放和偏移
       input_unit: mA     # 声明CSV解析或DBC解码后、额外换算前的单位；查列说明或DBC物理单位
@@ -276,18 +276,23 @@ sources:                   # 列出输入来源；每项规定数据位置、格
 
 两个来源的time字段可写成：
 
-时间同步示意：下面两个说明标签不是配置字段。分别将各自time的子字段替换到对应sources列表项的time中；不把“CAN来源的time”等文字复制到文件。
+将下面第一段放在CAN来源的列表项内，与`paths`同级，替换该来源原有的`time`：
 
 ```yaml
-CAN来源的time:             # 说明输入时间数值的类型、单位、共同起点和校准偏移
-  clock: test_button    # 命名相对时间的共同起点；来自同步依据，同名不会自动校时
-CSV来源的time:             # 说明输入时间数值的类型、单位、共同起点和校准偏移
-  unit: ms              # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
-  clock: test_button    # 命名相对时间的共同起点；来自同步依据，同名不会自动校时
-  offset: -2s           # 给换算后的时间加固定偏移；依据时钟校准结果填写，不是数值偏移
+time:                   # 该CAN来源的时间设置
+  clock: test_button    # 已确认的共同起点
 ```
 
-这是两个time字段的展示，不是可直接提交的完整sources数组；把其中对象分别放入相应来源的`time`字段。CSV原值5000ms会先变为5秒，再减2秒，得到共同时间3秒。
+将下面第二段放在CSV来源的列表项内，与`time_column`同级，替换该来源原有的`time`：
+
+```yaml
+time:                   # 该CSV来源的时间设置
+  unit: ms              # 输入时间列以毫秒计
+  clock: test_button    # 与CAN使用同一个已确认起点
+  offset: -2s           # 仪器比共同起点早启动2秒
+```
+
+这两段分别是一个来源内的字段，不是完整`sources`数组。CSV原值5000ms先变为5秒，再减2秒，得到共同时间3秒。完整多来源配置见[CAN与CSV联合分析](examples.md#can-joint-analysis)。
 
 `clock`是对共同起点的声明。把两个不同起点强行写成相同名字不会真的同步数据。偏移量必须来自已知采集起点、同步记录或能确认发生在同一时刻的事件；如果不知道偏了多少，先分别分析，不能任意拼在一起算功率。
 

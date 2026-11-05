@@ -8,9 +8,10 @@ TimeReductionResult只保存一次最终换单位后的候选数值及计算故�
 """
 
 # 冻结协议与有限输出检查只依赖通用核心，不依赖NumPy。
+from .moments import TIME_MOMENTS
 from dataclasses import dataclass
 from math import isfinite
-from .calculations import CalculationDefinition, CalculationSeries, calculation_unit
+from .calculations import CalculationDefinition, CalculationSeries, calculation_conversion
 from .models import Interval, SourceRef
 from .types import SignalDType as D, QualityFlag as Q
 from .validation import require_text
@@ -136,10 +137,10 @@ def require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_l
 
     参数: 原spec/单位/dtype；selected_duration_ns为actual均值第二遍整窗时长；
         step_ns为固定/DBC周期，该模式均值改用selected_weight_seconds有效权重秒数。
-    返回: (output_unit, factor)。异常: TypeError/ValueError为不支持能力或非法配置。
+    返回: CalculationConversion。异常: TypeError/ValueError为不支持能力或非法配置。
     """
     # 样本统计及条件选择有独立接口，不由时间统计配置承载。
-    if not isinstance(spec, CalculationDefinition) or spec.operation not in ('min_time', 'max_time', 'time_weighted_mean', 'duration'):
+    if not isinstance(spec, CalculationDefinition) or spec.operation not in ('min_time', 'max_time', 'time_weighted_mean', 'duration', *TIME_MOMENTS):
         raise TypeError('有限时间归约仅支持明确无条件时间算子')
     allowed = (D.BOOL,) if spec.operation == 'duration' else (D.INT64, D.UINT64, D.FLOAT64)
     if not isinstance(dtype, D) or dtype not in allowed:
@@ -158,7 +159,7 @@ def require_time_config(spec, input_unit, dtype, selected_duration_ns, partial_l
     if selected_duration_ns is not None and (spec.operation != 'time_weighted_mean' or type(selected_duration_ns) is not int
             or not 0 < selected_duration_ns <= 2 ** 63 - 1):
         raise ValueError('仅时间均值第二遍接受正原生int64整窗有效时长')
-    return calculation_unit(spec, input_unit)
+    return calculation_conversion(spec, input_unit)
 
 
 def require_time_series(series, spec, input_unit, dtype):

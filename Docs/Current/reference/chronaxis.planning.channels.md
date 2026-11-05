@@ -1,4 +1,4 @@
-# chronaxis.planning.channels
+# `chronaxis.planning.channels`
 
 把用户配置的 CAN 通道转换为内部编号，不读取报文或修改原始数据。
 
@@ -41,14 +41,14 @@ channel_index(value, path, *, key=False)
 |---|---|---|---|---|
 |`value`|int &#124; str|是|无|位置或关键字。用户配置的1基通道。key=False时为正整数；key=True时为不含前导零的正十进制字符串。|
 |`path`|str|是|无|位置或关键字。当前配置字段的位置，例如$.sources[0].dbc_by_channel；错误用它定位需要修正的声明。|
-|`key`|bool|否|False|仅关键字。key=True时为DBC映射的规范十进制字符串|
+|`key`|bool|否|False|仅关键字。key=True时为无前导零的正整数十进制字符串|
 
 ### 返回说明
 
-int，用户1对应内部0。
+int，用户配置的通道1转换为内部编号0。
 
 ### 异常说明
 
-PlanValidationError，非法或旧0基声明。
+PlanValidationError，值的类型或取值不符合上述规则，或文本整数超过解析能力。
 
-源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

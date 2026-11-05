@@ -18,8 +18,10 @@ import heapq
 from pathlib import Path
 from sys import getsizeof
 from types import MappingProxyType
+from ..extensions import ExtensionRegistry, FunctionSpec, ReductionSpec, TransformSpec
 from ..core.numeric import ScalarValue
 from ..core.types import QualityFlag, SignalDType
+from ..core.binding import SignalDefinition
 from ..results.budget import ResourceBudget
 from ..results.codec import _estimate
 from ..results.errors import AnalysisError, ResultClosedError, ResultFormatError
@@ -40,6 +42,16 @@ def _metadata_bytes(value, depth: int = 0) -> int:
     # 仅计数，不执行序列化或调用任意对象方法；所有描述先经typed模型检查。
     if depth > 32:
         raise ResultFormatError('历史元数据超过32层')
+    # 已注册的宿主实现由调用方持有，本次计划仅借不可变描述/身份。不遍历或
+    # 序列化任意Python回调；实际被请求的状态和工作区在其生命周期单独预约。
+    if type(value) in (ExtensionRegistry,FunctionSpec,ReductionSpec,TransformSpec):
+        return 256
+    if type(value) is SignalDefinition:
+        # 旧声明的四个可选版本/原码字段只引用类级默认单例。保留引用槽费用，
+        # 不按四份独立的字段包装再收费；实际声明的类型、标签和原码列仍全额计算。
+        shared_defaults={'input_dtype','code_dtype','capture_code','config_version'}
+        return getsizeof(value)+sum(16 if f.name in shared_defaults and getattr(value,f.name) is f.default
+                                     else 256+_metadata_bytes(getattr(value,f.name),depth+1) for f in fields(value))
     if is_dataclass(value) and not isinstance(value, type):
         return getsizeof(value) + sum(256 + _metadata_bytes(getattr(value, field.name), depth + 1) for field in fields(value))
     if isinstance(value, Mapping):
@@ -48,7 +60,8 @@ def _metadata_bytes(value, depth: int = 0) -> int:
         return getsizeof(value) + sum(32 + _metadata_bytes(item, depth + 1) for item in value)
     if isinstance(value, Enum):
         return 512
-    if value is None or type(value) in (str, int, bool, float):
+    # 已校验查表节点的冻结字节列按真实长度计入固定元数据成本。
+    if value is None or type(value) in (str, int, bool, float, bytes):
         return getsizeof(value) + 64
     raise ResultFormatError('历史元数据类型无法估算')
 
@@ -289,7 +302,9 @@ close幂等关闭读取句柄并释放状态RAM，磁盘文件留作恢复证据
                     # 无效原诊断仅作诊断，不参与计算；数组占位仍独立保留。
                     if not valid and original_present:
                         logical = original
-                    value = ScalarValue(logical, column.dtype, valid, QualityFlag(int(column.quality[index])), column.labels)
+                    from .calculation_values import scalar_from_column
+                    code = None if column.code is None else scalar_from_column(column.code, index)
+                    value = ScalarValue(logical, column.dtype, valid, QualityFlag(int(column.quality[index])), column.labels, code)
                     record = HistorySample(batch_index, column.name, time, sequence, physical, value,
                                            column.unit, column.source_ref[index], original_present, original)
                     self._write_record(handle, batch.source, record)

@@ -3,6 +3,74 @@
   "revision": 1,
   "tasks": [
     {
+      "id": "TEMPORAL_CURRENT",
+      "intent": "Rolling current or rate on CAN frames with irregular timestamps",
+      "example": "../../Current/examples/temporal/analysis.yaml",
+      "requires": "Current field and unit, valid_for, actual/fixed/DBC clock, driver, window and output step.",
+      "check": "At 0.20 s the mean is 130/9 A with a 100 ms DBC period; actual time gives 18 A.",
+      "fields": [
+        "sources",
+        "signals",
+        "transforms",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/temporal/analysis.yaml --format json",
+      "aliases": [
+        "时序变换",
+        "滚动统计",
+        "变化率",
+        "temporal transforms",
+        "rolling statistics"
+      ]
+    },
+    {
+      "id": "HOST_EXTENSION",
+      "intent": "Register a trusted custom point function, sample reduction or stateful grid operation in Python",
+      "example": "../../Current/examples/temporal/host-analysis.yaml",
+      "requires": "The accompanying host program, ASC and DBC; a version, typed ports, supported backends and a budget contract.",
+      "check": "The host reports 80 A peak and 10, 20, 30, 30 A for the valid grid outputs. Use the host script to supply the registry.",
+      "fields": [
+        "signals",
+        "transforms",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "ExtensionRegistry",
+        "FunctionSpec",
+        "ReductionSpec",
+        "TransformSpec"
+      ],
+      "verify": "python ../../Current/examples/temporal/host_extensions.py --plan ../../Current/examples/temporal/host-analysis.yaml --backend numpy --work-dir host-check",
+      "aliases": [
+        "宿主扩展",
+        "插件",
+        "host extensions",
+        "ExtensionRegistry",
+        "自定义分析算子",
+        "自定义算子",
+        "custom analysis operators",
+        "custom operators"
+      ],
+      "references": [
+        {
+          "path": "../../Current/examples/temporal/host_extensions.py",
+          "description": "Host implementation, registration and execution."
+        }
+      ]
+    },
+    {
       "id": "CAN",
       "intent": "Integrate power from BLF / ASC messages",
       "example": "../../Current/examples/analysis.yaml",
@@ -29,7 +97,7 @@
       "example": "../../Current/examples/conditional-energy.yaml",
       "requires": "Raw ASC/BLF and matching DBC; target signals, codes, units, comparisons, continuous duration, and integration scope. Do not require types, units, or periods to be repeated when the DBC supplies them.",
       "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, default onset, and actual elapsed time.",
-      "not_applicable": "For a direct sum using a fixed period per message, consult message_calculations. Use BATCH for independent files.",
+      "not_applicable": "For per-message contributions query MESSAGE_ENERGY; choose FAST_MESSAGE_ENERGY only when its independent-file restrictions fit. Independent tasks use BATCH; fast template totals use FAST_TEMPLATE_TOTAL.",
       "alternative": "charge_session applies only to its strict current > comparison, duration >= comparison, Wh/Ah outputs, and direction/measurement-point requirements. Do not choose it merely because a task mentions charging.",
       "check": "Exactly 60 seconds produces no event. The cross-file 61-second interval is [61,122), giving 4000W*61s/3600000=0.06777777777777777kWh. Link parent_id to event_id and check status/reason. Do not replace strict comparison with 60.1 seconds.",
       "fields": [
@@ -164,8 +232,8 @@
       "id": "UNITS",
       "intent": "Conversions, units, and scales",
       "example": "../../Current/examples/signal-number-conversion.yaml",
-      "requires": "Input/output units, existing decoder scaling, and direction declarations.",
-      "check": "Apply DBC scaling once. Unit labels alone do not convert values.",
+      "requires": "Input/target units and existing DBC conversion; establish direction only when the task needs that interpretation.",
+      "check": "Infer conversion from declared input and target units when scale and offset are both omitted; 2000 mA becomes 2 A. DBC coefficients apply only once.",
       "fields": [
         "signals"
       ],
@@ -233,7 +301,7 @@
       "id": "EXPORT",
       "intent": "Export raw messages around events",
       "example": "../../Current/examples/export-can-minimal.yaml",
-      "requires": "A supported CAN source, explicit window, and new output directory.",
+      "requires": "A supported CAN source, explicit window, and writable output directory; existing results may remain there.",
       "check": "Check actual windows, output format, and manifest.",
       "fields": [
         "outputs",
@@ -252,7 +320,7 @@
       "id": "PYTHON",
       "intent": "Load, publish, and close results in Python",
       "example": "../../Current/examples/input-csv-minimal.yaml",
-      "requires": "The matching installed version, complete plan, and new result directory.",
+      "requires": "The matching installed version, complete plan, and writable result directory; use the actual manifest path returned by write.",
       "check": "Run ../run_analysis.py. Validate before execution, read rows, and close resources.",
       "fields": [
         "outputs"
@@ -285,6 +353,167 @@
         "PlanValidationError"
       ],
       "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+    },
+    {
+      "id": "CALIBRATION",
+      "intent": "Map ASC/DBC voltage through a calibration curve and calculate mean power",
+      "example": "../../Current/examples/lookup-power.yaml",
+      "requires": "Input unit, calibration points and output unit.",
+      "check": "3, 7 and 3 V give 10, 30 and 10 W; the mean is about 16.67 W.",
+      "fields": [
+        "signals",
+        "lookups",
+        "calculations"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/lookup-power.yaml --format json",
+      "aliases": [
+        "一维查表",
+        "标定查表",
+        "one-dimensional lookup",
+        "lookup table"
+      ]
+    },
+    {
+      "id": "POWER_STATISTICS",
+      "intent": "Calculate sample and time-weighted power statistics, and aggregate scalar calculation rows, sequence delays, event counts or final segment counts",
+      "example": "../../Current/examples/power-statistics.yaml",
+      "requires": "Define the result population, named source, operation and grouping. Confirm whether partial values may participate and how an incomplete population is reported. The example uses P95 of per-event means; references cover calculation, sequence, rule and window sources.",
+      "check": "Five readings, two starts, two loaded activities and one merged segment. P95 of readings is 18 W. P95 across load means is 19.5 W with two candidates and two included. Time RMS is about 11.05542 W.",
+      "fields": [
+        "rules",
+        "windows",
+        "calculations",
+        "aggregations",
+        "sequences"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/power-statistics.yaml --format json",
+      "aliases": [
+        "统计",
+        "统计分析",
+        "statistics",
+        "variance",
+        "quantile",
+        "结果聚合",
+        "聚合统计",
+        "result aggregation",
+        "result aggregations"
+      ],
+      "references": [
+        {
+          "path": "../../Current/en/aggregations.md",
+          "description": "Complete fields, combinations, examples and result semantics."
+        },
+        {
+          "path": "../../Schema/analysis.schema.json#/properties/aggregations",
+          "description": "Complete schema subtree, including conditional constraints."
+        }
+      ]
+    },
+    {
+      "id": "MESSAGE_ENERGY",
+      "intent": "Accumulate each target CAN message contribution using the general analysis runner",
+      "example": "../../Current/examples/message-minimal.yaml",
+      "requires": "Confirm the target channel/frame, DBC, units and the contribution computed by expr. Confirm a time factor when converting power to energy; it is unnecessary for contributions already expressed as energy. Read references for all fields and restrictions.",
+      "check": "Two simultaneous 4000 W messages each contribute 400 J at 0.1 s, totaling 800 J; the record at 1 s is outside [0,1).",
+      "fields": [
+        "sources",
+        "signals",
+        "message_calculations",
+        "outputs"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner",
+        "AnalysisResult"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/message-minimal.yaml --format json",
+      "applicable": "Use general run for CAN per-message accumulation, including continuous source files or requested contribution details. Values come from the current target message.",
+      "not_applicable": "Not elapsed-time integration or cross-message cached values. For an independent single ASC/BLF with all inputs in the target frame, compare FAST_MESSAGE_ENERGY and its restrictions.",
+      "aliases": [
+        "逐消息累计",
+        "逐消息计算",
+        "逐报文累计",
+        "per-message accumulation",
+        "per-message calculations",
+        "message_calculations"
+      ],
+      "references": [
+        {
+          "path": "../../Current/en/message-calculations.md",
+          "description": "Complete fields, combinations, examples and result semantics."
+        },
+        {
+          "path": "../../Schema/analysis.schema.json#/properties/message_calculations",
+          "description": "Complete schema subtree, including conditional constraints."
+        }
+      ]
+    },
+    {
+      "id": "FAST_MESSAGE_ENERGY",
+      "intent": "Accumulate energy per matched CAN message in one ASC or BLF",
+      "example": "../../Current/examples/fast/analysis.yaml",
+      "requires": "Confirm the unit, contribution time, frame ID, DBC, channel and sign bucket.",
+      "check": "Open the manifest at this run manifest_path, then its CSV. Two simultaneous 400 J contributions give 800 J. No target frames gives null; valid target frames with an empty direction bucket give zero. Read status/reason with the value.",
+      "fields": [
+        "sources",
+        "signals",
+        "message_calculations",
+        "outputs"
+      ],
+      "templates": [],
+      "api": [
+        "fast.run"
+      ],
+      "verify": "python -m chronaxis fast validate ../../Current/examples/fast/analysis.yaml",
+      "applicable": "One independent ASC/BLF source per file, every formula input in the current matched frame, and verifiable numeric units.",
+      "not_applicable": "Do not use fast for state across continuous volumes, actual-time integrals, values held across IDs, duration conditions, raw CSV, multiplex/container messages or per-frame contribution rows.",
+      "aliases": [
+        "高性能积分器",
+        "同帧逐报文累计",
+        "high-performance integrator",
+        "fast"
+      ]
+    },
+    {
+      "id": "FAST_TEMPLATE_TOTAL",
+      "intent": "Compute per-metric totals across independent files from one template",
+      "example": "../../Current/examples/fast/batch.yaml",
+      "requires": "Confirm independent runs and the same template. Select only the intended inputs.",
+      "check": "Open report_path. The inputs yield 800 and 400 J, giving a complete 1200 J total. Totals require explicit --total. Check every member per metric; do not replace missing values with zero.",
+      "fields": [
+        "template",
+        "inputs",
+        "process_count"
+      ],
+      "templates": [],
+      "api": [
+        "fast.batch.run_batch"
+      ],
+      "verify": "python -m chronaxis fast batch ../../Current/examples/fast/batch.yaml --output result-fast-batch --total",
+      "aliases": [
+        "高性能积分器",
+        "同帧逐报文累计",
+        "high-performance integrator",
+        "fast"
+      ]
     }
   ]
 }

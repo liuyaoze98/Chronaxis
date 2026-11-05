@@ -25,6 +25,8 @@ from ..core.expression import CompiledExpression, ExprNode
 from ..core.expression_reference import Evaluation, evaluate_reference
 from ..core.expression_numpy import ArrayEvaluation, evaluate_numpy
 from ..core.numeric import ScalarValue
+from ..core.lookup import pack_requested_lookups
+from ..core.types import QualityFlag as Q
 from ..core.numeric_numpy import NumericArray
 from ..results.errors import ResultClosedError
 from ..timebase.conversion import require_int64_ns
@@ -32,6 +34,8 @@ from .bindings import _fingerprint
 from .history import _metadata_bytes
 from .history_records import estimate_record_bytes
 from .hold import HoldQueries
+from .where_state import before_context, group_updates, group_active
+from .calculation_values import scalar_from_column
 
 
 class ExpressionResult:
@@ -60,6 +64,8 @@ class ExpressionResult:
         # 结果取得自己的申请；关闭前不依赖state仍保留同一旧样本。
         self._owner, self._cost, self._closed = owner, cost, False
         self._times, self._payload, self._actual, self._samples = times, payload, actual, samples
+        self._where_invalid = None  # where 对当前真实组的活动无效更新；其他表达式沿用原证据。
+        self._where_ends = None  # where 仅保留活动输入的来源末端；数量受来源数限制。
         self._binding_identity, self._compiled_identity = compiled.bindings.identity, compiled.identity
 
     def _ensure_open(self):
@@ -99,7 +105,7 @@ class ExpressionResult:
 
     @property
     def actual_update(self):
-        """读取实际依赖更新OR。参数: 无。返回: 同轴bool tuple或只读列。异常: 关闭。"""
+        """读取真实输出更新，where 按活动分支。参数: 无。返回: 同轴bool tuple或只读列。异常: 关闭。"""
         self._ensure_open()
         return self._actual
 
@@ -160,7 +166,7 @@ class ExpressionResult:
             self._owner._results.discard(self)
         finally:
             self._closed, self._cost = True, 0
-            self._times = self._payload = self._actual = self._samples = self._owner = None
+            self._times = self._payload = self._actual = self._samples = self._owner = self._where_ends = None
 
 
 class ExpressionQueries:
@@ -197,10 +203,12 @@ class ExpressionQueries:
         # 引用和遍历容器先有固定预留；后续每一对象/节点增长另申请后再加入容器。
         self._budget, self._fixed_cost, self._closed = holds._budget, 0, False
         self._holds = self._bindings = self._expressions = self._stats = self._labels = self._results = None
+        self._lookup_plans = None
         try:
             self._charge(32768 + len(expressions) * 2048)
             self._holds, self._bindings, self._expressions = holds, bindings, expressions
             self._results, self._stats = set(), {}
+            self._lookup_plans = {}
             # 标签映射可很宽；复制容器之前先计槽位，深域随后逐对象申请。
             self._charge(8192 + len(holds._labels) * 1024)
             self._labels = MappingProxyType(dict(holds._labels))
@@ -287,7 +295,7 @@ class ExpressionQueries:
                 # 冻结序列仍需要遍历暂存，空tuple不会虚构子项。
                 self._charge(len(item) * 512)
                 stack.extend(item)
-            elif isinstance(item, Enum) or item is None or type(item) in (str, int, float, bool):
+            elif isinstance(item, Enum) or item is None or type(item) in (str, int, float, bool, bytes):
                 # 原生叶值已计入getsizeof；枚举是typed声明而非任意对象协议。
                 continue
             else:
@@ -332,7 +340,7 @@ class ExpressionQueries:
         参数:
             compiled: 当前登记的CompiledExpression对象。
         返回:
-            三项元组：唯一节点数、参数边数、枚举相关的暂存字节估算。
+            四项元组：唯一节点数、参数边数、枚举暂存字节估算、是否有 where。
         异常:
             TypeError: 节点不是ExprNode。
             BudgetExceededError: 遍历节点及容器增长的固定申请不足。
@@ -342,6 +350,7 @@ class ExpressionQueries:
         """
         # 只遍历ExprNode；共享对象只展开一次，节点及全部参数边先计账再扩栈。
         stack, seen, edges, enum_cost = [compiled.root], set(), 0, 0
+        has_where = False
         while stack:
             node = stack.pop()
             if not isinstance(node, ExprNode):
@@ -349,15 +358,20 @@ class ExpressionQueries:
             if id(node) in seen:
                 continue
             self._charge(4096 + len(node.args) * 512)
+            if node.operator == 'lookup':
+                # 预付执行副本中两列及构造暂存。只在首次实际 NumPy 查询时打包。
+                self._charge(32 * len(node.value.points))
             seen.add(id(node))
             edges += len(node.args)
+            has_where |= node.operator == 'where'
             stack.extend(node.args)
             # 核心模型/求值器会set/tuple固定域，N=0时这些临时量仍存在。
             enum_cost += 16 * (getsizeof(node.labels) + sum(getsizeof(label) + 128 for label in node.labels))
         for name in compiled.dependencies:
             labels = self._labels[name]
             enum_cost += 16 * (getsizeof(labels) + sum(getsizeof(label) + 128 for label in labels))
-        return len(seen), edges, enum_cost
+        from ..core.enum_codes import code_dependencies
+        return len(seen), edges, enum_cost, has_where, code_dependencies(compiled.root)
 
     @property
     def closed(self):
@@ -396,7 +410,7 @@ class ExpressionQueries:
         # 身份摘要相同也不能绕过登记，只接受已保留成本的原对象。
         if id(compiled) not in self._stats or not any(item is compiled for item in self._expressions):
             raise ValueError('只能查询当前owner登记的CompiledExpression对象')
-        nodes, edges, enum_cost = self._stats[id(compiled)]
+        nodes, edges, enum_cost, _, _ = self._stats[id(compiled)]
         # 所有局部cache节点同时存活；4096/节点边依赖/点覆盖复制、整数掩码和isclose多核。
         # (N+1)包括N=0的对象/列头/缓存容器，ENUM域另计而不是按轴长隐藏。
         sample_cost = sum(estimate_record_bytes(sample) for name in compiled.dependencies
@@ -404,6 +418,26 @@ class ExpressionQueries:
         cost = 32768 + 4096 * (nodes + edges + len(compiled.dependencies) + 1) * (count + 1) + enum_cost * 4 + sample_cost
         self._budget.reserve_ram(cost)
         return cost
+
+    def _where_evidence(self, compiled, time, context, backend):
+        """同一状态快照只有最近组可能更新。参数: 树、纳秒、当前标量和后端。
+        返回: 真实输出更新及活动无效输入标志。异常: 状态/后端求值错误。
+        """
+        state = self._holds._state
+        previous = before_context(state, compiled.dependencies, time, bounds=self._holds._bounds, left_limit=True)
+        if time == self._holds._context.domain.start_ns:
+            previous = {name: ScalarValue(None, val.dtype, False, Q.MISSING, val.labels) for name,val in previous.items()}
+        updated, invalid = {}, {}
+        for name in compiled.dependencies:
+            sample = state.get(name)
+            updated[name] = sample is not None and sample.time_ns == time
+            invalid[name] = updated[name] and not sample.value.valid
+        return (group_updates(compiled.root, context, previous, updated, backend),
+                group_active(compiled.root, context, invalid, backend))
+
+    def _source_cutoffs(self, compiled):
+        """取静态候选末端供活动判断。参数: 登记表达式。返回: 别名到纳秒。异常: 绑定错误。"""
+        return {name: self._holds._bounds[self._holds._definitions[name].source][1] for name in compiled.dependencies}
 
     def _check_axis(self, times):
         """检查规范整数轴非回退及最新状态限制，纯常量同样执行。
@@ -476,20 +510,40 @@ class ExpressionQueries:
                 self._keep_hold(held, self._holds.query_reference(name, times, point=point))
             # 结果与更新诊断分别累积，已知逻辑结果也要保留依赖质量。
             rows, actual = [], []
+            evidence = None
+            cutoffs = self._source_cutoffs(compiled) if self._stats[id(compiled)][3] else {}
+            candidates, active_ends = set(cutoffs.values()), set()
             # 参考实现逐点独立计算；每点只使用同轴保持输入。
             for index, _ in enumerate(times):
                 context = {}
                 updated = False
                 for name, result in zip(compiled.dependencies, held):
                     row = result.rows[index]
-                    context[name] = ScalarValue(row.value, result.definition.dtype, row.valid, row.quality, self._labels[name])
+                    code = None
+                    if name in self._stats[id(compiled)][4]:
+                        from ..core.enum_codes import history_code
+                        code = history_code(result.definition, row.sample)
+                        boundary = row.quality & (Q.MISSING | Q.STALE)
+                        if boundary:
+                            code = ScalarValue(None, code.dtype, False, code.quality | boundary)
+                    context[name] = ScalarValue(row.value, result.definition.dtype, row.valid, row.quality, self._labels[name], code)
                     updated |= row.actual_update
                 rows.append(evaluate_reference(compiled, context, self._bindings))
+                if times[index] in candidates and group_active(compiled.root, context,
+                        {name: end == times[index] for name, end in cutoffs.items()}, 'reference'):
+                    active_ends.add(times[index])
+                if updated and self._stats[id(compiled)][3]:
+                    if evidence is None:
+                        evidence = self._where_evidence(compiled, times[index], context, 'reference')
+                    updated = evidence[0]
                 actual.append(updated)
             # 输出保留原记录定位，关闭临时保持后仍独立计持有量。
             samples = tuple(result.sample for result in held if result.sample is not None)
             # 先取得完整输出但暂不登记；临时保持全部关闭后才允许对外交付。
             output = self._register(cost, times, tuple(rows), tuple(actual), samples, compiled)
+            if self._stats[id(compiled)][3]:
+                output._where_invalid = evidence is not None and evidence[1]
+                output._where_ends = active_ends
             for result in held:
                 result.close()
             held = None
@@ -546,16 +600,43 @@ class ExpressionQueries:
                 self._keep_hold(held, result)
                 arrays = result.arrays
                 # NumericArray复制三个列，已包含在树/依赖×N暂存上界，不借用可变输入。
-                context[name] = NumericArray(arrays.dtype, arrays.values, arrays.valid, arrays.quality, arrays.labels)
+                from ..core.enum_codes import historical_column
+                code = historical_column(result.definition, arrays) if name in self._stats[id(compiled)][4] else None
+                context[name] = NumericArray(arrays.dtype, arrays.values, arrays.valid, arrays.quality, arrays.labels, code)
                 actual |= arrays.actual_update
             # 整轴调用真实数组求值核；size让无依赖常量和空轴保持长度。
-            payload = evaluate_numpy(compiled, context, self._bindings, size=len(times))
+            executable = compiled
+            if compiled.bindings.lookups:
+                if id(compiled) not in self._lookup_plans:
+                    self._lookup_plans[id(compiled)] = pack_requested_lookups(compiled)
+                executable = self._lookup_plans[id(compiled)]
+            payload = evaluate_numpy(executable, context, self._bindings, size=len(times))
+            evidence = None
+            active_ends = set()
+            if self._stats[id(compiled)][3]:
+                cutoffs = self._source_cutoffs(compiled)
+                for end in set(cutoffs.values()) - {None}:
+                    index = int(times.searchsorted(end))
+                    if index < len(times) and times[index] == end:
+                        values = {name: scalar_from_column(column, index) for name, column in context.items()}
+                        if group_active(compiled.root, values, {n: t == end for n, t in cutoffs.items()}, 'numpy'):
+                            active_ends.add(end)
+            if self._stats[id(compiled)][3] and np.any(actual):
+                # 最新状态的所有真实更新只可能在同一 t。一次求证后应用到重复坐标，
+                # 不把未来 TTL 或窗口边界解释成更新，不逐行调用标量数值核。
+                index = int(np.argmax(actual))
+                values = {name: scalar_from_column(column, index) for name, column in context.items()}
+                evidence = self._where_evidence(compiled, int(times[index]), values, 'numpy')
+                actual &= evidence[0]
             # 输出保留原记录定位，关闭临时保持后仍独立计持有量。
             samples = tuple(result.sample for result in held if result.sample is not None)
             # 输出轴及真实更新掩码采用普通只读约定，避免外部原地改变诊断。
             times.flags.writeable = actual.flags.writeable = False
             # 临时保持先关闭，尚未登记的完整输出仍由本查询唯一持有。
             output = self._register(cost, times, payload, actual, samples, compiled)
+            if self._stats[id(compiled)][3]:
+                output._where_invalid = evidence is not None and evidence[1]
+                output._where_ends = active_ends
             for result in held:
                 result.close()
             held = None
@@ -615,4 +696,5 @@ class ExpressionQueries:
         """
         # 与保持/state/运行绑定lease的所有权分离，借用引用在此释放。
         self._closed, self._fixed_cost = True, 0
+        self._lookup_plans = None
         self._holds = self._bindings = self._expressions = self._stats = self._labels = self._results = None

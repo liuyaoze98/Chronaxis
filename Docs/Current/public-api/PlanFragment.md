@@ -1,13 +1,13 @@
 # chronaxis.PlanFragment
 
-从`chronaxis`导入本对象。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.preset_models.md)。
+使用`from chronaxis import PlanFragment`导入。本页只列直接公开成员与必要的构造/上下文协议；内部实现见[模块参考](../reference/chronaxis.planning.preset_models.md)。
 
 返回[公开API索引](../api.md)。参数表中的类型可跳转到定义；先核对必填、默认值与返回/异常说明。
 
 ## 成员导航
 
-- [PlanFragment](#api-PlanFragment)
-- [PlanFragment.to_dict](#api-PlanFragment-to_dict)
+- [`PlanFragment`](#api-PlanFragment)
+- [`PlanFragment.to_dict`](#api-PlanFragment-to_dict)
 
 <a id="api-PlanFragment"></a>
 ## `PlanFragment`
@@ -28,7 +28,7 @@ PlanFragment(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = 
 |`calculations`|tuple[[PresetCalculation](../reference/chronaxis.planning.preset_models.md#api-PresetCalculation), ...]|否|()|预设生成的指标配置；空元组表示没有新增指标。|
 |`sequences`|tuple[[SequencePlan](../reference/chronaxis.planning.sequences.md#api-SequencePlan), ...]|否|()|读取预设生成的SequencePlan元组；没有配对任务时为空。to_dict()将非空项转换为可合入完整配置的sequences列表。|
 
-源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-PlanFragment-to_dict"></a>
 ### `PlanFragment.to_dict`
@@ -54,4 +54,4 @@ dict，可合入AnalysisPlan.from_dict；不含伪造来源或执行结果。
 
 无主动异常；实例由build_preset构造。
 
-源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

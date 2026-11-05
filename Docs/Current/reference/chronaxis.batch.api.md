@@ -1,4 +1,4 @@
-# chronaxis.batch.api
+# `chronaxis.batch.api`
 
 执行一份批量计划，并返回每个任务的状态和结果目录。任务按同一套AnalysisRunner接口运行；批量报告写出失败时，异常上的batch_report仍可用于查看已完成的任务和关闭资源。
 
@@ -39,14 +39,14 @@ run_batch(plan: BatchPlan, output_dir, *, process_count: int | None=None, cancel
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[BatchPlan](chronaxis.batch.models.md#api-BatchPlan)|是|无|位置或关键字。指定要执行的批量任务及调度设置。传入load_batch_plan("batch.yaml")取得的BatchPlan，不能直接传文件名或普通分析计划。|
-|`output_dir`|str &#124; Path|是|无|位置或关键字。新批量结果目录，每个任务按id创建子目录；目标已经存在时拒绝覆盖。|
+|`output_dir`|str &#124; Path|是|无|位置或关键字。可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。|
 |`process_count`|int &#124; None|否|None|仅关键字。覆盖本次分析工作进程数。填正整数，例如4；None沿用BatchPlan.process_count，不修改原计划。|
 |`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|否|None|仅关键字。可选取消标记；None表示没有。其他线程调用set()后停止派发新任务，正在执行的任务继续收尾。|
 |`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，例如已核实的"home"或"work"；未确定时用"pending"。这是来源说明，不参与数值计算，也不根据文件路径猜测。|
 
 ### 返回说明
 
-BatchReport；failed/cancelled保留在报告，不伪装全部成功。
+BatchReport；report_path为本次实际报告，jobs各项的manifest_path为实际完成清单。failed/cancelled保留在报告，不伪装全部成功。
 
 ### 异常说明
 
@@ -56,12 +56,17 @@ TypeError：plan不是BatchPlan或取消对象类型不合法。ValueError：并
 
 ```python
 from chronaxis import load_batch_plan, run_batch
-# batch.yaml须已按批量指南准备；batch-output必须不存在。
-report = run_batch(load_batch_plan("batch.yaml"), "batch-output")
-try:
-    print(report.to_dict())
-finally:
-    report.close()
+
+def main():
+    # 先准备batch.yaml；batch-output可以已有结果。
+    report = run_batch(load_batch_plan("batch.yaml"), "batch-output")
+    try:
+        print(report.report_path)
+    finally:
+        report.close()
+
+if __name__ == "__main__":
+    main()
 ```
 
-源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

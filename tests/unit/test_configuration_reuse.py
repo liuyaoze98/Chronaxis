@@ -12,7 +12,7 @@ class ConfigurationReuseTests(unittest.TestCase):
     def setUp(self):
         """建立临时表；输入0/1/2秒功率3/1/3W，面积4J。"""
         self.temp=TemporaryDirectory();self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name)
-        self.raw=dict(config_version=3,dataset=dict(name='test',domain=dict(start='0s',end='2s')),
+        self.raw=dict(config_version=4,dataset=dict(name='test',domain=dict(start='0s',end='2s')),
             sources=[dict(source_type='signal_csv',path='input.csv',time_column='t',time=dict(unit='s'))],
             signals=[dict(name='p',field='p',dtype='float64',unit='W',valid_for='5s')],
             calculations=[dict(name='energy',operation='integral',expr='p')])
@@ -68,32 +68,7 @@ class ConfigurationReuseTests(unittest.TestCase):
             self.raw['overrides']['signals']=changes;self.write('plan.json',self.raw)
             with self.assertRaises(PlanValidationError):load_analysis_plan(path)
 
-    def test_ini_infers_unique_aliases_and_sclicer_section_names(self):
-        """同名原列唯一匹配时不重复写aliases，段名自动产生独立规则/窗口名。"""
-        from test_legacy_import_sclicer import mapping_fixture,FIXTURES,ROOT
-        from chronaxis.migration.api import import_legacy_ini
-        mapping=mapping_fixture();mapping.pop('aliases');mapping.pop('sections')
-        from chronaxis.planning.config_groups import public_configuration
-        mapping['analysis']=public_configuration(mapping['analysis'])
-        result=import_legacy_ini((FIXTURES/'single-soc.ini').read_bytes(),mapping,
-            mode='sclicer_single',base_dir=ROOT/'work/m2-import-tests',device_label='home')
-        self.assertIsNotNone(result.plan,result.report.to_dict())
-        self.assertEqual(result.plan.rules[0].rule_id,'trigger_1')
 
-    def test_grouped_ini_signal_defaults_and_ambiguous_alias(self):
-        """INI映射复用DBC元数据，不重复要求信号类型/单位；重名原字段不自动挑选。"""
-        from chronaxis.migration.api import _prepare_mapping
-        dbc=Path(__file__).parents[2]/'src/chronaxis/configuration/templates/shared/sample.dbc'
-        raw=dict(mapping_version=1,analysis=dict(config_version=3,dataset=dict(name='can',domain=dict(start='0s',end='1s')),
-            sources=[dict(path='missing.asc',dbc_by_channel={'1':str(dbc)})],
-            signals=[dict(frame_id=256,valid_for='1s',signals=[dict(name='voltage',signal='Voltage')])]))
-        prepared,_=_prepare_mapping(raw,self.root)
-        signal=prepared['analysis']['signals'][0]
-        self.assertEqual((signal['unit'],signal['source'],signal['field']['channel']),('V','source_1',1))
-        self.assertEqual(prepared['aliases'],{'Voltage':'voltage'})
-        raw['analysis']['signals'][0]['signals'].append(dict(name='other',signal='Voltage'))
-        prepared,_=_prepare_mapping(raw,self.root)
-        self.assertNotIn('Voltage',prepared['aliases'])
 
     def test_override_paths_use_main_directory_and_remove_old_origins(self):
         """替换输入按主文件解释，替换time整对象后不输出已删除clock的来源。"""

@@ -1,4 +1,4 @@
-# chronaxis.execution.record_sample_series
+# `chronaxis.execution.record_sample_series`
 
 把一小批实际记录及有效截止交给既有样本统计/选择核。
 
@@ -53,4 +53,4 @@ CalculationSeries。
 
 类型/时间错误。
 
-源码：[`src/chronaxis/execution/record_sample_series.py:12`](../../../src/chronaxis/execution/record_sample_series.py#L12)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_sample_series.py:12`](../../../src/chronaxis/execution/record_sample_series.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

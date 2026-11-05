@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-config_version: 3
+config_version: 4
 dataset:
   name: charge_example
 sources:

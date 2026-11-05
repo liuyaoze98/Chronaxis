@@ -43,7 +43,7 @@ class EventCalculationOriginTests(unittest.TestCase):
         choice = dict(mode=mode)
         if mode == 'fixed':
             choice.update(value='1s', driver='power')
-        return dict(config_version=3,
+        return dict(config_version=4,
                     dataset=dict(name='data', entity='device', session='session',
                                  domain=dict(start='0s', end='3s')),
                     sources=[source], signals=[dict(name=name, source='input', field=name,

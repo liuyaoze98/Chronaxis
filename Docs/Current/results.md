@@ -19,9 +19,10 @@
 | 窗口及窗口内统计 | 窗口结果.csv | “父事件区间”对应事件表编号；多个编号表示多个父事件。 |
 | 请求与响应 | 配对结果.csv | 请求/响应编号对应事件表；判定时间和延迟单位都是秒。 |
 | select明细 | 选择结果.csv | 每次更新的值、单位、有效性及满足/未知状态。 |
+| v4 结果聚合 | 聚合结果.csv | 一行对应一个组，列出数值、单位、候选数、参与数及排除原因。文件名带本次运行的时间后缀。 |
 | 明确请求贡献或输入追溯 | 贡献明细.csv、输入追溯.csv | 保留所需定位和原因，普通任务不产生。 |
 
-共同的数据集、对象和会话名称只在run_manifest.json的presentation.common_identity保存；出现多个值时，对应身份列才加入表中。区间编号只在本次输出内有效，不能用来跨次运行关联。信号CSV及ASC/BLF原帧导出保持各自的数据格式，不使用这套中文结果表结构。
+共同的数据集、对象和会话名称只在本次运行清单的presentation.common_identity保存；出现多个值时，对应身份列才加入表中。区间编号只在本次输出内有效，不能用来跨次运行关联。信号CSV及ASC/BLF原帧导出保持各自的数据格式，不使用这套中文结果表结构。
 
 时间列用精确十进制秒，例如922.346858001，不丢纳秒精度。时间保留分析原点，既不从首个结果重新归零，也不猜测日期或时区。绝对时间坐标仍按实际数值显示，不能把没有日期的信息解释成某天的钟表时间。
 
@@ -29,13 +30,22 @@
 
 没有事件时保留空表和清单中的result_messages，例如“条件曾成立，但持续时间不满足要求”；不会补一行能量0。全局存在条件未知可以与某个已输出区间的完整计算并存。多个指标中一项缺失，不会把其他项一起标为完整或失败。
 
+<a id="v4-aggregations"></a>
+## 聚合结果怎样读
+
+[结果聚合](aggregations.md)说明配置、来源与分组。默认“聚合结果”表逐行提供名称、分组、数值、单位、状态、原因及候选／参与／排除数。候选数＝参与数＋定义排除数＋质量排除数；这些是行数，不是时间覆盖率。
+
+`included_partial_count`是参与数中允许纳入的部分值数量。配对结果另有matched_count、timeout_count、insufficient_observation_count、pending_count，分别表示成功、确认超时、观测不足和未决请求。discovery_complete说明是否有足够观测确认所有候选均被识别。例如条件中断期间可能漏掉事件，此值就不能等同于“已有数值完整”。
+
+同时看status、reason、quality。功率示例load_mean_p95为19.5W，候选2、参与2；完整实际表见[统计结果示例](example-results.md#power-statistics-yaml)。
+
 ## 为程序选择交换格式
 
 默认格式名是readable_csv，无需手填。程序若依赖原表字段，在配置根部增加以下内容；已有outputs时在原映射内增加tables，不再写第二个outputs：
 
 ```yaml
-outputs:                      # 只在程序需要原交换字段时增加这段
-  tables: csv                 # 保留原平坦表、字段名和整数纳秒
+outputs:         # 只在程序需要原交换字段时增加这段
+  tables: csv    # 保留原平坦表、字段名和整数纳秒
 ```
 
 可选值只有readable_csv、csv、jsonl。csv使用events.csv、calculations.csv等原表；jsonl使用对应逐行JSON（包含row_schema_version和row）。选择一种只输出一套结果，不同时生成可读和交换副本。Python的iter_events、iter_calculations等始终返回原类型化行，不受输出格式影响；低层AnalysisResult构造器仍保留csv默认，AnalysisRunner跟随计划默认readable_csv。
@@ -62,15 +72,31 @@ outputs:                      # 只在程序需要原交换字段时增加这段
 | input_trace / iter_input_trace | 明确请求详细追溯时的输入位置和记录种类 |
 | contributions / iter_contributions | outputs.contributions=full时的逐消息贡献与跳过原因 |
 
-计算行按实际操作返回SummaryCalculationRow或带coverage_status的SummaryCoverageCalculationRow；普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean在minimum_coverage大于0时返回coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。显式填0与省略不会因此增加coverage_status。各类完整字段均列在[摘要行模型](reference/chronaxis.results.summary.md)。公开表的相同字段在CSV和JSONL中表示同一事实。
+计算行按实际操作返回SummaryCalculationRow或带coverage_status的SummaryCoverageCalculationRow；普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean，以及 v4 的样本计数、方差、标准差、RMS 和样本分位数，在 minimum_coverage 大于 0 时返回 coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。显式填0与省略不会因此增加coverage_status。各类完整字段均列在[摘要行模型](reference/chronaxis.results.summary.md)。公开表的相同字段在CSV和JSONL中表示同一事实。
 
-显式csv输出原CSV结果表和run_manifest.json；jsonl每行包含版本与row字段对象。清单记录本次运行和实际写出的表；可读模式的row_counts按合并后的文件行数计数。配置标识不是输入文件内容的哈希，不能据此认定两次数据相同。
+显式csv输出带时间后缀的CSV结果表和运行清单；jsonl每行包含版本与row字段对象。清单记录本次运行和实际写出的表；可读模式的row_counts按合并后的文件行数计数。配置标识不是输入文件内容的哈希，不能据此认定两次数据相同。
 
 <a id="result-publication"></a>
 
 ## 结果怎样发布
 
-程序先在目标目录旁创建临时目录，写完全部结果表、请求的导出文件和运行清单，并确认文件已关闭，再把整个临时目录改名为目标目录。发布前失败不会把半套结果作为正式完成结果交付；已有目标目录不会被覆盖。当前目录发布只验收Windows。这里的一次发布指整个结果目录，不是逐个文件分别提交。
+结果目录可以重复使用。一次输出的表、清单和请求的导出目录共用一个时间后缀，例如：
+
+```text
+results/
+  会话结果_20261103_091500_123456.csv
+  run_manifest_20261103_091500_123456.json
+  会话结果_20261103_092000_654321.csv
+  run_manifest_20261103_092000_654321.json
+```
+
+后缀使用本机时间，格式为年月日、时分秒、微秒；同刻或并发冲突时再加序号。它表示这批输出的命名时间，不改变报文时间、结果起止或能量。已有文件不会被覆盖，未请求的表和导出也不会生成。
+
+程序先完成本次临时文件并关闭，再逐项发布，最后发布完成清单。只有清单存在且状态为completed，才表示这批输出已齐全。普通失败会清理本次拥有的文件；进程被强杀或断电可能留下没有完成清单的文件，不能把它们当成已完成结果。下次运行不会扫描或删除旧结果。本页结果发布流程已在Windows环境验证；其他平台尚未完成相同验证。
+
+CLI完成摘要的manifest、API返回的OutputManifest.manifest_path指向本次实际清单；从清单outputs读取本次表文件。不要拼固定run_manifest.json，也不要在同目录内随意挑一个同类CSV或“最新文件”。同一AnalysisResult在关闭前可再次write到同一目录或其他目录，无需重读输入。显式work_dir仍须为新目录，与可复用的最终结果目录不同。
+
+本章表格中的事件结果.csv、会话结果.csv等是文件用途名称；实际运行均在扩展名前增加时间后缀。随手册保存的教学结果保留生成时的文件名，下载链接不代表新运行使用固定文件名。
 
 ## 缺失不是零
 
@@ -158,7 +184,7 @@ print(names)             # ['MISSING', 'STALE']
 <a id="result-relationships"></a>
 ## 用实例ID关联三张结果表
 
-同一个hot规则可能产生很多次事件，因此rule_id=hot只是配置定义名称，不能唯一定位某次活动。关联时使用同一运行目录中的event_id/segment_id；不要按表的行顺序拼接，也不要只按sequence跨表拼接。
+同一个hot规则可能产生很多次事件，因此rule_id=hot只是配置定义名称，不能唯一定位某次活动。关联时使用同一运行清单关联文件中的event_id/segment_id；不要按表的行顺序拼接，也不要只按sequence跨表拼接。
 
 以下来自[activity.yaml](examples/activity.yaml)的一次真实运行。为了表格可读，E1、S1仅是这里的显示缩写，实际字段保存下列完整字符串；使用时读取自己这次输出中的ID，不硬编码本例字符串。
 
@@ -193,7 +219,7 @@ for row in result.iter_calculations():
 
 ## 独立导出
 
-信号CSV与CAN报文导出由outputs单独请求，文件索引位于exports.jsonl，目录在exports/下。原值和插值后的估计值有各自文件；CAN原帧与重建帧不混称原始输入。导出网格不改变分析积分间隔，见[导出](exports.md)。
+信号CSV与CAN报文导出由outputs单独请求，实际索引路径和导出目录分别由本次 manifest 的 `exports.index_file`、`exports.directory` 给出；它们带本次运行的时间后缀。原值和插值后的估计值有各自文件；CAN原帧与重建帧不混称原始输入。导出网格不改变分析积分间隔，见[导出](exports.md)。
 
 <a id="metadata-output"></a>
 ## 运行清单的摘要与详细字段

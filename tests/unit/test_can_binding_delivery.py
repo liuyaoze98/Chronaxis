@@ -17,7 +17,6 @@ from chronaxis.results.budget import ResourceBudget
 from chronaxis.results.frame_patch import FrameRebuildRule, DBCFramePatch
 from chronaxis.configuration import load_configuration
 from chronaxis.configuration.initialization import initialize_configuration
-from chronaxis.migration import import_legacy_ini
 from chronaxis.legacy.records import field_from_dict
 from test_frame_exports import raw
 
@@ -101,21 +100,6 @@ class CANBindingDeliveryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             FrameRebuildRule(0,'0x1000',('V',),is_extended=False)
 
-    def test_ini_mapping_uses_the_same_default_validity(self):
-        """旧INI映射缺省valid_for时仍用明确周期，不另设强制字段规则。
-
-        参数: 无。返回: None。异常: 配置、导入或断言错误；只读取随包合成DBC。
-        """
-        with tempfile.TemporaryDirectory(prefix='binding-default-ini-',dir='work') as directory:
-            path=initialize_configuration('ini-mapping',Path(directory)/'mapping',style='minimal')
-            mapping=load_configuration(path).data
-            signal=mapping['analysis']['signals'][0]
-            self.assertNotIn('valid_for',signal)
-            signal['period']='1s'
-            imported=import_legacy_ini((path.parent/'source.ini').read_bytes(),mapping,
-                mode='sclicer_single',base_dir=path.parent,device_label='home')
-            self.assertIsNotNone(imported.plan,imported.report.to_dict())
-            self.assertEqual(imported.plan.signals[0].definition.valid_for_ns,3_000_000_000)
 
 
 if __name__=='__main__':

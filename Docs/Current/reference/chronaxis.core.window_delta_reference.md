@@ -1,4 +1,4 @@
-# chronaxis.core.window_delta_reference
+# `chronaxis.core.window_delta_reference`
 
 用独立Python遍历计算完整窗口变化量，作为数组实现的数值参考。
 
@@ -54,4 +54,4 @@ WindowDeltaResult；阈值比较包含等于，UNKNOWN不伪装False。
 
 输入结构错误；定宽数值溢出以质量结果返回。
 
-源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

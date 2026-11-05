@@ -20,6 +20,8 @@ Workflow name只填文件名，不带`.github/workflows/`。Environment name与�
 
 ## 验证和上传
 
+先公开并核对本次 GitHub Release 附件；当前工作流使用 `contents:read`，不能读取草稿。
+
 在[GitHub Actions](https://github.com/liuyaoze98/Chronaxis/actions/workflows/pypi-publish.yml)选择Run workflow，分支选main。
 
 1. 不勾选上传选项先运行：只下载两个发行文件，核对源码标签及SHA256，不上传PyPI。

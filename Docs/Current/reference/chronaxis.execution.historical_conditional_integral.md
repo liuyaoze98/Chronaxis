@@ -1,4 +1,4 @@
-# chronaxis.execution.historical_conditional_integral
+# `chronaxis.execution.historical_conditional_integral`
 
 分步读取已保存的数据块并计算条件积分。每次step最多处理一块；读到末尾并整理好最终结果后返回False。完成前不能把目前的累计值当作完整结果。
 
@@ -53,7 +53,7 @@ HistoricalConditionalIntegral(blocks: HistoricalConditionalBlocks, observation: 
 ```
 
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:25`](../../../src/chronaxis/execution/historical_conditional_integral.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:25`](../../../src/chronaxis/execution/historical_conditional_integral.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-__init__"></a>
 ### `HistoricalConditionalIntegral.__init__`
@@ -81,7 +81,7 @@ None，初始化新的分析 owner。
 配置、预算、分配和取消原样传播。
 持续清理失败时原异常.historical_conditional_integral_cleanup_owner 提供重试 close 的句柄。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:33`](../../../src/chronaxis/execution/historical_conditional_integral.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:33`](../../../src/chronaxis/execution/historical_conditional_integral.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-closed"></a>
 ### `HistoricalConditionalIntegral.closed`
@@ -111,7 +111,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:93`](../../../src/chronaxis/execution/historical_conditional_integral.py#L93)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:93`](../../../src/chronaxis/execution/historical_conditional_integral.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-failed"></a>
 ### `HistoricalConditionalIntegral.failed`
@@ -141,7 +141,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:98`](../../../src/chronaxis/execution/historical_conditional_integral.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:98`](../../../src/chronaxis/execution/historical_conditional_integral.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-finished"></a>
 ### `HistoricalConditionalIntegral.finished`
@@ -171,7 +171,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:103`](../../../src/chronaxis/execution/historical_conditional_integral.py#L103)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:103`](../../../src/chronaxis/execution/historical_conditional_integral.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-result"></a>
 ### `HistoricalConditionalIntegral.result`
@@ -205,7 +205,7 @@ CalculationResult。
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:108`](../../../src/chronaxis/execution/historical_conditional_integral.py#L108)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:108`](../../../src/chronaxis/execution/historical_conditional_integral.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-_require_open"></a>
 ### `HistoricalConditionalIntegral._require_open`
@@ -237,7 +237,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:118`](../../../src/chronaxis/execution/historical_conditional_integral.py#L118)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:118`](../../../src/chronaxis/execution/historical_conditional_integral.py#L118)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-_reserve"></a>
 ### `HistoricalConditionalIntegral._reserve`
@@ -264,7 +264,7 @@ HistoricalConditionalIntegral._reserve(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:123`](../../../src/chronaxis/execution/historical_conditional_integral.py#L123)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:123`](../../../src/chronaxis/execution/historical_conditional_integral.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-_release"></a>
 ### `HistoricalConditionalIntegral._release`
@@ -291,7 +291,7 @@ HistoricalConditionalIntegral._release(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:136`](../../../src/chronaxis/execution/historical_conditional_integral.py#L136)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:136`](../../../src/chronaxis/execution/historical_conditional_integral.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-_finish"></a>
 ### `HistoricalConditionalIntegral._finish`
@@ -319,7 +319,7 @@ HistoricalConditionalIntegral._finish() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:148`](../../../src/chronaxis/execution/historical_conditional_integral.py#L148)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:148`](../../../src/chronaxis/execution/historical_conditional_integral.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-step"></a>
 ### `HistoricalConditionalIntegral.step`
@@ -351,7 +351,7 @@ True为消费了一块，False为已完成；完成后重复调用安全。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:167`](../../../src/chronaxis/execution/historical_conditional_integral.py#L167)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:167`](../../../src/chronaxis/execution/historical_conditional_integral.py#L167)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-HistoricalConditionalIntegral-close"></a>
 ### `HistoricalConditionalIntegral.close`
@@ -379,4 +379,4 @@ None，重复成功关闭无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_conditional_integral.py:204`](../../../src/chronaxis/execution/historical_conditional_integral.py#L204)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/historical_conditional_integral.py:204`](../../../src/chronaxis/execution/historical_conditional_integral.py#L204)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

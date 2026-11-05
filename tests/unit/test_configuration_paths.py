@@ -111,7 +111,7 @@ class ConfigurationPathsTests(unittest.TestCase):
         # 原始字节01解出3V，00解出1V；在0/1/2秒更新，积分3×1+1×1=4Vs。
         for name, seconds, byte in (('part1.asc', 0, '01'), ('part2.asc', 1, '00'), ('part10.ASC', 2, '01')):
             (self.root / name).write_text(f'base hex timestamps absolute\n{seconds} 1 100 Rx d 2 {byte} 00\n', encoding='utf-8')
-        config = dict(config_version=3, dataset=dict(name='folder', domain=dict(start='0s', end='2s')),
+        config = dict(config_version=4, dataset=dict(name='folder', domain=dict(start='0s', end='2s')),
                       sources=[dict(paths=str(self.root), dbc_by_channel={'1': str(shared / 'sample.dbc')})],
                       signals=[dict(name='voltage', field=dict(frame_id='0x100', signal='Voltage'),
                                     dtype='float64', unit='V', valid_for='3s')],

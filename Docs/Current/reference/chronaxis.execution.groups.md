@@ -1,4 +1,4 @@
-# chronaxis.execution.groups
+# `chronaxis.execution.groups`
 
 把已封存且全部来源EOF的历史归并为完整同一时刻更新组。
 
@@ -58,7 +58,7 @@ class DecodedTimeGroup
 |`time_ns`|int|是|无|完整组的共同纳秒坐标。|
 |`samples`|tuple[[HistorySample](chronaxis.execution.history_records.md#api-HistorySample), ...]|是|无|同组全部原观测，不套用last_by_sequence策略。|
 
-源码：[`src/chronaxis/execution/groups.py:23`](../../../src/chronaxis/execution/groups.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:23`](../../../src/chronaxis/execution/groups.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-DecodedTimeGroup-__post_init__"></a>
 ### `DecodedTimeGroup.__post_init__`
@@ -92,7 +92,7 @@ TypeError/ValueError/OverflowError为结构或身份错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/groups.py:29`](../../../src/chronaxis/execution/groups.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:29`](../../../src/chronaxis/execution/groups.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator"></a>
 ## `_TimeGroupIterator`
@@ -109,7 +109,7 @@ _TimeGroupIterator(owner, *, sources=None)
 ```
 
 
-源码：[`src/chronaxis/execution/groups.py:46`](../../../src/chronaxis/execution/groups.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:46`](../../../src/chronaxis/execution/groups.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator-__init__"></a>
 ### `_TimeGroupIterator.__init__`
@@ -141,7 +141,7 @@ _TimeGroupIterator.__init__(owner, *, sources=None)
 - `ValueError`：时间组来源子集包含未知来源。
 - `ValueError`：时间组来源子集不能重复。
 
-源码：[`src/chronaxis/execution/groups.py:55`](../../../src/chronaxis/execution/groups.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:55`](../../../src/chronaxis/execution/groups.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator-_advance"></a>
 ### `_TimeGroupIterator._advance`
@@ -172,7 +172,7 @@ None，必要时heap增加一个前瞻。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/groups.py:110`](../../../src/chronaxis/execution/groups.py#L110)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:110`](../../../src/chronaxis/execution/groups.py#L110)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator-__iter__"></a>
 ### `_TimeGroupIterator.__iter__`
@@ -200,7 +200,7 @@ _TimeGroupIterator.__iter__() -> '_TimeGroupIterator'
 
 返回类型：'[_TimeGroupIterator](chronaxis.execution.groups.md#api-_TimeGroupIterator)'。
 
-源码：[`src/chronaxis/execution/groups.py:128`](../../../src/chronaxis/execution/groups.py#L128)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:128`](../../../src/chronaxis/execution/groups.py#L128)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator-__next__"></a>
 ### `_TimeGroupIterator.__next__`
@@ -233,7 +233,7 @@ StopIteration为全部历史校验完成；预算/损坏/关闭错误不丢组�
 
 返回类型：[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)。
 
-源码：[`src/chronaxis/execution/groups.py:135`](../../../src/chronaxis/execution/groups.py#L135)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:135`](../../../src/chronaxis/execution/groups.py#L135)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_TimeGroupIterator-close"></a>
 ### `_TimeGroupIterator.close`
@@ -262,7 +262,7 @@ None，重复关闭安全。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/groups.py:184`](../../../src/chronaxis/execution/groups.py#L184)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/groups.py:184`](../../../src/chronaxis/execution/groups.py#L184)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 ## 内部匿名回调
 

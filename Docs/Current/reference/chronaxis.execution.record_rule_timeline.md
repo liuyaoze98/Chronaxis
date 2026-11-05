@@ -1,4 +1,4 @@
-# chronaxis.execution.record_rule_timeline
+# `chronaxis.execution.record_rule_timeline`
 
 用最新必要信号在线推进一条规则，不保存输入历史或第二时间轴。
 
@@ -29,6 +29,7 @@
 |[`RecordRuleTimeline.clock_group`](#api-RecordRuleTimeline-clock_group)|待定旧条件已经交付后，接收报警累计所需的完整驱动对。|
 |[`RecordRuleTimeline.finish`](#api-RecordRuleTimeline-finish)|所有必要来源EOF后按真实末端封口，不外推到请求结束。|
 |[`RecordRuleTimeline.outcome`](#api-RecordRuleTimeline-outcome)|冻结规则结果原因，不读取输入。|
+|[`RecordRuleTimeline.count_evidence`](#api-RecordRuleTimeline-count_evidence)|判定规则实际观测是否覆盖整个目标会话，保留发现是否完整的证据。|
 |[`RecordRuleTimeline.duration_result`](#api-RecordRuleTimeline-duration_result)|借出明确请求的最终累计；空来源返回无观测。|
 |[`RecordRuleTimeline.closed`](#api-RecordRuleTimeline-closed)|返回资源关闭状态。|
 |[`RecordRuleTimeline.close`](#api-RecordRuleTimeline-close)|释放自有批、表达式和检测器，保留失败槽供重试。|
@@ -60,7 +61,7 @@ RecordRuleTimeline(plan, request, state, budget, step_ns, driver, observation_en
 ```
 
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:20`](../../../src/chronaxis/execution/record_rule_timeline.py#L20)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:20`](../../../src/chronaxis/execution/record_rule_timeline.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-__init__"></a>
 ### `RecordRuleTimeline.__init__`
@@ -93,7 +94,7 @@ RecordRuleTimeline.__init__(plan, request, state, budget, step_ns, driver, obser
 
 原构造错误附record_rule_cleanup_owner。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:23`](../../../src/chronaxis/execution/record_rule_timeline.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:23`](../../../src/chronaxis/execution/record_rule_timeline.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-extend_observation"></a>
 ### `RecordRuleTimeline.extend_observation`
@@ -118,7 +119,7 @@ None。
 
 回退。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:78`](../../../src/chronaxis/execution/record_rule_timeline.py#L78)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:91`](../../../src/chronaxis/execution/record_rule_timeline.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-_open"></a>
 ### `RecordRuleTimeline._open`
@@ -144,7 +145,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:88`](../../../src/chronaxis/execution/record_rule_timeline.py#L88)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:101`](../../../src/chronaxis/execution/record_rule_timeline.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-begin"></a>
 ### `RecordRuleTimeline.begin`
@@ -169,7 +170,7 @@ None。
 
 构造/范围错误附可清理owner。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:93`](../../../src/chronaxis/execution/record_rule_timeline.py#L93)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:106`](../../../src/chronaxis/execution/record_rule_timeline.py#L106)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-_snapshot"></a>
 ### `RecordRuleTimeline._snapshot`
@@ -196,7 +197,7 @@ None。
 
 求值原错。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:122`](../../../src/chronaxis/execution/record_rule_timeline.py#L122)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:135`](../../../src/chronaxis/execution/record_rule_timeline.py#L135)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-_commit"></a>
 ### `RecordRuleTimeline._commit`
@@ -222,7 +223,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:159`](../../../src/chronaxis/execution/record_rule_timeline.py#L159)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:177`](../../../src/chronaxis/execution/record_rule_timeline.py#L177)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-_drain_before"></a>
 ### `RecordRuleTimeline._drain_before`
@@ -247,7 +248,7 @@ None。
 
 原推进错。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:201`](../../../src/chronaxis/execution/record_rule_timeline.py#L201)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:227`](../../../src/chronaxis/execution/record_rule_timeline.py#L227)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-before_group"></a>
 ### `RecordRuleTimeline.before_group`
@@ -272,7 +273,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:215`](../../../src/chronaxis/execution/record_rule_timeline.py#L215)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:241`](../../../src/chronaxis/execution/record_rule_timeline.py#L241)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-after_group"></a>
 ### `RecordRuleTimeline.after_group`
@@ -297,7 +298,7 @@ None。
 
 原求值/事件错误，失败只能关闭。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:230`](../../../src/chronaxis/execution/record_rule_timeline.py#L230)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:256`](../../../src/chronaxis/execution/record_rule_timeline.py#L256)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-clock_group"></a>
 ### `RecordRuleTimeline.clock_group`
@@ -323,7 +324,7 @@ None。
 累计顺序/预算错误。
 不改变事件坐标，也不把请求域外样本算入报警；只借它们确定裁剪分母。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:251`](../../../src/chronaxis/execution/record_rule_timeline.py#L251)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:277`](../../../src/chronaxis/execution/record_rule_timeline.py#L277)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-finish"></a>
 ### `RecordRuleTimeline.finish`
@@ -348,7 +349,7 @@ None。
 
 原错，未完成不发布结果。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:260`](../../../src/chronaxis/execution/record_rule_timeline.py#L260)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:286`](../../../src/chronaxis/execution/record_rule_timeline.py#L286)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-outcome"></a>
 ### `RecordRuleTimeline.outcome`
@@ -376,7 +377,32 @@ RuleOutcome。
 
 有事件时始终保留计数；缺信号和UNKNOWN不被解释成条件为假。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:290`](../../../src/chronaxis/execution/record_rule_timeline.py#L290)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:316`](../../../src/chronaxis/execution/record_rule_timeline.py#L316)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+
+<a id="api-RecordRuleTimeline-count_evidence"></a>
+### `RecordRuleTimeline.count_evidence`
+
+判定规则实际观测是否覆盖整个目标会话，保留发现是否完整的证据。
+
+```python
+RecordRuleTimeline.count_evidence(domain)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`domain`|Interval &#124; None|是|无|位置或关键字。显式请求的分析范围；省略时按已观测范围评估对象发现的完整性。|
+
+#### 返回说明
+
+已观测、至少部分可判定、完整、质量位。
+
+#### 异常说明
+
+规则尚未结束或已关闭时沿outcome检查传播。
+
+源码：[`src/chronaxis/execution/record_rule_timeline.py:343`](../../../src/chronaxis/execution/record_rule_timeline.py#L343)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-duration_result"></a>
 ### `RecordRuleTimeline.duration_result`
@@ -404,7 +430,7 @@ tuple或None。
 
 未完成错误。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:316`](../../../src/chronaxis/execution/record_rule_timeline.py#L316)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:362`](../../../src/chronaxis/execution/record_rule_timeline.py#L362)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-closed"></a>
 ### `RecordRuleTimeline.closed`
@@ -432,7 +458,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:325`](../../../src/chronaxis/execution/record_rule_timeline.py#L325)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:371`](../../../src/chronaxis/execution/record_rule_timeline.py#L371)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-RecordRuleTimeline-close"></a>
 ### `RecordRuleTimeline.close`
@@ -458,4 +484,4 @@ None。
 
 原关闭错。
 
-源码：[`src/chronaxis/execution/record_rule_timeline.py:329`](../../../src/chronaxis/execution/record_rule_timeline.py#L329)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/execution/record_rule_timeline.py:375`](../../../src/chronaxis/execution/record_rule_timeline.py#L375)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

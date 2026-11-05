@@ -24,7 +24,7 @@
 
 例如`current > 5 and mode == 1`表示“电流大于5A，而且模式值等于1”。current和mode必须已经在signals里定义，不能直接写未绑定的原文件列名。
 
-所有支持的算符、两种函数及其参数已经逐项列在[表达式完整说明](expressions.md)：包括一元正负号、四种算术、六种比较、and/or/not、链式比较、括号、常量、枚举、类型和单位限制，以及不支持写法。本页只讲这些计算结果在时间上如何使用。
+所有支持的算符、内置函数及其参数已经逐项列在[表达式完整说明](expressions.md)：包括一元正负号、四种算术、六种比较、and/or/not、链式比较、括号、常量、枚举、类型和单位限制，以及不支持写法。本页只讲这些计算结果在时间上如何使用。
 
 ## UNKNOWN不是False
 
@@ -40,7 +40,7 @@
 |rising_edge/falling_edge|条件由假变真或由真变假的时刻。例如2秒由关闭变为开启，只记录2秒这个点，不代表开启持续了多久。|
 |start_only|例如按钮按下后取5秒数据，这5秒内再次按下会被忽略。5秒后按钮仍未松开，也不会自动再触发。|
 |Event（事件记录）|记录一次活动的开始、确认、结束及原因，或者记录一次触发时刻。|
-|Segment（时间片段）|围绕事件取出用于分析的数据范围。例如活动前后各多取1秒。parent_event_ids记录这个片段关联了哪些事件。|
+|Segment（时间片段）|用于分析或导出的连续时间范围，可以来自事件、窗口或整个会话。例如活动前后各多取1秒。parent_event_ids记录这个片段关联了哪些事件。|
 
 例如设备第0～1秒工作，第1～2秒停止，第2～3秒又工作。若规则无需等待确认，就记录两次活动。
 
@@ -59,8 +59,8 @@
 |条件全未知、无观测或零长度请求|不能据此返回正常0；保留具体原因|
 |有效贡献正负抵消得到0|正常数值0，不能与无数据混为一谈|
 
-`partial_policy="report"`表示保留已知部分的计算值，`"strict"`表示所需数据不完整时不给数值。`minimum_coverage`是使用者要求的最低数据覆盖比例，不能补齐缺失数据。完整数值对照见[运行参数](execution.md)。读取公开结果时同时查看`value`、`unit`、`status`、`reason`和`quality`。普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean在minimum_coverage大于0时返回coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。公开摘要不提供requested_coverage/value_coverage/condition_coverage三个数值比例。字段见[公开摘要行](reference/chronaxis.results.summary.md)。
+`partial_policy="report"`表示保留已知部分的计算值，`"strict"`表示所需数据不完整时不给数值。`minimum_coverage`是使用者要求的最低数据覆盖比例，不能补齐缺失数据。完整数值对照见[运行参数](execution.md)。读取公开结果时同时查看`value`、`unit`、`status`、`reason`和`quality`。普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean，以及 v4 的样本计数、方差、标准差、RMS 和样本分位数，在 minimum_coverage 大于 0 时返回 coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。公开摘要不提供requested_coverage/value_coverage/condition_coverage三个数值比例。字段见[公开摘要行](reference/chronaxis.results.summary.md)。
 
 ## 时间积分与逐消息累计的区别
 
-真实时间积分按时间差计算；`legacy_sum`按每条目标消息的表达式结果累加。例如表达式已写`power * period`，4000W×0.1s=400J，两条同刻消息仍是800J，不能再乘一次dt。缺值消息跳过且有原因，不拿上一条值补算。详见[迁移与消息能量](migration.md)。
+真实时间积分按时间差计算；`legacy_sum`按每条目标消息的表达式结果累加。例如表达式已写`power * period`，4000W×0.1s=400J，两条同刻消息仍是800J，不能再乘一次dt。缺值消息跳过且有原因，不拿上一条值补算。详见[逐消息计算](message-calculations.md)。

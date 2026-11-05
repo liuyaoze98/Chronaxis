@@ -1,4 +1,4 @@
-# chronaxis.core.calculations_reference
+# `chronaxis.core.calculations_reference`
 
 独立计算保持值积分、时间统计、TRUE时长和真实样本统计。
 
@@ -35,12 +35,16 @@ compute_reference接收CalculationSeries和CalculationDefinition，先裁剪观�
 
 ```python
 from math import fsum, isfinite
-from .calculations import CalculationSeries, CalculationDefinition, make_calculation_result, calculation_unit
+from .calculations import CalculationSeries, CalculationDefinition, make_calculation_result, calculation_conversion
 from .models import Interval
 from .numeric import ScalarValue, to_float_reference
 from .types import QualityFlag as Q, SignalDType as D, Truth
-from .selection import SelectionRow, require_selection
+from .selection import SelectionRow, require_selection, partial_selection
 from .record_intervals import clipped_record_seconds, require_record_step
+from .calculation_output_reference import convert_result_reference
+from .affine import affine_reference
+from .moments import MOMENTS, TIME_MOMENTS, compute_moment_series
+from .quantiles import SAMPLE_QUANTILES, compute_quantile_series
 ```
 
 </details>
@@ -76,7 +80,7 @@ TypeError为无类型占位输入；ValueError为select标量执行或dtype不�
 - `ValueError`：select需选择行流入口。
 - `ValueError`：指标算子与输入dtype不匹配。
 
-源码：[`src/chronaxis/core/calculations_reference.py:34`](../../../src/chronaxis/core/calculations_reference.py#L34)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_reference.py:38`](../../../src/chronaxis/core/calculations_reference.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-select_reference"></a>
 ## `select_reference`
@@ -107,7 +111,7 @@ SelectionRow迭代器；UNKNOWN保留诊断，FALSE排除，窗口右端不输�
 遍历完整时间轴，只处理请求与观测交集内的真实目标依赖更新。
     合成边界与条件独自更新不产生行；无效值保持原质量，不填正常零。
 
-源码：[`src/chronaxis/core/calculations_reference.py:58`](../../../src/chronaxis/core/calculations_reference.py#L58)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_reference.py:62`](../../../src/chronaxis/core/calculations_reference.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-compute_reference"></a>
 ## `compute_reference`
@@ -115,7 +119,7 @@ SelectionRow迭代器；UNKNOWN保留诊断，FALSE排除，窗口右端不输�
 独立计算请求窗口内的积分、样本/时间统计或BOOL TRUE时长。
 
 ```python
-compute_reference(series, spec, *, step_ns=None)
+compute_reference(series, spec, *, step_ns=None, budget=None)
 ```
 
 ### 参数
@@ -125,6 +129,7 @@ compute_reference(series, spec, *, step_ns=None)
 |`series`|[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)|是|无|位置或关键字。完整CalculationSeries；数值统计需同一数值dtype，duration需BOOL。|
 |`spec`|[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)|是|无|位置或关键字。CalculationDefinition，给出左闭右开纳秒窗口、算子、输出单位和数据不全时的处理方式。|
 |`step_ns`|int &#124; None|否|None|仅关键字。所选固定或DBC周期，单位纳秒且大于0；None表示采用实际时间间隔，不生成第二套时间坐标。|
+|`budget`|ResourceBudget &#124; None|否|None|仅关键字。可传入本次运行共享的内存账本。精确样本分位数据此为候选样本与排序空间预付费用，普通统计沿用原路径。|
 
 ### 返回说明
 
@@ -143,4 +148,4 @@ CalculationResult。未换单位的整数极值可保持精确整数；积分和
     最后应用一次输出单位转换并分类结果。正常零与无效数据位置暂存的值分别处理。
     临时值和诊断列表只用于本次计算，不修改调用者的CalculationSeries。
 
-源码：[`src/chronaxis/core/calculations_reference.py:87`](../../../src/chronaxis/core/calculations_reference.py#L87)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/calculations_reference.py:98`](../../../src/chronaxis/core/calculations_reference.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

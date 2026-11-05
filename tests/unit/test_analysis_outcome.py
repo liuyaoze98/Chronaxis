@@ -26,7 +26,7 @@ class AnalysisOutcomeTests(unittest.TestCase):
         """参数: (秒,值)序列、规则类别、是否无信号常量。返回: 最小公共配置。异常: 无。"""
         rule=dict(name='active',rule_type=rule_type,condition='True' if constant else 'power > 0')
         if rule_type=='condition_duration':rule['minimum_duration']='2s'
-        return dict(config_version=3,dataset=dict(name='sample',domain=dict(start='0s',end='4s')),
+        return dict(config_version=4,dataset=dict(name='sample',domain=dict(start='0s',end='4s')),
             sources=[dict(name='table',source_type='memory',rows=[dict(time=f'{time}s',
                 values={} if constant else dict(raw=value)) for time,value in values])],
             signals=[] if constant else [dict(name='power',field='raw',dtype='float64',unit='W',valid_for='5s')],
@@ -40,6 +40,31 @@ class AnalysisOutcomeTests(unittest.TestCase):
             self.assertEqual(outcome.to_dict(),result.run_manifest['run']['analysis_outcome'])
             rows=tuple(result.iter_calculations())
         return outcome,rows
+
+    def test_where_unobserved_branch_affects_only_rules_that_select_it(self):
+        """缺失分支在未选时不能把全程已知的FALSE报告为无观测。
+
+        参数: 无。返回: None。异常: 未选空来源改变结果，或选择该来源后漏报未知。
+        """
+        clock = dict(time_type='relative', unit='s', clock='common')
+        for backend in ('reference', 'numpy'):
+            for last in (1., -1.):
+                raw = self.config([(0, 1.), (2, last), (4, last)])
+                raw.update(config_version=4, calculations=[])
+                raw['sources'][0]['time'] = clock
+                raw['sources'].append(dict(name='other', source_type='memory', rows=[], time=clock))
+                raw['signals'][0]['source'] = 'table'
+                raw['signals'].append(dict(name='unused', source='other', field='absent', unit='W',
+                                           dtype='float64', valid_for='5s'))
+                raw['rules'][0]['condition'] = 'where(power > 0, power, unused) < 0'
+                outcome, _ = self.outcome(raw, backend)
+                rule, = outcome.rules
+                self.assertEqual(rule.event_count, 0)
+                if last == 1.:
+                    self.assertEqual((rule.status, rule.has_unknown), ('condition_not_met', False))
+                else:
+                    self.assertTrue(rule.has_unknown)
+                    self.assertIn('unused', rule.unobserved_signals)
 
     def test_rule_reasons_and_calculation_counts(self):
         """参数: 无。返回: None。异常: 断言失败；未满足与未知分别说明。"""

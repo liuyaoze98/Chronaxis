@@ -74,7 +74,7 @@ class ConfigurationTextTests(unittest.TestCase):
         self.assertEqual(bad.stderr,'')
         diagnostic=json.loads(bad.stdout)
         self.assertFalse(diagnostic['valid'])
-        error=diagnostic['error']
+        error=diagnostic['errors'][0]
         self.assertEqual((error['code'],error['path'],error['object_name']),
             ('invalid_duration','$.signals[0].valid_for','信号 current'))
         self.assertEqual(error['source'],str(self.path))
@@ -85,7 +85,7 @@ class ConfigurationTextTests(unittest.TestCase):
         self.assertEqual(human.stdout,'');self.assertIn('信号 current',human.stderr)
         missing=self.command('explain',self.root/'missing.yml','--format','json')
         self.assertEqual(missing.returncode,1)
-        self.assertEqual(json.loads(missing.stdout)['error']['code'],'load_error')
+        self.assertEqual(json.loads(missing.stdout)['errors'][0]['code'],'load_error')
 
     def test_text_static_path_never_opens_declared_csv_or_creates_output(self):
         """默认文本和机器报告共同保持静态边界；实际打开只允许配置。参数: 无。返回: None。异常: 断言。"""

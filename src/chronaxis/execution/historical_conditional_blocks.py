@@ -16,6 +16,8 @@ observation可指定原domain内已核实计算域，两路原样传递并按其
 """
 
 # 只组合原有限回读和公共时间输入协议，数值核及旧I/O保持独立。
+from ..core.moments import MOMENTS
+from ..core.quantiles import SAMPLE_QUANTILES
 from dataclasses import replace
 from ..core.decoded_binding import DecodedBindings
 from ..core.expression import CompiledExpression
@@ -59,11 +61,8 @@ class HistoricalConditionalBlocks:
             raise ValueError('条件历史分块需要合法后端和正整数batch_intervals')
         # 三种samples与select保留原值更新标记，条件或TTL边界不会生成真实样本/选择行。
         if spec.operation not in ('integral', 'min_time', 'max_time', 'time_weighted_mean', 'duration',
-                           'sample_minimum', 'sample_maximum', 'sample_mean', 'select'):
+                           'sample_count', 'sample_minimum', 'sample_maximum', 'sample_mean', 'select', *MOMENTS, *SAMPLE_QUANTILES):
             raise ValueError('条件历史输入只支持已接线的时间、样本与select口径')
-        # 行流保留数值/BOOL/ENUM原值单位，不借联合条件静默转换输出。
-        if spec.operation == 'select' and spec.output_unit not in (None, compiled.root.unit):
-            raise ValueError('条件select历史输入必须保留原表达式单位')
         if compiled.bindings.identity != bindings.identity:
             raise ValueError('值表达式与当前实际绑定不同')
         require_calculation_plan(compiled, spec, condition)
@@ -93,7 +92,7 @@ class HistoricalConditionalBlocks:
                                                     observation=self._observation)
             # BOOL分块仅提供原条件列；内部duration配置不执行时长统计或改原请求。
             building = 1
-            condition_spec = replace(spec, operation='duration', output_unit=None)
+            condition_spec = replace(spec, operation='duration', output_unit=None, ddof=None, q=None)
             self._blocks[1] = HistoricalCalculationBlocks(history, context, bindings, condition, condition_spec,
                                                     backend=backend, batch_intervals=batch_intervals,
                                                     observation=self._observation)

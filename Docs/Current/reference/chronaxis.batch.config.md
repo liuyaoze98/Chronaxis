@@ -1,4 +1,4 @@
-# chronaxis.batch.config
+# `chronaxis.batch.config`
 
 加载批量清单；显式jobs保存路径，template展开为每文件独立计划。
 
@@ -66,4 +66,4 @@ from chronaxis import load_batch_plan
 plan = load_batch_plan("batch.yaml")
 ```
 
-源码：[`src/chronaxis/batch/config.py:14`](../../../src/chronaxis/batch/config.py#L14)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/batch/config.py:14`](../../../src/chronaxis/batch/config.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

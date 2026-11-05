@@ -1,4 +1,4 @@
-# chronaxis.core.temporal_memory_reference
+# `chronaxis.core.temporal_memory_reference`
 
 从已绑定的内存信号计算条件时间轴，再用参考检测器找出活动和点事件。
 
@@ -27,6 +27,7 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .enum_codes import memory_histories, aligned_scalar
 from .expression import CompiledExpression
 from .binding import SignalBindings
 from .expression_reference import evaluate_reference
@@ -35,6 +36,8 @@ from .state import align_reference, common_timeline
 from .temporal import ConditionTick, ConditionTimeline, TemporalRule
 from .temporal_reference import detect_reference
 from .types import SignalDType as D, QualityFlag as Q, Truth
+from .where_updates import contains_where, reference_active, reference_updates
+from .calculations_memory_reference import _scalar_context
 ```
 
 </details>
@@ -69,7 +72,7 @@ TypeError/ValueError为类型、非BOOL根或会话冲突。
 - `TypeError`：memory时序需要真实内存SignalBindings，不能使用解码历史绑定。
 - `ValueError`：时序条件需BOOL且规则与绑定session一致。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:29`](../../../src/chronaxis/core/temporal_memory_reference.py#L29)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:32`](../../../src/chronaxis/core/temporal_memory_reference.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_evidence"></a>
 ## `_evidence`
@@ -96,7 +99,7 @@ ConditionTick tuple，实际因果、EOF及诊断保留。
 
 模型/保持/表达式校验错误传播，不吞UNKNOWN原因。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:48`](../../../src/chronaxis/core/temporal_memory_reference.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:51`](../../../src/chronaxis/core/temporal_memory_reference.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-build_timeline_reference"></a>
 ## `build_timeline_reference`
@@ -126,7 +129,7 @@ TypeError、ValueError或OverflowError: 计划、同步、输入或时间协议�
 
 分配本次依赖历史和完整时间轴，不重排原行，不读取或解码旧来源。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:96`](../../../src/chronaxis/core/temporal_memory_reference.py#L96)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:107`](../../../src/chronaxis/core/temporal_memory_reference.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-detect_memory_reference"></a>
 ## `detect_memory_reference`
@@ -153,4 +156,4 @@ Event tuple，来源/质量/稳定ID均来自当前任务。
 
 时间/计划/批大小错误传播，内部候选不作为最终输出。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:151`](../../../src/chronaxis/core/temporal_memory_reference.py#L151)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:162`](../../../src/chronaxis/core/temporal_memory_reference.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

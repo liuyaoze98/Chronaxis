@@ -346,6 +346,7 @@ class SignalSeries:
     source_ref: tuple[SourceRef, ...]  # 每行实际来源/字段/会话。
     labels: tuple[str, ...] = ()  # enum固定域，其他类型为空。
     original_values: tuple[int | float | bool | str | None, ...] | None = None  # 原无效诊断可保留。
+    code: NumericArray | None = None  # 请求 enum_code 时携带同坐标整数原码。
 
     def __post_init__(self) -> None:
         """检查单列布局、有效性和样本身份，再复制为只读数组。
@@ -365,7 +366,7 @@ class SignalSeries:
         # 标签有效性与转换一致性由上游绑定提供。
         require_text(self.unit, 'series.unit')
         # 数值结构校验包括enum域、非有限正常值与禁止原因。
-        numeric = NumericArray(self.dtype, self.values, self.valid, self.quality, self.labels)
+        numeric = NumericArray(self.dtype, self.values, self.valid, self.quality, self.labels, self.code)
         # 时间与稳定序号始终分列int64，禁止混宽表float。
         for array in (self.time_ns, self.sequence):
             # ndarray子类或隐式cast均不接受。
@@ -419,7 +420,8 @@ class SignalSeries:
             无主动异常；数组结构已在构造时检查。
         """
         # 时间与序号各占8字节，有效性占1字节、质量占2字节；值按类型占1或8字节，标签另计。
-        return sum(array.nbytes for array in (self.time_ns, self.values, self.valid, self.quality, self.sequence))
+        total = sum(array.nbytes for array in (self.time_ns, self.values, self.valid, self.quality, self.sequence))
+        return total if self.code is None else total + self.code.values.nbytes + self.code.valid.nbytes + self.code.quality.nbytes
 
 
 @dataclass(frozen=True)

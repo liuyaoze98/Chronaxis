@@ -24,7 +24,7 @@ __all__ = [
     "parse_datetime_ns", "parse_duration", "shift_times_reference", "time_deltas_reference",
     "AnalysisPlan", "PlanValidationError", "load_analysis_plan", "validate_analysis_plan", "explain_analysis_plan",
     "PresetSpec", "PlanFragment", "build_preset", "resolve_preset_roles",
-    "AnalysisResult", "OutputManifest", "RunMetadata", "AnalysisError", "ResultClosedError",
+    "AnalysisResult", "OutputManifest", "ExportManifest", "RunMetadata", "AnalysisError", "ResultClosedError",
     "AnalysisRunner",
     "BatchJob", "BatchJobResult", "BatchReport", "BatchRunner", "BatchPlan", "load_batch_plan", "run_batch",
 ]
@@ -52,10 +52,10 @@ def __getattr__(name: str):
         # 取得类本身不创建session或输入；validate/explain仍只消费冻结计划声明。
         from .runner import AnalysisRunner
         return AnalysisRunner
-    if name in ('AnalysisResult', 'OutputManifest', 'RunMetadata', 'AnalysisError', 'ResultClosedError'):
+    if name in ('AnalysisResult', 'OutputManifest', 'ExportManifest', 'RunMetadata', 'AnalysisError', 'ResultClosedError'):
         # 结果层只依赖标准库和核心模型，访问入口也不启动任何读取或发布。
-        from .results import AnalysisResult, OutputManifest, RunMetadata, AnalysisError, ResultClosedError
-        return {'AnalysisResult': AnalysisResult, 'OutputManifest': OutputManifest, 'RunMetadata': RunMetadata,
+        from .results import AnalysisResult, OutputManifest, ExportManifest, RunMetadata, AnalysisError, ResultClosedError
+        return {'AnalysisResult': AnalysisResult, 'OutputManifest': OutputManifest, 'ExportManifest': ExportManifest, 'RunMetadata': RunMetadata,
                 'AnalysisError': AnalysisError, 'ResultClosedError': ResultClosedError}[name]
     if name in ('PresetSpec', 'PlanFragment', 'build_preset', 'resolve_preset_roles'):
         # 预设是外部领域构建层，根包普通导入仍仅加载标准库时间协议。

@@ -20,8 +20,9 @@ from math import isfinite
 
 from .binding import SignalDefinition
 from .declarations import DeclarationBindings
+from .unit_conversion import binding_version, require_config_version
+from .unit_registry import REGISTRY_VERSION, resolve_unit
 from .types import SignalDType
-from .units import UNIT_TABLE
 from .validation import require_identifier, require_text
 from ..timebase.conversion import require_int64_ns
 
@@ -62,6 +63,7 @@ class ExpressionParameter:
     name: str  # 表达式使用的安全简单名称。
     value: int | float  # 构造后规范为有限原生float。
     unit: str  # 明确单位标签；不按对方信号自动改写。
+    config_version: int = field(default=4, kw_only=True)  # 参数与绑定同版本，默认使用当前规则。
     unit_status: str = field(init=False)  # 只说明标签是否属于已有单位表。
 
     def __post_init__(self) -> None:
@@ -71,6 +73,8 @@ class ExpressionParameter:
         返回: None，value规范成FLOAT64可精确表示的原生float。
         异常: TypeError为非原生数值；ValueError为非有限、有损整数或声明非法。
         """
+        # 独立参数也携带规则版本，不由绑定事后重解释。
+        require_config_version(self.config_version)
         if type(self.name) is not str or type(self.unit) is not str:
             raise TypeError('表达式参数名称和单位需要原生str')
         require_identifier(self.name, 'parameter.name')
@@ -85,7 +89,8 @@ class ExpressionParameter:
         if not isfinite(number) or type(self.value) is int and int(number) != self.value:
             raise ValueError('表达式参数必须能精确表示为有限FLOAT64')
         object.__setattr__(self, 'value', number)
-        object.__setattr__(self, 'unit_status', 'verified' if self.unit in UNIT_TABLE else 'unverified')
+        known = resolve_unit(self.unit) is not None
+        object.__setattr__(self, 'unit_status', 'verified' if known else 'unverified')
 
     @property
     def dtype(self) -> SignalDType:
@@ -107,6 +112,7 @@ class MessageDeclarations:
     parameters: tuple[ExpressionParameter, ...] = ()  # 有明确单位的配置参数。
     derived_names: tuple[str, ...] = ()  # 当前指标显式登记的局部派生名。
     message_policy: str = 'current_message-v1'  # 只看当前字典，不沿用缓存或TTL。
+    config_version: int | None = field(default=None, kw_only=True)  # 继承原声明，参数必须同版。
     identity: str = field(init=False)  # 完整原配置与消息配置的独立声明SHA。
 
     def __post_init__(self) -> None:
@@ -126,6 +132,12 @@ class MessageDeclarations:
         if (type(self.parameters) is not tuple or type(self.derived_names) is not tuple
                 or any(type(item) is not ExpressionParameter for item in self.parameters)):
             raise TypeError('消息参数与局部派生名称需要typed tuple')
+        # 原声明即使无信号也有明确版本，参数不能引入另一套单位规则。
+        version = self.declarations.config_version
+        if self.config_version is not None and require_config_version(self.config_version) != version:
+            raise ValueError('消息声明config_version与原声明不一致')
+        binding_version(self.parameters, version)
+        object.__setattr__(self, 'config_version', version)
         if type(self.message_policy) is not str or self.message_policy != 'current_message-v1':
             raise ValueError('消息policy仅支持current_message-v1')
         # 全原计划名称都受保护，不能利用selected source隐藏其他来源的名称冲突。
@@ -149,10 +161,22 @@ class MessageDeclarations:
             parts += tuple(value for item in self.parameters
                            for value in (item.name, item.value.hex(), item.unit, item.unit_status))
             parts += (str(len(self.derived_names)), *self.derived_names)
+            # 空信号/仅参数绑定也必须携带当前规则版本。
+            parts += (str(self.config_version), REGISTRY_VERSION)
             object.__setattr__(self, 'identity', _hash_parts(parts))
         finally:
             # 只清本层新身份容器，原声明/参数仍由调用者持有。
             parts = None
+
+    @property
+    def extensions(self):
+        """读取宿主注册。参数: 无。返回: 冻结注册或None。异常: 无。"""
+        return self.declarations.extensions
+
+    @property
+    def lookups(self):
+        """读取普通声明中的标定表。参数: 无。返回: 冻结tuple。异常: 无。"""
+        return self.declarations.lookups
 
     @property
     def signals(self) -> tuple[SignalDefinition, ...]:
@@ -246,6 +270,7 @@ class MessageBindings:
 
     declarations: MessageDeclarations  # 单源消息配置及完整原声明身份。
     evidence: MessageSourceEvidence  # 执行工厂核实后的仓事实，非手造即证明。
+    config_version: int | None = field(default=None, kw_only=True)  # 继承消息声明，不允许运行时切换。
     identity: str = field(init=False)  # 独立message-binding-v1身份。
 
     def __post_init__(self) -> None:
@@ -256,6 +281,11 @@ class MessageBindings:
         """
         if not isinstance(self.declarations, MessageDeclarations) or not isinstance(self.evidence, MessageSourceEvidence):
             raise TypeError('消息运行绑定需要MessageDeclarations和MessageSourceEvidence')
+        # 运行绑定不重设消息参数和信号的已冻结版本。
+        version = self.declarations.config_version
+        if self.config_version is not None and require_config_version(self.config_version) != version:
+            raise ValueError('消息运行绑定config_version与声明不一致')
+        object.__setattr__(self, 'config_version', version)
         if (self.evidence.source != self.declarations.source
                 or self.evidence.session_id != self.declarations.declarations.session_id):
             raise ValueError('消息仓证据的来源或会话与当前声明不符')
@@ -272,6 +302,16 @@ class MessageBindings:
         finally:
             # 原错误可被调用者保留，执行层抵费后不由本TB留下新身份容器。
             parts = None
+
+    @property
+    def extensions(self):
+        """读取宿主注册。参数: 无。返回: 冻结注册或None。异常: 无。"""
+        return self.declarations.extensions
+
+    @property
+    def lookups(self):
+        """读取消息声明中的标定表。参数: 无。返回: 冻结tuple。异常: 无。"""
+        return self.declarations.lookups
 
     @property
     def signals(self) -> tuple[SignalDefinition, ...]:

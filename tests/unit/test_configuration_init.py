@@ -64,7 +64,7 @@ class ConfigurationInitTests(unittest.TestCase):
         checked=self.command('validate',target/'plan.yaml');self.assertEqual(checked.returncode,0,checked.stderr)
         completed=self.command('run',target/'plan.yaml','--output',self.root/'result')
         self.assertEqual(completed.returncode,0,completed.stderr)
-        with (self.root/'result/会话结果.csv').open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
+        with next((self.root/'result').glob('会话结果_*.csv')).open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
         self.assertEqual(float(rows[0]['voltage_area（V*s）']),13)
         self.assertEqual(self.command('config','init','can-asc','--output',target).returncode,1)
         self.assertEqual(self.command('config','init','missing','--output',self.root/'missing').returncode,2)

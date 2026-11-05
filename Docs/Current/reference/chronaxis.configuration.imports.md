@@ -1,6 +1,6 @@
-# chronaxis.configuration.imports
+# `chronaxis.configuration.imports`
 
-展开明确列出的一层本地公共定义，供分析文件和INI映射文件加载使用。
+展开分析配置明确列出的一层本地公共定义。
 
 主配置按imports顺序引入sources/signals/derived，最后追加本地声明；重复名称
 直接拒绝。导入文件不能再导入文件，也不能声明运行、规则或输出字段。
@@ -20,7 +20,7 @@
 |[`_reject`](#api-_reject)|在实际声明处拒绝导入。|
 |[`_source_paths`](#api-_source_paths)|固定一项来源中的公开文件路径。|
 |[`_append_definitions`](#api-_append_definitions)|追加一个文件的定义并迁移字段位置。|
-|[`expand_document_imports`](#api-expand_document_imports)|展开分析配置或映射中analysis的公共定义。|
+|[`expand_document_imports`](#api-expand_document_imports)|展开当前分析配置的公共定义。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
@@ -62,7 +62,7 @@ _reject(document, path, message, code='invalid_import', hint=None)
 
 PlanValidationError。
 
-源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_source_paths"></a>
 ## `_source_paths`
@@ -92,7 +92,7 @@ None。
 
 只改本次副本，metadata内任意path不解释为文件；不调用stat或resolve。
 
-源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_append_definitions"></a>
 ## `_append_definitions`
@@ -108,9 +108,9 @@ _append_definitions(data, prefix, document, source_prefix, merged, locations, or
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`data`|dict|是|无|位置或关键字。当前文件的sources/signals数组及derived名称对象；原内容不修改。|
-|`prefix`|tuple[str &#124; int, ...]|是|无|位置或关键字。合并后定义的父路径；分析配置为()，INI映射为(analysis,)。|
+|`prefix`|tuple[str &#124; int, ...]|是|无|位置或关键字。合并后定义的父路径；当前分析配置的sources、signals和derived均从根级()开始。|
 |`document`|[ConfigurationDocument](chronaxis.configuration.models.md#api-ConfigurationDocument)|是|无|位置或关键字。本次解析后的配置文档，包含原生值、声明文件路径及仅在加载期使用的行列。|
-|`source_prefix`|tuple[str &#124; int, ...]|是|无|位置或关键字。原文件中的分析父路径；公共文件为()，主映射文件为(analysis,)。|
+|`source_prefix`|tuple[str &#124; int, ...]|是|无|位置或关键字。原文件中sources、signals和derived定义所在的父路径，用于记录字段来源；当前主分析文件和公共定义文件均从根级开始，传入空元组()。|
 |`merged`|dict|是|无|位置或关键字。本次合并的定义容器，按声明顺序追加，不覆盖同名项。|
 |`locations`|dict|是|无|位置或关键字。合并字段路径到原文行列的临时映射，在本次调用中追加。|
 |`origins`|dict|是|无|位置或关键字。合并路径到ConfigurationOrigin的临时映射，计划完成后释放。|
@@ -126,12 +126,12 @@ None。
 
 names保存首个同名声明的位置；所有修改仅发生在本次展开容器，无全局状态。
 
-源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-expand_document_imports"></a>
 ## `expand_document_imports`
 
-展开分析配置或映射中analysis的公共定义。
+展开当前分析配置的公共定义。
 
 ```python
 expand_document_imports(document)
@@ -154,4 +154,4 @@ expand_document_imports(document)
 未声明imports时原样返回，不增加复制或文件读取。批量文件通过每个子计划
 自行使用imports；纯字典API不调用此函数。版本错误由原入口拒绝，不读其导入。
 
-源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

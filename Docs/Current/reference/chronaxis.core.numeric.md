@@ -1,4 +1,4 @@
-# chronaxis.core.numeric
+# `chronaxis.core.numeric`
 
 把已解码的单个值转换成声明类型，并提供独立的标量运算参考实现。
 
@@ -36,7 +36,7 @@ memory_series_reference从已有内存行生成信号历史，保留来源和纳
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import isfinite
 from operator import eq, ne, lt, le, gt, ge
 from types import MappingProxyType
@@ -74,8 +74,10 @@ class ScalarValue
 |`valid`|bool|否|True|无效不代表正常0。|
 |`quality`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag)|否|QualityFlag.NONE|输入原因和计算失败原因。|
 |`labels`|tuple[str, ...]|否|()|仅enum有固定公开逻辑域。|
+|`code`|'[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue) &#124; None'|否|None|仅 enum_code 需要的原整数，可与标签有不同有效性。|
+|`partial`|bool|否|False|此值是否使用了可估算但覆盖不全的变换输入；有效数值可以同时携带这个标志。|
 
-源码：[`src/chronaxis/core/numeric.py:48`](../../../src/chronaxis/core/numeric.py#L48)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:48`](../../../src/chronaxis/core/numeric.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-ScalarValue-__post_init__"></a>
 ### `ScalarValue.__post_init__`
@@ -105,7 +107,7 @@ TypeError: 字段类型或枚举标签域结构不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/numeric.py:64`](../../../src/chronaxis/core/numeric.py#L64)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:66`](../../../src/chronaxis/core/numeric.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-result_dtype"></a>
 ## `result_dtype`
@@ -141,7 +143,7 @@ TypeError: 类型声明或字面量证明标志的类型不合法。
 
 返回类型：[SignalDType](chronaxis.core.types.md#api-SignalDType)。
 
-源码：[`src/chronaxis/core/numeric.py:129`](../../../src/chronaxis/core/numeric.py#L129)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:136`](../../../src/chronaxis/core/numeric.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_exact_float"></a>
 ## `_exact_float`
@@ -168,7 +170,7 @@ float值及NONE，或None及PRECISION_LOSS/NONFINITE。
 
 返回类型：tuple[float &#124; None, [QualityFlag](chronaxis.core.types.md#api-QualityFlag)]。
 
-源码：[`src/chronaxis/core/numeric.py:177`](../../../src/chronaxis/core/numeric.py#L177)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:184`](../../../src/chronaxis/core/numeric.py#L184)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-to_float_reference"></a>
 ## `to_float_reference`
@@ -199,7 +201,7 @@ TypeError/ValueError为结构或逻辑dtype。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:203`](../../../src/chronaxis/core/numeric.py#L203)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:210`](../../../src/chronaxis/core/numeric.py#L210)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-binary_reference"></a>
 ## `binary_reference`
@@ -240,7 +242,7 @@ TypeError、ValueError: 输入模型、运算类型或枚举比较域不符合�
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:224`](../../../src/chronaxis/core/numeric.py#L224)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:231`](../../../src/chronaxis/core/numeric.py#L231)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-unary_reference"></a>
 ## `unary_reference`
@@ -272,7 +274,7 @@ TypeError/ValueError为输入或未支持逻辑/运算。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:297`](../../../src/chronaxis/core/numeric.py#L297)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:304`](../../../src/chronaxis/core/numeric.py#L304)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-normalize_reference"></a>
 ## `normalize_reference`
@@ -313,7 +315,7 @@ TypeError: 声明、质量或原生标量结构不合法。
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:326`](../../../src/chronaxis/core/numeric.py#L326)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:333`](../../../src/chronaxis/core/numeric.py#L333)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-memory_series_reference"></a>
 ## `memory_series_reference`
@@ -321,7 +323,7 @@ TypeError: 声明、质量或原生标量结构不合法。
 从当前内存来源提取一个字段，转换后生成信号历史。
 
 ```python
-memory_series_reference(bindings: SignalBindings, name: str) -> SignalSeries
+memory_series_reference(bindings: SignalBindings, name: str, *, capture_code=False) -> SignalSeries
 ```
 
 ### 参数
@@ -330,6 +332,7 @@ memory_series_reference(bindings: SignalBindings, name: str) -> SignalSeries
 |---|---|---|---|---|
 |`bindings`|[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)|是|无|位置或关键字。当前真实SignalBindings；name为其中已定义的简单别名。 原行时间使用整数纳秒，来源offset_ns只作为显式时间偏移应用一次。|
 |`name`|str|是|无|位置或关键字。name为其中已定义的简单别名。     原行时间使用整数纳秒，来源offset_ns只作为显式时间偏移应用一次。|
+|`capture_code`|bool|否|False|仅关键字。本次表达式需要 enum_code 时才保留映射前的整数。|
 
 ### 返回说明
 
@@ -346,4 +349,4 @@ SignalSeries。保存正常转换值或无效原值，以及质量、时间、�
 
 返回类型：[SignalSeries](chronaxis.core.state.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/core/numeric.py:437`](../../../src/chronaxis/core/numeric.py#L437)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/core/numeric.py:444`](../../../src/chronaxis/core/numeric.py#L444)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

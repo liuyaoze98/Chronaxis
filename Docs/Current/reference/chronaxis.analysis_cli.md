@@ -1,4 +1,4 @@
-# chronaxis.analysis_cli
+# `chronaxis.analysis_cli`
 
 把公共AnalysisRunner的检查、解释和实际分析接到CLI，提供文本和JSON报告。
 
@@ -6,7 +6,7 @@
 validate和explain直接调用同一AnalysisRunner接口，不读取CSV、DBC或旧日志，不建立
 运行目录。序列化逐项选择公开报告字段，不遍历任意对象或另做一套配置校验。
 报告中的预算和有效期是声明，execution_ready不证明实际输入已核实。
-run先检查新输出与工作路径，再交给AnalysisRunner运行，在同一结果上write并关闭。
+run先检查输出根与独占工作路径，再交给AnalysisRunner运行，在同一结果上write并关闭。
 只有真实关闭成功才打印成功摘要；失败保留原原因链和现存产物，不假报回滚。
 
 本模块仅在实际计划命令时加载；CLI帮助与参数错误仍只需要标准库。
@@ -24,7 +24,7 @@ run先检查新输出与工作路径，再交给AnalysisRunner运行，在同一
 |[`validation_json`](#api-validation_json)|保留公共校验报告的全部固定字段和未验证警告。|
 |[`explanation_json`](#api-explanation_json)|将依赖、节点后端、历史需求和预算声明完整交给CLI使用者。|
 |[`run_static`](#api-run_static)|只加载配置并输出共享AnalysisRunner报告，不触碰来源或创建分析产物。|
-|[`_new_output`](#api-_new_output)|在扫描来源前拒绝已有输出、历史目录和必然冲突的工作路径。|
+|[`_new_output`](#api-_new_output)|在扫描来源前检查可复用输出根、历史目录和冲突工作路径。|
 |[`_cause_chain`](#api-_cause_chain)|取得有限且不重复的真实cause链，供诊断和致命异常判断共用。|
 |[`run_analysis`](#api-run_analysis)|复用真实分析和发布，成功关闭所有结果资源后才报告completed。|
 
@@ -64,7 +64,7 @@ validation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-explanation_json"></a>
 ## `explanation_json`
@@ -91,7 +91,7 @@ explanation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-run_static"></a>
 ## `run_static`
@@ -106,7 +106,7 @@ run_static(arguments) -> int
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。|
+|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。|
 
 ### 返回说明
 
@@ -122,12 +122,12 @@ run_static(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:67`](../../../src/chronaxis/analysis_cli.py#L67)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:67`](../../../src/chronaxis/analysis_cli.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_new_output"></a>
 ## `_new_output`
 
-在扫描来源前拒绝已有输出、历史目录和必然冲突的工作路径。
+在扫描来源前检查可复用输出根、历史目录和冲突工作路径。
 
 ```python
 _new_output(arguments) -> Path
@@ -154,7 +154,7 @@ FileExistsError或原lstat错误为文件失败；PlanValidationError为Ref或�
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/analysis_cli.py:97`](../../../src/chronaxis/analysis_cli.py#L97)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:97`](../../../src/chronaxis/analysis_cli.py#L97)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-_cause_chain"></a>
 ## `_cause_chain`
@@ -181,7 +181,7 @@ _cause_chain(error) -> tuple
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/analysis_cli.py:127`](../../../src/chronaxis/analysis_cli.py#L127)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:129`](../../../src/chronaxis/analysis_cli.py#L129)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-run_analysis"></a>
 ## `run_analysis`
@@ -196,7 +196,7 @@ run_analysis(arguments) -> int
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan或ini路径，以及output、backend、process_count等适用选项。字段由[CLI](../migration.md)生成，通常直接使用命令行入口。|
+|`arguments`|argparse.Namespace|是|无|位置或关键字。命令行解析后得到的参数对象；属性包括该命令的plan路径，以及output、backend、process_count等适用选项。字段由[CLI](../cli.md)生成，通常直接使用命令行入口。|
 
 ### 返回说明
 
@@ -209,8 +209,8 @@ run_analysis(arguments) -> int
 
 ### 副作用说明
 
-AnalysisRunner建立专用暂存并读来源，write按原合同安装新目录；不删除产物。
+AnalysisRunner建立专用暂存并读来源，write在输出根新增本次文件；不删除已有产物。
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:143`](../../../src/chronaxis/analysis_cli.py#L143)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/analysis_cli.py:145`](../../../src/chronaxis/analysis_cli.py#L145)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

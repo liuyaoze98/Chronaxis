@@ -20,7 +20,7 @@ class ConfigurationDelimiterTests(unittest.TestCase):
         with TemporaryDirectory(prefix='chronaxis-delimiter-') as folder:
             root=Path(folder);data=root/'input.csv'
             data.write_text('time;power\n0;3\n1;1\n2;3\n',encoding='utf-8')
-            raw=dict(config_version=3,dataset=dict(name='csv',domain=dict(start='0s',end='2s')),
+            raw=dict(config_version=4,dataset=dict(name='csv',domain=dict(start='0s',end='2s')),
                 sources=[dict(source_type='signal_csv',path=str(data),time_column='time',
                               time=dict(unit='s'),reader=dict(delimiter=';'))],
                 signals=[dict(name='power',field='power',dtype='float64',unit='W',valid_for='3s')],

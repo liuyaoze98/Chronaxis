@@ -57,12 +57,14 @@ def check_expressions():
         ('x < y', False), ('x <= 6', True), ('x > y', True), ('x >= 6', True),
         ('0 <= x < 10', True), ('x > 5 and y < 3', True), ('x < 5 or alarm', True),
         ('not alarm', False), ('abs(-x)', 6.0), ('abs(-3)', 3),
+        # 当前表达式支持平方和平方根；负数平方根是运行时无效值。
+        ('square(x)', 36.0), ('sqrt(square(x))', 6.0), ('sqrt(-x)', None),
         ('isclose(voltage, 400, atol=0.1, rtol=0)', True),
         ('isclose(102, 100, atol=0, rtol=0.02)', True),
         ('x + y * 2', 10.0), ('(x + y) * 2', 16.0), ('1e3', 1000.0),
         ('True', True), ('False', False), ('True == alarm', True),
         ("mode == 'charge'", True), ("mode != 'idle'", True),
-        ('voltage * current', 4000.0), ('power * period', 400.0),
+        ('voltage * current', 4000.0), ('voltage / current', 40.0), ('power * period', 400.0),
         ('current * period', 1.0), ('voltage + 1', 401.0), ('current / 2', 5.0),
         ('i / 2', 3.0), ('i < 18446744073709551616', True), ('i == u', True),
         ('missing > 0', None), ('False and missing > 0', False),
@@ -75,7 +77,7 @@ def check_expressions():
     rejected = [
         'x ** 2', 'x % 2', 'x // 2', 'x @ y', 'i & 1', 'i | 1', 'i ^ 1', '~i',
         'i << 1', 'i >> 1', 'x in [1, 2]', 'x not in [1, 2]', 'x is None', 'x is not None',
-        'battery.current', 'x[0]', 'x[1:3]', 'min(x,y)', 'round(x)', 'sqrt(x)',
+        'battery.current', 'x[0]', 'x[1:3]', 'min(x,y)', 'round(x)',
         'float(i)', "signal('x')", 'x.mean()', 'abs(*[x])', 'abs(x=x)',
         'isclose(x,y)', 'isclose(x,y,atol=0.1)', 'isclose(x,y,atol=1/10,rtol=0)',
         'isclose(x,y,atol=x,rtol=0)', 'isclose(x,y,atol=-1,rtol=0)',
@@ -83,11 +85,14 @@ def check_expressions():
         'x if alarm else y', 'x = 2', '(x := 2)', 'lambda x: x', "__import__('os')",
         'None', '1j', "b'abc'", "'a'+'b'", '1e309', 'true',
         'x and y', 'not x', 'alarm + True', "mode < 'charge'", "mode == 'charging'",
-        'x + i', 'x > i', 'voltage + current', 'voltage / current', 'unknown_signal',
+        'x + i', 'x > i', 'voltage + current', 'unknown_signal',
     ]
     records = []
     for expression, expected in accepted:
         compiled = compile_expression(expression, bindings)
+        if expression == 'voltage / current':
+            # 400V/10A得到40Ohm；当前单位代数允许该物理量。
+            assert compiled.root.unit == 'Ohm'
         reference = evaluate_memory_reference(compiled, (0,))[0].value
         array = evaluate_memory_numpy(compiled, np.array([0], dtype=np.int64)).value
         # invalid位置可能有占位值，比较时必须先查看valid。
@@ -155,7 +160,7 @@ def check_clock_offset(destination):
     异常: 时间转换或数值与预期8不符时抛错；不推断真实设备同步关系。
     """
     config = {
-        'config_version': 3,
+        'config_version': 4,
         'dataset': {'name': 'clock_demo', 'domain': {'start': '0s', 'end': '1s'}},
         'sources': [
             {'name': 'a', 'source_type': 'memory', 'time': {'clock': 'test_button'},

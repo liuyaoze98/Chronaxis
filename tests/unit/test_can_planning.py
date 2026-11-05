@@ -40,14 +40,14 @@ def can_config():
     # 原定位允许点号；简单别名power与原DBC名称保持不同职责。
     field = dict(channel=1,  signal='Power.value', frame_id=256,
                  is_extended=False, is_fd=False)
-    return public_configuration(dict(config_version=3,
+    return public_configuration(dict(config_version=4,
         dataset=dict(name='can_static', entity='synthetic', session='can_session',
                      domain=dict(start='0s', end='4s')),
         sources=[dict(name='bus', source_type='can_blf', path='work/can-planning-missing.BLF',
                       legacy_profile=PROFILE_ID, decode_scope='all',
                       dbc_by_channel={'1': 'work/can-planning-missing.dbc'},
                       time=dict(time_type='relative', unit='s', origin='can_static_origin'), reader_options={'decode_policy':'legacy'})],
-        signals=[dict(name='power', source='bus', field=field, dtype='float64', unit='W',
+        signals=[dict(name='power', source='bus', field=field, dtype='float64', input_unit='W', unit='W',
                       valid_for='2s', same_time_policy='last_by_sequence')],
         derived={'twice': dict(expr='power * 2', unit='W')},
         rules=[dict(name='active', rule_type='condition_duration', condition='power > 1', minimum_duration='0s')],
@@ -88,6 +88,9 @@ class CANPlanningTests(unittest.TestCase):
         schema = json.loads((ROOT / 'Docs' / 'Schema' / 'analysis.schema.json').read_text(encoding='utf-8'))
         Draft202012Validator.check_schema(schema)
         cls.validator = Draft202012Validator(schema)
+        # 内部结构规范先加载；下方禁止业务来源I/O的探针仍完整保留。
+        from chronaxis.planning.diagnostic_collection import schema_validator
+        schema_validator('analysis.schema.json')
 
     def guard_static(self):
         """阻断输入文件、旧依赖和子进程动作，返回可恢复的上下文栈。
@@ -263,13 +266,13 @@ class CANPlanningTests(unittest.TestCase):
             config = deepcopy(original)
             del config['sources'][0][removed]
             with self.subTest(removed=removed):
-                self.assert_invalid(config, path_prefix='$.sources[0]', code='missing_field' if removed!='path' else 'invalid_config')
+                self.assert_invalid(config, path_prefix='$.sources[0]', code='missing_field')
         relative = deepcopy(original)
         del relative['sources'][0]['time']['clock']
         # 单来源可使用自动时间基准；显式空origin仍不是省略。
         self.validator.validate(current_fixture(relative))
         self.assertEqual(AnalysisPlan.from_dict(current_fixture(relative)).sources[0].config.timebase.origin, '__source_bus')
-        self.assert_invalid(with_value(relative, ('sources', 0, 'time', 'clock'), None), path_prefix='$.sources[0].time')
+        self.assert_invalid(with_value(relative, ('sources', 0, 'time', 'clock'), None), path_prefix='$.sources[0].time', code='invalid_type')
         self.assert_invalid(with_value(original, ('sources', 0, 'time', 'time_type'), 'absolute'),
                             path_prefix='$.sources[0].time.clock')
         utc = deepcopy(original)
@@ -290,7 +293,7 @@ class CANPlanningTests(unittest.TestCase):
         self.assert_invalid(with_value(original, ('config_version',), 1), path_prefix='$.config_version', code='invalid_choice')
         # 旧配置版本均拒绝，不通过语义版本字段补偿。
         self.assert_invalid(with_value(original, ('config_version',), 2), path_prefix='$.config_version', code='invalid_choice')
-        self.assert_invalid(with_value(original, ('config_version',), 3.0), schema_reject=False,
+        self.assert_invalid(with_value(original, ('config_version',), 4.0), schema_reject=False,
                             path_prefix='$.config_version', code='invalid_choice')
         # 原始CSV使用新的raw_can_csv显式布局；旧转换器名称继续拒绝。
         # can_asc已有独立公共入口，不能拿BLF专用profile冒充其配置。

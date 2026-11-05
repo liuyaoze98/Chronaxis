@@ -1,4 +1,4 @@
-# chronaxis
+# `chronaxis`
 
 公开时间转换、分析计划、公共AnalysisRunner和流式结果入口。
 
@@ -17,7 +17,7 @@ BLF沿用sclicer-functions-v1旧读取链；新文本CAN使用can-text-v1独立�
 
 ## 相关类型
 
-[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)、[AnalysisResult](chronaxis.results.result.md#api-AnalysisResult)、[AnalysisRunner](chronaxis.runner.md#api-AnalysisRunner)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[PlanFragment](chronaxis.planning.preset_models.md#api-PlanFragment)、[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)、[PresetSpec](chronaxis.planning.preset_models.md#api-PresetSpec)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)、[TimeConversion](chronaxis.timebase.conversion.md#api-TimeConversion)、[TimeOverflowError](chronaxis.timebase.conversion.md#api-TimeOverflowError)
+[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)、[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)、[AnalysisResult](chronaxis.results.result.md#api-AnalysisResult)、[AnalysisRunner](chronaxis.runner.md#api-AnalysisRunner)、[ExportManifest](chronaxis.results.manifest.md#api-ExportManifest)、[OutputManifest](chronaxis.results.manifest.md#api-OutputManifest)、[PlanFragment](chronaxis.planning.preset_models.md#api-PlanFragment)、[PlanValidationError](chronaxis.planning.checks.md#api-PlanValidationError)、[PresetSpec](chronaxis.planning.preset_models.md#api-PresetSpec)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[RunMetadata](chronaxis.results.manifest.md#api-RunMetadata)、[TimeConversion](chronaxis.timebase.conversion.md#api-TimeConversion)、[TimeOverflowError](chronaxis.timebase.conversion.md#api-TimeOverflowError)
 
 ## 对象导航
 
@@ -27,7 +27,7 @@ BLF沿用sclicer-functions-v1旧读取链；新文本CAN使用can-text-v1独立�
 
 ## 导出名称
 
-`TimeConversion`, `TimeOverflowError`, `checked_add_ns`, `convert_time`, `parse_datetime_ns`, `parse_duration`, `shift_times_reference`, `time_deltas_reference`, `AnalysisPlan`, `PlanValidationError`, `load_analysis_plan`, `validate_analysis_plan`, `explain_analysis_plan`, `PresetSpec`, `PlanFragment`, `build_preset`, `resolve_preset_roles`, `AnalysisResult`, `OutputManifest`, `RunMetadata`, `AnalysisError`, `ResultClosedError`, `AnalysisRunner`, `BatchJob`, `BatchJobResult`, `BatchReport`, `BatchRunner`, `BatchPlan`, `load_batch_plan`, `run_batch`
+`TimeConversion`, `TimeOverflowError`, `checked_add_ns`, `convert_time`, `parse_datetime_ns`, `parse_duration`, `shift_times_reference`, `time_deltas_reference`, `AnalysisPlan`, `PlanValidationError`, `load_analysis_plan`, `validate_analysis_plan`, `explain_analysis_plan`, `PresetSpec`, `PlanFragment`, `build_preset`, `resolve_preset_roles`, `AnalysisResult`, `OutputManifest`, `ExportManifest`, `RunMetadata`, `AnalysisError`, `ResultClosedError`, `AnalysisRunner`, `BatchJob`, `BatchJobResult`, `BatchReport`, `BatchRunner`, `BatchPlan`, `load_batch_plan`, `run_batch`
 
 重导出保持定义位置的签名；按上级[总索引](index.md)查找对象名。
 
@@ -70,4 +70,4 @@ AttributeError: 名称未在公开名单中。
 
 导入planning及其依赖；不缓存任何会话输入或绑定。
 
-源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

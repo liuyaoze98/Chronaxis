@@ -1,4 +1,4 @@
-# chronaxis.planning.signal_groups
+# `chronaxis.planning.signal_groups`
 
 把同一报文的集中声明展开为既有信号绑定，不增加运行时分组或重复读取。
 
@@ -18,6 +18,7 @@
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
+from .diagnostic_collection import usable_node, collect_node_error
 from .checks import array_at, object_at, choice_at, text_at, model_at, PlanValidationError
 ```
 
@@ -49,7 +50,7 @@ signal_entries(value)
 集中项仅接受声明一套报文定位；子项可覆盖周期、有效期和同一时刻策略，
 不能把另一个报文塞进本组。没有额外组名、引用或运行时对象。
 
-源码：[`src/chronaxis/planning/signal_groups.py:9`](../../../src/chronaxis/planning/signal_groups.py#L9)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/signal_groups.py:10`](../../../src/chronaxis/planning/signal_groups.py#L10)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
 
 <a id="api-declared_signals"></a>
 ## `declared_signals`
@@ -74,4 +75,4 @@ declared_signals(value)
 
 无。
 
-源码：[`src/chronaxis/planning/signal_groups.py:55`](../../../src/chronaxis/planning/signal_groups.py#L55)（行号属于 `66a66ec751da79d6562f341e646dd7f47c726f68`）。
+源码：[`src/chronaxis/planning/signal_groups.py:62`](../../../src/chronaxis/planning/signal_groups.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。

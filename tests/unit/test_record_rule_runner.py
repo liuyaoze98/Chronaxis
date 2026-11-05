@@ -48,7 +48,7 @@ class RecordRuleRunnerTests(unittest.TestCase):
     def test_hysteresis_parsed_source_and_mixed_calculations(self):
         """内存温度85→77→77→75，实际0到9报警；统计和事件共用一次读取。"""
         raw=stable_config()
-        raw.update(config_version=3)
+        raw.update(config_version=4)
         raw['intervals']=dict(default=dict(mode='fixed',value='2ns',driver='temperature'))
         raw['calculations']=[dict(name='hot',scope='session',operation='duration',condition='temperature > 80')]
         for backend in ('reference','numpy'):
@@ -80,7 +80,7 @@ class RecordRuleRunnerTests(unittest.TestCase):
             budgets.append(owner._budget)
             raise KeyboardInterrupt('cancel after event')
         raw=stable_config()
-        raw.update(config_version=3)
+        raw.update(config_version=4)
         path=self.root/uuid4().hex
         with patch.object(RecordSessionCalculations,'_emit_event',cancel):
             with self.assertRaises(KeyboardInterrupt):
