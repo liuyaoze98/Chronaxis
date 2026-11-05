@@ -29,12 +29,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release download v0.1.0.dev1 --repo "$GITHUB_REPOSITORY" \
-            --pattern Chronaxis-Manual-0.1.0.dev1.zip
+          gh release download v0.1.0.dev2 --repo "$GITHUB_REPOSITORY" \
+            --pattern Chronaxis-Manual-0.1.0.dev2.zip
           sha256sum --strict --check - <<'SHA256'
-          ef2612368901022d56faa448f3fcb02b24740245ec229ab34f2e111515c633bd  Chronaxis-Manual-0.1.0.dev1.zip
+          99df96937dc848a517be619c04bfd54d45205cf4b876bcda37e5b7d096e281d8  Chronaxis-Manual-0.1.0.dev2.zip
           SHA256
-          unzip -q Chronaxis-Manual-0.1.0.dev1.zip -d manual
+          unzip -q Chronaxis-Manual-0.1.0.dev2.zip -d manual
           test -f manual/index.html
           test -f manual/en/index.html
           test -f manual/ai-guide/README.md
