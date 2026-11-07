@@ -50,7 +50,7 @@ class RecordSample
 |`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|当前样本的共享来源字段引用；包含会话、来源和字段，默认不增加逐帧证明副本。|
 |`enum_code`|int &#124; None|否|None|枚举的原整数码，配合共享labels恢复文字；普通数值不额外保存第二份值。|
 
-源码：[`src/chronaxis/execution/record_sample.py:8`](../../../src/chronaxis/execution/record_sample.py#L8)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample.py:8`](../../../src/chronaxis/execution/record_sample.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSample-__post_init__"></a>
 ### `RecordSample.__post_init__`
@@ -76,7 +76,7 @@ None。
 
 类型/值矛盾。
 
-源码：[`src/chronaxis/execution/record_sample.py:18`](../../../src/chronaxis/execution/record_sample.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample.py:18`](../../../src/chronaxis/execution/record_sample.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSample-array_value"></a>
 ### `RecordSample.array_value`
@@ -104,7 +104,7 @@ RecordSample.array_value
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:32`](../../../src/chronaxis/execution/record_sample.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample.py:32`](../../../src/chronaxis/execution/record_sample.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSample-original_present"></a>
 ### `RecordSample.original_present`
@@ -132,7 +132,7 @@ False。
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:39`](../../../src/chronaxis/execution/record_sample.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample.py:39`](../../../src/chronaxis/execution/record_sample.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSample-original_value"></a>
 ### `RecordSample.original_value`
@@ -160,4 +160,4 @@ None。
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:44`](../../../src/chronaxis/execution/record_sample.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample.py:44`](../../../src/chronaxis/execution/record_sample.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

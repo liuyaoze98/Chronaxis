@@ -1,14 +1,14 @@
 # 支持范围与限制
 
-本手册对应 Chronaxis 0.1.0.dev2，分析配置必须使用整数 `config_version: 4`。本版支持单位自动换算、统计、滚动计算和变化率。按[安装说明](installation.md)安装配套版本后运行示例；旧版用户请先阅读[升级说明](../Release/release-notes-0.1.0.dev2.md)。YAML 适合手写配置，JSON 适合程序交换。
+本手册对应 Chronaxis 0.1.0.dev3，分析配置必须使用整数 `config_version: 4`。本版支持单位自动换算、统计、滚动计算和变化率。按[安装说明](installation.md)安装同版源码或本地 wheel 后运行示例；旧版用户请先阅读[升级说明](../Release/release-notes-0.1.0.dev3.md)。YAML 适合手写配置，JSON 适合程序交换。
 
 | 能力 | 当前支持范围 |
 |---|---|
 | 输入 | 内存记录、已解码信号CSV、配DBC的BLF/ASC/原始CAN CSV；文件数量、通道及格式限制见[来源指南](inputs.md)。 |
 | 分析 | 表达式、持续条件、边沿、迟滞、去抖、起止活动、窗口变化、请求响应配对、事件窗口、统计与积分、逐消息累计。 |
 | 版本 4 扩展 | 单位自动换算、分支表达式、查表、方差与分位数、结果聚合、滚动统计和变化率；分别见[表达式](expressions.md)、[统计](calculations.md)及[滚动计算](temporal-transforms.md)。 |
-| 同帧累计 | 显式 fast 入口处理独立 ASC/BLF 文件的同帧公式及分桶总量；支持范围和输入要求见[高性能积分器](fast-energy.md)。 |
-| 执行 | Python API与CLI，reference/numpy两种计算实现，独立批量任务，内存/暂存预算管理。 |
+| 同帧累计 | fast run支持一个ASC/BLF来源的连续分卷，按配置并行读取、解码和求单帧贡献，主进程逐条累计；fast batch用于独立试验。见[高性能积分器](fast-energy.md)。 |
+| 执行 | Python API与CLI，reference/numpy两种计算实现，独立批量任务、[同一会话多文件并行读取](continuous-files.md)，内存/暂存预算管理。 |
 | 输出 | CSV或JSONL摘要、运行清单、按需贡献/输入追溯、信号CSV与CAN报文导出。 |
 | 配置工具 | 模板生成、YAML/JSON转换、独立配置导出、单层公共定义、字段来源查询。 |
 | 环境 | Python要求>=3.12且<3.13；实际验证环境为Windows/Python3.12。正式结果先写入临时位置并关闭文件，再以统一时间后缀发布；结果目录可复用，旧文件不覆盖，完成清单最后发布。该发布方式目前仅验收Windows，其他平台不能据声明推定可发布。详见[结果发布](results.md#result-publication)。 |

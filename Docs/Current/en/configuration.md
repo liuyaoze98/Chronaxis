@@ -29,7 +29,7 @@ The root sections below are siblings. For example, `signals` is not nested insid
 | `message_calculations` | Calculations performed for individual matching messages. They have different interval semantics from ordinary time integration. |
 | `intervals` | Shared calculation-interval choice; defaults to actual intervals. A local `interval` overrides the shared choice. |
 | `outputs` | Defaults to readable Chinese CSV tables and a manifest. CSV/JSONL can be selected explicitly. Contribution details, signal exports, and raw CAN exports are off unless requested. |
-| `execution` | Calculation implementation and resource limits; the default backend is NumPy. |
+| `execution` | File-reading worker count, calculation implementation, resource limits, and handling of incomplete data. Single-source ASC/BLF examples explicitly select `process_count: 4`; omission still defaults to one and the default backend is NumPy. See [Execution settings](execution.md). |
 | `diagnostics` | Optional diagnostics; all switches default to false. |
 | `metadata` | Optional notes, default `{}`. `device_label` defaults to `pending` and follows its documented value restrictions; other notes do not affect computation. |
 
@@ -40,16 +40,25 @@ Field names are case-sensitive. Unknown fields are errors. A diagnostic may sugg
 
 Omit a field when its documented default, inheritance, or reliable detection already gives the behavior you want. User-assigned names use `name`; references identify their target with fields such as `source`, `rule`, or `window`. A CAN message number is `frame_id`, and the signal's DBC name is `field.signal`. Expressions refer to configured signal names.
 
-For example, replace the existing calculation list with the following to integrate an already defined `power` signal over the dataset:
+Basic examples retain an explicit execution choice: up to four file-reading workers for a single ASC/BLF source. Add this root-level fragment to a complete configuration. If `execution` already exists, set only its `process_count` child and keep its other settings; do not add a second parent key.
 
 ```yaml
-calculations:              # Requested statistics or selected rows
-  - name: energy           # Name used to identify and reference this object
-    operation: integral    # Calculation to apply to the expression
-    expr: power            # Formula using the declared signal or derived names
+execution:          # Control how this analysis runs
+  process_count: 4  # Up to four file-reading workers, capped by the number of files
 ```
 
-The surrounding source and signal definitions are still required. Specify a calculation scope or an interval only when this task needs a choice other than the defaults.
+This is an explicit recommendation used by the manual; the program default remains one. A single file is not split among workers, and multiple files still form one continuous analysis. CSV, memory, and multi-source analyses use one. For independent tasks, set `process_count` at the batch configuration root and keep each child analysis at one. See [Execution settings](execution.md) for supported combinations and overrides.
+
+Starting with [analysis.yaml](../examples/analysis.yaml), replace its entire `calculations` list with the following to integrate the `power` signal already defined in that file:
+
+```yaml
+calculations:            # Requested statistics or selected rows
+  - name: energy         # Name used to identify and reference this object
+    operation: integral  # Calculation to apply to the expression
+    expr: power          # Formula using the declared signal or derived names
+```
+
+Keep every other section, including sources, signals, and execution settings. Do not append a second `calculations` key. Specify a calculation scope or an interval only when this task needs a choice other than the defaults.
 
 Reader settings are grouped under `reader`; value conversions are grouped under `conversion`. `time.clock` identifies a shared time origin, whereas `resampling.start` identifies the start of a sampling grid. These names describe different choices.
 

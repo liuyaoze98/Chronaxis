@@ -47,4 +47,4 @@ TransformSpec.require_backend(backend)
 
 [完整宿主示例](../host-extensions.md)
 
-源码：[`src/chronaxis/extensions.py:117`](../../../src/chronaxis/extensions.py#L117)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/extensions.py:117`](../../../src/chronaxis/extensions.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

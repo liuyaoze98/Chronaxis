@@ -58,7 +58,7 @@ ValueError为未支持的版本或错误类型。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/unit_conversion.py:16`](../../../src/chronaxis/core/unit_conversion.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/unit_conversion.py:16`](../../../src/chronaxis/core/unit_conversion.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-binding_version"></a>
 ## `binding_version`
@@ -86,7 +86,7 @@ ValueError为任一定义或显式参数不支持的版本。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/unit_conversion.py:29`](../../../src/chronaxis/core/unit_conversion.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/unit_conversion.py:29`](../../../src/chronaxis/core/unit_conversion.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-affine_conversion"></a>
 ## `affine_conversion`
@@ -114,7 +114,7 @@ ValueError为已知单位冲突、异名未知关系、非法语法或float倍�
 
 返回类型：tuple[int &#124; float, int &#124; float, str]。
 
-源码：[`src/chronaxis/core/unit_conversion.py:43`](../../../src/chronaxis/core/unit_conversion.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/unit_conversion.py:43`](../../../src/chronaxis/core/unit_conversion.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-validate_conversion_v4"></a>
 ## `validate_conversion_v4`
@@ -145,7 +145,7 @@ TypeError为非原生系数；ValueError为单位或系数冲突。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/unit_conversion.py:63`](../../../src/chronaxis/core/unit_conversion.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/unit_conversion.py:63`](../../../src/chronaxis/core/unit_conversion.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-converted_dtype"></a>
 ## `converted_dtype`
@@ -174,4 +174,4 @@ TypeError为错误dtype或系数；ValueError为非有限系数。
 
 返回类型：[SignalDType](chronaxis.core.types.md#api-SignalDType)。
 
-源码：[`src/chronaxis/core/unit_conversion.py:89`](../../../src/chronaxis/core/unit_conversion.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/unit_conversion.py:89`](../../../src/chronaxis/core/unit_conversion.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

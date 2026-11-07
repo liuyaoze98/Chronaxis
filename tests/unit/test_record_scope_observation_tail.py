@@ -36,7 +36,7 @@ BO_ 256 Reading: 2 Node
             sources=[dict(path='meter.asc', dbc_by_channel={'1': 'meter.dbc'})],
             signals=[dict(name=name, field=dict(frame_id='0x100', signal=signal), valid_for=ttl)
                 for name, signal, ttl in [('power', 'Power', age), ('temperature', 'Temperature', '4s')]],
-            rules=[dict(name='hot', rule_type='condition_duration', condition='temperature >= 80', minimum_duration='0s')],
+            rules=[dict(name='hot', rule_type='condition_duration', duration_comparison='>=', condition='temperature >= 80', minimum_duration='0s')],
             windows=[dict(name='context', rule='hot', pre='1s', post='1s')],
             calculations=[dict(name='event_energy', scope={'rule': 'hot'}, operation='integral', expr='power')]
                 + [dict(name=op, scope={'window': 'context'}, operation=op, expr='power')

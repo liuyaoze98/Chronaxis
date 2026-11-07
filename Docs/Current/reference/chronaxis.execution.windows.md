@@ -61,7 +61,7 @@ SegmentBatch(owner, cost, segments)
 ```
 
 
-源码：[`src/chronaxis/execution/windows.py:22`](../../../src/chronaxis/execution/windows.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:22`](../../../src/chronaxis/execution/windows.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SegmentBatch-__init__"></a>
 ### `SegmentBatch.__init__`
@@ -88,7 +88,7 @@ SegmentBatch.__init__(owner, cost, segments)
 
 分配/取消由外层抵销成本，未发布不隐藏失败。
 
-源码：[`src/chronaxis/execution/windows.py:29`](../../../src/chronaxis/execution/windows.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:29`](../../../src/chronaxis/execution/windows.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SegmentBatch-closed"></a>
 ### `SegmentBatch.closed`
@@ -116,7 +116,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/windows.py:39`](../../../src/chronaxis/execution/windows.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:39`](../../../src/chronaxis/execution/windows.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SegmentBatch-segments"></a>
 ### `SegmentBatch.segments`
@@ -148,7 +148,7 @@ ResultClosedError。
 
 - `ResultClosedError`：窗口片段批已关闭。
 
-源码：[`src/chronaxis/execution/windows.py:44`](../../../src/chronaxis/execution/windows.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:44`](../../../src/chronaxis/execution/windows.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SegmentBatch-_discard"></a>
 ### `SegmentBatch._discard`
@@ -174,7 +174,7 @@ SegmentBatch._discard()
 
 脱链取消传播，finally仍标closed并丢弃元数据。
 
-源码：[`src/chronaxis/execution/windows.py:50`](../../../src/chronaxis/execution/windows.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:50`](../../../src/chronaxis/execution/windows.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SegmentBatch-close"></a>
 ### `SegmentBatch.close`
@@ -200,7 +200,7 @@ SegmentBatch.close()
 
 预算/取消传播；已抵销时仍完成最小关闭。
 
-源码：[`src/chronaxis/execution/windows.py:61`](../../../src/chronaxis/execution/windows.py#L61)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:61`](../../../src/chronaxis/execution/windows.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries"></a>
 ## `WindowQueries`
@@ -215,7 +215,7 @@ WindowQueries(budget: ResourceBudget, *, backend='numpy')
 ```
 
 
-源码：[`src/chronaxis/execution/windows.py:78`](../../../src/chronaxis/execution/windows.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:78`](../../../src/chronaxis/execution/windows.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-__init__"></a>
 ### `WindowQueries.__init__`
@@ -245,7 +245,7 @@ WindowQueries.__init__(budget: ResourceBudget, *, backend='numpy')
 
 - `TypeError`：窗口查询需要ResourceBudget与reference/numpy后端。
 
-源码：[`src/chronaxis/execution/windows.py:85`](../../../src/chronaxis/execution/windows.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:85`](../../../src/chronaxis/execution/windows.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-closed"></a>
 ### `WindowQueries.closed`
@@ -273,7 +273,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/windows.py:108`](../../../src/chronaxis/execution/windows.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:108`](../../../src/chronaxis/execution/windows.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-_ensure_open"></a>
 ### `WindowQueries._ensure_open`
@@ -303,7 +303,7 @@ ResultClosedError。
 
 - `ResultClosedError`：窗口查询已关闭。
 
-源码：[`src/chronaxis/execution/windows.py:112`](../../../src/chronaxis/execution/windows.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:112`](../../../src/chronaxis/execution/windows.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-_construct"></a>
 ### `WindowQueries._construct`
@@ -329,7 +329,7 @@ SegmentBatch。
 
 分配/取消。
 
-源码：[`src/chronaxis/execution/windows.py:117`](../../../src/chronaxis/execution/windows.py#L117)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:117`](../../../src/chronaxis/execution/windows.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-build"></a>
 ### `WindowQueries.build`
@@ -363,7 +363,7 @@ WindowQueries.build(events: tuple[Event, ...], spec: WindowSpec, observation: In
 
 返回类型：[SegmentBatch](chronaxis.execution.windows.md#api-SegmentBatch)。
 
-源码：[`src/chronaxis/execution/windows.py:121`](../../../src/chronaxis/execution/windows.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:121`](../../../src/chronaxis/execution/windows.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowQueries-close"></a>
 ### `WindowQueries.close`
@@ -389,4 +389,4 @@ WindowQueries.close()
 
 子结果/预算/取消传播，已扣账字段最小清理。
 
-源码：[`src/chronaxis/execution/windows.py:154`](../../../src/chronaxis/execution/windows.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/windows.py:154`](../../../src/chronaxis/execution/windows.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

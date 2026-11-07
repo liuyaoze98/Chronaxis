@@ -10,6 +10,10 @@ import re
 from public_api_notes import NOTES, render_note
 
 PARAMETER_NOTES = {
+    ('api-AnalysisRunner-run', '`process_count`'): 'Positive reading/decoding worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. See continuous-file multiprocessing.',
+    ('api-AnalysisRunner-validate', '`process_count`'): 'Keyword-only worker-limit override for this static check. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started.',
+    ('api-AnalysisRunner-explain', '`process_count`'): 'Keyword-only worker-limit override for this explanation. None uses execution.process_count; a positive integer overrides without modifying the plan. Reported limits are not measured worker counts.',
+    ('api-ExplainReport', '`source_execution`'): 'Static per-CAN-source execution facts: source name, file_count, file_merge, read_process_limit, continuous_session=True and temporary_merge_files. Does not scan logs or measure workers.',
     ('api-PlanValidationError-from_diagnostics', '`errors`'): 'Nonempty sequence of individual configuration errors. A single error without blocked checks is returned unchanged.',
     ('api-PlanValidationError-from_diagnostics', '`blocked`'): 'Sequence of blocked-check dictionaries with path and reason. An empty tuple means no blocked checks were recorded.',
 }
@@ -55,12 +59,22 @@ def synchronize_page(source, translated, baseline):
                 rows[cells[1]] = cells
         missing_table = [name for name in rows if not re.search(r'\|\s*'+re.escape(name)+r'\s*\|', text)]
         if missing_table:
-            text += '\n| Name | Type | Required | Default | Purpose |\n|---|---|---|---|---|\n'
+            added = ''
             for name in missing_table:
                 description = PARAMETER_NOTES.get((key, name))
                 if description is None:
                     raise ValueError('English parameter explanation missing: '+key+' '+name)
-                text += f'|{name}||||{description}|\n'
+                added += f'|{name}||||{description}|\n'
+            # 新参数必须与已有参数并列，不能追加在返回值/副作用之后。
+            table = re.search(r'(?m)^\|\s*Name\s*\|[^\n]+\n(?:\|[^\n]*\n)+', text)
+            if table:
+                text = text[:table.end()] + added + text[table.end():]
+            else:
+                heading = re.search(r'(?m)^#{2,4} Parameters\s*\n', text)
+                if heading is None:
+                    raise ValueError('English parameter section missing: '+key)
+                added = '\n| Name | Type | Required | Default | Purpose |\n|---|---|---|---|---|\n' + added
+                text = text[:heading.end()] + added + text[heading.end():]
         seen = set()
         lines = []
         for line in text.splitlines():

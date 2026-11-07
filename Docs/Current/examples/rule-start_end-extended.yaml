@@ -29,3 +29,5 @@ rules:                                             # 列出识别活动或瞬间
     rule_type: start_end                           # 选择活动或变化识别算法；本例start_condition开始活动，end_condition或timeout结束活动
     start_condition: start_signal                  # 设置开始活动的条件；引用上方定义的信号
     timeout: 2s                                    # 限制一次活动的最长等待/持续时间；达到上限按规则结束
+execution:                                         # 设置本次分析的并行处理方式
+  process_count: 4                                 # 最多4个文件工作进程；实际并行数不超过输入文件数

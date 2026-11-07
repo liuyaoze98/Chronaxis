@@ -46,7 +46,7 @@ RecordAlarmDuration(budget, step_ns, backend, window)
 ```
 
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:15`](../../../src/chronaxis/execution/record_alarm_duration.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:15`](../../../src/chronaxis/execution/record_alarm_duration.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-__init__"></a>
 ### `RecordAlarmDuration.__init__`
@@ -74,7 +74,7 @@ owner。
 
 构造原错附owner。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:18`](../../../src/chronaxis/execution/record_alarm_duration.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:18`](../../../src/chronaxis/execution/record_alarm_duration.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-consume"></a>
 ### `RecordAlarmDuration.consume`
@@ -101,7 +101,7 @@ None。
 
 顺序/数值/关闭错误。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:39`](../../../src/chronaxis/execution/record_alarm_duration.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:39`](../../../src/chronaxis/execution/record_alarm_duration.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-driver"></a>
 ### `RecordAlarmDuration.driver`
@@ -126,7 +126,7 @@ None。
 
 顺序错误。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:78`](../../../src/chronaxis/execution/record_alarm_duration.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:78`](../../../src/chronaxis/execution/record_alarm_duration.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-finish"></a>
 ### `RecordAlarmDuration.finish`
@@ -152,7 +152,7 @@ RecordAlarmDuration.finish()
 
 求和失败/关闭错误。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:84`](../../../src/chronaxis/execution/record_alarm_duration.py#L84)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:84`](../../../src/chronaxis/execution/record_alarm_duration.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-closed"></a>
 ### `RecordAlarmDuration.closed`
@@ -180,7 +180,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:104`](../../../src/chronaxis/execution/record_alarm_duration.py#L104)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:104`](../../../src/chronaxis/execution/record_alarm_duration.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordAlarmDuration-close"></a>
 ### `RecordAlarmDuration.close`
@@ -206,4 +206,4 @@ None。
 
 释放原错可重试。
 
-源码：[`src/chronaxis/execution/record_alarm_duration.py:108`](../../../src/chronaxis/execution/record_alarm_duration.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_alarm_duration.py:108`](../../../src/chronaxis/execution/record_alarm_duration.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

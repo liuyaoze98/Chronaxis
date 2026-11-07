@@ -31,3 +31,5 @@ presets:                                            # 选择预先组合好的�
     role_bindings:                                  # 明确指定哪条已有信号担任每个角色；角色名由预设定义
       request: request                              # 为request角色选择上方已定义的分析信号名；仍须符合该角色要求
       response: response                            # 为response角色选择上方已定义的分析信号名；仍须符合该角色要求
+execution:                                          # 设置本次分析的并行处理方式
+  process_count: 4                                  # 最多4个文件工作进程；实际并行数不超过输入文件数

@@ -6,6 +6,20 @@
 
 常用结果：[能量与均值](example-results.md#analysis-yaml)、[事件与窗口](example-results.md#activity-yaml)、[无效值与过期](example-results.md#quality-yaml)、[实际间隔](example-results.md#interval-actual-yaml)／[固定间隔](example-results.md#interval-fixed-yaml)、[状态映射](example-results.md#signal-state-combined-yaml)。
 
+## 先选并行运行方式
+
+单一ASC/BLF来源的基础配置显式设置`execution.process_count: 4`，以最多4个工作进程处理同一次记录的文件；实际进程数受文件数限制。程序省略此字段时仍默认1。选定配置后，先按下表确认文件关系，再修改路径、DBC和业务条件。
+
+|输入关系|配置进程数的位置|完整示例与核对结果|
+|---|---|---|
+|同一次记录的连续ASC/BLF分卷|分析根级`execution.process_count`；跨文件保留状态|[两卷读取](examples/continuous-parallel.yaml)，积分38J；[跨卷持续条件](examples/conditional-energy.yaml)，61～122秒能量0.06777777777777777kWh|
+|同一次记录的文件时间范围交叠|同上，并明确`sources[].file_merge: time_order`|[按时间归并](examples/continuous-time-order.yaml)，积分38J；各文件内部所需记录须有序|
+|同帧公式逐报文累计|同样使用分析根级`execution.process_count`|[高性能积分器连续会话](examples/fast/session.yaml)，1200J；使用`chronaxis fast run`|
+|多次独立试验|批量根级`process_count`；每个子任务使用1|[独立批量](examples/batch-extended.yaml)，分别保留各任务结果；使用`chronaxis batch run`|
+|CSV、内存或多来源联合分析|分析内使用1；独立任务可由外层批量并行|[CAN与CSV联合任务](examples/can-joint-analysis.yaml)，26J|
+
+单文件示例保留相同的进程上限，便于换成多文件；只有一个文件时不会拆分该文件，也不代表实际启用了4个进程。完整用法见[连续记录多进程](continuous-files.md)和[批量任务](batch.md)。
+
 ## 完整教学任务
 
 | 任务 | 输入与完整配置 | 运行与预期 |
@@ -19,7 +33,7 @@
 |自定义函数、统计与时序算法|[自定义分析算子](host-extensions.md)|峰值80A。|
 |按标定表查值与插值|[一维查表与插值](expressions.md#lookup-reference)|按声明单位使用标定表。|
 |对已有事件或窗口结果再统计|[结果聚合](aggregations.md)|指定来源计算项和统计操作。|
-|高性能积分器|[同帧逐报文累计](fast-energy.md)|单文件800J；独立文件总量1200J。|
+|高性能积分器|[同帧逐报文累计](fast-energy.md)|单文件800J；连续分卷单会话1200J；独立batch总量1200J，三者分别运行。|
 
 ## 集中绑定与周期导出
 
@@ -59,7 +73,7 @@ BLF及混合格式可用[生成与验证脚本](examples/prepare_can_examples.py
 
 模板由已安装的Chronaxis生成，优先提供ASC/BLF与DBC，以及业务规则所需的小型合成日志；CSV专用场景保留相应表格。命令中的目标目录必须尚不存在；默认带逐项注释，--style minimal生成同一配置的简洁形式。
 
-两种style都省去无用途的默认字段，minimal仅比annotated少说明文字，计算内容相同。普通示例不填写session/entity、唯一来源引用、默认范围和策略；扩展示例只保留本节正在说明的设置，例如非默认策略、换算或资源限制。
+两种style都省去无用途的默认字段，minimal仅比annotated少说明文字，计算内容相同。普通示例不填写session/entity、唯一来源引用、默认范围和策略；明确保留进程上限作为运行选择，按上表区分会话并行和批量并行。扩展示例再添加本节正在说明的设置，例如非默认策略、换算或资源限制。
 
 随册YAML中，每个父字段解释它组织的内容，每个子字段解释它控制的行为；行里的值是本例具体选择。先阅读来源和信号定义，再看规则、窗口和计算。`imports`先列公共定义文件、`derived`先定义后引用，是便于阅读的顺序，解析器本身也允许顶层键采用其他顺序。
 

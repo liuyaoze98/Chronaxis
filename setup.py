@@ -1,4 +1,4 @@
-"""扩展标准wheel构建：从与离线手册相同的资料生成器填入用户指南。
+"""扩展标准wheel构建：填入同版用户指南和自动生成的运行版本。
 
 仅在构建产物中增加资源，不依赖Git或产品运行环境；sdist通过显式清单携带输入。
 """
@@ -40,7 +40,7 @@ def clean_package_output(build_lib, build_base, source_root):
 
 
 class GuideBuild(build_py):
-    """沿用标准包发现流程，在安装目录提供可直接打开的同版指南文件。"""
+    """沿用标准包发现流程，在安装目录提供同版指南及构建版本。"""
 
     def run(self):
         """参数: 无。返回: 无。异常: 构建失败或资料漂移时传播错误。"""
@@ -58,6 +58,11 @@ class GuideBuild(build_py):
             return
         builder = run_path(str(root / "tools/build_ai_guide.py"))["build_files"]
         package = Path(self.build_lib) / "chronaxis"
+        # 版本来自setuptools读取的project.version；只生成到构建目录，不另维护源字符串。
+        version = self.distribution.get_version()
+        (package / '_build_version.py').write_text(
+            '\"\"\"构建时从发行元数据生成的版本，勿手工修改。\"\"\"\n'
+            + 'VERSION = ' + repr(version) + '\n', encoding='utf8')
         # Docs/Schema是唯一维护源；安装包使用同版普通JSON资源，无网络取规范。
         schemas = package / "schemas"
         schemas.mkdir(parents=True, exist_ok=True)

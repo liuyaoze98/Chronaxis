@@ -8,6 +8,20 @@ Choose a complete task by goal. All bundled inputs are synthetic and can be chec
 
 Common results: [Energy and averages](example-results.md#analysis-yaml), [Events and windows](example-results.md#activity-yaml), [Invalid and stale data](example-results.md#quality-yaml), [Actual intervals](example-results.md#interval-actual-yaml) / [Fixed intervals](example-results.md#interval-fixed-yaml), and [State mappings](example-results.md#signal-state-combined-yaml).
 
+## Choose the parallel execution mode first
+
+Basic single-source ASC/BLF configurations explicitly set `execution.process_count: 4`, allowing up to four workers to process files from one recording. The number of files caps the actual worker count. Omitting this field still defaults to one. After selecting a configuration, identify the file relationship below before replacing paths, DBC and business conditions.
+
+| Input relationship | Where to set the count | Complete example and result |
+|---|---|---|
+| Continuous ASC/BLF parts from one recording | Analysis-root `execution.process_count`; state continues across files | [Two parts](../examples/continuous-parallel.yaml): 38 J; [sustained condition across parts](../examples/conditional-energy.yaml): 0.06777777777777777 kWh over 61–122 s |
+| Files from one recording with overlapping time ranges | Same count, plus explicit `sources[].file_merge: time_order` | [Time merge](../examples/continuous-time-order.yaml): 38 J; required records within each file must be ordered |
+| Same-frame per-message accumulation | Analysis-root `execution.process_count` | [Continuous high-performance integrator](../examples/fast/session.yaml): 1200 J; use `chronaxis fast run` |
+| Independent experiments | Batch-root `process_count`; each child analysis uses one | [Independent batch](../examples/batch-extended.yaml): separate task results; use `chronaxis batch run` |
+| CSV, memory, or a joint analysis of multiple sources | Use one within the analysis; independent tasks may run through an outer batch | [CAN and CSV joint task](../examples/can-joint-analysis.yaml): 26 J |
+
+Single-file examples retain the same limit so paths can later select multiple files. One file is not split among workers, so a limit of four does not mean four workers actually run. See [continuous-file multiprocessing](continuous-files.md) and [batch tasks](batch.md).
+
 <a id="完整教学任务"></a>
 ## Complete teaching tasks
 
@@ -22,7 +36,7 @@ Common results: [Energy and averages](example-results.md#analysis-yaml), [Events
 | Custom Python function/statistic/transform | [Custom analysis operators](host-extensions.md) | Peak: 80 A. |
 | Lookup and interpolation | [Lookup reference](expressions.md#lookup-reference) | Table-based conversion with declared units. |
 | Result aggregation | [Aggregation guide](aggregations.md) | Combine named event/window results with an explicit operation. |
-| High-performance integrator | [Same-frame per-message accumulation](fast-energy.md) | Single file: 800 J; independent-file total: 1200 J. |
+| High-performance integrator | [Same-frame per-message accumulation](fast-energy.md) | Single file: 800 J; continuous session: 1200 J; independent batch total: 1200 J, verified separately. |
 
 <a id="集中绑定周期导出和ini迁移专题"></a>
 <a id="集中绑定-周期导出和ini迁移专题"></a>
@@ -66,7 +80,7 @@ Use [prepare_can_examples.py](../examples/prepare_can_examples.py) to create BLF
 
 Installed Chronaxis generates templates, primarily ASC/BLF with DBC and small synthetic logs for the task. CSV scenes retain their appropriate tables. The target directory must not exist. Default `annotated` style includes comments; `--style minimal` generates the same configuration with less explanatory text.
 
-Both styles omit default fields that serve no purpose in the example. Ordinary examples omit `session`/`entity`, a uniquely inferable source reference, and default scopes/policies. Extensions retain settings needed to demonstrate their particular choice, such as a nondefault policy, conversion, or resource limit.
+Both styles omit default fields that serve no purpose in the example. Ordinary examples omit `session`/`entity`, a uniquely inferable source reference, and default scopes/policies. They retain an explicit process limit as an execution choice, distinguishing session workers from batch workers as above. Extensions add their particular choice, such as a nondefault policy, conversion, or resource limit.
 
 Comments explain what each parent groups and what each child controls. Read sources/signals first, then rules/windows/calculations. Listing imports before their uses and derived expressions before references helps reading; the parser permits other root-key orders too.
 

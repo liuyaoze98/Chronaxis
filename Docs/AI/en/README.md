@@ -20,15 +20,15 @@ The relative commands below illustrate a source or standalone guide directory. F
 
 ## Install Chronaxis and its default dependencies
 
-A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install version 0.1.0.dev2, matching this guide:
+A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install the local 0.1.0.dev3 wheel matching this guide. Substitute its actual file path:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-For a local package, replace `"chronaxis==0.1.0.dev2"` with `".\chronaxis-0.1.0.dev2-py3-none-any.whl"` in the installation command.
+You can also obtain the matching source tree, create the environment at its root containing `pyproject.toml`, and replace the installation command with `.\.venv\Scripts\python.exe -m pip install .`. When upgrading, supply `duration_comparison` for sustained conditions according to their intended meaning: `">="` means at least the threshold, and `">"` means strictly more than the threshold.
 
 Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is optional. This version declares and has been checked with `python-can==4.6.1`, `cantools==39.4.3`, and `natsort==8.4.0`, installed through the wheel's default dependencies. Do not install an arbitrary latest version to fix a missing module, or change signals, thresholds, or the DBC. Other dependency versions are not thereby verified; use the actual distribution's installation metadata. Prepare dependency wheels in advance for offline installation.
 
@@ -50,7 +50,7 @@ Select by calculation meaning, rather than matching only the word “energy”:
 | One-dimensional calibration lookup | `CALIBRATION`; [lookup configuration](../../Current/examples/lookup-power.yaml). |
 | Accumulate target-message contributions through the general runner, including contribution details | `MESSAGE_ENERGY`, using general `run`; [complete minimal configuration](../../Current/examples/message-minimal.yaml). |
 | Integrate over each entire interval whose condition lasts beyond a threshold | `CONDITION_ENERGY`, using general `run` or `run_analysis.py`. |
-| In one independent ASC/BLF, calculate each target frame's fixed-period contribution using inputs from that frame | `FAST_MESSAGE_ENERGY` in the high-performance integrator (same-frame per-message accumulation), using `fast validate/explain/run`. |
+| In one ASC/BLF source, calculate each target frame's fixed-period contribution using inputs from that frame | `FAST_MESSAGE_ENERGY` in the high-performance integrator (same-frame per-message accumulation), using `fast validate/explain/run`. |
 | Process the latter independent files from one template in parallel and total comparable metrics | `FAST_TEMPLATE_TOTAL`, using `fast batch --total`; see [complete batch configuration](../../Current/examples/fast/batch.yaml). |
 
 `run_analysis.py` runs a general analysis; it does not automatically select fast. Follow the task-specific commands for fast. Batch files use root `batch_version: 1`; their referenced analysis files separately declare `config_version`.
@@ -61,6 +61,19 @@ Select by calculation meaning, rather than matching only the word “energy”:
 4. Load the configuration, validate declarations, inspect dependencies, run, and write the output. Commands are below; the [complete Python call](../run_analysis.py) provides the executable path. Report actual inputs, units, boundaries, quality, and unverified parts. Returning from calculation is not the same as publishing results.
 
 <a id="一个从输入到结果的任务"></a>
+## Choose execution workers
+
+For continuous volumes from one ASC/BLF source, add this block at the analysis root. If `execution` already exists, merge `process_count` into it instead of repeating the parent key:
+
+```yaml
+execution:                     # Execution settings for this analysis
+  process_count: 4             # At most four workers, capped by the number of files
+```
+
+In a general analysis, workers read and decode while the main process preserves events and integration across files. High-performance integrator workers also evaluate same-frame contributions. Four is this manual's starting limit; the software default remains one. A single file uses at most one worker. Four is not optimal on every machine: more workers use more resources, so adjust it for your inputs.
+
+Independent trials use batch-root `process_count: 4` and `execution.process_count: 1` in each child plan to avoid nested file pools. A single CSV, memory, multi-source or all-signal-decoding plan currently uses one worker. Independent trials can run in an outer batch; do not split a continuous session merely to obtain parallelism. Put Python execution under `if __name__ == "__main__":`; the supplied `run_analysis.py` already does this.
+
 ## A complete task
 
 Query the material with standard Python from this README's directory instead of reading the whole specification:
@@ -90,3 +103,11 @@ The output directory can be reused; this publication uses a common timestamp suf
 For your own data, replace paths, IDs, signals, and conditions using the actual DBC. Decoded tables can use task `CSV`. Do not treat synthetic thresholds as the user's production parameters.
 
 Validation and explanation establish declaration validity and supported execution paths. Loading may read DBC metadata or enumerate directories as needed, but it does not scan business records. Report success only after actual execution, publication, and cleanup finish. An independent example does not establish that another device has the same business meaning.
+
+## Choose a runner for continuous analysis
+
+Start with `CONTINUOUS_FILES` for ASC/BLF volumes from one recording: one analysis configuration and one source preserve signal state, events and integration across file boundaries. Use ordinary analysis for duration conditions, cross-frame values, events/windows or actual-time integration. The duration-conditioned energy example uses `CONDITION_ENERGY`; splitting its recording into several files does not make it a fast task.
+
+Choose `FAST_CONTINUOUS_SESSION` only when every signal input in a formula comes from the current message, each message provides an independently additive contribution, and none of the capabilities above are needed. Here `execution.process_count` limits read/decode/current-message workers and `file_merge` controls file organization. The main process accumulates in the prescribed order; file partial sums cannot replace ordered session accumulation. Separate trials use ordinary batch or fast `FAST_TEMPLATE_TOTAL` according to their analysis requirements; do not split a continuous session into independent trials.
+
+Cancellation of `fast.run` raises `InterruptedError`. A managed memory budget is not a physical-memory limit for the whole process tree.

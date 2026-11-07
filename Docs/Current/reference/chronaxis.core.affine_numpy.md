@@ -59,7 +59,7 @@ _float_coefficient(value: int | float) -> tuple[float | None, QualityFlag]
 
 返回类型：tuple[float &#124; None, [QualityFlag](chronaxis.core.types.md#api-QualityFlag)]。
 
-源码：[`src/chronaxis/core/affine_numpy.py:22`](../../../src/chronaxis/core/affine_numpy.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/affine_numpy.py:22`](../../../src/chronaxis/core/affine_numpy.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-affine_numpy"></a>
 ## `affine_numpy`
@@ -95,4 +95,4 @@ TypeError/ValueError为声明结构错误；MemoryError等分配异常传播。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/affine_numpy.py:41`](../../../src/chronaxis/core/affine_numpy.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/affine_numpy.py:41`](../../../src/chronaxis/core/affine_numpy.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

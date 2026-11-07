@@ -17,6 +17,7 @@ signals:                             # 把输入字段定义为有名称、类�
 rules:                               # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
   - condition: voltage > 5           # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     name: high                       # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    duration_comparison: ">="        # 达到门槛即满足；要求严格超过时填>
     minimum_duration: 0s             # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
     rule_type: condition_duration    # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
 windows:                             # 围绕已定义规则的事件选取时间片段，供计算或导出使用
@@ -39,3 +40,5 @@ outputs:                             # 选择额外导出的数据及格式；�
       windows: all                   # 选择导出全部已定义窗口的片段；当前填写all
 metadata:                            # 保存说明性信息；字段不会自动校准数据或更改计算公式
   device_label: home                 # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
+execution:                           # 设置本次分析的并行处理方式
+  process_count: 4                   # 最多4个文件工作进程；实际并行数不超过输入文件数

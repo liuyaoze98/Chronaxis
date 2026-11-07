@@ -4,6 +4,8 @@
 
 Chronaxis用于分析多源时序数据：将输入列或报文字段绑定为信号，识别事件及时间片段，计算积分、持续时间和统计量，再读取或导出结果。常见输入是配有DBC的BLF或ASC日志，也支持原始报文CSV、已解码信号CSV和内存记录。
 
+基础 ASC／BLF 示例已包含并行设置。先按快速开始运行，再根据输入选择[同一次记录的连续分卷](continuous-files.md)或[多个独立试验的批量任务](batch.md)；具体字段与资源选择见[执行设置](execution.md)。
+
 本手册说明分析配置版本 4 及对应公开接口。新分析使用 `config_version: 4`；配置语法见[配置说明](configuration-language.md)。可从本地 wheel 或源码[安装](installation.md)，再检查[支持范围](status.md)。网页版提供离线导航和搜索；配套 AI 资料的修订与产品基线记录在资料包的 manifest.json。
 
 ## 配置使用者的阅读路线
@@ -41,5 +43,5 @@ Chronaxis用于分析多源时序数据：将输入列或报文字段绑定为�
 |计算滚动统计或变化率|[时序变换](temporal-transforms.md)|
 |对事件或窗口结果再统计|[结果聚合](aggregations.md)|
 |加入自己的Python算法|[自定义分析算子](host-extensions.md)|
-|计算同帧逐报文能量|[高性能积分器](fast-energy.md)：公式需包含时间因子|
+|计算同帧逐报文能量|[高性能积分器](fast-energy.md)：功率乘报文代表的时长得到能量；已有能量贡献直接累计|
 |查找可运行的完整配置|[示例目录](examples.md)|

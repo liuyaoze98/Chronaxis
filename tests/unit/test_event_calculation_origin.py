@@ -48,7 +48,7 @@ class EventCalculationOriginTests(unittest.TestCase):
                                  domain=dict(start='0s', end='3s')),
                     sources=[source], signals=[dict(name=name, source='input', field=name,
                         dtype='float64', unit=unit, valid_for='10s') for name, unit in (('power', 'W'), ('active', '1'))],
-                    rules=[dict(name='activity', rule_type='condition_duration', condition='active > 0',
+                    rules=[dict(name='activity', rule_type='condition_duration', duration_comparison='>=', condition='active > 0',
                                 minimum_duration=minimum_duration, selection_origin=origin)],
                     calculations=calculations, intervals=dict(default=choice),
                     execution=dict(batch_rows=size, result_buffer_rows=1))

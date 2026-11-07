@@ -33,4 +33,4 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/planning/plan.py:368`](../../../../src/chronaxis/planning/plan.py#L368) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/planning/plan.py:369`](../../../../src/chronaxis/planning/plan.py#L369) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

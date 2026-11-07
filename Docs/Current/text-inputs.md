@@ -4,6 +4,8 @@
 
 先分清两种CSV。`signal_csv`已经有时间、电压、电流等物理量列；`raw_can_csv`的一行还是报文ID和十六进制字节，必须用DBC把字节解成信号。文件扩展名相同不表示内容相同。
 
+ASC/BLF连续分卷可通过`execution.process_count`并行读取；来源的`file_merge`分别选择按文件接续或按共同时间归并。字段规则、可运行配置和跨文件状态见[连续记录多进程读取](continuous-files.md)。原始CSV不支持这两种新增执行方式。
+
 **DBC**是CAN报文的字段说明文件：例如ID 0x100的第一个字节表示Voltage、比例是1、单位V。它不提供日志的采集时刻，但可以声明报文周期，供默认有效期等功能使用；它也不替你确认测量位置和电流方向。ASC是文本报文日志，BLF是另一种二进制日志；文本入口和BLF入口都把解码后的信号送入同一个分析引擎。
 
 本页配置位于根级`sources`列表，每段来源示例都是其中一项；解码后的信号由`signals`引用。原始CSV读取报文列，ASC读取报文行，两者输出带统一时间的信号更新。
@@ -58,10 +60,10 @@ chronaxis run input-raw-csv-mapping.yaml --output raw-mapping-result
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-sources:                 # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - path: sample.asc     # 指定单个输入文件；相对路径从本配置文件所在目录计算
-    dbc_by_channel:      # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': sample.dbc    # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+sources:               # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - path: sample.asc   # 指定单个输入文件；相对路径从本配置文件所在目录计算
+    dbc_by_channel:    # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': sample.dbc  # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
 ```
 
 下表位于`sources[].reader`；例如格式版本的完整路径为`sources[].reader.version`。
@@ -96,21 +98,21 @@ ASC里有两个容易混淆的“绝对/相对时间”：
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-sources:                        # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - path: sample.csv            # 指定单个输入文件；相对路径从本配置文件所在目录计算
-    source_type: raw_can_csv    # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    dbc_by_channel:             # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': sample.dbc           # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
-    time:                       # 说明输入时间数值的类型、单位、共同起点和校准偏移
-      unit: s                   # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
-    reader:                     # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
-      time_format: numeric      # 指定原始CSV时间文本格式；按文件的时间列格式填写
-      id_base: 16               # 指定报文ID文本按几进制解释；从导出格式取得
-      layout:                   # 说明原始CAN CSV如何组成每条报文
-        fields:                 # 逐项指定报文时间、ID、数据字节及标志来自哪列或哪个固定值
-          timestamp: time       # 指定报文时间如何从CSV取得；选择column读列或fixed固定值
-          frame_id: id          # 指定报文ID如何从CSV取得；选择column读列或fixed固定值
-          data: data            # 指定数据字节如何从CSV取得；选择column读列或fixed固定值
+sources:                      # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - path: sample.csv          # 指定单个输入文件；相对路径从本配置文件所在目录计算
+    source_type: raw_can_csv  # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
+    dbc_by_channel:           # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': sample.dbc         # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+    time:                     # 说明输入时间数值的类型、单位、共同起点和校准偏移
+      unit: s                 # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
+    reader:                   # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
+      time_format: numeric    # 指定原始CSV时间文本格式；按文件的时间列格式填写
+      id_base: 16             # 指定报文ID文本按几进制解释；从导出格式取得
+      layout:                 # 说明原始CAN CSV如何组成每条报文
+        fields:               # 逐项指定报文时间、ID、数据字节及标志来自哪列或哪个固定值
+          timestamp: time     # 指定报文时间如何从CSV取得；选择column读列或fixed固定值
+          frame_id: id        # 指定报文ID如何从CSV取得；选择column读列或fixed固定值
+          data: data          # 指定数据字节如何从CSV取得；选择column读列或fixed固定值
 ```
 
 ### reader：时间、ID和数据字节怎样读取
@@ -143,20 +145,20 @@ sources:                        # 列出输入来源；每项规定数据位置�
 常见表格只需对应时间、ID和数据列，不必给每列套column：
 
 ```yaml
-sources:                        # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - source_type: raw_can_csv    # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    path: data/raw.csv          # 指定单个输入文件；相对路径从本配置文件所在目录计算
-    dbc_by_channel:             # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': network.dbc          # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
-    time:                       # 说明输入时间数值的类型、单位、共同起点和校准偏移
-      unit: s                   # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
-    reader:                     # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
-      time_format: numeric      # 指定原始CSV时间文本格式；按文件的时间列格式填写
-      layout:                   # 说明原始CAN CSV如何组成每条报文
-        fields:                 # 逐项指定报文时间、ID、数据字节及标志来自哪列或哪个固定值
-          timestamp: time       # 指定报文时间如何从CSV取得；选择column读列或fixed固定值
-          frame_id: id          # 指定报文ID如何从CSV取得；选择column读列或fixed固定值
-          data: data            # 指定数据字节如何从CSV取得；选择column读列或fixed固定值
+sources:                      # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - source_type: raw_can_csv  # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
+    path: data/raw.csv        # 指定单个输入文件；相对路径从本配置文件所在目录计算
+    dbc_by_channel:           # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': network.dbc        # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+    time:                     # 说明输入时间数值的类型、单位、共同起点和校准偏移
+      unit: s                 # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
+    reader:                   # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
+      time_format: numeric    # 指定原始CSV时间文本格式；按文件的时间列格式填写
+      layout:                 # 说明原始CAN CSV如何组成每条报文
+        fields:               # 逐项指定报文时间、ID、数据字节及标志来自哪列或哪个固定值
+          timestamp: time     # 指定报文时间如何从CSV取得；选择column读列或fixed固定值
+          frame_id: id        # 指定报文ID如何从CSV取得；选择column读列或fixed固定值
+          data: data          # 指定数据字节如何从CSV取得；选择column读列或fixed固定值
 ```
 
 `timestamp: time`等同`timestamp: {column: time}`。整数字段简写如`timestamp: 1`表示第1列；常量必须写`{fixed: 值}`。唯一DBC通道自动补入；数据帧默认frame_kind=data，长度从实际字节数取得。方向省略保持未知，普通数值分析可以继续；要导出完整报文时必须提供真实方向。标准/扩展、CAN/FD标志只有在绑定与DBC足以唯一识别时才可省略。显式长度、帧种类或标志仍严格检查，不被默认值覆盖。

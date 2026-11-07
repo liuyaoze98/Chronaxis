@@ -18,35 +18,37 @@ Write durations as `"0.1s"` or `"100ms"`. Internal times and API/exchange-format
 The following synthetic input and expected energy can be checked by hand. Save this complete root-level configuration as `energy.yaml`; do not wrap it in another key. The result directory can be reused; files receive a timestamp suffix.
 
 ```yaml
-config_version: 4          # Current analysis configuration version
-dataset:                   # Dataset settings.
-  name: demo               # Name included in result identity.
-sources:                   # Input sources.
-  - source_type: memory    # Synthetic records supplied in the configuration.
-    rows:                  # Each record supplies a timestamp and updated values.
-      - time: 0s           # First observation.
-        values:            # Original input field names.
-          p: 4000          # Power value; its type and unit are defined below.
-      - time: 0.12s        # Second observation.
-        values:            # Values updated at this timestamp.
-          p: 4000          # Same power.
-      - time: 0.3s         # Third observation.
-        values:            # Values updated at this timestamp.
-          p: 4000          # Same power.
-signals:                   # Named analysis signals.
-  - name: power            # Name used in expressions.
-    field: p               # Original input field.
-    dtype: float64         # Numeric type for analysis.
-    unit: W                # Target analysis unit; compatible registered units convert when scale/offset are omitted.
-    valid_for: 1s          # Maximum age of a valid update.
-calculations:              # Requested results.
-  - name: energy           # Calculation name.
-    operation: integral    # Accumulate power multiplied by duration.
-    expr: power            # Signal to integrate.
-intervals:                 # Duration basis; original timestamps remain intact.
-  default:                 # Default for nodes without their own override.
-    mode: fixed            # actual, fixed, or dbc.
-    value: 100ms           # Duration assigned to each driver interval.
+config_version: 4        # Current analysis configuration version
+dataset:                 # Dataset settings.
+  name: demo             # Name included in result identity.
+sources:                 # Input sources.
+  - source_type: memory  # Synthetic records supplied in the configuration.
+    rows:                # Each record supplies a timestamp and updated values.
+      - time: 0s         # First observation.
+        values:          # Original input field names.
+          p: 4000        # Power value; its type and unit are defined below.
+      - time: 0.12s      # Second observation.
+        values:          # Values updated at this timestamp.
+          p: 4000        # Same power.
+      - time: 0.3s       # Third observation.
+        values:          # Values updated at this timestamp.
+          p: 4000        # Same power.
+signals:                 # Named analysis signals.
+  - name: power          # Name used in expressions.
+    field: p             # Original input field.
+    dtype: float64       # Numeric type for analysis.
+    unit: W              # Target analysis unit; compatible registered units convert when scale/offset are omitted.
+    valid_for: 1s        # Maximum age of a valid update.
+calculations:            # Requested results.
+  - name: energy         # Calculation name.
+    operation: integral  # Accumulate power multiplied by duration.
+    expr: power          # Signal to integrate.
+intervals:               # Duration basis; original timestamps remain intact.
+  default:               # Default for nodes without their own override.
+    mode: fixed          # actual, fixed, or dbc.
+    value: 100ms         # Duration assigned to each driver interval.
+execution:               # Execution settings for this analysis
+  process_count: 1       # Memory input runs in one process
 ```
 
 Run `python -m chronaxis run energy.yaml --output work/energy-v2-result`. The result directory can be reused. The `energy（J）` value in `会话结果_<run timestamp>.csv` should be 800. Remove the entire `intervals` object to obtain 1200 J using actual time. Only raw CAN inputs can use `mode: dbc` without `value`; requesting `dbc` for this memory example fails instead of silently substituting a fixed period.
@@ -71,13 +73,13 @@ The next fields belong inside an interval object. Their global paths are `interv
 In `energy.yaml`, remove the root `intervals` and replace `calculations` with this fragment to override only `energy`. Other nodes use actual time.
 
 ```yaml
-calculations:              # Requested results.
-  - name: energy           # Calculation name.
-    operation: integral    # Accumulate power multiplied by duration.
-    expr: power            # Previously defined signal.
-    interval:              # Override the task-wide duration basis for this node.
-      mode: fixed          # Advance once per driver interval.
-      value: 100ms         # Duration assigned to each interval.
+calculations:            # Requested results.
+  - name: energy         # Calculation name.
+    operation: integral  # Accumulate power multiplied by duration.
+    expr: power          # Previously defined signal.
+    interval:            # Override the task-wide duration basis for this node.
+      mode: fixed        # Advance once per driver interval.
+      value: 100ms       # Duration assigned to each interval.
 ```
 
 `power` is the only candidate, so `driver` can be omitted. When several candidates exist, choose one explicitly. A separate original clock signal is also allowed if its time basis is comparable to the expression inputs. Two aliases of the same physical message count as one candidate. Other formula inputs still update and undergo validity checks even when they are not the driver.

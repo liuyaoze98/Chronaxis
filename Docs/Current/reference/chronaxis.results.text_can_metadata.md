@@ -57,7 +57,7 @@ class TextCANSourceMetadata
 |`decode_scope`|str|否|'requested'|`"requested"`解码本次需要的报文和字段；`"all"`保留全解码与完整诊断。该字段记录或指定的是解码范围。|
 |`time_scope`|str|否|'source'|`"none"`：本次未收集时间范围；`"selected"`：范围只基于选中的报文；`"source"`：范围基于整个来源。selected的首末时间不代表整个文件的首末时间。|
 
-源码：[`src/chronaxis/results/text_can_metadata.py:14`](../../../src/chronaxis/results/text_can_metadata.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/text_can_metadata.py:14`](../../../src/chronaxis/results/text_can_metadata.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TextCANSourceMetadata-__post_init__"></a>
 ### `TextCANSourceMetadata.__post_init__`
@@ -94,4 +94,4 @@ TextCANSourceMetadata.__post_init__()
 - `ValueError`：空文本CAN不能声明观测时间。
 - `ValueError`：文本CAN观测时间倒退。
 
-源码：[`src/chronaxis/results/text_can_metadata.py:35`](../../../src/chronaxis/results/text_can_metadata.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/text_can_metadata.py:35`](../../../src/chronaxis/results/text_can_metadata.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -1,4 +1,4 @@
-"""直接运行单文件 fast 配置。"""
+"""直接运行fast单会话配置；输入可包含同一来源的多个分卷。"""
 
 import argparse
 import json

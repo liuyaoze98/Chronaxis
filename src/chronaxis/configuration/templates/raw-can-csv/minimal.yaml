@@ -18,7 +18,7 @@ sources:
           frame_id: id
           data: data
           payload_length: length
-        # 输入含DBC未定义ID且没有帧型列，需明确本文件均为标准ID、经典CAN。
+# 输入含DBC未定义ID且没有帧型列，需明确本文件均为标准ID、经典CAN。
           is_extended:
             fixed: false
           is_fd:
@@ -33,3 +33,5 @@ calculations:
   - name: voltage_area
     expr: voltage
     operation: integral
+execution:            # 设置本次分析的并行处理方式
+  process_count: 1    # 本例为CSV、内存或多来源会话，当前仅支持单进程

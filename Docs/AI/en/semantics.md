@@ -1,5 +1,12 @@
 <a id="先决定什么能算再生成配置"></a>
+
 # Establish what can be calculated before generating configuration
+
+## Continuous files in one session
+
+Put files from one charge in one ASC/BLF source. execution.process_count is a positive reading/decoding worker limit, default 1; ordinary run/validate/explain and AnalysisRunner accept an explicit override. The main process preserves event, validity and integration state. file_merge: concatenate consumes file order; time_order validates each required sequence then stably merges a verified shared clock, without shifting or deduplicating records. Do not split a continuous recording into independent batch jobs and add their results. Current support is one ASC/BLF source with requested decoding, with no nested file pool inside a batch worker. Time merging uses quota-controlled staging and a shared memory budget; more workers do not guarantee speedup. See the [runnable guide](../../Current/en/continuous-files.md).
+
+## Facts needed for every task
 
 | Task | Facts to establish | How to decide |
 |---|---|---|
@@ -15,6 +22,8 @@
 
 <a id="从报告定位错误"></a>
 ## Diagnose using actual reports
+
+Do not infer an error category from exit code 1 or 2 alone. Ordinary commands usually return 1 for a missing configuration file; fast validate/explain/run return 2 when preparing configuration, DBCs or the input list fails. Fast batch has its own classification: failure to write the final batch report can also return 2. Read stderr and any job reports already produced, then use the CLI description for that command and phase. A nonzero exit does not mean existing results were rolled back.
 
 Record the user's required signals, conditions, scope, and outputs first. Request JSON from `validate`. For a constructed plan, inspect `valid`, `execution_ready`, `errors`, `warnings`, and `capability_status`. For loading failure, iterate `errors`, even for one error; `blocked_checks` explains checks prevented by invalid dependencies. Each item provides available fields such as `code`, `source`, `path`, `line`, `column`, `message`, and `hint`. In `explain`, the validation report is under `validation`, with dependencies under `nodes` and `input_requirements`. Environment, I/O, or argument errors may produce only a nonzero exit code and stderr; missing JSON does not mean success.
 
@@ -32,7 +41,7 @@ python -m chronaxis explain ../../Current/examples/input-csv-minimal.yaml --form
 <a id="持续门槛与积分起点"></a>
 ## Duration thresholds and integration starts
 
-For `condition_duration`, `minimum_duration: 60s` means reaching 60 seconds by default. For “more than 60 seconds,” add `duration_comparison: ">"`, not 60.1 seconds. Default `selection_origin: onset` includes the entire qualifying interval. Select `confirmed` only when the user asks to start after confirmation. An exactly 60-second activity produces an event in the default mode and no event in strict mode. Time precision is 1 ns. Actual-time strict comparison can confirm at threshold plus 1 ns; fixed/DBC mode waits for the next driving message that takes accumulated duration strictly past the threshold.
+For `condition_duration`, `duration_comparison` is required and has no default. With `minimum_duration: 60s`, use `">="` for “at least 60 seconds” or `">"` for “more than 60 seconds,” not 60.1 seconds. If the request does not specify whether exactly 60 seconds qualifies and the choice affects the result, ask the user before choosing. Default `selection_origin: onset` includes the entire qualifying interval. Select `confirmed` only when the user asks to start after confirmation. An exactly 60-second activity produces an event with `>=` and no event with `>`. Time precision is 1 ns. Actual-time strict comparison can confirm at threshold plus 1 ns; fixed/DBC mode waits for the next driving message that takes accumulated duration strictly past the threshold.
 
 <a id="资源不足时保留原任务"></a>
 ## Preserve the task when resources are insufficient
@@ -58,7 +67,7 @@ Readable tables retain calculation names and units. Empty cells are not zero. Ea
 <a id="独立批量的进程数"></a>
 ## Process count for independent batch tasks
 
-Root-level batch `process_count` is a positive integer, default 1, limiting analysis worker processes. It excludes the scheduler and CAN reader subprocesses. `run_batch(plan, output, process_count=4)` and CLI `--process-count 4` override it. Only the Python API accepts `None` to inherit the plan; configuration rejects null and Booleans. Call from a Python script inside `if __name__ == "__main__":`. Ordinary `AnalysisRunner` has no such parameter. Continuous `paths` in one session are not split into independent processes.
+Root-level batch `process_count` is a positive integer, default 1, limiting analysis worker processes. It excludes the scheduler and CAN reader subprocesses. `run_batch(plan, output, process_count=4)` and CLI `--process-count 4` override it. Only the Python API accepts `None` to inherit the plan; configuration rejects null and Booleans. Call from a Python script inside `if __name__ == "__main__":`. Ordinary AnalysisRunner separately accepts a reading/decoding worker limit from execution.process_count. Continuous paths retain one analysis state and are not split into independent jobs.
 
 Each task has its own budgets and output. Cancellation prevents tasks that have not started; in-flight tasks finish and close. `report.close()` can retry remote cleanup. Unstarted tasks and worker crashes are not successes. Legacy `workers`, `max_workers`, and `--workers` are rejected.
 
@@ -83,3 +92,11 @@ In the bench task, P95 of five individual readings is 18 W. P95 of the two load 
 ## Temporal transforms and host extensions
 
 Ask for the actual timebase, TTL, output grid and clock policy. At a fixed/DBC grid tick between two real driver frames, wait for the later frame to determine fractional period weights and keep the original grid timestamp. adjacent_rate uses real value updates and actual max_gap. window_rate compares both boundary values; sample_fit_slope uses only real samples. Default strict warm-up returns unknown. Preserve partial quality in downstream results. For a registered operation ask for its host program, fixed ports, version and backend; run the host script with the same registry at plan load and execution. A YAML module path is never a registration mechanism.
+
+## Choose a runner for continuous analysis
+
+Start with `CONTINUOUS_FILES` for ASC/BLF volumes from one recording: one analysis configuration and one source preserve signal state, events and integration across file boundaries. Use ordinary analysis for duration conditions, cross-frame values, events/windows or actual-time integration. The duration-conditioned energy example uses `CONDITION_ENERGY`; splitting its recording into several files does not make it a fast task.
+
+Choose `FAST_CONTINUOUS_SESSION` only when every signal input in a formula comes from the current message, each message provides an independently additive contribution, and none of the capabilities above are needed. Here `execution.process_count` limits read/decode/current-message workers and `file_merge` controls file organization. The main process accumulates in the prescribed order; file partial sums cannot replace ordered session accumulation. Separate trials use ordinary batch or fast `FAST_TEMPLATE_TOTAL` according to their analysis requirements; do not split a continuous session into independent trials.
+
+Cancellation of `fast.run` raises `InterruptedError`. A managed memory budget is not a physical-memory limit for the whole process tree.

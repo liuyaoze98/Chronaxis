@@ -70,7 +70,7 @@ state或quality类型不正确时抛TypeError；已知状态带未知原因，�
 - `TypeError`：条件需要Truth及QualityFlag。
 - `ValueError`：条件truth与quality矛盾。
 
-源码：[`src/chronaxis/core/temporal.py:26`](../../../src/chronaxis/core/temporal.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:26`](../../../src/chronaxis/core/temporal.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionSpan"></a>
 ## `ConditionSpan`
@@ -93,7 +93,7 @@ class ConditionSpan
 |`state`|[Truth](chronaxis.core.types.md#api-Truth)|是|无|条件的状态，填写Truth.TRUE（成立）、Truth.FALSE（不成立）或Truth.UNKNOWN（数据不足以判断）。该状态适用于start_ns到end_ns之间，包含起点、不包含终点。|
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|否|Q.NONE|条件未知的原因，使用QualityFlag标记，可以用按位或组合多个原因。state为TRUE或FALSE时使用QualityFlag.NONE；state为UNKNOWN时必须提供非NONE原因，例如MISSING表示缺少数据。|
 
-源码：[`src/chronaxis/core/temporal.py:44`](../../../src/chronaxis/core/temporal.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:44`](../../../src/chronaxis/core/temporal.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionSpan-__post_init__"></a>
 ### `ConditionSpan.__post_init__`
@@ -123,7 +123,7 @@ TypeError/ValueError/OverflowError为结构/区间/质量。
 
 - `ValueError`：ConditionSpan需正长度。
 
-源码：[`src/chronaxis/core/temporal.py:56`](../../../src/chronaxis/core/temporal.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:56`](../../../src/chronaxis/core/temporal.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionTick"></a>
 ## `ConditionTick`
@@ -154,7 +154,7 @@ class ConditionTick
 |`actual_unknown`|bool|否|False|实际无效/实际更新导致未知，优先interrupted。|
 |`diagnostic_quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|否|Q.NONE|全部依赖和边界原因，保留原异常诊断。|
 
-源码：[`src/chronaxis/core/temporal.py:74`](../../../src/chronaxis/core/temporal.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:74`](../../../src/chronaxis/core/temporal.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionTick-__post_init__"></a>
 ### `ConditionTick.__post_init__`
@@ -186,7 +186,7 @@ TypeError/ValueError为类型、状态或实际未知证据冲突。
 - `ValueError`：actual_unknown需实际更新且点UNKNOWN。
 - `TypeError`：时序证据标志需bool。
 
-源码：[`src/chronaxis/core/temporal.py:94`](../../../src/chronaxis/core/temporal.py#L94)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:94`](../../../src/chronaxis/core/temporal.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalRule"></a>
 ## `TemporalRule`
@@ -213,9 +213,9 @@ class TemporalRule
 |`minimum_duration_ns`|int|否|0|condition_duration阈值；edge必须0。|
 |`emit_initial`|bool|否|False|rising_edge/start_only首次已知TRUE初始化策略。|
 |`window_duration_ns`|int|否|0|仅start_only的固定抑制时长，其他模式必须0。|
-|`duration_comparison`|str|否|'>='|持续时长比较符：>=表示达到minimum_duration，>表示严格超过；默认>=。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。|
+|`duration_comparison`|str|否|'>='|持续时长比较符：>=表示达到minimum_duration，>表示严格超过；此底层Python对象默认>=；用户配置中的condition_duration必须显式填写比较符。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。|
 
-源码：[`src/chronaxis/core/temporal.py:128`](../../../src/chronaxis/core/temporal.py#L128)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:128`](../../../src/chronaxis/core/temporal.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalRule-__post_init__"></a>
 ### `TemporalRule.__post_init__`
@@ -247,7 +247,7 @@ TypeError/ValueError/OverflowError为配置错误。
 - `ValueError`：规则参数与kind不匹配。
 - `ValueError`：window_duration_ns仅且必须用于正时长start_only。
 
-源码：[`src/chronaxis/core/temporal.py:146`](../../../src/chronaxis/core/temporal.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:146`](../../../src/chronaxis/core/temporal.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalRule-qualifying_duration_ns"></a>
 ### `TemporalRule.qualifying_duration_ns`
@@ -276,7 +276,7 @@ Python整数；严格大于最大int64时可超出int64，表示域内不可达�
 无。时间模型精度为1ns，因此>60s的首个可表示时长为60000000001ns；
 这不是把用户阈值粗略提高到60.1秒，固定/DBC模式仍只随实际驱动记录确认。
 
-源码：[`src/chronaxis/core/temporal.py:177`](../../../src/chronaxis/core/temporal.py#L177)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:177`](../../../src/chronaxis/core/temporal.py#L177)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-Event"></a>
 ## `Event`
@@ -309,7 +309,7 @@ class Event
 |`dependency_quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|期间及结束证据的完整诊断。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|否|()|真实绑定原来源定位，合成span可空。|
 
-源码：[`src/chronaxis/core/temporal.py:188`](../../../src/chronaxis/core/temporal.py#L188)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:188`](../../../src/chronaxis/core/temporal.py#L188)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-Event-__post_init__"></a>
 ### `Event.__post_init__`
@@ -345,7 +345,7 @@ TypeError/ValueError/OverflowError为事件结构/时间/身份错误。
 - `ValueError`：activity确认/连续边界矛盾。
 - `ValueError`：Event来源与session不一致。
 
-源码：[`src/chronaxis/core/temporal.py:210`](../../../src/chronaxis/core/temporal.py#L210)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:210`](../../../src/chronaxis/core/temporal.py#L210)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-make_event"></a>
 ## `make_event`
@@ -385,7 +385,7 @@ TypeError、ValueError或OverflowError: 事件模型或身份材料不符合约�
 
 返回类型：[Event](chronaxis.core.temporal.md#api-Event)。
 
-源码：[`src/chronaxis/core/temporal.py:258`](../../../src/chronaxis/core/temporal.py#L258)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:258`](../../../src/chronaxis/core/temporal.py#L258)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionTimeline"></a>
 ## `ConditionTimeline`
@@ -409,7 +409,7 @@ class ConditionTimeline
 |`ticks`|tuple[[ConditionTick](chronaxis.core.temporal.md#api-ConditionTick), ...]|是|无|完整时间组，含TTL/source/EOF证据。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|否|()|实际condition依赖源定位。|
 
-源码：[`src/chronaxis/core/temporal.py:292`](../../../src/chronaxis/core/temporal.py#L292)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:292`](../../../src/chronaxis/core/temporal.py#L292)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionTimeline-__post_init__"></a>
 ### `ConditionTimeline.__post_init__`
@@ -443,7 +443,7 @@ TypeError/ValueError/OverflowError为结构/边界/顺序。
 - `TypeError`：timeline source_refs需SourceRef。
 - `ValueError`：timeline中途terminal/时间回退/重复组。
 
-源码：[`src/chronaxis/core/temporal.py:305`](../../../src/chronaxis/core/temporal.py#L305)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:305`](../../../src/chronaxis/core/temporal.py#L305)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-timeline_from_spans"></a>
 ## `timeline_from_spans`
@@ -479,4 +479,4 @@ TypeError/ValueError为结构/缺口/point更新声明矛盾。
 
 返回类型：[ConditionTimeline](chronaxis.core.temporal.md#api-ConditionTimeline)。
 
-源码：[`src/chronaxis/core/temporal.py:338`](../../../src/chronaxis/core/temporal.py#L338)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal.py:338`](../../../src/chronaxis/core/temporal.py#L338)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -19,19 +19,19 @@ A **list** contains several items. Each item starts with `-`. A source list can 
 A reference such as `dataset.domain.start` means “the `start` field inside `domain`, inside `dataset`.” It is a lookup notation, not a key to paste into your YAML file. To change the analysis range, edit your existing `dataset` block; do not append a second block with the same name.
 
 ```yaml
-dataset:          # Analysis identity and optional input range
-  name: energy    # Name used to identify and reference this object
-  domain:         # Requested analysis start and end
-    start: 2s     # Inclusive start of the analysis range
-    end: 5s       # End of the analysis range
+dataset:        # Analysis identity and optional input range
+  name: energy  # Name used to identify and reference this object
+  domain:       # Requested analysis start and end
+    start: 2s   # Inclusive start of the analysis range
+    end: 5s     # End of the analysis range
 ```
 
 The following inline mapping means exactly the same thing. The braces group the two child fields; the comma separates them.
 
 ```yaml
-dataset:                          # Analysis identity and optional input range
-  name: energy                    # Name used to identify and reference this object
-  domain: {start: 2s, end: 5s}    # Requested analysis start and end; Inclusive start of the analysis range; End of the analysis range
+dataset:                        # Analysis identity and optional input range
+  name: energy                  # Name used to identify and reference this object
+  domain: {start: 2s, end: 5s}  # Requested analysis start and end; Inclusive start of the analysis range; End of the analysis range
 ```
 
 With the ASC teaching input, this range gives **22 J**. See [Analyze only 2–5 seconds](dataset.md#只分析2到5秒) for the input, command, and calculation.
@@ -42,13 +42,13 @@ With the ASC teaching input, this range gives **22 J**. See [Analyze only 2–5 
 Replace the existing `calculations` block with this fragment to calculate both energy and an arithmetic sample average. It assumes `power` has already been defined as a signal.
 
 ```yaml
-calculations:                 # Requested statistics or selected rows
-  - name: energy              # Name used to identify and reference this object
-    operation: integral       # Calculation to apply to the expression
-    expr: power               # Formula using the declared signal or derived names
-  - name: sample_average      # Name used to identify and reference this object
-    operation: sample_mean    # Calculation to apply to the expression
-    expr: power               # Formula using the declared signal or derived names
+calculations:               # Requested statistics or selected rows
+  - name: energy            # Name used to identify and reference this object
+    operation: integral     # Calculation to apply to the expression
+    expr: power             # Formula using the declared signal or derived names
+  - name: sample_average    # Name used to identify and reference this object
+    operation: sample_mean  # Calculation to apply to the expression
+    expr: power             # Formula using the declared signal or derived names
 ```
 
 In field references, `sources[]` means each item in the source list. `sources[0]` means its first item: list positions start at zero. This notation does not change the one-based channel numbers used in user configurations. `sources[].time.unit` is the `unit` field under `time` in each source.

@@ -9,7 +9,9 @@ from pathlib import Path
 def _semantics(spec):
     """比较业务绑定、计算指令、时间范围及解码选项。单文件路径和展示格式可不同。"""
     settings = {key: value for key, value in spec.items()
-                if key not in ('path', 'dbc', 'table_format', '_database')}
+                if key not in ('path', 'dbc', 'table_format', '_database', 'inputs')}
+    if 'inputs' in spec:
+        settings['input_options'] = [{k:v for k,v in item.items() if k != 'path'} for item in spec['inputs']]
     return Path(spec['dbc']).resolve(), json.dumps(settings, sort_keys=True, allow_nan=False)
 
 

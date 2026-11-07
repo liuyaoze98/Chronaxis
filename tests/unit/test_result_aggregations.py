@@ -148,7 +148,7 @@ class AggregationTests(unittest.TestCase):
             sources=[dict(name='table',source_type='memory',rows=[
                 dict(time=f'{t}s',values={'p':v}) for t,v in ((0,0.),(1,2.),(3,0.),(4,4.),(6,0.),(7,0.))])],
             signals=[dict(name='power',field='p',dtype='float64',unit='W',valid_for='10s')],
-            rules=[dict(name='active',rule_type='condition_duration',condition='power > 0',minimum_duration='0.1s')],
+            rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='power > 0',minimum_duration='0.1s')],
             windows=[dict(name='window',rule='active',pre='1s',post='1s')],
             calculations=[dict(name='energy',operation='integral',expr='power',scope=dict(rule='active'),unit='J')],
             aggregations=[dict(name=op,source=dict(calculation='energy'),operation=op,group_by=['entity_id'])

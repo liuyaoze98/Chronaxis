@@ -26,6 +26,7 @@ class CANTextSpec:
 
     decode_policy: str = 'legacy'  # 旧文本失败停止；新strict/partial解码失败置无效继续。
     input_check: str = 'auto'  # full检查全部帧时间顺序；auto按实际消费者选择。
+    file_merge: str = 'concatenate'  # concatenate按文件顺序；time_order按原时间稳定归并。
 
     def __post_init__(self):
         """核声明与支持范围。参数: 无。返回: None。异常: 名称/类型/文件集合或时基不合法。
@@ -35,6 +36,8 @@ class CANTextSpec:
         validate_decode_policy(self.decode_policy)
         if type(self.input_check) is not str or self.input_check not in ('auto','full'):
             raise ValueError('文本CAN input_check需要auto或full')
+        if type(self.file_merge) is not str or self.file_merge not in ('concatenate', 'time_order'):
+            raise ValueError('file_merge需要concatenate或time_order')
         require_identifier(self.name,'text_can.name')
         if (type(self.inputs) is not tuple or not 1 <= len(self.inputs) <= 4096
                 or any(type(item) not in (ASCSpec,CANCSVSpec,BLFSpec) for item in self.inputs)

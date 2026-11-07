@@ -23,7 +23,7 @@ AnalysisRunner(backend=None, *, extensions=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -54,7 +54,7 @@ TypeError为非文本覆盖；ValueError为未知后端。
 - `TypeError`：AnalysisRunner backend需要reference、numpy或None。
 - `ValueError`：AnalysisRunner仅支持reference与numpy后端。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -82,7 +82,7 @@ None/reference/numpy。
 
 无。
 
-源码：[`src/chronaxis/runner.py:51`](../../../src/chronaxis/runner.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:51`](../../../src/chronaxis/runner.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -90,7 +90,7 @@ None/reference/numpy。
 报告声明是否合法及执行路径是否已接入，不提前读取数据。
 
 ```python
-AnalysisRunner.validate(plan)
+AnalysisRunner.validate(plan, *, process_count=None)
 ```
 
 #### 参数
@@ -98,6 +98,7 @@ AnalysisRunner.validate(plan)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
+|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
 
 #### 返回说明
 
@@ -107,11 +108,13 @@ AnalysisRunner.validate(plan)
 
 TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正常计划的静态问题通过ValidationReport.errors返回，执行能力看execution_ready；不读取输入，不能把空errors当作实际日志已验证。
 
+ValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
+
 #### 副作用说明
 
 无来源I/O或目录创建。
 
-源码：[`src/chronaxis/runner.py:73`](../../../src/chronaxis/runner.py#L73)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:78`](../../../src/chronaxis/runner.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -119,7 +122,7 @@ TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正�
 列出真实依赖、各节点后端、历史需求及声明预算，不启动分析。
 
 ```python
-AnalysisRunner.explain(plan)
+AnalysisRunner.explain(plan, *, process_count=None)
 ```
 
 #### 参数
@@ -127,6 +130,7 @@ AnalysisRunner.explain(plan)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
+|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
 
 #### 返回说明
 
@@ -136,11 +140,13 @@ ExplainReport，plan_identity保原声明身份。
 
 TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏带有明确类型的引用可能引发AttributeError/KeyError；重新使用from_dict/load_analysis_plan构造合法计划。函数不打开CSV/DBC，不测量实际耗时或内存。
 
+ValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
+
 #### 副作用说明
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:83`](../../../src/chronaxis/runner.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:88`](../../../src/chronaxis/runner.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -148,7 +154,7 @@ TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏带�
 验证后执行一次真实分析，输入全关才返回独立AnalysisResult。
 
 ```python
-AnalysisRunner.run(plan, work_dir=None)
+AnalysisRunner.run(plan, work_dir=None, *, process_count=None)
 ```
 
 #### 参数
@@ -157,6 +163,7 @@ AnalysisRunner.run(plan, work_dir=None)
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
 |`work_dir`|str &#124; Path &#124; None|否|None|位置或关键字。本次运行独占的工作目录，用来保存中间文件。自行指定时要求尚不存在；不会覆盖旧目录。None让入口自动创建唯一目录。|
+|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
 
 #### 返回说明
 
@@ -164,8 +171,11 @@ analysis_complete的AnalysisResult，由调用者close/上下文管理，write�
 
 #### 异常说明
 
-TypeError为错误plan；验证或运行错误为AnalysisError，保原cause和诊断；
-    KeyboardInterrupt/SystemExit原样传播。持续清理失败用runner_cleanup_owner.close恢复。
+TypeError：plan不是AnalysisPlan，或其执行声明类型错误。ValueError：显式process_count不是正整数（含bool），或AnalysisRunner与计划未共享同一个扩展注册。
+
+AnalysisError：计划校验未通过、无法执行，或分析运行失败。运行失败被包装时可通过异常的__cause__读取原错误；原AnalysisError及直接校验错误的__cause__可能为空。附加清理信息在__notes__中（若有）。加载配置时的PlanValidationError另有diagnostics，不能假定所有AnalysisError都有此属性。
+
+KeyboardInterrupt和SystemExit原样传播。清理持续失败时，从捕获的异常读取getattr(exc, "runner_cleanup_owner", None)；如果存在恢复对象，排除资源故障后调用该对象.close()重试。未附此属性不表示分析成功；仍须处理原异常。
 
 #### 副作用说明
 
@@ -208,4 +218,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:94`](../../../src/chronaxis/runner.py#L94)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/runner.py:99`](../../../src/chronaxis/runner.py#L99)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

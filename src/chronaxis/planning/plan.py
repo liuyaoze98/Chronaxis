@@ -284,7 +284,7 @@ class AnalysisPlan:
         execution = None
         with collection.stage('$.execution', requires=True, check=True) as ready:
             if ready:
-                raw_execution = object_at(root.get('execution', {}), '$.execution', (), ('backend', 'batch_rows', 'memory_budget_bytes', 'result_buffer_rows', 'partial_policy', 'on_budget_exceeded', 'spool_quota_bytes'))
+                raw_execution = object_at(root.get('execution', {}), '$.execution', (), ('backend', 'batch_rows', 'memory_budget_bytes', 'result_buffer_rows', 'partial_policy', 'on_budget_exceeded', 'spool_quota_bytes', 'process_count'))
                 # 只允许'numpy'或'reference'，不为未知实现名称自动回退。
                 backend = choice_at(raw_execution.get('backend', 'numpy'), ('numpy', 'reference'), '$.execution.backend')
                 # 分批行数、内存预算和结果缓冲行数必须为正整数，不能是布尔值。
@@ -296,7 +296,8 @@ class AnalysisPlan:
                 # 磁盘配额若给出则必须为正整数；None表示没有配置该配额。
                 quota = number_at(raw_execution['spool_quota_bytes'], '$.execution.spool_quota_bytes', integer=True, minimum=1) if raw_execution.get('spool_quota_bytes') is not None else None
                 # 保存检查后的执行选项，包含本次实际采用的默认值。
-                execution = ExecutionPlan(backend, *limits, partial, quota)
+                process_count = number_at(raw_execution.get('process_count', 1), '$.execution.process_count', integer=True, minimum=1)
+                execution = ExecutionPlan(backend, *limits, partial, quota, process_count=process_count)
         # 规则、窗口和指标共用标识集合，避免同一计划出现重复ID。
         ids = {t.name for t in transforms}
         # 先检查条件和规则，供窗口按当前规则名称建立引用。

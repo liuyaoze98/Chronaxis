@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chronaxis"
-version = "0.1.0.dev2"
+version = "0.1.0.dev3"
 description = "Declarative analysis of multi-source time series"
 dynamic = ["readme"]
 authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]
@@ -32,7 +32,7 @@ dependencies = [
 Repository = "https://github.com/liuyaoze98/Chronaxis"
 Documentation = "https://liuyaoze98.github.io/Chronaxis/"
 Issues = "https://github.com/liuyaoze98/Chronaxis/issues"
-Changelog = "https://github.com/liuyaoze98/Chronaxis/blob/v0.1.0.dev2/Docs/Release/release-notes-0.1.0.dev2.md"
+Changelog = "https://github.com/liuyaoze98/Chronaxis/releases"
 
 # 命令行入口与Python API共享计划加载和执行逻辑。
 [project.scripts]

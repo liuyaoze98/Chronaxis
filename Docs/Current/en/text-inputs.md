@@ -1,7 +1,10 @@
 <a id="读取asc和原始can报文csv"></a>
+
 # Read ASC and raw CAN CSV
 
 Distinguish two CSV inputs. `signal_csv` already contains physical columns such as time, voltage, and current. A `raw_can_csv` row still contains a message ID and hexadecimal bytes, which need DBC decoding. Equal filename extensions do not imply equal contents.
+
+ASC/BLF continuations support `execution.process_count` and an independent `file_merge` selection. See [continuous-file multiprocessing](continuous-files.md) for complete examples and cross-file state. These added execution paths do not support raw CAN CSV.
 
 A **DBC** defines CAN message fields: for example, the first byte of ID `0x100` may represent Voltage with scale 1 and unit V. It does not supply acquisition timestamps. It can define message periods used for defaults such as validity, but does not establish measurement points or current direction. ASC is a text message log; BLF is a binary log. Both reader paths feed decoded signals into the same analysis engine.
 
@@ -60,10 +63,10 @@ Explicit files retain order; matched files use natural order. Default sources ma
 This excerpt replaces the root `sources` list of a complete analysis. Supply actual `sample.asc` and `sample.dbc`; do not insert a second `sources` parent inside an existing item.
 
 ```yaml
-sources:                 # Input sources used by this analysis
-  - path: sample.asc     # Input file path, relative to the configuration
-    dbc_by_channel:      # DBC files indexed by user-facing CAN channel
-      '1': sample.dbc    # DBC for channel 1; channel keys are strings
+sources:               # Input sources used by this analysis
+  - path: sample.asc   # Input file path, relative to the configuration
+    dbc_by_channel:    # DBC files indexed by user-facing CAN channel
+      '1': sample.dbc  # DBC for channel 1; channel keys are strings
 ```
 
 Fields below are inside `sources[].reader`.
@@ -99,21 +102,21 @@ Without a reliable acquisition date, use relative analysis time. Do not substitu
 This partial root `sources` section needs your actual input and DBC plus the rest of the analysis:
 
 ```yaml
-sources:                        # Input sources used by this analysis
-  - path: sample.csv            # Input file path, relative to the configuration
-    source_type: raw_can_csv    # Input adapter; CSV or memory must be declared explicitly
-    dbc_by_channel:             # DBC files indexed by user-facing CAN channel
-      '1': sample.dbc           # DBC for channel 1; channel keys are strings
-    time:                       # Input timestamp interpretation
-      unit: s                   # Unit of the input timestamp values
-    reader:                     # Input-format parsing options
-      time_format: numeric      # Format used to parse timestamp text
-      id_base: 16               # Unprefixed ID text is hexadecimal
-      layout:                   # Columns and fixed values in the raw message table
-        fields:                 # Column names used to read each raw message field
-          timestamp: time       # Original CSV time header
-          frame_id: id          # Original CSV ID header
-          data: data            # Payload bytes, not decoded values
+sources:                      # Input sources used by this analysis
+  - path: sample.csv          # Input file path, relative to the configuration
+    source_type: raw_can_csv  # Input adapter; CSV or memory must be declared explicitly
+    dbc_by_channel:           # DBC files indexed by user-facing CAN channel
+      '1': sample.dbc         # DBC for channel 1; channel keys are strings
+    time:                     # Input timestamp interpretation
+      unit: s                 # Unit of the input timestamp values
+    reader:                   # Input-format parsing options
+      time_format: numeric    # Format used to parse timestamp text
+      id_base: 16             # Unprefixed ID text is hexadecimal
+      layout:                 # Columns and fixed values in the raw message table
+        fields:               # Column names used to read each raw message field
+          timestamp: time     # Original CSV time header
+          frame_id: id        # Original CSV ID header
+          data: data          # Payload bytes, not decoded values
 ```
 
 <a id="reader时间id和数据字节怎样读取"></a>
@@ -146,20 +149,20 @@ For a continuous log moving from `23:59:59` to `00:00:01`, the clock drops nearl
 Common tables need only time, ID, and payload mappings; each column need not be wrapped in `column`:
 
 ```yaml
-sources:                        # Input sources used by this analysis
-  - source_type: raw_can_csv    # Input adapter; CSV or memory must be declared explicitly
-    path: data/raw.csv          # Input file path, relative to the configuration
-    dbc_by_channel:             # DBC files indexed by user-facing CAN channel
-      '1': network.dbc          # DBC for channel 1; channel keys are strings
-    time:                       # Input timestamp interpretation
-      unit: s                   # Unit of the input timestamp values
-    reader:                     # Input-format parsing options
-      time_format: numeric      # Format used to parse timestamp text
-      layout:                   # Columns and fixed values in the raw message table
-        fields:                 # Column names used to read each raw message field
-          timestamp: time       # Column containing the original timestamp
-          frame_id: id          # CAN message identifier; decimal or prefixed hexadecimal/binary
-          data: data            # Column containing payload bytes
+sources:                      # Input sources used by this analysis
+  - source_type: raw_can_csv  # Input adapter; CSV or memory must be declared explicitly
+    path: data/raw.csv        # Input file path, relative to the configuration
+    dbc_by_channel:           # DBC files indexed by user-facing CAN channel
+      '1': network.dbc        # DBC for channel 1; channel keys are strings
+    time:                     # Input timestamp interpretation
+      unit: s                 # Unit of the input timestamp values
+    reader:                   # Input-format parsing options
+      time_format: numeric    # Format used to parse timestamp text
+      layout:                 # Columns and fixed values in the raw message table
+        fields:               # Column names used to read each raw message field
+          timestamp: time     # Column containing the original timestamp
+          frame_id: id        # CAN message identifier; decimal or prefixed hexadecimal/binary
+          data: data          # Column containing payload bytes
 ```
 
 `timestamp: time` equals `timestamp: {column: time}`. Integer shorthand such as `timestamp: 1` selects the first column. Constants require `{fixed: VALUE}`. The unique DBC channel is supplied automatically; frames default to `frame_kind: data`, with length from actual bytes. Omitted direction remains unknown, allowing ordinary numeric analysis; complete raw-frame export needs actual direction. Standard/extended and CAN/FD flags may be omitted only when bindings and DBC identify them uniquely. Explicit lengths, kinds, and flags are strictly checked rather than replaced by defaults.

@@ -59,7 +59,7 @@ TypeError为非数值类型/系数；ValueError为非有限系数或错误类型
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/affine.py:17`](../../../src/chronaxis/core/affine.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/affine.py:17`](../../../src/chronaxis/core/affine.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-affine_reference"></a>
 ## `affine_reference`
@@ -95,4 +95,4 @@ TypeError或ValueError为声明结构错误；不将配置错误变成样本质�
 
 返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/affine.py:40`](../../../src/chronaxis/core/affine.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/affine.py:40`](../../../src/chronaxis/core/affine.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

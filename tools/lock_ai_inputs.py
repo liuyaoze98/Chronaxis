@@ -38,19 +38,19 @@ def lock(manual, runtime, device):
     names.update("Docs/Current/examples/temporal/" + name for name in
                  ("analysis.yaml","rolling-actual.yaml","host-analysis.yaml","host_extensions.py","meter.asc","meter.dbc"))
     names.update("Docs/Current/examples/fast/" + name for name in
-                 ("analysis.yaml","analysis-blf.yaml","batch.yaml","unsupported.yaml","data/power.dbc",
+                 ("analysis.yaml","analysis-blf.yaml","batch.yaml","batch-analysis.yaml","unsupported.yaml","session.yaml","session-time-order.yaml","data/power.dbc",
                   "data/run2.asc","data/run10.asc","data/single.blf"))
     names.update("Docs/AI/en/" + name for name in ("README.md", "workflow.md", "semantics.md", "tasks.json"))
     # 任务后续阅读使用同一手册正文；方向扩展示例也随专题分发。
     names.update("Docs/Current/" + language + topic + ".md"
                  for language in ("", "en/") for topic in ("aggregations", "message-calculations", "expressions", "configuration-language",
-                     "results", "examples", "example-results", "fast-energy", "calculations"))
+                     "results", "examples", "example-results", "fast-energy", "calculations", "continuous-files"))
     # 结果链接提供同源实际表和解释，不能只用配置文件充当输出。
     names.update("Docs/Current/examples/results/power-statistics-yaml/" + name
                  for name in ("result-summary.json", "事件结果.csv", "会话结果.csv", "窗口结果.csv", "聚合结果.csv"))
     names.update("Docs/Current/examples/" + name for name in
-                 ("message-directions.yaml", "message-energy.yaml", "readability_examples.py",
-                  "example_support.py", "execution-comparison.json"))
+                 ("continuous-time-order.yaml", "message-directions.yaml", "message-energy.yaml", "readability_examples.py",
+                  "example_support.py", "execution-comparison.json", "batch/energy.yaml", "batch/voltage.yaml"))
     for task in tasks:
         # 索引可直接从Docs/AI阅读；只接受约定的Current示例目录，不隐式猜测路径。
         example = task["example"]
@@ -87,6 +87,7 @@ def lock(manual, runtime, device):
                  "Docs/Release/publishing.md", "Docs/Release/publishing.en.md", "Docs/Release/release-notes-0.1.0.dev0.md",
                  "Docs/Release/release-notes-0.1.0.dev1.md", "Docs/Release/release-notes-0.1.0.dev1.en.md",
                  "Docs/Release/release-notes-0.1.0.dev2.md", "Docs/Release/release-notes-0.1.0.dev2.en.md",
+                 "Docs/Release/release-notes-0.1.0.dev3.md", "Docs/Release/release-notes-0.1.0.dev3.en.md",
                  "Docs/Release/trusted-publishing.md", "Docs/Release/trusted-publishing.en.md",
                  "Docs/Release/third-party.md", "Docs/Release/security.md", "Docs/Release/ThirdParty/highlight.js-LICENSE.txt",
                  "Docs/Release/ThirdParty/marked-LICENSE.txt", "tools/public_docs.py",

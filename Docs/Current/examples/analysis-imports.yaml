@@ -20,3 +20,5 @@ metadata:                               # 保存说明性信息；字段不会�
   device_label: home                    # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
   data_kind: synthetic                  # 记录数据来源性质；synthetic表示人工构造的测试输入
   purpose: 演示导入公共来源、信号及派生功率，并计算能量和均值    # 记录这份配置的用途；不参与条件判断或数值计算
+execution:                              # 设置本次分析的并行处理方式
+  process_count: 4                      # 最多4个文件工作进程；实际并行数不超过输入文件数

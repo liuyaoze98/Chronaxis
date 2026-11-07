@@ -85,7 +85,7 @@ str。布尔使用'true'或'false'，整数使用十进制文本，字符串保�
 
 返回类型：str。
 
-源码：[`src/chronaxis/sources/signal_csv.py:48`](../../../src/chronaxis/sources/signal_csv.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:48`](../../../src/chronaxis/sources/signal_csv.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter"></a>
 ## `SignalCSVSourceAdapter`
@@ -102,7 +102,7 @@ SignalCSVSourceAdapter(spec: SignalCSVSpec, session_id: str, signals: tuple[Sign
 ```
 
 
-源码：[`src/chronaxis/sources/signal_csv.py:66`](../../../src/chronaxis/sources/signal_csv.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:66`](../../../src/chronaxis/sources/signal_csv.py#L66)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-__init__"></a>
 ### `SignalCSVSourceAdapter.__init__`
@@ -143,7 +143,7 @@ TypeError: 配置、信号容器或后端类型不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/signal_csv.py:75`](../../../src/chronaxis/sources/signal_csv.py#L75)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:75`](../../../src/chronaxis/sources/signal_csv.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_ensure_open"></a>
 ### `SignalCSVSourceAdapter._ensure_open`
@@ -171,7 +171,7 @@ SourceClosedError包含当前来源名。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/signal_csv.py:127`](../../../src/chronaxis/sources/signal_csv.py#L127)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:127`](../../../src/chronaxis/sources/signal_csv.py#L127)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-describe"></a>
 ### `SignalCSVSourceAdapter.describe`
@@ -201,7 +201,7 @@ SourceClosedError: 本实例已经关闭。
 
 返回类型：[SourceDescription](chronaxis.sources.models.md#api-SourceDescription)。
 
-源码：[`src/chronaxis/sources/signal_csv.py:139`](../../../src/chronaxis/sources/signal_csv.py#L139)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:139`](../../../src/chronaxis/sources/signal_csv.py#L139)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-iter_batches"></a>
 ### `SignalCSVSourceAdapter.iter_batches`
@@ -234,7 +234,7 @@ SourceClosedError: 实例已经关闭。
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/signal_csv.py:164`](../../../src/chronaxis/sources/signal_csv.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:164`](../../../src/chronaxis/sources/signal_csv.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_request_batches"></a>
 ### `SignalCSVSourceAdapter._request_batches`
@@ -267,7 +267,7 @@ SignalCSVSourceAdapter._request_batches(request: ReadRequest, observation_sink=N
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/signal_csv.py:181`](../../../src/chronaxis/sources/signal_csv.py#L181)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:181`](../../../src/chronaxis/sources/signal_csv.py#L181)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_request_batches-iterate"></a>
 ### `SignalCSVSourceAdapter._request_batches.iterate`
@@ -295,7 +295,7 @@ SignalCSVSourceAdapter._request_batches.iterate() -> Iterator[SignalBatch]
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/signal_csv.py:200`](../../../src/chronaxis/sources/signal_csv.py#L200)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:200`](../../../src/chronaxis/sources/signal_csv.py#L200)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_parse_value"></a>
 ### `SignalCSVSourceAdapter._parse_value`
@@ -330,7 +330,7 @@ ValueError: 布尔文本不合法、数值语法错误、解析资源超限、
 
 返回类型：int &#124; float &#124; bool &#124; str &#124; None。
 
-源码：[`src/chronaxis/sources/signal_csv.py:234`](../../../src/chronaxis/sources/signal_csv.py#L234)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:234`](../../../src/chronaxis/sources/signal_csv.py#L234)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_close_handle"></a>
 ### `SignalCSVSourceAdapter._close_handle`
@@ -359,7 +359,7 @@ None。无论关闭成功与否都移除本句柄登记，不删除文件。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/signal_csv.py:306`](../../../src/chronaxis/sources/signal_csv.py#L306)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:306`](../../../src/chronaxis/sources/signal_csv.py#L306)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_read_resources"></a>
 ### `SignalCSVSourceAdapter._read_resources`
@@ -384,7 +384,7 @@ SignalCSVSourceAdapter._read_resources(request: ReadRequest)
 
 执行层子类可在申请预算失败时抛错；不涉及旧报文reader或DBC。
 
-源码：[`src/chronaxis/sources/signal_csv.py:333`](../../../src/chronaxis/sources/signal_csv.py#L333)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:333`](../../../src/chronaxis/sources/signal_csv.py#L333)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_iterate"></a>
 ### `SignalCSVSourceAdapter._iterate`
@@ -422,7 +422,7 @@ SourceReadError: 文件、表头、行、时间、数值或协议校验失败；
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/signal_csv.py:342`](../../../src/chronaxis/sources/signal_csv.py#L342)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:342`](../../../src/chronaxis/sources/signal_csv.py#L342)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-_make_batch"></a>
 ### `SignalCSVSourceAdapter._make_batch`
@@ -456,7 +456,7 @@ TypeError、ValueError或OverflowError: 数值、时间或列结构校验失败�
 
 返回类型：[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)。
 
-源码：[`src/chronaxis/sources/signal_csv.py:536`](../../../src/chronaxis/sources/signal_csv.py#L536)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:536`](../../../src/chronaxis/sources/signal_csv.py#L536)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SignalCSVSourceAdapter-close"></a>
 ### `SignalCSVSourceAdapter.close`
@@ -488,4 +488,4 @@ SourceReadError: 至少一次清理失败，原异常链保存首错，其他失
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/signal_csv.py:560`](../../../src/chronaxis/sources/signal_csv.py#L560)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/signal_csv.py:560`](../../../src/chronaxis/sources/signal_csv.py#L560)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

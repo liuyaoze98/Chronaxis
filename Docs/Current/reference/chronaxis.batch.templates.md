@@ -46,4 +46,4 @@ template_jobs(raw, base)
 |`raw`|dict|是|无|位置或关键字。当前批量模板声明，含template、inputs及可选source。|
 |`base`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。批量配置所在目录；用于解释模板与输入集合的相对路径。|
 
-源码：[`src/chronaxis/batch/templates.py:15`](../../../src/chronaxis/batch/templates.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/templates.py:15`](../../../src/chronaxis/batch/templates.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

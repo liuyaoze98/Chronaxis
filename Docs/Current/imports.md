@@ -72,11 +72,11 @@ sources与signals是数组；derived是名称到表达式对象的映射。每�
 主文件可以用overrides按已有名称修改少量参数。例如公共power从DBC取得1秒周期，默认有效期为3秒，本次只允许沿用1秒：
 
 ```yaml
-imports: [shared/definitions.yaml]    # 先加载公共定义文件；列表项为相对当前配置文件的路径
-overrides:                            # 明确覆盖导入的公共定义；仅在需要改动已导入设置时填写
-  signals:                            # 按已导入信号的名称指定允许覆盖的设置
-    power:                            # 修改名为power的已导入信号；其他字段保持原定义
-      valid_for: 1s                   # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+imports: [shared/definitions.yaml]  # 先加载公共定义文件；列表项为相对当前配置文件的路径
+overrides:                          # 明确覆盖导入的公共定义；仅在需要改动已导入设置时填写
+  signals:                          # 按已导入信号的名称指定允许覆盖的设置
+    power:                          # 修改名为power的已导入信号；其他字段保持原定义
+      valid_for: 1s                 # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
 ```
 
 下表的对象属于根级overrides，下一层按已有名称索引，例如`overrides.signals.power.valid_for`；不同于根级signals声明列表，不能把overrides.signals写成数组。

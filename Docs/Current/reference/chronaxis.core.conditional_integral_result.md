@@ -56,4 +56,4 @@ TypeError/ValueError为类型、单位或样本/面积项数矛盾；分配错�
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/core/conditional_integral_result.py:16`](../../../src/chronaxis/core/conditional_integral_result.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_integral_result.py:16`](../../../src/chronaxis/core/conditional_integral_result.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

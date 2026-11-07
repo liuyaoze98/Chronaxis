@@ -75,7 +75,7 @@ class RunnerReportTests(unittest.TestCase):
             signals=[dict(name=name, source='table', field='raw.'+name, dtype='float64',
                 unit=unit, valid_for='2ns') for name, unit in (('a', 'W'), ('b', '1'), ('c', 'custom_unit'))],
             derived={'twice': dict(expr='a * 2', unit='W')},
-            rules=[dict(name='active', rule_type='condition_duration', condition='b > 0', minimum_duration='1ns'),
+            rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='b > 0', minimum_duration='1ns'),
                 dict(name='start', rule_type='start_only', condition='b > 0', emit_initial=True, window_duration='3ns')],
             windows=[dict(name='context', rule='active', anchor='activity', pre='3ns', post='0ns',
                 merge='exit_delay', exit_delay='2ns'),
@@ -280,7 +280,7 @@ class RunnerReportTests(unittest.TestCase):
         # 数值逐字段等于原声明，没有预测或伪造实际执行峰值。
         self.assertEqual(dict(explanation.budget), dict(memory_budget_bytes=plan.execution.memory_budget_bytes,
             batch_rows=plan.execution.batch_rows, result_buffer_rows=plan.execution.result_buffer_rows,
-            spool_quota_bytes=plan.execution.spool_quota_bytes))
+            spool_quota_bytes=plan.execution.spool_quota_bytes,process_count=plan.execution.process_count))
 
     def test_public_static_type_errors_and_explicit_backend_validation_remain_clear(self):
         """类型错误保持TypeError，未知显式覆盖不静默回退。参数: 无。返回: None。异常: 错类型被吞或启动运行。"""

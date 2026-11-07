@@ -62,4 +62,4 @@ Segment或compact的CompactSegment tuple；bounds为按所选周期解析的真�
 逐事件精确扩展，按none/重叠/相邻/真实退出间隔分组，逐组裁剪。
     不改变原Event，不增加旧writer调用，不凭EOF外的请求补观测。
 
-源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

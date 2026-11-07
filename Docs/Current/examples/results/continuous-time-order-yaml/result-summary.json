@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "table_format": "readable_csv",
+  "row_counts": {
+    "events": 1,
+    "calculations": 1
+  },
+  "device_label": "home",
+  "analysis_outcome": {
+    "rules": [
+      {
+        "rule_id": "active",
+        "status": "events_found",
+        "event_count": 1,
+        "has_unknown": false,
+        "unobserved_signals": []
+      }
+    ],
+    "calculations": {
+      "complete": 1,
+      "partial": 0,
+      "indeterminate": 0,
+      "no_observation": 0
+    }
+  },
+  "presentation": {
+    "version": 1,
+    "time_unit": "s",
+    "time_coordinates": "保留原分析时间坐标，不从零重排，不推断日期或时区",
+    "empty_cell": "无数值；请结合本指标状态和说明，不等于0",
+    "common_identity": {
+      "dataset_id": "interleaved_charge",
+      "entity_id": "interleaved_charge",
+      "session_id": "interleaved_charge"
+    }
+  },
+  "result_messages": [
+    "active：已找到满足要求的事件（1个）"
+  ],
+  "files": [
+    {
+      "path": "事件结果.csv",
+      "bytes": 167,
+      "sha256": "cb144d5dc9353a5c8c0f7dbafa2ac7445b1cfbb1324d0efe7fd78d0a808d337a",
+      "rows": 1
+    },
+    {
+      "path": "会话结果.csv",
+      "bytes": 64,
+      "sha256": "322bb4cd66c4a81aa95d323c365cfd1200b135d7835cc346b9b941ec41297bc8",
+      "rows": 1
+    }
+  ]
+}

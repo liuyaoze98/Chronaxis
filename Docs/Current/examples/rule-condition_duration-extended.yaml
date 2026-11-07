@@ -20,6 +20,7 @@ signals:                                                    # 把输入字段定
 rules:                                                      # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
   - condition: temperature >= 80                            # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     name: detected                                          # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    duration_comparison: ">="                               # 达到门槛即满足；要求严格超过时填>
     minimum_duration: 2s                                    # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
     rule_type: condition_duration                           # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
     selection_origin: confirmed                             # 选择活动计算起点；onset包含确认前等待，confirmed从确认时刻起算
@@ -29,3 +30,5 @@ calculations:                                               # 列出希望获得
     scope:                                                  # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
       rule: detected                                        # 按指定规则的每次事件分别计算；填写前面rules中的name
     expr: power                                             # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+execution:                                                  # 设置本次分析的并行处理方式
+  process_count: 4                                          # 最多4个文件工作进程；实际并行数不超过输入文件数

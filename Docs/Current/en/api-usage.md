@@ -1,7 +1,10 @@
 <a id="python-api用法"></a>
+
 # Python API usage
 
 Public entry points are in `chronaxis`. Use `load_analysis_plan` for a configuration file or `AnalysisPlan.from_dict` for a programmatically constructed configuration. `AnalysisRunner` executes it; `AnalysisResult` reads and publishes the output. Complete [installation](installation.md) before running the following examples.
+
+Basic single-source ASC/BLF configurations set `execution.process_count: 4`; the `run(plan)` call below inherits it. To override it for one call, use `AnalysisRunner().run(plan, process_count=4)`. The instance's `validate` and `explain` methods accept the same keyword-only parameter. `None` inherits the setting without changing the plan; a positive integer sets the limit for this call. CSV, memory, and multi-source analyses use one worker setting; independent batch tasks configure parallelism at the outer level. See [continuous-file multiprocessing](continuous-files.md) for the supported scope.
 
 
 ## Reading parameter tables
@@ -11,7 +14,7 @@ Reference tables distinguish actual Python names, types, required arguments, def
 <a id="加载检查和执行"></a>
 ## Load, check, and execute
 
-Run this complete example from the repository root. In an offline examples directory, run [api_example.py](../examples/api_example.py), which defaults to the adjacent `analysis.yaml` and also accepts a custom configuration path.
+Save this complete example as a `.py` file and run it from the repository root. Keep the `if __name__ == "__main__":` guard so Windows worker startup does not rerun the main program. In an offline examples directory, run [api_example.py](../examples/api_example.py), which defaults to the adjacent `analysis.yaml` and also accepts a custom configuration path.
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan
@@ -36,7 +39,7 @@ if __name__ == "__main__":
     main()
 ```
 
-The synthetic ASC example produced the following terminal output. Each row gives the calculation name, value, unit and status.
+The configuration allows four workers, but this example has one ASC file and uses at most one reading worker. To run two parts of the same data, load `Docs/Current/examples/input-can-directory.yaml` instead: at most two reading workers produce the same calculation results. The synthetic example produces the following terminal output. Each row gives the calculation name, value, unit and status.
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -49,7 +52,7 @@ Power values of 2, 4, 8 and 10 W last 1, 2, 1 and 2 seconds, respectively. The i
 
 `validate_analysis_plan` returns a static `ValidationReport`. `valid` reports declaration validity; `execution_ready` reports whether the execution path supports the plan. `explain_analysis_plan` returns an `ExplainReport` containing dependencies and backend decisions. Static checks on a loaded plan do not read business records. DBC metadata read during loading is not proof that actual data is valid.
 
-`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's backend. `reference` uses the independent reference implementation; `numpy` uses array calculations. Explicitly supplying either name overrides the backend for that run. `run(plan, work_dir=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
+`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's backend. `reference` uses the independent reference implementation; `numpy` uses array calculations. Explicitly supplying either name overrides the backend for that run. `run(plan, work_dir=None, *, process_count=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
 
 Omit extensions for built-in operations. A Python host that registers custom functions or rolling operators must pass the same extension registry when loading the plan and constructing AnalysisRunner. See [Custom analysis operators](host-extensions.md). An asterisk in a signature marks the following arguments as keyword-only.
 
@@ -69,7 +72,7 @@ Close a cursor whether you exhaust it or stop early. Manage the result with `wit
 | `AnalysisPlan.from_dict(config, *, base_dir=None, extensions=None)` | Builds a plan from a dictionary; may enumerate directories or read DBC metadata, but does not scan business records. |
 | `validate_analysis_plan(plan)` | Returns a static validation report without running the task. |
 | `explain_analysis_plan(plan)` | Returns dependencies, interval choices, and resource declarations without running the task. |
-| `AnalysisRunner(...).run(plan, work_dir=None)` | Reads inputs, calculates, and uses temporary storage; returns a result that must be closed. |
+| `AnalysisRunner(...).run(plan, work_dir=None, *, process_count=None)` | Inherits or overrides the file-reading worker limit, reads inputs, calculates, and uses temporary storage; returns a result that must be closed. |
 | `AnalysisResult.write(output_dir)` | Publishes timestamped tables and a manifest to a reusable directory; returns an `OutputManifest`. |
 | `load_batch_plan(path)`, `run_batch(...)` | Load and execute independent tasks. Each child plan is loaded when its task starts. |
 | `build_preset(...)`, `resolve_preset_roles(...)` | Check preset roles and generate ordinary declarations. Usually, declare `presets` in configuration. |
@@ -130,6 +133,8 @@ Import `SignalDefinition` from `chronaxis.core.binding`; it is not exported unde
 
 The complete script is [preset_api_example.py](../examples/preset_api_example.py). From the examples directory, run `python preset_api_example.py --output preset-api-result` with a new output directory. This example script creates that parent directory for both its temporary work and published results. It produces `heat_duration=9.0s`, `complete`. Dictionaries here are Python function arguments; users need not rewrite YAML as JSON.
 
+This API example supplies in-memory records and explicitly uses `process_count: 1`. For your ASC/BLF volumes, use the file-loading example above and its `execution.process_count: 4` configuration.
+
 ```python
 """Build a preset from typed signals and run it. --output selects a new directory for work and published results."""
 from pathlib import Path
@@ -153,6 +158,7 @@ def run(output):
     fragment=build_preset(spec,signals)  # Also checks roles; returns a PlanFragment.
     nodes=fragment.to_dict()            # Nodes only; no sources, signals, or results.
     raw=dict(config_version=4,dataset=dict(name='preset_api'),
+        execution=dict(process_count=1),
         sources=[dict(name='table',source_type='memory',
             rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
         signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])

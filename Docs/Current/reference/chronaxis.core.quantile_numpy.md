@@ -48,4 +48,4 @@ ordered_numpy(chunks, index, remainder, denominator)
 
 预算由外层预付，数组分配或索引错误直接传播。
 
-源码：[`src/chronaxis/core/quantile_numpy.py:7`](../../../src/chronaxis/core/quantile_numpy.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/quantile_numpy.py:7`](../../../src/chronaxis/core/quantile_numpy.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

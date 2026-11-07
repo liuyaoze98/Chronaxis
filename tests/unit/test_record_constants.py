@@ -20,7 +20,7 @@ class RecordConstantTests(unittest.TestCase):
         raw=self.config(kind,mode='actual')
         raw['calculations']=[dict(name='elapsed',scope='session',operation='duration',condition='True'),
                         dict(name='never',scope='session',operation='duration',condition='False')]
-        raw['rules']=[dict(name='alarm',rule_type='condition_duration',condition='True',minimum_duration='0.2s')]
+        raw['rules']=[dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='True',minimum_duration='0.2s')]
         return raw
 
     def test_parsed_constant_and_mixed_actual_scope(self):
@@ -126,7 +126,7 @@ class RawConstantTests(unittest.TestCase):
             def edit(raw):
                 """只需要观测。参数: 配置。返回: None。异常: 无。"""
                 raw['calculations']=[dict(name='elapsed',scope='session',operation='duration',condition='True')]
-                raw['rules']=[dict(name='alarm',rule_type='condition_duration',condition='True',minimum_duration='0.2s')]
+                raw['rules']=[dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='True',minimum_duration='0.2s')]
             with self.subTest(kind=kind,backend=backend),patch(
                     'chronaxis.execution.raw_signal_groups.pack_message_values',side_effect=AssertionError('unneeded values')):
                 with AnalysisRunner(backend).run(self.plan(kind,path,'actual',edit),self.root/uuid4().hex) as result:

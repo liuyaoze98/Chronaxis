@@ -57,4 +57,4 @@ PlanValidationError定位时间域、陈旧绑定或来源策略错误；其他�
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

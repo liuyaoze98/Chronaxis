@@ -105,7 +105,7 @@ class MomentStatisticsTests(unittest.TestCase):
             sources=[dict(name='table',source_type='memory',rows=[dict(time=f'{t}s',values=dict(raw=x)) for
                     t,x in ((0,0.),(1,10.),(4,-1.))])],
             signals=[dict(name='v',field='raw',dtype='float64',unit='V',valid_for='10s')],
-            rules=[dict(name='active',rule_type='condition_duration',condition='v>=0',minimum_duration='0s')],
+            rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='v>=0',minimum_duration='0s')],
             windows=[dict(name='around',rule='active',anchor='activity',pre='0s',post='0s',merge='none')],
             calculations=items,execution=dict(backend=backend,batch_rows=1))
 

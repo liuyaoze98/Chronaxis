@@ -55,7 +55,7 @@ class SequenceRule
 |`group_id`|str|否|'default'|标识已经划分的分析组；由调用侧提供，例如设备分组名称。默认default；各组独立配对，不从报文ID自动分组。|
 |`record_clock`|bool|否|False|True时delay按所选记录间隔累计，事件坐标仍是实际时间。|
 
-源码：[`src/chronaxis/core/sequence.py:19`](../../../src/chronaxis/core/sequence.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:19`](../../../src/chronaxis/core/sequence.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceRule-__post_init__"></a>
 ### `SequenceRule.__post_init__`
@@ -85,7 +85,7 @@ TypeError/ValueError/OverflowError表示非法身份、范围或类型。
 
 - `ValueError`：需要0 <= min_delay_ns <= max_delay_ns。
 
-源码：[`src/chronaxis/core/sequence.py:36`](../../../src/chronaxis/core/sequence.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:36`](../../../src/chronaxis/core/sequence.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceRule-check_event"></a>
 ### `SequenceRule.check_event`
@@ -116,7 +116,7 @@ TypeError为类型不符，ValueError为数据集/会话/规则不匹配。
 - `TypeError`：需要Event及bool角色。
 - `ValueError`：顺序事件的数据集、会话或规则不匹配。
 
-源码：[`src/chronaxis/core/sequence.py:58`](../../../src/chronaxis/core/sequence.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:58`](../../../src/chronaxis/core/sequence.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceTick"></a>
 ## `SequenceTick`
@@ -139,7 +139,7 @@ class SequenceTick
 |`starts`|tuple[[Event](chronaxis.core.temporal.md#api-Event), ...]|否|()|当前时刻发生的请求Event元组；空元组表示没有请求。|
 |`responses`|tuple[[Event](chronaxis.core.temporal.md#api-Event), ...]|否|()|当前时刻发生的响应Event元组；先收集同一时刻事件，再做配对。|
 
-源码：[`src/chronaxis/core/sequence.py:74`](../../../src/chronaxis/core/sequence.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:74`](../../../src/chronaxis/core/sequence.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceTick-__post_init__"></a>
 ### `SequenceTick.__post_init__`
@@ -173,7 +173,7 @@ TypeError/ValueError为结构、时间、重复ID或观测矛盾。
 - `ValueError`：事件确认时间与同一时刻组不同。
 - `ValueError`：同一角色内事件ID重复。
 
-源码：[`src/chronaxis/core/sequence.py:86`](../../../src/chronaxis/core/sequence.py#L86)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:86`](../../../src/chronaxis/core/sequence.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceResult"></a>
 ## `SequenceResult`
@@ -197,7 +197,7 @@ class SequenceResult
 |`delay_ns`|int &#124; None|是|无|成功时response.confirmed_ns减request.confirmed_ns，单位ns；未匹配时为None，不能当0。|
 |`observation_quality`|QualityFlag|是|无|等待响应期间遇到的全部未知原因；即使最终配对成功，也保留此前缺失或失效的记录。|
 
-源码：[`src/chronaxis/core/sequence.py:109`](../../../src/chronaxis/core/sequence.py#L109)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:109`](../../../src/chronaxis/core/sequence.py#L109)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequenceResult-__post_init__"></a>
 ### `SequenceResult.__post_init__`
@@ -233,4 +233,4 @@ TypeError/ValueError/OverflowError为身份、时间或状态矛盾。
 - `ValueError`：no_response需要完整、已知的等待区间。
 - `ValueError`：indeterminate必须说明缺失观测原因。
 
-源码：[`src/chronaxis/core/sequence.py:126`](../../../src/chronaxis/core/sequence.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/sequence.py:126`](../../../src/chronaxis/core/sequence.py#L126)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

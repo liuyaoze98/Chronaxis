@@ -54,14 +54,14 @@ class RecordRuleTimelineTests(unittest.TestCase):
 
     def test_actual_deadline_and_record_confirmation_use_real_coordinates(self):
         """0、120、300、900；实际200确认，周期100则300确认，均900结束。"""
-        rule=dict(name='alarm',rule_type='condition_duration',condition='temperature > 80',minimum_duration='200ns')
+        rule=dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='temperature > 80',minimum_duration='200ns')
         for period,expected in ((None,200),(100,300)):
             event,=self.run_case(rule,((0,85),(120,85),(300,85),(900,70)),period=period)
             self.assertEqual((event.start_ns,event.confirmed_ns,event.end_ns,event.status),(0,expected,900,'closed'))
 
     def test_eof_truncates_at_actual_last_record(self):
         """请求到1000，实际300结束；固定周期不能再补第4条。"""
-        rule=dict(name='alarm',rule_type='condition_duration',condition='temperature > 80',minimum_duration='200ns')
+        rule=dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='temperature > 80',minimum_duration='200ns')
         event,=self.run_case(rule,((0,85),(120,85),(300,85)),period=100)
         self.assertEqual((event.confirmed_ns,event.end_ns,event.status),(300,300,'truncated'))
         rule['minimum_duration']='300ns'
@@ -69,7 +69,7 @@ class RecordRuleTimelineTests(unittest.TestCase):
 
     def test_ttl_interrupts_before_next_driver(self):
         """有效期150，下一条500；中途过期不会给等待凑周期或跨缺口拼接。"""
-        rule=dict(name='alarm',rule_type='condition_duration',condition='temperature > 80',minimum_duration='100ns')
+        rule=dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='temperature > 80',minimum_duration='100ns')
         events=self.run_case(rule,((0,85),(500,85),(600,70)),age=150)
         self.assertEqual(tuple((e.start_ns,e.confirmed_ns,e.end_ns,e.status) for e in events),
                          ((0,100,150,'interrupted'),(500,600,600,'closed')))

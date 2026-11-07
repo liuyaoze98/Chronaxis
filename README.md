@@ -31,20 +31,20 @@ Chronaxis 希望把日志读取、条件筛选和指标计算整理成可复用�
 
 ## 安装与运行环境
 
-当前版本为 **0.1.0.dev2**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev2.md)。
+本源码及配套资料对应 **0.1.0.dev3**，属于开发预览版。请使用 **Windows 和 Python 3.12** 安装运行。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev3.md)。
 
-从 PyPI 安装：
+在包含 `pyproject.toml` 的同版源码根目录安装：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install .
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-从源码安装时，在包含 `pyproject.toml` 的仓库根目录执行 `python -m pip install .`。若取得的是发行 wheel，将上面的安装命令替换为：
+若取得的是同版 wheel，将上面的安装命令替换为以下命令，并填写实际文件路径：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 ```
 
 安装时会自动安装 CAN 读取、DBC 解码等所需依赖。离线安装请提前准备依赖包，具体方法见[安装说明](Docs/Current/installation.md)。

@@ -30,14 +30,14 @@ class RecordSampleCalculationTests(unittest.TestCase):
         for operation in ('sample_minimum','sample_maximum','sample_mean'):
             raw['calculations'].append(dict(name=operation,scope=scope,operation=operation,expr='value',condition='gate',unit='W'))
         if scope.startswith('event:'):
-            raw['rules']=[dict(name='active',rule_type='condition_duration',condition='gate',minimum_duration='0s')]
+            raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='gate',minimum_duration='0s')]
         return raw
 
     def test_session_samples_ignore_condition_updates_and_default_period(self):
         """批次大小和任务默认周期不改变样本统计；与schema1现有接口同值同状态。"""
         for backend,size in product(('reference','numpy'),(1,2,16)):
             raw=self.config();raw['execution']={'batch_rows':size}
-            raw['rules']=[dict(name='active',rule_type='condition_duration',condition='gate',minimum_duration='0s')]
+            raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='gate',minimum_duration='0s')]
             raw['intervals']={'default':{'mode':'fixed','value':'0.1s','driver':'gate'}}
             with AnalysisRunner(backend).run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex) as result:
                 rows={r.calculation_id:r for r in result.iter_calculations()}

@@ -3,16 +3,51 @@
   "revision": 1,
   "tasks": [
     {
+      "id": "CONTINUOUS_FILES",
+      "intent": "Read and decode several files from one continuous charge in parallel",
+      "example": "../../Current/examples/continuous-parallel.yaml",
+      "requires": "Complete file list, DBC and signal bindings, established time coordinates and an explicit merge choice; positive worker limit.",
+      "check": "The cross-file integral is 38 J. Configuration allows four workers, capped at two for the two files. The time-order extension has one event from 0 to 6 s, confirmed at 1 s.",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations",
+        "execution"
+      ],
+      "templates": [
+        "can-asc"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/continuous-parallel.yaml --format json",
+      "aliases": [
+        "连续分卷",
+        "同一次充电",
+        "file_merge",
+        "process_count",
+        "continuous session"
+      ],
+      "references": [
+        {
+          "path": "../../Current/en/continuous-files.md",
+          "description": "Process limits, ordering, resource and error rules"
+        }
+      ]
+    },
+    {
       "id": "TEMPORAL_CURRENT",
       "intent": "Rolling current or rate on CAN frames with irregular timestamps",
       "example": "../../Current/examples/temporal/analysis.yaml",
       "requires": "Current field and unit, valid_for, actual/fixed/DBC clock, driver, window and output step.",
-      "check": "At 0.20 s the mean is 130/9 A with a 100 ms DBC period; actual time gives 18 A.",
+      "check": "At 0.20 s the mean is 130/9 A with a 100 ms DBC period; actual time gives 18 A. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sources",
         "signals",
         "transforms",
-        "calculations"
+        "calculations",
+        "execution"
       ],
       "templates": [
         "can-asc"
@@ -35,11 +70,12 @@
       "intent": "Register a trusted custom point function, sample reduction or stateful grid operation in Python",
       "example": "../../Current/examples/temporal/host-analysis.yaml",
       "requires": "The accompanying host program, ASC and DBC; a version, typed ports, supported backends and a budget contract.",
-      "check": "The host reports 80 A peak and 10, 20, 30, 30 A for the valid grid outputs. Use the host script to supply the registry.",
+      "check": "The host reports 80 A peak and 10, 20, 30, 30 A for the valid grid outputs. Use the host script to supply the registry. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "signals",
         "transforms",
-        "calculations"
+        "calculations",
+        "execution"
       ],
       "templates": [
         "can-asc"
@@ -75,11 +111,12 @@
       "intent": "Integrate power from BLF / ASC messages",
       "example": "../../Current/examples/analysis.yaml",
       "requires": "Logs, channel, matching DBC, power unit, and clock.",
-      "check": "Check joules (J) and the actual observed range.",
+      "check": "Check joules (J) and the actual observed range. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sources",
         "signals",
-        "calculations"
+        "calculations",
+        "execution"
       ],
       "templates": [
         "can-blf",
@@ -97,14 +134,15 @@
       "example": "../../Current/examples/conditional-energy.yaml",
       "requires": "Raw ASC/BLF and matching DBC; target signals, codes, units, comparisons, continuous duration, and integration scope. Do not require types, units, or periods to be repeated when the DBC supplies them.",
       "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, default onset, and actual elapsed time.",
-      "not_applicable": "For per-message contributions query MESSAGE_ENERGY; choose FAST_MESSAGE_ENERGY only when its independent-file restrictions fit. Independent tasks use BATCH; fast template totals use FAST_TEMPLATE_TOTAL.",
+      "not_applicable": "For per-message contributions query MESSAGE_ENERGY; choose FAST_MESSAGE_ENERGY only when its current-message restrictions fit. Independent tasks use BATCH; fast template totals use FAST_TEMPLATE_TOTAL.",
       "alternative": "charge_session applies only to its strict current > comparison, duration >= comparison, Wh/Ah outputs, and direction/measurement-point requirements. Do not choose it merely because a task mentions charging.",
-      "check": "Exactly 60 seconds produces no event. The cross-file 61-second interval is [61,122), giving 4000W*61s/3600000=0.06777777777777777kWh. Link parent_id to event_id and check status/reason. Do not replace strict comparison with 60.1 seconds.",
+      "check": "Exactly 60 seconds produces no event. The cross-file 61-second interval is [61,122), giving 4000W*61s/3600000=0.06777777777777777kWh. Link parent_id to event_id and check status/reason. Do not replace strict comparison with 60.1 seconds. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sources",
         "signals",
         "rules",
-        "calculations"
+        "calculations",
+        "execution"
       ],
       "templates": [],
       "api": [
@@ -138,10 +176,11 @@
       "intent": "Charging activities, electric charge, and charging energy",
       "example": "../../Current/examples/preset-charge-energy.yaml",
       "requires": "Mode codes, positive current direction, terminal measurement point, voltage, thresholds, and duration. The teaching example uses ASC; for BLF replace the logs, DBC, and bindings with your own.",
-      "check": "Check each activity boundary and Wh/Ah result. Current exactly equal to current_min is excluded; duration exactly equal to minimum_duration qualifies. The default start is onset. Check applicability rather than matching only the word charging.",
+      "check": "Check each activity boundary and Wh/Ah result. Current exactly equal to current_min is excluded; duration exactly equal to minimum_duration qualifies. The default start is onset. Check applicability rather than matching only the word charging. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "presets",
-        "signals"
+        "signals",
+        "execution"
       ],
       "templates": [
         "charge-session"
@@ -161,10 +200,11 @@
       "intent": "Sustained activities, exit grouping, and event relationships",
       "example": "../../Current/examples/window-merged.yaml",
       "requires": "Condition, time units, window, and allowed gap.",
-      "check": "Preserve event boundaries; a segment may contain multiple parent_event_ids.",
+      "check": "Preserve event boundaries; a segment may contain multiple parent_event_ids. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "rules",
-        "windows"
+        "windows",
+        "execution"
       ],
       "templates": [],
       "api": [
@@ -178,10 +218,11 @@
       "intent": "Alarm context and rising edges",
       "example": "../../Current/examples/preset-fault-context.yaml",
       "requires": "An explicitly defined Boolean alarm and before/after durations.",
-      "check": "Check point events separately from surrounding segments.",
+      "check": "Check point events separately from surrounding segments. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "presets",
-        "windows"
+        "windows",
+        "execution"
       ],
       "templates": [
         "fault-window"
@@ -197,10 +238,11 @@
       "intent": "Request/response pairs, timeout, and insufficient observation",
       "example": "../../Current/examples/sequence-outcomes.yaml",
       "requires": "Comparable request and response clocks, with explicit minimum and maximum delays.",
-      "check": "Unknown observations must not become a definite no-response outcome.",
+      "check": "Unknown observations must not become a definite no-response outcome. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sequences",
-        "rules"
+        "rules",
+        "execution"
       ],
       "templates": [
         "command-response"
@@ -216,10 +258,11 @@
       "intent": "Boolean and enumeration codes, and expression aliases",
       "example": "../../Current/examples/signal-enum-minimal.yaml",
       "requires": "Equipment code definitions; undefined codes must not use nonzero=true.",
-      "check": "Expressions reference bound names. Semantic IDs are not attribute paths.",
+      "check": "Expressions reference bound names. Semantic IDs are not attribute paths. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "signals",
-        "derived"
+        "derived",
+        "execution"
       ],
       "templates": [],
       "api": [
@@ -233,9 +276,10 @@
       "intent": "Conversions, units, and scales",
       "example": "../../Current/examples/signal-number-conversion.yaml",
       "requires": "Input/target units and existing DBC conversion; establish direction only when the task needs that interpretation.",
-      "check": "Infer conversion from declared input and target units when scale and offset are both omitted; 2000 mA becomes 2 A. DBC coefficients apply only once.",
+      "check": "Infer conversion from declared input and target units when scale and offset are both omitted; 2000 mA becomes 2 A. DBC coefficients apply only once. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
-        "signals"
+        "signals",
+        "execution"
       ],
       "templates": [],
       "api": [
@@ -249,7 +293,7 @@
       "intent": "Expired data, zero values, and partial results",
       "example": "../../Current/examples/quality.yaml",
       "requires": "Period or validity, required observation range, and missing-data policy.",
-      "check": "Read status/reason/quality together with the value.",
+      "check": "Read status/reason/quality together with the value. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "signals",
         "execution",
@@ -267,7 +311,7 @@
       "intent": "Run independent tasks in a batch",
       "example": "../../Current/examples/batch-minimal.yaml",
       "requires": "Independent input and output for each plan, without shared task state.",
-      "check": "Use batch run. process_count is a positive integer, default 1, overridable with --process-count. Inspect worker_process_count and each task worker_pid in batch_report. Continuous volumes belong in one task's paths.",
+      "check": "Use batch run. The basic file sets root process_count to 4 (software default 1) and child plans to 1. Inspect worker_process_count and each worker_pid; one job uses at most one task worker. Keep continuous volumes in one task source.",
       "fields": [
         "jobs",
         "process_count"
@@ -287,9 +331,10 @@
       "intent": "Shared definitions, field origins, and relative paths",
       "example": "../../Current/examples/analysis-imports.yaml",
       "requires": "Both the main configuration and referenced shared-definition files.",
-      "check": "Use config origins --fields to inspect declaration origins.",
+      "check": "Use config origins --fields to inspect declaration origins. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
-        "imports"
+        "imports",
+        "execution"
       ],
       "templates": [],
       "api": [
@@ -302,10 +347,11 @@
       "intent": "Export raw messages around events",
       "example": "../../Current/examples/export-can-minimal.yaml",
       "requires": "A supported CAN source, explicit window, and writable output directory; existing results may remain there.",
-      "check": "Check actual windows, output format, and manifest.",
+      "check": "Check actual windows, output format, and manifest. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "outputs",
-        "windows"
+        "windows",
+        "execution"
       ],
       "templates": [
         "can-export"
@@ -359,11 +405,12 @@
       "intent": "Map ASC/DBC voltage through a calibration curve and calculate mean power",
       "example": "../../Current/examples/lookup-power.yaml",
       "requires": "Input unit, calibration points and output unit.",
-      "check": "3, 7 and 3 V give 10, 30 and 10 W; the mean is about 16.67 W.",
+      "check": "3, 7 and 3 V give 10, 30 and 10 W; the mean is about 16.67 W. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "signals",
         "lookups",
-        "calculations"
+        "calculations",
+        "execution"
       ],
       "templates": [
         "can-asc"
@@ -385,13 +432,14 @@
       "intent": "Calculate sample and time-weighted power statistics, and aggregate scalar calculation rows, sequence delays, event counts or final segment counts",
       "example": "../../Current/examples/power-statistics.yaml",
       "requires": "Define the result population, named source, operation and grouping. Confirm whether partial values may participate and how an incomplete population is reported. The example uses P95 of per-event means; references cover calculation, sequence, rule and window sources.",
-      "check": "Five readings, two starts, two loaded activities and one merged segment. P95 of readings is 18 W. P95 across load means is 19.5 W with two candidates and two included. Time RMS is about 11.05542 W.",
+      "check": "Five readings, two starts, two loaded activities and one merged segment. P95 of readings is 18 W. P95 across load means is 19.5 W with two candidates and two included. Time RMS is about 11.05542 W. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "rules",
         "windows",
         "calculations",
         "aggregations",
-        "sequences"
+        "sequences",
+        "execution"
       ],
       "templates": [
         "can-asc"
@@ -429,12 +477,13 @@
       "intent": "Accumulate each target CAN message contribution using the general analysis runner",
       "example": "../../Current/examples/message-minimal.yaml",
       "requires": "Confirm the target channel/frame, DBC, units and the contribution computed by expr. Confirm a time factor when converting power to energy; it is unnecessary for contributions already expressed as energy. Read references for all fields and restrictions.",
-      "check": "Two simultaneous 4000 W messages each contribute 400 J at 0.1 s, totaling 800 J; the record at 1 s is outside [0,1).",
+      "check": "Two simultaneous 4000 W messages each contribute 400 J at 0.1 s, totaling 800 J; the record at 1 s is outside [0,1). The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sources",
         "signals",
         "message_calculations",
-        "outputs"
+        "outputs",
+        "execution"
       ],
       "templates": [
         "can-asc"
@@ -446,7 +495,7 @@
       ],
       "verify": "python -m chronaxis validate ../../Current/examples/message-minimal.yaml --format json",
       "applicable": "Use general run for CAN per-message accumulation, including continuous source files or requested contribution details. Values come from the current target message.",
-      "not_applicable": "Not elapsed-time integration or cross-message cached values. For an independent single ASC/BLF with all inputs in the target frame, compare FAST_MESSAGE_ENERGY and its restrictions.",
+      "not_applicable": "Not elapsed-time integration or cross-message cached values. For one ASC/BLF source with all inputs in the target frame, compare FAST_MESSAGE_ENERGY and its restrictions.",
       "aliases": [
         "逐消息累计",
         "逐消息计算",
@@ -471,20 +520,21 @@
       "intent": "Accumulate energy per matched CAN message in one ASC or BLF",
       "example": "../../Current/examples/fast/analysis.yaml",
       "requires": "Confirm the unit, contribution time, frame ID, DBC, channel and sign bucket.",
-      "check": "Open the manifest at this run manifest_path, then its CSV. Two simultaneous 400 J contributions give 800 J. No target frames gives null; valid target frames with an empty direction bucket give zero. Read status/reason with the value.",
+      "check": "Open the manifest at this run manifest_path, then its CSV. Two simultaneous 400 J contributions give 800 J. No target frames gives null; valid target frames with an empty direction bucket give zero. Read status/reason with the value. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
       "fields": [
         "sources",
         "signals",
         "message_calculations",
-        "outputs"
+        "outputs",
+        "execution"
       ],
       "templates": [],
       "api": [
         "fast.run"
       ],
       "verify": "python -m chronaxis fast validate ../../Current/examples/fast/analysis.yaml",
-      "applicable": "One independent ASC/BLF source per file, every formula input in the current matched frame, and verifiable numeric units.",
-      "not_applicable": "Do not use fast for state across continuous volumes, actual-time integrals, values held across IDs, duration conditions, raw CSV, multiplex/container messages or per-frame contribution rows.",
+      "applicable": "One ASC/BLF source with all formula inputs in the current frame; see FAST_CONTINUOUS_SESSION for multiple volumes.",
+      "not_applicable": "No cross-message holding, events/windows, elapsed-time integration, raw CSV or multiplex/container frames.",
       "aliases": [
         "高性能积分器",
         "同帧逐报文累计",
@@ -513,6 +563,39 @@
         "同帧逐报文累计",
         "high-performance integrator",
         "fast"
+      ]
+    },
+    {
+      "id": "FAST_CONTINUOUS_SESSION",
+      "intent": "Compute one recording across ASC/BLF volumes with multiple workers and one session summary",
+      "example": "../../Current/examples/fast/session.yaml",
+      "requires": "Confirm one source and current-message contributions; choose file_merge deliberately and set the worker count.",
+      "check": "Three 400 J contributions total 1200 J. Configuration allows four workers; the two input files use two. Check statuses and counts rather than applying independent-batch missing-value rules.",
+      "fields": [
+        "sources",
+        "signals",
+        "message_calculations",
+        "execution"
+      ],
+      "templates": [],
+      "api": [
+        "fast.run"
+      ],
+      "verify": "python -m chronaxis fast run ../../Current/examples/fast/session.yaml --output result-fast-session",
+      "aliases": [
+        "fast",
+        "连续分卷",
+        "single session",
+        "process_count",
+        "高性能积分器",
+        "high-performance integrator",
+        "同一次充电"
+      ],
+      "references": [
+        {
+          "path": "../../Current/en/fast-energy.md",
+          "description": "Single-session process count, merge order, resource and result rules"
+        }
       ]
     }
   ]

@@ -42,7 +42,7 @@ class FastWorkerImportTests(unittest.TestCase):
                 for _ in range(2):
                     writer.on_message_received(can.Message(timestamp=1.,channel=0,is_extended_id=False,
                                                             arbitration_id=0x100,data=b'\xa0\x0f'))
-            spec.update(path=str(source),domain_ns=None)
+            spec.update(path=str(source),inputs=[dict(path=str(source),offset_ns=0)],domain_ns=None)
             process.start()
             child.close()
             try:

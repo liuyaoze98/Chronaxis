@@ -70,7 +70,7 @@ JSON文本。
 
 非有限值拒绝。
 
-源码：[`src/chronaxis/results/readable.py:27`](../../../src/chronaxis/results/readable.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:27`](../../../src/chronaxis/results/readable.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter"></a>
 ## `ReadableWriter`
@@ -82,7 +82,7 @@ ReadableWriter(owner, directory, iterator_factory)
 ```
 
 
-源码：[`src/chronaxis/results/readable.py:32`](../../../src/chronaxis/results/readable.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:32`](../../../src/chronaxis/results/readable.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-__init__"></a>
 ### `ReadableWriter.__init__`
@@ -109,7 +109,7 @@ ReadableWriter.__init__(owner, directory, iterator_factory)
 
 无文件副作用。
 
-源码：[`src/chronaxis/results/readable.py:35`](../../../src/chronaxis/results/readable.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:35`](../../../src/chronaxis/results/readable.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_execute"></a>
 ### `ReadableWriter._execute`
@@ -136,7 +136,7 @@ cursor。
 
 配额、SQL、IO或取消传播。预留包含B树分裂余量，不按总行数预占RAM。
 
-源码：[`src/chronaxis/results/readable.py:54`](../../../src/chronaxis/results/readable.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:54`](../../../src/chronaxis/results/readable.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_rows"></a>
 ### `ReadableWriter._rows`
@@ -161,7 +161,7 @@ ReadableWriter._rows(table)
 
 读取/校验/关闭错误传播。
 
-源码：[`src/chronaxis/results/readable.py:69`](../../../src/chronaxis/results/readable.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:69`](../../../src/chronaxis/results/readable.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-prepare"></a>
 ### `ReadableWriter.prepare`
@@ -187,7 +187,7 @@ None。
 
 重复身份、重复指标、配额/IO传播。
 
-源码：[`src/chronaxis/results/readable.py:92`](../../../src/chronaxis/results/readable.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:92`](../../../src/chronaxis/results/readable.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_number"></a>
 ### `ReadableWriter._number`
@@ -214,7 +214,7 @@ ReadableWriter._number(kind, row, identifier)
 
 ResultFormatError为悬空父关联。
 
-源码：[`src/chronaxis/results/readable.py:156`](../../../src/chronaxis/results/readable.py#L156)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:156`](../../../src/chronaxis/results/readable.py#L156)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_metric_columns"></a>
 ### `ReadableWriter._metric_columns`
@@ -239,7 +239,7 @@ ReadableWriter._metric_columns(scope)
 
 无。
 
-源码：[`src/chronaxis/results/readable.py:172`](../../../src/chronaxis/results/readable.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:172`](../../../src/chronaxis/results/readable.py#L172)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_metric_values"></a>
 ### `ReadableWriter._metric_values`
@@ -266,7 +266,7 @@ ReadableWriter._metric_values(scope, row, parent)
 
 关联/JSON错误传播。
 
-源码：[`src/chronaxis/results/readable.py:180`](../../../src/chronaxis/results/readable.py#L180)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:180`](../../../src/chronaxis/results/readable.py#L180)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_base"></a>
 ### `ReadableWriter._base`
@@ -293,7 +293,7 @@ ReadableWriter._base(table, row, number)
 
 悬空关联传播。
 
-源码：[`src/chronaxis/results/readable.py:197`](../../../src/chronaxis/results/readable.py#L197)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:197`](../../../src/chronaxis/results/readable.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_write"></a>
 ### `ReadableWriter._write`
@@ -320,7 +320,7 @@ ReadableWriter._write(table, columns, rows)
 
 编码、IO或取消传播。
 
-源码：[`src/chronaxis/results/readable.py:218`](../../../src/chronaxis/results/readable.py#L218)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:218`](../../../src/chronaxis/results/readable.py#L218)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-write"></a>
 ### `ReadableWriter.write`
@@ -346,7 +346,7 @@ ReadableWriter.write(quality_handle=None, coverage=None)
 
 关联/预算/IO错误传播。
 
-源码：[`src/chronaxis/results/readable.py:256`](../../../src/chronaxis/results/readable.py#L256)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:256`](../../../src/chronaxis/results/readable.py#L256)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_detail_rows"></a>
 ### `ReadableWriter._detail_rows`
@@ -371,7 +371,7 @@ ReadableWriter._detail_rows(table)
 
 缺失父对象或原读取错误。
 
-源码：[`src/chronaxis/results/readable.py:294`](../../../src/chronaxis/results/readable.py#L294)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:294`](../../../src/chronaxis/results/readable.py#L294)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-_main_rows"></a>
 ### `ReadableWriter._main_rows`
@@ -396,7 +396,7 @@ CSV行生成器。
 
 JSON/关联错误。
 
-源码：[`src/chronaxis/results/readable.py:324`](../../../src/chronaxis/results/readable.py#L324)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:324`](../../../src/chronaxis/results/readable.py#L324)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-presentation"></a>
 ### `ReadableWriter.presentation`
@@ -422,7 +422,7 @@ ReadableWriter.presentation()
 
 无。
 
-源码：[`src/chronaxis/results/readable.py:336`](../../../src/chronaxis/results/readable.py#L336)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:336`](../../../src/chronaxis/results/readable.py#L336)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReadableWriter-close"></a>
 ### `ReadableWriter.close`
@@ -448,7 +448,7 @@ None。
 
 IO/释放错误传播，不删除输入或其他文件。
 
-源码：[`src/chronaxis/results/readable.py:346`](../../../src/chronaxis/results/readable.py#L346)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:346`](../../../src/chronaxis/results/readable.py#L346)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_with_header"></a>
 ## `_with_header`
@@ -474,4 +474,4 @@ _with_header(columns, rows)
 
 原流错误传播。
 
-源码：[`src/chronaxis/results/readable.py:362`](../../../src/chronaxis/results/readable.py#L362)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/readable.py:362`](../../../src/chronaxis/results/readable.py#L362)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

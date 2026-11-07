@@ -63,7 +63,7 @@ RecordScopeCalculations(plan, state, budget, path, steps, requests, ends, consum
 ```
 
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:24`](../../../src/chronaxis/execution/record_scope_calculations.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:24`](../../../src/chronaxis/execution/record_scope_calculations.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-__init__"></a>
 ### `RecordScopeCalculations.__init__`
@@ -96,7 +96,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:27`](../../../src/chronaxis/execution/record_scope_calculations.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:27`](../../../src/chronaxis/execution/record_scope_calculations.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_new"></a>
 ### `RecordScopeCalculations._new`
@@ -124,7 +124,7 @@ owner。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:71`](../../../src/chronaxis/execution/record_scope_calculations.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:71`](../../../src/chronaxis/execution/record_scope_calculations.py#L71)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_open"></a>
 ### `RecordScopeCalculations._open`
@@ -150,7 +150,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:79`](../../../src/chronaxis/execution/record_scope_calculations.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:79`](../../../src/chronaxis/execution/record_scope_calculations.py#L79)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-observe_group"></a>
 ### `RecordScopeCalculations.observe_group`
@@ -176,7 +176,7 @@ None。
 
 求值/写入/预算原错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:84`](../../../src/chronaxis/execution/record_scope_calculations.py#L84)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:84`](../../../src/chronaxis/execution/record_scope_calculations.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-observe_event"></a>
 ### `RecordScopeCalculations.observe_event`
@@ -201,7 +201,7 @@ None。
 
 预算/计算原错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:103`](../../../src/chronaxis/execution/record_scope_calculations.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:103`](../../../src/chronaxis/execution/record_scope_calculations.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-observe_segment"></a>
 ### `RecordScopeCalculations.observe_segment`
@@ -226,7 +226,7 @@ None。
 
 原查询错；空片段只返回无观测值。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:119`](../../../src/chronaxis/execution/record_scope_calculations.py#L119)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:119`](../../../src/chronaxis/execution/record_scope_calculations.py#L119)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_calculate"></a>
 ### `RecordScopeCalculations._calculate`
@@ -258,7 +258,7 @@ None。
 原查询、预算或输出错误。
 不缓存整个范围；每次借一行同时交给有限计算器，仍按声明顺序发布。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:134`](../../../src/chronaxis/execution/record_scope_calculations.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:134`](../../../src/chronaxis/execution/record_scope_calculations.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_calculate_chunk"></a>
 ### `RecordScopeCalculations._calculate_chunk`
@@ -290,7 +290,7 @@ None。
 
 原错误保留owner。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:150`](../../../src/chronaxis/execution/record_scope_calculations.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:150`](../../../src/chronaxis/execution/record_scope_calculations.py#L150)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_estimated_selection"></a>
 ### `RecordScopeCalculations._estimated_selection`
@@ -317,7 +317,7 @@ None。
 
 发布错误。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:198`](../../../src/chronaxis/execution/record_scope_calculations.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:198`](../../../src/chronaxis/execution/record_scope_calculations.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_finish_observation_tail"></a>
 ### `RecordScopeCalculations._finish_observation_tail`
@@ -345,7 +345,7 @@ None。
 表达式、预算或累计错误沿查询清理路径传播。
 只处理整个历史的最后一点；旧范围已有右邻点时绝不借用当前状态重新求值。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:204`](../../../src/chronaxis/execution/record_scope_calculations.py#L204)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:204`](../../../src/chronaxis/execution/record_scope_calculations.py#L204)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-_flush"></a>
 ### `RecordScopeCalculations._flush`
@@ -370,7 +370,7 @@ None。
 
 原查询错，未退费用由close清理。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:242`](../../../src/chronaxis/execution/record_scope_calculations.py#L242)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:242`](../../../src/chronaxis/execution/record_scope_calculations.py#L242)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-finish"></a>
 ### `RecordScopeCalculations.finish`
@@ -395,7 +395,7 @@ None。
 
 原求值/计算错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:269`](../../../src/chronaxis/execution/record_scope_calculations.py#L269)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:269`](../../../src/chronaxis/execution/record_scope_calculations.py#L269)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-closed"></a>
 ### `RecordScopeCalculations.closed`
@@ -423,7 +423,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:285`](../../../src/chronaxis/execution/record_scope_calculations.py#L285)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:285`](../../../src/chronaxis/execution/record_scope_calculations.py#L285)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordScopeCalculations-close"></a>
 ### `RecordScopeCalculations.close`
@@ -449,7 +449,7 @@ None。
 
 原关闭错。
 
-源码：[`src/chronaxis/execution/record_scope_calculations.py:289`](../../../src/chronaxis/execution/record_scope_calculations.py#L289)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_scope_calculations.py:289`](../../../src/chronaxis/execution/record_scope_calculations.py#L289)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 ## 内部匿名回调
 

@@ -29,7 +29,7 @@ class RecordRuleRunnerTests(unittest.TestCase):
             def edit(raw):
                 """仅请求一条电压持续规则。参数: raw。返回: None。异常: 无。"""
                 raw['calculations']=[]
-                raw['rules']=[dict(name='alarm',rule_type='condition_duration',condition='voltage > 350',minimum_duration='0.2s')]
+                raw['rules']=[dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='voltage > 350',minimum_duration='0.2s')]
             plan=self.plan(kind,path,mode,edit)
             self.assertTrue(validate_analysis_plan(plan).execution_ready)
             result=AnalysisRunner(backend).run(plan,self.root/uuid4().hex)
@@ -65,7 +65,7 @@ class RecordRuleRunnerTests(unittest.TestCase):
             def edit(raw):
                 """请求正持续门槛。参数: raw。返回: None。异常: 无。"""
                 raw['calculations']=[]
-                raw['rules']=[dict(name='alarm',rule_type='condition_duration',condition='voltage > 350',minimum_duration='0.1s')]
+                raw['rules']=[dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='voltage > 350',minimum_duration='0.1s')]
             with AnalysisRunner().run(self.plan('can_asc',path,'fixed',edit),self.root/uuid4().hex) as result:
                 self.assertFalse(tuple(result.iter_events()))
 

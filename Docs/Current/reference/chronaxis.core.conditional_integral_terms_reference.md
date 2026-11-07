@@ -56,4 +56,4 @@ ReferenceConditionalIntegralTerms；面积为输入单位乘秒，无效槽位0�
 
 输入、单位、时间与分配错误传播；精度、面积溢出/下溢写入质量及未知。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

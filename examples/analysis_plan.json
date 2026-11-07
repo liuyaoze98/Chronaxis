@@ -93,6 +93,7 @@
       "name": "active",
       "condition": "current > 5",
       "rule_type": "condition_duration",
+      "duration_comparison": ">=",
       "minimum_duration": "1s"
     },
     {

@@ -75,7 +75,7 @@ class FastConfigurationTests(unittest.TestCase):
             self.compile()
         errors=raised.exception.diagnostics
         self.assertEqual({e.path for e in errors}, {'$.sources[0].legacy_profile','$.execution.backend',
-                                                     '$.execution.memory_budget_bytes','$.outputs.contributions'})
+                                                     '$.outputs.contributions'})
         self.assertTrue(all(e.source==str(self.folder/'input.json') for e in errors))
 
     def test_rejects_bad_dbc_or_cross_frame_before_opening_log(self):
@@ -91,10 +91,9 @@ class FastConfigurationTests(unittest.TestCase):
             self.compile()
 
     def test_rejects_v4_features_and_continuous_paths(self):
-        """遇连续分卷、全帧读取校验或越过 fast 表达式白名单的请求应报错。"""
+        """连续分卷静态接入，但越过fast表达式白名单仍拒绝。"""
         self.raw['sources'][0]['paths']=[str(self.folder/'first.asc'),str(self.folder/'next.asc')]
-        with self.assertRaisesRegex(PlanValidationError,'连续'):
-            self.compile()
+        self.assertEqual(len(self.compile()['inputs']), 2)
         self.raw['sources'][0]['paths']=str(self.folder/'first.asc')
         self.raw['config_version']=4
         self.raw['message_calculations'][0]['expr']='where(True,power,power) * period'

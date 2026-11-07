@@ -22,7 +22,7 @@
 | message_calculations | 否，缺省为空 | 按原消息累计一次表达式贡献，与普通时间积分分开 |
 | intervals | 否，默认actual | intervals.default提供统一间隔；节点自己的interval就地覆盖，不另写overrides名称表 |
 | outputs | 否 | 默认中文可读CSV与JSON运行清单；需要原交换字段时显式tables: csv或jsonl；贡献明细、信号导出和CAN导出默认关闭 |
-| execution | 否 | 控制计算实现和资源使用，以及数据不全时如何返回结果；默认numpy，预算和各选项见[执行设置](execution.md) |
+| execution | 否 | 控制文件读取进程数、计算实现、资源使用及数据不全时的处理。单一ASC/BLF来源示例显式选择process_count: 4；省略时进程数仍为1，计算实现默认numpy。见[执行设置](execution.md) |
 | diagnostics | 否，全为false | 选择是否额外记录逐项定位信息、完整性校验以及保留临时文件；按排错需求启用，详见[诊断](execution.md#diagnostics) |
 | metadata | 否，空对象 | 保存附加信息；device_label控制运行清单来源标签，普通分析缺省pending。具体入口限制见[运行说明](execution.md)，其他备注不改变计算 |
 
@@ -32,15 +32,24 @@
 
 普通BLF/ASC任务从[最小入门配置](quickstart.md)开始，只加当前任务需要的内容。不要按字段表逐项补齐：session/entity沿用dataset.name；格式、默认时间、唯一来源/通道、DBC已有类型/单位/周期、默认scope与输出均可省略。多个候选或缺少信息时，程序会指出需要补充的位置。
 
+基础示例保留一个明确的运行选择：单一ASC/BLF来源使用最多4个文件读取工作进程。下面是根级片段，加入自己的完整配置；已有`execution`时只在其中设置`process_count`，保留其他设置，不重复创建父键。
+
+```yaml
+execution:          # 控制本次分析的运行方式
+  process_count: 4  # 最多4个文件读取工作进程；实际不超过文件数
+```
+
+这是手册推荐的显式配置，程序默认仍为1。只有一个文件时不会拆分该文件；多个文件仍组成同一次连续分析。CSV、内存和多来源联合分析使用1；独立任务在批量配置根级设置`process_count`，各子任务保持1。使用条件与覆盖顺序见[执行设置](execution.md)。
+
 用户给来源、信号、规则、窗口、计算项和批量任务起的名称统一用`name`；引用使用`source`、`rule`、`window`。CAN报文编号使用`frame_id`，DBC信号名仍为`field.signal`。普通计算的输入统一写`expr`。
 
 下面以 [analysis.yaml](examples/analysis.yaml) 为基础，替换其整个 `calculations` 段；`power` 已在同一文件的 `signals` 中定义。普通会话积分只需要：
 
 ```yaml
-calculations:              # 列出希望获得的统计或积分结果，每项独立选择范围和算法
-  - name: energy           # 为这项计算结果取唯一名称；结果表用它区分计算项
-    operation: integral    # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
-    expr: power            # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+calculations:            # 列出希望获得的统计或积分结果，每项独立选择范围和算法
+  - name: energy         # 为这项计算结果取唯一名称；结果表用它区分计算项
+    operation: integral  # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
+    expr: power          # 指定参与计算的数值或信号表达式；引用前面已定义的信号
 ```
 
 其他段保持原样，不要再追加第二个 `calculations:`。需要事件/窗口范围时再加 `scope`，需要覆盖计算间隔时再加 `interval`，见[计算](calculations.md)和[间隔](intervals.md)。

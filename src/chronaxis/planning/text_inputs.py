@@ -24,7 +24,7 @@ def parse_text_source(raw,base,path):
     返回: SourcePlan。异常: PlanValidationError定位配置问题；不发生原始输入I/O。
     """
     from .models import SourcePlan
-    raw=object_at(raw,path,('name','source_type','time','dbc_by_channel'),('path','paths','parser','offsets','metadata','input_check') + (('reader_options',)))
+    raw=object_at(raw,path,('name','source_type','time','dbc_by_channel'),('path','paths','parser','offsets','metadata','input_check','file_merge') + (('reader_options',)))
     source_type=choice_at(raw['source_type'],('can_asc','asc_or_blf','raw_can_csv'),path+'.source_type')
     name=text_at(raw['name'],path+'.name',identifier=True)
     clock=object_at(raw['time'],path+'.time',('time_type','unit'),('origin','offset','timezone'))
@@ -104,7 +104,10 @@ def parse_text_source(raw,base,path):
     policy=choice_at(options.get('decode_policy','strict'),
         ('strict','partial','legacy'),path+'.reader_options.decode_policy')
     input_check=choice_at(raw.get('input_check','auto'),('auto','full'),path+'.input_check')
-    spec=model_at(CANTextSpec,path,name,inputs,dbc_path,channel_number,timebase,policy,input_check)
+    merge=choice_at(raw.get('file_merge','concatenate'),('concatenate','time_order'),path+'.file_merge')
+    if source_type=='raw_can_csv' and 'file_merge' in raw:
+        raise PlanValidationError(path+'.file_merge','file_merge仅适用于ASC/BLF来源')
+    spec=model_at(CANTextSpec,path,name,inputs,dbc_path,channel_number,timebase,policy,input_check,merge)
     identity=dict(raw,paths=tuple(str(p) for p in paths),dbc_by_channel={channel:str(dbc_path)})
     identity.pop('path',None)
     return SourcePlan(name,source_type,spec,unit,clock.get('timezone'),canonical(identity),metadata_at(raw.get('metadata',{}),path+'.metadata'))

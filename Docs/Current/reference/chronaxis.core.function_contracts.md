@@ -50,7 +50,7 @@ class BuiltinFunctionContract
 |`pure`|bool|否|True|声明相同输入是否有确定输出且不保留上次调用的状态。|
 |`backends`|tuple[str, ...]|否|('reference', 'numpy')|当前内置实现实际提供的后端名称。|
 
-源码：[`src/chronaxis/core/function_contracts.py:11`](../../../src/chronaxis/core/function_contracts.py#L11)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/function_contracts.py:11`](../../../src/chronaxis/core/function_contracts.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_catalog"></a>
 ## `_catalog`
@@ -75,7 +75,7 @@ _catalog(version)
 
 内部描述冲突。
 
-源码：[`src/chronaxis/core/function_contracts.py:26`](../../../src/chronaxis/core/function_contracts.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/function_contracts.py:26`](../../../src/chronaxis/core/function_contracts.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_catalog-add"></a>
 ### `_catalog.add`
@@ -106,7 +106,7 @@ None。
 
 重复名称。
 
-源码：[`src/chronaxis/core/function_contracts.py:30`](../../../src/chronaxis/core/function_contracts.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/function_contracts.py:30`](../../../src/chronaxis/core/function_contracts.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-builtin_function_specs"></a>
 ## `builtin_function_specs`
@@ -131,4 +131,4 @@ builtin_function_specs(config_version=4)
 
 未支持版本。
 
-源码：[`src/chronaxis/core/function_contracts.py:70`](../../../src/chronaxis/core/function_contracts.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/function_contracts.py:70`](../../../src/chronaxis/core/function_contracts.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

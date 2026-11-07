@@ -16,3 +16,5 @@ calculations:
   - name: energy
     operation: integral
     expr: power
+execution:            # 设置本次分析的并行处理方式
+  process_count: 1    # 批量外层负责并行；子任务保持1，避免嵌套进程池

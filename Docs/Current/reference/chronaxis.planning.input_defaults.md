@@ -52,7 +52,7 @@ source_defaults(raw, index, *, inferred_type=None)
 
 PlanValidationError表示未知格式、显式空时间或非法名称。
 
-源码：[`src/chronaxis/planning/input_defaults.py:12`](../../../src/chronaxis/planning/input_defaults.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_defaults.py:12`](../../../src/chronaxis/planning/input_defaults.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-source_reference"></a>
 ## `source_reference`
@@ -80,4 +80,4 @@ source_reference(raw, sources, path, *, can_only=False)
 
 PlanValidationError表示无候选、多候选或非法显式名称。
 
-源码：[`src/chronaxis/planning/input_defaults.py:48`](../../../src/chronaxis/planning/input_defaults.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_defaults.py:48`](../../../src/chronaxis/planning/input_defaults.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

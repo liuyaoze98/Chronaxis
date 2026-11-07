@@ -58,7 +58,7 @@ HistoricalConditionalBlocks(history, context, bindings, compiled, spec, conditio
 ```
 
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:35`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:35`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-__init__"></a>
 ### `HistoricalConditionalBlocks.__init__`
@@ -92,7 +92,7 @@ HistoricalConditionalBlocks.__init__(history, context, bindings, compiled, spec,
 类型/能力/同步/预算/取消错误原样传播；
     持续清理失败时原异常的conditional_blocks_cleanup_owner可再次close。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:43`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:43`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-closed"></a>
 ### `HistoricalConditionalBlocks.closed`
@@ -120,7 +120,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:116`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L116)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:116`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L116)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-failed"></a>
 ### `HistoricalConditionalBlocks.failed`
@@ -148,7 +148,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:121`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:121`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-__iter__"></a>
 ### `HistoricalConditionalBlocks.__iter__`
@@ -174,7 +174,7 @@ HistoricalConditionalBlocks.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:125`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L125)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:125`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L125)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-_reserve"></a>
 ### `HistoricalConditionalBlocks._reserve`
@@ -200,7 +200,7 @@ HistoricalConditionalBlocks._reserve(cost, *, fixed=False)
 
 超预算/取消原样传播，不靠发布后的总余额推断所有权。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:129`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L129)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:129`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L129)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-_load"></a>
 ### `HistoricalConditionalBlocks._load`
@@ -230,7 +230,7 @@ HistoricalConditionalBlocks._load(side)
 - `ValueError`：条件历史两路当前块没有覆盖同一实际游标。
 - `ValueError`：条件历史输入在完整窗口交付前意外结束。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:146`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:146`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-__next__"></a>
 ### `HistoricalConditionalBlocks.__next__`
@@ -260,7 +260,7 @@ StopIteration仅表示正常完整结束/无交集；其余失败后需要调用
 
 - `ResultClosedError`：条件历史分块已关闭、正在关闭或推进失败。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:169`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L169)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:169`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L169)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-_release_unpublished"></a>
 ### `HistoricalConditionalBlocks._release_unpublished`
@@ -286,7 +286,7 @@ HistoricalConditionalBlocks._release_unpublished()
 
 块关闭/扣账/取消错误原样传播。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:211`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:211`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L211)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalConditionalBlocks-close"></a>
 ### `HistoricalConditionalBlocks.close`
@@ -312,4 +312,4 @@ None，重复关闭安全。
 
 关闭/释放取消可重试。
 
-源码：[`src/chronaxis/execution/historical_conditional_blocks.py:229`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L229)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_conditional_blocks.py:229`](../../../src/chronaxis/execution/historical_conditional_blocks.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

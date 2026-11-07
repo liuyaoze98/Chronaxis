@@ -47,7 +47,7 @@ CANReferenceTemplate(session_id, source_name, field, path, profile, channel, sig
 |---|---|---|---|---|
 |`_fields`|object|不直接填写|由自定义构造器建立；见 __init__|公开模型完整校验后的只读字段，不借用外部dict。|
 
-源码：[`src/chronaxis/execution/can_reference_template.py:17`](../../../src/chronaxis/execution/can_reference_template.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/can_reference_template.py:17`](../../../src/chronaxis/execution/can_reference_template.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANReferenceTemplate-__init__"></a>
 ### `CANReferenceTemplate.__init__`
@@ -81,7 +81,7 @@ CANReferenceTemplate.__init__(session_id, source_name, field, path, profile, cha
 
 原公开模型的身份/定位/类型/编码错误。
 
-源码：[`src/chronaxis/execution/can_reference_template.py:22`](../../../src/chronaxis/execution/can_reference_template.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/can_reference_template.py:22`](../../../src/chronaxis/execution/can_reference_template.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANReferenceTemplate-at"></a>
 ### `CANReferenceTemplate.at`
@@ -114,4 +114,4 @@ CANReferenceTemplate.at(yield_sequence, timestamp_s, time_quantized)
 - `ValueError`：CANSourceRef timestamp必须有限。
 - `TypeError`：CANSourceRef time_quantized需要bool。
 
-源码：[`src/chronaxis/execution/can_reference_template.py:38`](../../../src/chronaxis/execution/can_reference_template.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/can_reference_template.py:38`](../../../src/chronaxis/execution/can_reference_template.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

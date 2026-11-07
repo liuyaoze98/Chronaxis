@@ -92,7 +92,7 @@ class InputRequirementsTests(unittest.TestCase):
         参数: 无。返回: None。异常: 规则因为没有下游指标而被漏掉即失败。
         """
         config = ordinary_config()
-        config['rules'] = [dict(name='active', rule_type='condition_duration', condition='current > 5', minimum_duration='1s')]
+        config['rules'] = [dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='current > 5', minimum_duration='1s')]
         _, requirements = self.build(config)
         self.assertEqual(requirements.ordinary_sample_aliases, ('current',))
         self.assertEqual(requirements.for_source('table').required_fields, ('raw.current',))

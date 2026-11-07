@@ -2,32 +2,23 @@
 
 已有本地 wheel 时无需源码。Python要求>=3.12且<3.13；已验证环境为Windows和Python3.12.4。最终结果发布目前依赖Windows的不覆盖文件发布，完成清单最后出现，不能据Python版本声明推定其他平台已受验收。
 
-## 从 PyPI 安装
+## 使用本地安装包
 
-在 Windows PowerShell 中创建独立环境，安装本手册对应的版本：
+本手册对应 0.1.0.dev3。取得同版 wheel 后，在 Windows PowerShell 中创建独立环境，并把下列 wheel 路径替换为实际文件路径。普通安装包含信号表分析、CAN 日志和 DBC 解码的运行依赖；离线安装需事先备齐依赖包。
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m chronaxis guide
 ```
 
 后续命令使用同一个虚拟环境中的 Python。
 
-## 已取得安装包
-
-在自己的 Python 3.12 虚拟环境中，把下列文件名换成实际收到的同版 wheel。普通安装已包含信号表分析、CAN 日志和 DBC 解码的运行依赖，无需添加 `[can]`。离线安装时需事先备齐依赖包。
-
-```powershell
-python -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
-python -m chronaxis guide
-```
-
 直接打开命令显示的README路径即可阅读，无需导出或解压；没有运行环境时，可以打开[离线手册附带的指南](ai-guide.md)。手册 ZIP 是说明和教学数据，不是 Python 安装包。以下为拥有源码时的安装路径。
 
-## 创建独立环境
+## 从同版源码安装
 
-在仓库根目录执行以下Windows PowerShell命令。显式调用虚拟环境中的Python，无需修改脚本执行策略或依赖终端激活状态。
+取得 0.1.0.dev3 源码后，在包含 `pyproject.toml` 的仓库根目录执行以下 Windows PowerShell 命令。显式调用虚拟环境中的 Python，无需修改脚本执行策略或依赖终端激活状态。
 
 ```powershell
 py -3.12 -m venv .venv

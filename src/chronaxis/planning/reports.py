@@ -89,6 +89,7 @@ class ExplainReport:
     input_requirements: InputRequirements | None = None  # 来源检查和时间范围声明；非法typed计划为空。
     intervals: IntervalPlan | None = None  # 当前有限声明；不含实际DBC周期或运行记录。
     diagnostics: DiagnosticPlan | None = None  # 独立诊断开关；声明不证明已执行。
+    source_execution: tuple[Mapping, ...] = ()  # 每来源文件组织/读取进程上限；不是实际运行进程数。
 
 
 def _window_available(window, rules) -> bool:
@@ -593,9 +594,12 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
                             history[name] = max(history[name], window.pre_ns)
     # 原样报告配置限额，不能假称其已执行。
     budget = {'memory_budget_bytes': plan.execution.memory_budget_bytes, 'batch_rows': plan.execution.batch_rows,
-              'result_buffer_rows': plan.execution.result_buffer_rows, 'spool_quota_bytes': plan.execution.spool_quota_bytes}
+              'result_buffer_rows': plan.execution.result_buffer_rows, 'spool_quota_bytes': plan.execution.spool_quota_bytes,
+              'process_count': plan.execution.process_count}
     # 冻结所有结果容器以保留当前计划身份。
+    from .process_execution import source_execution_facts
     return ExplainReport(validation, plan.identity, tuple(item.name for item in plan.sources),
         tuple(nodes), MappingProxyType(history), MappingProxyType(budget), requirements,
         plan.intervals if type(plan.intervals) is IntervalPlan else None,
-        plan.diagnostics if type(plan.diagnostics) is DiagnosticPlan else None)
+        plan.diagnostics if type(plan.diagnostics) is DiagnosticPlan else None,
+        tuple(MappingProxyType(item) for item in source_execution_facts(plan)))

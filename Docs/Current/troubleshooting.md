@@ -32,6 +32,11 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 
 ## 环境与配置
 
+计算项缺少`operation`时，先补计算方法。程序明确方法后才检查该方法需要的字段，不会要求你补其他方法才使用的`rule`、`window`或`q`。其他独立字段的错误仍会一并报告。
+
+`condition_duration`缺少`duration_comparison`时，请按业务选择：`">="`包含恰好达到门槛的活动，`">"`要求严格超过。
+
+
 | 现象或错误 | 原因与检查 | 修正动作 |
 |---|---|---|
 | No module named chronaxis | 当前解释器未安装项目，或编辑安装目录已移动 | 使用安装时的Python，按[安装页](installation.md)重新安装当前源码目录。 |
@@ -78,3 +83,18 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 | 批量返回报告但部分任务失败 | 查看CLI返回report路径中的每个任务的状态、错误与输出路径；修正失败项后独立重跑，同目录重跑会生成另一批时间文件名。 |
 
 需要保留现场时，在下一次复现配置中设置`diagnostics.retain_work: true`；需要输入位置时再单独开启trace。记录配置、命令、错误链、运行清单和可共享的最小合成输入，以便重现。
+
+## 高性能积分器的会话失败
+
+fast run的任一分卷失败都会终止本次会话，不发布正常成功汇总。先用fast validate或fast explain检查配置；它们不代替实际读取验证。
+
+|现象|检查与处理|
+|---|---|
+|进程数无效或嵌套进程被拒绝|execution.process_count填写正整数；独立batch模板内省略该字段或填1，批量并发在根级process_count设置。|
+|目标报文时间回退|核对文件时间、通道和目标ID。time_order检查各分卷目标候选报文，范围外记录也检查；不要通过平移时间或去重隐藏问题。|
+|必要暂存额度不足|time_order多文件归并需要暂存全部贡献。根据输入规模提高execution.spool_quota_bytes及可用磁盘；删除已读暂存不返还累计额度。|
+|后续文件预读暂停|concatenate模式的可选预读额度不足时暂停，轮到该文件后直接读取；通常只影响速度。实际写盘失败仍会终止会话。|
+|贡献块缺失、损坏、重复或worker退出|保留完整异常链，核对磁盘和进程环境后重新运行；不使用残留文件作为完整结果。|
+|Python主动取消|cancel_event.set()后run抛InterruptedError；本次进程和暂存会回收，不发布成功清单。|
+
+字段默认值、可运行配置和状态解释见[高性能积分器](fast-energy.md)。

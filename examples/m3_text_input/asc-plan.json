@@ -49,6 +49,7 @@
       "name": "active",
       "condition": "voltage > 5",
       "rule_type": "condition_duration",
+      "duration_comparison": ">=",
       "minimum_duration": "0s"
     }
   ],

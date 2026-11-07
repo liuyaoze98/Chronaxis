@@ -161,6 +161,7 @@ def check_clock_offset(destination):
     """
     config = {
         'config_version': 4,
+        'execution': {'process_count': 1},  # 内存和多来源会话使用单进程。
         'dataset': {'name': 'clock_demo', 'domain': {'start': '0s', 'end': '1s'}},
         'sources': [
             {'name': 'a', 'source_type': 'memory', 'time': {'clock': 'test_button'},

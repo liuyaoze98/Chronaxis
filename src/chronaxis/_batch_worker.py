@@ -20,6 +20,8 @@ def worker_main(connection, fast_cancel=None):
     """处理run/cleanup/close命令。参数: 私有管道。返回: None。异常: 断管退出，父进程负责树清理。"""
     if fast_cancel is None:
         from .batch.runner import _run_job
+        from .planning import process_execution
+        process_execution.IN_BATCH_WORKER = True
         from .batch.process_transport import restore_job
         from .batch.models import BatchJobResult
     # Ctrl+C只由调度主进程接收，正在写结果的工作进程继续完整收尾。

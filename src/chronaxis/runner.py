@@ -55,10 +55,10 @@ class AnalysisRunner:
         """
         return self._backend
 
-    def _effective_plan(self, plan):
+    def _effective_plan(self, plan, process_count=None):
         """保留原声明身份，只为明确覆盖创建内部执行视图。
 
-        参数: plan为已构建AnalysisPlan。返回: 原plan或仅execution.backend不同的新view。
+        参数: plan为已构建AnalysisPlan；process_count为正整数覆盖，None沿用配置。返回: 原plan或仅执行选项不同的新view。
         异常: TypeError为非计划/执行声明；不重新解析配置或复制原输入行。
         """
         if not isinstance(plan, AnalysisPlan) or not isinstance(plan.execution, ExecutionPlan):
@@ -66,41 +66,51 @@ class AnalysisRunner:
         if plan.bindings.extensions is not self._extensions:
             raise ValueError('AnalysisRunner与AnalysisPlan必须使用同一个宿主注册')
         # 来源、绑定及raw_config仍借原对象；后端是本次执行选项，不伪造另一份输入。
-        if self._backend is None or self._backend == plan.execution.backend:
+        if process_count is not None and (type(process_count) is not int or process_count < 1):
+            raise ValueError('process_count需要大于等于1的整数，不接受bool')
+        # 只复制执行声明，调用者的计划及原始配置保持不变。
+        count = plan.execution.process_count if process_count is None else process_count
+        backend = plan.execution.backend if self._backend is None else self._backend
+        if count == plan.execution.process_count and backend == plan.execution.backend:
             return plan
-        return replace(plan, execution=replace(plan.execution, backend=self._backend))
+        return replace(plan, execution=replace(plan.execution, backend=backend, process_count=count))
 
-    def validate(self, plan):
+    def validate(self, plan, *, process_count=None):
         """报告声明是否合法及执行路径是否已接入，不提前读取数据。
 
-        参数: plan为已构建AnalysisPlan。返回: 同一共享ValidationReport，保留实际字段/范围未验警告。
-        异常: TypeError为非AnalysisPlan或非法执行模型；正常计划的静态问题写入报告errors，
+        参数: plan为已构建AnalysisPlan；process_count为仅关键字的正整数覆盖，None沿用配置。返回: 同一共享ValidationReport，保留实际字段/范围未验警告。
+        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖；正常计划的静态问题写入报告errors，
             不以校验成功证明输入文件内容有效。副作用: 无来源I/O或目录创建。
         """
         # 使用相同有效视图和纯静态报告，避免校验后偷偷换另一套后端能力。
-        return validate_analysis_plan(self._effective_plan(plan))
+        return validate_analysis_plan(self._effective_plan(plan, process_count))
 
-    def explain(self, plan):
+    def explain(self, plan, *, process_count=None):
         """列出真实依赖、各节点后端、历史需求及声明预算，不启动分析。
 
-        参数: plan为已构建AnalysisPlan。返回: ExplainReport，plan_identity保原声明身份。
-        异常: TypeError为非AnalysisPlan或非法执行模型；调用者绕过解析器手工破坏typed
+        参数: plan为已构建AnalysisPlan；process_count为仅关键字的正整数覆盖，None沿用配置。返回: ExplainReport，plan_identity保原声明身份。
+        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖；调用者绕过解析器手工破坏typed
             引用时可能产生AttributeError/KeyError，应重新从完整配置构造计划。
         副作用: 不读取CSV/DBC，也不测量实耗。
         """
         # 规则状态驱动与数组节点分别由同一报告说明，不把覆盖当整个计划标量回退。
-        return explain_analysis_plan(self._effective_plan(plan))
+        return explain_analysis_plan(self._effective_plan(plan, process_count))
 
-    def run(self, plan, work_dir=None):
+    def run(self, plan, work_dir=None, *, process_count=None):
         """验证后执行一次真实分析，输入全关才返回独立AnalysisResult。
 
-        参数: plan为已构建AnalysisPlan；work_dir为全新工作目录或None（唯一专用目录）。
+        参数: plan为已构建AnalysisPlan；work_dir为全新工作目录或None（唯一专用目录）；
+            process_count为仅关键字的正整数，覆盖读取解码进程上限；None沿用配置，不修改原计划。
         返回: analysis_complete的AnalysisResult，由调用者close/上下文管理，write另行发布。
-        异常: TypeError为错误plan；验证或运行错误为AnalysisError，保原cause和诊断；
-            KeyboardInterrupt/SystemExit原样传播。持续清理失败用runner_cleanup_owner.close恢复。
+        异常: TypeError为错误plan/执行声明；ValueError为非法process_count或不同扩展注册。
+            校验或运行失败抛AnalysisError；新包装的运行错误通过__cause__保留原异常，
+            直接抛出的AnalysisError可能没有原因链，也没有统一diagnostics属性。
+            KeyboardInterrupt/SystemExit原样传播；附加清理信息见__notes__（若有）。
+            持续清理失败时，从异常取得getattr(exc, 'runner_cleanup_owner', None)，
+            排除资源故障后对存在的恢复对象调用close()。
         副作用: 创建本次新暂存；扫描来源一次、后续仅回读新history，不自动删除或发布文件。
         """
-        effective = self._effective_plan(plan)
+        effective = self._effective_plan(plan, process_count)
         validation = validate_analysis_plan(effective)
         if validation.errors or not validation.valid or not validation.execution_ready:
             raise AnalysisError('计划尚不能执行：' + ('；'.join(validation.errors) or '所需执行路径不可用'))

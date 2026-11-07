@@ -71,7 +71,7 @@ numeric_coefficient(value)
 
 不能表示的浮点范围错误由调用者/倍率模型检查。
 
-源码：[`src/chronaxis/core/expression_v4.py:23`](../../../src/chronaxis/core/expression_v4.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:23`](../../../src/chronaxis/core/expression_v4.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler"></a>
 ## `UnitCompiler`
@@ -88,7 +88,7 @@ UnitCompiler(bindings, derived, extensions=None)
 继承关系：[_SyntaxCompiler](chronaxis.core.expression.md#api-_SyntaxCompiler)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/core/expression_v4.py:34`](../../../src/chronaxis/core/expression_v4.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:34`](../../../src/chronaxis/core/expression_v4.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-__init__"></a>
 ### `UnitCompiler.__init__`
@@ -115,7 +115,7 @@ None。
 
 ValueError为别名与本版本函数重名；其余声明错误沿原校验传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:41`](../../../src/chronaxis/core/expression_v4.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:41`](../../../src/chronaxis/core/expression_v4.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_known_node"></a>
 ### `UnitCompiler._known_node`
@@ -140,7 +140,7 @@ UnitCompiler._known_node(result)
 
 非法单位文本按编译错误传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:58`](../../../src/chronaxis/core/expression_v4.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:58`](../../../src/chronaxis/core/expression_v4.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_name"></a>
 ### `UnitCompiler._name`
@@ -165,7 +165,7 @@ UnitCompiler._name(node)
 
 名称/循环/声明错误沿原编译器传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:71`](../../../src/chronaxis/core/expression_v4.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:71`](../../../src/chronaxis/core/expression_v4.py#L71)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_convert"></a>
 ### `UnitCompiler._convert`
@@ -193,7 +193,7 @@ UnitCompiler._convert(child, target, node, *, explicit=False)
 
 ValueError为非数值转换、未知关系、量种不兼容或不可表示倍率。
 
-源码：[`src/chronaxis/core/expression_v4.py:85`](../../../src/chronaxis/core/expression_v4.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:85`](../../../src/chronaxis/core/expression_v4.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_canonical"></a>
 ### `UnitCompiler._canonical`
@@ -219,7 +219,7 @@ UnitCompiler._canonical(child, node)
 
 单位或转换边界错误传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:123`](../../../src/chronaxis/core/expression_v4.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:123`](../../../src/chronaxis/core/expression_v4.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_final_unit"></a>
 ### `UnitCompiler._final_unit`
@@ -246,7 +246,7 @@ UnitCompiler._final_unit(root, unit, node)
 
 不兼容目标或未知转换明确报错。
 
-源码：[`src/chronaxis/core/expression_v4.py:136`](../../../src/chronaxis/core/expression_v4.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:136`](../../../src/chronaxis/core/expression_v4.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_context"></a>
 ### `UnitCompiler._context`
@@ -274,7 +274,7 @@ UnitCompiler._context(literal, other, node, *, arithmetic)
 
 类型、范围或枚举域错误沿原检查传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:148`](../../../src/chronaxis/core/expression_v4.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:148`](../../../src/chronaxis/core/expression_v4.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_units"></a>
 ### `UnitCompiler._units`
@@ -303,7 +303,7 @@ UnitCompiler._units(operator, left, right, node, declared_unit=None)
 
 ValueError为不兼容量种、温度组合或未登记关系。
 
-源码：[`src/chronaxis/core/expression_v4.py:164`](../../../src/chronaxis/core/expression_v4.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:164`](../../../src/chronaxis/core/expression_v4.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_binary"></a>
 ### `UnitCompiler._binary`
@@ -332,7 +332,7 @@ UnitCompiler._binary(operator, left, right, node, declared_unit=None)
 
 原类型校验和新单位校验错误直接传播。
 
-源码：[`src/chronaxis/core/expression_v4.py:201`](../../../src/chronaxis/core/expression_v4.py#L201)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:201`](../../../src/chronaxis/core/expression_v4.py#L201)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-_where"></a>
 ### `UnitCompiler._where`
@@ -357,7 +357,7 @@ UnitCompiler._where(node)
 
 ValueError为签名、非布尔条件、类型/量种不兼容或字面量越界。
 
-源码：[`src/chronaxis/core/expression_v4.py:211`](../../../src/chronaxis/core/expression_v4.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:211`](../../../src/chronaxis/core/expression_v4.py#L211)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-UnitCompiler-visit"></a>
 ### `UnitCompiler.visit`
@@ -383,4 +383,4 @@ UnitCompiler.visit(node, declared_unit=None)
 
 ValueError为签名、非字面量单位、非法数值或未知函数。
 
-源码：[`src/chronaxis/core/expression_v4.py:253`](../../../src/chronaxis/core/expression_v4.py#L253)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_v4.py:253`](../../../src/chronaxis/core/expression_v4.py#L253)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

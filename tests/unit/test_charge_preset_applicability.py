@@ -25,7 +25,7 @@ class ChargePresetApplicabilityTests(unittest.TestCase):
                 signal.pop('measurement_location',None)
                 signal.pop('sign_convention',None)
             raw['derived']={'demo_preset_power':{'expr':'voltage * current','unit':'W'}}
-            raw['rules']=[{'name':'demo_preset_activity','rule_type':'condition_duration',
+            raw['rules']=[{'name':'demo_preset_activity','rule_type':'condition_duration', 'duration_comparison': '>=',
                 'condition':f'mode == 1 and current {comparison} {current_min}','minimum_duration':'0s'}]
             raw['calculations']=[
                 {'name':'demo_preset_energy','operation':'integral','expr':'demo_preset_power',

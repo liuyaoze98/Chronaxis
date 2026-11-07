@@ -285,11 +285,14 @@ class CANBatchObservationRead(CANObservationRead):
         """
         try:
             _reserve_owned_ram(self, 65536, '_pack_cost')
-            records, references, count = {}, {}, 0
-            while count < self._request.batch_rows:
+            records, references, count, delivered = {}, {}, 0, 0
+            # 记录流只订阅消息时没有信号列，样本数永远为零。每256条消息让主
+            # 状态机消费已完成时间组，避免把整文件的组堆在来源队列中。
+            while count < self._request.batch_rows and (self._selected or delivered < 256):
                 if self._record is None or self._alias_index >= len(self._selected):
                     if not self._advance_record():
                         break
+                    delivered += 1
                 while self._alias_index < len(self._selected) and count < self._request.batch_rows:
                     definition, field = self._selected[self._alias_index]
                     self._alias_index += 1
@@ -308,6 +311,13 @@ class CANBatchObservationRead(CANObservationRead):
                     references.setdefault(definition.name, []).append(ref)
                     count += 1
             if not count:
+                if delivered:
+                    # 这只是有界读取进度，不是文件/来源结束；最后同刻组仍由
+                    # RawSignalGroups保留，下一次不同时间或真实EOF才封口。
+                    progress = self._progress_ns
+                    watermark = None if progress is None or progress == -(1 << 63) else progress - 1
+                    return self._accept(SignalBatch(self._spec.name, self._request.session_id,
+                        {}, watermark, False, None))
                 return None
             columns = {definition.name: pack_decoded(definition, tuple(records[definition.name]),
                 tuple(references[definition.name]), self._owner.backend)

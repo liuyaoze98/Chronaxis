@@ -48,7 +48,7 @@ class FullDomainConfigurationTests(unittest.TestCase):
                         calculations,_,_=self.run_config(raw,backend)
                     self.assertEqual(calculations[0].value,4.)
                     raw=self.config(rows=[])
-                    raw['rules']=[dict(name='always',rule_type='condition_duration',condition='True',minimum_duration='0s')]
+                    raw['rules']=[dict(name='always',rule_type='condition_duration', duration_comparison='>=',condition='True',minimum_duration='0s')]
                     calculations,events,_=self.run_config(raw,backend)
                     self.assertEqual(events,())
                     self.assertIsNone(calculations[0].value)
@@ -58,7 +58,7 @@ class FullDomainConfigurationTests(unittest.TestCase):
         """跨批待定末点不提前结束；事件及前后窗口与真实0—2秒显式范围相同。"""
         for backend in ('reference','numpy'):
             raw=self.config()
-            raw['rules']=[dict(name='active',rule_type='condition_duration',condition='power > 2',minimum_duration='0s')]
+            raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='power > 2',minimum_duration='0s')]
             raw['windows']=[dict(name='around',rule='active',anchor='activity',pre='0.5s',post='1.5s')]
             raw['calculations'].extend([
                 dict(name='event_energy',scope=dict(rule='active'),operation='integral',expr='power',unit='J'),

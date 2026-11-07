@@ -27,17 +27,17 @@
 应用位置：以[activity.yaml](examples/activity.yaml)为基础，在文件根级加入或替换`windows, calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 基础文件已定义hot规则及temperature、power信号；先读[来源与信号](activity-tutorial.md)。
 
 ```yaml
-windows:                     # 围绕已定义规则的事件选取时间片段，供计算或导出使用
-  - name: hot_context        # 计算或导出引用的窗口名称
-    rule: hot                # 引用前面定义的事件规则
-    pre: 1s                  # 设置起点之前保留多久上下文；0s表示不提前
-    post: 1s                 # 设置结束点之后保留多久上下文；0s表示不延长
-calculations:                # 本例的统计结果
-  - name: context_energy     # 结果表中的计算名称
-    scope:                   # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
-      window: hot_context    # 按指定窗口的每个片段分别计算；填写前面windows中的name
-    operation: integral      # 按有效持续时间积分
-    expr: power              # 使用已定义的信号或公式
+windows:                   # 围绕已定义规则的事件选取时间片段，供计算或导出使用
+  - name: hot_context      # 计算或导出引用的窗口名称
+    rule: hot              # 引用前面定义的事件规则
+    pre: 1s                # 设置起点之前保留多久上下文；0s表示不提前
+    post: 1s               # 设置结束点之后保留多久上下文；0s表示不延长
+calculations:              # 本例的统计结果
+  - name: context_energy   # 结果表中的计算名称
+    scope:                 # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      window: hot_context  # 按指定窗口的每个片段分别计算；填写前面windows中的name
+    operation: integral    # 按有效持续时间积分
+    expr: power            # 使用已定义的信号或公式
 ```
 
 这是完整计划中的两部分配置；`hot` 规则和 `power` 信号须已定义。每个设置各做一件事：

@@ -4,34 +4,24 @@
 A local wheel can be installed without the source repository. Python must be >=3.12 and <3.13; the verified environment is Windows with Python 3.12.4. Use Windows for writing final result directories: the current implementation publishes timestamped files without overwriting existing files, and publishes the completion manifest last. Other operating systems have not been validated for this operation.
 
 <a id="从-pypi-安装"></a>
-## Install from PyPI
+## Install a local wheel
 
-Create an isolated environment in Windows PowerShell and install the version covered by this manual:
+This manual covers 0.1.0.dev3. Obtain the matching wheel, create an isolated environment in Windows PowerShell, and substitute its actual path below. Installation includes dependencies for signal tables, CAN logs and DBC decoding. Prepare dependency packages in advance for offline installation.
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m chronaxis guide --language en
 ```
 
 Use the Python executable from this environment for subsequent commands.
 
-<a id="已取得安装包"></a>
-## Install a wheel
-
-In your Python 3.12 virtual environment, replace the filename below with the wheel you received. A normal installation includes the dependencies for signal tables, CAN logs and DBC decoding. Prepare the dependency packages in advance for offline installation.
-
-```powershell
-python -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
-python -m chronaxis guide --language en
-```
-
 Open the README at the printed path directly. No export or extraction is needed. Without a Python environment, use the files included with the [offline manual](ai-guide.md). The manual ZIP contains documentation and teaching data; install the wheel separately to execute analyses. Source installation is described below.
 
 <a id="创建独立环境"></a>
-## Create an isolated environment
+## Install from the matching source tree
 
-Run these Windows PowerShell commands from the repository root. Explicitly using the virtual environment's Python avoids relying on terminal activation or changing script execution policy.
+Obtain the 0.1.0.dev3 source tree, then run these Windows PowerShell commands from its root containing `pyproject.toml`. Explicitly using the virtual environment's Python avoids relying on terminal activation or changing script execution policy.
 
 ```powershell
 py -3.12 -m venv .venv

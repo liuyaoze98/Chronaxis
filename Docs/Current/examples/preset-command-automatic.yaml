@@ -34,3 +34,5 @@ presets:                                            # 选择预先组合好的�
       min_delay: 0s                                 # 设置请求到响应的最小允许延迟；按协议要求填写
     preset_type: command_response                   # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
     version: '1'                                    # 选择预设定义版本；当前填写字符串"1"，与分析配置结构版本相互独立
+execution:                                          # 设置本次分析的并行处理方式
+  process_count: 4                                  # 最多4个文件工作进程；实际并行数不超过输入文件数

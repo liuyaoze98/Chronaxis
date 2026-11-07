@@ -26,3 +26,5 @@ message_calculations:                # 按每条目标CAN报文计算贡献再�
     unit: J                          # 声明累计结果的单位；须与表达式量纲相符
     update_message:                  # 指定触发一次求值的目标报文；通道和ID从日志/DBC取得
       frame_id: 256                  # 指定每到一条便求值的报文ID；从DBC取得
+execution:                           # 设置本次分析的并行处理方式
+  process_count: 4                   # 最多4个文件工作进程；实际并行数不超过输入文件数

@@ -67,7 +67,7 @@ class WindowSpec
 |`merge`|str|否|'none'|多段窗口如何合并，四种值见下表。|
 |`exit_delay_ns`|int &#124; None|否|None|只用于同名合并模式，不能重复附加post。 merge为exit_delay时必须填写非负纳秒数；其他合并模式填写None。|
 
-源码：[`src/chronaxis/core/windows.py:24`](../../../src/chronaxis/core/windows.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:24`](../../../src/chronaxis/core/windows.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-WindowSpec-__post_init__"></a>
 ### `WindowSpec.__post_init__`
@@ -100,7 +100,7 @@ TypeError/ValueError/OverflowError为标识、参数或时间协议错误。
 - `ValueError`：exit_delay要求activity、post=0及非负delay。
 - `ValueError`：exit_delay_ns仅用于exit_delay合并。
 
-源码：[`src/chronaxis/core/windows.py:40`](../../../src/chronaxis/core/windows.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:40`](../../../src/chronaxis/core/windows.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-Segment"></a>
 ## `Segment`
@@ -132,7 +132,7 @@ class Segment
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|全部原事件的结束质量及依赖诊断。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|当前所有依赖原字段引用。|
 
-源码：[`src/chronaxis/core/windows.py:68`](../../../src/chronaxis/core/windows.py#L68)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:68`](../../../src/chronaxis/core/windows.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-Segment-__post_init__"></a>
 ### `Segment.__post_init__`
@@ -168,7 +168,7 @@ TypeError/ValueError/OverflowError为非法结果模型。
 - `ValueError`：Segment事件状态需同长完整tuple。
 - `TypeError`：Segment质量与来源需带有明确类型的模型。
 
-源码：[`src/chronaxis/core/windows.py:89`](../../../src/chronaxis/core/windows.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:89`](../../../src/chronaxis/core/windows.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_windows"></a>
 ## `require_windows`
@@ -204,7 +204,7 @@ TypeError/ValueError为类型、重复、回退、归属或锚点不匹配。
 - `ValueError`：同一规则真实活动不能重叠。
 - `ValueError`：事件事实超出实际观测范围。
 
-源码：[`src/chronaxis/core/windows.py:124`](../../../src/chronaxis/core/windows.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:124`](../../../src/chronaxis/core/windows.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CompactSegment"></a>
 ## `CompactSegment`
@@ -229,7 +229,7 @@ class CompactSegment
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|该值或结果的质量位组合；缺失、过期等原因不能通过清零掩盖。|
 |`coverage`|float &#124; None|否|None|仅下游明确设置覆盖门槛时计算，默认不保存。|
 
-源码：[`src/chronaxis/core/windows.py:155`](../../../src/chronaxis/core/windows.py#L155)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:155`](../../../src/chronaxis/core/windows.py#L155)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_resolved_windows"></a>
 ## `require_resolved_windows`
@@ -260,7 +260,7 @@ None。
 
 不构造另一时间轴。
 
-源码：[`src/chronaxis/core/windows.py:168`](../../../src/chronaxis/core/windows.py#L168)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:168`](../../../src/chronaxis/core/windows.py#L168)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-make_segment"></a>
 ## `make_segment`
@@ -295,4 +295,4 @@ Segment，稳定ID包含窗口语义、原事件引用与请求/实际边界。
 
 无；不计算扩展、分组或窗口覆盖，不修改Event。
 
-源码：[`src/chronaxis/core/windows.py:186`](../../../src/chronaxis/core/windows.py#L186)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows.py:186`](../../../src/chronaxis/core/windows.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

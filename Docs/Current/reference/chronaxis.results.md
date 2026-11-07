@@ -63,4 +63,4 @@ AttributeError为未知名称；实际模块导入错误原样传播。
 
 访问对应类才加载实现及其依赖，不读取输入或启动分析。
 
-源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

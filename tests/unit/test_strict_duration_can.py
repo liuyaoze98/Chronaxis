@@ -41,7 +41,7 @@ class StrictDurationCANTests(unittest.TestCase):
             def edit(raw):
                 """参数: raw计划字典。返回: None。异常: 无；只声明本测试的规则与积分。"""
                 raw['dataset']['domain']['end'] = f'{end}s'
-                reached = dict(name='reached', rule_type='condition_duration',
+                reached = dict(name='reached', rule_type='condition_duration', duration_comparison='>=',
                                condition='current > 0', minimum_duration='0.2s')
                 raw['rules'] = [reached, dict(reached, name='strict', duration_comparison='>')]
                 raw['calculations'] = [dict(name='energy_' + name, scope=dict(rule=name),

@@ -15,11 +15,11 @@
 | [part-2.asc](examples/data/can/conditional-energy/part-2.asc) | 第2卷，90～123秒；延续上一卷的条件状态。|
 | [signals.dbc](examples/data/can/conditional-energy/signals.dbc) | 合成报文0x100的状态、电流、电压及1000ms周期。|
 
-在 Windows PowerShell 中，从包含 `examples` 的工作目录执行。普通安装会自动安装本版声明的 CAN 依赖，无需额外指定依赖组；不要随意更换 cantools 版本。本地 wheel 和离线依赖安装方法见[安装说明](installation.md)。
+本例对应 Chronaxis 0.1.0.dev3。在 Windows PowerShell 中，从包含 `examples` 的工作目录执行，并把 wheel 路径替换为实际文件路径。普通安装会自动安装本版声明的 CAN 依赖；不要随意更换 cantools 版本。同版源码及离线依赖安装方法见[安装说明](installation.md)。
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m chronaxis validate examples/conditional-energy.yaml --format json
 .\.venv\Scripts\python.exe -m chronaxis explain examples/conditional-energy.yaml --format json
 .\.venv\Scripts\python.exe -m chronaxis run examples/conditional-energy.yaml --output result-conditional-energy
@@ -27,54 +27,58 @@ py -3.12 -m venv .venv
 
 命令里的配置和输出路径相对**命令运行目录**。配置内部的ASC和DBC路径相对**配置文件所在目录**，因此不必把工作目录切换到数据目录。输出目录可重复使用；每次结果文件自动带时间后缀，旧结果保留。
 
-两卷在同一个来源的`paths`中，按所列顺序连续读取，信号保持和条件计时会跨卷延续。不能把这两卷当成两个独立批量任务；那样90秒处会重新开始状态。不同试验的文件则应使用[独立批量任务](batch.md)。
+两卷在同一个来源的`paths`中，`execution.process_count: 4`允许并行读取，两个文件实际最多使用2个读取工作进程。主进程按所列顺序接续数据，信号保持和条件计时跨卷延续，因此90秒的文件边界不会重置已经开始的条件。不同试验的文件则应使用[独立批量任务](batch.md)。
 
 ## 完整配置与可省略内容
 
-下方是可下载配置的原文。`sources`、`signals`、`rules`、`calculations`是并列的根级字段；短横线表示列表项，缩进表示父子关系。例如`scope`下缩进的`rule`写在同一个计算项内，不是一个名为`scope.rule`的字面键。基础语法见[配置写法](configuration-language.md)。
+下方是可下载配置的完整内容。`sources`、`signals`、`rules`、`calculations`、`execution`是并列的根级字段；短横线表示列表项，缩进表示父子关系。例如`scope`下缩进的`rule`写在同一个计算项内，不是一个名为`scope.rule`的字面键。基础语法见[配置写法](configuration-language.md)。
 
 ```yaml
 # 合成教学示例：两个条件连续超过60秒，再对整个合格区间积分。
-config_version: 4                                     # 当前配置结构版本
-dataset:                                              # 本次分析
-  name: conditional_energy                            # 结果使用这个任务名称
-sources:                                              # 两卷连续文件组成一个来源
-  - paths:                                            # 按下面的先后顺序读取，跨文件保持状态
-      - data/can/conditional-energy/part-1.asc        # 0～89秒
-      - data/can/conditional-energy/part-2.asc        # 90～123秒
-    dbc_by_channel:                                   # 用户通道从1开始；内部编号自动匹配
-      '1': data/can/conditional-energy/signals.dbc    # 相对本配置文件的位置
-signals:                                              # 唯一来源和通道可省略；类型、单位和周期由DBC取得
-  - name: state                                       # 用整数状态直接比较，无需映射成布尔或枚举
-    field:                                            # DBC中的报文与信号
-      frame_id: '0x100'                               # 十六进制报文ID
-      signal: State                                   # DBC中的状态信号
-  - name: current                                     # 电流，DBC单位A
-    field:                                            # 与状态在同一报文中
-      frame_id: '0x100'                               # 相同ID
-      signal: Current                                 # DBC中的电流信号
-  - name: voltage                                     # 电压，DBC单位V
-    field:                                            # 与状态在同一报文中
-      frame_id: '0x100'                               # 相同ID
-      signal: Voltage                                 # DBC中的电压信号
-rules:                                                # 先找合格区间
-  - name: eligible                                    # 积分通过这个名称选择区间
-    rule_type: condition_duration                     # 要求条件连续成立
-    condition: state == 0x2 and current >= 10         # 状态为2且电流至少10A
-    minimum_duration: 60s                             # 持续时长门槛
-    duration_comparison: ">"                          # 严格超过；恰好60秒不合格
-calculations:                                         # 只请求所需的能量结果
-  - name: energy_kwh                                  # 结果表中的计算项名称
-    operation: integral                               # 按实际时间积分
-    expr: current * voltage                           # A×V得到W，乘时间后转为kWh
-    scope:                                            # 选择整个合格事件区间
-      rule: eligible                                  # 默认onset，包含最初60秒
-    unit: kWh                                         # 直接输出kWh，不在外部再换算
+config_version: 4                                   # 当前配置结构版本
+dataset:                                            # 本次分析
+  name: conditional_energy                          # 结果使用这个任务名称
+sources:                                            # 两卷连续文件组成一个来源
+  - paths:                                          # 按下面的先后顺序读取，跨文件保持状态
+      - data/can/conditional-energy/part-1.asc      # 0～89秒
+      - data/can/conditional-energy/part-2.asc      # 90～123秒
+    dbc_by_channel:                                 # 用户通道从1开始；内部编号自动匹配
+      '1': data/can/conditional-energy/signals.dbc  # 相对本配置文件的位置
+signals:                                            # 唯一来源和通道可省略；类型、单位和周期由DBC取得
+  - name: state                                     # 用整数状态直接比较，无需映射成布尔或枚举
+    field:                                          # DBC中的报文与信号
+      frame_id: '0x100'                             # 十六进制报文ID
+      signal: State                                 # DBC中的状态信号
+  - name: current                                   # 电流，DBC单位A
+    field:                                          # 与状态在同一报文中
+      frame_id: '0x100'                             # 相同ID
+      signal: Current                               # DBC中的电流信号
+  - name: voltage                                   # 电压，DBC单位V
+    field:                                          # 与状态在同一报文中
+      frame_id: '0x100'                             # 相同ID
+      signal: Voltage                               # DBC中的电压信号
+rules:                                              # 先找合格区间
+  - name: eligible                                  # 积分通过这个名称选择区间
+    rule_type: condition_duration                   # 要求条件连续成立
+    condition: state == 0x2 and current >= 10       # 状态为2且电流至少10A
+    minimum_duration: 60s                           # 持续时长门槛
+    duration_comparison: ">"                        # 严格超过；恰好60秒不合格
+calculations:                                       # 只请求所需的能量结果
+  - name: energy_kwh                                # 结果表中的计算项名称
+    operation: integral                             # 按实际时间积分
+    expr: current * voltage                         # A×V得到W，乘时间后转为kWh
+    scope:                                          # 选择整个合格事件区间
+      rule: eligible                                # 默认onset，包含最初60秒
+    unit: kWh                                       # 直接输出kWh，不在外部再换算
+execution:                                          # 控制同一会话内的文件读取
+  process_count: 4                                  # 最多4个工作进程；本例2个文件实际最多用2个
 ```
 
 ASC/BLF格式自动识别；唯一来源及通道不用在每条信号中重复。配置中的通道1由程序匹配内部编号，不需要用户减1。DBC已经包含类型、单位和报文周期；本例省略`valid_for`，运行时使用1000ms的3倍，即3秒。这里的3秒是旧样本最多能沿用多久，积分仍按两条实际记录之间的时间计算，不能把3秒误当积分步长。
 
-本例也省略了默认`selection_origin: onset`、实际时间间隔模式和默认结果输出。`duration_comparison: ">"`必须明确填写，因为省略时是`>=`。状态直接保留整数，表达式中的`0x2`等于十进制2，无需先配置bool或enum映射。更换真实数据时，报文ID、信号名和状态编码以实际DBC及设备定义为准。
+`execution.process_count`控制文件读取和解码并行，不把事件或积分按文件切开。这里的`4`是示例选择的上限，省略时程序默认`1`；按机器资源可改为其他正整数。需要交叠文件按时间归并或调整运行资源时，见[连续记录多进程](continuous-files.md)。
+
+本例也省略了默认`selection_origin: onset`、实际时间间隔模式和默认结果输出。`duration_comparison`必须明确填写：本例要求严格超过，选择`">"`；要求达到门槛则选择`">="`。省略会报告缺少字段。状态直接保留整数，表达式中的`0x2`等于十进制2，无需先配置bool或enum映射。更换真实数据时，报文ID、信号名和状态编码以实际DBC及设备定义为准。
 
 ## 输入发生了什么，为什么只有一条能量结果
 

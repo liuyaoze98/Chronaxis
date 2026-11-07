@@ -1,5 +1,5 @@
 {
-  "baseline": "e65c920526335247bcc1ed25852bcc967f55f2fd",
+  "baseline": "afc8d5eb1dc95c26176b20ebedaeda6a0a643540",
   "device_label": "home",
   "modules": [
     {
@@ -69,7 +69,7 @@
     {
       "module": "chronaxis._batch_worker",
       "path": "src/chronaxis/_batch_worker.py",
-      "sha256": "91e2d6ccc3d50df31248b74afa45ebba35d059c41f30e3888bb4ca0d013c814b",
+      "sha256": "4a66543442b74a48b4960514eb92bd6312c15595e021e9eaf99cf75b44177278",
       "exports": [],
       "objects": [
         {
@@ -112,9 +112,26 @@
       "lambdas": []
     },
     {
+      "module": "chronaxis._version",
+      "path": "src/chronaxis/_version.py",
+      "sha256": "eed38071defc505f5a6e636c4955d4260bc57e95d80a512c55f61657b171396d",
+      "exports": [],
+      "objects": [
+        {
+          "name": "software_version",
+          "kind": "function",
+          "line": 11,
+          "summary": "返回当前源码或安装包版本；版本资料缺失、项目不符或版本为空时抛RuntimeError。",
+          "parameters": [],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
       "module": "chronaxis.analysis_cli",
       "path": "src/chronaxis/analysis_cli.py",
-      "sha256": "4676c3458e2e64f4e865a959b3051950a6d53187cf07861f538d904cdfbef43d",
+      "sha256": "a66c6751019629082ac942acd52e8680c2233a565a680fb53c247ce4805d2d21",
       "exports": [],
       "objects": [
         {
@@ -150,7 +167,7 @@
         {
           "name": "run_static",
           "kind": "function",
-          "line": 67,
+          "line": 68,
           "summary": "只加载配置并输出共享AnalysisRunner报告，不触碰来源或创建分析产物。",
           "parameters": [
             {
@@ -165,7 +182,7 @@
         {
           "name": "_new_output",
           "kind": "function",
-          "line": 97,
+          "line": 98,
           "summary": "在扫描来源前检查可复用输出根、历史目录和冲突工作路径。",
           "parameters": [
             {
@@ -180,7 +197,7 @@
         {
           "name": "_cause_chain",
           "kind": "function",
-          "line": 129,
+          "line": 130,
           "summary": "取得有限且不重复的真实cause链，供诊断和致命异常判断共用。",
           "parameters": [
             {
@@ -195,7 +212,7 @@
         {
           "name": "run_analysis",
           "kind": "function",
-          "line": 145,
+          "line": 146,
           "summary": "复用真实分析和发布，成功关闭所有结果资源后才报告completed。",
           "parameters": [
             {
@@ -1522,7 +1539,7 @@
     {
       "module": "chronaxis.cli",
       "path": "src/chronaxis/cli.py",
-      "sha256": "a85391d6c6396f76a79accaf40023e481ab00a5e977273f49c1eaa4a7e12222a",
+      "sha256": "15a2420919a331b7f3e382c7fa954b13eb3d1c9fe0889802b9a2a446296cd7a2",
       "exports": [],
       "objects": [
         {
@@ -1536,7 +1553,7 @@
         {
           "name": "main",
           "kind": "function",
-          "line": 81,
+          "line": 85,
           "summary": "执行共享CLI并给出固定退出码，完整事实保在报告和原异常中。",
           "parameters": [
             {
@@ -1717,7 +1734,7 @@
     {
       "module": "chronaxis.configuration.explanation",
       "path": "src/chronaxis/configuration/explanation.py",
-      "sha256": "3afc729c0a62b159333de2c3b96f97faf5d90ef8b2a0f170c4366ec2553f083b",
+      "sha256": "dbe827ee67be1de49eb29e6ed250d63c059d17a554135dee4fbdbc6aae5b522a",
       "exports": [],
       "objects": [
         {
@@ -21338,7 +21355,7 @@
     {
       "module": "chronaxis.execution.can_batch_reader",
       "path": "src/chronaxis/execution/can_batch_reader.py",
-      "sha256": "befffc5eea915fe5621e81e0654f8f4a5a89e67135fc20ca834d233ec3be0862",
+      "sha256": "a54db6bbf7d7ece19f2ea8cf993665c2e9107a4990138b320545ec1a8c0d5d41",
       "exports": [],
       "objects": [
         {
@@ -21510,7 +21527,7 @@
         {
           "name": "CANBatchObservationRead.__next__",
           "kind": "function",
-          "line": 323,
+          "line": 333,
           "summary": "返回下一批信号，或最后一个标记来源结束的空批；迭代真正结束后才能读取完整观测信息或移交暂存。",
           "parameters": [
             {
@@ -21525,7 +21542,7 @@
         {
           "name": "CANBatchObservationRead.close",
           "kind": "function",
-          "line": 353,
+          "line": 363,
           "summary": "释放当前批次的引用，再按既定顺序关闭本对象管理的资源。",
           "parameters": [
             {
@@ -32825,6 +32842,440 @@
       "lambdas": []
     },
     {
+      "module": "chronaxis.execution.parallel_can_decode",
+      "path": "src/chronaxis/execution/parallel_can_decode.py",
+      "sha256": "5739864ba332abc8588dde41c1ead5a62cf0fcf7eeefa1d0d361c5a30c467950",
+      "exports": [],
+      "objects": [
+        {
+          "name": "ParallelCANDecodeRead",
+          "kind": "class",
+          "line": 25,
+          "summary": "拥有有限文件工作槽及唯一有序输出；文件EOF不结束来源。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.__init__",
+          "kind": "function",
+          "line": 32,
+          "summary": "保存冻结文件任务，不读输入。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "signals",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "work_dir",
+              "type": "",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "emit_frame_ids",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "options",
+              "type": "",
+              "default": "{}",
+              "kind": "可变关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.closed",
+          "kind": "function",
+          "line": 61,
+          "summary": "返回实际关闭事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "ParallelCANDecodeRead.exhausted",
+          "kind": "function",
+          "line": 66,
+          "summary": "返回完整来源结束事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "ParallelCANDecodeRead.metadata",
+          "kind": "function",
+          "line": 71,
+          "summary": "返回同次DBC元数据。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "ParallelCANDecodeRead._receive",
+          "kind": "function",
+          "line": 77,
+          "summary": "接收独立控制消息并监测退出。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._bytes",
+          "kind": "function",
+          "line": 106,
+          "summary": "接收已预付且限定长度的数据。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "size",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._assign",
+          "kind": "function",
+          "line": 120,
+          "summary": "给空闲进程一个冻结文件并核元数据。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.prepare_metadata",
+          "kind": "function",
+          "line": 138,
+          "summary": "启动有限工作槽，只初始化DBC再授予首块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._block",
+          "kind": "function",
+          "line": 176,
+          "summary": "收一块并记录已见事实，原始计数不以传输记录数替代。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._next_task",
+          "kind": "function",
+          "line": 209,
+          "summary": "完成文件后复用同一工作槽；没有下一文件时保留槽待统一关闭。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._stop_workers",
+          "kind": "function",
+          "line": 217,
+          "summary": "关闭全部本次进程和管道，不等待满管道自行排空。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "completed",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._prepare_sorted",
+          "kind": "function",
+          "line": 252,
+          "summary": "先流式暂存已校验文件，再释放进程额度开始归并。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead._push",
+          "kind": "function",
+          "line": 296,
+          "summary": "为一个有序文件取下一记录，堆键固定时间/文件位置/局部序号。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.__iter__",
+          "kind": "function",
+          "line": 321,
+          "summary": "返回本次游标。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.__next__",
+          "kind": "function",
+          "line": 325,
+          "summary": "返回按明确归并政策排序的下一记录。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelCANDecodeRead.close",
+          "kind": "function",
+          "line": 375,
+          "summary": "释放本次进程、块和登记暂存。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.parallel_can_worker",
+      "path": "src/chronaxis/execution/parallel_can_worker.py",
+      "sha256": "8b168ce867057abe6f9f131ecdb968df041f7e449d980be36db8497538911a97",
+      "exports": [],
+      "objects": [
+        {
+          "name": "plain",
+          "kind": "function",
+          "line": 25,
+          "summary": "转换有限冻结元数据为可传输结构。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "facts",
+          "kind": "function",
+          "line": 35,
+          "summary": "摘取同次读取得到的有限事实，不把观测末点当水位。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "read_block",
+          "kind": "function",
+          "line": 43,
+          "summary": "在固定预付空间内读取一块，不为凑满64条继续读取宽记录。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "worker_main",
+          "kind": "function",
+          "line": 71,
+          "summary": "等待文件/读取许可并发送有界结果。",
+          "parameters": [
+            {
+              "name": "control",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "data",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
       "module": "chronaxis.execution.raw_signal_groups",
       "path": "src/chronaxis/execution/raw_signal_groups.py",
       "sha256": "195851c521c7036e37de5ee7a80eefaad25a6f169e5a477f4e9ce59d1c1f0153",
@@ -33923,7 +34374,7 @@
     {
       "module": "chronaxis.execution.record_exports",
       "path": "src/chronaxis/execution/record_exports.py",
-      "sha256": "99ea0a820b2ee75bad4cd29a057fc621d42d0b5975bbbf0541e3628e281755b2",
+      "sha256": "4348118f8fb973b40dbb672bf4403d03ecc45ef85f819e84df256cadf8f9274e",
       "exports": [],
       "objects": [
         {
@@ -36671,7 +37122,7 @@
     {
       "module": "chronaxis.execution.record_source_cursor",
       "path": "src/chronaxis/execution/record_source_cursor.py",
-      "sha256": "aa12646ad1a135e8c2d4b00e731531f1e92fbe9bb9d2f6faad3324a045d74cd2",
+      "sha256": "2e108ac25463c7abcacbcf9c9419c4deaa4be7d76f6c5208bfd0e7cf79b72b64",
       "exports": [],
       "objects": [
         {
@@ -36778,7 +37229,7 @@
         {
           "name": "RecordSourceCursor._consume_message",
           "kind": "function",
-          "line": 136,
+          "line": 162,
           "summary": "同次解码先交逐消息消费者，再按需归组。",
           "parameters": [
             {
@@ -36799,7 +37250,7 @@
         {
           "name": "RecordSourceCursor._new",
           "kind": "function",
-          "line": 146,
+          "line": 172,
           "summary": "接实际未返回的子owner。",
           "parameters": [
             {
@@ -36838,7 +37289,7 @@
         {
           "name": "RecordSourceCursor._enqueue",
           "kind": "function",
-          "line": 154,
+          "line": 180,
           "summary": "在上游释放组费用前接管必要组。",
           "parameters": [
             {
@@ -36859,7 +37310,7 @@
         {
           "name": "RecordSourceCursor.peek",
           "kind": "function",
-          "line": 163,
+          "line": 189,
           "summary": "读取到下一个完整组或真实EOF，返回借用组。",
           "parameters": [
             {
@@ -36874,7 +37325,7 @@
         {
           "name": "RecordSourceCursor.advance",
           "kind": "function",
-          "line": 222,
+          "line": 248,
           "summary": "消费当前组并释放其费用，不主动读取下一组。",
           "parameters": [
             {
@@ -36889,7 +37340,7 @@
         {
           "name": "RecordSourceCursor._retain_frame_notices",
           "kind": "function",
-          "line": 228,
+          "line": 254,
           "summary": "在同次真实EOF后保留已核DBC帧型提示，不借清单声明代替读取。",
           "parameters": [
             {
@@ -36904,7 +37355,7 @@
         {
           "name": "RecordSourceCursor._require_closed",
           "kind": "function",
-          "line": 263,
+          "line": 289,
           "summary": "关闭未完成时保留槽。",
           "parameters": [
             {
@@ -36921,7 +37372,7 @@
         {
           "name": "RecordSourceCursor._close_slot",
           "kind": "function",
-          "line": 268,
+          "line": 294,
           "summary": "成功关闭后才撤槽。",
           "parameters": [
             {
@@ -36942,7 +37393,7 @@
         {
           "name": "RecordSourceCursor.close",
           "kind": "function",
-          "line": 276,
+          "line": 302,
           "summary": "按责任释放当前批/队列和输入；提前关闭不交付末组。",
           "parameters": [
             {
@@ -40543,7 +40994,7 @@
     {
       "module": "chronaxis.execution.text_can_reader",
       "path": "src/chronaxis/execution/text_can_reader.py",
-      "sha256": "8cd069a9a4b5c7732b11644494b55d7a227be32c95fab79b8ac99a40a2d522c0",
+      "sha256": "38431719024acead8116e3247737a215eff0aaf7dda49736253a7b76ae2f7333",
       "exports": [],
       "objects": [
         {
@@ -40661,6 +41112,30 @@
               "type": "",
               "default": "None",
               "kind": "仅关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "1",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "emit_frame_ids",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "blf_time_scope",
+              "type": "",
+              "default": "'source'",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "legacy_blf_decode",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -40668,7 +41143,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter.retain_raw_frames",
           "kind": "function",
-          "line": 86,
+          "line": 91,
           "summary": "返回本来源冻结的原帧保存选择。",
           "parameters": [
             {
@@ -40685,7 +41160,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter._ensure_open",
           "kind": "function",
-          "line": 91,
+          "line": 96,
           "summary": "拒绝使用已关闭适配器。",
           "parameters": [
             {
@@ -40700,7 +41175,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter.describe",
           "kind": "function",
-          "line": 97,
+          "line": 102,
           "summary": "返回静态字段及时间声明。",
           "parameters": [
             {
@@ -40715,7 +41190,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter.iter_batches_with_observation",
           "kind": "function",
-          "line": 102,
+          "line": 107,
           "summary": "创建具有同次观测的独立read。",
           "parameters": [
             {
@@ -40736,7 +41211,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter.iter_batches",
           "kind": "function",
-          "line": 121,
+          "line": 126,
           "summary": "沿同一批次合同创建read，不另读输入。",
           "parameters": [
             {
@@ -40757,7 +41232,7 @@
         {
           "name": "BudgetedTextCANSourceAdapter.close",
           "kind": "function",
-          "line": 126,
+          "line": 131,
           "summary": "关闭所有本来源活read，再释放描述费用。",
           "parameters": [
             {
@@ -40772,7 +41247,7 @@
         {
           "name": "TextCANObservationRead",
           "kind": "class",
-          "line": 140,
+          "line": 145,
           "summary": "拥有一个有限原帧块和一个归一化批，完整EOF前不开放完成事实。",
           "fields": [],
           "bases": []
@@ -40780,7 +41255,7 @@
         {
           "name": "TextCANObservationRead.__init__",
           "kind": "function",
-          "line": 143,
+          "line": 148,
           "summary": "验证原会话/投影并构造未开始的解码器。",
           "parameters": [
             {
@@ -40807,7 +41282,7 @@
         {
           "name": "TextCANObservationRead.closed",
           "kind": "function",
-          "line": 184,
+          "line": 198,
           "summary": "返回真实关闭状态。",
           "parameters": [
             {
@@ -40824,7 +41299,7 @@
         {
           "name": "TextCANObservationRead.failed",
           "kind": "function",
-          "line": 190,
+          "line": 204,
           "summary": "返回当前读取是否失败。",
           "parameters": [
             {
@@ -40841,7 +41316,7 @@
         {
           "name": "TextCANObservationRead.exhausted",
           "kind": "function",
-          "line": 196,
+          "line": 210,
           "summary": "返回完整EOF及解析器关闭事实。",
           "parameters": [
             {
@@ -40858,7 +41333,7 @@
         {
           "name": "TextCANObservationRead.observation",
           "kind": "function",
-          "line": 202,
+          "line": 216,
           "summary": "仅交付本read已完成的真实观测。",
           "parameters": [
             {
@@ -40875,7 +41350,7 @@
         {
           "name": "TextCANObservationRead.observed_bounds",
           "kind": "function",
-          "line": 210,
+          "line": 224,
           "summary": "返回同次解析已经看到的首末时间，不额外扫描或冒充EOF。",
           "parameters": [
             {
@@ -40892,7 +41367,7 @@
         {
           "name": "TextCANObservationRead.runtime_metadata",
           "kind": "function",
-          "line": 222,
+          "line": 236,
           "summary": "交付同次DBC身份与解码次数。",
           "parameters": [
             {
@@ -40909,7 +41384,7 @@
         {
           "name": "TextCANObservationRead.prepare_metadata",
           "kind": "function",
-          "line": 228,
+          "line": 242,
           "summary": "在读取前取得同次DBC周期，不冒充最终解码计数。",
           "parameters": [
             {
@@ -40924,7 +41399,7 @@
         {
           "name": "TextCANObservationRead.__iter__",
           "kind": "function",
-          "line": 245,
+          "line": 259,
           "summary": "返回独立游标。",
           "parameters": [
             {
@@ -40939,7 +41414,7 @@
         {
           "name": "TextCANObservationRead._accept",
           "kind": "function",
-          "line": 250,
+          "line": 264,
           "summary": "按既有批合同核同一时刻组，保留所需pending费用。",
           "parameters": [
             {
@@ -40960,7 +41435,7 @@
         {
           "name": "TextCANObservationRead._fill",
           "kind": "function",
-          "line": 261,
+          "line": 275,
           "summary": "按全部别名的样本容量取有限原记录，所有值只解码一次。",
           "parameters": [
             {
@@ -40975,7 +41450,7 @@
         {
           "name": "TextCANObservationRead.__next__",
           "kind": "function",
-          "line": 284,
+          "line": 298,
           "summary": "交付全局时间非递减的有界批，最终EOF后保完成事实。",
           "parameters": [
             {
@@ -40990,7 +41465,7 @@
         {
           "name": "TextCANObservationRead._finish",
           "kind": "function",
-          "line": 320,
+          "line": 334,
           "summary": "封口可选原帧仓，解析器真正关闭后提交完整事实。",
           "parameters": [
             {
@@ -41005,7 +41480,7 @@
         {
           "name": "TextCANObservationRead.take_raw_store",
           "kind": "function",
-          "line": 338,
+          "line": 353,
           "summary": "移交本read的同次封口原帧仓。",
           "parameters": [
             {
@@ -41032,7 +41507,7 @@
         {
           "name": "TextCANObservationRead.close",
           "kind": "function",
-          "line": 346,
+          "line": 361,
           "summary": "关闭实际解析器/原帧仓并释放自身费用，不释放共享DBC。",
           "parameters": [
             {
@@ -44628,7 +45103,7 @@
     {
       "module": "chronaxis.fast",
       "path": "src/chronaxis/fast/__init__.py",
-      "sha256": "3630737f9c5d5705133511b3fa8deb59d91447d924730382989afb7cfb3b7447",
+      "sha256": "5e6b7b8832048477e30420ebb7dc018022699325cefa2b459e3ff5b38f720630",
       "exports": [],
       "objects": [],
       "lambdas": []
@@ -44636,7 +45111,7 @@
     {
       "module": "chronaxis.fast.__main__",
       "path": "src/chronaxis/fast/__main__.py",
-      "sha256": "f84db7f0755e3c29d387bbe165472b35a32417417d32a5e746b7595a2ab916d3",
+      "sha256": "ee07414a8b33ada0e80303c8ef33ee5474e47079f83f8a47a842fa56e33391ca",
       "exports": [],
       "objects": [],
       "lambdas": []
@@ -44661,7 +45136,7 @@
     {
       "module": "chronaxis.fast.batch",
       "path": "src/chronaxis/fast/batch.py",
-      "sha256": "17af79b9c16750a8cae35ba749b332e6cd17ec0e95bc735d2b59564747901e1f",
+      "sha256": "4eaf52ca26d3ff95ce9ec506b0373301e6193a63f23612b01c890c15a157c714",
       "exports": [],
       "objects": [
         {
@@ -44684,7 +45159,7 @@
         {
           "name": "run_batch",
           "kind": "function",
-          "line": 49,
+          "line": 51,
           "summary": "运行独立 fast jobs/template 配置，返回本次带时间的批量报告路径。",
           "parameters": [
             {
@@ -44724,9 +45199,93 @@
       "lambdas": []
     },
     {
+      "module": "chronaxis.fast.blocks",
+      "path": "src/chronaxis/fast/blocks.py",
+      "sha256": "b1ac3368bdce45fc52183b09adf92e3abd4ab7930e3f4489bba7220de0b612e6",
+      "exports": [],
+      "objects": [
+        {
+          "name": "encode",
+          "kind": "function",
+          "line": 19,
+          "summary": "编码一个有界块。",
+          "parameters": [
+            {
+              "name": "file_index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "records",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "decode",
+          "kind": "function",
+          "line": 38,
+          "summary": "核验并逐帧解码。",
+          "parameters": [
+            {
+              "name": "payload",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "file_index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "metric_count",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "batches",
+          "kind": "function",
+          "line": 74,
+          "summary": "按记录数及字节双上限切块。",
+          "parameters": [
+            {
+              "name": "stream",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
       "module": "chronaxis.fast.can_io",
       "path": "src/chronaxis/fast/can_io.py",
-      "sha256": "4be99948f380292616f1a209dd1346f71989a18aae4612e96476d68668d1f2e6",
+      "sha256": "d66ea460c509a2b39985e331076e7c1ab0aa5c12a25ef582c6729bc0715cc9f8",
       "exports": [],
       "objects": [
         {
@@ -44772,79 +45331,10 @@
           "decorators": []
         },
         {
-          "name": "_read_all",
-          "kind": "function",
-          "line": 71,
-          "summary": "完整读入本文件；批量任务每 4096 帧检查一次取消，reader 由调用方关闭。",
-          "parameters": [
-            {
-              "name": "reader",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            },
-            {
-              "name": "cancel_event",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            }
-          ],
-          "decorators": []
-        },
-        {
-          "name": "_read",
-          "kind": "function",
-          "line": 85,
-          "summary": "与 base 一样按文件读入并确定关闭。ASC 保留文本解析所得的精确纳秒。",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            },
-            {
-              "name": "groups",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            },
-            {
-              "name": "spec",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            },
-            {
-              "name": "cancel_event",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            }
-          ],
-          "decorators": []
-        },
-        {
-          "name": "_read.selected_time",
-          "kind": "function",
-          "line": 95,
-          "summary": "只比较实际进入时间筛选的帧，其他通道或远程帧不改变前一时刻。",
-          "parameters": [
-            {
-              "name": "frame",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            }
-          ],
-          "decorators": []
-        },
-        {
           "name": "run_one",
           "kind": "function",
-          "line": 108,
-          "summary": "执行一份已准备的任务并返回汇总行及兼容提示。任何文件错误均不返回部分指标。",
+          "line": 71,
+          "summary": "流式运行单文件低层入口，保留原调用的行及提示返回结构。",
           "parameters": [
             {
               "name": "spec",
@@ -44873,7 +45363,7 @@
     {
       "module": "chronaxis.fast.cli",
       "path": "src/chronaxis/fast/cli.py",
-      "sha256": "d9d2a4841c3354069f2241eb2f4018d001a50261a7be0bb05a73ae5b8d790c54",
+      "sha256": "c34ef8e13d012f46d10cda24bb12823260792db1a47f15908a5ba3a23eddd59b",
       "exports": [],
       "objects": [
         {
@@ -44894,7 +45384,7 @@
         {
           "name": "_batch",
           "kind": "function",
-          "line": 45,
+          "line": 47,
           "summary": "执行一份独立文件清单。CLI 保留实际报告位置，失败和取消返回非零。",
           "parameters": [
             {
@@ -44912,7 +45402,7 @@
     {
       "module": "chronaxis.fast.compute",
       "path": "src/chronaxis/fast/compute.py",
-      "sha256": "5730fda896cff8ded7bf8f114f1e3d553ab7b408062b64230903d1d620ba08e4",
+      "sha256": "98da0be8b37af372b101aeb9d562dc1ab54b3d18d4a7c7523266b8c47f97a2fe",
       "exports": [],
       "objects": [
         {
@@ -45102,7 +45592,7 @@
           "name": "_Metric",
           "kind": "class",
           "line": 159,
-          "summary": "只属于当前文件的累计器。求值和分桶均成功后才更新累计和计数。",
+          "summary": "当前累计器及其已准备公式；FileContributions只调用无状态contribution，会话主进程按原顺序调用add。",
           "fields": [],
           "bases": []
         },
@@ -45155,9 +45645,57 @@
           "decorators": []
         },
         {
+          "name": "_Metric.contribution",
+          "kind": "function",
+          "line": 180,
+          "summary": "只求当前帧贡献和方向选择，不修改累计状态。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "decoded",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Metric.add",
+          "kind": "function",
+          "line": 197,
+          "summary": "按原顺序提交一次贡献，零值仍计入入选数。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "contribution",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "keep",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "_Metric.result",
           "kind": "function",
-          "line": 191,
+          "line": 208,
           "summary": "区分无目标、空方向桶和贡献相消，以原始精度给出当前结果。",
           "parameters": [
             {
@@ -45172,8 +45710,8 @@
         {
           "name": "prepare_metric",
           "kind": "function",
-          "line": 198,
-          "summary": "创建一个独立文件指标。参数为简单声明字典；拒绝冲突别名和未知指令。",
+          "line": 215,
+          "summary": "创建一个计算项的求值/累计状态。参数为简单声明字典；拒绝冲突别名和未知指令。",
           "parameters": [
             {
               "name": "spec",
@@ -45287,13 +45825,13 @@
     {
       "module": "chronaxis.fast.config",
       "path": "src/chronaxis/fast/config.py",
-      "sha256": "b5e0fac80d37be6c46e06b96fc5c863bda3628545639fb5f6caf5c138d3e1058",
+      "sha256": "a986d630816d8a8900c5d9a5f454d79df5bb1ea6dcadb0f6e19a0b3b44757518",
       "exports": [],
       "objects": [
         {
           "name": "_unsupported",
           "kind": "function",
-          "line": 17,
+          "line": 21,
           "summary": "构造可由已有配置诊断和 CLI 消费的错误。",
           "parameters": [
             {
@@ -45314,7 +45852,7 @@
         {
           "name": "_capabilities",
           "kind": "function",
-          "line": 22,
+          "line": 26,
           "summary": "仅检查显式请求，避免把通用计划的默认设置误判为用户要求。",
           "parameters": [
             {
@@ -45329,8 +45867,8 @@
         {
           "name": "_source",
           "kind": "function",
-          "line": 67,
-          "summary": "取得唯一文件及其时钟参数，保持 ASC 与 BLF 各自的时间解释。",
+          "line": 73,
+          "summary": "展开同一来源的文件和时间解释，不打开日志。",
           "parameters": [
             {
               "name": "plan",
@@ -45344,7 +45882,7 @@
         {
           "name": "_flag",
           "kind": "function",
-          "line": 95,
+          "line": 104,
           "summary": "合并同一公式中每个信号和选择器的身份限制；显式矛盾不可合并。",
           "parameters": [
             {
@@ -45371,7 +45909,7 @@
         {
           "name": "_metric",
           "kind": "function",
-          "line": 103,
+          "line": 112,
           "summary": "静态验证本次请求的信号及原单位，将已检查的表达式树编码为简单数值指令。",
           "parameters": [
             {
@@ -45398,8 +45936,8 @@
         {
           "name": "_compile_plan",
           "kind": "function",
-          "line": 146,
-          "summary": "编译公共静态计划的独立文件任务，仅需加载本计划的 DBC 元数据。",
+          "line": 155,
+          "summary": "将公共分析计划编译为同一会话的多文件执行声明，冻结公式、来源和资源选项。",
           "parameters": [
             {
               "name": "plan",
@@ -45419,7 +45957,7 @@
         {
           "name": "compile_template_plan",
           "kind": "function",
-          "line": 178,
+          "line": 191,
           "summary": "为 batch.template_jobs 展开的一个真实文件编译 fast 任务。",
           "parameters": [
             {
@@ -45446,8 +45984,8 @@
         {
           "name": "compile_config",
           "kind": "function",
-          "line": 205,
-          "summary": "读取配置和导入定义，验证 DBC 与 fast 子集。默认返回可序列化单文件任务。",
+          "line": 218,
+          "summary": "读取配置及导入定义，验证DBC与fast子集，返回可序列化的单会话文件清单和计算定义。",
           "parameters": [
             {
               "name": "path",
@@ -45472,14 +46010,113 @@
     {
       "module": "chronaxis.fast.run",
       "path": "src/chronaxis/fast/run.py",
-      "sha256": "8904e041b06286c3047b597f8358f06e914d181e9d2273e31b1ec66c24d78745",
+      "sha256": "d62c9f948e9e704f602c3fc93580d8f199f83c0b2132b56f7867bacedcda8d6a",
       "exports": [],
       "objects": [
         {
           "name": "run_prepared",
           "kind": "function",
-          "line": 12,
-          "summary": "执行单文件，返回完成清单。批量请求跨文件总量时另返回未舍入指标行。",
+          "line": 11,
+          "summary": "执行冻结会话并最后发布清单。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "dict",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "output",
+              "type": "str | Path",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "engine",
+              "type": "str",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "database",
+              "type": "object | None",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "cancel_event",
+              "type": "object | None",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "_return_rows",
+              "type": "bool",
+              "default": "False",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "work_dir",
+              "type": "str | Path | None",
+              "default": "None",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "run",
+          "kind": "function",
+          "line": 63,
+          "summary": "运行一份fast单会话配置，所有分卷成功后发布汇总。",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "str | Path",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "output",
+              "type": "str | Path",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "int | None",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "work_dir",
+              "type": "str | Path | None",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "cancel_event",
+              "type": "object | None",
+              "default": "None",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.fast.session",
+      "path": "src/chronaxis/fast/session.py",
+      "sha256": "44caa55481f05cfa183d063e99b0b8b2b69518405e6607c70c8d80fa17cb1ea0",
+      "exports": [],
+      "objects": [
+        {
+          "name": "effective_spec",
+          "kind": "function",
+          "line": 25,
+          "summary": "取得不修改原声明的执行视图。",
           "parameters": [
             {
               "name": "spec",
@@ -45488,19 +46125,479 @@
               "kind": "位置或关键字"
             },
             {
-              "name": "output",
+              "name": "process_count",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_worker_process_limit",
+          "kind": "function",
+          "line": 35,
+          "summary": "从已验证的进程上限和文件数取得文件工作进程数，不包含主进程。",
+          "parameters": [
+            {
+              "name": "process_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "file_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "file_specs",
+          "kind": "function",
+          "line": 45,
+          "summary": "展开有限文件声明。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SessionAccumulator",
+          "kind": "class",
+          "line": 53,
+          "summary": "只有主会话持有的标量累计器。计数、目标缺失和帧身份按计算项分别核验。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "SessionAccumulator.__init__",
+          "kind": "function",
+          "line": 56,
+          "summary": "准备累计器。",
+          "parameters": [
+            {
+              "name": "self",
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
             },
             {
-              "name": "engine",
+              "name": "spec",
               "type": "",
               "default": "必填",
-              "kind": "仅关键字"
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SessionAccumulator.consume",
+          "kind": "function",
+          "line": 68,
+          "summary": "按输入顺序逐项相加。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "record",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SessionAccumulator.finish_file",
+          "kind": "function",
+          "line": 76,
+          "summary": "合并已关闭文件的事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "facts",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SessionAccumulator.result",
+          "kind": "function",
+          "line": 96,
+          "summary": "核完整消费后生成业务行。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool",
+          "kind": "class",
+          "line": 111,
+          "summary": "管理有限工作槽及每文件连续块前缀；不在内存保存所有暂存块描述。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "FilePool.__init__",
+          "kind": "function",
+          "line": 114,
+          "summary": "初始化但不启动。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "directory",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "cancel",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "statistics",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.check_cancel",
+          "kind": "function",
+          "line": 133,
+          "summary": "传递外部取消。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.start",
+          "kind": "function",
+          "line": 139,
+          "summary": "预付全部工作槽后启动spawn。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "count",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.assign",
+          "kind": "function",
+          "line": 164,
+          "summary": "按文件声明顺序派发下一文件。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.grant",
+          "kind": "function",
+          "line": 173,
+          "summary": "授权一个完整块的唯一交付路径。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.pump",
+          "kind": "function",
+          "line": 194,
+          "summary": "推进有限控制和数据消息，优先响应所有worker错误。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "blocking",
+              "type": "",
+              "default": "True",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.message",
+          "kind": "function",
+          "line": 226,
+          "summary": "核验工作槽状态及块序号。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "message",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.packet_records",
+          "kind": "function",
+          "line": 265,
+          "summary": "验证块间顺序并展开一块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "packet",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.read_spool",
+          "kind": "function",
+          "line": 282,
+          "summary": "读取并删除一个已提交块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.concatenate",
+          "kind": "function",
+          "line": 297,
+          "summary": "消费当前文件，后续文件同时预读。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "accumulator",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.file_records",
+          "kind": "function",
+          "line": 327,
+          "summary": "逐块读取一个已完整暂存文件。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.time_order",
+          "kind": "function",
+          "line": 337,
+          "summary": "完成必要暂存后k路稳定归并。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "accumulator",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FilePool.close",
+          "kind": "function",
+          "line": 361,
+          "summary": "关闭自有工作树。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "success",
+              "type": "",
+              "default": "False",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "run_session",
+          "kind": "function",
+          "line": 400,
+          "summary": "运行一个连续fast任务。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
             },
             {
               "name": "database",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "work_dir",
               "type": "",
               "default": "None",
               "kind": "仅关键字"
@@ -45512,28 +46609,201 @@
               "kind": "仅关键字"
             },
             {
-              "name": "_return_rows",
+              "name": "statistics",
               "type": "",
-              "default": "False",
+              "default": "None",
               "kind": "仅关键字"
             }
           ],
           "decorators": []
-        },
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.fast.session_worker",
+      "path": "src/chronaxis/fast/session_worker.py",
+      "sha256": "d5314625ddacf9e8a08c30ee98c155486aa4f01c1e41219d73f4f75dd21581de",
+      "exports": [],
+      "objects": [
         {
-          "name": "run",
+          "name": "worker_main",
           "kind": "function",
-          "line": 54,
-          "summary": "读取单文件 Chronaxis 配置并执行，返回该次发布的 manifest 路径。",
+          "line": 15,
+          "summary": "运行父授权的文件任务。",
           "parameters": [
             {
-              "name": "config",
+              "name": "control",
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
             },
             {
-              "name": "output",
+              "name": "data",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "cancel",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.fast.stream",
+      "path": "src/chronaxis/fast/stream.py",
+      "sha256": "a72ab446dfdeb6b4c75e3f04d1c43f0c55eee183fcf16b7cdf7a958cde8d7eb6",
+      "exports": [],
+      "objects": [
+        {
+          "name": "FileContributions",
+          "kind": "class",
+          "line": 16,
+          "summary": "持有一个读取器和有限公式组；同帧仅解码一次，计数按计算项隔离。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "FileContributions.__init__",
+          "kind": "function",
+          "line": 19,
+          "summary": "打开单文件。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "database",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "cancel",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions._measured",
+          "kind": "function",
+          "line": 59,
+          "summary": "仅诊断运行计量解析迭代。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "iterator",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions._selected_time",
+          "kind": "function",
+          "line": 73,
+          "summary": "确定ASC精确时间检查集合。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "frame",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions.__iter__",
+          "kind": "function",
+          "line": 81,
+          "summary": "返回自身。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions.__next__",
+          "kind": "function",
+          "line": 85,
+          "summary": "跳过无关帧并返回一条目标贡献。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions.summary",
+          "kind": "function",
+          "line": 152,
+          "summary": "取得关闭后的文件事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileContributions.close",
+          "kind": "function",
+          "line": 159,
+          "summary": "释放读取器。",
+          "parameters": [
+            {
+              "name": "self",
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
@@ -45547,7 +46817,7 @@
     {
       "module": "chronaxis.fast.totals",
       "path": "src/chronaxis/fast/totals.py",
-      "sha256": "068344c5c52f78e2dcf4e1a7882f83be2bf66b9c53d2f56ec21038a99a6985ee",
+      "sha256": "036b4713055590ab2ce14ac55571afc27aa99ceeca5385da793e7241e74d5fc4",
       "exports": [],
       "objects": [
         {
@@ -45568,7 +46838,7 @@
         {
           "name": "FastTotals",
           "kind": "class",
-          "line": 17,
+          "line": 19,
           "summary": "在开始读文件前冻结可求和的指标，以及这些指标应当来自哪些任务。",
           "fields": [
             {
@@ -45589,7 +46859,7 @@
         {
           "name": "FastTotals.from_specs",
           "kind": "function",
-          "line": 24,
+          "line": 26,
           "summary": "specs 为按模板输入顺序排列的 job_id→fast 声明。返回只读求和计划。",
           "parameters": [
             {
@@ -45618,7 +46888,7 @@
         {
           "name": "FastTotals.finish",
           "kind": "function",
-          "line": 48,
+          "line": 50,
           "summary": "按计算项和方向桶分别求和。失败/取消/未运行任务须显式写为 None。",
           "parameters": [
             {
@@ -52260,7 +53530,7 @@
     {
       "module": "chronaxis.planning.diagnostic_collection",
       "path": "src/chronaxis/planning/diagnostic_collection.py",
-      "sha256": "0ae2d44c48a600678273e7c1f758f77c1f1023e21342dbf1670a9c799664682f",
+      "sha256": "8c97fff7f791e597fbc34005ac3479232d105771a2c2511a113e4942b98dc1c3",
       "exports": [],
       "objects": [
         {
@@ -52360,7 +53630,7 @@
         {
           "name": "DiagnosticCollection.add",
           "kind": "function",
-          "line": 171,
+          "line": 191,
           "summary": "登记唯一错误。",
           "parameters": [
             {
@@ -52381,7 +53651,7 @@
         {
           "name": "DiagnosticCollection.usable",
           "kind": "function",
-          "line": 176,
+          "line": 196,
           "summary": "判断对象是否有结构错误。",
           "parameters": [
             {
@@ -52402,7 +53672,7 @@
         {
           "name": "DiagnosticCollection.block",
           "kind": "function",
-          "line": 181,
+          "line": 201,
           "summary": "记录依赖阻断，避免派生假错误。",
           "parameters": [
             {
@@ -52429,7 +53699,7 @@
         {
           "name": "DiagnosticCollection.stage",
           "kind": "function",
-          "line": 188,
+          "line": 208,
           "summary": "隔离一个有明确依赖的检查。",
           "parameters": [
             {
@@ -52464,7 +53734,7 @@
         {
           "name": "DiagnosticCollection.finish",
           "kind": "function",
-          "line": 205,
+          "line": 225,
           "summary": "有错则统一抛出，不返回残缺计划。",
           "parameters": [
             {
@@ -52477,9 +53747,24 @@
           "decorators": []
         },
         {
+          "name": "DiagnosticCollection.finish.priority",
+          "kind": "function",
+          "line": 229,
+          "summary": "",
+          "parameters": [
+            {
+              "name": "error",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "current_collection",
           "kind": "function",
-          "line": 213,
+          "line": 240,
           "summary": "返回当前构建的集合。",
           "parameters": [],
           "decorators": []
@@ -52487,7 +53772,7 @@
         {
           "name": "collecting",
           "kind": "function",
-          "line": 219,
+          "line": 246,
           "summary": "临时接入本次构建。",
           "parameters": [
             {
@@ -52504,7 +53789,7 @@
         {
           "name": "usable_node",
           "kind": "function",
-          "line": 228,
+          "line": 255,
           "summary": "跳过坏节点且记录名称供依赖判断。",
           "parameters": [
             {
@@ -52525,7 +53810,7 @@
         {
           "name": "collect_node_error",
           "kind": "function",
-          "line": 265,
+          "line": 292,
           "summary": "收集单节点失败；非汇总模式保持原抛出行为。",
           "parameters": [
             {
@@ -52552,7 +53837,7 @@
         {
           "name": "require_expression_dependencies",
           "kind": "function",
-          "line": 280,
+          "line": 307,
           "summary": "遇到已知坏信号只阻断当前表达式。",
           "parameters": [
             {
@@ -52579,7 +53864,7 @@
         {
           "name": "expression_scope",
           "kind": "function",
-          "line": 307,
+          "line": 334,
           "summary": "给单项静态诊断选择真实依赖，避免无关坏派生项遮蔽此项。",
           "parameters": [
             {
@@ -52606,7 +53891,7 @@
         {
           "name": "diagnose_plan",
           "kind": "function",
-          "line": 336,
+          "line": 363,
           "summary": "为计划入口建立唯一诊断上下文。",
           "parameters": [
             {
@@ -52621,7 +53906,7 @@
         {
           "name": "diagnose_plan.checked",
           "kind": "function",
-          "line": 342,
+          "line": 369,
           "summary": "调用一次构建。",
           "parameters": [
             {
@@ -52684,18 +53969,6 @@
             }
           ],
           "expression": "lambda item: item[:3]"
-        },
-        {
-          "line": 209,
-          "parameters": [
-            {
-              "name": "error",
-              "type": "",
-              "default": "必填",
-              "kind": "位置或关键字"
-            }
-          ],
-          "expression": "lambda error: error.code == 'missing_field'"
         }
       ]
     },
@@ -53437,7 +54710,7 @@
     {
       "module": "chronaxis.planning.inputs",
       "path": "src/chronaxis/planning/inputs.py",
-      "sha256": "25b0806d2164424137acbb083c2c13893c4396c46afc5f39498958d5c37a533a",
+      "sha256": "65a9eb479a6a5e983b3797eac6be4f87a34020b14b05290ce732e0300edddfce",
       "exports": [],
       "objects": [
         {
@@ -53464,7 +54737,7 @@
         {
           "name": "parse_signals",
           "kind": "function",
-          "line": 217,
+          "line": 218,
           "summary": "检查原字段到简单别名的转换与有效期声明。",
           "parameters": [
             {
@@ -53926,7 +55199,7 @@
     {
       "module": "chronaxis.planning.models",
       "path": "src/chronaxis/planning/models.py",
-      "sha256": "cc51cfa0e35bb3175423b56ced4d2becd8d71c803937fd4e1d49c21d7fb43938",
+      "sha256": "4936b95958e4d43d44e2bfc018c1889a936ff2d2b3e64d149b976aa2ce956548",
       "exports": [],
       "objects": [
         {
@@ -54518,7 +55791,7 @@
           "name": "ExecutionPlan",
           "kind": "class",
           "line": 338,
-          "summary": "本次分析的资源和读取设置，包括内存上限、分批大小、解码范围以及是否读取完整来源时间。各字段影响哪些工作会执行、怎样限制资源，不替代信号单位和时间基准的配置。完整例子见[运行参数](../execution.md)。",
+          "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、数据不全时的处理方式及文件读取/解码进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。",
           "fields": [
             {
               "name": "backend",
@@ -54561,6 +55834,12 @@
               "type": "str",
               "default": "'error'",
               "description": "首版不丢数据或增加旧扫描。"
+            },
+            {
+              "name": "process_count",
+              "type": "int",
+              "default": "1",
+              "description": "本次分析读取/解码工作进程上限；不包含主分析进程。"
             }
           ],
           "bases": []
@@ -54568,7 +55847,7 @@
         {
           "name": "OutputPlan",
           "kind": "class",
-          "line": 360,
+          "line": 361,
           "summary": "保存新结果表和清单的输出格式声明。",
           "fields": [
             {
@@ -54610,7 +55889,7 @@
     {
       "module": "chronaxis.planning.nodes",
       "path": "src/chronaxis/planning/nodes.py",
-      "sha256": "bbc33d7e8ff59997de59adecf2b1a8e240285ea32d1405faaacb1b0bfd5de5bc",
+      "sha256": "f0c4159b2ba9a77ce174f1a6e4b6822c993af5414013dc1d4ed105e4bc477aed",
       "exports": [],
       "objects": [
         {
@@ -54721,7 +56000,7 @@
         {
           "name": "parse_windows",
           "kind": "function",
-          "line": 186,
+          "line": 187,
           "summary": "检查事件窗口锚点、前后扩展和合并参数，不改变原事件声明。",
           "parameters": [
             {
@@ -54748,7 +56027,7 @@
         {
           "name": "parse_calculations",
           "kind": "function",
-          "line": 263,
+          "line": 264,
           "summary": "检查指标统计范围、信号、条件、单位和覆盖政策。",
           "parameters": [
             {
@@ -54802,7 +56081,7 @@
     {
       "module": "chronaxis.planning.plan",
       "path": "src/chronaxis/planning/plan.py",
-      "sha256": "3e7a511c46280ccc6a1bde8004ed60d24ced61f1baf1bff682e4ef5ed279d9e4",
+      "sha256": "89f214abf3f6d9d40f84f321503828ad677e16336ad931f13b735556de31fe56",
       "exports": [],
       "objects": [
         {
@@ -55047,7 +56326,7 @@
         {
           "name": "load_analysis_plan",
           "kind": "function",
-          "line": 368,
+          "line": 369,
           "summary": "加载JSON/YAML及显式公共定义，应用受限覆盖并编译分析计划。目录输入会展开文件名；信号缺省类型、单位或枚举映射时按需读取DBC，不扫描业务报文。",
           "parameters": [
             {
@@ -55071,7 +56350,7 @@
     {
       "module": "chronaxis.planning.preset_models",
       "path": "src/chronaxis/planning/preset_models.py",
-      "sha256": "3b54da56a12f7c27529f8d33aed8fd7903f77169ce2e0a96fe4a6a78cde239d8",
+      "sha256": "dc0e829e5240fa79d8c963bd8047f0dd98917455d8738da528440fd0f49c384f",
       "exports": [],
       "objects": [
         {
@@ -55419,9 +56698,48 @@
       "lambdas": []
     },
     {
+      "module": "chronaxis.planning.process_execution",
+      "path": "src/chronaxis/planning/process_execution.py",
+      "sha256": "2aca0075e6e2f9229ab2c9fb2411d9c2feba06a3f3aeceaf5600ed2b88af048a",
+      "exports": [],
+      "objects": [
+        {
+          "name": "process_execution_errors",
+          "kind": "function",
+          "line": 11,
+          "summary": "核有效计划的进程与归并声明。",
+          "parameters": [
+            {
+              "name": "plan",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "source_execution_facts",
+          "kind": "function",
+          "line": 34,
+          "summary": "解释文件组织与读取进程上限。",
+          "parameters": [
+            {
+              "name": "plan",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
       "module": "chronaxis.planning.record_execution",
       "path": "src/chronaxis/planning/record_execution.py",
-      "sha256": "259e438f4ac826c217d744f6a1288f159d821fba9aa0ee4aa710d631fa4eb8af",
+      "sha256": "72d46bf650cbdac0331e8c519ee9e1379a6a5ea4b7403dcabb49b3163192bf0a",
       "exports": [],
       "objects": [
         {
@@ -55460,7 +56778,7 @@
     {
       "module": "chronaxis.planning.reports",
       "path": "src/chronaxis/planning/reports.py",
-      "sha256": "c977307f4e3428feb691134b2b29f85d122eab0311f4d5136c112bd4ae032c86",
+      "sha256": "fa2b56fa2523ec178a599172491d2e8ac380c074f2df9ac13f27f60f1d0df891",
       "exports": [],
       "objects": [
         {
@@ -55600,6 +56918,12 @@
               "type": "DiagnosticPlan | None",
               "default": "None",
               "description": "独立诊断开关；声明不证明已执行。"
+            },
+            {
+              "name": "source_execution",
+              "type": "tuple[Mapping, ...]",
+              "default": "()",
+              "description": "每来源文件组织/读取进程上限；不是实际运行进程数。"
             }
           ],
           "bases": []
@@ -55607,7 +56931,7 @@
         {
           "name": "_window_available",
           "kind": "function",
-          "line": 94,
+          "line": 95,
           "summary": "核窗口是否引用当前支持的真实规则、锚点与合并路径。",
           "parameters": [
             {
@@ -55628,7 +56952,7 @@
         {
           "name": "_can_source_available",
           "kind": "function",
-          "line": 110,
+          "line": 111,
           "summary": "核一个带有明确类型的来源是否具有当前单BLF固定profile的声明能力。",
           "parameters": [
             {
@@ -55643,7 +56967,7 @@
         {
           "name": "_static_errors",
           "kind": "function",
-          "line": 123,
+          "line": 124,
           "summary": "依据已构建带有明确类型的声明检查公共执行路径，不重新解析配置或输入。",
           "parameters": [
             {
@@ -55658,7 +56982,7 @@
         {
           "name": "_extension_backend_errors",
           "kind": "function",
-          "line": 243,
+          "line": 244,
           "summary": "检查此次输出实际用到的宿主操作。",
           "parameters": [
             {
@@ -55673,7 +56997,7 @@
         {
           "name": "validate_analysis_plan",
           "kind": "function",
-          "line": 281,
+          "line": 282,
           "summary": "报告静态配置有效性及当前读取、执行和发布能力限制。",
           "parameters": [
             {
@@ -55688,7 +57012,7 @@
         {
           "name": "explain_analysis_plan",
           "kind": "function",
-          "line": 431,
+          "line": 432,
           "summary": "列出计划依赖、各节点计算方式、历史需求和预算声明。",
           "parameters": [
             {
@@ -55931,7 +57255,7 @@
     {
       "module": "chronaxis.planning.text_inputs",
       "path": "src/chronaxis/planning/text_inputs.py",
-      "sha256": "ca0742521a8d32e25112835a9e91a3c1c36207c8b63bac5d0b7ef3ed39d9d7f6",
+      "sha256": "6e5a445bafbda38b941e862c6f4ddc0ea3afdafe822d7cdc3e068e5ea0e6f315",
       "exports": [],
       "objects": [
         {
@@ -59898,13 +61222,13 @@
     {
       "module": "chronaxis.results.manifest",
       "path": "src/chronaxis/results/manifest.py",
-      "sha256": "07fc12bb19a1b6f36ab149c7d019a2319bc525aed0c671f39e04bdc8f8e2a8d2",
+      "sha256": "36bf7ffb02e908c6b6bee3c3dd8e3509be33b5edf155ce29be512926291781f0",
       "exports": [],
       "objects": [
         {
           "name": "RunMetadata",
           "kind": "class",
-          "line": 28,
+          "line": 29,
           "summary": "保存一次运行的身份、实际计算后端、时间解释及诊断摘要。通常从仍打开的AnalysisResult.metadata读取，不需要自行构造。来源明细字段是可选模型：只有调用方提供真实读取明细时才有内容。当前AnalysisRunner没有填充can_sources和text_can_sources，两者保持空元组；这不表示没有读取CAN文件，也不表示DBC已经校验。to_dict的摘要与详细模式见下方方法说明。",
           "fields": [
             {
@@ -59994,8 +61318,8 @@
             {
               "name": "software_version",
               "type": "str",
-              "default": "'0.1.0.dev2'",
-              "description": ""
+              "default": "software_version()",
+              "description": "默认记录当前源码/构建包版本；显式历史身份保持调用值。"
             },
             {
               "name": "device_label",
@@ -60093,7 +61417,7 @@
         {
           "name": "RunMetadata.__post_init__",
           "kind": "function",
-          "line": 72,
+          "line": 73,
           "summary": "验证清单文本与明确会话范围，不访问外部输入。",
           "parameters": [
             {
@@ -60108,7 +61432,7 @@
         {
           "name": "RunMetadata.estimated_bytes",
           "kind": "function",
-          "line": 204,
+          "line": 205,
           "summary": "在asdict/JSON复制前估算元数据与其临时对象开销。",
           "parameters": [
             {
@@ -60123,7 +61447,7 @@
         {
           "name": "RunMetadata.to_dict",
           "kind": "function",
-          "line": 215,
+          "line": 216,
           "summary": "返回独立JSON兼容元数据，调用侧必须先预留estimated_bytes。",
           "parameters": [
             {
@@ -60138,7 +61462,7 @@
         {
           "name": "_metadata_size",
           "kind": "function",
-          "line": 305,
+          "line": 306,
           "summary": "统计已校验元数据树的基础对象大小，不产生转换树。",
           "parameters": [
             {
@@ -60153,7 +61477,7 @@
         {
           "name": "OutputManifest",
           "kind": "class",
-          "line": 332,
+          "line": 333,
           "summary": "保存成功发布目录、清单和固定白名单表行数；legacy只在启用时出现。",
           "fields": [
             {
@@ -60198,7 +61522,7 @@
         {
           "name": "OutputManifest.__post_init__",
           "kind": "function",
-          "line": 342,
+          "line": 343,
           "summary": "校验返回清单身份，不凭构造调用证明目录已发布。",
           "parameters": [
             {
@@ -60213,7 +61537,7 @@
         {
           "name": "ExportManifest",
           "kind": "class",
-          "line": 359,
+          "line": 360,
           "summary": "独立信号或原帧导出的实际输出路径；调用者无需猜测时间文件名。",
           "fields": [
             {
@@ -60240,7 +61564,7 @@
         {
           "name": "ExportManifest.__post_init__",
           "kind": "function",
-          "line": 366,
+          "line": 367,
           "summary": "核对实际路径类型和所属目录。",
           "parameters": [
             {
@@ -64719,7 +66043,7 @@
     {
       "module": "chronaxis.runner",
       "path": "src/chronaxis/runner.py",
-      "sha256": "6b028c4d53915b0301e816346aeb1ef94805e8672e862229e3bc82e4c1674c66",
+      "sha256": "1d0b35dcde038551c811f9842e9c9a182f645c9c3dbb8f52a1da9343b4c6a37d",
       "exports": [],
       "objects": [
         {
@@ -64791,6 +66115,12 @@
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
             }
           ],
           "decorators": []
@@ -64798,7 +66128,7 @@
         {
           "name": "AnalysisRunner.validate",
           "kind": "function",
-          "line": 73,
+          "line": 78,
           "summary": "报告声明是否合法及执行路径是否已接入，不提前读取数据。",
           "parameters": [
             {
@@ -64812,6 +66142,12 @@
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -64819,7 +66155,7 @@
         {
           "name": "AnalysisRunner.explain",
           "kind": "function",
-          "line": 83,
+          "line": 88,
           "summary": "列出真实依赖、各节点后端、历史需求及声明预算，不启动分析。",
           "parameters": [
             {
@@ -64833,6 +66169,12 @@
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -64840,7 +66182,7 @@
         {
           "name": "AnalysisRunner.run",
           "kind": "function",
-          "line": 94,
+          "line": 99,
           "summary": "验证后执行一次真实分析，输入全关才返回独立AnalysisResult。",
           "parameters": [
             {
@@ -64860,6 +66202,12 @@
               "type": "",
               "default": "None",
               "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -64894,7 +66242,7 @@
     {
       "module": "chronaxis.sources.asc",
       "path": "src/chronaxis/sources/asc.py",
-      "sha256": "43dce983df3eaa96aa758b583e0d82a97cb845c4ca9d6ddcb8a046370904b8a7",
+      "sha256": "71341c4d724631551d1a13f1cedf591523cad4f200375ef0baf67f46a76ed2b3",
       "exports": [],
       "objects": [
         {
@@ -65133,7 +66481,7 @@
         {
           "name": "ASCRead.closed",
           "kind": "function",
-          "line": 241,
+          "line": 242,
           "summary": "提供真实关闭状态。",
           "parameters": [
             {
@@ -65150,7 +66498,7 @@
         {
           "name": "ASCRead.last_exact_time",
           "kind": "function",
-          "line": 247,
+          "line": 248,
           "summary": "取得最近参与时间顺序检查的精确秒值，供下一连续文件接续比较。",
           "parameters": [
             {
@@ -65167,7 +66515,7 @@
         {
           "name": "ASCRead.__iter__",
           "kind": "function",
-          "line": 255,
+          "line": 256,
           "summary": "返回本次读取。",
           "parameters": [
             {
@@ -65182,7 +66530,7 @@
         {
           "name": "ASCRead._set_date",
           "kind": "function",
-          "line": 260,
+          "line": 261,
           "summary": "设置段基准。",
           "parameters": [
             {
@@ -65209,7 +66557,7 @@
         {
           "name": "ASCRead._line",
           "kind": "function",
-          "line": 276,
+          "line": 277,
           "summary": "解释一行。",
           "parameters": [
             {
@@ -65230,7 +66578,7 @@
         {
           "name": "ASCRead._check_order",
           "kind": "function",
-          "line": 333,
+          "line": 334,
           "summary": "拒绝所需时间序列回退，包括舍入后相同的亚纳秒回退。",
           "parameters": [
             {
@@ -65251,7 +66599,7 @@
         {
           "name": "ASCRead.__next__",
           "kind": "function",
-          "line": 349,
+          "line": 352,
           "summary": "读取到下一帧或EOF。",
           "parameters": [
             {
@@ -65266,7 +66614,7 @@
         {
           "name": "ASCRead.close",
           "kind": "function",
-          "line": 387,
+          "line": 390,
           "summary": "关闭自有文件再归还预算，可重试。",
           "parameters": [
             {
@@ -65281,7 +66629,7 @@
         {
           "name": "ASCRead.__enter__",
           "kind": "function",
-          "line": 400,
+          "line": 403,
           "summary": "支持显式读取上下文。",
           "parameters": [
             {
@@ -65296,7 +66644,7 @@
         {
           "name": "ASCRead.__exit__",
           "kind": "function",
-          "line": 405,
+          "line": 408,
           "summary": "保留原错并收尾。",
           "parameters": [
             {
@@ -65332,7 +66680,7 @@
     {
       "module": "chronaxis.sources.blf",
       "path": "src/chronaxis/sources/blf.py",
-      "sha256": "076795b48537e36ed7d2a58f3b7afca7a3c1b2e0a6c6bc8c34a90e962c554177",
+      "sha256": "197d52fc65c55314fbcb493da5d8748950b20bfc7a5730c2827dc9420b183b70",
       "exports": [],
       "objects": [
         {
@@ -65426,6 +66774,36 @@
               "type": "",
               "default": "None",
               "kind": "仅关键字"
+            },
+            {
+              "name": "emit_frame_ids",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "channel",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "projection_only",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "time_check_all",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "time_scope",
+              "type": "",
+              "default": "'source'",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -65433,7 +66811,7 @@
         {
           "name": "BLFRead.closed",
           "kind": "function",
-          "line": 57,
+          "line": 70,
           "summary": "返回本层所有文件和费用是否已释放。",
           "parameters": [
             {
@@ -65450,7 +66828,7 @@
         {
           "name": "BLFRead.__iter__",
           "kind": "function",
-          "line": 61,
+          "line": 74,
           "summary": "返回同次迭代器，不重复打开文件。",
           "parameters": [
             {
@@ -65465,7 +66843,7 @@
         {
           "name": "BLFRead.__next__",
           "kind": "function",
-          "line": 65,
+          "line": 78,
           "summary": "读取下一实际帧，先按ID选择再转换；失败保原异常并清理。",
           "parameters": [
             {
@@ -65480,7 +66858,7 @@
         {
           "name": "BLFRead.close",
           "kind": "function",
-          "line": 88,
+          "line": 124,
           "summary": "关闭本次库迭代器和文件再释放费用；失败保留owner以便重试。",
           "parameters": [
             {
@@ -65491,6 +66869,51 @@
             }
           ],
           "decorators": []
+        },
+        {
+          "name": "_UntimedBLFRecord",
+          "kind": "class",
+          "line": 141,
+          "summary": "内部按需消息：保存真实输入身份与载荷，明确没有采集分析时间，禁止原帧导出。",
+          "fields": [
+            {
+              "name": "frame",
+              "type": "object",
+              "default": "必填",
+              "description": ""
+            },
+            {
+              "name": "path",
+              "type": "Path",
+              "default": "必填",
+              "description": ""
+            },
+            {
+              "name": "sequence",
+              "type": "int",
+              "default": "必填",
+              "description": ""
+            },
+            {
+              "name": "time_ns",
+              "type": "None",
+              "default": "None",
+              "description": ""
+            },
+            {
+              "name": "raw_time",
+              "type": "None",
+              "default": "None",
+              "description": ""
+            },
+            {
+              "name": "line_number",
+              "type": "None",
+              "default": "None",
+              "description": ""
+            }
+          ],
+          "bases": []
         }
       ],
       "lambdas": []
@@ -65498,7 +66921,7 @@
     {
       "module": "chronaxis.sources.can_spec",
       "path": "src/chronaxis/sources/can_spec.py",
-      "sha256": "559f5fdadb37bed8ebc0cb0e34305993163f492617d3faa3df0cabb09ea8c341",
+      "sha256": "bd51b142decda6302c67c0ecb774e16d9a5aa25085cfeaaa7ad0dd506b5d5e35",
       "exports": [],
       "objects": [
         {
@@ -65614,6 +67037,12 @@
               "type": "str",
               "default": "'legacy'",
               "description": "新版本默认strict；旧调用保原宽松解码。"
+            },
+            {
+              "name": "file_merge",
+              "type": "str",
+              "default": "'concatenate'",
+              "description": "concatenate按文件顺序；time_order按原时间稳定归并。"
             }
           ],
           "bases": []
@@ -65621,7 +67050,7 @@
         {
           "name": "LegacyCANSpec.input_paths",
           "kind": "function",
-          "line": 72,
+          "line": 73,
           "summary": "取得原序文件。",
           "parameters": [
             {
@@ -65638,7 +67067,7 @@
         {
           "name": "LegacyCANSpec.__post_init__",
           "kind": "function",
-          "line": 76,
+          "line": 77,
           "summary": "检查静态来源约束，路径和时基对象均原样保留。",
           "parameters": [
             {
@@ -65653,7 +67082,7 @@
         {
           "name": "CANSourceRef",
           "kind": "class",
-          "line": 120,
+          "line": 123,
           "summary": "保留一次原yield对应样本的CAN身份，不替代实际绑定或质量检查。",
           "fields": [
             {
@@ -65724,7 +67153,7 @@
         {
           "name": "CANSourceRef.__post_init__",
           "kind": "function",
-          "line": 139,
+          "line": 142,
           "summary": "校验通用身份与完整原定位相等，不访问路径或重新解码。",
           "parameters": [
             {
@@ -65739,7 +67168,7 @@
         {
           "name": "CANSourceRef.evaluation_index",
           "kind": "function",
-          "line": 174,
+          "line": 177,
           "summary": "提供本次原yield位置的只读别名，明确不声称legacy_sum求值流已存在。",
           "parameters": [
             {
@@ -68538,7 +69967,7 @@
     {
       "module": "chronaxis.sources.text_can_decode",
       "path": "src/chronaxis/sources/text_can_decode.py",
-      "sha256": "8e51d320ed65f2bb15c7e317d47a6bc0b4ee255c6a67df1cd6f757afd4f1387d",
+      "sha256": "0ef7008ba7883e2ebb97698ff5e6283ee745b595509dfa3cd9dfc5b881bcf295",
       "exports": [],
       "objects": [
         {
@@ -68567,9 +69996,9 @@
             },
             {
               "name": "raw",
-              "type": "RawCANRecord",
+              "type": "RawCANRecord | _UntimedBLFRecord",
               "default": "必填",
-              "description": "原文件/行/精确时间和原帧字段。"
+              "description": "保留原帧；无时间需求的BLF记录明确不提供时间。"
             },
             {
               "name": "values",
@@ -68710,6 +70139,24 @@
               "type": "",
               "default": "None",
               "kind": "仅关键字"
+            },
+            {
+              "name": "emit_frame_ids",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "blf_time_scope",
+              "type": "",
+              "default": "'source'",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "legacy_blf_decode",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
             }
           ],
           "decorators": []
@@ -68717,7 +70164,7 @@
         {
           "name": "CANTextDecodeRead.closed",
           "kind": "function",
-          "line": 149,
+          "line": 159,
           "summary": "查看本对象负责的资源是否已经全部关闭。",
           "parameters": [
             {
@@ -68734,7 +70181,7 @@
         {
           "name": "CANTextDecodeRead.exhausted",
           "kind": "function",
-          "line": 155,
+          "line": 165,
           "summary": "区别真实全文件EOF与提前close。",
           "parameters": [
             {
@@ -68751,7 +70198,7 @@
         {
           "name": "CANTextDecodeRead.metadata",
           "kind": "function",
-          "line": 161,
+          "line": 171,
           "summary": "取得本次读取使用的DBC及其相关记录。",
           "parameters": [
             {
@@ -68768,7 +70215,7 @@
         {
           "name": "CANTextDecodeRead.prepare_metadata",
           "kind": "function",
-          "line": 168,
+          "line": 178,
           "summary": "只初始化一次DBC，供计算在首帧前取得周期。",
           "parameters": [
             {
@@ -68783,7 +70230,7 @@
         {
           "name": "CANTextDecodeRead._start",
           "kind": "function",
-          "line": 185,
+          "line": 195,
           "summary": "一次加载并核所需定位/单位。",
           "parameters": [
             {
@@ -68798,7 +70245,7 @@
         {
           "name": "CANTextDecodeRead._decode",
           "kind": "function",
-          "line": 236,
+          "line": 248,
           "summary": "给本条原帧分类并按需解码。",
           "parameters": [
             {
@@ -68819,7 +70266,7 @@
         {
           "name": "CANTextDecodeRead.__iter__",
           "kind": "function",
-          "line": 278,
+          "line": 293,
           "summary": "迭代同次读取。",
           "parameters": [
             {
@@ -68834,7 +70281,7 @@
         {
           "name": "CANTextDecodeRead._time_selected",
           "kind": "function",
-          "line": 283,
+          "line": 298,
           "summary": "判断此帧是否属于所需通道与ID；不解码、不改时间。",
           "parameters": [
             {
@@ -68855,8 +70302,23 @@
         {
           "name": "CANTextDecodeRead.__next__",
           "kind": "function",
-          "line": 292,
+          "line": 307,
           "summary": "逐条返回原始报文和本次请求的解码信号值。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "CANTextDecodeRead._blf_observation",
+          "kind": "function",
+          "line": 395,
+          "summary": "接收BLF投影前已核的范围和顺序事实。",
           "parameters": [
             {
               "name": "self",
@@ -68870,7 +70332,7 @@
         {
           "name": "CANTextDecodeRead.close",
           "kind": "function",
-          "line": 365,
+          "line": 411,
           "summary": "关闭自有解析器及DBC状态，可重试。",
           "parameters": [
             {
@@ -68885,7 +70347,7 @@
         {
           "name": "CANTextDecodeRead.__enter__",
           "kind": "function",
-          "line": 383,
+          "line": 429,
           "summary": "建立显式资源上下文。",
           "parameters": [
             {
@@ -68900,7 +70362,7 @@
         {
           "name": "CANTextDecodeRead.__exit__",
           "kind": "function",
-          "line": 388,
+          "line": 434,
           "summary": "保原业务错误并收尾。",
           "parameters": [
             {
@@ -68933,7 +70395,7 @@
         {
           "name": "pack_text_records",
           "kind": "function",
-          "line": 398,
+          "line": 444,
           "summary": "把有限已解码原帧交给现有数值核心，不再次解码或重复DBC缩放。",
           "parameters": [
             {
@@ -69052,7 +70514,7 @@
     {
       "module": "chronaxis.sources.text_can_spec",
       "path": "src/chronaxis/sources/text_can_spec.py",
-      "sha256": "57951bae1f7615f92e3be014e434ca20cb576a8392e37d8880901293ddf4b86a",
+      "sha256": "ebce98a54fc890baf173406cd3827ec88e92a92c50e89a4aeba4aeae3bb69c17",
       "exports": [],
       "objects": [
         {
@@ -69102,6 +70564,12 @@
               "type": "str",
               "default": "'auto'",
               "description": "full检查全部帧时间顺序；auto按实际消费者选择。"
+            },
+            {
+              "name": "file_merge",
+              "type": "str",
+              "default": "'concatenate'",
+              "description": "concatenate按文件顺序；time_order按原时间稳定归并。"
             }
           ],
           "bases": []
@@ -69109,7 +70577,7 @@
         {
           "name": "CANTextSpec.__post_init__",
           "kind": "function",
-          "line": 30,
+          "line": 31,
           "summary": "核声明与支持范围。",
           "parameters": [
             {
@@ -69124,7 +70592,7 @@
         {
           "name": "CANTextSpec.source_type",
           "kind": "function",
-          "line": 50,
+          "line": 53,
           "summary": "区分原始来源。返回can_asc、asc_or_blf或raw_can_csv，不发生I/O。",
           "parameters": [
             {
@@ -69141,7 +70609,7 @@
         {
           "name": "CANTextSpec.offset_ns",
           "kind": "function",
-          "line": 58,
+          "line": 61,
           "summary": "说明本层不再移动解析后时间。",
           "parameters": [
             {

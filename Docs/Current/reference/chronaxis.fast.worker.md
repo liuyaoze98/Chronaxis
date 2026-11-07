@@ -45,7 +45,7 @@ _run_file(packet, directory, cancel)
 |`directory`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。给本次任务独占的结果目录。|
 |`cancel`|multiprocessing.Event|是|无|位置或关键字。由父进程设置的在途任务取消信号。|
 
-源码：[`src/chronaxis/fast/worker.py:9`](../../../src/chronaxis/fast/worker.py#L9)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/worker.py:9`](../../../src/chronaxis/fast/worker.py#L9)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_dbc_digest"></a>
 ## `_dbc_digest`
@@ -62,7 +62,7 @@ _dbc_digest(path)
 |---|---|---|---|---|
 |`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的文件路径。|
 
-源码：[`src/chronaxis/fast/worker.py:40`](../../../src/chronaxis/fast/worker.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/worker.py:40`](../../../src/chronaxis/fast/worker.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-file_response"></a>
 ## `file_response`
@@ -81,4 +81,4 @@ file_response(packet, directory, cancel)
 |`directory`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。给本次任务独占的结果目录。|
 |`cancel`|multiprocessing.Event|是|无|位置或关键字。由父进程设置的在途任务取消信号。|
 
-源码：[`src/chronaxis/fast/worker.py:46`](../../../src/chronaxis/fast/worker.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/worker.py:46`](../../../src/chronaxis/fast/worker.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -50,4 +50,4 @@ integer_numpy(node, args)
 
 ValueError为未知内部节点。分配发生异常时直接交给调用者处理。
 
-源码：[`src/chronaxis/core/expression_integer_numpy.py:12`](../../../src/chronaxis/core/expression_integer_numpy.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_integer_numpy.py:12`](../../../src/chronaxis/core/expression_integer_numpy.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

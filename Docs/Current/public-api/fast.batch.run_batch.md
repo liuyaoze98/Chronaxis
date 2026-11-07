@@ -33,4 +33,4 @@ pathlib.Path：本次批量报告路径。报告可包含失败或未启动任�
 
 [高性能积分器教程](../fast-energy.md)
 
-源码：[`src/chronaxis/fast/batch.py:49`](../../../src/chronaxis/fast/batch.py#L49)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/batch.py:51`](../../../src/chronaxis/fast/batch.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

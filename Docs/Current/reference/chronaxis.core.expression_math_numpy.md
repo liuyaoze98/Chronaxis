@@ -50,4 +50,4 @@ math_numpy(name, args)
 
 ValueError为内部未注册名称。内存分配异常直接传播。
 
-源码：[`src/chronaxis/core/expression_math_numpy.py:12`](../../../src/chronaxis/core/expression_math_numpy.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_math_numpy.py:12`](../../../src/chronaxis/core/expression_math_numpy.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

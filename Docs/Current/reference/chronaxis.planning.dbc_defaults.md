@@ -51,7 +51,7 @@ scoped_dbc_cache()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:19`](../../../src/chronaxis/planning/dbc_defaults.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:19`](../../../src/chronaxis/planning/dbc_defaults.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-load_dbc"></a>
 ## `load_dbc`
@@ -68,7 +68,7 @@ load_dbc(path)
 |---|---|---|---|---|
 |`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的文件路径。|
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:31`](../../../src/chronaxis/planning/dbc_defaults.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:31`](../../../src/chronaxis/planning/dbc_defaults.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-requested_enum_codes"></a>
 ## `requested_enum_codes`
@@ -93,7 +93,7 @@ requested_enum_codes(config)
 
 完整语法诊断由稍后的统一编译器报告。
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:43`](../../../src/chronaxis/planning/dbc_defaults.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:43`](../../../src/chronaxis/planning/dbc_defaults.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_numeric_dtype"></a>
 ## `_numeric_dtype`
@@ -118,7 +118,7 @@ float64、int64或uint64文本。
 
 ValueError为缩放后整数不能用64位类型表示。
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:89`](../../../src/chronaxis/planning/dbc_defaults.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:89`](../../../src/chronaxis/planning/dbc_defaults.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_enum_choices"></a>
 ## `_enum_choices`
@@ -143,7 +143,7 @@ _enum_choices(signal)
 
 ValueError为缺少枚举、解码码值含小数或标签为空。
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:108`](../../../src/chronaxis/planning/dbc_defaults.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:108`](../../../src/chronaxis/planning/dbc_defaults.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DBCDefaults"></a>
 ## `DBCDefaults`
@@ -155,7 +155,7 @@ DBCDefaults()
 ```
 
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:130`](../../../src/chronaxis/planning/dbc_defaults.py#L130)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:130`](../../../src/chronaxis/planning/dbc_defaults.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DBCDefaults-__init__"></a>
 ### `DBCDefaults.__init__`
@@ -181,7 +181,7 @@ None。
 
 内存分配错误传播。
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:132`](../../../src/chronaxis/planning/dbc_defaults.py#L132)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:132`](../../../src/chronaxis/planning/dbc_defaults.py#L132)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DBCDefaults-fill"></a>
 ### `DBCDefaults.fill`
@@ -211,4 +211,4 @@ DBCDefaults.fill(raw, config, field, path, *, config_version=4, need_code=False)
 
 PlanValidationError为缺项、歧义、读取或依赖错误。
 
-源码：[`src/chronaxis/planning/dbc_defaults.py:140`](../../../src/chronaxis/planning/dbc_defaults.py#L140)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/dbc_defaults.py:140`](../../../src/chronaxis/planning/dbc_defaults.py#L140)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

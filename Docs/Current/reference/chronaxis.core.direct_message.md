@@ -53,7 +53,7 @@ _text(value, name, *, identifier=False)
 
 原类型/文本错误。
 
-源码：[`src/chronaxis/core/direct_message.py:19`](../../../src/chronaxis/core/direct_message.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:19`](../../../src/chronaxis/core/direct_message.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_sha"></a>
 ## `_sha`
@@ -79,7 +79,7 @@ _sha(value, name)
 
 类型/格式错误。
 
-源码：[`src/chronaxis/core/direct_message.py:26`](../../../src/chronaxis/core/direct_message.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:26`](../../../src/chronaxis/core/direct_message.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DirectMessageEvidence"></a>
 ## `DirectMessageEvidence`
@@ -116,7 +116,7 @@ class DirectMessageEvidence
 |`evidence_kind`|str|否|'can-direct-scan-v1'|与消息仓证据完全独立的固定版本。|
 |`identity`|str|不填写|构造时计算|全字段版本化SHA，含本次read UUID。|
 
-源码：[`src/chronaxis/core/direct_message.py:34`](../../../src/chronaxis/core/direct_message.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:34`](../../../src/chronaxis/core/direct_message.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DirectMessageEvidence-__post_init__"></a>
 ### `DirectMessageEvidence.__post_init__`
@@ -143,7 +143,7 @@ None，时间规范为原生int，identity为全字段SHA。
 TypeError/ValueError为结构矛盾；时间越界、编码及取消错误原样传播。
 执行工厂还须核同scan/read/request及预算归属；此模型不开放假历史字段。
 
-源码：[`src/chronaxis/core/direct_message.py:59`](../../../src/chronaxis/core/direct_message.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:59`](../../../src/chronaxis/core/direct_message.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DirectMessageInputEvidence"></a>
 ## `DirectMessageInputEvidence`
@@ -186,7 +186,7 @@ class DirectMessageInputEvidence
 |`evidence_kind`|str|否|'can-direct-input-v2'|与旧信号流及消息历史证据不同的版本。|
 |`identity`|str|不填写|构造时计算|全部字段及版本的SHA，包含本次read UUID。|
 
-源码：[`src/chronaxis/core/direct_message.py:126`](../../../src/chronaxis/core/direct_message.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:126`](../../../src/chronaxis/core/direct_message.py#L126)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DirectMessageInputEvidence-__post_init__"></a>
 ### `DirectMessageInputEvidence.__post_init__`
@@ -213,7 +213,7 @@ None；时间规范为原生int，identity写入全字段版本化SHA。
 TypeError/ValueError为结构矛盾，时间溢出、编码或取消错误原样传播。
 无文件或进程操作；SHA文本合法不等于此构造器认证了实际输入内容。
 
-源码：[`src/chronaxis/core/direct_message.py:158`](../../../src/chronaxis/core/direct_message.py#L158)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:158`](../../../src/chronaxis/core/direct_message.py#L158)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DemandMessageInputEvidence"></a>
 ## `DemandMessageInputEvidence`
@@ -258,7 +258,7 @@ class DemandMessageInputEvidence
 |`evidence_kind`|str|否|'can-demand-input-v1'|与旧信号流及消息历史证据不同的版本。|
 |`identity`|str|不填写|构造时计算|全部字段及版本的SHA，包含本次read UUID。|
 
-源码：[`src/chronaxis/core/direct_message.py:244`](../../../src/chronaxis/core/direct_message.py#L244)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:244`](../../../src/chronaxis/core/direct_message.py#L244)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DemandMessageInputEvidence-__post_init__"></a>
 ### `DemandMessageInputEvidence.__post_init__`
@@ -285,4 +285,4 @@ None；时间规范为原生int，identity写入全字段版本化SHA。
 TypeError/ValueError为结构矛盾，时间溢出、编码或取消错误原样传播。
 无文件或进程操作；SHA文本合法不等于此构造器认证了实际输入内容。
 
-源码：[`src/chronaxis/core/direct_message.py:278`](../../../src/chronaxis/core/direct_message.py#L278)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/direct_message.py:278`](../../../src/chronaxis/core/direct_message.py#L278)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -129,6 +129,10 @@
           "title": "Execution settings"
         },
         {
+          "path": "continuous-files.md",
+          "title": "Continuous-file multiprocessing"
+        },
+        {
           "path": "batch.md",
           "title": "Batch tasks"
         },

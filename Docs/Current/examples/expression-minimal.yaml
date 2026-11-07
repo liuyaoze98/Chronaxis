@@ -28,3 +28,5 @@ calculations:                                  # 列出希望获得的统计或�
   - name: maximum_power                        # 为这项计算结果取唯一名称；结果表用它区分计算项
     operation: sample_maximum                  # 选择计算方法；本例取范围内有效真实样本的最大值
     expr: power                                # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+execution:                                     # 设置本次分析的并行处理方式
+  process_count: 4                             # 最多4个文件工作进程；实际并行数不超过输入文件数

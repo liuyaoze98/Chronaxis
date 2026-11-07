@@ -338,7 +338,7 @@ class TextCANPublicTests(unittest.TestCase):
         """
         parser=self.asc('0 1 100 Rx d 2 01 05\n1 1 100 Rx d 2 03 06\n2 1 100 Rx d 2 01 07\n3 1 777 Rx d 1 ff\n')
         config=self.config(parser)
-        config['rules']=[dict(name='active',rule_type='condition_duration',condition='voltage > 5',minimum_duration='0s')]
+        config['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='voltage > 5',minimum_duration='0s')]
         config['windows']=[dict(name='alarm',rule='active',anchor='activity',pre='0s',post='0s',merge='none')]
         config['outputs']={'signal_csv':{'signals':['voltage'],'scope':'segments','window':'alarm'},
             'can_frames':{'source':'bus','format':'asc','scope':'segments','window':'alarm'}}

@@ -155,7 +155,7 @@ class StartEndRunnerTests(unittest.TestCase):
 
     def test_one_scan_publication_and_old_rules_coexist(self):
         """双条件共用一次来源扫描，发布保timeout且旧规则可并用。参数: 无。返回: None。异常: 断言失败。"""
-        raw=start_end_config();raw['rules'].append(dict(name='old',rule_type='condition_duration',condition='begin > 0',minimum_duration='0ns'))
+        raw=start_end_config();raw['rules'].append(dict(name='old',rule_type='condition_duration', duration_comparison='>=',condition='begin > 0',minimum_duration='0ns'))
         scans=[];original=BudgetedMemorySourceAdapter.iter_batches
         def batches(owner,*args,**kwargs):
             """捕获扫描而不替换数据。参数: 原调用参数。返回: 原游标。异常: 原异常。"""

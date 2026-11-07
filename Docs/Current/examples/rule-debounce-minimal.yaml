@@ -19,3 +19,5 @@ rules:                                            # 列出识别活动或瞬间�
   - condition: button_pressed                     # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     name: detected                                # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: debounce                           # 选择进入/退出状态的稳定等待规则；本例省略两项等待，默认均为0s，不增加额外确认等待
+execution:                                        # 设置本次分析的并行处理方式
+  process_count: 4                                # 最多4个文件工作进程；实际并行数不超过输入文件数

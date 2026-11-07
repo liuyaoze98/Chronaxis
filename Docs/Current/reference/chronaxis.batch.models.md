@@ -55,7 +55,7 @@ class Closable(Protocol)
 继承关系：Protocol。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/batch/models.py:16`](../../../src/chronaxis/batch/models.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:16`](../../../src/chronaxis/batch/models.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-Closable-close"></a>
 ### `Closable.close`
@@ -83,7 +83,7 @@ Closable.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/batch/models.py:19`](../../../src/chronaxis/batch/models.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:19`](../../../src/chronaxis/batch/models.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CleanupHandle"></a>
 ## `CleanupHandle`
@@ -95,7 +95,7 @@ CleanupHandle(owner: Closable)
 ```
 
 
-源码：[`src/chronaxis/batch/models.py:24`](../../../src/chronaxis/batch/models.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:24`](../../../src/chronaxis/batch/models.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CleanupHandle-__init__"></a>
 ### `CleanupHandle.__init__`
@@ -120,7 +120,7 @@ CleanupHandle.__init__(owner: Closable)
 
 无。
 
-源码：[`src/chronaxis/batch/models.py:27`](../../../src/chronaxis/batch/models.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:27`](../../../src/chronaxis/batch/models.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CleanupHandle-closed"></a>
 ### `CleanupHandle.closed`
@@ -150,7 +150,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/batch/models.py:32`](../../../src/chronaxis/batch/models.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:32`](../../../src/chronaxis/batch/models.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CleanupHandle-close"></a>
 ### `CleanupHandle.close`
@@ -178,7 +178,7 @@ CleanupHandle.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/batch/models.py:36`](../../../src/chronaxis/batch/models.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:36`](../../../src/chronaxis/batch/models.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchJob"></a>
 ## `BatchJob`
@@ -196,7 +196,7 @@ BatchJob(job_id: str, plan: chronaxis.planning.plan.AnalysisPlan | pathlib.Path)
 |`job_id`|str|是|无|设置批量内唯一任务名称，例如test_a；用于结果目录及报告定位，不能与其他任务仅大小写不同。|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan) &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|提供待运行的AnalysisPlan或pathlib.Path，例如Path("analysis.yaml")；直接构造BatchJob时不能传裸字符串。路径在任务真正启动时加载。|
 
-源码：[`src/chronaxis/batch/models.py:44`](../../../src/chronaxis/batch/models.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:44`](../../../src/chronaxis/batch/models.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchJob-__post_init__"></a>
 ### `BatchJob.__post_init__`
@@ -226,7 +226,7 @@ BatchJob.__post_init__()
 
 - `TypeError`：BatchJob.plan需要AnalysisPlan或Path。
 
-源码：[`src/chronaxis/batch/models.py:50`](../../../src/chronaxis/batch/models.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:50`](../../../src/chronaxis/batch/models.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchPlan"></a>
 ## `BatchPlan`
@@ -246,7 +246,7 @@ BatchPlan(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int 
 |`fail_fast`|bool|否|False|控制某任务失败后的调度：False继续其他独立任务；True停止提交新任务，已运行任务按批量执行器的取消流程收尾。|
 |`backend`|str &#124; None|否|None|`"reference"`使用独立参考计算，`"numpy"`使用NumPy数组计算。None沿用计划的设置。|
 
-源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchPlan-__post_init__"></a>
 ### `BatchPlan.__post_init__`
@@ -280,7 +280,7 @@ BatchPlan.__post_init__()
 - `TypeError`：fail_fast需要bool。
 - `ValueError`：backend需要reference、numpy或null。
 
-源码：[`src/chronaxis/batch/models.py:66`](../../../src/chronaxis/batch/models.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:66`](../../../src/chronaxis/batch/models.py#L66)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchPlan-from_dict"></a>
 ### `BatchPlan.from_dict`
@@ -308,7 +308,7 @@ BatchPlan.from_dict(config, *, base_dir=None)
 
 PlanValidationError定位非法字段、重名、缺少模板输入或来源歧义。jobs可为空；jobs只保留计划路径，template会读取模板、展开文件集合并按需读取DBC元数据，不扫描业务报文。
 
-源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchJobResult"></a>
 ## `BatchJobResult`
@@ -342,7 +342,7 @@ BatchJobResult(job_id: str, status: str, plan_path: str | None = None, plan_iden
 |`worker_pid`|int &#124; None|否|None|实际执行此任务的分析工作进程PID；未启动的任务为None。复用同一进程的任务可具有相同PID。|
 |`recovery`|[CleanupHandle](chronaxis.batch.models.md#api-CleanupHandle) &#124; None|否|None|关闭失败后保留的CleanupHandle；调用close()重试释放资源，正常关闭时为None；不写入JSON。|
 
-源码：[`src/chronaxis/batch/models.py:136`](../../../src/chronaxis/batch/models.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:136`](../../../src/chronaxis/batch/models.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchJobResult-__post_init__"></a>
 ### `BatchJobResult.__post_init__`
@@ -373,7 +373,7 @@ BatchJobResult.__post_init__()
 - `ValueError`：批量任务状态无效。
 - `ValueError`：completed需要实际发布目录及运行身份。
 
-源码：[`src/chronaxis/batch/models.py:158`](../../../src/chronaxis/batch/models.py#L158)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:158`](../../../src/chronaxis/batch/models.py#L158)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchJobResult-to_dict"></a>
 ### `BatchJobResult.to_dict`
@@ -401,7 +401,7 @@ JSON对象。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/models.py:165`](../../../src/chronaxis/batch/models.py#L165)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:165`](../../../src/chronaxis/batch/models.py#L165)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport"></a>
 ## `BatchReport`
@@ -427,7 +427,7 @@ BatchReport(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJo
 |`report_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|已发布的实际批量报告路径；BatchRunner.run尚未写报告时为None，run_batch写完报告后提供。|
 |`_publication`|object|否|None|持有本批名称，关闭释放。|
 
-源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-status"></a>
 ### `BatchReport.status`
@@ -457,7 +457,7 @@ failed/cancelled/completed。
 
 返回类型：str。
 
-源码：[`src/chronaxis/batch/models.py:194`](../../../src/chronaxis/batch/models.py#L194)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:194`](../../../src/chronaxis/batch/models.py#L194)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-to_dict"></a>
 ### `BatchReport.to_dict`
@@ -485,7 +485,7 @@ JSON对象。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/models.py:200`](../../../src/chronaxis/batch/models.py#L200)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:200`](../../../src/chronaxis/batch/models.py#L200)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-close"></a>
 ### `BatchReport.close`
@@ -513,4 +513,4 @@ BatchReport.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/batch/models.py:211`](../../../src/chronaxis/batch/models.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:211`](../../../src/chronaxis/batch/models.py#L211)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

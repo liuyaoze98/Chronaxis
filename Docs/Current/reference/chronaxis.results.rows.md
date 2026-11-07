@@ -56,7 +56,7 @@ TypeError为未注册类型。
 
 返回类型：str。
 
-源码：[`src/chronaxis/results/rows.py:13`](../../../src/chronaxis/results/rows.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/rows.py:13`](../../../src/chronaxis/results/rows.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-row_sort_key"></a>
 ## `row_sort_key`
@@ -83,4 +83,4 @@ TypeError为非法行；不在这里排序或重复原数据读取。
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/results/rows.py:29`](../../../src/chronaxis/results/rows.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/rows.py:29`](../../../src/chronaxis/results/rows.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

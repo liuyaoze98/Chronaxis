@@ -58,7 +58,7 @@ class ThresholdDurationMetadata
 |`known_active_duration_ns`|int|是|无|已知报警区间的准确整数纳秒和。|
 |`known_duration_ns`|int|是|无|已知报警或未报警的总纳秒。|
 
-源码：[`src/chronaxis/results/threshold_metadata.py:15`](../../../src/chronaxis/results/threshold_metadata.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:15`](../../../src/chronaxis/results/threshold_metadata.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-__post_init__"></a>
 ### `ThresholdDurationMetadata.__post_init__`
@@ -91,7 +91,7 @@ TypeError/ValueError为身份、范围或计数矛盾。
 - `ValueError`：报警/已知时长不得超过实际观测范围。
 - `TypeError`：阈值汇总端点须原生整数纳秒。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:25`](../../../src/chronaxis/results/threshold_metadata.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:25`](../../../src/chronaxis/results/threshold_metadata.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-observed_duration_ns"></a>
 ### `ThresholdDurationMetadata.observed_duration_ns`
@@ -119,7 +119,7 @@ int纳秒。
 
 无。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:44`](../../../src/chronaxis/results/threshold_metadata.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:44`](../../../src/chronaxis/results/threshold_metadata.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-unknown_duration_ns"></a>
 ### `ThresholdDurationMetadata.unknown_duration_ns`
@@ -147,7 +147,7 @@ int纳秒。
 
 无。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:49`](../../../src/chronaxis/results/threshold_metadata.py#L49)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:49`](../../../src/chronaxis/results/threshold_metadata.py#L49)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-total_duration_ns"></a>
 ### `ThresholdDurationMetadata.total_duration_ns`
@@ -175,7 +175,7 @@ int或None。
 
 无。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:54`](../../../src/chronaxis/results/threshold_metadata.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:54`](../../../src/chronaxis/results/threshold_metadata.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-status"></a>
 ### `ThresholdDurationMetadata.status`
@@ -203,7 +203,7 @@ ThresholdDurationMetadata.status
 
 无。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:59`](../../../src/chronaxis/results/threshold_metadata.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:59`](../../../src/chronaxis/results/threshold_metadata.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ThresholdDurationMetadata-to_dict"></a>
 ### `ThresholdDurationMetadata.to_dict`
@@ -229,7 +229,7 @@ ThresholdDurationMetadata.to_dict()
 
 无；调用方在复制前预付元数据费用。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:67`](../../../src/chronaxis/results/threshold_metadata.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:67`](../../../src/chronaxis/results/threshold_metadata.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SummaryThresholdDuration"></a>
 ## `SummaryThresholdDuration`
@@ -250,7 +250,7 @@ class SummaryThresholdDuration
 |`status`|str|是|无|读取可用性：complete为全程可判断；partial为部分时段未知但有已知部分；indeterminate为有观测但状态全未知；no_observation为没有可统计时段。|
 |`unit`|str|否|'s'|读取数值单位，固定为s；value不使用纳秒，也不能填写W或J。|
 
-源码：[`src/chronaxis/results/threshold_metadata.py:82`](../../../src/chronaxis/results/threshold_metadata.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:82`](../../../src/chronaxis/results/threshold_metadata.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SummaryThresholdDuration-__post_init__"></a>
 ### `SummaryThresholdDuration.__post_init__`
@@ -276,7 +276,7 @@ None。
 
 非法身份/数值/状态。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:91`](../../../src/chronaxis/results/threshold_metadata.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:91`](../../../src/chronaxis/results/threshold_metadata.py#L91)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SummaryThresholdDuration-to_dict"></a>
 ### `SummaryThresholdDuration.to_dict`
@@ -302,4 +302,4 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/results/threshold_metadata.py:102`](../../../src/chronaxis/results/threshold_metadata.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/threshold_metadata.py:102`](../../../src/chronaxis/results/threshold_metadata.py#L102)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

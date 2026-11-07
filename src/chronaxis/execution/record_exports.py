@@ -81,7 +81,7 @@ class RecordExports:
             else:
                 context=cursor._dbc_context
                 if context is None:raise ValueError('报文重采样缺同次编码定义')
-                if cursor.source_kind=='can_blf':
+                if cursor.legacy_frame_storage:
                     source=next(s for s in self._plan.sources if s.name==option.source)
                     try:
                         self._reader=LegacyFrameSamples(store,cursor._message_store,context,self._budget,

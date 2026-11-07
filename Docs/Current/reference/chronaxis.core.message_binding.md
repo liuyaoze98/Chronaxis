@@ -93,7 +93,7 @@ _hash_parts(parts: tuple[str, ...]) -> str
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/message_binding.py:30`](../../../src/chronaxis/core/message_binding.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:30`](../../../src/chronaxis/core/message_binding.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ExpressionParameter"></a>
 ## `ExpressionParameter`
@@ -117,7 +117,7 @@ class ExpressionParameter
 |`config_version`|int|否|4|参数与绑定同版本，默认使用当前规则。|
 |`unit_status`|str|不填写|构造时计算|`"verified"`表示单位及换算关系已通过程序的单位表检查；`"unverified"`表示使用未登记的单位文字，程序未验证其物理换算关系。|
 
-源码：[`src/chronaxis/core/message_binding.py:56`](../../../src/chronaxis/core/message_binding.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:56`](../../../src/chronaxis/core/message_binding.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ExpressionParameter-__post_init__"></a>
 ### `ExpressionParameter.__post_init__`
@@ -152,7 +152,7 @@ TypeError为非原生数值；ValueError为非有限、有损整数或声明非�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:69`](../../../src/chronaxis/core/message_binding.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:69`](../../../src/chronaxis/core/message_binding.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ExpressionParameter-dtype"></a>
 ### `ExpressionParameter.dtype`
@@ -182,7 +182,7 @@ FLOAT64；
 
 返回类型：[SignalDType](chronaxis.core.types.md#api-SignalDType)。
 
-源码：[`src/chronaxis/core/message_binding.py:96`](../../../src/chronaxis/core/message_binding.py#L96)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:96`](../../../src/chronaxis/core/message_binding.py#L96)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations"></a>
 ## `MessageDeclarations`
@@ -209,7 +209,7 @@ class MessageDeclarations
 |`config_version`|int &#124; None|否|None|继承原声明，参数必须同版。|
 |`identity`|str|不填写|构造时计算|完整原配置与消息配置的独立声明SHA。|
 
-源码：[`src/chronaxis/core/message_binding.py:102`](../../../src/chronaxis/core/message_binding.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:102`](../../../src/chronaxis/core/message_binding.py#L102)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-__post_init__"></a>
 ### `MessageDeclarations.__post_init__`
@@ -246,7 +246,7 @@ TypeError为模型/容器错误；ValueError为来源、名称或policy冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:118`](../../../src/chronaxis/core/message_binding.py#L118)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:118`](../../../src/chronaxis/core/message_binding.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-extensions"></a>
 ### `MessageDeclarations.extensions`
@@ -274,7 +274,7 @@ MessageDeclarations.extensions
 
 无。
 
-源码：[`src/chronaxis/core/message_binding.py:172`](../../../src/chronaxis/core/message_binding.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:172`](../../../src/chronaxis/core/message_binding.py#L172)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-lookups"></a>
 ### `MessageDeclarations.lookups`
@@ -302,7 +302,7 @@ MessageDeclarations.lookups
 
 无。
 
-源码：[`src/chronaxis/core/message_binding.py:177`](../../../src/chronaxis/core/message_binding.py#L177)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:177`](../../../src/chronaxis/core/message_binding.py#L177)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-signals"></a>
 ### `MessageDeclarations.signals`
@@ -332,7 +332,7 @@ tuple；
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/message_binding.py:182`](../../../src/chronaxis/core/message_binding.py#L182)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:182`](../../../src/chronaxis/core/message_binding.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-resolve"></a>
 ### `MessageDeclarations.resolve`
@@ -359,7 +359,7 @@ ValueError为未知、其他来源或非法名称；不从点号猜测原字段�
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/message_binding.py:186`](../../../src/chronaxis/core/message_binding.py#L186)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:186`](../../../src/chronaxis/core/message_binding.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageDeclarations-require_synchronized"></a>
 ### `MessageDeclarations.require_synchronized`
@@ -390,7 +390,7 @@ TypeError为容器错误；ValueError为非本来源或未知依赖。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:198`](../../../src/chronaxis/core/message_binding.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:198`](../../../src/chronaxis/core/message_binding.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageSourceEvidence"></a>
 ## `MessageSourceEvidence`
@@ -417,7 +417,7 @@ class MessageSourceEvidence
 |`first_time_ns`|int &#124; None|是|无|全仓首条映射坐标，空仓为None。|
 |`last_time_ns`|int &#124; None|是|无|全仓最后坐标，不补采样周期。|
 
-源码：[`src/chronaxis/core/message_binding.py:212`](../../../src/chronaxis/core/message_binding.py#L212)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:212`](../../../src/chronaxis/core/message_binding.py#L212)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageSourceEvidence-__post_init__"></a>
 ### `MessageSourceEvidence.__post_init__`
@@ -455,7 +455,7 @@ TypeError/ValueError为类型、SHA、条数或首末矛盾；时间超界原样
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:228`](../../../src/chronaxis/core/message_binding.py#L228)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:228`](../../../src/chronaxis/core/message_binding.py#L228)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings"></a>
 ## `MessageBindings`
@@ -478,7 +478,7 @@ class MessageBindings
 |`config_version`|int &#124; None|否|None|继承消息声明，不允许运行时切换。|
 |`identity`|str|不填写|构造时计算|独立message-binding-v1身份。|
 
-源码：[`src/chronaxis/core/message_binding.py:264`](../../../src/chronaxis/core/message_binding.py#L264)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:264`](../../../src/chronaxis/core/message_binding.py#L264)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-__post_init__"></a>
 ### `MessageBindings.__post_init__`
@@ -511,7 +511,7 @@ TypeError为模型错误；ValueError为来源/会话不符；编码或取消原
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:276`](../../../src/chronaxis/core/message_binding.py#L276)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:276`](../../../src/chronaxis/core/message_binding.py#L276)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-extensions"></a>
 ### `MessageBindings.extensions`
@@ -539,7 +539,7 @@ MessageBindings.extensions
 
 无。
 
-源码：[`src/chronaxis/core/message_binding.py:307`](../../../src/chronaxis/core/message_binding.py#L307)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:307`](../../../src/chronaxis/core/message_binding.py#L307)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-lookups"></a>
 ### `MessageBindings.lookups`
@@ -567,7 +567,7 @@ MessageBindings.lookups
 
 无。
 
-源码：[`src/chronaxis/core/message_binding.py:312`](../../../src/chronaxis/core/message_binding.py#L312)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:312`](../../../src/chronaxis/core/message_binding.py#L312)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-signals"></a>
 ### `MessageBindings.signals`
@@ -597,7 +597,7 @@ tuple；
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/message_binding.py:317`](../../../src/chronaxis/core/message_binding.py#L317)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:317`](../../../src/chronaxis/core/message_binding.py#L317)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-parameters"></a>
 ### `MessageBindings.parameters`
@@ -627,7 +627,7 @@ tuple；
 
 返回类型：tuple[[ExpressionParameter](chronaxis.core.message_binding.md#api-ExpressionParameter), ...]。
 
-源码：[`src/chronaxis/core/message_binding.py:322`](../../../src/chronaxis/core/message_binding.py#L322)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:322`](../../../src/chronaxis/core/message_binding.py#L322)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-derived_names"></a>
 ### `MessageBindings.derived_names`
@@ -657,7 +657,7 @@ tuple；
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/core/message_binding.py:327`](../../../src/chronaxis/core/message_binding.py#L327)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:327`](../../../src/chronaxis/core/message_binding.py#L327)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-resolve"></a>
 ### `MessageBindings.resolve`
@@ -684,7 +684,7 @@ ValueError为非法、未知或其他来源名称。
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/message_binding.py:331`](../../../src/chronaxis/core/message_binding.py#L331)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:331`](../../../src/chronaxis/core/message_binding.py#L331)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-MessageBindings-require_synchronized"></a>
 ### `MessageBindings.require_synchronized`
@@ -711,4 +711,4 @@ TypeError/ValueError为容器或非本来源依赖。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/message_binding.py:339`](../../../src/chronaxis/core/message_binding.py#L339)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/message_binding.py:339`](../../../src/chronaxis/core/message_binding.py#L339)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

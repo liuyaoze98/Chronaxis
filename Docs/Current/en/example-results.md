@@ -4,7 +4,7 @@
 
 > These results come from actual runs of bundled synthetic data. They are not expected values for other logs.
 
-This page covers 74 runnable YAML configurations (including two batch plans) and two JSON configurations. Two teaching base files and one shared-definitions file are not standalone tasks and are listed separately at the end.
+This page covers 76 runnable YAML configurations (including two batch plans) and two JSON configurations. Two teaching base files and one shared-definitions file are not standalone tasks and are listed separately at the end.
 
 Run commands from the shared `examples` directory; output directories can be reused with timestamped filenames. Ordinary examples use readable Chinese CSV by default: exact seconds, metrics joined by interval, and individual statuses/explanations. Explicit CSV/JSONL exchange formats and frame/signal exports retain their own layouts. A blank is not zero.
 
@@ -28,6 +28,8 @@ The result tables below retain the software's actual Chinese headers and values.
 |[calculation-operations.yaml](../examples/calculation-operations.yaml)|Statistics, integration, and selection|[Tables and explanation](#calculation-operations-yaml)|
 |[can-joint-analysis.yaml](../examples/can-joint-analysis.yaml)|Combine CAN with an independent current table|[Tables and explanation](#can-joint-analysis-yaml)|
 |[conditional-energy.yaml](../examples/conditional-energy.yaml)|Integrate after a sustained condition|[Tables and explanation](#conditional-energy-yaml)|
+|[continuous-parallel.yaml](../examples/continuous-parallel.yaml)|Read multipart logs as one continuous session|[Tables and explanation](#continuous-parallel-yaml)|
+|[continuous-time-order.yaml](../examples/continuous-time-order.yaml)|Read multipart logs as one continuous session|[Tables and explanation](#continuous-time-order-yaml)|
 |[dual-grid.yaml](../examples/dual-grid.yaml)|Original CAN and reconstructed-grid exports|[Tables and explanation](#dual-grid-yaml)|
 |[execution-comparison.json](../examples/execution-comparison.json)|Insufficient observation|[Tables and explanation](#execution-comparison-json)|
 |[execution-diagnostics.yaml](../examples/execution-diagnostics.yaml)|Explicit input tracing|[Tables and explanation](#execution-diagnostics-yaml)|
@@ -238,7 +240,7 @@ Purpose: One independent job. Configuration: [Download](../examples/batch-minima
 chronaxis batch run batch-minimal.yaml --output result-batch-minimal-yaml
 ```
 
-Why these results: job_1 runs analysis.yaml independently and obtains 38 J, 6 W, and 38/6 W. Check completed under jobs and the child results.
+Why these results: job_1 runs batch/energy.yaml independently and obtains 38 J, 6 W, and 38/6 W. Check completed under jobs and the child results.
 
 [Batch status summary](../examples/results/batch-minimal-yaml/batch-summary.json). Each job produces its own output:
 
@@ -350,6 +352,56 @@ Why these results: State is 0x2 and current is exactly 10 A, satisfying >=10 A. 
 | 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
+
+
+<a id="continuous-parallel-yaml"></a>
+## continuous-parallel.yaml
+
+Purpose: Read multipart logs as one continuous session. Configuration: [Download](../examples/continuous-parallel.yaml); feature: [Guide](continuous-files.md)。
+
+```powershell
+chronaxis run continuous-parallel.yaml --output result-continuous-parallel-yaml
+```
+
+Why: The session keeps state across files. Holding 2/4/8/10 W for 1/2/1/2 seconds gives 38 J. The time_order example also produces one activity from 0 to 6 seconds, confirmed at 1 second.
+
+[Run status and table inventory](../examples/results/continuous-parallel-yaml/result-summary.json)：`completed`。
+
+**Session results: [Download full 会话结果.csv](../examples/results/continuous-parallel-yaml/会话结果.csv) (1 row)**
+
+| energy（J） | energy：状态 | energy：说明 |
+| --- | --- | --- |
+| 38.0 | 完整 | — |
+
+This example requests session calculations only; it does not produce event, window, or sequence tables.
+
+
+<a id="continuous-time-order-yaml"></a>
+## continuous-time-order.yaml
+
+Purpose: Read multipart logs as one continuous session. Configuration: [Download](../examples/continuous-time-order.yaml); feature: [Guide](continuous-files.md)。
+
+```powershell
+chronaxis run continuous-time-order.yaml --output result-continuous-time-order-yaml
+```
+
+Why: The session keeps state across files. Holding 2/4/8/10 W for 1/2/1/2 seconds gives 38 J. The time_order example also produces one activity from 0 to 6 seconds, confirmed at 1 second.
+
+[Run status and table inventory](../examples/results/continuous-time-order-yaml/result-summary.json)：`completed`。
+
+**Event results: [Download full 事件结果.csv](../examples/results/continuous-time-order-yaml/事件结果.csv) (1 row)**
+
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | active | 0 | 1 | 6 | 观测结束，活动尚未确认结束 | 数据缺失 |
+
+**Session results: [Download full 会话结果.csv](../examples/results/continuous-time-order-yaml/会话结果.csv) (1 row)**
+
+| energy（J） | energy：状态 | energy：说明 |
+| --- | --- | --- |
+| 38.0 | 完整 | — |
+
+This example produces event and session tables. It does not request window or sequence tables.
 
 
 <a id="dual-grid-yaml"></a>

@@ -107,7 +107,8 @@ class DiagnosticCollection:
             for issue in _specific_errors(error):
                 path = tuple(issue.absolute_path)
                 code = 'invalid_config'
-                message = issue.message
+                # 未专门处理的Schema约束也使用项目文案，不透传校验器内部英文。
+                message = '值或字段组合不符合当前配置要求'
                 hint = '按字段参考修正此值'
                 if issue.validator == 'required':
                     missing = sorted(key for key in issue.validator_value if key not in issue.instance)
@@ -133,7 +134,10 @@ class DiagnosticCollection:
                                 hint=('是否要写 ' + candidate[0] + '？' if candidate else '检查拼写或删除不适用字段')))
                     continue
                 if issue.validator == 'type':
-                    code, message = 'invalid_type', '值类型应为 ' + str(issue.validator_value)
+                    type_names = {'object': '对象', 'array': '列表', 'string': '字符串',
+                                  'integer': '整数', 'number': '数值', 'boolean': '布尔值', 'null': '空值'}
+                    expected = issue.validator_value if type(issue.validator_value) is list else [issue.validator_value]
+                    code, message = 'invalid_type', '值类型应为' + '或'.join(type_names.get(value, '规定类型') for value in expected)
                     if path[-2:] == ('conversion', 'input_unit') and issue.instance is None:
                         message = 'input_unit不能填写null；需要自动确定输入单位时请省略此字段'
                         hint = '删除input_unit字段；如需手动指定，请填写非空单位字符串'
@@ -148,9 +152,25 @@ class DiagnosticCollection:
                         code = 'capability_unavailable'
                 elif issue.validator in ('minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum'):
                     code = 'out_of_range'
-                    message = '数值不满足边界 ' + issue.validator + '=' + str(issue.validator_value)
+                    relation = {'minimum': '大于或等于', 'maximum': '小于或等于',
+                                'exclusiveMinimum': '大于', 'exclusiveMaximum': '小于'}[issue.validator]
+                    message = '数值必须' + relation + str(issue.validator_value)
                 elif issue.validator in ('minLength', 'maxLength', 'minItems', 'maxItems'):
-                    message = '长度不满足 ' + issue.validator + '=' + str(issue.validator_value)
+                    subject = '文本长度' if issue.validator.endswith('Length') else '列表项数'
+                    relation = '至少为' if issue.validator.startswith('min') else '最多为'
+                    message = subject + relation + str(issue.validator_value)
+                elif issue.validator == 'not':
+                    forbidden = issue.validator_value.get('required', ()) if type(issue.validator_value) is dict else ()
+                    if type(issue.instance) is dict and len(forbidden) == 1:
+                        path = (*path, forbidden[0])
+                        message = '当前操作或配置下不能填写字段：' + str(forbidden[0])
+                    elif type(issue.instance) is dict and forbidden:
+                        message = '不能同时填写字段：' + '、'.join(forbidden)
+                    elif issue.validator_value == {} and path:
+                        message = '当前操作或配置下不能填写字段：' + str(path[-1])
+                    else:
+                        message = '此值或字段组合不适用于当前配置'
+                    hint = '删除不适用的字段，或按所选操作的字段说明调整配置'
                 elif issue.validator == 'pattern':
                     message = '文本格式不符合字段要求：' + str(issue.validator_value)
                     if path and (path[-1].endswith('duration') or path[-1] in ('valid_for','period','pre','post','min_delay','max_delay')):
@@ -205,8 +225,15 @@ class DiagnosticCollection:
     def finish(self):
         """有错则统一抛出，不返回残缺计划。参数: 无。返回: None。异常: PlanValidationError。"""
         if self.errors:
-            # 先指出拼错的原字段，再提示因拼错而缺失的新字段；仍保留全部独立诊断。
-            self.errors.sort(key=lambda error: error.code == 'missing_field')
+            # 拼写建议先于其缺项；操作名决定后续填写规则，先于其他独立字段错误。
+            def priority(error):
+                """参数: 单条诊断。返回: 根因优先级。异常: 无。"""
+                if error.code == 'unknown_field':
+                    return 0
+                if error.path.endswith('.operation') and error.code in ('missing_field', 'invalid_choice', 'invalid_type'):
+                    return 1
+                return 3 if error.code == 'missing_field' else 2
+            self.errors.sort(key=priority)
             raise PlanValidationError.from_diagnostics(self.errors, self.blocked)
 
 

@@ -19,7 +19,8 @@ def run(output):
     assert roles[0].definition is temperature and roles[0].resolution=='explicit'
     fragment=build_preset(spec,signals)  # 返回PlanFragment；此函数也会自行检查角色。
     nodes=fragment.to_dict()            # 仅节点声明，不包含sources、signals或运行结果。
-    raw=dict(config_version=4,dataset=dict(name='preset_api'),
+    # 内存来源由当前进程直接分析；文件多进程示例见quickstart.md。
+    raw=dict(config_version=4,dataset=dict(name='preset_api'),execution=dict(process_count=1),
         sources=[dict(name='table',source_type='memory',
             rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
         signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])

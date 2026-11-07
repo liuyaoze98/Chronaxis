@@ -50,6 +50,37 @@ class RawCANContinuousTests(unittest.TestCase):
             'BO_ 256 Frame: 2 Node\n SG_ Selector M : 0|8@1+ (1,0) [0|255] "" Node\n'
             ' SG_ Voltage m1 : 8|8@1+ (2,1) [0|511] "V" Node\n',encoding='utf-8')
 
+    def test_message_only_read_returns_before_file_end(self):
+        """消息消费者每次最多接256条，600条输入分批交还且只在真实结束报EOF。
+
+        参数: 无。返回: None。异常: 断言或读取错误；资源由finally关闭。
+        """
+        path = self.blf([(i / 1000, bytes((1, 5))) for i in range(600)])
+        received = []
+        spec = LegacyCANSpec('bus', path, self.dbc, 0, self.timebase,
+            offset_ns=-1700000000*10**9, decode_scope='requested')
+        adapter = BudgetedLegacyCANSourceAdapter(self.budget, spec, 'session', (self.signal,),
+            work_dir=self.root/'message-only', retain_raw_frames=False,
+            batch_read=True, message_consumer=received.append)
+        read = None
+        try:
+            read = adapter.iter_batches(ReadRequest('session', (), 0, 10**9, 65536))
+            previous, batches = 0, 0
+            for batch in read:
+                # 该断言直接检测控制权是否及时归还，不依赖实现中的计数器。
+                self.assertLessEqual(len(received)-previous, 256)
+                self.assertFalse(batch.series)
+                previous = len(received)
+                batches += 1
+            self.assertEqual(len(received), 600)
+            self.assertGreaterEqual(batches, 4)
+            self.assertTrue(read.exhausted)
+        finally:
+            if read is not None:
+                read.close()
+            adapter.close()
+        self.assertEqual(self.budget.ram_bytes, 0)
+
     def consume(self, adapter, names=()):
         """消费一次并关闭。参数: adapter/names。返回: 每条样本引用。异常: 原读取错误。"""
         refs=[]

@@ -94,7 +94,7 @@ class CSVObservation
 |`row_count`|int|是|无|原时间行总数，空投影也计，不按信号列样本数计算。|
 |`source_eof`|bool|是|无|仅完整whole-source EOF的事实，完成模型必须为True。|
 
-源码：[`src/chronaxis/execution/csv_observation.py:36`](../../../src/chronaxis/execution/csv_observation.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:36`](../../../src/chronaxis/execution/csv_observation.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservation-__post_init__"></a>
 ### `CSVObservation.__post_init__`
@@ -127,7 +127,7 @@ CSVObservation.__post_init__()
 - `ValueError`：空CSV观测的首末时间须均为None。
 - `ValueError`：CSV观测首末时间不能回退。
 
-源码：[`src/chronaxis/execution/csv_observation.py:53`](../../../src/chronaxis/execution/csv_observation.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:53`](../../../src/chronaxis/execution/csv_observation.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead"></a>
 ## `CSVObservationRead`
@@ -143,7 +143,7 @@ CSVObservationRead(owner, request)
 ```
 
 
-源码：[`src/chronaxis/execution/csv_observation.py:77`](../../../src/chronaxis/execution/csv_observation.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:77`](../../../src/chronaxis/execution/csv_observation.py#L77)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-__init__"></a>
 ### `CSVObservationRead.__init__`
@@ -173,7 +173,7 @@ CSVObservationRead.__init__(owner, request)
 
 - `TypeError`：CSV观测读取需实际预算CSV来源及ReadRequest。
 
-源码：[`src/chronaxis/execution/csv_observation.py:85`](../../../src/chronaxis/execution/csv_observation.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:85`](../../../src/chronaxis/execution/csv_observation.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-identity"></a>
 ### `CSVObservationRead.identity`
@@ -201,7 +201,7 @@ CSVObservationRead.identity
 
 无。
 
-源码：[`src/chronaxis/execution/csv_observation.py:118`](../../../src/chronaxis/execution/csv_observation.py#L118)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:118`](../../../src/chronaxis/execution/csv_observation.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-closed"></a>
 ### `CSVObservationRead.closed`
@@ -229,7 +229,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/csv_observation.py:124`](../../../src/chronaxis/execution/csv_observation.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:124`](../../../src/chronaxis/execution/csv_observation.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-failed"></a>
 ### `CSVObservationRead.failed`
@@ -257,7 +257,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/csv_observation.py:130`](../../../src/chronaxis/execution/csv_observation.py#L130)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:130`](../../../src/chronaxis/execution/csv_observation.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-exhausted"></a>
 ### `CSVObservationRead.exhausted`
@@ -285,7 +285,7 @@ True表示输入或结果已正常读完；False表示尚未正常读完。发�
 
 无。
 
-源码：[`src/chronaxis/execution/csv_observation.py:136`](../../../src/chronaxis/execution/csv_observation.py#L136)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:136`](../../../src/chronaxis/execution/csv_observation.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-observation"></a>
 ### `CSVObservationRead.observation`
@@ -317,7 +317,7 @@ ResultClosedError为未完成、失败或关闭。
 
 - `ResultClosedError`：CSV观测读取尚未正常完成或已关闭。
 
-源码：[`src/chronaxis/execution/csv_observation.py:142`](../../../src/chronaxis/execution/csv_observation.py#L142)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:142`](../../../src/chronaxis/execution/csv_observation.py#L142)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_read_resources"></a>
 ### `CSVObservationRead._read_resources`
@@ -343,7 +343,7 @@ _ObservationCSVResources。
 
 原预算、登记或构造错误。
 
-源码：[`src/chronaxis/execution/csv_observation.py:152`](../../../src/chronaxis/execution/csv_observation.py#L152)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:152`](../../../src/chronaxis/execution/csv_observation.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_created_iterator"></a>
 ### `CSVObservationRead._created_iterator`
@@ -368,7 +368,7 @@ CSVObservationRead._created_iterator(iterator)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:166`](../../../src/chronaxis/execution/csv_observation.py#L166)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:166`](../../../src/chronaxis/execution/csv_observation.py#L166)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_opened_handle"></a>
 ### `CSVObservationRead._opened_handle`
@@ -393,7 +393,7 @@ CSVObservationRead._opened_handle(handle)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:174`](../../../src/chronaxis/execution/csv_observation.py#L174)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:174`](../../../src/chronaxis/execution/csv_observation.py#L174)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_close_handle"></a>
 ### `CSVObservationRead._close_handle`
@@ -419,7 +419,7 @@ CSVObservationRead._close_handle(handle, primary)
 
 无业务根因时原关闭错误传播，已有根因只补note。
 
-源码：[`src/chronaxis/execution/csv_observation.py:182`](../../../src/chronaxis/execution/csv_observation.py#L182)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:182`](../../../src/chronaxis/execution/csv_observation.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_close_resources"></a>
 ### `CSVObservationRead._close_resources`
@@ -448,7 +448,7 @@ CSVObservationRead._close_resources(primary)
 
 - `SourceReadError`：CSV观测文件尚未成功关闭。
 
-源码：[`src/chronaxis/execution/csv_observation.py:199`](../../../src/chronaxis/execution/csv_observation.py#L199)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:199`](../../../src/chronaxis/execution/csv_observation.py#L199)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_end_file"></a>
 ### `CSVObservationRead._end_file`
@@ -475,7 +475,7 @@ CSVObservationRead._end_file(resources, primary)
 正常文件结束或GeneratorExit时的原清理错误继续传播；
     已有其他主异常时仅给它增加note，事务式费用槽留待同一read.close重试。
 
-源码：[`src/chronaxis/execution/csv_observation.py:216`](../../../src/chronaxis/execution/csv_observation.py#L216)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:216`](../../../src/chronaxis/execution/csv_observation.py#L216)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_accept_candidate"></a>
 ### `CSVObservationRead._accept_candidate`
@@ -502,7 +502,7 @@ CSVObservationRead._accept_candidate(first, last, count)
 
 无预期异常，最终带有明确类型的字段在真正耗尽后校验。
 
-源码：[`src/chronaxis/execution/csv_observation.py:232`](../../../src/chronaxis/execution/csv_observation.py#L232)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:232`](../../../src/chronaxis/execution/csv_observation.py#L232)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_adopt_cleanup"></a>
 ### `CSVObservationRead._adopt_cleanup`
@@ -527,7 +527,7 @@ CSVObservationRead._adopt_cleanup(exc)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:241`](../../../src/chronaxis/execution/csv_observation.py#L241)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:241`](../../../src/chronaxis/execution/csv_observation.py#L241)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-__iter__"></a>
 ### `CSVObservationRead.__iter__`
@@ -553,7 +553,7 @@ CSVObservationRead.__iter__()
 
 ResultClosedError为不可推进。
 
-源码：[`src/chronaxis/execution/csv_observation.py:251`](../../../src/chronaxis/execution/csv_observation.py#L251)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:251`](../../../src/chronaxis/execution/csv_observation.py#L251)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_ensure_active"></a>
 ### `CSVObservationRead._ensure_active`
@@ -583,7 +583,7 @@ ResultClosedError。
 
 - `ResultClosedError`：CSV观测读取已关闭、正在清理或推进失败。
 
-源码：[`src/chronaxis/execution/csv_observation.py:258`](../../../src/chronaxis/execution/csv_observation.py#L258)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:258`](../../../src/chronaxis/execution/csv_observation.py#L258)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-__next__"></a>
 ### `CSVObservationRead.__next__`
@@ -610,7 +610,7 @@ CSVObservationRead.__next__()
 正常StopIteration；原读取、预算或取消错误
     保留csv_observation_read_cleanup_owner，失败后仅可close。
 
-源码：[`src/chronaxis/execution/csv_observation.py:265`](../../../src/chronaxis/execution/csv_observation.py#L265)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:265`](../../../src/chronaxis/execution/csv_observation.py#L265)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-_close_request"></a>
 ### `CSVObservationRead._close_request`
@@ -636,7 +636,7 @@ CSVObservationRead._close_request()
 
 首个真实关闭错误，其他错误附note而不覆盖。
 
-源码：[`src/chronaxis/execution/csv_observation.py:300`](../../../src/chronaxis/execution/csv_observation.py#L300)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:300`](../../../src/chronaxis/execution/csv_observation.py#L300)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CSVObservationRead-close"></a>
 ### `CSVObservationRead.close`
@@ -662,7 +662,7 @@ CSVObservationRead.close()
 
 原文件、子资源或预算取消，未完责任保留。
 
-源码：[`src/chronaxis/execution/csv_observation.py:344`](../../../src/chronaxis/execution/csv_observation.py#L344)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:344`](../../../src/chronaxis/execution/csv_observation.py#L344)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources"></a>
 ## `_ObservationCSVResources`
@@ -679,7 +679,7 @@ _ObservationCSVResources(owner)
 继承关系：[_CSVResources](chronaxis.execution.csv_reader.md#api-_CSVResources)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/csv_observation.py:361`](../../../src/chronaxis/execution/csv_observation.py#L361)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:361`](../../../src/chronaxis/execution/csv_observation.py#L361)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-__init__"></a>
 ### `_ObservationCSVResources.__init__`
@@ -704,7 +704,7 @@ _ObservationCSVResources.__init__(owner)
 
 原预算或取消错误，附恢复owner。
 
-源码：[`src/chronaxis/execution/csv_observation.py:368`](../../../src/chronaxis/execution/csv_observation.py#L368)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:368`](../../../src/chronaxis/execution/csv_observation.py#L368)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-_sync"></a>
 ### `_ObservationCSVResources._sync`
@@ -729,7 +729,7 @@ _ObservationCSVResources._sync(key)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:383`](../../../src/chronaxis/execution/csv_observation.py#L383)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:383`](../../../src/chronaxis/execution/csv_observation.py#L383)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-_add"></a>
 ### `_ObservationCSVResources._add`
@@ -755,7 +755,7 @@ _ObservationCSVResources._add(key, amount)
 
 原预算或取消错误。
 
-源码：[`src/chronaxis/execution/csv_observation.py:393`](../../../src/chronaxis/execution/csv_observation.py#L393)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:393`](../../../src/chronaxis/execution/csv_observation.py#L393)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-_release_amount"></a>
 ### `_ObservationCSVResources._release_amount`
@@ -781,7 +781,7 @@ _ObservationCSVResources._release_amount(key, amount)
 
 原释放或取消错误。
 
-源码：[`src/chronaxis/execution/csv_observation.py:404`](../../../src/chronaxis/execution/csv_observation.py#L404)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:404`](../../../src/chronaxis/execution/csv_observation.py#L404)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-_release"></a>
 ### `_ObservationCSVResources._release`
@@ -806,7 +806,7 @@ _ObservationCSVResources._release(key)
 
 原释放取消。
 
-源码：[`src/chronaxis/execution/csv_observation.py:415`](../../../src/chronaxis/execution/csv_observation.py#L415)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:415`](../../../src/chronaxis/execution/csv_observation.py#L415)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-_move"></a>
 ### `_ObservationCSVResources._move`
@@ -837,7 +837,7 @@ ValueError为内部金额矛盾。
 
 - `ValueError`：CSV观测资源交接超出原用途余额。
 
-源码：[`src/chronaxis/execution/csv_observation.py:421`](../../../src/chronaxis/execution/csv_observation.py#L421)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:421`](../../../src/chronaxis/execution/csv_observation.py#L421)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-lines"></a>
 ### `_ObservationCSVResources.lines`
@@ -862,7 +862,7 @@ _ObservationCSVResources.lines(handle)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:435`](../../../src/chronaxis/execution/csv_observation.py#L435)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:435`](../../../src/chronaxis/execution/csv_observation.py#L435)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-records"></a>
 ### `_ObservationCSVResources.records`
@@ -887,7 +887,7 @@ _ObservationCSVResources.records(reader)
 
 无预期异常。
 
-源码：[`src/chronaxis/execution/csv_observation.py:442`](../../../src/chronaxis/execution/csv_observation.py#L442)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:442`](../../../src/chronaxis/execution/csv_observation.py#L442)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-after_pack"></a>
 ### `_ObservationCSVResources.after_pack`
@@ -912,7 +912,7 @@ _ObservationCSVResources.after_pack(validator)
 
 原账本或取消错误。
 
-源码：[`src/chronaxis/execution/csv_observation.py:448`](../../../src/chronaxis/execution/csv_observation.py#L448)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:448`](../../../src/chronaxis/execution/csv_observation.py#L448)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVResources-close"></a>
 ### `_ObservationCSVResources.close`
@@ -938,7 +938,7 @@ _ObservationCSVResources.close()
 
 原释放取消，尚未抵销槽保留供重试。
 
-源码：[`src/chronaxis/execution/csv_observation.py:461`](../../../src/chronaxis/execution/csv_observation.py#L461)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:461`](../../../src/chronaxis/execution/csv_observation.py#L461)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationPhysicalLines"></a>
 ## `_ObservationPhysicalLines`
@@ -952,7 +952,7 @@ class _ObservationPhysicalLines(_PhysicalLines)
 继承关系：[_PhysicalLines](chronaxis.execution.csv_reader.md#api-_PhysicalLines)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/csv_observation.py:477`](../../../src/chronaxis/execution/csv_observation.py#L477)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:477`](../../../src/chronaxis/execution/csv_observation.py#L477)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationPhysicalLines-__next__"></a>
 ### `_ObservationPhysicalLines.__next__`
@@ -983,7 +983,7 @@ _ObservationPhysicalLines.__next__()
 - `BudgetExceededError`：CSV物理行/引用记录累积超出剩余RAM估算。
 - `BudgetExceededError`：CSV物理行超过剩余RAM允许长度，未解析截断行。
 
-源码：[`src/chronaxis/execution/csv_observation.py:480`](../../../src/chronaxis/execution/csv_observation.py#L480)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:480`](../../../src/chronaxis/execution/csv_observation.py#L480)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVRecords"></a>
 ## `_ObservationCSVRecords`
@@ -997,7 +997,7 @@ class _ObservationCSVRecords(_CSVRecords)
 继承关系：[_CSVRecords](chronaxis.execution.csv_reader.md#api-_CSVRecords)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/csv_observation.py:510`](../../../src/chronaxis/execution/csv_observation.py#L510)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:510`](../../../src/chronaxis/execution/csv_observation.py#L510)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ObservationCSVRecords-__next__"></a>
 ### `_ObservationCSVRecords.__next__`
@@ -1023,4 +1023,4 @@ _ObservationCSVRecords.__next__()
 
 原EOF、CSV、I/O、预算或取消错误。
 
-源码：[`src/chronaxis/execution/csv_observation.py:513`](../../../src/chronaxis/execution/csv_observation.py#L513)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/csv_observation.py:513`](../../../src/chronaxis/execution/csv_observation.py#L513)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

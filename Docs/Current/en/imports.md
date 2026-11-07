@@ -40,7 +40,7 @@ python Docs/Current/examples/imports_example.py
 Add this root field to the analysis configuration:
 
 ```yaml
-imports: [shared/definitions.yaml]    # Reusable definition files to load before this plan
+imports: [shared/definitions.yaml]  # Reusable definition files to load before this plan
 ```
 
 `imports` is an optional list of explicit local paths; an empty list means no imports. Supported suffixes are `.json`, `.yaml`, and `.yml`, matched without case sensitivity. JSON and YAML files can be mixed. Paths can be absolute or relative to the file containing `imports`. URLs, globs, environment substitution, and directory scanning are not supported here.
@@ -48,19 +48,19 @@ imports: [shared/definitions.yaml]    # Reusable definition files to load before
 The shared file can contain:
 
 ```yaml
-sources:                                 # Input sources used by this analysis
-  - name: bus                            # Name used to identify and reference this object
-    paths: ../data/can/quickstart.asc    # File, continuous file list or directory; relative to this configuration
-    dbc_by_channel:                      # DBC files indexed by user-facing CAN channel
-      '1': ../data/can/teaching.dbc      # DBC for channel 1; channel keys are strings
-signals:                                 # Signals available to expressions
-  - name: power                          # Name used to identify and reference this object
-    field:                               # Locate the original input field
-      frame_id: '0x100'                  # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Power                      # Exact signal name defined in the DBC
-derived:                                 # Named formulas that can be referenced by other expressions
-  double_power:                          # Name of this derived expression
-    expr: power * 2                      # Formula using the declared signal or derived names
+sources:                               # Input sources used by this analysis
+  - name: bus                          # Name used to identify and reference this object
+    paths: ../data/can/quickstart.asc  # File, continuous file list or directory; relative to this configuration
+    dbc_by_channel:                    # DBC files indexed by user-facing CAN channel
+      '1': ../data/can/teaching.dbc    # DBC for channel 1; channel keys are strings
+signals:                               # Signals available to expressions
+  - name: power                        # Name used to identify and reference this object
+    field:                             # Locate the original input field
+      frame_id: '0x100'                # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Power                    # Exact signal name defined in the DBC
+derived:                               # Named formulas that can be referenced by other expressions
+  double_power:                        # Name of this derived expression
+    expr: power * 2                    # Formula using the declared signal or derived names
 ```
 
 Shared sources and signals require explicit names so they can be referenced and overridden. With a single source, a signal's `source` can be inferred. In this example, ASC uses relative seconds, and signal type and unit come from the DBC.
@@ -80,11 +80,11 @@ An error points to the second definition and identifies the first. To change a s
 For example, a DBC period of 1 second gives the signal a default validity of 3 seconds. To use 1 second in this analysis, add:
 
 ```yaml
-imports: [shared/definitions.yaml]    # Reusable definition files to load before this plan
-overrides:                            # Explicit replacements for imported definitions
-  signals:                            # Signals available to expressions
-    power:                            # Power value or named power signal settings in this example
-      valid_for: 1s                   # Maximum time for retaining the latest valid reading
+imports: [shared/definitions.yaml]  # Reusable definition files to load before this plan
+overrides:                          # Explicit replacements for imported definitions
+  signals:                          # Signals available to expressions
+    power:                          # Power value or named power signal settings in this example
+      valid_for: 1s                 # Maximum time for retaining the latest valid reading
 ```
 
 The nested keys identify existing definitions by name; this is a mapping, not a list.

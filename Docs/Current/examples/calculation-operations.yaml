@@ -47,3 +47,5 @@ calculations:                                  # 列出希望获得的统计或�
     partial_policy: report                     # 决定数据不全时是否保留可核实数值；report保留并标记，strict返回空值
     expr: power                                # 指定参与计算的数值或信号表达式；引用前面已定义的信号
     unit: Wh                                   # 选择结果单位；从该运算和输入单位支持的输出单位中选择
+execution:                                     # 设置本次分析的并行处理方式
+  process_count: 4                             # 最多4个文件工作进程；实际并行数不超过输入文件数

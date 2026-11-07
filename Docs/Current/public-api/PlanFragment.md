@@ -28,7 +28,7 @@ PlanFragment(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = 
 |`calculations`|tuple[[PresetCalculation](../reference/chronaxis.planning.preset_models.md#api-PresetCalculation), ...]|否|()|预设生成的指标配置；空元组表示没有新增指标。|
 |`sequences`|tuple[[SequencePlan](../reference/chronaxis.planning.sequences.md#api-SequencePlan), ...]|否|()|读取预设生成的SequencePlan元组；没有配对任务时为空。to_dict()将非空项转换为可合入完整配置的sequences列表。|
 
-源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-PlanFragment-to_dict"></a>
 ### `PlanFragment.to_dict`
@@ -54,4 +54,4 @@ dict，可合入AnalysisPlan.from_dict；不含伪造来源或执行结果。
 
 无主动异常；实例由build_preset构造。
 
-源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -69,7 +69,7 @@ LegacyCANBatchRead(request, budget, *, frame_ids=None, batch_rows=MAX_BATCH_ROWS
 继承关系：[LegacyCANProcessRead](chronaxis.legacy.process_read.md#api-LegacyCANProcessRead)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/legacy/batch_read.py:27`](../../../src/chronaxis/legacy/batch_read.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:27`](../../../src/chronaxis/legacy/batch_read.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-__init__"></a>
 ### `LegacyCANBatchRead.__init__`
@@ -123,7 +123,7 @@ LegacyCANBatchRead.__init__(request, budget, *, frame_ids=None, batch_rows=MAX_B
 - `ValueError`：按需解码ID必须是无重复29位整数tuple。
 - `ValueError`：所需字段的报文ID必须属于固定解码集合。
 
-源码：[`src/chronaxis/legacy/batch_read.py:36`](../../../src/chronaxis/legacy/batch_read.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:36`](../../../src/chronaxis/legacy/batch_read.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_check_ready"></a>
 ### `LegacyCANBatchRead._check_ready`
@@ -150,7 +150,7 @@ SourceReadError。
 ID先逐项核原生int再比较tuple，拒绝bool/int混同、缺项、额外字段或顺序改变；
 显式测试worker也必须确认同策略，不能用旧v1/v2应答冒充字段已裁剪。
 
-源码：[`src/chronaxis/legacy/batch_read.py:149`](../../../src/chronaxis/legacy/batch_read.py#L149)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:149`](../../../src/chronaxis/legacy/batch_read.py#L149)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_check_ready_metadata"></a>
 ### `LegacyCANBatchRead._check_ready_metadata`
@@ -175,7 +175,7 @@ None。
 
 原字段、周期或依赖校验错误。
 
-源码：[`src/chronaxis/legacy/batch_read.py:208`](../../../src/chronaxis/legacy/batch_read.py#L208)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:208`](../../../src/chronaxis/legacy/batch_read.py#L208)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-counters"></a>
 ### `LegacyCANBatchRead.counters`
@@ -208,7 +208,7 @@ LegacyCANBatchRead.counters
 items计全部原帧；accepted为接收校验完成，
 returned为已交付，records_returned计已交付的保留记录，预取失败不会虚增交付数。
 
-源码：[`src/chronaxis/legacy/batch_read.py:216`](../../../src/chronaxis/legacy/batch_read.py#L216)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:216`](../../../src/chronaxis/legacy/batch_read.py#L216)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-full_check_count"></a>
 ### `LegacyCANBatchRead.full_check_count`
@@ -236,7 +236,7 @@ LegacyCANBatchRead.full_check_count
 
 无。此属性不把完整检查默认模式中的原帧数误作按需回退数量。
 
-源码：[`src/chronaxis/legacy/batch_read.py:228`](../../../src/chronaxis/legacy/batch_read.py#L228)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:228`](../../../src/chronaxis/legacy/batch_read.py#L228)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_receive_reply"></a>
 ### `LegacyCANBatchRead._receive_reply`
@@ -264,7 +264,7 @@ LegacyCANBatchRead._receive_reply()
 内部观察者仅在整包严格解码成功后调用一次；只借用本槽中的payload与batch，
 不改变所有权。回调失败沿next的同一read清理，不交付或再次处理该批。
 
-源码：[`src/chronaxis/legacy/batch_read.py:236`](../../../src/chronaxis/legacy/batch_read.py#L236)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:236`](../../../src/chronaxis/legacy/batch_read.py#L236)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-__next__"></a>
 ### `LegacyCANBatchRead.__next__`
@@ -297,7 +297,7 @@ LegacyDecodedBatch，借至下次next或close。
 - `SourceReadError`：预取许可与实际已消费位置不符。
 - `BudgetExceededError`：CAN批次预算不足以保留一条最大记录及两端工作空间。
 
-源码：[`src/chronaxis/legacy/batch_read.py:278`](../../../src/chronaxis/legacy/batch_read.py#L278)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:278`](../../../src/chronaxis/legacy/batch_read.py#L278)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_new_packet"></a>
 ### `LegacyCANBatchRead._new_packet`
@@ -322,7 +322,7 @@ LegacyCANBatchRead._new_packet(byte_limit)
 
 原分配错误。
 
-源码：[`src/chronaxis/legacy/batch_read.py:341`](../../../src/chronaxis/legacy/batch_read.py#L341)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:341`](../../../src/chronaxis/legacy/batch_read.py#L341)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_set_prefetch_headroom"></a>
 ### `LegacyCANBatchRead._set_prefetch_headroom`
@@ -356,7 +356,7 @@ TypeError/ValueError为非法余量；关闭后拒绝更新。
 
 本线程直接设置有限整数，没有后台预算回调；不足时只停预取。
 
-源码：[`src/chronaxis/legacy/batch_read.py:350`](../../../src/chronaxis/legacy/batch_read.py#L350)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:350`](../../../src/chronaxis/legacy/batch_read.py#L350)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_available_limit"></a>
 ### `LegacyCANBatchRead._available_limit`
@@ -381,7 +381,7 @@ LegacyCANBatchRead._available_limit(*, additional_headroom=0)
 
 原账本读取错误；这里只看余额，不取得额外空间。
 
-源码：[`src/chronaxis/legacy/batch_read.py:364`](../../../src/chronaxis/legacy/batch_read.py#L364)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:364`](../../../src/chronaxis/legacy/batch_read.py#L364)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_try_prefetch"></a>
 ### `LegacyCANBatchRead._try_prefetch`
@@ -415,7 +415,7 @@ LegacyCANBatchRead._try_prefetch()
 
 EOF不再发许可；至多一个在途批，消费余量不用于预付。
 
-源码：[`src/chronaxis/legacy/batch_read.py:375`](../../../src/chronaxis/legacy/batch_read.py#L375)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:375`](../../../src/chronaxis/legacy/batch_read.py#L375)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-LegacyCANBatchRead-_release_closed_state"></a>
 ### `LegacyCANBatchRead._release_closed_state`
@@ -441,4 +441,4 @@ LegacyCANBatchRead._release_closed_state()
 
 原退费错误；同一close可从实际剩余槽恢复。
 
-源码：[`src/chronaxis/legacy/batch_read.py:396`](../../../src/chronaxis/legacy/batch_read.py#L396)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/batch_read.py:396`](../../../src/chronaxis/legacy/batch_read.py#L396)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

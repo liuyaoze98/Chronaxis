@@ -51,4 +51,4 @@ plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
-源码：[`src/chronaxis/planning/reports.py:431`](../../../src/chronaxis/planning/reports.py#L431)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/reports.py:432`](../../../src/chronaxis/planning/reports.py#L432)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

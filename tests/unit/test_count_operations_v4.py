@@ -21,7 +21,7 @@ def counter_config(values=(0.,1.,1.,0.,1.,0.,0.)):
         sources=[dict(name='input',source_type='memory',rows=[
             dict(time=f'{n}s',values={'v':v}) for n,v in enumerate(values)])],
         signals=[dict(name='v',field='v',dtype='float64',unit='V',valid_for='5s')],
-        rules=[dict(name='active',rule_type='condition_duration',condition='v > 0',minimum_duration='0s'),
+        rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='v > 0',minimum_duration='0s'),
                dict(name='rise',rule_type='rising_edge',condition='v > 0')],
         windows=[dict(name=name,rule='active',anchor='activity',pre='0s',post='0s',
                       merge='exit_delay',exit_delay='2s') for name in ('joined','second')],

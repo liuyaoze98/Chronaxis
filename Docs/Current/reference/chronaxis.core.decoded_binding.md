@@ -65,7 +65,7 @@ TypeError为非原生str；ValueError为长度或字符不符。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:22`](../../../src/chronaxis/core/decoded_binding.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:22`](../../../src/chronaxis/core/decoded_binding.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedSourceEvidence"></a>
 ## `DecodedSourceEvidence`
@@ -97,7 +97,7 @@ class DecodedSourceEvidence
 |`observation_end_ns`|int &#124; None|是|无|最终EOF中的已知会话坐标终点；未知不补周期。|
 |`source_eof`|bool|是|无|必须为True，表示整个配置来源已完成。|
 
-源码：[`src/chronaxis/core/decoded_binding.py:38`](../../../src/chronaxis/core/decoded_binding.py#L38)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:38`](../../../src/chronaxis/core/decoded_binding.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedSourceEvidence-__post_init__"></a>
 ### `DecodedSourceEvidence.__post_init__`
@@ -138,7 +138,7 @@ TypeError/ValueError为结构或事实矛盾；时间溢出发生异常时直接
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:59`](../../../src/chronaxis/core/decoded_binding.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:59`](../../../src/chronaxis/core/decoded_binding.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings"></a>
 ## `DecodedBindings`
@@ -163,7 +163,7 @@ class DecodedBindings
 |`sources`|tuple[[DecodedSourceEvidence](chronaxis.core.decoded_binding.md#api-DecodedSourceEvidence), ...]|是|无|已核对来源事实，保留工厂的固定顺序。|
 |`identity`|str|不填写|构造时计算|声明加实际证据的独立SHA-256运行身份。|
 
-源码：[`src/chronaxis/core/decoded_binding.py:101`](../../../src/chronaxis/core/decoded_binding.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:101`](../../../src/chronaxis/core/decoded_binding.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-__post_init__"></a>
 ### `DecodedBindings.__post_init__`
@@ -198,7 +198,7 @@ TypeError/ValueError为模型、重复/缺少来源、会话或投影冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:115`](../../../src/chronaxis/core/decoded_binding.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:115`](../../../src/chronaxis/core/decoded_binding.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-extensions"></a>
 ### `DecodedBindings.extensions`
@@ -226,7 +226,7 @@ DecodedBindings.extensions
 
 无。
 
-源码：[`src/chronaxis/core/decoded_binding.py:149`](../../../src/chronaxis/core/decoded_binding.py#L149)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:149`](../../../src/chronaxis/core/decoded_binding.py#L149)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-lookups"></a>
 ### `DecodedBindings.lookups`
@@ -254,7 +254,7 @@ DecodedBindings.lookups
 
 无。
 
-源码：[`src/chronaxis/core/decoded_binding.py:154`](../../../src/chronaxis/core/decoded_binding.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:154`](../../../src/chronaxis/core/decoded_binding.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-signals"></a>
 ### `DecodedBindings.signals`
@@ -284,7 +284,7 @@ SignalDefinition tuple。
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:159`](../../../src/chronaxis/core/decoded_binding.py#L159)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:159`](../../../src/chronaxis/core/decoded_binding.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-projected_signals"></a>
 ### `DecodedBindings.projected_signals`
@@ -315,7 +315,7 @@ DecodedBindings.projected_signals: tuple[SignalDefinition, ...]
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:167`](../../../src/chronaxis/core/decoded_binding.py#L167)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:167`](../../../src/chronaxis/core/decoded_binding.py#L167)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-derived_names"></a>
 ### `DecodedBindings.derived_names`
@@ -345,7 +345,7 @@ str tuple。
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/core/decoded_binding.py:183`](../../../src/chronaxis/core/decoded_binding.py#L183)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:183`](../../../src/chronaxis/core/decoded_binding.py#L183)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-resolve"></a>
 ### `DecodedBindings.resolve`
@@ -372,7 +372,7 @@ ValueError为非法或未声明名称；查找本身不证明该别名已投影�
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/decoded_binding.py:190`](../../../src/chronaxis/core/decoded_binding.py#L190)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:190`](../../../src/chronaxis/core/decoded_binding.py#L190)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedBindings-require_synchronized"></a>
 ### `DecodedBindings.require_synchronized`
@@ -403,4 +403,4 @@ TypeError为错误容器；ValueError为未知/未投影依赖或同步缺项。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/decoded_binding.py:198`](../../../src/chronaxis/core/decoded_binding.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/decoded_binding.py:198`](../../../src/chronaxis/core/decoded_binding.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

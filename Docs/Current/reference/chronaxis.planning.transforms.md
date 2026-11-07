@@ -66,7 +66,7 @@ class TemporalTransformPlan
 |`minimum_coverage`|float|是|无|请求窗口中有效输入所需的最低权重占比，范围0到1。|
 |`host_spec`|TransformSpec &#124; None|否|None|仅自定义网格保存其宿主描述，用于选择后端并预约有界状态。|
 
-源码：[`src/chronaxis/planning/transforms.py:26`](../../../src/chronaxis/planning/transforms.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:26`](../../../src/chronaxis/planning/transforms.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_names"></a>
 ## `_names`
@@ -92,7 +92,7 @@ _names(text, path)
 
 带位置的语法错误。
 
-源码：[`src/chronaxis/planning/transforms.py:44`](../../../src/chronaxis/planning/transforms.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:44`](../../../src/chronaxis/planning/transforms.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-build_transforms"></a>
 ## `build_transforms`
@@ -120,7 +120,7 @@ build_transforms(raw, bindings, derived, *, timezone=None)
 
 配置错误。
 
-源码：[`src/chronaxis/planning/transforms.py:53`](../../../src/chronaxis/planning/transforms.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:53`](../../../src/chronaxis/planning/transforms.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-build_transforms-visit"></a>
 ### `build_transforms.visit`
@@ -145,7 +145,7 @@ build_transforms.visit(name)
 
 包括派生/变换混合环。
 
-源码：[`src/chronaxis/planning/transforms.py:82`](../../../src/chronaxis/planning/transforms.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:82`](../../../src/chronaxis/planning/transforms.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-active_transforms"></a>
 ## `active_transforms`
@@ -171,7 +171,7 @@ active_transforms(plan, aliases)
 
 已建计划错误。
 
-源码：[`src/chronaxis/planning/transforms.py:162`](../../../src/chronaxis/planning/transforms.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:162`](../../../src/chronaxis/planning/transforms.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-physical_dependencies"></a>
 ## `physical_dependencies`
@@ -197,4 +197,4 @@ physical_dependencies(plan, aliases)
 
 已建计划错误。
 
-源码：[`src/chronaxis/planning/transforms.py:173`](../../../src/chronaxis/planning/transforms.py#L173)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/transforms.py:173`](../../../src/chronaxis/planning/transforms.py#L173)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -48,8 +48,8 @@ Read status, reason, and quality together. In the power example, load_mean_p95 i
 The default is `readable_csv`; it need not be written. If another program requires the original flat fields, add this root fragment. If `outputs` already exists, add `tables` inside it instead of adding another root block.
 
 ```yaml
-outputs:         # Additional result files to publish
-  tables: csv    # Original flat fields with integer nanosecond times.
+outputs:       # Additional result files to publish
+  tables: csv  # Original flat fields with integer nanosecond times.
 ```
 
 The only choices are `readable_csv`, `csv`, and `jsonl`. `csv` writes the original `events.csv`, `calculations.csv`, and related tables. `jsonl` writes corresponding line-delimited JSON records containing `row_schema_version` and `row`. One selected format produces one set of results, not readable and exchange copies together.

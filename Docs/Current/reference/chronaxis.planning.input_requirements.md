@@ -60,7 +60,7 @@ class SourceInputRequirements
 |`active`|bool|否|True|只为实际消费者打开来源。|
 |`clock_aliases`|tuple[str, ...]|否|()|只用于推进周期的定位，不因此读取该信号数值。|
 
-源码：[`src/chronaxis/planning/input_requirements.py:20`](../../../src/chronaxis/planning/input_requirements.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:20`](../../../src/chronaxis/planning/input_requirements.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-InputRequirements"></a>
 ## `InputRequirements`
@@ -90,7 +90,7 @@ class InputRequirements
 |`constant_observation`|bool|否|False|无信号常量规则/统计需要会话观测范围。|
 |`transform_names`|tuple[str, ...]|否|()|按依赖顺序列出本次真正被请求的变换名。读取器投影仍使用物理信号。|
 
-源码：[`src/chronaxis/planning/input_requirements.py:43`](../../../src/chronaxis/planning/input_requirements.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:43`](../../../src/chronaxis/planning/input_requirements.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-InputRequirements-for_source"></a>
 ### `InputRequirements.for_source`
@@ -121,7 +121,7 @@ TypeError 为非原生文本；ValueError 为未知来源。
 
 返回类型：[SourceInputRequirements](chronaxis.planning.input_requirements.md#api-SourceInputRequirements)。
 
-源码：[`src/chronaxis/planning/input_requirements.py:63`](../../../src/chronaxis/planning/input_requirements.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:63`](../../../src/chronaxis/planning/input_requirements.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-supports_unbounded_message_summary"></a>
 ## `supports_unbounded_message_summary`
@@ -148,7 +148,7 @@ bool；True允许用户省略dataset.domain，仍需另选实际检查和时间�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/input_requirements.py:78`](../../../src/chronaxis/planning/input_requirements.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:78`](../../../src/chronaxis/planning/input_requirements.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-collect_input_requirements"></a>
 ## `collect_input_requirements`
@@ -182,7 +182,7 @@ TypeError 为非计划对象或依赖容器错误；ValueError 为未声明依�
 
 返回类型：[InputRequirements](chronaxis.planning.input_requirements.md#api-InputRequirements)。
 
-源码：[`src/chronaxis/planning/input_requirements.py:92`](../../../src/chronaxis/planning/input_requirements.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:92`](../../../src/chronaxis/planning/input_requirements.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-collect_input_requirements-add"></a>
 ### `collect_input_requirements.add`
@@ -213,7 +213,7 @@ collect_input_requirements.add(expression, destination)
 - `TypeError`：表达式依赖必须为原生str tuple。
 - `ValueError`：表达式依赖包含未声明信号。
 
-源码：[`src/chronaxis/planning/input_requirements.py:121`](../../../src/chronaxis/planning/input_requirements.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:121`](../../../src/chronaxis/planning/input_requirements.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-collect_input_requirements-add_rule"></a>
 ### `collect_input_requirements.add_rule`
@@ -238,4 +238,4 @@ collect_input_requirements.add_rule(rule_id)
 
 ValueError 为未知规则；条件依赖错误沿 add 原样传播。
 
-源码：[`src/chronaxis/planning/input_requirements.py:134`](../../../src/chronaxis/planning/input_requirements.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/input_requirements.py:134`](../../../src/chronaxis/planning/input_requirements.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

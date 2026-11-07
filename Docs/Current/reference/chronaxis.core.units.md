@@ -44,4 +44,4 @@ TypeError为其他类型；ValueError为非有限float。
 
 返回类型：int &#124; float。
 
-源码：[`src/chronaxis/core/units.py:6`](../../../src/chronaxis/core/units.py#L6)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/units.py:6`](../../../src/chronaxis/core/units.py#L6)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

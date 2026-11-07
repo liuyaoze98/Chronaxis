@@ -17,10 +17,11 @@ from build_ai_guide import build as build_ai_guide
 from english_docs import check_reviewed
 
 
-def hashes(folder):
-    """参数: folder为文件夹。返回: 相对路径到SHA256的映射。异常: 读取错误传播。"""
+def hashes(folder, *, exclude_cache=False):
+    """参数: folder为目录，exclude_cache控制排除源示例缓存。返回相对路径摘要；读取错误传播。"""
     return {p.relative_to(folder).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in folder.rglob('*') if p.is_file()}
+            for p in folder.rglob('*') if p.is_file() and
+            (not exclude_cache or ('__pycache__' not in p.relative_to(folder).parts and p.suffix != '.pyc'))}
 
 
 def main():
@@ -54,7 +55,9 @@ def main():
         assert (docs / name).read_bytes() == (html / name).read_bytes(), name
     for source in (repo / 'Docs/Schema').glob('*.json'):
         assert source.read_bytes() == (html / 'attachments/Docs/Schema' / source.name).read_bytes(), source
-    assert hashes(docs / 'examples') == hashes(html / 'examples'), '随册示例不一致'
+    assert hashes(docs / 'examples',exclude_cache=True) == hashes(html / 'examples'), '随册示例不一致'
+    caches=[str(p.relative_to(html)) for p in html.rglob('*') if p.name=='__pycache__' or p.suffix=='.pyc']
+    assert not caches, ('交付目录包含Python缓存',caches)
 
     # 哈希在打包前后及独立解压目录三方比较，检测打包期间的文件变化。
     expected = hashes(html)

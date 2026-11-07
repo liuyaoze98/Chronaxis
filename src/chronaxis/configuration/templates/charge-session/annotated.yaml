@@ -36,3 +36,5 @@ presets:                                   # 选择预先组合好的规则与�
       compute_charge: true                 # 选择是否计算电荷量；true生成电流积分并输出Ah，false不生成
       minimum_duration: 1s                 # 设置充电条件连续成立多久才确认；按业务要求填写
     preset_type: charge_session            # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+execution:                                 # 设置本次分析的并行处理方式
+  process_count: 4                         # 最多4个文件工作进程；实际并行数不超过输入文件数

@@ -53,4 +53,4 @@ CalculationSeries。
 
 类型/时间错误。
 
-源码：[`src/chronaxis/execution/record_sample_series.py:12`](../../../src/chronaxis/execution/record_sample_series.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_sample_series.py:12`](../../../src/chronaxis/execution/record_sample_series.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

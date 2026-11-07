@@ -64,7 +64,7 @@ class SelectionRow
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|当前所有依赖的原字段定位。|
 |`unit`|str|是|无|当前分析值单位，和原带有明确类型的值一起保留。|
 
-源码：[`src/chronaxis/core/selection.py:23`](../../../src/chronaxis/core/selection.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/selection.py:23`](../../../src/chronaxis/core/selection.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SelectionRow-__post_init__"></a>
 ### `SelectionRow.__post_init__`
@@ -96,7 +96,7 @@ TypeError/ValueError/OverflowError为不合法协议。
 - `TypeError`：选择行来源需tuple SourceRef。
 - `ValueError`：选择行质量不能隐藏无效值或UNKNOWN原因。
 
-源码：[`src/chronaxis/core/selection.py:40`](../../../src/chronaxis/core/selection.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/selection.py:40`](../../../src/chronaxis/core/selection.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_selection"></a>
 ## `require_selection`
@@ -127,7 +127,7 @@ TypeError为模型错误；ValueError为算子或单位转换请求。
 - `TypeError`：选择行流需CalculationSeries和CalculationDefinition。
 - `ValueError`：选择行流需select且保留输入单位。
 
-源码：[`src/chronaxis/core/selection.py:62`](../../../src/chronaxis/core/selection.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/selection.py:62`](../../../src/chronaxis/core/selection.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-partial_selection"></a>
 ## `partial_selection`
@@ -154,4 +154,4 @@ partial_selection(value, quality, spec)
 
 值契约不合法时传播。
 
-源码：[`src/chronaxis/core/selection.py:79`](../../../src/chronaxis/core/selection.py#L79)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/selection.py:79`](../../../src/chronaxis/core/selection.py#L79)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

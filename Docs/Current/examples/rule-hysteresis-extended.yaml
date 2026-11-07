@@ -19,3 +19,5 @@ rules:                                              # 列出识别活动或瞬�
     exit_delay: 1s                                  # 设置退出条件需连续成立的等待时间；0s表示不额外等待
     name: detected                                  # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: hysteresis                           # 选择活动或变化识别算法；本例分别用进入和退出条件判断活动，避免一个阈值附近反复切换
+execution:                                          # 设置本次分析的并行处理方式
+  process_count: 4                                  # 最多4个文件工作进程；实际并行数不超过输入文件数

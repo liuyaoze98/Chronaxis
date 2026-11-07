@@ -202,7 +202,7 @@ class StabilityRunnerTests(unittest.TestCase):
         raw=stable_config();raw['execution']['memory_budget_bytes']=64
         with self.assertRaises(BudgetExceededError):
             self.run_config(raw)
-        raw=stable_config();raw['rules'].append(dict(name='simple',rule_type='condition_duration',condition='temperature >= 80',minimum_duration='0ns'))
+        raw=stable_config();raw['rules'].append(dict(name='simple',rule_type='condition_duration', duration_comparison='>=',condition='temperature >= 80',minimum_duration='0ns'))
         rows=list(self.run_config(raw).iter_events())
         self.assertEqual({r.rule_id:(r.start_ns,r.end_ns) for r in rows},{'alarm':(0,9),'simple':(0,3)})
 

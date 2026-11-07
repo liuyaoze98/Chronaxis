@@ -26,3 +26,5 @@ windows:                                            # 围绕已定义规则的�
     merge: overlap_and_adjacent                     # 选择片段合并规则；none分别输出，overlap合并重叠，overlap_and_adjacent也合并相邻，exit_delay等待下一活动
     post: 3s                                        # 设置结束点之后保留多久上下文；0s表示不延长
     pre: 0s                                         # 设置起点之前保留多久上下文；0s表示不提前
+execution:                                          # 设置本次分析的并行处理方式
+  process_count: 4                                  # 最多4个文件工作进程；实际并行数不超过输入文件数

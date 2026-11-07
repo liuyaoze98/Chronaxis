@@ -55,8 +55,9 @@ class CANTextSpec
 |`timebase`|[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)|是|无|相同ID本身不证明物理同步。|
 |`decode_policy`|str|否|'legacy'|旧文本失败停止；新strict/partial解码失败置无效继续。|
 |`input_check`|str|否|'auto'|auto按任务所需的时间序列检查；full要求完整来源顺序。普通ASC/混合来源的auto只核所需通道/ID顺序，全部已解析帧在同次读取中用于来源最早/最晚范围；原帧导出仍要求完整顺序。不是解码范围或输出开关。|
+|`file_merge`|str|否|'concatenate'|控制本来源文件记录的组合顺序。concatenate按声明文件顺序接续，沿用任务输入检查范围；time_order检查各文件所需时间非递减后，按时间/文件位置/局部序号稳定归并，不平移或去重。默认concatenate，与进程数独立。|
 
-源码：[`src/chronaxis/sources/text_can_spec.py:18`](../../../src/chronaxis/sources/text_can_spec.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:18`](../../../src/chronaxis/sources/text_can_spec.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANTextSpec-__post_init__"></a>
 ### `CANTextSpec.__post_init__`
@@ -88,7 +89,7 @@ CANTextSpec.__post_init__()
 - `TypeError`：文本CAN需要DBC Path及TimebaseSpec。
 - `ValueError`：文本CAN通道需要非负原生整数。
 
-源码：[`src/chronaxis/sources/text_can_spec.py:30`](../../../src/chronaxis/sources/text_can_spec.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:31`](../../../src/chronaxis/sources/text_can_spec.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANTextSpec-source_type"></a>
 ### `CANTextSpec.source_type`
@@ -104,7 +105,7 @@ CANTextSpec.source_type
 读取属性，不使用调用括号。
 
 
-源码：[`src/chronaxis/sources/text_can_spec.py:50`](../../../src/chronaxis/sources/text_can_spec.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:53`](../../../src/chronaxis/sources/text_can_spec.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANTextSpec-offset_ns"></a>
 ### `CANTextSpec.offset_ns`
@@ -132,4 +133,4 @@ CANTextSpec.offset_ns
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_spec.py:58`](../../../src/chronaxis/sources/text_can_spec.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:61`](../../../src/chronaxis/sources/text_can_spec.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

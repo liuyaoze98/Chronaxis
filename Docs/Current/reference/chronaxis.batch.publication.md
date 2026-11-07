@@ -59,7 +59,7 @@ write_batch_report(report: BatchReport) -> Path
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/publication.py:14`](../../../src/chronaxis/batch/publication.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_write_batch_report"></a>
 ## `_write_batch_report`
@@ -77,4 +77,4 @@ _write_batch_report(report, extra)
 |`report`|[BatchReport](chronaxis.batch.models.md#api-BatchReport)|是|无|位置或关键字。本批各任务的成功、取消、失败以及发布路径。|
 |`extra`|dict &#124; None|是|无|位置或关键字。在报告根写入的 fast 执行标志和可选总量。|
 
-源码：[`src/chronaxis/batch/publication.py:23`](../../../src/chronaxis/batch/publication.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/publication.py:23`](../../../src/chronaxis/batch/publication.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

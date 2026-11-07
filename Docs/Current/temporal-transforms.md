@@ -14,28 +14,30 @@ chronaxis run rolling-actual.yaml --output rolling-result
 在本轮manifest列出的选择结果表中，`average_rows`在0.20秒应为18A：窗口[0.10,0.20)内，10A持续0.02秒、20A持续0.08秒，均值为(10×0.02+20×0.08)/0.1。起始窗口缺少历史时按默认strict不提供数值。完整配置如下：
 
 ```yaml
-config_version: 4                   # 使用当前分析配置格式
-dataset:                            # 命名本次分析
-  name: rolling_actual              # 结果中的数据集名称
-sources:                            # 读取配套合成报文
-  - paths: meter.asc                # 文件路径相对本配置
-    dbc_by_channel:                 # CAN通道到DBC的对应关系
-      '1': meter.dbc                # 用户通道1对应这份DBC
-signals:                            # 定义后续计算引用的信号
-  - name: current                   # 分析中的电流名称
-    field:                          # 按DBC定位信号
-      frame_id: 0x100               # 包含电流的报文ID
-      signal: Current               # DBC信号名称
-transforms:                         # 从已有信号生成新的时序信号
-  - name: average                   # 滚动均值序列名称
-    operation: rolling_time_mean    # 按有效时长加权求窗口均值
-    expr: current                   # 使用上面绑定的电流
-    window: 0.1s                    # 回看实际时间0.1秒
-    step: 0.1s                      # 每隔实际时间0.1秒计算一次
-calculations:                       # 选择要返回的结果
-  - name: average_rows              # 选择记录的计算名称
-    operation: select               # 输出每次均值的时刻、值和质量
-    expr: average                   # 读取新时序信号
+config_version: 4                 # 使用当前分析配置格式
+dataset:                          # 命名本次分析
+  name: rolling_actual            # 结果中的数据集名称
+sources:                          # 读取配套合成报文
+  - paths: meter.asc              # 文件路径相对本配置
+    dbc_by_channel:               # CAN通道到DBC的对应关系
+      '1': meter.dbc              # 用户通道1对应这份DBC
+signals:                          # 定义后续计算引用的信号
+  - name: current                 # 分析中的电流名称
+    field:                        # 按DBC定位信号
+      frame_id: 0x100             # 包含电流的报文ID
+      signal: Current             # DBC信号名称
+transforms:                       # 从已有信号生成新的时序信号
+  - name: average                 # 滚动均值序列名称
+    operation: rolling_time_mean  # 按有效时长加权求窗口均值
+    expr: current                 # 使用上面绑定的电流
+    window: 0.1s                  # 回看实际时间0.1秒
+    step: 0.1s                    # 每隔实际时间0.1秒计算一次
+calculations:                     # 选择要返回的结果
+  - name: average_rows            # 选择记录的计算名称
+    operation: select             # 输出每次均值的时刻、值和质量
+    expr: average                 # 读取新时序信号
+execution:                        # 本次分析的执行方式
+  process_count: 4                # 最多4个工作进程；本例仅1个文件，实际最多1个
 ```
 
 ## 字段参考与操作选择

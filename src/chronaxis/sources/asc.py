@@ -230,6 +230,7 @@ class ASCRead:
         self._base = self._mode = self._date_origin = self._header_date = None
         self._block_ns, self._elapsed = 0, Decimal(0)
         self._last_exact = previous_exact_time
+        self.first_exact_time = None  # 当前文件首个参与顺序检查的时刻，含无CAN帧的计时行。
         try:
             _reserve_owned_ram(self, MAX_ASC_LINE_CHARS * 64 + 8192, '_fixed_cost')
             self._file = spec.path.open('rb')
@@ -344,6 +345,8 @@ class ASCRead:
                 shifted = exact + Decimal(self.spec.offset_ns).scaleb(-9)
         if self._last_exact is not None and shifted < self._last_exact:
             raise ValueError('ASC来源时间回退')
+        if self.first_exact_time is None:
+            self.first_exact_time = shifted
         self._last_exact = shifted
 
     def __next__(self):

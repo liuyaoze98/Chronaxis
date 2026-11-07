@@ -85,7 +85,7 @@ None；只清精确chronaxis.legacy.records模块的已结束frame局部引用�
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/message_store.py:43`](../../../src/chronaxis/legacy/message_store.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:43`](../../../src/chronaxis/legacy/message_store.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-StoredDecodedMessage"></a>
 ## `StoredDecodedMessage`
@@ -108,7 +108,7 @@ class StoredDecodedMessage
 |`time_quantized`|bool|是|无|原转换的量化事实，不由浮点时间猜测。|
 |`decoded`|[LegacyDecodedFrame](chronaxis.legacy.records.md#api-LegacyDecodedFrame)|是|无|一次原yield和parse的完整冻结返回。|
 
-源码：[`src/chronaxis/legacy/message_store.py:64`](../../../src/chronaxis/legacy/message_store.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:64`](../../../src/chronaxis/legacy/message_store.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-StoredDecodedMessage-__post_init__"></a>
 ### `StoredDecodedMessage.__post_init__`
@@ -141,7 +141,7 @@ TypeError为类型不符；TimeOverflowError为时间超int64。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/message_store.py:76`](../../../src/chronaxis/legacy/message_store.py#L76)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:76`](../../../src/chronaxis/legacy/message_store.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_encode_row"></a>
 ## `_encode_row`
@@ -170,7 +170,7 @@ bytes；完整JSON对象加换行，原decoded payload不超过MAX_WIRE_BYTES。
 
 返回类型：bytes。
 
-源码：[`src/chronaxis/legacy/message_store.py:92`](../../../src/chronaxis/legacy/message_store.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:92`](../../../src/chronaxis/legacy/message_store.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_decode_row"></a>
 ## `_decode_row`
@@ -207,7 +207,7 @@ ResultFormatError为外壳、重复/多余字段、原包或模型不合法；
 
 返回类型：[StoredDecodedMessage](chronaxis.legacy.message_store.md#api-StoredDecodedMessage)。
 
-源码：[`src/chronaxis/legacy/message_store.py:117`](../../../src/chronaxis/legacy/message_store.py#L117)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:117`](../../../src/chronaxis/legacy/message_store.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore"></a>
 ## `DecodedMessageStore`
@@ -223,7 +223,7 @@ DecodedMessageStore(budget, work_dir, source_name, session_id, *, decoder_profil
 ```
 
 
-源码：[`src/chronaxis/legacy/message_store.py:161`](../../../src/chronaxis/legacy/message_store.py#L161)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:161`](../../../src/chronaxis/legacy/message_store.py#L161)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-__init__"></a>
 ### `DecodedMessageStore.__init__`
@@ -257,7 +257,7 @@ building仓；不读取BLF/DBC或证明来源EOF。
 类型、路径、预算、文件或取消原错；持续清理失败保最高
     decoded_message_store_cleanup_owner，恢复后对同一owner.close。
 
-源码：[`src/chronaxis/legacy/message_store.py:169`](../../../src/chronaxis/legacy/message_store.py#L169)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:169`](../../../src/chronaxis/legacy/message_store.py#L169)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-line_limit"></a>
 ### `DecodedMessageStore.line_limit`
@@ -285,7 +285,7 @@ DecodedMessageStore.line_limit
 
 无；文件损坏、未完成写入和外部stat都不会提高此值。
 
-源码：[`src/chronaxis/legacy/message_store.py:233`](../../../src/chronaxis/legacy/message_store.py#L233)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:233`](../../../src/chronaxis/legacy/message_store.py#L233)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-closed"></a>
 ### `DecodedMessageStore.closed`
@@ -313,7 +313,7 @@ bool；
 
 无。
 
-源码：[`src/chronaxis/legacy/message_store.py:242`](../../../src/chronaxis/legacy/message_store.py#L242)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:242`](../../../src/chronaxis/legacy/message_store.py#L242)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-spool_bytes"></a>
 ### `DecodedMessageStore.spool_bytes`
@@ -341,7 +341,7 @@ bytes整数；
 
 无。
 
-源码：[`src/chronaxis/legacy/message_store.py:247`](../../../src/chronaxis/legacy/message_store.py#L247)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:247`](../../../src/chronaxis/legacy/message_store.py#L247)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-_require"></a>
 ### `DecodedMessageStore._require`
@@ -370,7 +370,7 @@ ResultClosedError为关闭中；RuntimeError为状态不匹配。
 
 - `ResultClosedError`：解码仓已关闭或正在清理。
 
-源码：[`src/chronaxis/legacy/message_store.py:251`](../../../src/chronaxis/legacy/message_store.py#L251)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:251`](../../../src/chronaxis/legacy/message_store.py#L251)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-_fail"></a>
 ### `DecodedMessageStore._fail`
@@ -395,7 +395,7 @@ DecodedMessageStore._fail(exc)
 
 清理副错只加notes，不覆盖同一普通错误、KeyboardInterrupt或SystemExit。
 
-源码：[`src/chronaxis/legacy/message_store.py:262`](../../../src/chronaxis/legacy/message_store.py#L262)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:262`](../../../src/chronaxis/legacy/message_store.py#L262)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-_reserve_spool"></a>
 ### `DecodedMessageStore._reserve_spool`
@@ -420,7 +420,7 @@ DecodedMessageStore._reserve_spool(amount)
 
 原配额或取消错误；未入账不增加本owner累计。
 
-源码：[`src/chronaxis/legacy/message_store.py:272`](../../../src/chronaxis/legacy/message_store.py#L272)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:272`](../../../src/chronaxis/legacy/message_store.py#L272)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-_write_pending"></a>
 ### `DecodedMessageStore._write_pending`
@@ -450,7 +450,7 @@ None，全部字节已交真实writer。
 
 - `OSError`：解码仓写入未推进或返回非法长度。
 
-源码：[`src/chronaxis/legacy/message_store.py:285`](../../../src/chronaxis/legacy/message_store.py#L285)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:285`](../../../src/chronaxis/legacy/message_store.py#L285)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-append"></a>
 ### `DecodedMessageStore.append`
@@ -485,7 +485,7 @@ DecodedMessageStore.append(record, time_ns, *, time_quantized)
 - `ValueError`：解码仓sequence不满足声明连续/稀疏顺序或time_ns回退。
 - `ValueError`：解码仓行超过max_row_bytes。
 
-源码：[`src/chronaxis/legacy/message_store.py:313`](../../../src/chronaxis/legacy/message_store.py#L313)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:313`](../../../src/chronaxis/legacy/message_store.py#L313)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-_close_writer"></a>
 ### `DecodedMessageStore._close_writer`
@@ -511,7 +511,7 @@ DecodedMessageStore._close_writer()
 
 原FD或取消错误；实际closed后抛错也不重关已经完成的handle。
 
-源码：[`src/chronaxis/legacy/message_store.py:351`](../../../src/chronaxis/legacy/message_store.py#L351)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:351`](../../../src/chronaxis/legacy/message_store.py#L351)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-seal"></a>
 ### `DecodedMessageStore.seal`
@@ -537,7 +537,7 @@ None；空仓也可完整封口。
 
 原flush、close、摘要或取消错误；poison后不再读或重试seal。
 
-源码：[`src/chronaxis/legacy/message_store.py:365`](../../../src/chronaxis/legacy/message_store.py#L365)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:365`](../../../src/chronaxis/legacy/message_store.py#L365)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-iter_records"></a>
 ### `DecodedMessageStore.iter_records`
@@ -563,7 +563,7 @@ DecodedMessageStore.iter_records()
 
 状态、预算、打开、登记或取消原错，最高仓owner可恢复全部实际子资源。
 
-源码：[`src/chronaxis/legacy/message_store.py:381`](../../../src/chronaxis/legacy/message_store.py#L381)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:381`](../../../src/chronaxis/legacy/message_store.py#L381)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DecodedMessageStore-close"></a>
 ### `DecodedMessageStore.close`
@@ -590,7 +590,7 @@ None；所有责任闭合才closed=True，重复close幂等。
 首个关闭/抵销错误原样传播，其他错误只note；最高owner不变，不关闭
     借用budget或释放其他owner费用，不删除文件及已交付调用方的记录。
 
-源码：[`src/chronaxis/legacy/message_store.py:396`](../../../src/chronaxis/legacy/message_store.py#L396)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:396`](../../../src/chronaxis/legacy/message_store.py#L396)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_DecodedMessageReader"></a>
 ## `_DecodedMessageReader`
@@ -605,7 +605,7 @@ _DecodedMessageReader(owner)
 ```
 
 
-源码：[`src/chronaxis/legacy/message_store.py:461`](../../../src/chronaxis/legacy/message_store.py#L461)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:461`](../../../src/chronaxis/legacy/message_store.py#L461)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_DecodedMessageReader-__init__"></a>
 ### `_DecodedMessageReader.__init__`
@@ -630,7 +630,7 @@ None；初始化实例状态；父工厂成功返回前一直可从_pending_read
 
 原预算、打开、登记或取消错误，由父工厂保原错并统一清理最高owner。
 
-源码：[`src/chronaxis/legacy/message_store.py:468`](../../../src/chronaxis/legacy/message_store.py#L468)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:468`](../../../src/chronaxis/legacy/message_store.py#L468)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_DecodedMessageReader-__iter__"></a>
 ### `_DecodedMessageReader.__iter__`
@@ -656,7 +656,7 @@ _DecodedMessageReader.__iter__()
 
 无。
 
-源码：[`src/chronaxis/legacy/message_store.py:489`](../../../src/chronaxis/legacy/message_store.py#L489)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:489`](../../../src/chronaxis/legacy/message_store.py#L489)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_DecodedMessageReader-__next__"></a>
 ### `_DecodedMessageReader.__next__`
@@ -683,7 +683,7 @@ StoredDecodedMessage；最后一行交付仍未验证EOF。
 StopIteration仅在关闭或真正完成；ResultFormatError为损坏；原IO、
     预算或取消错误保留并poison父，最高decoded_message_store_cleanup_owner可恢复。
 
-源码：[`src/chronaxis/legacy/message_store.py:493`](../../../src/chronaxis/legacy/message_store.py#L493)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:493`](../../../src/chronaxis/legacy/message_store.py#L493)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_DecodedMessageReader-close"></a>
 ### `_DecodedMessageReader.close`
@@ -710,4 +710,4 @@ None；FD、费用及父登记都成功完成才closed=True。
 原FD、抵销、登记或取消错误，最高父owner可达；真实已关闭handle不重关，
     已抵销费用不重扣，提前close不设置verified_eof。
 
-源码：[`src/chronaxis/legacy/message_store.py:539`](../../../src/chronaxis/legacy/message_store.py#L539)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/message_store.py:539`](../../../src/chronaxis/legacy/message_store.py#L539)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

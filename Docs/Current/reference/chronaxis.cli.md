@@ -53,7 +53,7 @@ ArgumentParser，不读取任何配置或来源。
 
 返回类型：argparse.ArgumentParser。
 
-源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-main"></a>
 ## `main`
@@ -72,7 +72,8 @@ main(argv=None) -> int
 
 ### 返回说明
 
-0成功、2配置错误、1文件/平台错误、130取消。
+0成功、130取消；失败按入口/阶段返回1或2。普通文件失败为1，
+    fast单会话准备失败（含文件错误）为2、运行失败为1；批量规则见手册CLI。
 
 ### 异常说明
 
@@ -84,4 +85,4 @@ argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程�
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:81`](../../../src/chronaxis/cli.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/cli.py:85`](../../../src/chronaxis/cli.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

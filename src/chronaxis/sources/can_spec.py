@@ -67,6 +67,7 @@ class LegacyCANSpec:
 
     paths: tuple[Path, ...] = ()  # 显式连续BLF；空tuple沿用path单文件，首项必须等于path。
     decode_policy: str = 'legacy'  # 新版本默认strict；旧调用保原宽松解码。
+    file_merge: str = 'concatenate'  # concatenate按文件顺序；time_order按原时间稳定归并。
 
     @property
     def input_paths(self):
@@ -81,6 +82,8 @@ class LegacyCANSpec:
             后缀、通道、单位、profile或解码/检查范围不符；OverflowError为offset_ns超出int64。
         副作用: 无open/stat/resolve/DBC/依赖加载，不核实存在性或实际BLF内容。
         """
+        if type(self.file_merge) is not str or self.file_merge not in ('concatenate', 'time_order'):
+            raise ValueError('file_merge需要concatenate或time_order')
         require_identifier(self.name, 'can.name')
         # 后缀只限定本次支持范围；DBC保Path，不额外猜格式、改路径或检查内容。
         if not isinstance(self.path, Path) or not isinstance(self.dbc_path, Path):

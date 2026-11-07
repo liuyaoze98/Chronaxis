@@ -76,7 +76,7 @@ class DerivedDefinition
 |`expr`|str|是|无|白名单DSL文本，不是任意Python。|
 |`unit`|str &#124; None|否|None|缺省使用表达式已支持的单位关系。|
 
-源码：[`src/chronaxis/core/expression.py:57`](../../../src/chronaxis/core/expression.py#L57)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:57`](../../../src/chronaxis/core/expression.py#L57)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DerivedDefinition-__post_init__"></a>
 ### `DerivedDefinition.__post_init__`
@@ -104,7 +104,7 @@ TypeError/ValueError为标识符/空文本问题。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/expression.py:70`](../../../src/chronaxis/core/expression.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:70`](../../../src/chronaxis/core/expression.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ExprNode"></a>
 ## `ExprNode`
@@ -141,7 +141,7 @@ class ExprNode
 |`typed_constant`|bool|否|False|带单位纯常量只适配dtype，不继承别的单位。|
 |`host_function`|FunctionSpec &#124; None|否|None|宿主逐点调用编译出的函数契约，保存输出规范、回调及实现身份。普通表达式节点省略。|
 
-源码：[`src/chronaxis/core/expression.py:87`](../../../src/chronaxis/core/expression.py#L87)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:87`](../../../src/chronaxis/core/expression.py#L87)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CompiledExpression"></a>
 ## `CompiledExpression`
@@ -168,7 +168,7 @@ class CompiledExpression
 |`normalized_ast`|str|是|无|不含位置的AST规范结构。|
 |`identity`|str|是|无|完整执行身份SHA。|
 
-源码：[`src/chronaxis/core/expression.py:115`](../../../src/chronaxis/core/expression.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:115`](../../../src/chronaxis/core/expression.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-StaticExpression"></a>
 ## `StaticExpression`
@@ -190,7 +190,7 @@ class StaticExpression
 |`normalized_ast`|str|是|无|规范语法，仅供静态身份。|
 |`identity`|str|是|无|独立静态版本前缀的SHA。|
 
-源码：[`src/chronaxis/core/expression.py:133`](../../../src/chronaxis/core/expression.py#L133)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:133`](../../../src/chronaxis/core/expression.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-contains_host_call"></a>
 ## `contains_host_call`
@@ -215,7 +215,7 @@ bool。
 
 内部不合法树传播属性错误。
 
-源码：[`src/chronaxis/core/expression.py:148`](../../../src/chronaxis/core/expression.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:148`](../../../src/chronaxis/core/expression.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_node"></a>
 ## `_node`
@@ -246,7 +246,7 @@ _node(operator, dtype, unit, args=(), **kwargs) -> ExprNode
 
 返回类型：[ExprNode](chronaxis.core.expression.md#api-ExprNode)。
 
-源码：[`src/chronaxis/core/expression.py:164`](../../../src/chronaxis/core/expression.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:164`](../../../src/chronaxis/core/expression.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler"></a>
 ## `_SyntaxCompiler`
@@ -264,7 +264,7 @@ _SyntaxCompiler(bindings, derived)
 ```
 
 
-源码：[`src/chronaxis/core/expression.py:182`](../../../src/chronaxis/core/expression.py#L182)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:182`](../../../src/chronaxis/core/expression.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-__init__"></a>
 ### `_SyntaxCompiler.__init__`
@@ -295,7 +295,7 @@ TypeError/ValueError为类型/缺项/重复/名称空间不一致。
 - `TypeError`：解析需要带有明确类型的真实/声明绑定及tuple DerivedDefinition。
 - `ValueError`：derived声明与bindings名称不一致或重复。
 
-源码：[`src/chronaxis/core/expression.py:192`](../../../src/chronaxis/core/expression.py#L192)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:192`](../../../src/chronaxis/core/expression.py#L192)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_error"></a>
 ### `_SyntaxCompiler._error`
@@ -321,7 +321,7 @@ _SyntaxCompiler._error(node, message)
 
 ValueError定位行/列，不自动点号改名。
 
-源码：[`src/chronaxis/core/expression.py:224`](../../../src/chronaxis/core/expression.py#L224)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:224`](../../../src/chronaxis/core/expression.py#L224)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-parse"></a>
 ### `_SyntaxCompiler.parse`
@@ -347,7 +347,7 @@ _SyntaxCompiler.parse(text, unit=None)
 
 ValueError为语法/白名单/类型/单位/环；不吞I/O异常。
 
-源码：[`src/chronaxis/core/expression.py:234`](../../../src/chronaxis/core/expression.py#L234)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:234`](../../../src/chronaxis/core/expression.py#L234)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_final_unit"></a>
 ### `_SyntaxCompiler._final_unit`
@@ -374,7 +374,7 @@ _SyntaxCompiler._final_unit(root, unit, node)
 
 ValueError为结果与声明单位不一致。
 
-源码：[`src/chronaxis/core/expression.py:269`](../../../src/chronaxis/core/expression.py#L269)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:269`](../../../src/chronaxis/core/expression.py#L269)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_name"></a>
 ### `_SyntaxCompiler._name`
@@ -399,7 +399,7 @@ _SyntaxCompiler._name(node)
 
 ValueError为未知别名/环/派生表达式错误。
 
-源码：[`src/chronaxis/core/expression.py:281`](../../../src/chronaxis/core/expression.py#L281)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:281`](../../../src/chronaxis/core/expression.py#L281)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_context"></a>
 ### `_SyntaxCompiler._context`
@@ -427,7 +427,7 @@ _SyntaxCompiler._context(literal, other, node, *, arithmetic)
 
 ValueError为字面量类型/定宽/枚举域冲突。
 
-源码：[`src/chronaxis/core/expression.py:326`](../../../src/chronaxis/core/expression.py#L326)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:326`](../../../src/chronaxis/core/expression.py#L326)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_units"></a>
 ### `_SyntaxCompiler._units`
@@ -456,7 +456,7 @@ _SyntaxCompiler._units(operator, left, right, node, declared_unit=None)
 
 ValueError为未转换单位或未支持组合。
 
-源码：[`src/chronaxis/core/expression.py:375`](../../../src/chronaxis/core/expression.py#L375)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:375`](../../../src/chronaxis/core/expression.py#L375)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-_binary"></a>
 ### `_SyntaxCompiler._binary`
@@ -485,7 +485,7 @@ _SyntaxCompiler._binary(operator, left, right, node, declared_unit=None)
 
 ValueError为单位/类型/常量配置错误。
 
-源码：[`src/chronaxis/core/expression.py:413`](../../../src/chronaxis/core/expression.py#L413)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:413`](../../../src/chronaxis/core/expression.py#L413)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_SyntaxCompiler-visit"></a>
 ### `_SyntaxCompiler.visit`
@@ -511,7 +511,7 @@ _SyntaxCompiler.visit(node, declared_unit=None)
 
 ValueError定位未注册语法/函数/类型/单位。
 
-源码：[`src/chronaxis/core/expression.py:475`](../../../src/chronaxis/core/expression.py#L475)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:475`](../../../src/chronaxis/core/expression.py#L475)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compile_expression"></a>
 ## `compile_expression`
@@ -553,7 +553,7 @@ TypeError、ValueError: 输入结构、语法、名称、类型、单位、循�
 
 返回类型：[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)。
 
-源码：[`src/chronaxis/core/expression.py:606`](../../../src/chronaxis/core/expression.py#L606)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:606`](../../../src/chronaxis/core/expression.py#L606)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-validate_expression"></a>
 ## `validate_expression`
@@ -594,7 +594,7 @@ TypeError、ValueError: 声明结构、语法、名称、单位、循环依赖�
 
 返回类型：[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)。
 
-源码：[`src/chronaxis/core/expression.py:643`](../../../src/chronaxis/core/expression.py#L643)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:643`](../../../src/chronaxis/core/expression.py#L643)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_create_compiler"></a>
 ## `_create_compiler`
@@ -622,7 +622,7 @@ _create_compiler(bindings, derived, *, config_version=None, extensions=None)
 
 TypeError/ValueError为版本类型、冲突或尚未支持的扩展对象。
 
-源码：[`src/chronaxis/core/expression.py:678`](../../../src/chronaxis/core/expression.py#L678)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:678`](../../../src/chronaxis/core/expression.py#L678)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-expression_identity"></a>
 ## `expression_identity`
@@ -652,4 +652,4 @@ SHA256文本，包含当前单位和函数规则版本。
 
 内部类型错误直接传播，不读取文件。
 
-源码：[`src/chronaxis/core/expression.py:704`](../../../src/chronaxis/core/expression.py#L704)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression.py:704`](../../../src/chronaxis/core/expression.py#L704)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

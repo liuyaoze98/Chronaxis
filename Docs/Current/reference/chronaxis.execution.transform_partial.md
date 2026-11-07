@@ -49,7 +49,7 @@ partial_in_block(rows, window, *, samples)
 
 内部行损坏时传播结构错误；不把末端共享点计入两块。
 
-源码：[`src/chronaxis/execution/transform_partial.py:7`](../../../src/chronaxis/execution/transform_partial.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_partial.py:7`](../../../src/chronaxis/execution/transform_partial.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-partial_result"></a>
 ## `partial_result`
@@ -75,4 +75,4 @@ partial_result(result, policy)
 
 非结果对象。
 
-源码：[`src/chronaxis/execution/transform_partial.py:36`](../../../src/chronaxis/execution/transform_partial.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_partial.py:36`](../../../src/chronaxis/execution/transform_partial.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

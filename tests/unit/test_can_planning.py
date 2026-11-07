@@ -50,7 +50,7 @@ def can_config():
         signals=[dict(name='power', source='bus', field=field, dtype='float64', input_unit='W', unit='W',
                       valid_for='2s', same_time_policy='last_by_sequence')],
         derived={'twice': dict(expr='power * 2', unit='W')},
-        rules=[dict(name='active', rule_type='condition_duration', condition='power > 1', minimum_duration='0s')],
+        rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='power > 1', minimum_duration='0s')],
         windows=[dict(name='context', rule='active', anchor='activity', pre='0s', post='0s', merge='none')],
         calculations=[dict(name='area', scope='session', operation='integral', expr='power', unit='J')],
         execution=dict(backend='numpy', memory_budget_bytes=256*1024**2, batch_rows=2),

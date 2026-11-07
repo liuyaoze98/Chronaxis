@@ -213,12 +213,42 @@ class BatchPublicTests(unittest.TestCase):
         self.assertTrue(published_path(output/'batch_report.json').is_file())
 
     def test_help_and_root_import_remain_standard_library_only(self):
-        """根包和帮助不加载NumPy或CAN，参数错误不要求依赖已安装。参数: 无。返回: None。异常: 断言。"""
-        result = subprocess.run([sys.executable, '-B', '-S', '-c',
-            'import chronaxis, chronaxis.cli, sys; assert "numpy" not in sys.modules; chronaxis.cli.main(["batch","run","--help"])'],
-            cwd=ROOT, env=dict(os.environ,CHRONAXIS_DEVICE_LABEL='home'), capture_output=True, text=True, encoding='utf-8', timeout=15)
+        """隔离外部路径后，源码或已安装包的根导入和帮助仅需标准库。参数: 无。返回: None。异常: 断言。"""
+        # -S 会移除安装包搜索路径；只加载当前被测包，不能连带开放其依赖目录。
+        package_init = Path(sys.modules['chronaxis'].__file__).resolve()
+        probe = '''
+import importlib.util
+from pathlib import Path
+import sys
+
+dependencies = ('numpy', 'can', 'cantools', 'jsonschema')
+assert sys.flags.isolated and sys.flags.no_site
+assert all(importlib.util.find_spec(name) is None for name in dependencies)
+package_init = Path(sys.argv[1]).resolve()
+spec = importlib.util.spec_from_file_location(
+    'chronaxis', package_init, submodule_search_locations=[str(package_init.parent)])
+package = importlib.util.module_from_spec(spec)
+sys.modules['chronaxis'] = package
+spec.loader.exec_module(package)
+assert Path(package.__file__).resolve() == package_init
+import chronaxis.cli
+for arguments in (['--help'], ['batch', 'run', '--help']):
+    try:
+        result = chronaxis.cli.main(arguments)
+    except SystemExit as error:
+        result = error.code
+    assert result in (None, 0), result
+assert all(importlib.util.find_spec(name) is None for name in dependencies)
+assert not any(name.split('.')[0] in dependencies for name in sys.modules)
+print('STANDARD_LIBRARY_ONLY_OK')
+'''
+        result = subprocess.run(
+            [sys.executable, '-X', 'utf8', '-B', '-I', '-S', '-c', probe, str(package_init)],
+            cwd=self.work, env=dict(os.environ, CHRONAXIS_DEVICE_LABEL='home'),
+            capture_output=True, text=True, encoding='utf-8', timeout=15)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('--process-count', result.stdout)
+        self.assertIn('STANDARD_LIBRARY_ONLY_OK', result.stdout)
 
     def test_standalone_report_rejects_ref_path_before_file_open(self):
         """独立报告写出也须保护只读目录，不依赖调用者一定先跑调度器。参数: 无。返回: None。异常: 断言。"""

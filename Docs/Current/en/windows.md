@@ -28,17 +28,17 @@ In the [temperature example](rules.md#duration-selection-origin), temperature re
 Start with [activity.yaml](../examples/activity.yaml). Replace or add the root `windows` and `calculations` lists below; do not nest their parent keys inside items. The file already defines the `hot` rule and `temperature` and `power` signals; see [Sources and signals](activity-tutorial.md).
 
 ```yaml
-windows:                     # Ranges around existing rule events
-  - name: hot_context        # Window name used by calculations
-    rule: hot                # Existing rule name
-    pre: 1s                  # Include one second before onset
-    post: 1s                 # Include one second after the end
-calculations:                # Results to compute
-  - name: context_energy     # Name shown in the result
-    scope:                   # Compute separately for each window segment
-      window: hot_context    # Previously defined window
-    operation: integral      # Integrate valid power over time
-    expr: power              # Previously defined signal
+windows:                   # Ranges around existing rule events
+  - name: hot_context      # Window name used by calculations
+    rule: hot              # Existing rule name
+    pre: 1s                # Include one second before onset
+    post: 1s               # Include one second after the end
+calculations:              # Results to compute
+  - name: context_energy   # Name shown in the result
+    scope:                 # Compute separately for each window segment
+      window: hot_context  # Previously defined window
+    operation: integral    # Integrate valid power over time
+    expr: power            # Previously defined signal
 ```
 
 - `rule: hot` uses the activities found by that rule.

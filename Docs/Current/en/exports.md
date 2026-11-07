@@ -40,7 +40,7 @@ BLF, ASC, and raw-message CSV frame exports all use `outputs.can_frames`.
 | `{window: context}` | Export segments from the window named `context`. | Signal CSV and CAN frames |
 | `{windows: all}` | Export segments from every window. | CAN frames only |
 
-Window names come from `windows[].name`. Set the choice in `outputs.signal_csv.scope` or `outputs.can_frames.scope`; do not add a separate `window` field. `null` is not a valid scope. Signal export requires one named window and does not accept `windows: all`.
+Window names come from `windows[].name`. Set the choice in `outputs.signal_csv.scope` or `outputs.can_frames.scope`; do not add a separate `window` field. `null` is not a valid scope. Signal export may omit scope for the session range. Specify one named window only when selecting window-based export; signal export does not accept `windows: all`.
 
 Each export chooses its own scope independently. Ranges include the start and exclude the end: a 1–2 second segment includes 1 second but not 2 seconds. Interpolation does not borrow samples from outside the requested range to fill endpoints.
 

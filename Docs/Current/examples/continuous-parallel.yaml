@@ -1,0 +1,21 @@
+config_version: 4                     # 选择分析配置结构版本；填写整数4
+dataset:                              # 定义本次分析的身份与可选时间范围
+  name: continuous_charge             # 命名整个会话，不为每个文件建立新会话
+sources:                              # 列出输入来源；本例只有一个连续CAN来源
+  - paths:                            # 按列表顺序接续这些记录文件
+      - data/can/session/part1.asc    # 本来源的第一个分卷
+      - data/can/session/part2.asc    # 同一会话的下一个分卷
+    dbc_by_channel:                   # 指定各通道解释报文字节所需的DBC
+      '1': data/can/teaching.dbc      # 通道1使用此相对路径的DBC
+signals:                              # 定义计算可以引用的信号
+  - name: power                       # 为输入功率取分析名称
+    field:                            # 在DBC中定位信号
+      frame_id: '0x100'               # 信号所在报文的ID
+      signal: Power                   # DBC中的信号名称
+    valid_for: 3s                     # 每次有效更新最多沿用3秒，超时后值未知
+calculations:                         # 列出要得到的计算结果
+  - name: energy                      # 命名能量结果
+    operation: integral               # 将功率乘实际持续时间后累计
+    expr: power                       # 使用上面已定义的功率信号
+execution:                            # 设置本次分析的执行方式及资源
+  process_count: 4                    # 最多4个文件工作进程；实际并行数不超过输入文件数

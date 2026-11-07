@@ -43,5 +43,5 @@ Returns a frozen BatchPlan. Raises `PlanValidationError` identifying invalid fie
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:58`](../../../../src/chronaxis/batch/models.py#L58) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/batch/models.py:80`](../../../../src/chronaxis/batch/models.py#L80) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/batch/models.py:58`](../../../../src/chronaxis/batch/models.py#L58) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/models.py:80`](../../../../src/chronaxis/batch/models.py#L80) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

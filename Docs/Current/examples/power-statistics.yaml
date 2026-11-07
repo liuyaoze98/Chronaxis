@@ -22,6 +22,7 @@ rules:                                      # 分别识别上升沿及整段加�
   - name: loaded                            # 每一段连续加载 / each uninterrupted load
     rule_type: condition_duration           # 生成活动区间 / activity event
     condition: power > 0                    # 使用同一功率条件 / same power condition
+    duration_comparison: ">="               # 达到门槛即满足；要求严格超过时填>
     minimum_duration: 0s                    # 加载即开始 / accept immediately
 windows:                                    # 将接近的加载视为一次试验 / join nearby loads
   - name: test_cycle                        # 合并后的试验片段 / merged test segment
@@ -81,3 +82,5 @@ aggregations:                               # 在已有结果行上再统计 / r
     operation: quantile                     # 精确分位数 / exact quantile
     q: 0.95                                 # 结果应为 19.5 W / expect 19.5 W
     group_by: [session_id]                  # 本次会话一组 / one group in this session
+execution:                                  # 设置本次分析的并行处理方式
+  process_count: 4                          # 最多4个文件工作进程；实际并行数不超过输入文件数

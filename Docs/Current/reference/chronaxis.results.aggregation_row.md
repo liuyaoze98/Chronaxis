@@ -65,7 +65,7 @@ class SummaryAggregationRow
 |`discovery_complete`|bool|是|无|是否具备发现请求范围内全部候选对象的证据，独立于已发现行的参与质量。|
 |`quality`|QualityFlag|是|无|本组来源证据和数值计算累积的质量位，用于解释何种数据或精度限制影响结果。|
 
-源码：[`src/chronaxis/results/aggregation_row.py:10`](../../../src/chronaxis/results/aggregation_row.py#L10)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/aggregation_row.py:10`](../../../src/chronaxis/results/aggregation_row.py#L10)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SummaryAggregationRow-__post_init__"></a>
 ### `SummaryAggregationRow.__post_init__`
@@ -91,4 +91,4 @@ None。
 
 无效协议直接拒绝。
 
-源码：[`src/chronaxis/results/aggregation_row.py:39`](../../../src/chronaxis/results/aggregation_row.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/aggregation_row.py:39`](../../../src/chronaxis/results/aggregation_row.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -15,4 +15,4 @@ Base class: [AnalysisError](AnalysisError.md#api-AnalysisError). No additional f
 
 ## Source locations
 
-- [`src/chronaxis/results/errors.py:16`](../../../../src/chronaxis/results/errors.py#L16) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/results/errors.py:16`](../../../../src/chronaxis/results/errors.py#L16) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

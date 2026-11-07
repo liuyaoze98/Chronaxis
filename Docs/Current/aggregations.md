@@ -9,12 +9,12 @@
 以下片段替换该文件根级的`aggregations`；`load_mean`已经由完整文件的calculations定义：
 
 ```yaml
-aggregations:                   # 对已有结果行再次统计
-  - name: load_mean_p95         # 新聚合结果的名称
-    source:                     # 只选择一个已命名的结果来源
-      calculation: load_mean    # 每段加载的一项平均功率
-    operation: quantile         # 对这些均值求分位数
-    q: 0.95                     # P95的位置概率
+aggregations:                 # 对已有结果行再次统计
+  - name: load_mean_p95       # 新聚合结果的名称
+    source:                   # 只选择一个已命名的结果来源
+      calculation: load_mean  # 每段加载的一项平均功率
+    operation: quantile       # 对这些均值求分位数
+    q: 0.95                   # P95的位置概率
 ```
 
 ## 来源与操作选择

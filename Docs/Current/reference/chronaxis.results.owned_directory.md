@@ -46,7 +46,7 @@ directory_identity(path)
 
 IO或链接根拒绝。
 
-源码：[`src/chronaxis/results/owned_directory.py:7`](../../../src/chronaxis/results/owned_directory.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/owned_directory.py:7`](../../../src/chronaxis/results/owned_directory.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-remove_owned_directory"></a>
 ## `remove_owned_directory`
@@ -73,4 +73,4 @@ None。
 重定向/替换或IO错误。
 shutil只删除目录内链接自身，不沿子目录链接删除外部内容；不接收未登记目录。
 
-源码：[`src/chronaxis/results/owned_directory.py:19`](../../../src/chronaxis/results/owned_directory.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/owned_directory.py:19`](../../../src/chronaxis/results/owned_directory.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

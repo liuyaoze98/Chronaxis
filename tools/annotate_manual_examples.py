@@ -49,8 +49,15 @@ def render(text, example_path=None):
                 # 使用行尾注释，便于读者把职责与同一行的具体值对应。
                 explanation=example_comment(path,child,node)
                 # fast只接受展开后一个文件；不能套用连续分析的多文件说明。
-                if example_path in ('fast/analysis.yaml', 'fast/analysis-blf.yaml', 'fast/unsupported.yaml') and re.fullmatch(r'sources\[\d+\]\.paths', path):
-                    explanation='输入文件或目录；展开后必须恰好一个ASC或BLF文件，连续分卷请使用通用分析'
+                if example_path and example_path.startswith('fast/'):
+                    if re.fullmatch(r'sources\[\d+\]\.paths', path):
+                        explanation='指定本次会话的ASC/BLF文件、目录或通配符；同次记录的分卷放在同一来源中'
+                    explanation = {
+                        'execution': '控制本次fast会话的工作进程、受管理内存和临时磁盘额度',
+                        'execution.process_count': '限制读取、解码和单帧求值工作进程；正整数，默认1内联，不含主进程',
+                        'execution.memory_budget_bytes': '限制受管理缓冲和状态的估算字节数；不含整个Python进程树的全部内存',
+                        'execution.spool_quota_bytes': '限制累计预约暂存字节数；删除不返还，null不设额外上限',
+                    }.get(path, explanation)
                 if isinstance(child,CommentedMap) and child.fa.flow_style():
                     if any(isinstance(item,(CommentedMap,CommentedSeq)) for item in child.values()):
                         raise ValueError('内联教学映射仅支持标量子字段：'+path)

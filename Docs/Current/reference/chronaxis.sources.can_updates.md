@@ -63,7 +63,7 @@ require_message_keys(keys, *, channel=None)
 
 ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:17`](../../../src/chronaxis/sources/can_updates.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:17`](../../../src/chronaxis/sources/can_updates.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection"></a>
 ## `CANUpdateProjection`
@@ -75,7 +75,7 @@ CANUpdateProjection(source, session_id, fields, *, message_keys=(), clock_fields
 ```
 
 
-源码：[`src/chronaxis/sources/can_updates.py:31`](../../../src/chronaxis/sources/can_updates.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:31`](../../../src/chronaxis/sources/can_updates.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-__init__"></a>
 ### `CANUpdateProjection.__init__`
@@ -104,7 +104,7 @@ None；初始化实例状态。
 
 TypeError/ValueError为字段、身份或同帧信号定位冲突。
 
-源码：[`src/chronaxis/sources/can_updates.py:34`](../../../src/chronaxis/sources/can_updates.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:34`](../../../src/chronaxis/sources/can_updates.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-configure_metadata"></a>
 ### `CANUpdateProjection.configure_metadata`
@@ -129,7 +129,7 @@ None；在当前投影保存已验证的有限DBC候选。
 
 定位或元数据不合法时传播TypeError/ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:67`](../../../src/chronaxis/sources/can_updates.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:67`](../../../src/chronaxis/sources/can_updates.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-for_read"></a>
 ### `CANUpdateProjection.for_read`
@@ -154,7 +154,7 @@ CANUpdateProjection.for_read(facts)
 
 定位或元数据不合法时传播TypeError/ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:74`](../../../src/chronaxis/sources/can_updates.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:74`](../../../src/chronaxis/sources/can_updates.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-_matching"></a>
 ### `CANUpdateProjection._matching`
@@ -179,7 +179,7 @@ CANUpdateProjection._matching(frame)
 
 ValueError：同一自动绑定遇到另一种实际类型。
 
-源码：[`src/chronaxis/sources/can_updates.py:85`](../../../src/chronaxis/sources/can_updates.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:85`](../../../src/chronaxis/sources/can_updates.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-accepts_frame"></a>
 ### `CANUpdateProjection.accepts_frame`
@@ -204,7 +204,7 @@ bool。
 
 非原帧属性错。
 
-源码：[`src/chronaxis/sources/can_updates.py:128`](../../../src/chronaxis/sources/can_updates.py#L128)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:128`](../../../src/chronaxis/sources/can_updates.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-fields_for"></a>
 ### `CANUpdateProjection.fields_for`
@@ -229,7 +229,7 @@ CANUpdateProjection.fields_for(frame)
 
 非原帧对象缺少必需属性时AttributeError；不吞读取错误。
 
-源码：[`src/chronaxis/sources/can_updates.py:132`](../../../src/chronaxis/sources/can_updates.py#L132)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:132`](../../../src/chronaxis/sources/can_updates.py#L132)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANUpdateProjection-build"></a>
 ### `CANUpdateProjection.build`
@@ -258,4 +258,4 @@ LegacyDecodedUpdate/LegacyUntimedUpdate；非目标数据帧返回None。
 
 类型/数值/身份错误原样传播，不缓存前条值补齐缺失。
 
-源码：[`src/chronaxis/sources/can_updates.py:141`](../../../src/chronaxis/sources/can_updates.py#L141)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/can_updates.py:141`](../../../src/chronaxis/sources/can_updates.py#L141)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

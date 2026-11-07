@@ -34,3 +34,5 @@ calculations:                                         # 只请求所需的能量
     scope:                                            # 选择整个合格事件区间
       rule: eligible                                  # 默认onset，包含最初60秒
     unit: kWh                                         # 直接输出kWh，不在外部再换算
+execution:                                            # 设置本次分析的并行处理方式
+  process_count: 4                                    # 最多4个文件工作进程；实际并行数不超过输入文件数

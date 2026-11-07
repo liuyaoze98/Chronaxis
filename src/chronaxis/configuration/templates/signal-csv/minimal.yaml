@@ -25,3 +25,5 @@ calculations:
   - name: time_average
     operation: time_weighted_mean
     expr: power
+execution:            # 设置本次分析的并行处理方式
+  process_count: 1    # 本例为CSV、内存或多来源会话，当前仅支持单进程

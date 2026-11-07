@@ -55,10 +55,11 @@ domain.start|设置分析起点，包含该时刻；按希望分析的范围填�
 domain.end|设置分析终点；连续时长不包含该端点，按希望分析的范围填写
 ''')
 register('sources[].', '''
+file_merge|选择文件记录组合顺序；concatenate按文件接续，time_order按共同时间稳定归并，不平移或去重
 name|给本来源取计划内唯一名称；下方signals.source引用这个名称
 source_type|选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
 path|指定单个输入文件；相对路径从本配置文件所在目录计算
-paths|指定按时间连续排列的输入文件列表；不能混合不同格式
+paths|指定文件、目录或通配符；同次记录分卷放在同一来源，ASC和BLF可混用
 time_column|填写CSV时间列的实际表头，大小写和文件一致
 time|说明输入时间数值的类型、单位、共同起点和校准偏移
 time.time_type|选择时间类型；relative为距共同起点的时间，absolute为日期时间或UTC纪元时间
@@ -214,6 +215,7 @@ default.driver|选择提供周期和更新计数的信号；填写已有signals�
 overrides|按规则/配对/计算节点ID覆盖默认的间隔选择
 ''')
 register('execution.', '''
+process_count|设置会话工作进程上限；普通分析并行读取解码，fast还求同帧贡献；默认1，不含主进程
 backend|选择计算实现；numpy使用数组，reference使用独立参考计算
 batch_rows|限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期
 memory_budget_bytes|限制新分析层管理的内存字节数；按可用内存留出其他进程开销

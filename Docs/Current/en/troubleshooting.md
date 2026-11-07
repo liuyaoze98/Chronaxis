@@ -37,6 +37,11 @@ except PlanValidationError as error:
 <a id="环境与配置"></a>
 ## Environment and configuration
 
+When a calculation is missing `operation`, correct that field first. Checks specific to an operation wait until the operation is known; the report must not ask you to add another operation's `rule`, `window`, or `q`. Errors in independent fields are still reported together.
+
+For `condition_duration`, a missing `duration_comparison` requires a business choice: `">="` includes the threshold and `">"` requires strictly longer.
+
+
 | Symptom | Cause or check | Remedy |
 |---|---|---|
 | `No module named chronaxis` | The active interpreter lacks the package, or an editable source directory moved. | Use the installation interpreter and reinstall the current directory as described in [Installation](installation.md). |
@@ -87,3 +92,18 @@ except PlanValidationError as error:
 | Batch report includes failed jobs | Inspect each job's status, error, and output path in the actual CLI `report` path. Fix and rerun failed jobs independently without overwriting completed directories. |
 
 If reproducing a problem requires retaining staged files, set `diagnostics.retain_work: true` for the next run. Enable trace separately when input positions are needed. Keep the configuration, command, exception chain, manifest, and a shareable minimal synthetic input for reproduction.
+
+## Fast session failures
+
+A required volume failing in fast run fails the session and prevents successful summary publication. Use fast validate or fast explain for configuration checks; they do not establish that logs can be read.
+
+|Symptom|Check and remedy|
+|---|---|
+|Invalid process count or nested workers rejected|Use a positive integer for execution.process_count. In an independent batch template omit it or use 1; set batch concurrency with root process_count.|
+|Target timestamp regression|Check file times, channels and target IDs. time_order checks target candidates before domain filtering. Do not shift times or deduplicate to conceal the error.|
+|Required staging quota exhausted|Multi-file time_order stages all contributions. Increase execution.spool_quota_bytes and available disk based on input size. Deleting consumed staging files does not refund cumulative quota.|
+|Later-volume prefetch paused|concatenate pauses optional prefetch when quota is unavailable; the file proceeds directly when current. This can reduce speed. Actual disk write failures still fail the session.|
+|Missing, corrupt or duplicate blocks, or worker exit|Keep the exception chain and check disk/process conditions before rerunning. Leftover files are not complete results.|
+|Python cancellation|cancel_event.set() causes run to raise InterruptedError, reclaim its workers and staging, and omit the successful manifest.|
+
+See [Fast](fast-energy.md) for defaults, complete examples and result states.

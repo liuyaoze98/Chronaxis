@@ -56,4 +56,4 @@ SourcePlan。
 
 PlanValidationError定位配置问题；不发生原始输入I/O。
 
-源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

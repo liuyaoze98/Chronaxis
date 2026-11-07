@@ -129,6 +129,10 @@
           "title": "执行配置"
         },
         {
+          "path": "continuous-files.md",
+          "title": "连续记录多进程"
+        },
+        {
           "path": "batch.md",
           "title": "批量任务"
         },

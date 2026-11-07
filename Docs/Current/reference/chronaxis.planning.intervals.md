@@ -65,7 +65,7 @@ class IntervalChoice
 |`step_ns`|int &#124; None|否|None|仅fixed使用的正纳秒数；DBC在这里不提前填值。|
 |`driver`|str &#124; None|否|None|推进累计的原信号别名；不存另一列时间。|
 
-源码：[`src/chronaxis/planning/intervals.py:19`](../../../src/chronaxis/planning/intervals.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:19`](../../../src/chronaxis/planning/intervals.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-IntervalChoice-__post_init__"></a>
 ### `IntervalChoice.__post_init__`
@@ -95,7 +95,7 @@ TypeError/ValueError为模式、纳秒范围或信号名错误。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:30`](../../../src/chronaxis/planning/intervals.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:30`](../../../src/chronaxis/planning/intervals.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-IntervalPlan"></a>
 ## `IntervalPlan`
@@ -117,7 +117,7 @@ class IntervalPlan
 |`overrides`|tuple[tuple[str, [IntervalChoice](chronaxis.planning.intervals.md#api-IntervalChoice)], ...]|否|()|按稳定节点ID的显式选择。|
 |`resolved`|tuple[tuple[str, [IntervalChoice](chronaxis.planning.intervals.md#api-IntervalChoice)], ...]|否|()|当前消费者的唯一有效选择。|
 
-源码：[`src/chronaxis/planning/intervals.py:49`](../../../src/chronaxis/planning/intervals.py#L49)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:49`](../../../src/chronaxis/planning/intervals.py#L49)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-IntervalPlan-__post_init__"></a>
 ### `IntervalPlan.__post_init__`
@@ -147,7 +147,7 @@ TypeError/ValueError为非冻结选择、节点重复或非法名称。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:60`](../../../src/chronaxis/planning/intervals.py#L60)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:60`](../../../src/chronaxis/planning/intervals.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DiagnosticPlan"></a>
 ## `DiagnosticPlan`
@@ -169,7 +169,7 @@ class DiagnosticPlan
 |`integrity`|bool|否|False|请求额外完整性诊断，不代替必要输入检查。|
 |`retain_work`|bool|否|False|请求保留本次自有现场，不授权保留无关用户数据。|
 
-源码：[`src/chronaxis/planning/intervals.py:82`](../../../src/chronaxis/planning/intervals.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:82`](../../../src/chronaxis/planning/intervals.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-DiagnosticPlan-__post_init__"></a>
 ### `DiagnosticPlan.__post_init__`
@@ -199,7 +199,7 @@ TypeError为任一值不是原生bool。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:93`](../../../src/chronaxis/planning/intervals.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:93`](../../../src/chronaxis/planning/intervals.py#L93)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-parse_diagnostics"></a>
 ## `parse_diagnostics`
@@ -230,7 +230,7 @@ PlanValidationError为未知键或非bool。
 
 返回类型：[DiagnosticPlan](chronaxis.planning.intervals.md#api-DiagnosticPlan)。
 
-源码：[`src/chronaxis/planning/intervals.py:102`](../../../src/chronaxis/planning/intervals.py#L102)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:102`](../../../src/chronaxis/planning/intervals.py#L102)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_choice"></a>
 ## `_choice`
@@ -262,7 +262,7 @@ PlanValidationError为缺项、矛盾、单位或类型错误。
 
 返回类型：[IntervalChoice](chronaxis.planning.intervals.md#api-IntervalChoice)。
 
-源码：[`src/chronaxis/planning/intervals.py:111`](../../../src/chronaxis/planning/intervals.py#L111)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:111`](../../../src/chronaxis/planning/intervals.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_consumers"></a>
 ## `_consumers`
@@ -294,7 +294,7 @@ tuple，每项为节点ID及原信号别名tuple，无消费者为空。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:125`](../../../src/chronaxis/planning/intervals.py#L125)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:125`](../../../src/chronaxis/planning/intervals.py#L125)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_driver_key"></a>
 ## `_driver_key`
@@ -326,7 +326,7 @@ tuple物理更新身份。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:158`](../../../src/chronaxis/planning/intervals.py#L158)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:158`](../../../src/chronaxis/planning/intervals.py#L158)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_resolve"></a>
 ## `_resolve`
@@ -358,7 +358,7 @@ PlanValidationError为歧义、未知驱动、时基不符或DBC不适用。
 
 无。
 
-源码：[`src/chronaxis/planning/intervals.py:173`](../../../src/chronaxis/planning/intervals.py#L173)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:173`](../../../src/chronaxis/planning/intervals.py#L173)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-resolve_intervals"></a>
 ## `resolve_intervals`
@@ -394,7 +394,7 @@ TypeError/ValueError及PlanValidationError为非法声明或不明确驱动。
 
 返回类型：[IntervalPlan](chronaxis.planning.intervals.md#api-IntervalPlan)。
 
-源码：[`src/chronaxis/planning/intervals.py:201`](../../../src/chronaxis/planning/intervals.py#L201)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:201`](../../../src/chronaxis/planning/intervals.py#L201)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-parse_intervals"></a>
 ## `parse_intervals`
@@ -426,7 +426,7 @@ PlanValidationError为结构、取值或引用错误。
 
 返回类型：[IntervalPlan](chronaxis.planning.intervals.md#api-IntervalPlan)。
 
-源码：[`src/chronaxis/planning/intervals.py:229`](../../../src/chronaxis/planning/intervals.py#L229)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:229`](../../../src/chronaxis/planning/intervals.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_interval_declarations"></a>
 ## `require_interval_declarations`
@@ -455,4 +455,4 @@ TypeError/ValueError为版本、新类型或解析结果不一致；引用错误
 
 无，不重编译表达式。
 
-源码：[`src/chronaxis/planning/intervals.py:244`](../../../src/chronaxis/planning/intervals.py#L244)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/intervals.py:244`](../../../src/chronaxis/planning/intervals.py#L244)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

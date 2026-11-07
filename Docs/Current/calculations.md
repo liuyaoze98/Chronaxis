@@ -7,7 +7,7 @@
 
 **通用时间积分器**把每段仍有效的数值乘以该段按所选时间依据计算的时长，再累加。配置`calculations[].operation: integral`与`expr`；默认按实际时间差，其他依据见[计算间隔](intervals.md)。前一次值只保持到下一次更新或valid_for到期，缺值不补0，结果同时说明完整性。功率积分得到能量，电流积分得到电荷量，其他物理量也可积分。
 
-独立ASC／BLF文件、同一报文内可取得全部输入、每条报文贡献已经明确时，可选择[高性能积分器（同帧逐报文累计）](fast-energy.md)。其每条贡献由`expr`给出，需要时间因子时须显式写入公式；它不自动采用相邻报文实际间隔，通用integral配置不能只换运行入口。需要跨报文保持、持续条件或事件窗口时使用通用路径。
+ASC／BLF来源（可包含同次记录的多个分卷）、同一报文内可取得全部输入、每条报文贡献已经明确时，可选择[高性能积分器（同帧逐报文累计）](fast-energy.md)。其每条贡献由`expr`给出，需要时间因子时须显式写入公式；它不自动采用相邻报文实际间隔，通用integral配置不能只换运行入口。需要跨报文保持、持续条件或事件窗口时使用通用路径。
 
 
 ## 完整最小例与计算方法对照
@@ -63,10 +63,10 @@ python -m chronaxis run power-statistics.yaml --output power-results
 先运行最小配置；下方扩展配置增加可选控制。两段是替换关系，不同时重复写入同一个父键。
 
 ```yaml
-calculations:              # 本例的统计结果
-  - name: energy           # 结果表中的计算名称
-    operation: integral    # 按有效持续时间积分
-    expr: power            # 使用已定义的信号或公式
+calculations:            # 本例的统计结果
+  - name: energy         # 结果表中的计算名称
+    operation: integral  # 按有效持续时间积分
+    expr: power          # 使用已定义的信号或公式
 ```
 
 ### 扩展设置
@@ -74,11 +74,11 @@ calculations:              # 本例的统计结果
 下面只增加90%的覆盖要求；积分单位J、前值保持法zoh和部分结果策略report均使用默认值。若需要Wh等其他结果单位或strict策略，再单独填写。
 
 ```yaml
-calculations:                # 本例的统计结果
-  - name: energy             # 结果表中的计算名称
-    operation: integral      # 按有效持续时间积分
-    expr: power              # 使用已定义的信号或公式
-    minimum_coverage: 0.9    # 设置要求的最低有效数据比例；0到1，按可信性要求选择
+calculations:              # 本例的统计结果
+  - name: energy           # 结果表中的计算名称
+    operation: integral    # 按有效持续时间积分
+    expr: power            # 使用已定义的信号或公式
+    minimum_coverage: 0.9  # 设置要求的最低有效数据比例；0到1，按可信性要求选择
 ```
 
 ## 字段参考

@@ -68,7 +68,7 @@ class HostedReductionRunnerTests(unittest.TestCase):
             sources=[dict(name='table',source_type='memory',rows=rows)],
             signals=[dict(name='power',field='p',unit='mV',dtype='float64',valid_for='3s'),
                      dict(name='gate',field='g',unit='1',dtype='bool',valid_for='3s')],
-            rules=[dict(name='active',rule_type='condition_duration',condition='gate',minimum_duration='0.1s')],
+            rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='gate',minimum_duration='0.1s')],
             windows=[dict(name='parts',rule='active')],
             calculations=[dict(name=n,scope=s,operation='custom_total',expr='power',condition='gate',unit='mA') for n,s in
                           (('all','session'),('each',{'rule':'active'}),('window_sum',{'window':'parts'}))],

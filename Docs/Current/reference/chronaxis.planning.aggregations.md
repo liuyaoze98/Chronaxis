@@ -56,7 +56,7 @@ class AggregationPlan
 |`q`|int &#124; float &#124; None|是|无|quantile 用于计算精确顺序统计位置的概率，其他操作省略。|
 |`ddof`|int|是|无|variance 的自由度修正，可为 0 或 1；当参与数不大于此值时方差不可定。|
 
-源码：[`src/chronaxis/planning/aggregations.py:13`](../../../src/chronaxis/planning/aggregations.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/aggregations.py:13`](../../../src/chronaxis/planning/aggregations.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-aggregation_unit"></a>
 ## `aggregation_unit`
@@ -83,7 +83,7 @@ aggregation_unit(operation, source_unit, target)
 
 单位不可比或未知变换。
 
-源码：[`src/chronaxis/planning/aggregations.py:30`](../../../src/chronaxis/planning/aggregations.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/aggregations.py:30`](../../../src/chronaxis/planning/aggregations.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-parse_aggregations"></a>
 ## `parse_aggregations`
@@ -115,4 +115,4 @@ AggregationPlan 元组，顺序与配置一致。
 
 PlanValidationError 定位错误条目。
 
-源码：[`src/chronaxis/planning/aggregations.py:58`](../../../src/chronaxis/planning/aggregations.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/aggregations.py:58`](../../../src/chronaxis/planning/aggregations.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

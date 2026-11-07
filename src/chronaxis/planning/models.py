@@ -352,6 +352,7 @@ class ExecutionPlan:
     partial_policy: str  # 全局指标默认部分政策。
     spool_quota_bytes: int | None  # 磁盘配额，None表示未显式限额。
     on_budget_exceeded: str = 'error'  # 首版不丢数据或增加旧扫描。
+    process_count: int = 1  # 本次分析读取/解码工作进程上限；不包含主分析进程。
 
 
 

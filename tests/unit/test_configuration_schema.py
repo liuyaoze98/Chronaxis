@@ -49,8 +49,8 @@ class ConfigurationSchemaTests(unittest.TestCase):
                     self.assertTrue(node.get('description'),(name,node))
                 if '$ref' in node:
                     self.assertFalse(node['$ref'].startswith(('urn:','http:','https:')),node['$ref'])
-        # 当前三份规范共732项；移除旧INI及版本3专用分支后，仍逐项检查说明。
-        self.assertEqual(count,732)
+        # 743项含进程数及三个文件来源的归并声明；每个引用节点仍单独检查说明。
+        self.assertEqual(count,743)
 
     def test_current_analysis_examples_and_all_three_local_references_validate(self):
         """有效分析、批量和共享定义都能离线标准校验；被引用的当前结构确实生效。参数: 无。返回: None。异常: 断言/引用错误。"""

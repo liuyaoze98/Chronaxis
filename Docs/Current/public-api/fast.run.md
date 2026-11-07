@@ -5,29 +5,32 @@
 <a id="api-run"></a>
 ## `run`
 
-高性能积分器：读取一个ASC或BLF文件，对同帧公式逐报文累计，成功后发布结果。不是按真实帧间隔积分。
+高性能积分器：一个会话管理一个或多个ASC/BLF分卷，按确定顺序累计同帧贡献并发布一次汇总。
 
 ```python
-run(config, output)
+run(config: str | pathlib.Path, output: str | pathlib.Path, *, process_count: int | None = None, work_dir: str | pathlib.Path | None = None, cancel_event: object | None = None) -> pathlib.Path
 ```
 
 |名称|类型|必填|默认值|用途|
 |---|---|---|---|---|
-|`config`|见用途|是|无默认值|str或Path：单文件YAML/JSON配置路径。只接受fast支持的同帧逐报文累计配置；DBC与报文路径相对声明它们的配置文件。|
-|`output`|见用途|是|无默认值|str或Path：结果目录，可已存在；使用本次时间标记文件，不覆盖既有结果。|
+|`config`|str &#124; pathlib.Path|是|无默认值|YAML/JSON分析配置路径；一个来源的paths列出同一会话分卷，内部路径相对配置文件。仅支持fast当前帧数值子集。|
+|`output`|str &#124; pathlib.Path|是|无默认值|结果目录，可已存在；使用本次时间标记文件，不覆盖既有结果。|
+|`process_count`|int &#124; None|否|None|可选正整数工作进程上限，不含主进程；None沿用execution.process_count，默认1内联。超过文件数时按文件数限制，拒绝bool，不修改原配置。|
+|`work_dir`|str &#124; pathlib.Path &#124; None|否|None|可选暂存父目录，None使用系统临时目录；本次创建的私有暂存完成或失败后清理。|
+|`cancel_event`|object &#124; None|否|None|可选带is_set()的取消事件，例如threading.Event；set()请求停止调度并清理，run抛InterruptedError，不发布成功汇总。|
 
 ### 返回
 
-pathlib.Path：本次run_manifest完成清单；从outputs取得实际结果文件名。没有目标帧时结果为空且保留原因，不伪造零。
+pathlib.Path：本次完成清单。inputs列出全部文件，outputs列出结果表；每项独立判断空值/有效零，某分卷无目标不使其他有效贡献失效。
 
 ### 异常
 
-无效配置抛PlanValidationError；读取、解码或公式错误传播对应异常，本文件不发布正常累计结果。输出I/O失败传播OSError。此单文件入口没有cancel_event参数。
+PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。
 
 ### 执行与资源
 
-读取配置/DBC/输入，创建并发布结果文件，最后发布完成清单。支持范围与完整配置见高性能积分器教程。
+读取配置/DBC及分卷；工作进程求单帧贡献，主进程逐条累计。单进程内联；time_order多文件需暂存。Windows多进程调用须置于`if __name__ == "__main__":`保护中，清单最后发布。
 
 [高性能积分器教程](../fast-energy.md)
 
-源码：[`src/chronaxis/fast/run.py:54`](../../../src/chronaxis/fast/run.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/run.py:63`](../../../src/chronaxis/fast/run.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

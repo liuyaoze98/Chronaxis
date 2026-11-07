@@ -50,7 +50,7 @@ ASCReaderForCANFD(file_path: str, relative_timestamp: bool=False, format_hint: s
 ```
 
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:11`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L11)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:11`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-__init__"></a>
 ### `ASCReaderForCANFD.__init__`
@@ -69,7 +69,7 @@ ASCReaderForCANFD.__init__(file_path: str, relative_timestamp: bool=False, forma
 |`relative_timestamp`|bool|否|False|位置或关键字。是否使用相对时间戳|
 |`format_hint`|str|否|'auto'|位置或关键字。格式提示，可选值：'auto'（自动检测）、'standard'（标准格式）、'custom'（自定义格式）|
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:18`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:18`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_initialize_patterns"></a>
 ### `ASCReaderForCANFD._initialize_patterns`
@@ -85,7 +85,7 @@ ASCReaderForCANFD._initialize_patterns() -> List[re.Pattern]
 
 返回类型：List[re.Pattern]。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:46`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:46`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_detect_format"></a>
 ### `ASCReaderForCANFD._detect_format`
@@ -99,7 +99,7 @@ ASCReaderForCANFD._detect_format()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:72`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L72)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:72`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L72)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_record_pattern_info"></a>
 ### `ASCReaderForCANFD._record_pattern_info`
@@ -116,7 +116,7 @@ ASCReaderForCANFD._record_pattern_info(match: re.Match)
 |---|---|---|---|---|
 |`match`|re.Match|是|无|位置或关键字。已匹配ASC行的正则Match对象，用于登记本次可复用字段位置。|
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:96`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L96)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:96`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L96)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-__iter__"></a>
 ### `ASCReaderForCANFD.__iter__`
@@ -132,7 +132,7 @@ ASCReaderForCANFD.__iter__() -> Generator[can.Message, None, None]
 
 返回类型：Generator[can.Message, None, None]。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:103`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:103`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_parse_line"></a>
 ### `ASCReaderForCANFD._parse_line`
@@ -155,7 +155,7 @@ can.Message: 解析后的CAN消息对象，解析失败返回None
 
 返回类型：Optional[can.Message]。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:121`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:121`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_parse_with_pattern"></a>
 ### `ASCReaderForCANFD._parse_with_pattern`
@@ -175,7 +175,7 @@ ASCReaderForCANFD._parse_with_pattern(line: str, pattern: re.Pattern) -> Optiona
 
 返回类型：Optional[can.Message]。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:149`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L149)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:149`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L149)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_parse_with_generic_split"></a>
 ### `ASCReaderForCANFD._parse_with_generic_split`
@@ -199,7 +199,7 @@ ASCReaderForCANFD._parse_with_generic_split(line: str) -> Optional[can.Message]
 
 返回类型：Optional[can.Message]。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:239`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L239)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:239`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L239)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-add_custom_pattern"></a>
 ### `ASCReaderForCANFD.add_custom_pattern`
@@ -222,7 +222,7 @@ bool: 添加是否成功
 
 返回类型：bool。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:379`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L379)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:379`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L379)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_parse_header"></a>
 ### `ASCReaderForCANFD._parse_header`
@@ -238,7 +238,7 @@ ASCReaderForCANFD._parse_header() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:398`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L398)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:398`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L398)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ASCReaderForCANFD-_apply_header_timestamp"></a>
 ### `ASCReaderForCANFD._apply_header_timestamp`
@@ -257,4 +257,4 @@ ASCReaderForCANFD._apply_header_timestamp(ts: float) -> float
 
 返回类型：float。
 
-源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:438`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L438)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py:438`](../../../src/chronaxis/legacy/vendor/sclicer_functions_v1/utils.py#L438)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

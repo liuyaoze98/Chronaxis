@@ -44,4 +44,4 @@ run_configuration_cli(arguments)
 
 初始化显示实际入口与合成预期；可运行不代表适合真实设备。
 
-源码：[`src/chronaxis/configuration/cli.py:6`](../../../src/chronaxis/configuration/cli.py#L6)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/cli.py:6`](../../../src/chronaxis/configuration/cli.py#L6)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

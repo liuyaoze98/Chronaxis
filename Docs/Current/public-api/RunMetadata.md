@@ -16,7 +16,7 @@
 保存一次运行的身份、实际计算后端、时间解释及诊断摘要。通常从仍打开的AnalysisResult.metadata读取，不需要自行构造。来源明细字段是可选模型：只有调用方提供真实读取明细时才有内容。当前AnalysisRunner没有填充can_sources和text_can_sources，两者保持空元组；这不表示没有读取CAN文件，也不表示DBC已经校验。to_dict的摘要与详细模式见下方方法说明。
 
 ```python
-RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev2', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None
+RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev3', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None
 ```
 
 ### 属性与数据字段
@@ -37,7 +37,7 @@ RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: st
 |`worker_config`|str|否|'single-thread'|本次执行worker配置说明，不将单线程标签当性能保证。|
 |`dependency_versions`|tuple[tuple[str, str], ...]|否|()|实际记录的依赖(name,version)元组。|
 |`limitations`|tuple[str, ...]|否|()|本次已知限制文本元组，发布时保持可见。|
-|`software_version`|str|否|'0.1.0.dev2'|软件版本文本，与设计版本和配置版本分开。|
+|`software_version`|str|否|software_version()|软件发行版本文本；省略时取当前源码或安装包的发行版本。与设计版本、配置版本分开；显式传入的历史版本保持原值。|
 |`device_label`|str|否|'pending'|实际内容来源设备标签；不能根据文件所在路径猜home/work。|
 |`signal_bindings`|tuple[[SignalDefinition](../reference/chronaxis.core.binding.md#api-SignalDefinition), ...]|否|()|本次实际完整定义，不含样本或输入行。|
 |`preset_bindings`|tuple[[PresetBindingMetadata](../reference/chronaxis.results.binding_metadata.md#api-PresetBindingMetadata), ...]|否|()|原预设版本及最终角色。|
@@ -54,7 +54,7 @@ RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: st
 |`analysis_outcome`|[AnalysisOutcome](../reference/chronaxis.results.analysis_outcome.md#api-AnalysisOutcome) &#124; None|否|None|同次执行累计的AnalysisOutcome或None：逐规则说明有事件、条件未成立、未达到时长、无观测或数据不足，并分别统计complete/partial/indeterminate指标行。None表示该路径未提供概况，不能当作无事件；completed只说明执行结束。无二次输入扫描或逐条追溯。|
 |`aggregation_definitions`|tuple[[AggregationPlan](../reference/chronaxis.planning.aggregations.md#api-AggregationPlan), ...]|否|()|本次运行使用的聚合定义及总体政策。非空时随清单序列化，省略时不增加该字段。|
 
-源码：[`src/chronaxis/results/manifest.py:28`](../../../src/chronaxis/results/manifest.py#L28)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/manifest.py:29`](../../../src/chronaxis/results/manifest.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RunMetadata-estimated_bytes"></a>
 ### `RunMetadata.estimated_bytes`
@@ -82,7 +82,7 @@ RunMetadata.estimated_bytes() -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/manifest.py:204`](../../../src/chronaxis/results/manifest.py#L204)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/manifest.py:205`](../../../src/chronaxis/results/manifest.py#L205)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RunMetadata-to_dict"></a>
 ### `RunMetadata.to_dict`
@@ -110,4 +110,4 @@ RunMetadata.to_dict() -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/manifest.py:215`](../../../src/chronaxis/results/manifest.py#L215)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/manifest.py:216`](../../../src/chronaxis/results/manifest.py#L216)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

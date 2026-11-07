@@ -30,4 +30,4 @@ OutputManifest(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Pat
 
 ## Source locations
 
-- [`src/chronaxis/results/manifest.py:332`](../../../../src/chronaxis/results/manifest.py#L332) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/results/manifest.py:333`](../../../../src/chronaxis/results/manifest.py#L333) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

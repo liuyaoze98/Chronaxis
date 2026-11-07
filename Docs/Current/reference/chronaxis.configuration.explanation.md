@@ -51,7 +51,7 @@ time_text(nanoseconds)
 
 无。
 
-源码：[`src/chronaxis/configuration/explanation.py:25`](../../../src/chronaxis/configuration/explanation.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:25`](../../../src/chronaxis/configuration/explanation.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_declared"></a>
 ## `_declared`
@@ -77,7 +77,7 @@ bool。
 
 无；不取文件默认值。
 
-源码：[`src/chronaxis/configuration/explanation.py:35`](../../../src/chronaxis/configuration/explanation.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:35`](../../../src/chronaxis/configuration/explanation.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_setting"></a>
 ## `_setting`
@@ -105,7 +105,7 @@ _setting(plan, label, value, *parts)
 
 无。
 
-源码：[`src/chronaxis/configuration/explanation.py:48`](../../../src/chronaxis/configuration/explanation.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:48`](../../../src/chronaxis/configuration/explanation.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_scope"></a>
 ## `_scope`
@@ -130,7 +130,7 @@ _scope(value)
 
 无。
 
-源码：[`src/chronaxis/configuration/explanation.py:56`](../../../src/chronaxis/configuration/explanation.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:56`](../../../src/chronaxis/configuration/explanation.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_validation_lines"></a>
 ## `_validation_lines`
@@ -155,7 +155,7 @@ _validation_lines(validation)
 
 无。
 
-源码：[`src/chronaxis/configuration/explanation.py:64`](../../../src/chronaxis/configuration/explanation.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:64`](../../../src/chronaxis/configuration/explanation.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-validation_text"></a>
 ## `validation_text`
@@ -181,7 +181,7 @@ validation_text(plan, validation)
 
 无。
 
-源码：[`src/chronaxis/configuration/explanation.py:74`](../../../src/chronaxis/configuration/explanation.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:74`](../../../src/chronaxis/configuration/explanation.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_rule_lines"></a>
 ## `_rule_lines`
@@ -206,7 +206,7 @@ _rule_lines(plan)
 
 内部模型不符。
 
-源码：[`src/chronaxis/configuration/explanation.py:82`](../../../src/chronaxis/configuration/explanation.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:82`](../../../src/chronaxis/configuration/explanation.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-explanation_text"></a>
 ## `explanation_text`
@@ -233,4 +233,4 @@ explanation_text(plan, report, *, backend_override=None)
 
 内部接口不符传播，不用默认文案掩盖未实现类型；无输入I/O。
 
-源码：[`src/chronaxis/configuration/explanation.py:121`](../../../src/chronaxis/configuration/explanation.py#L121)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/explanation.py:121`](../../../src/chronaxis/configuration/explanation.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -69,7 +69,7 @@ ResultFormatError 为既有估算协议无法处理的字段。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:23`](../../../src/chronaxis/execution/conditional_integral_facts.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:23`](../../../src/chronaxis/execution/conditional_integral_facts.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_unique_refs"></a>
 ## `_unique_refs`
@@ -95,7 +95,7 @@ _unique_refs(existing, incoming)
 
 MemoryError 为预算已申请后的实际分配失败。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:37`](../../../src/chronaxis/execution/conditional_integral_facts.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:37`](../../../src/chronaxis/execution/conditional_integral_facts.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_join_unknown"></a>
 ## `_join_unknown`
@@ -121,7 +121,7 @@ _join_unknown(existing, incoming)
 
 MemoryError 为已申请工作空间内的实际分配失败。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:62`](../../../src/chronaxis/execution/conditional_integral_facts.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:62`](../../../src/chronaxis/execution/conditional_integral_facts.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator"></a>
 ## `ConditionalIntegralFactsAccumulator`
@@ -133,7 +133,7 @@ ConditionalIntegralFactsAccumulator(budget: ResourceBudget, spec: CalculationDef
 ```
 
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:83`](../../../src/chronaxis/execution/conditional_integral_facts.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:83`](../../../src/chronaxis/execution/conditional_integral_facts.py#L83)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-__init__"></a>
 ### `ConditionalIntegralFactsAccumulator.__init__`
@@ -164,7 +164,7 @@ ConditionalIntegralFactsAccumulator.__init__(budget: ResourceBudget, spec: Calcu
 TypeError/ValueError 为协议错误；预算/分配/取消原样传播。
 清理仍失败时，原异常.conditional_integral_facts_cleanup_owner 提供可重试 close 的 owner。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:91`](../../../src/chronaxis/execution/conditional_integral_facts.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:91`](../../../src/chronaxis/execution/conditional_integral_facts.py#L91)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-closed"></a>
 ### `ConditionalIntegralFactsAccumulator.closed`
@@ -192,7 +192,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:148`](../../../src/chronaxis/execution/conditional_integral_facts.py#L148)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:148`](../../../src/chronaxis/execution/conditional_integral_facts.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-failed"></a>
 ### `ConditionalIntegralFactsAccumulator.failed`
@@ -220,7 +220,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:154`](../../../src/chronaxis/execution/conditional_integral_facts.py#L154)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:154`](../../../src/chronaxis/execution/conditional_integral_facts.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-facts"></a>
 ### `ConditionalIntegralFactsAccumulator.facts`
@@ -258,7 +258,7 @@ ConditionalIntegralFactsAccumulator.facts: ConditionalIntegralFacts
 
 返回类型：[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:160`](../../../src/chronaxis/execution/conditional_integral_facts.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:160`](../../../src/chronaxis/execution/conditional_integral_facts.py#L160)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-_require_open"></a>
 ### `ConditionalIntegralFactsAccumulator._require_open`
@@ -288,7 +288,7 @@ ResultClosedError。
 
 - `ResultClosedError`：积分事实owner已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:172`](../../../src/chronaxis/execution/conditional_integral_facts.py#L172)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:172`](../../../src/chronaxis/execution/conditional_integral_facts.py#L172)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-_reserve"></a>
 ### `ConditionalIntegralFactsAccumulator._reserve`
@@ -313,7 +313,7 @@ ConditionalIntegralFactsAccumulator._reserve(amount)
 
 原预算或取消异常。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:177`](../../../src/chronaxis/execution/conditional_integral_facts.py#L177)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:177`](../../../src/chronaxis/execution/conditional_integral_facts.py#L177)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-_release"></a>
 ### `ConditionalIntegralFactsAccumulator._release`
@@ -338,7 +338,7 @@ ConditionalIntegralFactsAccumulator._release(amount)
 
 原释放或取消异常。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:190`](../../../src/chronaxis/execution/conditional_integral_facts.py#L190)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:190`](../../../src/chronaxis/execution/conditional_integral_facts.py#L190)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-_validate_block"></a>
 ### `ConditionalIntegralFactsAccumulator._validate_block`
@@ -373,7 +373,7 @@ TypeError/ValueError 为协议错误。
 - `ValueError`：零窗口仅接收一个真实点块。
 - `ValueError`：正窗口不接受不推进的块。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:203`](../../../src/chronaxis/execution/conditional_integral_facts.py#L203)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:203`](../../../src/chronaxis/execution/conditional_integral_facts.py#L203)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-push"></a>
 ### `ConditionalIntegralFactsAccumulator.push`
@@ -404,7 +404,7 @@ ConditionalIntegralFactsAccumulator.push(facts: ConditionalIntegralFacts) -> Non
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:232`](../../../src/chronaxis/execution/conditional_integral_facts.py#L232)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:232`](../../../src/chronaxis/execution/conditional_integral_facts.py#L232)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-finish"></a>
 ### `ConditionalIntegralFactsAccumulator.finish`
@@ -437,7 +437,7 @@ RuntimeError 为失败状态；ValueError 为观测前缀不足。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:279`](../../../src/chronaxis/execution/conditional_integral_facts.py#L279)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:279`](../../../src/chronaxis/execution/conditional_integral_facts.py#L279)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ConditionalIntegralFactsAccumulator-close"></a>
 ### `ConditionalIntegralFactsAccumulator.close`
@@ -465,4 +465,4 @@ None；重复关闭不再扣账。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/conditional_integral_facts.py:294`](../../../src/chronaxis/execution/conditional_integral_facts.py#L294)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/conditional_integral_facts.py:294`](../../../src/chronaxis/execution/conditional_integral_facts.py#L294)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

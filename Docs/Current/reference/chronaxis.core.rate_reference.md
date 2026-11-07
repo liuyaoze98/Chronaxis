@@ -54,7 +54,7 @@ ScalarValue，真溢出或下溢有独立原因。
 
 内存不足原样传播。
 
-源码：[`src/chronaxis/core/rate_reference.py:14`](../../../src/chronaxis/core/rate_reference.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_reference.py:14`](../../../src/chronaxis/core/rate_reference.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-difference_reference"></a>
 ## `difference_reference`
@@ -81,7 +81,7 @@ FLOAT64 ScalarValue。
 
 内部调用需先校验模型。不能精确进入浮点的整数差量报PRECISION_LOSS。
 
-源码：[`src/chronaxis/core/rate_reference.py:29`](../../../src/chronaxis/core/rate_reference.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_reference.py:29`](../../../src/chronaxis/core/rate_reference.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-fit_reference"></a>
 ## `fit_reference`
@@ -107,4 +107,4 @@ FLOAT64 ScalarValue。
 
 内部结构错误传播，数值失效转为质量。
 
-源码：[`src/chronaxis/core/rate_reference.py:44`](../../../src/chronaxis/core/rate_reference.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_reference.py:44`](../../../src/chronaxis/core/rate_reference.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

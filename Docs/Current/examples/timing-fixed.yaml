@@ -51,6 +51,7 @@ rules:                               # 列出识别活动或瞬间变化的规�
   - name: hot                        # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: condition_duration    # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
     condition: temperature >= 80     # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    duration_comparison: ">="        # 达到门槛即满足；要求严格超过时填>
     minimum_duration: 1.5s           # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
   - name: change                     # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: window_delta          # 选择活动或变化识别算法；本例检查向前窗口内的变化幅度、方向及配置的单调性要求
@@ -74,3 +75,5 @@ intervals:                           # 选择时间计算使用实际间隔还�
     mode: fixed                      # 选择actual实际时间差、fixed固定周期或dbc报文周期
     value: 1s                        # 给fixed模式提供固定周期；从采集设置或业务规则取得
     driver: request                  # 选择提供周期和更新计数的信号；填写已有signals名称
+execution:                           # 设置本次分析的并行处理方式
+  process_count: 4                   # 最多4个文件工作进程；实际并行数不超过输入文件数

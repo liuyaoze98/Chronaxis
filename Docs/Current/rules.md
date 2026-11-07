@@ -10,7 +10,7 @@
 
 |rule_type|必填字段|可选字段及默认值|适合的问题|
 |---|---|---|---|
-|[`condition_duration`](#rule-duration)|[`condition`](#duration-condition)、[`minimum_duration`](#duration-duration)|`duration_comparison: ">="`、[`selection_origin="onset"`](#duration-selection-origin)|条件连续成立至少3秒后，记录这段活动|
+|[`condition_duration`](#rule-duration)|[`condition`](#duration-condition)、[`minimum_duration`](#duration-duration)、`duration_comparison`|[`selection_origin="onset"`](#duration-selection-origin)|条件连续成立至少3秒后，记录这段活动|
 |[`rising_edge`](#rule-rising_edge)|[`condition`](#rising_edge-condition)|[`emit_initial=false`](#rising_edge-emit-initial)|按钮由松开变成按下时记一个点|
 |[`falling_edge`](#rule-falling_edge)|[`condition`](#falling_edge-condition)|[`emit_initial=false`](#falling_edge-emit-initial)，不允许true|按钮由按下变成松开时记一个点|
 |[`start_only`](#rule-start-only)|[`condition`](#start-only-condition)、[`window_duration`](#start-only-window-duration)|[`emit_initial=false`](#start-only-emit-initial)|触发后取固定5秒，这5秒内不重复触发|
@@ -43,44 +43,44 @@
 基础文件已有的信号定义摘录：用于阅读，不重复插入；完整基础文件只有一个CAN来源，无需逐项重复source。信号的frame_id和signal来自随附DBC；类型与单位自动读取。此处显式保留20s有效期，保证稀疏教学记录之间仍有效，不代表实际设备的推荐设置。
 
 ```yaml
-signals:                       # 定义公式使用的信号
-  - name: temperature          # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x11d'        # 信号所属报文 ID
-      signal: Temperature      # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: power                # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x100'        # 信号所属报文 ID
-      signal: Power            # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: voltage              # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x11f'        # 信号所属报文 ID
-      signal: Voltage          # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: button_pressed       # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x113'        # 信号所属报文 ID
-      signal: ButtonPressed    # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                   # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+signals:                     # 定义公式使用的信号
+  - name: temperature        # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x11d'      # 信号所属报文 ID
+      signal: Temperature    # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: power              # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x100'      # 信号所属报文 ID
+      signal: Power          # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: voltage            # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x11f'      # 信号所属报文 ID
+      signal: Voltage        # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: button_pressed     # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x113'      # 信号所属报文 ID
+      signal: ButtonPressed  # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                 # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
-  - name: start_signal         # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x11c'        # 信号所属报文 ID
-      signal: StartSignal      # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                   # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+  - name: start_signal       # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x11c'      # 信号所属报文 ID
+      signal: StartSignal    # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                 # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
-  - name: end_signal           # 公式中的信号名称
-    field:                     # 输入中的原始字段
-      frame_id: '0x117'        # 信号所属报文 ID
-      signal: EndSignal        # DBC 中的信号名
-    valid_for: 20s             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                   # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+  - name: end_signal         # 公式中的信号名称
+    field:                   # 输入中的原始字段
+      frame_id: '0x117'      # 信号所属报文 ID
+      signal: EndSignal      # DBC 中的信号名
+    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                 # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
 ```
@@ -112,19 +112,22 @@ signals:                       # 定义公式使用的信号
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                               # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: hot                        # 窗口或计算引用的规则名称
-    condition: temperature >= 80     # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    minimum_duration: 2s             # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
-    rule_type: condition_duration    # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
+rules:                             # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: hot                      # 窗口或计算引用的规则名称
+    condition: temperature >= 80   # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    duration_comparison: ">="      # 达到门槛即满足；要求严格超过时填>
+    minimum_duration: 2s           # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
+    rule_type: condition_duration  # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
 |---|---|---|---|---|---|
 |<a id="duration-condition"></a>`condition`|要检查的条件。本例表示温度达到80时条件成立；低于80时不成立。|能计算出真或假的表达式，例如 `"temperature >= 80"`|字符串|是；无|用已定义信号名，按业务判断要求组合表达式。|
-|<a id="duration-duration"></a>`minimum_duration`|条件连续成立这么久，才把这次过程记为一次活动。填 `"2s"` 时，持续1.9秒的过程不会被记录；填 `"0s"` 时无需等待。|大于或等于0，例如 `"2s"`|时长字符串|是；无|由业务规定连续成立的最短时间。|
-|`duration_comparison`|持续时长与minimum_duration的比较。`>=`表示达到，`>`表示严格超过。60秒整只符合前者，60.000000001秒符合两者。|`>=`、`>`|字符串|否；`>=`|需求写“超过”时填`">"`；不要把60秒改为60.1秒。|
+|<a id="duration-duration"></a>`minimum_duration`|条件连续成立这么久，才把这次过程记为一次活动。填 `"2s"` 时，持续1.9秒的过程不会被记录；填 `"0s"` 且比较符为 `">="` 时无需等待；`">"` 仍要求持续时间大于0。|大于或等于0，例如 `"2s"`|时长字符串|是；无|由业务规定连续成立的最短时间。|
+|`duration_comparison`|持续时长与minimum_duration的比较。`>=`表示达到，`>`表示严格超过。60秒整只符合前者，60.000000001秒符合两者。|`>=`、`>`|字符串|是；无|需求写“至少/达到”时填`">="`，“超过”时填`">"`；不要把60秒改为60.1秒。|
 |<a id="duration-selection-origin"></a>`selection_origin`|计算每次活动的时长、平均值或积分时，选择是否计入确认前的等待时间。|`"onset"` 或 `"confirmed"`；逐项解释见下方|字符串|否；`"onset"`|按统计是否包含等待确认时间选择。|
+
+漏填`duration_comparison`会在加载配置时报告缺少字段。请按业务要求明确选择`">="`或`">"`；程序不代替用户选择是否包含恰好达到门槛的活动。
 
 ### 严格超过指定时长
 
@@ -155,18 +158,19 @@ rules:                               # 列出识别活动或瞬间变化的规�
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules, calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                               # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: hot                        # 窗口或计算引用的规则名称
-    condition: temperature >= 80     # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    selection_origin: confirmed      # 选择活动计算起点；onset包含确认前等待，confirmed从确认时刻起算
-    minimum_duration: 2s             # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
-    rule_type: condition_duration    # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
-calculations:                        # 本例的统计结果
-  - name: hot_energy                 # 结果表中的计算名称
-    expr: power                      # 使用已定义的信号或公式
-    operation: integral              # 按有效持续时间积分
-    scope:                           # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
-      rule: hot                      # 按指定规则的每次事件分别计算；填写前面rules中的name
+rules:                             # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: hot                      # 窗口或计算引用的规则名称
+    condition: temperature >= 80   # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    selection_origin: confirmed    # 选择活动计算起点；onset包含确认前等待，confirmed从确认时刻起算
+    duration_comparison: ">="      # 达到门槛即满足；要求严格超过时填>
+    minimum_duration: 2s           # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
+    rule_type: condition_duration  # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
+calculations:                      # 本例的统计结果
+  - name: hot_energy               # 结果表中的计算名称
+    expr: power                    # 使用已定义的信号或公式
+    operation: integral            # 按有效持续时间积分
+    scope:                         # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      rule: hot                    # 按指定规则的每次事件分别计算；填写前面rules中的name
 ```
 
 按上面的数据，这段配置得到30J。把 `"confirmed"` 改成 `"onset"`，得到50J；活动是否达到“至少2秒”的要求并没有变化。
@@ -175,7 +179,7 @@ calculations:                        # 本例的统计结果
 
 **`selection_origin` 不改变这个窗口的范围。** 无论填写 `"onset"` 还是 `"confirmed"`，这个窗口都保持不变。具体配置见[活动前后各取1秒并计算能量](windows.md#activity-context-example)。
 
-**如果恰好保持2秒就结束呢？** 第1秒温度达到80，第3秒降到80以下，这次活动仍会被记录。
+**如果恰好保持2秒就结束呢？** 本例明确使用`duration_comparison: ">="`。 第1秒温度达到80，第3秒降到80以下，这次活动仍会被记录。
 
 填 `"onset"` 时，计算第1秒到第3秒的数据。填 `"confirmed"` 时，确认和结束都在第3秒，没有可供统计的持续时间；时间计算会返回空值，并说明统计范围长度为0。
 
@@ -187,10 +191,10 @@ calculations:                        # 本例的统计结果
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                           # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: pressed                # 窗口或计算引用的规则名称
-    condition: button_pressed    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    rule_type: rising_edge       # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: pressed              # 窗口或计算引用的规则名称
+    condition: button_pressed  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    rule_type: rising_edge     # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -206,10 +210,10 @@ rules:                           # 列出识别活动或瞬间变化的规则；
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                           # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: released               # 窗口或计算引用的规则名称
-    condition: button_pressed    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    rule_type: falling_edge      # 选择活动或变化识别算法；本例condition由true变为false时产生瞬时事件
+rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: released             # 窗口或计算引用的规则名称
+    condition: button_pressed  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    rule_type: falling_edge    # 选择活动或变化识别算法；本例condition由true变为false时产生瞬时事件
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -225,11 +229,11 @@ rules:                           # 列出识别活动或瞬间变化的规则；
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                           # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: capture                # 窗口或计算引用的规则名称
-    condition: button_pressed    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    window_duration: 5s          # 设置start_only一次触发后抑制新触发的时长；配套窗口post必须与此值相等
-    rule_type: start_only        # 选择活动或变化识别算法；本例开始条件触发后，在window_duration内抑制重复触发
+rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: capture              # 窗口或计算引用的规则名称
+    condition: button_pressed  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    window_duration: 5s        # 设置start_only一次触发后抑制新触发的时长；配套窗口post必须与此值相等
+    rule_type: start_only      # 选择活动或变化识别算法；本例开始条件触发后，在window_duration内抑制重复触发
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -245,9 +249,9 @@ rules:                           # 列出识别活动或瞬间变化的规则；
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`windows`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 依赖：保留上方 start_only 的 capture 规则，再加入本块 windows。
 
 ```yaml
-windows:                  # 围绕已定义规则的事件选取时间片段，供计算或导出使用
-  - name: capture_data    # 计算或导出引用的窗口名称
-    rule: capture         # 引用前面定义的事件规则
+windows:                # 围绕已定义规则的事件选取时间片段，供计算或导出使用
+  - name: capture_data  # 计算或导出引用的窗口名称
+    rule: capture       # 引用前面定义的事件规则
 ```
 
 这段包含根级windows字段，保留上方capture规则后替换同名字段。省略`post`时自动沿用规则的`window_duration`；显式填写也须与它相等。本例得到`[1,6)`和`[6,11)`；`pre`可另外指定向前取多少数据。字段逐项见[窗口字段](windows.md#window-fields)。
@@ -258,12 +262,12 @@ windows:                  # 围绕已定义规则的事件选取时间片段，�
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                           # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: stable_pressed         # 窗口或计算引用的规则名称
-    condition: button_pressed    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    enter_delay: 2s              # 设置进入条件需连续成立的等待时间；0s表示不额外等待
-    exit_delay: 3s               # 设置退出条件需连续成立的等待时间；0s表示不额外等待
-    rule_type: debounce          # 选择活动或变化识别算法；本例进入和退出条件各需保持指定时长才确认状态变化
+rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: stable_pressed       # 窗口或计算引用的规则名称
+    condition: button_pressed  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    enter_delay: 2s            # 设置进入条件需连续成立的等待时间；0s表示不额外等待
+    exit_delay: 3s             # 设置退出条件需连续成立的等待时间；0s表示不额外等待
+    rule_type: debounce        # 选择活动或变化识别算法；本例进入和退出条件各需保持指定时长才确认状态变化
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -293,11 +297,11 @@ rules:                           # 列出识别活动或瞬间变化的规则；
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                                    # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: alarm                           # 窗口或计算引用的规则名称
-    enter_condition: temperature >= 80    # 设置进入活动的条件；与退出条件分别判断
-    exit_condition: temperature <= 75     # 设置退出活动的条件；按恢复要求填写
-    rule_type: hysteresis                 # 选择活动或变化识别算法；本例分别用进入和退出条件判断活动，避免一个阈值附近反复切换
+rules:                                  # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: alarm                         # 窗口或计算引用的规则名称
+    enter_condition: temperature >= 80  # 设置进入活动的条件；与退出条件分别判断
+    exit_condition: temperature <= 75   # 设置退出活动的条件；按恢复要求填写
+    rule_type: hysteresis               # 选择活动或变化识别算法；本例分别用进入和退出条件判断活动，避免一个阈值附近反复切换
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -327,12 +331,12 @@ rules:                                    # 列出识别活动或瞬间变化的
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                               # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: cycle                      # 窗口或计算引用的规则名称
-    start_condition: start_signal    # 设置开始活动的条件；引用上方定义的信号
-    end_condition: end_signal        # 设置结束活动的条件；引用上方定义的信号
-    timeout: 5s                      # 限制一次活动的最长等待/持续时间；达到上限按规则结束
-    rule_type: start_end             # 选择活动或变化识别算法；本例start_condition开始活动，end_condition或timeout结束活动
+rules:                             # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: cycle                    # 窗口或计算引用的规则名称
+    start_condition: start_signal  # 设置开始活动的条件；引用上方定义的信号
+    end_condition: end_signal      # 设置结束活动的条件；引用上方定义的信号
+    timeout: 5s                    # 限制一次活动的最长等待/持续时间；达到上限按规则结束
+    rule_type: start_end           # 选择活动或变化识别算法；本例start_condition开始活动，end_condition或timeout结束活动
 ```
 
 |字段|控制作用与效果|可填写的值|数据类型|必填/默认|取值依据|
@@ -360,27 +364,27 @@ rules:                               # 列出识别活动或瞬间变化的规�
 最小变化量规则使用默认行为；替换基础文件的根级rules。
 
 ```yaml
-rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: change               # 窗口或计算引用的规则名称
-    signal: voltage            # 选择用于变化量判断的分析信号；填写上方signals中的名称
-    window: 4s                 # 设置向前比较变化量的时间窗口长度；依据业务变化尺度填写
-    direction: rise            # 选择变化方向；rise检测上升，fall检测下降，any检测任一方向的幅度
-    threshold: 5               # 设置触发变化的幅度门槛；数值单位与所选信号一致
-    rule_type: window_delta    # 选择活动或变化识别算法；本例检查向前窗口内的变化幅度、方向及配置的单调性要求
+rules:                       # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: change             # 窗口或计算引用的规则名称
+    signal: voltage          # 选择用于变化量判断的分析信号；填写上方signals中的名称
+    window: 4s               # 设置向前比较变化量的时间窗口长度；依据业务变化尺度填写
+    direction: rise          # 选择变化方向；rise检测上升，fall检测下降，any检测任一方向的幅度
+    threshold: 5             # 设置触发变化的幅度门槛；数值单位与所选信号一致
+    rule_type: window_delta  # 选择活动或变化识别算法；本例检查向前窗口内的变化幅度、方向及配置的单调性要求
 ```
 
 需要限制单调性或初次触发时，再用下段替换同一rules字段：
 
 ```yaml
-rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: change               # 窗口或计算引用的规则名称
-    signal: voltage            # 选择用于变化量判断的分析信号；填写上方signals中的名称
-    window: 4s                 # 设置向前比较变化量的时间窗口长度；依据业务变化尺度填写
-    direction: rise            # 选择变化方向；rise检测上升，fall检测下降，any检测任一方向的幅度
-    threshold: 5               # 设置触发变化的幅度门槛；数值单位与所选信号一致
-    monotonic: true            # 控制窗口内是否要求持续同向变化；true检查，false仅检查规定的变化幅度
-    emit_initial: true         # 控制初始已为真时是否发出初始事件；true发出，false等待实际变化
-    rule_type: window_delta    # 选择活动或变化识别算法；本例检查向前窗口内的变化幅度、方向及配置的单调性要求
+rules:                       # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: change             # 窗口或计算引用的规则名称
+    signal: voltage          # 选择用于变化量判断的分析信号；填写上方signals中的名称
+    window: 4s               # 设置向前比较变化量的时间窗口长度；依据业务变化尺度填写
+    direction: rise          # 选择变化方向；rise检测上升，fall检测下降，any检测任一方向的幅度
+    threshold: 5             # 设置触发变化的幅度门槛；数值单位与所选信号一致
+    monotonic: true          # 控制窗口内是否要求持续同向变化；true检查，false仅检查规定的变化幅度
+    emit_initial: true       # 控制初始已为真时是否发出初始事件；true发出，false等待实际变化
+    rule_type: window_delta  # 选择活动或变化识别算法；本例检查向前窗口内的变化幅度、方向及配置的单调性要求
 ```
 
 `signal`接受数值信号别名或受支持的数值表达式；不能填布尔条件。`window`必须为正。`threshold`必须是非负有限数值，单位与计算的信号相同。电压阈值5表示5V，**没有除以4秒**，不是5V/s。
@@ -419,17 +423,17 @@ rules:                         # 列出识别活动或瞬间变化的规则；�
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`windows, calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 依赖：保留上方 hysteresis 的 alarm 规则，再加入本块 windows 和 calculations。
 
 ```yaml
-windows:                             # 围绕已定义规则的事件选取时间片段，供计算或导出使用
-  - name: context                    # 计算或导出引用的窗口名称
-    rule: alarm                      # 引用前面定义的事件规则
-    pre: 2s                          # 设置起点之前保留多久上下文；0s表示不提前
-    post: 2s                         # 设置结束点之后保留多久上下文；0s表示不延长
-calculations:                        # 本例的统计结果
-  - name: mean_temperature           # 结果表中的计算名称
-    expr: temperature                # 使用已定义的信号或公式
-    operation: time_weighted_mean    # 选择计算方法；本例按有效值持续时长加权求平均
-    scope:                           # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
-      window: context                # 按指定窗口的每个片段分别计算；填写前面windows中的name
+windows:                           # 围绕已定义规则的事件选取时间片段，供计算或导出使用
+  - name: context                  # 计算或导出引用的窗口名称
+    rule: alarm                    # 引用前面定义的事件规则
+    pre: 2s                        # 设置起点之前保留多久上下文；0s表示不提前
+    post: 2s                       # 设置结束点之后保留多久上下文；0s表示不延长
+calculations:                      # 本例的统计结果
+  - name: mean_temperature         # 结果表中的计算名称
+    expr: temperature              # 使用已定义的信号或公式
+    operation: time_weighted_mean  # 选择计算方法；本例按有效值持续时长加权求平均
+    scope:                         # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      window: context              # 按指定窗口的每个片段分别计算；填写前面windows中的name
 ```
 
 这段配置计算报警前2秒到解除后2秒的平均温度。若只想计算报警期间的平均温度，把 `scope` 改成 `{rule: alarm}`。日志没有覆盖的前后时间仍会标为缺失，不会自动补出温度值。

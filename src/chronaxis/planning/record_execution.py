@@ -22,7 +22,8 @@ def record_execution_errors(plan):
     参数: 已编译计划。返回: 错误tuple，空值表示当前组合可执行。
     异常: 非法typed对象属性错误传播；不访问文件或修改计划。
     """
-    errors = []
+    from .process_execution import process_execution_errors
+    errors = list(process_execution_errors(plan))
     # typed计划也不能让无DBC来源携带未确定的有效期；不靠读取数据猜周期。
     sources = {source.name: source for source in plan.sources}
     for signal in plan.signals:

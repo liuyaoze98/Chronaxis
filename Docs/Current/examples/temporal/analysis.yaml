@@ -78,4 +78,5 @@ intervals:                          # 选择时间计算使用实际间隔还是
     mode: dbc                       # 选择actual实际时间差、fixed固定周期或dbc报文周期
     driver: current                 # 选择提供周期和更新计数的信号；填写已有signals名称
 execution:                          # 设置计算实现、资源上限和数据不全时的处理方式
+  process_count: 4                  # 最多4个文件工作进程；实际并行数不超过输入文件数
   batch_rows: 16                    # 限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期

@@ -20,41 +20,41 @@
 基础文件已有的信号定义摘录：用于阅读，不重复插入；完整基础文件只有一个CAN来源，无需逐项重复source。信号的frame_id和signal来自随附DBC；类型与单位自动读取。此处显式保留20s有效期，保证稀疏教学记录之间仍有效，不代表实际设备的推荐设置。
 
 ```yaml
-signals:                     # 定义公式使用的信号
-  - name: temperature        # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x11d'      # 信号所属报文 ID
-      signal: Temperature    # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: voltage            # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x11f'      # 信号所属报文 ID
-      signal: Voltage        # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: current            # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x114'      # 信号所属报文 ID
-      signal: Current        # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: mode               # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x118'      # 信号所属报文 ID
-      signal: Mode           # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: request            # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x11a'      # 信号所属报文 ID
-      signal: Request        # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                 # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+signals:                   # 定义公式使用的信号
+  - name: temperature      # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x11d'    # 信号所属报文 ID
+      signal: Temperature  # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: voltage          # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x11f'    # 信号所属报文 ID
+      signal: Voltage      # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: current          # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x114'    # 信号所属报文 ID
+      signal: Current      # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: mode             # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x118'    # 信号所属报文 ID
+      signal: Mode         # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: request          # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x11a'    # 信号所属报文 ID
+      signal: Request      # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:               # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
-  - name: response           # 公式中的信号名称
-    field:                   # 输入中的原始字段
-      frame_id: '0x11b'      # 信号所属报文 ID
-      signal: Response       # DBC 中的信号名
-    valid_for: 20s           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                 # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+  - name: response         # 公式中的信号名称
+    field:                 # 输入中的原始字段
+      frame_id: '0x11b'    # 信号所属报文 ID
+      signal: Response     # DBC 中的信号名
+    valid_for: 20s         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:               # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
 ```
@@ -66,20 +66,21 @@ signals:                     # 定义公式使用的信号
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`derived, rules, calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-derived:                                        # 用已定义信号的表达式生成新信号；先定义再在后续功能中引用
-  power:                                        # 定义名为power的派生信号，后面的计算通过此名称引用
-    expr: voltage * current                     # 规定派生值如何由已有信号计算；名称必须先在signals或前面的derived中定义
-rules:                                          # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: working                               # 窗口或计算引用的规则名称
-    condition: current > 5 and voltage > 300    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    minimum_duration: 2s                        # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
-    rule_type: condition_duration               # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
-calculations:                                   # 本例的统计结果
-  - name: energy                                # 结果表中的计算名称
-    expr: power                                 # 使用已定义的信号或公式
-    operation: integral                         # 按有效持续时间积分
-    scope:                                      # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
-      rule: working                             # 按指定规则的每次事件分别计算；填写前面rules中的name
+derived:                                      # 用已定义信号的表达式生成新信号；先定义再在后续功能中引用
+  power:                                      # 定义名为power的派生信号，后面的计算通过此名称引用
+    expr: voltage * current                   # 规定派生值如何由已有信号计算；名称必须先在signals或前面的derived中定义
+rules:                                        # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: working                             # 窗口或计算引用的规则名称
+    condition: current > 5 and voltage > 300  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    duration_comparison: ">="                 # 达到门槛即满足；要求严格超过时填>
+    minimum_duration: 2s                      # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
+    rule_type: condition_duration             # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
+calculations:                                 # 本例的统计结果
+  - name: energy                              # 结果表中的计算名称
+    expr: power                               # 使用已定义的信号或公式
+    operation: integral                       # 按有效持续时间积分
+    scope:                                    # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
+      rule: working                           # 按指定规则的每次事件分别计算；填写前面rules中的name
 ```
 
 含义是：先计算功率；电流超过5A且电压超过300V连续保持2秒时确认活动；对每次活动算能量。上面只展示要加入的三个字段，来源、信号、时间范围仍须按[完整教程](quickstart.md)填写。

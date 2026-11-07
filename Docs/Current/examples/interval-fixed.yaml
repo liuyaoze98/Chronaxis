@@ -19,3 +19,5 @@ calculations:                              # 列出希望获得的统计或积�
     interval:                              # 为本节点单独选择计算间隔；覆盖全局默认，不修改原记录时间
       mode: fixed                          # 选择actual实际时间差、fixed固定周期或dbc报文周期
       value: 100ms                         # 给fixed模式提供固定周期；从采集设置或业务规则取得
+execution:                                 # 设置本次分析的并行处理方式
+  process_count: 4                         # 最多4个文件工作进程；实际并行数不超过输入文件数

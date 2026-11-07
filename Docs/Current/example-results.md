@@ -2,7 +2,7 @@
 
 > 本页使用随册合成数据，结果由实际运行产生；不能作为其他日志的预期值。
 
-本页覆盖74份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
+本页覆盖76份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
 
 命令以`examples`为当前目录，结果目录可复用，每次输出增加时间文件名。普通例默认中文可读CSV，时间列为精确秒、同区间指标合并，各指标分别显示状态和说明。显式csv/jsonl交换格式及原帧/信号导出仍采用各自约定；空单元格不是零。
 
@@ -22,6 +22,8 @@
 |[calculation-operations.yaml](examples/calculation-operations.yaml)|统计、积分与筛选|[查看表和解释](#calculation-operations-yaml)|
 |[can-joint-analysis.yaml](examples/can-joint-analysis.yaml)|CAN与独立电流表联合计算|[查看表和解释](#can-joint-analysis-yaml)|
 |[conditional-energy.yaml](examples/conditional-energy.yaml)|连续满足条件后积分|[查看表和解释](#conditional-energy-yaml)|
+|[continuous-parallel.yaml](examples/continuous-parallel.yaml)|连续分卷多进程读取|[查看表和解释](#continuous-parallel-yaml)|
+|[continuous-time-order.yaml](examples/continuous-time-order.yaml)|连续分卷多进程读取|[查看表和解释](#continuous-time-order-yaml)|
 |[dual-grid.yaml](examples/dual-grid.yaml)|原始CAN或网格重建导出|[查看表和解释](#dual-grid-yaml)|
 |[execution-comparison.json](examples/execution-comparison.json)|观测不足时的结果|[查看表和解释](#execution-comparison-json)|
 |[execution-diagnostics.yaml](examples/execution-diagnostics.yaml)|显式请求输入追溯|[查看表和解释](#execution-diagnostics-yaml)|
@@ -230,7 +232,7 @@ chronaxis batch run batch-extended.yaml --output result-batch-extended-yaml
 chronaxis batch run batch-minimal.yaml --output result-batch-minimal-yaml
 ```
 
-为什么得到这些结果：job_1独立执行analysis.yaml，得到38J、6W和38/6W；检查jobs中的completed与子任务结果。
+为什么得到这些结果：job_1独立执行batch/energy.yaml，得到38J、6W和38/6W；检查jobs中的completed与子任务结果。
 
 [批量状态摘要](examples/results/batch-minimal-yaml/batch-summary.json)。以下各任务独立输出：
 
@@ -339,6 +341,56 @@ chronaxis run conditional-energy.yaml --output result-conditional-energy-yaml
 | 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — |
+
+本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
+
+
+<a id="continuous-parallel-yaml"></a>
+## continuous-parallel.yaml
+
+用途：连续分卷多进程读取。配置：[下载](examples/continuous-parallel.yaml)；功能说明：[阅读指南](continuous-files.md)。
+
+```powershell
+chronaxis run continuous-parallel.yaml --output result-continuous-parallel-yaml
+```
+
+为什么得到这些结果：同一会话保持跨文件状态，2/4/8/10W分别保持1/2/1/2秒，能量38J；time_order例还产生[0,6)秒的一段活动，1秒确认。
+
+[本次状态与表清单](examples/results/continuous-parallel-yaml/result-summary.json)：`completed`。
+
+**会话结果：[下载完整 会话结果.csv](examples/results/continuous-parallel-yaml/会话结果.csv)（1行）**
+
+| energy（J） | energy：状态 | energy：说明 |
+| --- | --- | --- |
+| 38.0 | 完整 | — |
+
+本次没有事件、窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
+
+
+<a id="continuous-time-order-yaml"></a>
+## continuous-time-order.yaml
+
+用途：连续分卷多进程读取。配置：[下载](examples/continuous-time-order.yaml)；功能说明：[阅读指南](continuous-files.md)。
+
+```powershell
+chronaxis run continuous-time-order.yaml --output result-continuous-time-order-yaml
+```
+
+为什么得到这些结果：同一会话保持跨文件状态，2/4/8/10W分别保持1/2/1/2秒，能量38J；time_order例还产生[0,6)秒的一段活动，1秒确认。
+
+[本次状态与表清单](examples/results/continuous-time-order-yaml/result-summary.json)：`completed`。
+
+**事件结果：[下载完整 事件结果.csv](examples/results/continuous-time-order-yaml/事件结果.csv)（1行）**
+
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | active | 0 | 1 | 6 | 观测结束，活动尚未确认结束 | 数据缺失 |
+
+**会话结果：[下载完整 会话结果.csv](examples/results/continuous-time-order-yaml/会话结果.csv)（1行）**
+
+| energy（J） | energy：状态 | energy：说明 |
+| --- | --- | --- |
+| 38.0 | 完整 | — |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -2134,6 +2186,6 @@ python tools/build_example_results.py --work work/manual-results-new --publish
 python tools/build_example_results.py --check
 ```
 
-生成时先执行74份YAML并核对案例对应的独立数学断言，再执行2份JSON及规则、时间、窗口等已有脚本的明确预期；解释文字单独维护，不由实测倒推。`--check`核对配置解析值、输入和结果文件摘要：配置注释/缩进不影响摘要，输入和结果按实际字节检查；它只证明文件一致性，不替代重新执行。
+生成时先执行76份YAML并核对案例对应的独立数学断言，再执行2份JSON及规则、时间、窗口等已有脚本的明确预期；解释文字单独维护，不由实测倒推。`--check`核对配置解析值、输入和结果文件摘要：配置注释/缩进不影响摘要，输入和结果按实际字节检查；它只证明文件一致性，不替代重新执行。
 
 生成来源标签可用`--device-label home`或`--device-label work`按实际设备填写；省略时读取CHRONAXIS_DEVICE_LABEL，未知则记pending。它只标注本次结果文件，不修改原教学输入的来源。

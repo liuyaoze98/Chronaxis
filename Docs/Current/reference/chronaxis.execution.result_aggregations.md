@@ -64,7 +64,7 @@ discovery_rules(plan, spec)
 
 引用未校验。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:13`](../../../src/chronaxis/execution/result_aggregations.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:13`](../../../src/chronaxis/execution/result_aggregations.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Group"></a>
 ## `_Group`
@@ -76,7 +76,7 @@ _Group()
 ```
 
 
-源码：[`src/chronaxis/execution/result_aggregations.py:33`](../../../src/chronaxis/execution/result_aggregations.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:33`](../../../src/chronaxis/execution/result_aggregations.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Group-__init__"></a>
 ### `_Group.__init__`
@@ -102,7 +102,7 @@ _Group.__init__()
 
 分配错误传播。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:36`](../../../src/chronaxis/execution/result_aggregations.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:36`](../../../src/chronaxis/execution/result_aggregations.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Group-accept"></a>
 ### `_Group.accept`
@@ -132,7 +132,7 @@ None。
 
 预算或模型错误。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:45`](../../../src/chronaxis/execution/result_aggregations.py#L45)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:45`](../../../src/chronaxis/execution/result_aggregations.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Group-value"></a>
 ### `_Group.value`
@@ -159,7 +159,7 @@ _Group.value(spec, factor, shift)
 
 原预算/排序错误。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:107`](../../../src/chronaxis/execution/result_aggregations.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:107`](../../../src/chronaxis/execution/result_aggregations.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations"></a>
 ## `ResultAggregations`
@@ -171,7 +171,7 @@ ResultAggregations(plan, budget)
 ```
 
 
-源码：[`src/chronaxis/execution/result_aggregations.py:144`](../../../src/chronaxis/execution/result_aggregations.py#L144)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:144`](../../../src/chronaxis/execution/result_aggregations.py#L144)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-__init__"></a>
 ### `ResultAggregations.__init__`
@@ -197,7 +197,7 @@ owner。
 
 配置/预算错误含清理句柄。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:147`](../../../src/chronaxis/execution/result_aggregations.py#L147)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:147`](../../../src/chronaxis/execution/result_aggregations.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-_input_dtype"></a>
 ### `ResultAggregations._input_dtype`
@@ -222,7 +222,7 @@ dtype。
 
 引用不符。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:171`](../../../src/chronaxis/execution/result_aggregations.py#L171)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:171`](../../../src/chronaxis/execution/result_aggregations.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-_group"></a>
 ### `ResultAggregations._group`
@@ -248,7 +248,7 @@ ResultAggregations._group(spec, row)
 
 预算或键不合法。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:193`](../../../src/chronaxis/execution/result_aggregations.py#L193)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:193`](../../../src/chronaxis/execution/result_aggregations.py#L193)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-accept"></a>
 ### `ResultAggregations.accept`
@@ -273,7 +273,7 @@ None。
 
 预算/输入矛盾。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:209`](../../../src/chronaxis/execution/result_aggregations.py#L209)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:209`](../../../src/chronaxis/execution/result_aggregations.py#L209)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-rows"></a>
 ### `ResultAggregations.rows`
@@ -299,7 +299,7 @@ ResultAggregations.rows(rules, sequence)
 
 未完成或预算错误。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:225`](../../../src/chronaxis/execution/result_aggregations.py#L225)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:225`](../../../src/chronaxis/execution/result_aggregations.py#L225)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ResultAggregations-close"></a>
 ### `ResultAggregations.close`
@@ -325,4 +325,4 @@ None。
 
 原账本错误传播。
 
-源码：[`src/chronaxis/execution/result_aggregations.py:261`](../../../src/chronaxis/execution/result_aggregations.py#L261)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/result_aggregations.py:261`](../../../src/chronaxis/execution/result_aggregations.py#L261)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

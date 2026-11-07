@@ -2,7 +2,7 @@
 
 根级`message_calculations`对每条目标CAN消息计算一次表达式并累计。它使用当前消息携带的值，直接相加各条消息的`expr`结果。公式需要常量时才声明`parameters`，参数名称由用户选择；用功率求能量时在公式中包含时间因子，输入已是能量贡献时直接累计。普通信号时间积分使用`calculations`，二者的时间依据不同。
 
-本页使用通用`run`。若每个文件独立、输入为单一ASC/BLF且公式全部取当条报文的值，可按[高性能积分器选型](fast-energy.md)判断是否使用`fast`。需要连续分卷或逐帧贡献明细时使用通用入口；两种入口的支持范围和输出须分别核对。
+本页使用通用`run`。对于单一ASC/BLF来源，若公式所需数值全部来自当前报文，可按[高性能积分器选型](fast-energy.md)选择`fast`，同一次记录的分卷放在一个来源中。需要跨帧保持、事件或逐帧贡献明细时使用通用入口；两种入口的支持字段和输出须分别核对。
 
 ## 完整最小例与方向分组扩展
 
@@ -21,16 +21,16 @@
 应用位置：以[message-energy.yaml](examples/message-energy.yaml)为基础，在文件根级加入或替换`message_calculations`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-message_calculations:       # 每条目标报文计算一次并累计
-  - name: energy            # 结果表中的累计名称
-    update_message:         # 触发公式的报文
-      frame_id: 0x100       # 每来一条此 ID 的报文就计算
-    parameters:             # 每条报文使用的固定参数
-      period:               # 提供名为period的公式参数；在本例表示每条消息计入的时间
-        value: 0.1          # 填写每条消息代表的时间数值；从消息周期或业务规则取得
-        unit: s             # 声明该公式参数的单位；本例s表示秒
-    expr: power * period    # 定义单条目标消息的贡献；使用该报文信号和parameters常量
-    unit: J                 # 声明累计结果的单位；须与表达式量纲相符
+message_calculations:     # 每条目标报文计算一次并累计
+  - name: energy          # 结果表中的累计名称
+    update_message:       # 触发公式的报文
+      frame_id: 0x100     # 每来一条此 ID 的报文就计算
+    parameters:           # 每条报文使用的固定参数
+      period:             # 提供名为period的公式参数；在本例表示每条消息计入的时间
+        value: 0.1        # 填写每条消息代表的时间数值；从消息周期或业务规则取得
+        unit: s           # 声明该公式参数的单位；本例s表示秒
+    expr: power * period  # 定义单条目标消息的贡献；使用该报文信号和parameters常量
+    unit: J               # 声明累计结果的单位；须与表达式量纲相符
 ```
 
 两条同刻4000W消息各贡献400J；第三条缺值记missing_input；非目标ID不算尝试。总计800J、3次尝试、2次贡献、1次跳过。period是明确给定的固定周期，不从时间间隔推断，也不再乘实际报文之间的时间间隔。

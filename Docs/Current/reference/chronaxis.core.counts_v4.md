@@ -52,4 +52,4 @@ classify_count(count, policy, *, observed, determinate, complete)
 
 ValueError为计数或数据不全时的处理方式不合法。
 
-源码：[`src/chronaxis/core/counts_v4.py:14`](../../../src/chronaxis/core/counts_v4.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/counts_v4.py:14`](../../../src/chronaxis/core/counts_v4.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

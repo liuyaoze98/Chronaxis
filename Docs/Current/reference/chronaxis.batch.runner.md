@@ -65,7 +65,7 @@ _new_root(value) -> Path
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/batch/runner.py:24`](../../../src/chronaxis/batch/runner.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:24`](../../../src/chronaxis/batch/runner.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_facts"></a>
 ## `_facts`
@@ -93,7 +93,7 @@ _facts(job, plan=None) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/runner.py:30`](../../../src/chronaxis/batch/runner.py#L30)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:30`](../../../src/chronaxis/batch/runner.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_cancelled"></a>
 ## `_cancelled`
@@ -121,7 +121,7 @@ _cancelled(job, reason) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:41`](../../../src/chronaxis/batch/runner.py#L41)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:41`](../../../src/chronaxis/batch/runner.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_report"></a>
 ## `_report`
@@ -155,7 +155,7 @@ _report(root, jobs, results, process_count, fail_fast, cancelled, label, reason)
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:46`](../../../src/chronaxis/batch/runner.py#L46)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:46`](../../../src/chronaxis/batch/runner.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_run_job"></a>
 ## `_run_job`
@@ -186,7 +186,7 @@ _run_job(job, directory, backend, stop, cancel) -> BatchJobResult
 
 返回类型：[BatchJobResult](chronaxis.batch.models.md#api-BatchJobResult)。
 
-源码：[`src/chronaxis/batch/runner.py:55`](../../../src/chronaxis/batch/runner.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:55`](../../../src/chronaxis/batch/runner.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_pause"></a>
 ## `_pause`
@@ -212,7 +212,7 @@ None。
 
 主进程取消。
 
-源码：[`src/chronaxis/batch/runner.py:103`](../../../src/chronaxis/batch/runner.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:103`](../../../src/chronaxis/batch/runner.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner"></a>
 ## `BatchRunner`
@@ -224,7 +224,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -256,7 +256,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -297,7 +297,7 @@ BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写�
 
 返回类型：[BatchReport](chronaxis.batch.models.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner-_run"></a>
 ### `BatchRunner._run`
@@ -319,4 +319,4 @@ BatchRunner._run(jobs, output_dir, *, cancel_event, device_label, fast_specs=Non
 |`fast_specs`|dict &#124; None|否|None|仅关键字。任务名到文件级计算参数的映射，启用 fast 时传入。|
 |`fast_rows`|dict &#124; None|否|None|仅关键字。请求总量时收集各任务未舍入行，按任务名存放。|
 
-源码：[`src/chronaxis/batch/runner.py:134`](../../../src/chronaxis/batch/runner.py#L134)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:134`](../../../src/chronaxis/batch/runner.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

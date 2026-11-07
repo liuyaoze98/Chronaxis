@@ -91,7 +91,7 @@ TypeError为非带有明确类型的上下文/范围；ValueError为显式范围
 - `TypeError`：显式指标observation需Interval。
 - `ValueError`：指标observation必须位于原context.domain内。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:32`](../../../src/chronaxis/execution/calculation_blocks.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:32`](../../../src/chronaxis/execution/calculation_blocks.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock"></a>
 ## `CalculationBlock`
@@ -106,7 +106,7 @@ CalculationBlock(owner, cost, series)
 ```
 
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:51`](../../../src/chronaxis/execution/calculation_blocks.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:51`](../../../src/chronaxis/execution/calculation_blocks.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock-__init__"></a>
 ### `CalculationBlock.__init__`
@@ -133,7 +133,7 @@ CalculationBlock.__init__(owner, cost, series)
 
 分配失败由外层收回本次申请。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:58`](../../../src/chronaxis/execution/calculation_blocks.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:58`](../../../src/chronaxis/execution/calculation_blocks.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock-closed"></a>
 ### `CalculationBlock.closed`
@@ -161,7 +161,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:70`](../../../src/chronaxis/execution/calculation_blocks.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:70`](../../../src/chronaxis/execution/calculation_blocks.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock-series"></a>
 ### `CalculationBlock.series`
@@ -193,7 +193,7 @@ ResultClosedError。
 
 - `ResultClosedError`：指标输入块已关闭或正在关闭。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:75`](../../../src/chronaxis/execution/calculation_blocks.py#L75)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:75`](../../../src/chronaxis/execution/calculation_blocks.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock-_discard"></a>
 ### `CalculationBlock._discard`
@@ -219,7 +219,7 @@ CalculationBlock._discard()
 
 脱链失败传播，finally仍保存真实关闭事实。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:82`](../../../src/chronaxis/execution/calculation_blocks.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:82`](../../../src/chronaxis/execution/calculation_blocks.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CalculationBlock-close"></a>
 ### `CalculationBlock.close`
@@ -245,7 +245,7 @@ CalculationBlock.close()
 
 账本/取消原样传播。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:93`](../../../src/chronaxis/execution/calculation_blocks.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:93`](../../../src/chronaxis/execution/calculation_blocks.py#L93)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks"></a>
 ## `HistoricalCalculationBlocks`
@@ -261,7 +261,7 @@ HistoricalCalculationBlocks(history, context, bindings, compiled, spec, *, backe
 ```
 
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:112`](../../../src/chronaxis/execution/calculation_blocks.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:112`](../../../src/chronaxis/execution/calculation_blocks.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-__init__"></a>
 ### `HistoricalCalculationBlocks.__init__`
@@ -302,7 +302,7 @@ HistoricalCalculationBlocks.__init__(history, context, bindings, compiled, spec,
 - `ValueError`：select历史输入必须保留原表达式单位。
 - `ValueError`：指标表达式与当前实际绑定不同。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:120`](../../../src/chronaxis/execution/calculation_blocks.py#L120)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:120`](../../../src/chronaxis/execution/calculation_blocks.py#L120)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-closed"></a>
 ### `HistoricalCalculationBlocks.closed`
@@ -330,7 +330,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:193`](../../../src/chronaxis/execution/calculation_blocks.py#L193)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:193`](../../../src/chronaxis/execution/calculation_blocks.py#L193)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-failed"></a>
 ### `HistoricalCalculationBlocks.failed`
@@ -358,7 +358,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:198`](../../../src/chronaxis/execution/calculation_blocks.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:198`](../../../src/chronaxis/execution/calculation_blocks.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-__iter__"></a>
 ### `HistoricalCalculationBlocks.__iter__`
@@ -384,7 +384,7 @@ HistoricalCalculationBlocks.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:202`](../../../src/chronaxis/execution/calculation_blocks.py#L202)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:202`](../../../src/chronaxis/execution/calculation_blocks.py#L202)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-_capture"></a>
 ### `HistoricalCalculationBlocks._capture`
@@ -413,7 +413,7 @@ HistoricalCalculationBlocks._capture(frame)
 
 valid ENUM物理整数码沿原labels映射回标签字符串；其他dtype及invalid不改口径。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:206`](../../../src/chronaxis/execution/calculation_blocks.py#L206)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:206`](../../../src/chronaxis/execution/calculation_blocks.py#L206)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-__next__"></a>
 ### `HistoricalCalculationBlocks.__next__`
@@ -443,7 +443,7 @@ StopIteration为完成/无交集；推进错误标failed并保留旧块可读。
 
 - `ResultClosedError`：历史指标分块已关闭、正在关闭或推进失败。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:233`](../../../src/chronaxis/execution/calculation_blocks.py#L233)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:233`](../../../src/chronaxis/execution/calculation_blocks.py#L233)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-_release_unpublished"></a>
 ### `HistoricalCalculationBlocks._release_unpublished`
@@ -469,7 +469,7 @@ None，可重试。
 
 子关闭/扣账/取消错误传播。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:290`](../../../src/chronaxis/execution/calculation_blocks.py#L290)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:290`](../../../src/chronaxis/execution/calculation_blocks.py#L290)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalCalculationBlocks-close"></a>
 ### `HistoricalCalculationBlocks.close`
@@ -495,4 +495,4 @@ None，可重试。
 
 子close/账本/取消错误传播。
 
-源码：[`src/chronaxis/execution/calculation_blocks.py:310`](../../../src/chronaxis/execution/calculation_blocks.py#L310)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/calculation_blocks.py:310`](../../../src/chronaxis/execution/calculation_blocks.py#L310)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

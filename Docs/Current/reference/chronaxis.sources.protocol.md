@@ -52,7 +52,7 @@ class SourceClosedError(RuntimeError)
 继承关系：RuntimeError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/sources/protocol.py:21`](../../../src/chronaxis/sources/protocol.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:21`](../../../src/chronaxis/sources/protocol.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SourceReadError"></a>
 ## `SourceReadError`
@@ -66,7 +66,7 @@ class SourceReadError(RuntimeError)
 继承关系：RuntimeError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/sources/protocol.py:26`](../../../src/chronaxis/sources/protocol.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:26`](../../../src/chronaxis/sources/protocol.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SourceAdapter"></a>
 ## `SourceAdapter`
@@ -84,7 +84,7 @@ class SourceAdapter(Protocol)
 继承关系：Protocol。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/sources/protocol.py:32`](../../../src/chronaxis/sources/protocol.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:32`](../../../src/chronaxis/sources/protocol.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SourceAdapter-describe"></a>
 ### `SourceAdapter.describe`
@@ -113,7 +113,7 @@ SourceClosedError: 来源已关闭。
 
 返回类型：[SourceDescription](chronaxis.sources.models.md#api-SourceDescription)。
 
-源码：[`src/chronaxis/sources/protocol.py:40`](../../../src/chronaxis/sources/protocol.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:40`](../../../src/chronaxis/sources/protocol.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SourceAdapter-iter_batches"></a>
 ### `SourceAdapter.iter_batches`
@@ -144,7 +144,7 @@ SourceClosedError、SourceReadError或请求与协议校验错误，由具体实
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/sources/protocol.py:54`](../../../src/chronaxis/sources/protocol.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:54`](../../../src/chronaxis/sources/protocol.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SourceAdapter-close"></a>
 ### `SourceAdapter.close`
@@ -172,7 +172,7 @@ None。重复关闭应安全。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/protocol.py:69`](../../../src/chronaxis/sources/protocol.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:69`](../../../src/chronaxis/sources/protocol.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchValidator"></a>
 ## `BatchValidator`
@@ -190,7 +190,7 @@ BatchValidator(description: SourceDescription, request: ReadRequest) -> None
 ```
 
 
-源码：[`src/chronaxis/sources/protocol.py:83`](../../../src/chronaxis/sources/protocol.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:83`](../../../src/chronaxis/sources/protocol.py#L83)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchValidator-__init__"></a>
 ### `BatchValidator.__init__`
@@ -223,7 +223,7 @@ TypeError: 输入不是规定的模型类型。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/protocol.py:93`](../../../src/chronaxis/sources/protocol.py#L93)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:93`](../../../src/chronaxis/sources/protocol.py#L93)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchValidator-accept"></a>
 ### `BatchValidator.accept`
@@ -260,4 +260,4 @@ ValueError: 批次类型或归属错误、超过样本上限、列契约变化�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/protocol.py:126`](../../../src/chronaxis/sources/protocol.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/protocol.py:126`](../../../src/chronaxis/sources/protocol.py#L126)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

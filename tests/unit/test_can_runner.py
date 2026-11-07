@@ -54,7 +54,7 @@ class CANRunnerTests(unittest.TestCase):
             signals=[dict(name='voltage', source='bus', field=dict(channel=1,
                 signal='Voltage', frame_id=256, is_extended=False, is_fd=False),
                 dtype='float64', input_unit=unit, unit=unit, valid_for='10s', same_time_policy=policy)] if signals else [],
-            rules=[dict(name='active', rule_type='condition_duration', condition='voltage > 0' if signals else 'True',
+            rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='voltage > 0' if signals else 'True',
                 minimum_duration='0s')],
             windows=[], calculations=[dict(name='samples', scope='session', operation='select', expr='voltage')]
                 if signals else [dict(name='known', scope='session', operation='duration', condition='True')],

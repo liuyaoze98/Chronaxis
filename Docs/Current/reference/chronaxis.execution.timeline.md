@@ -96,7 +96,7 @@ _require_timeline_input(evidence, boundaries, compiled, rule, source_refs)
 - `ValueError`：时间游标规则/来源会话与实际绑定不一致。
 - `ValueError`：时间游标必须从未处理的起点开始，种子仅接受域前完整组。
 
-源码：[`src/chronaxis/execution/timeline.py:24`](../../../src/chronaxis/execution/timeline.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:24`](../../../src/chronaxis/execution/timeline.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep"></a>
 ## `TimelineStep`
@@ -111,7 +111,7 @@ TimelineStep(owner, cost, time_ns, consumed, condition, events)
 ```
 
 
-源码：[`src/chronaxis/execution/timeline.py:59`](../../../src/chronaxis/execution/timeline.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:59`](../../../src/chronaxis/execution/timeline.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-__init__"></a>
 ### `TimelineStep.__init__`
@@ -141,7 +141,7 @@ TimelineStep.__init__(owner, cost, time_ns, consumed, condition, events)
 
 构造失败由step外层清理。
 
-源码：[`src/chronaxis/execution/timeline.py:66`](../../../src/chronaxis/execution/timeline.py#L66)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:66`](../../../src/chronaxis/execution/timeline.py#L66)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-_ensure_open"></a>
 ### `TimelineStep._ensure_open`
@@ -171,7 +171,7 @@ ResultClosedError。
 
 - `ResultClosedError`：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:77`](../../../src/chronaxis/execution/timeline.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:77`](../../../src/chronaxis/execution/timeline.py#L77)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-closed"></a>
 ### `TimelineStep.closed`
@@ -199,7 +199,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline.py:83`](../../../src/chronaxis/execution/timeline.py#L83)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:83`](../../../src/chronaxis/execution/timeline.py#L83)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-time_ns"></a>
 ### `TimelineStep.time_ns`
@@ -227,7 +227,7 @@ TimelineStep.time_ns
 
 对象处于下列状态时抛ResultClosedError：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:88`](../../../src/chronaxis/execution/timeline.py#L88)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:88`](../../../src/chronaxis/execution/timeline.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-consumed_group"></a>
 ### `TimelineStep.consumed_group`
@@ -255,7 +255,7 @@ True表示本步骤已经处理了预先读到的下一组更新；False表示�
 
 对象处于下列状态时抛ResultClosedError：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:94`](../../../src/chronaxis/execution/timeline.py#L94)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:94`](../../../src/chronaxis/execution/timeline.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-tick"></a>
 ### `TimelineStep.tick`
@@ -283,7 +283,7 @@ ConditionTick。
 
 对象处于下列状态时抛ResultClosedError：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:100`](../../../src/chronaxis/execution/timeline.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:100`](../../../src/chronaxis/execution/timeline.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-source_refs"></a>
 ### `TimelineStep.source_refs`
@@ -311,7 +311,7 @@ SourceRef tuple。
 
 对象处于下列状态时抛ResultClosedError：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:106`](../../../src/chronaxis/execution/timeline.py#L106)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:106`](../../../src/chronaxis/execution/timeline.py#L106)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-events"></a>
 ### `TimelineStep.events`
@@ -339,7 +339,7 @@ Event tuple。
 
 对象处于下列状态时抛ResultClosedError：时间游标步已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:112`](../../../src/chronaxis/execution/timeline.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:112`](../../../src/chronaxis/execution/timeline.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-_discard"></a>
 ### `TimelineStep._discard`
@@ -365,7 +365,7 @@ TimelineStep._discard()
 
 脱链取消传播，finally仍关闭，owner可重试移除。
 
-源码：[`src/chronaxis/execution/timeline.py:117`](../../../src/chronaxis/execution/timeline.py#L117)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:117`](../../../src/chronaxis/execution/timeline.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TimelineStep-close"></a>
 ### `TimelineStep.close`
@@ -391,7 +391,7 @@ TimelineStep.close()
 
 子结果/预算/取消传播，已扣workspace则最小收尾且不会再次扣账。
 
-源码：[`src/chronaxis/execution/timeline.py:128`](../../../src/chronaxis/execution/timeline.py#L128)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:128`](../../../src/chronaxis/execution/timeline.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline"></a>
 ## `TemporalTimeline`
@@ -406,7 +406,7 @@ TemporalTimeline(evidence: ConditionEvidenceQueries, boundaries: BoundaryQueries
 ```
 
 
-源码：[`src/chronaxis/execution/timeline.py:152`](../../../src/chronaxis/execution/timeline.py#L152)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:152`](../../../src/chronaxis/execution/timeline.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-__init__"></a>
 ### `TemporalTimeline.__init__`
@@ -435,7 +435,7 @@ TemporalTimeline.__init__(evidence: ConditionEvidenceQueries, boundaries: Bounda
 
 类型/登记/会话/已有推进/预算/取消传播并清理自有申请。
 
-源码：[`src/chronaxis/execution/timeline.py:159`](../../../src/chronaxis/execution/timeline.py#L159)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:159`](../../../src/chronaxis/execution/timeline.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-closed"></a>
 ### `TemporalTimeline.closed`
@@ -463,7 +463,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline.py:188`](../../../src/chronaxis/execution/timeline.py#L188)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:188`](../../../src/chronaxis/execution/timeline.py#L188)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-failed"></a>
 ### `TemporalTimeline.failed`
@@ -491,7 +491,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/timeline.py:193`](../../../src/chronaxis/execution/timeline.py#L193)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:193`](../../../src/chronaxis/execution/timeline.py#L193)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-cursor_ns"></a>
 ### `TemporalTimeline.cursor_ns`
@@ -523,7 +523,7 @@ ResultClosedError。
 
 - `ResultClosedError`：时间游标已关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:198`](../../../src/chronaxis/execution/timeline.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:198`](../../../src/chronaxis/execution/timeline.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-_ensure_active"></a>
 ### `TemporalTimeline._ensure_active`
@@ -554,7 +554,7 @@ TemporalTimeline._ensure_active()
 - `ResultClosedError`：时间游标已关闭。
 - `AnalysisError`：时间游标已失败，禁止重试。
 
-源码：[`src/chronaxis/execution/timeline.py:204`](../../../src/chronaxis/execution/timeline.py#L204)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:204`](../../../src/chronaxis/execution/timeline.py#L204)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-_construct"></a>
 ### `TemporalTimeline._construct`
@@ -583,7 +583,7 @@ TimelineStep。
 
 分配/取消。
 
-源码：[`src/chronaxis/execution/timeline.py:213`](../../../src/chronaxis/execution/timeline.py#L213)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:213`](../../../src/chronaxis/execution/timeline.py#L213)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-step"></a>
 ### `TemporalTimeline.step`
@@ -611,7 +611,7 @@ TemporalTimeline.step(next_group: DecodedTimeGroup | None=None) -> TimelineStep 
 
 返回类型：[TimelineStep](chronaxis.execution.timeline.md#api-TimelineStep) &#124; None。
 
-源码：[`src/chronaxis/execution/timeline.py:217`](../../../src/chronaxis/execution/timeline.py#L217)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:217`](../../../src/chronaxis/execution/timeline.py#L217)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TemporalTimeline-close"></a>
 ### `TemporalTimeline.close`
@@ -637,4 +637,4 @@ TemporalTimeline.close()
 
 子关闭/预算/取消传播，未完成可重试，固定已释放则最小关闭。
 
-源码：[`src/chronaxis/execution/timeline.py:287`](../../../src/chronaxis/execution/timeline.py#L287)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/timeline.py:287`](../../../src/chronaxis/execution/timeline.py#L287)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -51,7 +51,7 @@ _joint_times(value, condition, window)
 
 已校验模型外的存储或分配发生异常时直接交给调用者处理。
 
-源码：[`src/chronaxis/core/calculation_series_join.py:22`](../../../src/chronaxis/core/calculation_series_join.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/calculation_series_join.py:22`](../../../src/chronaxis/core/calculation_series_join.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-join_calculation_series"></a>
 ## `join_calculation_series`
@@ -95,4 +95,4 @@ TypeError为模型或容量类型错误；ValueError为条件、窗口或容量�
 
 允许点窗口，但不外推EOF；调用方负责真实绑定/同步和先行预算预约。
 
-源码：[`src/chronaxis/core/calculation_series_join.py:50`](../../../src/chronaxis/core/calculation_series_join.py#L50)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/calculation_series_join.py:50`](../../../src/chronaxis/core/calculation_series_join.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

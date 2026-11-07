@@ -56,7 +56,7 @@ class SequencePlan
 |`max_delay_ns`|int|是|无|不小于min_delay_ns的整数纳秒最大延迟，边界包含。|
 |`max_pending`|int|否|65536|限制本配对规则同时等待响应的请求数量；按可接受的并发请求上限选正整数，默认65536。它不是总请求数或等待时长。|
 
-源码：[`src/chronaxis/planning/sequences.py:19`](../../../src/chronaxis/planning/sequences.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/sequences.py:19`](../../../src/chronaxis/planning/sequences.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-SequencePlan-__post_init__"></a>
 ### `SequencePlan.__post_init__`
@@ -87,7 +87,7 @@ TypeError/ValueError为名称或整数边界错误。
 - `TypeError`：sequence延迟和容量须为原生整数。
 - `ValueError`：sequence需要0<=min_delay<=max_delay及正max_pending。
 
-源码：[`src/chronaxis/planning/sequences.py:29`](../../../src/chronaxis/planning/sequences.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/sequences.py:29`](../../../src/chronaxis/planning/sequences.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-sequence_dependencies"></a>
 ## `sequence_dependencies`
@@ -118,7 +118,7 @@ TypeError/ValueError为不支持的引用或时钟。
 
 - `TypeError`：sequences需要SequencePlan。
 
-源码：[`src/chronaxis/planning/sequences.py:44`](../../../src/chronaxis/planning/sequences.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/sequences.py:44`](../../../src/chronaxis/planning/sequences.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-parse_sequences"></a>
 ## `parse_sequences`
@@ -146,4 +146,4 @@ SequencePlan tuple。
 
 PlanValidationError保留非法字段或引用的位置。
 
-源码：[`src/chronaxis/planning/sequences.py:75`](../../../src/chronaxis/planning/sequences.py#L75)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/sequences.py:75`](../../../src/chronaxis/planning/sequences.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

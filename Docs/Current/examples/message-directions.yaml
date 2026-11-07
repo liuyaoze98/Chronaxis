@@ -55,3 +55,5 @@ message_calculations:                    # 按每条目标CAN报文计算贡献�
       value_policy: raw_decoded-v1       # 选择方向值的处理阶段；raw_decoded-v1使用DBC解码后的原值，不再额外换算
 outputs:                                 # 选择额外导出的数据及格式；默认结果表由运行入口提供
   contributions: full                    # 选择是否导出每次贡献明细；用于检查逐消息求值及跳过原因
+execution:                               # 设置本次分析的并行处理方式
+  process_count: 4                       # 最多4个文件工作进程；实际并行数不超过输入文件数

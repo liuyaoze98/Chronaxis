@@ -9,8 +9,8 @@ For ordinary analysis, name the inputs with `dataset.name`. `entity`, `session` 
 This root-level mapping sits alongside `sources` and `signals`. Start with [analysis.yaml](../examples/analysis.yaml) and replace its existing `dataset:` section; do not add a second `dataset`, or put a list marker before it.
 
 ```yaml
-dataset:                # Name this analysis; other dataset fields are optional
-  name: bench_run_01    # Identifies the dataset in results
+dataset:              # Name this analysis; other dataset fields are optional
+  name: bench_run_01  # Identifies the dataset in results
 ```
 
 Set `entity` and `session` only when equipment and acquisition runs need separate labels. They do not select files or prove that sources are synchronized. Add `domain` only to restrict the time range. The reference table describes choices for those needs, not a checklist of required fields.
@@ -21,11 +21,11 @@ Set `entity` and `session` only when equipment and acquisition runs need separat
 Replace the `dataset` section of [analysis.yaml](../examples/analysis.yaml):
 
 ```yaml
-dataset:          # Name the analysis and restrict its requested time range
-  name: energy    # Dataset name included in results
-  domain:         # Use the same time basis as the sources
-    start: 2s     # Include this starting instant
-    end: 5s       # Exclude this endpoint from continuous duration
+dataset:        # Name the analysis and restrict its requested time range
+  name: energy  # Dataset name included in results
+  domain:       # Use the same time basis as the sources
+    start: 2s   # Include this starting instant
+    end: 5s     # Exclude this endpoint from continuous duration
 ```
 
 The reference calls these positions `dataset.domain.start` and `dataset.domain.end`: find `dataset`, then `domain`, then `start` or `end`. The actual keys do not contain dots. `domain: {start: 2s, end: 5s}` is the equivalent inline mapping. See [configuration syntax](configuration-language.md#field-paths).

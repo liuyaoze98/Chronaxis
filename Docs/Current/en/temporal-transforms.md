@@ -7,28 +7,30 @@ Root `transforms` creates new time-varying signals from bound numeric signals or
 Download [the minimal configuration](../examples/temporal/rolling-actual.yaml), [meter.asc](../examples/temporal/meter.asc), and [meter.dbc](../examples/temporal/meter.dbc) into one directory. Synthetic readings include 10 A at 0 s, 20 A at 0.12 s, 40 A at 0.30 s, then 5 A at 0.42 and 0.60 s. The configuration contains one rolling_time_mean and one select, using default actual time. Omitted validity is three times the DBC's 100 ms period.
 
 ```yaml
-config_version: 4                   # Current analysis configuration version
-dataset:                            # Analysis identity and optional input range
-  name: rolling_actual              # Name used to identify and reference this object
-sources:                            # Input sources used by this analysis
-  - paths: meter.asc                # File, continuous file list or directory; relative to this configuration
-    dbc_by_channel:                 # DBC files indexed by user-facing CAN channel
-      '1': meter.dbc                # DBC for channel 1; channel keys are strings
-signals:                            # Signals available to expressions
-  - name: current                   # Name used to identify and reference this object
-    field:                          # Locate the original input field
-      frame_id: 0x100               # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Current               # Exact signal name defined in the DBC
-transforms:                         # Time-window calculations producing output signals
-  - name: average                   # Name used to identify and reference this object
-    operation: rolling_time_mean    # Calculation to apply to the expression
-    expr: current                   # Formula using the declared signal or derived names
-    window: 0.1s                    # Length of the trailing calculation window
-    step: 0.1s                      # Spacing between output times
-calculations:                       # Requested statistics or selected rows
-  - name: average_rows              # Name used to identify and reference this object
-    operation: select               # Calculation to apply to the expression
-    expr: average                   # Formula using the declared signal or derived names
+config_version: 4                 # Current analysis configuration version
+dataset:                          # Analysis identity and optional input range
+  name: rolling_actual            # Name used to identify and reference this object
+sources:                          # Input sources used by this analysis
+  - paths: meter.asc              # File, continuous file list or directory; relative to this configuration
+    dbc_by_channel:               # DBC files indexed by user-facing CAN channel
+      '1': meter.dbc              # DBC for channel 1; channel keys are strings
+signals:                          # Signals available to expressions
+  - name: current                 # Name used to identify and reference this object
+    field:                        # Locate the original input field
+      frame_id: 0x100             # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Current             # Exact signal name defined in the DBC
+transforms:                       # Time-window calculations producing output signals
+  - name: average                 # Name used to identify and reference this object
+    operation: rolling_time_mean  # Calculation to apply to the expression
+    expr: current                 # Formula using the declared signal or derived names
+    window: 0.1s                  # Length of the trailing calculation window
+    step: 0.1s                    # Spacing between output times
+calculations:                     # Requested statistics or selected rows
+  - name: average_rows            # Name used to identify and reference this object
+    operation: select             # Calculation to apply to the expression
+    expr: average                 # Formula using the declared signal or derived names
+execution:                        # Execution settings for this analysis
+  process_count: 4                # At most four workers; this one-file example uses one
 ```
 
 ```powershell

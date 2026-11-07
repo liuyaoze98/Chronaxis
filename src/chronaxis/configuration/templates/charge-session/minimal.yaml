@@ -36,3 +36,5 @@ presets:
       compute_charge: true
       minimum_duration: 1s
     preset_type: charge_session
+execution:            # 设置本次分析的并行处理方式
+  process_count: 4    # 最多4个文件工作进程；实际并行数不超过输入文件数

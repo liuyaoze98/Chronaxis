@@ -130,7 +130,7 @@ class MergedRecordWindowTests(unittest.TestCase):
                 sources=[dict(name='input',source_type='memory',time=dict(time_type='relative',unit='s',origin='clock'),
                     rows=[dict(time=t,values=dict(v=v)) for t,v in zip(('0s','0.12s','0.3s','0.45s','0.7s','0.9s'),(1,0,1,0,1,0))])],
                 signals=[dict(name='value',source='input',field='v',dtype='float64',unit='1',valid_for='1s')],
-                rules=[dict(name='alarm',rule_type='condition_duration',condition='value > 0',minimum_duration='0s')],
+                rules=[dict(name='alarm',rule_type='condition_duration', duration_comparison='>=',condition='value > 0',minimum_duration='0s')],
                 windows=[window],calculations=[],intervals=dict(default=dict(mode='fixed',value='0.1s',driver='value')),
                 execution=dict(batch_rows=1,result_buffer_rows=1))
             with self.subTest(backend=backend,merge=merge):

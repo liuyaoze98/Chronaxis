@@ -20,7 +20,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -52,7 +52,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -93,4 +93,4 @@ BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写�
 
 返回类型：[BatchReport](BatchReport.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

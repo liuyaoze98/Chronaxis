@@ -4,6 +4,8 @@
 
 Chronaxis analyzes time-series data from multiple sources. Bind input columns or message fields to signals, detect events and time intervals, calculate integrals, durations and statistics, then inspect or export the results. Typical inputs are BLF or ASC logs with a DBC; raw-message CSV, decoded-signal CSV and in-memory records are also supported.
 
+Basic ASC/BLF examples include parallel settings. Start with the quick start, then choose [continuous volumes from one recording](continuous-files.md) or [independent batch trials](batch.md). See [execution settings](execution.md) for the fields and resource choices.
+
 This manual covers analysis configuration version 4 and its public interfaces. Use `config_version: 4` for new analyses. See [configuration syntax](configuration-language.md) for writing an analysis. [Install](installation.md) from a local wheel or source, then check the [supported features](status.md). The HTML manual includes offline navigation and search. The AI bundle's `manifest.json` records its documentation revision and product baseline.
 
 <a id="配置使用者的阅读路线"></a>
@@ -42,7 +44,7 @@ Start with the [Python quick start](api-usage.md): load a plan, validate it, exe
 | Calculate rolling values or rates | [Temporal transforms](temporal-transforms.md) |
 | Summarize event/window results | [Result aggregation](aggregations.md) |
 | Add a Python algorithm | [Custom analysis operators](host-extensions.md) |
-| Accumulate same-frame per-message energy | [High-performance integrator](fast-energy.md): include a time factor in the formula |
+| Accumulate same-frame per-message energy | [High-performance integrator](fast-energy.md): multiply power by the duration represented by the message; accumulate existing energy contributions directly |
 | Find complete runnable configurations | [Example catalog](examples.md) |
 
 ## Time-series transforms and host Python

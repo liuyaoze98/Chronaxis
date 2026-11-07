@@ -41,7 +41,7 @@ _semantics(spec)
 |---|---|---|---|---|
 |`spec`|dict|是|无|位置或关键字。一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。|
 
-源码：[`src/chronaxis/fast/totals.py:9`](../../../src/chronaxis/fast/totals.py#L9)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/totals.py:9`](../../../src/chronaxis/fast/totals.py#L9)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FastTotals"></a>
 ## `FastTotals`
@@ -59,7 +59,7 @@ class FastTotals
 |`members`|tuple[str, ...]|是|无|按模板声明顺序固定的成员任务名，决定跨文件求和顺序。|
 |`metrics`|tuple[tuple[str, str], ...]|是|无|需要在全部成员中逐项核对的计算项名和单位。|
 
-源码：[`src/chronaxis/fast/totals.py:17`](../../../src/chronaxis/fast/totals.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/totals.py:19`](../../../src/chronaxis/fast/totals.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FastTotals-from_specs"></a>
 ### `FastTotals.from_specs`
@@ -81,7 +81,7 @@ FastTotals.from_specs(specs, *, template)
 |`specs`|dict|是|无|位置或关键字。按任务名保存的执行参数，用于核验绑定、DBC 和计算口径。|
 |`template`|bool|是|无|仅关键字。本批是否来自同一个显式分析模板，决定能否请求固定总量。|
 
-源码：[`src/chronaxis/fast/totals.py:24`](../../../src/chronaxis/fast/totals.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/totals.py:26`](../../../src/chronaxis/fast/totals.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FastTotals-finish"></a>
 ### `FastTotals.finish`
@@ -101,4 +101,4 @@ FastTotals.finish(outcomes)
 |---|---|---|---|---|
 |`outcomes`|dict|是|无|位置或关键字。成员任务映射到未舍入结果行；取消、失败或未运行记为空。|
 
-源码：[`src/chronaxis/fast/totals.py:48`](../../../src/chronaxis/fast/totals.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/totals.py:50`](../../../src/chronaxis/fast/totals.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

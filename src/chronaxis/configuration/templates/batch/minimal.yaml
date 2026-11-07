@@ -1,6 +1,7 @@
 %YAML 1.2
 ---
 batch_version: 1
+process_count: 4    # 外层最多同时执行4个独立任务；实际并行数不超过任务数
 jobs:
   - plan: analysis.yaml
   - plan: analysis.yaml

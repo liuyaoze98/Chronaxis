@@ -92,7 +92,7 @@ True表示计划中的来源全是CAN，且没有后续计算需要普通信号�
 
 错误模型属性错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:35`](../../../src/chronaxis/execution/scanned_signal_proof.py#L35)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:35`](../../../src/chronaxis/execution/scanned_signal_proof.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_source_contract"></a>
 ## `_source_contract`
@@ -117,7 +117,7 @@ _source_contract(source)
 
 非CAN属性错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:42`](../../../src/chronaxis/execution/scanned_signal_proof.py#L42)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:42`](../../../src/chronaxis/execution/scanned_signal_proof.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedSignalFacts"></a>
 ## `ScannedSignalFacts`
@@ -144,7 +144,7 @@ class ScannedSignalFacts
 |`completion`|[HistoryProgress](chronaxis.execution.history_records.md#api-HistoryProgress)|是|无|同次真实EOF/关闭等来源完成事实。|
 |`observation`|[SourceScanObservation](chronaxis.execution.observed_ingestion.md#api-SourceScanObservation)|是|无|实际观测范围Interval或按合同允许的空值，不是用户请求范围的复制。|
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:54`](../../../src/chronaxis/execution/scanned_signal_proof.py#L54)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:54`](../../../src/chronaxis/execution/scanned_signal_proof.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedInputFacts"></a>
 ## `ScannedInputFacts`
@@ -173,7 +173,7 @@ class ScannedInputFacts
 |`time_scope`|str|否|'source'|`"none"`：本次未收集时间范围；`"selected"`：范围只基于选中的报文；`"source"`：范围基于整个来源。selected的首末时间不代表整个文件的首末时间。|
 |`input_check`|str|否|'full'|`"auto"`按本计划实际要计算的内容检查输入；`"full"`检查全部原帧及时间，即使某帧不参与指标也检查它。|
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:71`](../../../src/chronaxis/execution/scanned_signal_proof.py#L71)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:71`](../../../src/chronaxis/execution/scanned_signal_proof.py#L71)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals"></a>
 ## `ScannedCANSignals`
@@ -185,7 +185,7 @@ ScannedCANSignals(declarations, source_plan, adapter, request, *, input_only=Fal
 ```
 
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:89`](../../../src/chronaxis/execution/scanned_signal_proof.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:89`](../../../src/chronaxis/execution/scanned_signal_proof.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-__init__"></a>
 ### `ScannedCANSignals.__init__`
@@ -219,7 +219,7 @@ ScannedCANSignals.__init__(declarations, source_plan, adapter, request, *, input
 - `TypeError`：扫描证明只接真实有界CAN来源、原请求且无原始导出。
 - `ValueError`：输入证明仅接真实直接累计的空普通样本请求。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:92`](../../../src/chronaxis/execution/scanned_signal_proof.py#L92)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:92`](../../../src/chronaxis/execution/scanned_signal_proof.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_require_contract"></a>
 ### `ScannedCANSignals._require_contract`
@@ -250,7 +250,7 @@ ScannedCANSignals._require_contract(*, completed=False)
 - `ValueError`：CAN扫描证明的原来源、完整投影、请求、验证器或计数摘要已改变。
 - `ValueError`：CAN扫描证明的实际adapter与原合同不符。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:150`](../../../src/chronaxis/execution/scanned_signal_proof.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:150`](../../../src/chronaxis/execution/scanned_signal_proof.py#L150)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_digest_record"></a>
 ### `ScannedCANSignals._digest_record`
@@ -275,7 +275,7 @@ ScannedCANSignals._digest_record(record)
 
 原模型/编码/预算错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:176`](../../../src/chronaxis/execution/scanned_signal_proof.py#L176)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:176`](../../../src/chronaxis/execution/scanned_signal_proof.py#L176)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_release_temporary"></a>
 ### `ScannedCANSignals._release_temporary`
@@ -301,7 +301,7 @@ ScannedCANSignals._release_temporary(slot, primary)
 
 无主错时释放错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:190`](../../../src/chronaxis/execution/scanned_signal_proof.py#L190)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:190`](../../../src/chronaxis/execution/scanned_signal_proof.py#L190)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_accept"></a>
 ### `ScannedCANSignals._accept`
@@ -333,7 +333,7 @@ ScannedCANSignals._accept(batch)
 - `ValueError`：纯消息输入证明不能混入普通样本或非最终批。
 - `ResultFormatError`：实际扫描样本与当前绑定契约不符。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:199`](../../../src/chronaxis/execution/scanned_signal_proof.py#L199)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:199`](../../../src/chronaxis/execution/scanned_signal_proof.py#L199)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_adopt"></a>
 ### `ScannedCANSignals._adopt`
@@ -358,7 +358,7 @@ ScannedCANSignals._adopt(exc)
 
 无正常新增异常。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:268`](../../../src/chronaxis/execution/scanned_signal_proof.py#L268)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:268`](../../../src/chronaxis/execution/scanned_signal_proof.py#L268)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-_close_read"></a>
 ### `ScannedCANSignals._close_read`
@@ -388,7 +388,7 @@ ScannedCANSignals._close_read()
 
 - `AnalysisError`：扫描read关闭未完成。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:275`](../../../src/chronaxis/execution/scanned_signal_proof.py#L275)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:275`](../../../src/chronaxis/execution/scanned_signal_proof.py#L275)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-consume"></a>
 ### `ScannedCANSignals.consume`
@@ -424,7 +424,7 @@ ScannedCANSignals.consume()
 - `ValueError`：扫描消息仓不属于本次完整输入。
 - `ValueError`：实际输入指纹原帧数与观测不一致。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:284`](../../../src/chronaxis/execution/scanned_signal_proof.py#L284)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:284`](../../../src/chronaxis/execution/scanned_signal_proof.py#L284)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-assert_current"></a>
 ### `ScannedCANSignals.assert_current`
@@ -459,7 +459,7 @@ ScannedCANSignals.assert_current(source, description, request, declarations)
 - `ValueError`：输入证明与实际已验证字节流不符。
 - `ValueError`：样本扫描证明与实际计数摘要不符。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:359`](../../../src/chronaxis/execution/scanned_signal_proof.py#L359)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:359`](../../../src/chronaxis/execution/scanned_signal_proof.py#L359)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-facts"></a>
 ### `ScannedCANSignals.facts`
@@ -487,7 +487,7 @@ ScannedSignalFacts。
 
 原生命周期/合同错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:382`](../../../src/chronaxis/execution/scanned_signal_proof.py#L382)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:382`](../../../src/chronaxis/execution/scanned_signal_proof.py#L382)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-observation"></a>
 ### `ScannedCANSignals.observation`
@@ -515,7 +515,7 @@ SourceScanObservation。
 
 未完成/失效证明。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:388`](../../../src/chronaxis/execution/scanned_signal_proof.py#L388)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:388`](../../../src/chronaxis/execution/scanned_signal_proof.py#L388)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-runtime_metadata"></a>
 ### `ScannedCANSignals.runtime_metadata`
@@ -543,7 +543,7 @@ ScannedCANSignals.runtime_metadata
 
 未完成/失效证明。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:393`](../../../src/chronaxis/execution/scanned_signal_proof.py#L393)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:393`](../../../src/chronaxis/execution/scanned_signal_proof.py#L393)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-read_identity"></a>
 ### `ScannedCANSignals.read_identity`
@@ -571,7 +571,7 @@ str。
 
 未完成/失效证明。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:399`](../../../src/chronaxis/execution/scanned_signal_proof.py#L399)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:399`](../../../src/chronaxis/execution/scanned_signal_proof.py#L399)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-capture_message_updates"></a>
 ### `ScannedCANSignals.capture_message_updates`
@@ -599,7 +599,7 @@ True表示本次读取会保存逐消息计算需要的原值；False表示不�
 
 无。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:405`](../../../src/chronaxis/execution/scanned_signal_proof.py#L405)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:405`](../../../src/chronaxis/execution/scanned_signal_proof.py#L405)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-closed"></a>
 ### `ScannedCANSignals.closed`
@@ -627,7 +627,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:410`](../../../src/chronaxis/execution/scanned_signal_proof.py#L410)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:410`](../../../src/chronaxis/execution/scanned_signal_proof.py#L410)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-finished"></a>
 ### `ScannedCANSignals.finished`
@@ -655,7 +655,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 无。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:415`](../../../src/chronaxis/execution/scanned_signal_proof.py#L415)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:415`](../../../src/chronaxis/execution/scanned_signal_proof.py#L415)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-take_message_store"></a>
 ### `ScannedCANSignals.take_message_store`
@@ -685,7 +685,7 @@ ScannedCANSignals.take_message_store(receiver, slot='_message_store')
 
 - `ValueError`：扫描消息仓移交需同预算空父槽且只能一次。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:419`](../../../src/chronaxis/execution/scanned_signal_proof.py#L419)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:419`](../../../src/chronaxis/execution/scanned_signal_proof.py#L419)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedCANSignals-close"></a>
 ### `ScannedCANSignals.close`
@@ -715,7 +715,7 @@ ScannedCANSignals.close()
 
 - `AnalysisError`：扫描消息仓未完成关闭。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:437`](../../../src/chronaxis/execution/scanned_signal_proof.py#L437)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:437`](../../../src/chronaxis/execution/scanned_signal_proof.py#L437)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ScannedBindings"></a>
 ## `_ScannedBindings`
@@ -734,7 +734,7 @@ class _ScannedBindings
 |`sources`|tuple[[ScannedSignalFacts](chronaxis.execution.scanned_signal_proof.md#api-ScannedSignalFacts) &#124; [ScannedInputFacts](chronaxis.execution.scanned_signal_proof.md#api-ScannedInputFacts), ...]|是|无|各来源已经完成的扫描事实元组。|
 |`identity`|str|是|无|该已扫描绑定的版本化身份摘要。|
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:464`](../../../src/chronaxis/execution/scanned_signal_proof.py#L464)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:464`](../../../src/chronaxis/execution/scanned_signal_proof.py#L464)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ScannedBindings-signals"></a>
 ### `_ScannedBindings.signals`
@@ -762,7 +762,7 @@ _ScannedBindings.signals
 
 无。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:472`](../../../src/chronaxis/execution/scanned_signal_proof.py#L472)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:472`](../../../src/chronaxis/execution/scanned_signal_proof.py#L472)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_ScannedBindings-resolve"></a>
 ### `_ScannedBindings.resolve`
@@ -787,7 +787,7 @@ SignalDefinition。
 
 原声明解析错误。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:476`](../../../src/chronaxis/execution/scanned_signal_proof.py#L476)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:476`](../../../src/chronaxis/execution/scanned_signal_proof.py#L476)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedBindingLease"></a>
 ## `ScannedBindingLease`
@@ -799,7 +799,7 @@ ScannedBindingLease(plan, scans, descriptions, requests, budget)
 ```
 
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:481`](../../../src/chronaxis/execution/scanned_signal_proof.py#L481)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:481`](../../../src/chronaxis/execution/scanned_signal_proof.py#L481)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedBindingLease-__init__"></a>
 ### `ScannedBindingLease.__init__`
@@ -834,7 +834,7 @@ lease。
 - `ValueError`：扫描绑定必须使用同一实际budget。
 - `ValueError`：扫描投影未恰好覆盖本计划实际需求。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:484`](../../../src/chronaxis/execution/scanned_signal_proof.py#L484)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:484`](../../../src/chronaxis/execution/scanned_signal_proof.py#L484)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedBindingLease-bindings"></a>
 ### `ScannedBindingLease.bindings`
@@ -866,7 +866,7 @@ ScannedBindingLease.bindings
 
 - `ResultClosedError`：扫描绑定未完成或已关闭。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:530`](../../../src/chronaxis/execution/scanned_signal_proof.py#L530)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:530`](../../../src/chronaxis/execution/scanned_signal_proof.py#L530)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedBindingLease-closed"></a>
 ### `ScannedBindingLease.closed`
@@ -894,7 +894,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:539`](../../../src/chronaxis/execution/scanned_signal_proof.py#L539)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:539`](../../../src/chronaxis/execution/scanned_signal_proof.py#L539)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ScannedBindingLease-close"></a>
 ### `ScannedBindingLease.close`
@@ -920,4 +920,4 @@ ScannedBindingLease.close()
 
 预算释放错误可重试。
 
-源码：[`src/chronaxis/execution/scanned_signal_proof.py:543`](../../../src/chronaxis/execution/scanned_signal_proof.py#L543)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/scanned_signal_proof.py:543`](../../../src/chronaxis/execution/scanned_signal_proof.py#L543)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

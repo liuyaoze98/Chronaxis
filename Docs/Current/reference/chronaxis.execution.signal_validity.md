@@ -53,4 +53,4 @@ ValueError：缺少唯一周期；PlanValidationError：周期3倍超出纳秒�
 
 无，不修改原声明或游标，不读取文件。
 
-源码：[`src/chronaxis/execution/signal_validity.py:14`](../../../src/chronaxis/execution/signal_validity.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/signal_validity.py:14`](../../../src/chronaxis/execution/signal_validity.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

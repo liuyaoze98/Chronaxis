@@ -52,14 +52,14 @@ output_print = builtins.print
 fatal_inner, fatal_outer = MemoryError('fatal_memory_cause'), AnalysisError('fatal_outer_analysis')
 cancel = KeyboardInterrupt('controlled_final_result_write_cancel')
 
-def actual_run(owner, plan, work_dir=None):
+def actual_run(owner, plan, work_dir=None, *, process_count=None):
     """参数: 原AnalysisRunner实参；返回: 原真实结果；异常: fatal分类例或原run错误。"""
     global target
     facts['runner_calls'] += 1
     if mode == 'fatal_chain':
         # 此单一分类例没有真实结果，不把异常构造当资源恢复证据。
         raise fatal_outer from fatal_inner
-    target = run(owner, plan, work_dir=work_dir)
+    target = run(owner, plan, work_dir=work_dir, process_count=process_count)
     facts['target_returned'] = True
     facts['target_run_id'] = target.metadata.run_id
     return target
@@ -168,7 +168,7 @@ class CLIRunTests(unittest.TestCase):
             sources=[dict(name='table', source_type='signal_csv', path='signal.csv', time_column='t',
                 time=dict(time_type='relative', unit='s', origin='cli_clock'))],
             signals=[dict(name='power', source='table', field='Power', dtype='float64', unit='W', valid_for='10s')],
-            rules=[dict(name='active', rule_type='condition_duration', condition='power > 0', minimum_duration='0s')],
+            rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='power > 0', minimum_duration='0s')],
             windows=[dict(name='context', rule='active', anchor='activity', pre='1s', post='1s', merge='none')],
             calculations=[dict(name='energy', scope='session', operation='integral', expr='power', unit='J')],
             execution=dict(backend='numpy', batch_rows=2, result_buffer_rows=1, memory_budget_bytes=256 * 1024**2),

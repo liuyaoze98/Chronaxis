@@ -145,6 +145,10 @@ def explanation_text(plan,report,*,backend_override=None):
         lines.append(f'  {source.name}：{SOURCES[source.source_type]}；{paths}；时间单位 {source.time_unit}，偏移 {time_text(config.offset_ns)}')
         if source.source_type in ('can_blf','can_asc','asc_or_blf','raw_can_csv'):
             lines.append(f'    通道 {config.channel + 1}，DBC {config.dbc_path}（缺省信号声明按需读取元数据，未读取报文）')
+        execution=next((item for item in report.source_execution if item['source']==source.name),None)
+        if execution is not None:
+            merge='按文件顺序接续' if execution['file_merge']=='concatenate' else '按记录时间归并，需要磁盘暂存'
+            lines.append(f"    {execution['file_count']}个文件；{merge}；读取子进程上限{execution['read_process_limit']}；保持一个连续会话（未实测输入时间）")
     lines.append('输入信号：')
     signal_paths={}
     for index,raw in enumerate(plan.raw_config.get('signals',())):
@@ -222,9 +226,12 @@ def explanation_text(plan,report,*,backend_override=None):
     backend=plan.execution.backend if backend_override is None else backend_override
     lines.append('  执行后端='+backend+('（命令行覆盖）' if backend_override is not None else
         '（配置指定）' if _declared(plan,'execution','backend') else '（默认）'))
-    for field,label in (('batch_rows','每批记录上限'),('memory_budget_bytes','分析层内存预算/字节'),
+    for field,label in (('process_count','读取解码工作进程上限'),('batch_rows','每批记录上限'),('memory_budget_bytes','分析层内存预算/字节'),
                         ('result_buffer_rows','结果缓冲行数'),('spool_quota_bytes','暂存磁盘预算/字节')):
-        value=getattr(plan.execution,field)
+        value=report.budget[field] if field=='process_count' else getattr(plan.execution,field)
+        if field=='process_count' and value!=plan.execution.process_count:
+            lines.append('  '+label+'='+str(value)+'（本次调用覆盖）')
+            continue
         lines.append('  '+_setting(plan,label,'未设置' if value is None else value,'execution',field))
     for field,label in (('trace','详细追溯'),('integrity','完整性诊断'),('retain_work','保留现场')):
         lines.append('  '+_setting(plan,label,getattr(plan.diagnostics,field),'diagnostics',field))

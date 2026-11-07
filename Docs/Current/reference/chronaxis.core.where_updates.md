@@ -48,7 +48,7 @@ bool。
 
 非法节点。
 
-源码：[`src/chronaxis/core/where_updates.py:9`](../../../src/chronaxis/core/where_updates.py#L9)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:9`](../../../src/chronaxis/core/where_updates.py#L9)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-reference_updates"></a>
 ## `reference_updates`
@@ -76,7 +76,7 @@ reference_updates(root, current, before, updates)
 
 输入/节点与绑定不符时沿用标量表达式核错误。
 
-源码：[`src/chronaxis/core/where_updates.py:22`](../../../src/chronaxis/core/where_updates.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:22`](../../../src/chronaxis/core/where_updates.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-reference_updates-visit"></a>
 ### `reference_updates.visit`
@@ -101,7 +101,7 @@ bool。
 
 同外层求值。
 
-源码：[`src/chronaxis/core/where_updates.py:32`](../../../src/chronaxis/core/where_updates.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:32`](../../../src/chronaxis/core/where_updates.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-numpy_updates"></a>
 ## `numpy_updates`
@@ -130,7 +130,7 @@ numpy_updates(root, current, before, updates, size)
 
 原数组布局/求值错误传播。
 
-源码：[`src/chronaxis/core/where_updates.py:59`](../../../src/chronaxis/core/where_updates.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:59`](../../../src/chronaxis/core/where_updates.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-numpy_updates-condition_at"></a>
 ### `numpy_updates.condition_at`
@@ -157,7 +157,7 @@ BOOL 列。
 
 数组求值错误。
 
-源码：[`src/chronaxis/core/where_updates.py:69`](../../../src/chronaxis/core/where_updates.py#L69)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:69`](../../../src/chronaxis/core/where_updates.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-numpy_updates-visit"></a>
 ### `numpy_updates.visit`
@@ -184,7 +184,7 @@ numpy_updates.visit(node, indices, cache)
 
 数组错误。
 
-源码：[`src/chronaxis/core/where_updates.py:77`](../../../src/chronaxis/core/where_updates.py#L77)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:77`](../../../src/chronaxis/core/where_updates.py#L77)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-reference_active"></a>
 ## `reference_active`
@@ -211,7 +211,7 @@ bool。
 
 标量求值错误。
 
-源码：[`src/chronaxis/core/where_updates.py:107`](../../../src/chronaxis/core/where_updates.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:107`](../../../src/chronaxis/core/where_updates.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-numpy_active"></a>
 ## `numpy_active`
@@ -239,4 +239,4 @@ numpy_active(root, current, flags, size)
 
 数组错误。
 
-源码：[`src/chronaxis/core/where_updates.py:112`](../../../src/chronaxis/core/where_updates.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/where_updates.py:112`](../../../src/chronaxis/core/where_updates.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

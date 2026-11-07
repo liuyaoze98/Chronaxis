@@ -38,7 +38,8 @@
       "condition": "active > 0",
       "rule_type": "condition_duration",
       "minimum_duration": "0s",
-      "name": "working"
+      "name": "working",
+      "duration_comparison": ">="
     }
   ],
   "windows": [
@@ -54,7 +55,8 @@
   "execution": {
     "backend": "numpy",
     "batch_rows": 1,
-    "result_buffer_rows": 1
+    "result_buffer_rows": 1,
+    "process_count": 4
   },
   "outputs": {
     "tables": "csv"

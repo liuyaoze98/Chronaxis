@@ -1,5 +1,9 @@
-"""把独立原始报文配置编译成每文件任务，共用 Chronaxis 的单位、类型与来源位置规则。"""
+"""把一个CAN来源编译成fast会话，共用Chronaxis的单位、类型与来源位置规则。
+
+会话保存完整输入序列、合并方式及资源额度，工作进程接收其中一个文件的声明。
+"""
 from dataclasses import asdict
+from hashlib import sha256
 from pathlib import Path
 
 from ..configuration import ConfigurationError, load_configuration
@@ -30,6 +34,8 @@ def _capabilities(raw):
         group = raw.get(key)
         if isinstance(group, dict):
             for field, value in group.items():
+                if key == 'execution' and field in ('process_count', 'memory_budget_bytes', 'spool_quota_bytes'):
+                    continue
                 if key == 'diagnostics' and value is False:
                     continue
                 errors.append(_unsupported(f'$.{key}.{field}', 'fast 不执行该资源或诊断策略'))
@@ -65,31 +71,34 @@ def _capabilities(raw):
 
 
 def _source(plan):
-    """取得唯一文件及其时钟参数，保持 ASC 与 BLF 各自的时间解释。"""
+    """展开同一来源的文件和时间解释，不打开日志。
+
+    参数: 静态AnalysisPlan。返回: 可序列化会话声明。异常: 不支持来源或解码策略。
+    """
     source, = plan.sources
     cfg = source.config
     if source.source_type not in ('can_blf', 'can_asc', 'asc_or_blf'):
-        raise _unsupported('$.sources[0]', 'fast 首版只读取 ASC/BLF')
+        raise _unsupported('$.sources[0]', 'fast只读取ASC/BLF')
     if cfg.decode_policy != 'strict':
-        raise _unsupported('$.sources[0].reader', 'fast 要求严格帧长')
-    options = {}
+        raise _unsupported('$.sources[0].reader', 'fast要求严格帧长')
+    inputs = []
     if isinstance(cfg, LegacyCANSpec):
-        paths = cfg.input_paths
-        options['offset_ns'] = cfg.offset_ns
+        inputs = [dict(path=str(path), offset_ns=cfg.offset_ns) for path in cfg.input_paths]
     else:
-        paths = tuple(item.path for item in cfg.inputs)
-        if len(paths) == 1:
-            item, = cfg.inputs
+        for item in cfg.inputs:
             if isinstance(item, ASCSpec):
-                options['asc_options'] = {k:v for k,v in asdict(item).items() if k != 'path'}
+                inputs.append(dict(path=str(item.path), asc_options={k:v for k,v in asdict(item).items() if k != 'path'}))
             else:
-                options['offset_ns'] = item.offset_ns
-    if len(paths) != 1:
-        raise _unsupported('$.sources[0].paths', 'fast单任务展开后须恰好一个ASC或BLF文件；独立文件可用fast batch，连续分卷请使用通用分析入口')
+                inputs.append(dict(path=str(item.path), offset_ns=item.offset_ns))
+    if not inputs:
+        raise _unsupported('$.sources[0].paths', 'fast需要至少一个输入文件')
     domain = plan.dataset.domain
-    return dict(path=str(paths[0]), dbc=str(cfg.dbc_path), channel=cfg.channel + 1,
+    return dict(**inputs[0], inputs=inputs, dbc=str(cfg.dbc_path), channel=cfg.channel + 1,
                 domain_ns=[domain.start_ns, domain.end_ns] if domain else None,
-                table_format=plan.outputs.tables, **options)
+                table_format=plan.outputs.tables, file_merge=cfg.file_merge,
+                process_count=plan.execution.process_count,
+                memory_budget_bytes=plan.execution.memory_budget_bytes,
+                spool_quota_bytes=plan.execution.spool_quota_bytes)
 
 
 def _flag(selector, fields, name):
@@ -144,12 +153,16 @@ def _metric(plan, item, database):
 
 
 def _compile_plan(plan, with_database):
-    """编译公共静态计划的独立文件任务，仅需加载本计划的 DBC 元数据。"""
+    """编译公共静态计划的单会话声明，保留全部分卷；仅加载本计划的DBC元数据。"""
     import cantools
     errors = []
     result = _source(plan)
     try:
+        before = sha256(Path(result['dbc']).read_bytes()).hexdigest()
         database = load_dbc(result['dbc'])
+        if sha256(Path(result['dbc']).read_bytes()).hexdigest() != before:
+            raise ValueError('编译期间DBC内容变化')
+        result['_dbc_digest'] = before
     except (OSError, ValueError, cantools.database.errors.Error) as exc:
         raise PlanValidationError('$.sources[0].dbc_by_channel', str(exc)) from exc
     metrics = []
@@ -203,7 +216,7 @@ def compile_template_plan(plan, *, template_path=None, _with_database=False):
 
 @scoped_dbc_cache()
 def compile_config(path, *, _with_database=False):
-    """读取配置和导入定义，验证 DBC 与 fast 子集。默认返回可序列化单文件任务。
+    """读取配置和导入定义，验证DBC与fast子集。默认返回可序列化会话声明。
 
     参数 path 是 JSON/YAML 文件路径；_with_database 仅给同进程立即执行时复用数据库。
     错误带配置路径。此入口只准备计算，不打开日志或创建输出目录。

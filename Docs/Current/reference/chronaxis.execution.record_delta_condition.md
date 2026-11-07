@@ -51,7 +51,7 @@ RecordDeltaCondition(budget, spec, dtype, backend, step_ns)
 ```
 
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:18`](../../../src/chronaxis/execution/record_delta_condition.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:18`](../../../src/chronaxis/execution/record_delta_condition.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-__init__"></a>
 ### `RecordDeltaCondition.__init__`
@@ -80,7 +80,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:21`](../../../src/chronaxis/execution/record_delta_condition.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:21`](../../../src/chronaxis/execution/record_delta_condition.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-_condition"></a>
 ### `RecordDeltaCondition._condition`
@@ -107,7 +107,7 @@ ScalarValue。
 
 原类型错。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:40`](../../../src/chronaxis/execution/record_delta_condition.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:40`](../../../src/chronaxis/execution/record_delta_condition.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-_append"></a>
 ### `RecordDeltaCondition._append`
@@ -134,7 +134,7 @@ None。
 
 预算/时间回退。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:45`](../../../src/chronaxis/execution/record_delta_condition.py#L45)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:45`](../../../src/chronaxis/execution/record_delta_condition.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-_left"></a>
 ### `RecordDeltaCondition._left`
@@ -159,7 +159,7 @@ RecordDeltaCondition._left(time_ns)
 
 无。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:64`](../../../src/chronaxis/execution/record_delta_condition.py#L64)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:64`](../../../src/chronaxis/execution/record_delta_condition.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-update"></a>
 ### `RecordDeltaCondition.update`
@@ -188,7 +188,7 @@ RecordDeltaCondition.update(time_ns, point, right, expires_at_ns, *, driver=Fals
 
 倒序、预算或原数值错误；失败只能清理。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:78`](../../../src/chronaxis/execution/record_delta_condition.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:78`](../../../src/chronaxis/execution/record_delta_condition.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-closed"></a>
 ### `RecordDeltaCondition.closed`
@@ -216,7 +216,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:164`](../../../src/chronaxis/execution/record_delta_condition.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:164`](../../../src/chronaxis/execution/record_delta_condition.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordDeltaCondition-close"></a>
 ### `RecordDeltaCondition.close`
@@ -242,4 +242,4 @@ None。
 
 原预算关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:168`](../../../src/chronaxis/execution/record_delta_condition.py#L168)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:168`](../../../src/chronaxis/execution/record_delta_condition.py#L168)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

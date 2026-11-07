@@ -3,6 +3,8 @@
 
 You can analyze CAN logs without first converting them to CSV or writing a Python entry function. Complete [installation](installation.md), then run this small, synthetic CAN example.
 
+The basic configuration retains `execution.process_count: 4` as the limit for later multi-volume inputs. This first example reads one ASC file in the default file order, within the current process. The directory example then demonstrates two continuous parts read in parallel. See [execution settings](execution.md) for field meanings and resource choices.
+
 <a id="准备日志和dbc"></a>
 ## 1. Prepare the log and DBC
 
@@ -26,31 +28,33 @@ The complete file is [analysis.yaml](../examples/analysis.yaml). Its input paths
 In YAML, indentation defines nesting. Here, two spaces indent a child field, and `-` starts a list item. A reference such as `dataset.name` describes the field's location: write `name` indented beneath `dataset`, not a literal key named `dataset.name`. See [configuration notation](configuration-language.md#field-paths).
 
 ```yaml
-config_version: 4                     # Current analysis configuration version
-dataset:                              # Analysis identity and optional input range
-  name: energy                        # Name of this analysis
-sources:                              # Input sources used by this analysis
-  - paths: data/can/quickstart.asc    # Relative to this YAML file
-    dbc_by_channel:                   # DBC files indexed by user-facing CAN channel
-      '1': data/can/teaching.dbc      # Public channel numbers start at 1
-signals:                              # Signals available to expressions
-  - name: power                       # Name used in expressions
-    field:                            # Locate the original input field
-      frame_id: '0x100'               # CAN message ID
-      signal: Power                   # Signal name in the DBC
-calculations:                         # Requested statistics or selected rows
-  - name: energy                      # Result column name
-    operation: integral               # Integrate power over time
-    expr: power                       # Formula using the declared signal or derived names
-  - name: sample_average              # Name used to identify and reference this object
-    operation: sample_mean            # Equal weight for each sample
-    expr: power                       # Formula using the declared signal or derived names
-  - name: time_average                # Name used to identify and reference this object
-    operation: time_weighted_mean     # Weight by valid time
-    expr: power                       # Formula using the declared signal or derived names
+config_version: 4                   # Current analysis configuration version
+dataset:                            # Analysis identity and optional input range
+  name: energy                      # Name of this analysis
+sources:                            # Input sources used by this analysis
+  - paths: data/can/quickstart.asc  # Relative to this YAML file
+    dbc_by_channel:                 # DBC files indexed by user-facing CAN channel
+      '1': data/can/teaching.dbc    # Public channel numbers start at 1
+signals:                            # Signals available to expressions
+  - name: power                     # Name used in expressions
+    field:                          # Locate the original input field
+      frame_id: '0x100'             # CAN message ID
+      signal: Power                 # Signal name in the DBC
+calculations:                       # Requested statistics or selected rows
+  - name: energy                    # Result column name
+    operation: integral             # Integrate power over time
+    expr: power                     # Formula using the declared signal or derived names
+  - name: sample_average            # Name used to identify and reference this object
+    operation: sample_mean          # Equal weight for each sample
+    expr: power                     # Formula using the declared signal or derived names
+  - name: time_average              # Name used to identify and reference this object
+    operation: time_weighted_mean   # Weight by valid time
+    expr: power                     # Formula using the declared signal or derived names
+execution:                          # Control how this analysis runs
+  process_count: 4                  # At most four file-reading workers, capped by the number of files
 ```
 
-Only the analysis name, log and DBC paths, signal, and three calculations are needed. There is no need to specify `session`, `entity`, `source_type`, `time_type`, a reference to the only source, or the default session scope. Signal type and unit come from the DBC; a unique channel is selected automatically. Omitting `domain` uses the observed range.
+The configuration names the analysis, selects the log, DBC, signal and three calculations, and sets the file-reading worker limit. Four is the recommended starting value used by this example; omitting the field still defaults to one. Choose another positive integer to suit available resources. There is no need to specify `session`, `entity`, `source_type`, `time_type`, a reference to the only source, or the default session scope. Signal type and unit come from the DBC; a unique channel is selected automatically. Omitting `domain` uses the observed range.
 
 From the examples directory, run:
 
@@ -77,7 +81,7 @@ All three values appear in one row, each with status `完整` (complete) and no 
 <a id="直接试用目录和blf"></a>
 ## 4. Try directory input and BLF
 
-[input-can-directory.yaml](../examples/input-can-directory.yaml) reads `part1.asc` and `part2.asc` from `quickstart-parts` in natural filename order. It produces the same 38 J, 6 W, and `38 / 6` W.
+[input-can-directory.yaml](../examples/input-can-directory.yaml) reads `part1.asc` and `part2.asc` from `quickstart-parts`. With `execution.process_count: 4`, these two files use at most two reading workers. The main process still consumes them in natural filename order and carries signal and event state across the boundary. The results remain 38 J, 6 W, and `38 / 6` W.
 
 ```powershell
 chronaxis run input-can-directory.yaml --output directory-result
@@ -99,6 +103,7 @@ chronaxis run can-demo/blf.json --output blf-result
 2. Set `dbc_by_channel` to your DBC files. User-facing channel numbers start at 1.
 3. Select `frame_id` and `signal` from the DBC. A message name is unnecessary. IDs accept `0x` hexadecimal, `0b` binary, and unprefixed decimal notation.
 4. Set `dataset.name`. Add a `domain` only to analyze a restricted time range, and add other features when the task needs them.
+5. Keep `execution.process_count: 4` as a starting point for multiple files. Increasing this number does not split a single file among workers. See [continuous-file multiprocessing](continuous-files.md) for ordering and resource rules.
 
 When `valid_for` is omitted, the validity period is three times the signal period obtained from the DBC. If no period is available, supply `period` or `valid_for`. Use actual signal definitions to determine units and current direction; names alone cannot establish them.
 

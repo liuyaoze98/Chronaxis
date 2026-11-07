@@ -66,4 +66,4 @@ from chronaxis import load_batch_plan
 plan = load_batch_plan("batch.yaml")
 ```
 
-源码：[`src/chronaxis/batch/config.py:14`](../../../src/chronaxis/batch/config.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/config.py:14`](../../../src/chronaxis/batch/config.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -1,45 +1,66 @@
 # 执行设置与资源管理
 
+根级映射 `execution` 控制一次分析怎样运行：使用多少文件工作进程、采用哪种计算实现、分配多少受管理资源，以及怎样返回数据不完整的结果。输入文件由 `sources` 选择，计算内容由 `calculations`、`rules` 等字段定义。
 
+## 基础配置：设置并行进程数
 
-根级映射`execution`控制一个分析任务采用哪种计算实现、每批处理多少样本、可使用多少受管理内存和暂存磁盘，以及数据不完整时如何返回结果。它不选择输入文件，也不决定需要计算的业务内容；后两者分别由sources和calculations/rules等字段控制。
+对同一次试验的 ASC／BLF 连续分卷，推荐先设置最多 4 个文件工作进程。普通分析由工作进程读取、解析和 DBC 解码，主进程接续信号状态、检测事件并完成计算。使用[高性能积分器](fast-energy.md)时，工作进程还会计算每条报文的贡献。
 
-需要同时处理多个独立文件时，在单独的[批量配置](batch.md)根级填写`process_count`；该字段不放在`execution`内。`batch_rows`表示处理批次大小，不能用它设置进程数。
+下面的片段放在完整分析配置根级；已有 `execution` 时，只增加或修改其中的 `process_count`，保留其他设置。与 `dataset`、`sources` 对齐，不添加第二个同名父键。
+
+```yaml
+execution:          # 设置本次分析的运行方式
+  process_count: 4  # 最多4个文件工作进程，主进程另计
+```
+
+`4` 是示例推荐的上限，不是程序默认值。省略仍为 `1`；有两个文件时最多使用两个文件工作进程，只有一个文件时不会拆成四份并行计算。根据电脑的 CPU、内存和同时运行的其他程序，可以改为 `2`、`4`、`8` 等正整数。先运行完整的[连续分卷示例](examples/continuous-parallel.yaml)：两份 ASC 共同得到 **38 J**，文件边界不切断积分。
+
+|输入或任务|进程数放在哪里|本手册的基础写法|
+|---|---|---|
+|同一来源的 ASC／BLF 连续分卷|分析配置的 `execution.process_count`|填写 `4`；来源保留默认的按需解码。支持范围见[连续记录](continuous-files.md)。|
+|多个相互独立的试验|[批量配置](batch.md)根级 `process_count`|批量填写 `4`，每个子分析填写 `execution.process_count: 1`，避免重复建立进程池。|
+|CSV、内存、多个来源或全部信号解码|分析配置的 `execution.process_count`|当前填写 `1`。多个独立分析可通过上一行的批量入口并行。|
+
+`batch_rows` 控制一次交给分析器的样本数，不是进程数。修改并行上限也不会自动排序文件；文件接续和时间归并见[连续记录](continuous-files.md)。
 
 ## 完整最小例与执行扩展
 
-[calculation-minimal.yaml](examples/calculation-minimal.yaml)省略execution和diagnostics，用默认设置得到30J。[execution-diagnostics.yaml](examples/execution-diagnostics.yaml)使用完全相同输入，仅改为reference计算、每批1个样本、结果缓冲1行，并开启输入追溯；数值仍为30J，同时可读取input_trace。小批次用于观察分批行为，不是大文件性能推荐值。
+[calculation-minimal.yaml](examples/calculation-minimal.yaml)读取随册的一个 ASC 文件，并用 teaching.dbc 解码功率，得到30J。配置保留基础上限 `process_count: 4`；本例是单 ASC 文件且使用默认 `file_merge: concatenate`，读取和分析都在当前进程内完成，不创建文件工作进程。这一说明仅针对本例的输入和文件组织方式。
+
+[execution-diagnostics.yaml](examples/execution-diagnostics.yaml)使用相同 ASC／DBC，改为reference计算、每批1个样本、结果缓冲1行，并开启输入追溯；数值仍为30J，同时可读取input_trace。小批次用于观察分批行为，不是大文件性能推荐值。
 
 [execution-report.yaml](examples/execution-report.yaml)与[execution-strict.yaml](examples/execution-strict.yaml)都请求0～12秒，但4000W输入只观测到8秒。前者得到32000J/partial，后者得到空值/indeterminate；数据和公式完全相同，只有partial_policy不同。
 
-命令：`chronaxis run 文件名.yaml --output 结果目录`。先完成最小例，再按资源或诊断需求增加字段。默认运行无需填写execution。下段仅作为全部默认值的参考，不是需要复制的配置：
+命令：`chronaxis run 文件名.yaml --output 结果目录`。先按上表选择进程数，再按实际需要增加资源或诊断字段。下段列出程序的全部默认值，供查阅；普通 ASC／BLF 配置通常只需上面的 `process_count`。
 
 以下是可放入完整分析配置根级的片段。全部字段可省略，使用表中的默认值。
 
 应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在文件根级加入或替换`execution`，代码已包含父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
 ```yaml
-execution:                          # 设置计算实现、资源上限和数据不全时的处理方式
-  backend: numpy                    # 选择计算实现；numpy使用数组，reference使用独立参考计算
-  batch_rows: 65536                 # 限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期
-  memory_budget_bytes: 268435456    # 限制新分析层管理的内存字节数；按可用内存留出其他进程开销
-  result_buffer_rows: 4096          # 限制结果写入前在内存积累的行数；按结果大小和内存选择
-  spool_quota_bytes: null           # 限制本次分析临时数据的磁盘字节数；按可用磁盘空间选择
-  partial_policy: report            # 设置默认的数据不全处理；report保留已知部分，strict不给不完整数值
-  on_budget_exceeded: error         # 选择资源超限处理；当前填error，中止并报告，不丢数据继续
+execution:                        # 设置计算实现、资源上限和数据不全时的处理方式
+  process_count: 1                # 设置本任务读取/解码工作进程上限；不包含主进程，默认1
+  backend: numpy                  # 选择计算实现；numpy使用数组，reference使用独立参考计算
+  batch_rows: 65536               # 限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期
+  memory_budget_bytes: 268435456  # 限制新分析层管理的内存字节数；按可用内存留出其他进程开销
+  result_buffer_rows: 4096        # 限制结果写入前在内存积累的行数；按结果大小和内存选择
+  spool_quota_bytes: null         # 限制本次分析临时数据的磁盘字节数；按可用磁盘空间选择
+  partial_policy: report          # 设置默认的数据不全处理；report保留已知部分，strict不给不完整数值
+  on_budget_exceeded: error       # 选择资源超限处理；当前填error，中止并报告，不丢数据继续
 ```
 
 ## 全部运行字段
 
 本页主字段表相对于`execution`，例如`execution.backend`。子对象另行注明，表中的字段不能直接放到配置根级。
 
-execution本身可以省略。填写时使用根级映射，例如`execution: {batch_rows: 1000}`。以下七个字段均为可选项；数字不加引号，字符串按[YAML语法](configuration-language.md)填写。各项的具体影响在后文解释。除spool_quota_bytes允许null外，其余字段不要用null代替省略；预算/行数必须是正整数，0和布尔true/false均不是合法额度。
+execution本身可以省略。填写时使用根级映射，例如`execution: {batch_rows: 1000}`。以下八个字段均为可选项；数字不加引号，字符串按[YAML语法](configuration-language.md)填写。各项的具体影响在后文解释。除spool_quota_bytes允许null外，其余字段不要用null代替省略；预算/行数必须是正整数，0和布尔true/false均不是合法额度。
 
 |字段|数据类型|必填|默认值|可填写的值及含义|
 |---|---|---|---|---|
+|process_count|整数|否|1|控制本任务共用的文件读取/解码进程上限。填写正整数，按可用CPU和内存设置；不包含主进程，不超过可处理文件数。默认1；不能填null或布尔值。当前支持范围见[连续多进程](continuous-files.md)。|
 |backend|字符串|否|`"numpy"`|选择执行数值计算的实现；通常用numpy，需要独立复算时用reference。`"numpy"`使用数组计算；`"reference"`使用独立实现作对照。|
 |batch_rows|整数|否|65536|控制一次交付的信号样本数量，按内存与批次切换开销选择。大于0；每批交付的信号样本数上限。|
-|memory_budget_bytes|整数|否|268435456|限制引擎可分配的受管理内存，按机器可用资源以字节设置。大于0，单位字节；新分析部分管理的内存额度。|
+|memory_budget_bytes|整数|否|268435456|限制引擎可分配的受管理内存，按机器可用资源以字节设置。大于0，单位字节；分析状态及文件工作进程受管理缓冲共用的内存额度。|
 |result_buffer_rows|整数|否|4096|限制暂存前积累的结果行数，按结果数量和缓冲开销选择。大于0；结果写入暂存前积累的行数上限。|
 |spool_quota_bytes|整数或null|否|`null`|限制本任务受管理的暂存磁盘用量，按工作目录可用空间以字节设置。正整数：暂存的磁盘额度，单位字节；null：不另外设置配额。|
 |partial_policy|字符串|否|`"report"`|选择数据不完整时是否保留已知部分的数值，按是否允许部分结果选择。`"report"`返回已知部分并标注；`"strict"`在所需数据不全时返回空值。|
@@ -112,11 +133,12 @@ report不会猜缺失部分，也不会把缺失值改成0。若从头到尾都�
 
 可以给全部计算项设置默认值：
 
-应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在文件根级加入或替换`execution`，代码已包含父键。保留未展示的其他根字段，不再添加第二个同名父键。
+应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在已有 `execution` 内增加或修改 `partial_policy`。下面同时保留基础并行设置；其他执行字段如已填写，继续保留，不再添加第二个同名父键。
 
 ```yaml
-execution:                  # 设置计算实现、资源上限和数据不全时的处理方式
-  partial_policy: strict    # 设置默认的数据不全处理；report保留已知部分，strict不给不完整数值
+execution:                # 设置计算实现、资源上限和数据不全时的处理方式
+  process_count: 4        # 保留本次分析的文件工作进程上限
+  partial_policy: strict  # 设置默认的数据不全处理；report保留已知部分，strict不给不完整数值
 ```
 
 如果已把execution.partial_policy设为strict，也可以让某一项仍返回已知部分：
@@ -124,11 +146,11 @@ execution:                  # 设置计算实现、资源上限和数据不全�
 应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在文件根级加入或替换`calculations`，代码已包含父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
 ```yaml
-calculations:                 # 本例的统计结果
-  - name: session_energy      # 结果表中的计算名称
-    expr: power               # 使用已定义的信号或公式
-    partial_policy: report    # 决定数据不全时是否保留可核实数值；report保留并标记，strict返回空值
-    operation: integral       # 按有效持续时间积分
+calculations:               # 本例的统计结果
+  - name: session_energy    # 结果表中的计算名称
+    expr: power             # 使用已定义的信号或公式
+    partial_policy: report  # 决定数据不全时是否保留可核实数值；report保留并标记，strict返回空值
+    operation: integral     # 按有效持续时间积分
 ```
 
 单个计算项里的设置优先于execution默认值。上面都是放进完整配置的片段；完整例子在[快速上手](quickstart.md)。
@@ -147,8 +169,8 @@ calculations:                 # 本例的统计结果
 应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，在文件根级加入或替换`diagnostics`，代码已包含父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
 ```yaml
-diagnostics:     # 选择是否额外记录定位信息、校验摘要以及保留临时数据
-  trace: true    # 控制是否记录详细定位信息；true增加追溯记录，false使用默认简要信息
+diagnostics:   # 选择是否额外记录定位信息、校验摘要以及保留临时数据
+  trace: true  # 控制是否记录详细定位信息；true增加追溯记录，false使用默认简要信息
 ```
 
 逐消息贡献另由`outputs.contributions: full`开启。运行环境备注放在根级`metadata`映射中；metadata默认{}，不会替代execution或diagnostics。独立信号/CAN导出另有[当前设备标签限制](exports.md)。
@@ -180,6 +202,6 @@ metadata保存运行附加信息，缺省为空对象。其中metadata.device_la
 普通分析可在根级填写：
 
 ```yaml
-metadata:                 # 保存说明性信息；字段不会自动校准数据或更改计算公式
-  device_label: lab_pc    # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
+metadata:               # 保存说明性信息；字段不会自动校准数据或更改计算公式
+  device_label: lab_pc  # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
 ```

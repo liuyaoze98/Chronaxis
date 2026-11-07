@@ -36,3 +36,5 @@ calculations:                                         # 列出希望获得的统
     scope:                                            # 选择计算范围；session整段会话，{rule: 名称}逐事件，{window: 名称}逐片段
       window: context                                 # 按指定窗口的每个片段分别计算；填写前面windows中的name
     expr: power                                       # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+execution:                                            # 设置本次分析的并行处理方式
+  process_count: 4                                    # 最多4个文件工作进程；实际并行数不超过输入文件数

@@ -37,7 +37,7 @@ BLF、ASC和原始报文CSV的报文导出均配置在`outputs.can_frames`中，
 | `{window: context}` | 导出名为context的窗口产生的片段 | 信号CSV、CAN报文 |
 | `{windows: all}` | 导出所有窗口产生的片段 | 仅CAN报文 |
 
-窗口名来自`windows[].name`。范围写在`outputs.signal_csv.scope`或`outputs.can_frames.scope`字段中，可以是session字符串或表中对象，不再另填window字段。空值不是有效scope；信号导出需明确一个窗口，不能使用windows: all。
+窗口名来自`windows[].name`。范围写在`outputs.signal_csv.scope`或`outputs.can_frames.scope`字段中，可以是session字符串或表中对象，不再另填window字段。空值不是有效scope。信号导出采用会话范围时可省略scope；选择按窗口导出时才需指定一个窗口，不能使用windows: all。
 
 两类导出各自选择scope，互不影响。范围包含起点、不包含终点，例如1～2秒的片段含1秒、不含2秒；插值不会从范围外借样本补端点。
 

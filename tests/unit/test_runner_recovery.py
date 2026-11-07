@@ -69,7 +69,7 @@ class RunnerRecoveryTests(unittest.TestCase):
         config = dict(config_version=4,
             dataset=dict(name='recovery', entity='synthetic', session='session', domain=dict(start='0ns',end='12ns')),
             sources=[source], signals=[dict(name='v',source='table',field='v',dtype='float64',unit='1',valid_for='20ns')],
-            rules=[dict(name='active',rule_type='condition_duration',condition='v > 0',minimum_duration='0ns')],
+            rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='v > 0',minimum_duration='0ns')],
             windows=[dict(name='window',rule='active',anchor='activity',pre='0ns',post='0ns',merge='none')],
             calculations=[dict(name='whole',scope='session',operation='integral',expr='v'),
                      dict(name='event',scope='event:active',operation='integral',expr='v'),

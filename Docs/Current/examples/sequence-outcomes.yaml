@@ -37,3 +37,5 @@ sequences:                                   # 把请求事件与响应事件按
     min_delay: 0s                            # 设置响应的最小允许延迟；依据协议或业务要求填写，包含边界
     response: response_edge                  # 选择响应事件规则；填写前面rules的name
     start: request_edge                      # 选择请求事件规则；填写前面rules的name
+execution:                                   # 设置本次分析的并行处理方式
+  process_count: 4                           # 最多4个文件工作进程；实际并行数不超过输入文件数

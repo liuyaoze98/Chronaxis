@@ -45,7 +45,7 @@ RecordSelection(budget, spec, input_unit, dtype, step_ns, *, backend='numpy', ba
 继承关系：[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/record_selection.py:13`](../../../src/chronaxis/execution/record_selection.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_selection.py:13`](../../../src/chronaxis/execution/record_selection.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSelection-__init__"></a>
 ### `RecordSelection.__init__`
@@ -78,7 +78,7 @@ owner。
 
 配置或预算错。
 
-源码：[`src/chronaxis/execution/record_selection.py:15`](../../../src/chronaxis/execution/record_selection.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_selection.py:15`](../../../src/chronaxis/execution/record_selection.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSelection-_flush"></a>
 ### `RecordSelection._flush`
@@ -104,7 +104,7 @@ None。
 
 核或输出错误。
 
-源码：[`src/chronaxis/execution/record_selection.py:34`](../../../src/chronaxis/execution/record_selection.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_selection.py:34`](../../../src/chronaxis/execution/record_selection.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSelection-finish"></a>
 ### `RecordSelection.finish`
@@ -130,7 +130,7 @@ None。
 
 原计算/写入错。
 
-源码：[`src/chronaxis/execution/record_selection.py:51`](../../../src/chronaxis/execution/record_selection.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_selection.py:51`](../../../src/chronaxis/execution/record_selection.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RecordSelection-close"></a>
 ### `RecordSelection.close`
@@ -156,4 +156,4 @@ None。
 
 预算释放错。
 
-源码：[`src/chronaxis/execution/record_selection.py:56`](../../../src/chronaxis/execution/record_selection.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/record_selection.py:56`](../../../src/chronaxis/execution/record_selection.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

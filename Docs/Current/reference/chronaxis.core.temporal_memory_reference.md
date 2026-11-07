@@ -72,7 +72,7 @@ TypeError/ValueError为类型、非BOOL根或会话冲突。
 - `TypeError`：memory时序需要真实内存SignalBindings，不能使用解码历史绑定。
 - `ValueError`：时序条件需BOOL且规则与绑定session一致。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:32`](../../../src/chronaxis/core/temporal_memory_reference.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:32`](../../../src/chronaxis/core/temporal_memory_reference.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_evidence"></a>
 ## `_evidence`
@@ -99,7 +99,7 @@ ConditionTick tuple，实际因果、EOF及诊断保留。
 
 模型/保持/表达式校验错误传播，不吞UNKNOWN原因。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:51`](../../../src/chronaxis/core/temporal_memory_reference.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:51`](../../../src/chronaxis/core/temporal_memory_reference.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-build_timeline_reference"></a>
 ## `build_timeline_reference`
@@ -129,7 +129,7 @@ TypeError、ValueError或OverflowError: 计划、同步、输入或时间协议�
 
 分配本次依赖历史和完整时间轴，不重排原行，不读取或解码旧来源。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:107`](../../../src/chronaxis/core/temporal_memory_reference.py#L107)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:107`](../../../src/chronaxis/core/temporal_memory_reference.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-detect_memory_reference"></a>
 ## `detect_memory_reference`
@@ -156,4 +156,4 @@ Event tuple，来源/质量/稳定ID均来自当前任务。
 
 时间/计划/批大小错误传播，内部候选不作为最终输出。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:162`](../../../src/chronaxis/core/temporal_memory_reference.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:162`](../../../src/chronaxis/core/temporal_memory_reference.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

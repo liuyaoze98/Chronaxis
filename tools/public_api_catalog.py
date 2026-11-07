@@ -1,6 +1,6 @@
 """从明确的产品基线取得根导出和公开子模块的真实Python签名。
 
-临时目录只展开src，子进程只导入声明；不读取业务日志。未知根导出必须先补分组，
+临时目录展开同一基线的src及pyproject版本，子进程只导入声明；不读取业务日志。未知根导出必须先补分组，
 不能静默遗漏。源码树发行模式复用已经由DocSources校验的当前src。
 """
 import argparse
@@ -66,7 +66,8 @@ def refresh(root, baseline, *, source_tree=False):
         if source_tree:
             source = root / 'src'
         else:
-            archive = subprocess.check_output(['git', 'archive', baseline, 'src'], cwd=root)
+            # 反射的默认软件版本必须来自同一冻结提交，不能借用当前工作区的pyproject。
+            archive = subprocess.check_output(['git', 'archive', baseline, 'src', 'pyproject.toml'], cwd=root)
             with tarfile.open(fileobj=io.BytesIO(archive)) as stream:
                 stream.extractall(temp, filter='data')
             source = temp / 'src'

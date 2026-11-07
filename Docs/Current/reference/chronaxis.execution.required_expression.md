@@ -62,4 +62,4 @@ TypeError 为对象域不符；ValueError 为静态内容被替换、未知名�
 未使用派生仍接受语法和单位检查，但不要求其原字段已读取。当前根需要
     的字段必须有真实投影证明。预算由调用阶段在本函数执行前承担。
 
-源码：[`src/chronaxis/execution/required_expression.py:16`](../../../src/chronaxis/execution/required_expression.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/required_expression.py:16`](../../../src/chronaxis/execution/required_expression.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

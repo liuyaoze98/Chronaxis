@@ -55,7 +55,7 @@ class HistoricalMathFixture(unittest.TestCase):
                               'domain': {'start': str(domain[0]) + 'ns', 'end': str(domain[1]) + 'ns'}},
                   'sources': [source], 'signals': [{'name': 'a', 'source': 'table', 'field': 'raw.a',
                       'dtype': 'float64', 'unit': '1', 'valid_for': str(valid_for) + 'ns'}],
-                  'rules': [{'name': 'active', 'rule_type': 'condition_duration', 'condition': 'a > 0', 'minimum_duration': '2ns'}]
+                  'rules': [{'name': 'active', 'rule_type': 'condition_duration', 'duration_comparison': '>=', 'condition': 'a > 0', 'minimum_duration': '2ns'}]
                            if rules is None else rules,
                   'derived': {} if derived is None else derived,
                   'execution': {'backend': backend, 'batch_rows': size, 'result_buffer_rows': buffer,

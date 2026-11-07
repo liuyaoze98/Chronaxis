@@ -61,7 +61,7 @@ None。
 ValueError 为非整数类型、非整数键或定宽范围不符。
 同一标签可由多个不同代码表示，此处不反向查找标签。
 
-源码：[`src/chronaxis/core/enum_codes.py:8`](../../../src/chronaxis/core/enum_codes.py#L8)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:8`](../../../src/chronaxis/core/enum_codes.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compile_enum_code"></a>
 ## `compile_enum_code`
@@ -87,7 +87,7 @@ compile_enum_code(compiler, call)
 
 参数数量、来源或原码类型不明时报编译错误。
 
-源码：[`src/chronaxis/core/enum_codes.py:22`](../../../src/chronaxis/core/enum_codes.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:22`](../../../src/chronaxis/core/enum_codes.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-code_dependencies"></a>
 ## `code_dependencies`
@@ -112,7 +112,7 @@ code_dependencies(root)
 
 输入不是表达式节点时传播属性错误。
 
-源码：[`src/chronaxis/core/enum_codes.py:40`](../../../src/chronaxis/core/enum_codes.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:40`](../../../src/chronaxis/core/enum_codes.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-original_code"></a>
 ## `original_code`
@@ -139,7 +139,7 @@ original_code(definition, original, quality=Q.NONE)
 
 缺少有效类型声明时报错。未知映射不使整数本身无效。
 
-源码：[`src/chronaxis/core/enum_codes.py:58`](../../../src/chronaxis/core/enum_codes.py#L58)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:58`](../../../src/chronaxis/core/enum_codes.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-code_column"></a>
 ## `code_column`
@@ -165,7 +165,7 @@ None 或只读的定宽整数 NumericArray。
 
 声明或输入违反模型时传播。
 
-源码：[`src/chronaxis/core/enum_codes.py:80`](../../../src/chronaxis/core/enum_codes.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:80`](../../../src/chronaxis/core/enum_codes.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-memory_histories"></a>
 ## `memory_histories`
@@ -193,7 +193,7 @@ memory_histories(compiled, names, factory, condition=None)
 
 原输入转换或绑定错误直接传播。
 
-源码：[`src/chronaxis/core/enum_codes.py:100`](../../../src/chronaxis/core/enum_codes.py#L100)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:100`](../../../src/chronaxis/core/enum_codes.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-aligned_scalar"></a>
 ## `aligned_scalar`
@@ -219,7 +219,7 @@ ScalarValue。
 
 质量或输入布局非法时传播。
 
-源码：[`src/chronaxis/core/enum_codes.py:112`](../../../src/chronaxis/core/enum_codes.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:112`](../../../src/chronaxis/core/enum_codes.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-expire_value"></a>
 ## `expire_value`
@@ -245,7 +245,7 @@ expire_value(value, reason)
 
 错误 dtype 或质量组合由模型拒绝。
 
-源码：[`src/chronaxis/core/enum_codes.py:126`](../../../src/chronaxis/core/enum_codes.py#L126)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:126`](../../../src/chronaxis/core/enum_codes.py#L126)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-aligned_column"></a>
 ## `aligned_column`
@@ -270,7 +270,7 @@ NumericArray；标签单独使用时不分配码列。
 
 不一致的历史布局或整数存储错误。
 
-源码：[`src/chronaxis/core/enum_codes.py:138`](../../../src/chronaxis/core/enum_codes.py#L138)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:138`](../../../src/chronaxis/core/enum_codes.py#L138)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-history_code"></a>
 ## `history_code`
@@ -296,7 +296,7 @@ history_code(definition, sample)
 
 缺少必要历史投影时明确失败。
 
-源码：[`src/chronaxis/core/enum_codes.py:164`](../../../src/chronaxis/core/enum_codes.py#L164)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:164`](../../../src/chronaxis/core/enum_codes.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-historical_column"></a>
 ## `historical_column`
@@ -322,7 +322,7 @@ historical_column(definition, arrays)
 
 缺少原码投影或布局错误。
 
-源码：[`src/chronaxis/core/enum_codes.py:182`](../../../src/chronaxis/core/enum_codes.py#L182)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:182`](../../../src/chronaxis/core/enum_codes.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-enum_code_reference"></a>
 ## `enum_code_reference`
@@ -348,7 +348,7 @@ enum_code_reference(node, operand)
 
 已有观测却缺原码投影或类型不一致时报错。
 
-源码：[`src/chronaxis/core/enum_codes.py:197`](../../../src/chronaxis/core/enum_codes.py#L197)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:197`](../../../src/chronaxis/core/enum_codes.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-enum_code_numpy"></a>
 ## `enum_code_numpy`
@@ -374,4 +374,4 @@ enum_code_numpy(node, operand)
 
 有观测而原码投影缺失或类型错误时报错。
 
-源码：[`src/chronaxis/core/enum_codes.py:210`](../../../src/chronaxis/core/enum_codes.py#L210)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/enum_codes.py:210`](../../../src/chronaxis/core/enum_codes.py#L210)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

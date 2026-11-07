@@ -95,7 +95,7 @@ def parse_sources(value, base: Path) -> tuple[SourcePlan, ...]:
             if source_type == 'can_blf':
                 # BLF来源使用固定profile、单通道DBC和有序文件路径，只接受声明的读取选项。
                 raw = object_at(raw, path, ('name', 'source_type', 'time', 'dbc_by_channel'),
-                                ('path', 'paths', 'reader_options', 'metadata', 'decode_scope', 'input_check', 'legacy_profile'))
+                                ('path', 'paths', 'reader_options', 'metadata', 'decode_scope', 'input_check', 'legacy_profile', 'file_merge'))
             else:
                 optional = ('metadata',) if source_type == 'memory' else ('path', 'paths', 'encoding', 'delimiter', 'missing_values', 'metadata')
                 # memory行或CSV时间列不能省略。
@@ -189,7 +189,8 @@ def parse_sources(value, base: Path) -> tuple[SourcePlan, ...]:
                         choice_at(raw.get('input_check', 'auto'), ('auto', 'full'), path + '.input_check'),
                         paths if len(paths)>1 else (),
                         choice_at(options.get('decode_policy','strict'),
-                            ('strict','partial','legacy'),path+'.reader_options.decode_policy'))
+                            ('strict','partial','legacy'),path+'.reader_options.decode_policy'),
+                        file_merge=choice_at(raw.get('file_merge','concatenate'),('concatenate','time_order'),path+'.file_merge'))
                     # 默认按实际需求执行，不回填raw；实际执行策略还进入来源描述和运行证明。
                     # 实际绝对定位进入来源声明身份，不读取路径内容或猜测DBC元数据。
                     identity_input['dbc_by_channel'] = {channel_text: str(dbc_path)}

@@ -58,7 +58,7 @@ class CANTextSourceRef(SourceRef)
 |`raw_time`|str &#124; None|是|无|文本原文字；BLF没有时间文字，不构造副本。|
 |`time_quantized`|bool|是|无|源文字转纳秒时是否实际量化。|
 
-源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-CANTextSourceRef-__post_init__"></a>
 ### `CANTextSourceRef.__post_init__`
@@ -88,4 +88,4 @@ CANTextSourceRef.__post_init__()
 
 - `TypeError`：文本CAN量化标志需要bool。
 
-源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

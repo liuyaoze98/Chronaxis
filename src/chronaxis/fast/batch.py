@@ -38,6 +38,8 @@ def prepare_batch(plan_path):
                 specs[job.job_id] = compile_template_plan(job.plan,template_path=path.parent/raw['template'])
             else:
                 specs[job.job_id] = compile_config(job.plan)
+            if specs[job.job_id].get('process_count', 1) != 1:
+                raise PlanValidationError('$.execution.process_count','独立fast批量任务内部不能请求多进程')
         except PlanValidationError as exc:
             errors.extend(exc.diagnostics)
             blocked.extend(exc.blocked_checks)
@@ -66,7 +68,7 @@ def run_batch(plan_path, output, *, process_count=None, cancel_event=None, total
         outcomes = dict.fromkeys(specs)
     count = plan.process_count if process_count is None else process_count
     runner = BatchRunner(count,fail_fast=plan.fail_fast)
-    extra = dict(engine='base_hpc_v1',budget_scope='whole_file_per_worker')
+    extra = dict(engine='base_hpc_v1',budget_scope='managed_streaming_per_job')
     try:
         report = runner._run(plan.jobs,output,cancel_event=cancel_event,device_label='pending',
                              fast_specs=specs,fast_rows=outcomes)

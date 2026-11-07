@@ -16,3 +16,5 @@ calculations:                   # 需要输出的计算结果
   - name: energy                # 为此分析对象取名称，供表达式、规则或结果引用
     operation: integral         # 选择统计或积分方法
     expr: power                 # 使用分析信号名或白名单表达式
+execution:                      # 设置本次分析的并行处理方式
+  process_count: 1              # 批量外层负责并行；子任务保持1，避免嵌套进程池

@@ -81,7 +81,7 @@ def check(guide):
         assert rows[0].value is None and rows[0].status != "complete"
         # 两次真实活动在退出等待内合并，保留两个原事件的身份与边界。
         conf = memory([0,1,0,1,0,0,0])
-        conf["rules"] = [dict(name="hot",rule_type="condition_duration",minimum_duration="0s",condition="power > 0")]
+        conf["rules"] = [dict(name="hot",rule_type="condition_duration",minimum_duration="0s",duration_comparison=">=",condition="power > 0")]
         conf["windows"] = [dict(name="context",rule="hot",anchor="activity",pre="0s",post="0s",
                                 merge="exit_delay",exit_delay="2s")]
         _,events,segments = snapshot(conf,backend)
@@ -105,7 +105,7 @@ def check(guide):
         conf["signals"][0].update(dtype="bool",unit="1",choices=[[0,False],[2,True]])
         conf["calculations"] = []
         conf["rules"] = [dict(name="active",rule_type="condition_duration",condition="power",
-                              minimum_duration="0s")]
+                              minimum_duration="0s",duration_comparison=">=")]
         _,events,_ = snapshot(conf,backend)
         assert len(events)==1 and events[0].start_ns==10**9 and events[0].end_ns==2*10**9
         assert events[0].status=="interrupted", events[0]

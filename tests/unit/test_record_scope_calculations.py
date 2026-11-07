@@ -19,7 +19,7 @@ class RecordScopeCalculationTests(unittest.TestCase):
     @staticmethod
     def calculations(raw):
         """同一事件请求能量/均值/极值。参数: 配置。返回: None。异常: 无。"""
-        raw['rules']=[dict(name='active',rule_type='condition_duration',condition='voltage > 350',minimum_duration='0.1s')]
+        raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='voltage > 350',minimum_duration='0.1s')]
         raw['calculations']=[dict(name='energy',scope='event:active',operation='integral',expr='power',unit='J'),
                         dict(name='mean',scope='event:active',operation='time_weighted_mean',expr='power',unit='W'),
                         dict(name='peak',scope='event:active',operation='max_time',expr='power',unit='W')]

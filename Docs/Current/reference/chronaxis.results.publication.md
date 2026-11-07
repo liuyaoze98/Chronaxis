@@ -55,7 +55,7 @@ output_root(value)
 
 路径/平台错误。
 
-源码：[`src/chronaxis/results/publication.py:13`](../../../src/chronaxis/results/publication.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:13`](../../../src/chronaxis/results/publication.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_identity"></a>
 ## `_identity`
@@ -80,7 +80,7 @@ _identity(path)
 
 原stat错误。
 
-源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-PublicationNames"></a>
 ## `PublicationNames`
@@ -92,7 +92,7 @@ PublicationNames(root, names)
 ```
 
 
-源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-PublicationNames-__init__"></a>
 ### `PublicationNames.__init__`
@@ -118,7 +118,7 @@ PublicationNames.__init__(root, names)
 
 IO错。
 
-源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-PublicationNames-publish"></a>
 ### `PublicationNames.publish`
@@ -146,7 +146,7 @@ None。
 
 IO/取消。
 
-源码：[`src/chronaxis/results/publication.py:76`](../../../src/chronaxis/results/publication.py#L76)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:76`](../../../src/chronaxis/results/publication.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-PublicationNames-close"></a>
 ### `PublicationNames.close`
@@ -172,4 +172,4 @@ None。
 
 IO错，不删除其他身份的文件。
 
-源码：[`src/chronaxis/results/publication.py:123`](../../../src/chronaxis/results/publication.py#L123)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/publication.py:123`](../../../src/chronaxis/results/publication.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

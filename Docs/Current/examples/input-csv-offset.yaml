@@ -22,3 +22,5 @@ calculations:                  # 列出希望获得的统计或积分结果，�
   - name: energy               # 为这项计算结果取唯一名称；结果表用它区分计算项
     operation: integral        # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
     expr: power                # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+execution:                     # 设置本次分析的并行处理方式
+  process_count: 1             # 本例为CSV、内存或多来源会话，当前仅支持单进程

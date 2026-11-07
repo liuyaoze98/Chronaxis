@@ -62,6 +62,21 @@ def check(wheel, guide, deps, report, device):
         "actual={name:version(name) for name in expected}; assert actual==expected,(actual,expected); print(actual)"])
     check_name = "import chronaxis,pathlib,sys;assert pathlib.Path(chronaxis.__file__).is_relative_to(sys.prefix);print(chronaxis.__file__)"
     summary["import_path"]=command("import",[python,"-I","-c",check_name]).strip()
+    # 在真正的安装环境核对构建版本，摘要/详细元数据都不得借用仓库或旧安装身份。
+    version_check = """from importlib.metadata import version
+from dataclasses import replace
+from chronaxis._version import software_version
+from chronaxis.results.manifest import RunMetadata
+expected = version('chronaxis')
+assert software_version() == expected
+metadata = RunMetadata('install-version', None, 'plan', 'reference', 4,
+                       'relative', (), '2026-11-07T00:00:00+08:00')
+for item in (metadata, replace(metadata, detailed_diagnostics=True)):
+    assert item.to_dict()['software_version'] == expected
+assert replace(metadata, software_version='0.0.1').to_dict()['software_version'] == '0.0.1'
+print(expected)
+"""
+    summary['software_version'] = command('software-version', [python, '-I', '-B', '-c', version_check]).strip()
     out = area/"from-installed.zip"
     def cli(name,*args,cwd=area):
         """参数: name为日志名、args公开命令参数、cwd运行目录。返回: stdout。异常: 非零退出。"""
@@ -72,6 +87,7 @@ def check(wheel, guide, deps, report, device):
     english_entry = Path(cli("guide-path-en", "guide", "--language", "en").strip())
     assert direct.is_relative_to(site) and english_entry == direct / "en/README.md"
     assert (direct / "README.md").is_file() and english_entry.is_file()
+    assert json.loads((direct / 'manifest.json').read_bytes())['package_version'] == summary['software_version']
     original_files = {p.relative_to(direct).as_posix(): sha256(p.read_bytes()).hexdigest()
                       for p in direct.rglob("*") if p.is_file()}
     user = area/"user"
@@ -138,6 +154,7 @@ print(len(rows))
     english_output=command("english-run", [python, "-I", "../run_analysis.py", en_task["example"], user / "out-english"], direct / "en")
     english_manifest=Path(english_output.strip().splitlines()[-1])
     english_info=json.loads(english_manifest.read_bytes())
+    assert english_info['run']['software_version'] == summary['software_version']
     english_table=next(english_manifest.parent/item["name"] for item in english_info["outputs"] if item["name"].startswith("事件结果_"))
     with english_table.open(encoding="utf-8-sig", newline="") as stream:
         en_events = list(csv.DictReader(stream))
@@ -146,6 +163,39 @@ print(len(rows))
     assert abs(summary["english_energy_kwh"] - 4000*61/3600000) < 1e-12
     for task in plan_index["tasks"]:
         slug,plan=task["id"],str((direct / task["example"]).resolve())
+        if slug == "FAST_CONTINUOUS_SESSION":
+            # 安装后的真实入口执行两种顺序；每个下载例包含完整来源/信号/公式。
+            folder = Path(plan).parent
+            for name in ('session.yaml', 'session-time-order.yaml'):
+                source = folder/name
+                explained = json.loads(cli('explain-'+name, 'fast','explain',source,'--process-count','4',cwd=user))
+                assert explained['worker_process_limit'] == 2 and len(explained['inputs']) == 2
+                published = json.loads(cli('run-'+name,'fast','run',source,'--output','out-'+name,
+                                          '--process-count','2',cwd=user))
+                manifest = Path(published['manifest_path'])
+                data = json.loads(manifest.read_bytes())
+                assert len(data['inputs']) == 2 and len(data['execution']['worker_pids']) == 2
+                assert data['execution']['ram_estimated_bytes'] == 0
+                with (manifest.parent/data['outputs'][0]['name']).open(encoding='utf-8-sig',newline='') as stream:
+                    row, = csv.DictReader(stream)
+                assert float(row['结果']) == 1200 and row['状态'] == '完整', row
+            script = user/'run_fast_session.py'
+            script.write_text(
+                'import json\nfrom chronaxis.fast import run\n'
+                'if __name__ == "__main__":\n'
+                f'    path = run({str(folder/"session.yaml")!r}, "out-fast-python", process_count=4, work_dir="fast-work")\n'
+                '    print(json.dumps({"manifest_path": str(path)}))\n', encoding='utf8')
+            command('python-fast-session', [python,'-I','-B',script], user)
+            published = json.loads((area/'python-fast-session.stdout').read_bytes())
+            manifest = Path(published['manifest_path'])
+            data = json.loads(manifest.read_bytes())
+            assert len(data['execution']['worker_pids']) == 2
+            with (manifest.parent/data['outputs'][0]['name']).open(encoding='utf-8-sig',newline='') as stream:
+                row, = csv.DictReader(stream)
+            assert float(row['结果']) == 1200 and not any((user/'fast-work').iterdir())
+            summary['cases'][slug] = 'Two session modes; CLI and Python overrides; two workers; 1200 J; clean work directory'
+            save()
+            continue
         if slug == "FAST_MESSAGE_ENERGY":
             folder = Path(plan).parent
             explained = json.loads(cli("explain-fast-energy", "fast", "explain", plan, cwd=user))
@@ -202,6 +252,22 @@ print(len(rows))
             assert published["status"]=="completed",published
             manifest_path=Path(published["manifest"])
             manifest=json.loads(manifest_path.read_bytes())
+            assert manifest['run']['software_version'] == summary['software_version'], slug
+            if slug=="CONTINUOUS_FILES":
+                # 从安装资料运行真实文件池；核独立手算值、静态上限及时间归并扩展。
+                table=next(manifest_path.parent/item['name'] for item in manifest['outputs'] if item['name'].startswith('会话结果_'))
+                with table.open(encoding='utf-8-sig',newline='') as stream:
+                    assert float(next(csv.DictReader(stream))['energy（J）'])==38
+                explained=json.loads(cli('continuous-explain','explain',plan,'--process-count','4','--format','json',cwd=user))
+                assert explained['budget']['process_count']==4 and explained['source_execution'][0]['read_process_limit']==2,explained
+                extended=Path(plan).with_name('continuous-time-order.yaml')
+                extra=json.loads(cli('continuous-merge','run',extended,'--process-count','4','--output','out-continuous-merge',cwd=user))
+                extra_path=Path(extra['manifest']);extra_manifest=json.loads(extra_path.read_bytes())
+                events_path=next(extra_path.parent/item['name'] for item in extra_manifest['outputs'] if item['name'].startswith('事件结果_'))
+                with events_path.open(encoding='utf-8-sig',newline='') as stream:
+                    event,=list(csv.DictReader(stream))
+                assert (event['开始时间（s）'],event['确认时间（s）'],event['结束时间（s）'])==('0','1','6'),event
+                summary['continuous_energy_j']=38
             if slug=="MESSAGE_ENERGY":
                 # 通用逐消息任务走普通run；独立手算两条4000W×0.1s贡献合计800J。
                 table = next(manifest_path.parent / item["name"] for item in manifest["outputs"]

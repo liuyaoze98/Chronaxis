@@ -49,7 +49,8 @@ def explanation_json(report) -> dict:
     if report.intervals is not None and requirements is not None:
         for item,scope in zip(requirements.sources,scopes):
             scope['active']=item.active
-    output = dict(input_requirements=scopes, validation=validation_json(report.validation), plan_identity=report.plan_identity,
+    output = dict(source_execution=[dict(item) for item in report.source_execution],
+                input_requirements=scopes, validation=validation_json(report.validation), plan_identity=report.plan_identity,
                 source_names=list(report.source_names), nodes=nodes,
                 history_ns=dict(report.history_ns), budget=dict(report.budget))
     # 解释已解析的间隔声明，不推测DBC周期或输出第二时间轴。
@@ -77,10 +78,10 @@ def run_static(arguments) -> int:
     runner = AnalysisRunner(backend=arguments.backend)
     # 两种命令使用相同有效计划，覆盖后端不会伪造新的配置或输入身份。
     if arguments.command == 'validate':
-        validation = runner.validate(plan)
+        validation = runner.validate(plan, process_count=arguments.process_count)
         payload = validation_json(validation)
     else:
-        report = runner.explain(plan)
+        report = runner.explain(plan, process_count=arguments.process_count)
         validation = report.validation
         payload = explanation_json(report)
     # 人读输出复用同一计划及报告；机器格式保持明确字段，不重新解析输入。
@@ -157,7 +158,7 @@ def run_analysis(arguments) -> int:
     manifest = None
     try:
         # 结果拥有其真实仓和资源；write不重新运行来源，退出上下文完成实际close。
-        with runner.run(plan, work_dir=arguments.work_dir) as result:
+        with runner.run(plan, work_dir=arguments.work_dir, process_count=arguments.process_count) as result:
             manifest = result.write(output)
             summary = dict(status=manifest.status, run_id=manifest.run_id,
                 plan_identity=result.metadata.plan_hash, backend=result.metadata.backend,

@@ -25,7 +25,7 @@ def quantile_config(batch_rows=1):
         sources=[dict(name='input',source_type='memory',rows=[
             dict(time=f'{i}s',values={'v':v}) for i,v in enumerate((0,10,20,30,99))])],
         signals=[dict(name='v',field='v',unit='V',dtype='int64',valid_for='3s')],
-        rules=[dict(name='active',rule_type='condition_duration',condition='0 < v < 30',minimum_duration='0s')],
+        rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='0 < v < 30',minimum_duration='0s')],
         windows=[dict(name='wide',rule='active',anchor='activity',pre='1s',post='1s')],
         calculations=[
             dict(name='p95',operation='sample_quantile',expr='v',q=.95),

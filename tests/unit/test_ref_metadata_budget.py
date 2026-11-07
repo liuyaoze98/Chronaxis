@@ -397,7 +397,7 @@ class RefMetadataBudgetTests(unittest.TestCase):
                     signals=[dict(name='a', source='table', field='a', dtype='float64', unit='W',
                         valid_for='10s', same_time_policy='last_by_sequence')],
                     derived={'b': dict(expr='a * 2', unit='W')},
-                    rules=[dict(name='active', rule_type='condition_duration', condition='b > 0', minimum_duration='0s')],
+                    rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='b > 0', minimum_duration='0s')],
                     windows=[dict(name='whole', rule='active', anchor='activity', pre='0s', post='0s', merge='none')],
                     calculations=[dict(name=calculation_id, scope=scope, operation='integral', expr='b', unit='J')
                         for calculation_id, scope in (('session', 'session'), ('event', 'event:active'), ('segment', 'segment:whole'))],

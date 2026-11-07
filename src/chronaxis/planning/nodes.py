@@ -154,9 +154,9 @@ def parse_rules(value, bindings, derived, ids) -> tuple[RulePlan, ...]:
                 result.append(model_at(RulePlan, path, rule_id, rule_type, signal, None, None, emit, None, spec, retrigger))
                 continue
             # condition_duration与start_only有不同必须持续参数。
-            required = ('name', 'rule_type', 'condition') + (('minimum_duration',) if rule_type == 'condition_duration' else ('window_duration',) if rule_type == 'start_only' else ())
+            required = ('name', 'rule_type', 'condition') + (('minimum_duration', 'duration_comparison') if rule_type == 'condition_duration' else ('window_duration',) if rule_type == 'start_only' else ())
             # condition_duration不接emit_initial，避免错误活动政策。
-            raw = object_at(raw, path, required, ('selection_origin', 'duration_comparison') if rule_type == 'condition_duration' else ('emit_initial',))
+            raw = object_at(raw, path, required, ('selection_origin',) if rule_type == 'condition_duration' else ('emit_initial',))
             # ID和DSL都静态校验，不读取来源。
             rule_id = register_id(raw['name'], path + '.name', ids)
             # 条件必须为bool，并检查依赖来源是否声明共同时间基准；这不核实真实时钟误差。
@@ -174,7 +174,8 @@ def parse_rules(value, bindings, derived, ids) -> tuple[RulePlan, ...]:
             # 固定抑制不能以0长度循环重触发。
             fixed = duration_at(raw['window_duration'], path + '.window_duration', positive=True) if rule_type == 'start_only' else None
             # 保存声明，不在解析器内创建时序活动状态。
-            comparison = choice_at(raw.get('duration_comparison', '>='), ('>=', '>'), path + '.duration_comparison')
+            comparison = (choice_at(raw['duration_comparison'], ('>=', '>'), path + '.duration_comparison')
+                          if rule_type == 'condition_duration' else '>=')
             result.append(RulePlan(rule_id, rule_type, condition, duration, selection, emit, fixed,
                                    duration_comparison=comparison))
         except PlanValidationError as error:

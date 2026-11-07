@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
+import {rewriteLinks} from './manual_markdown.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const docs=path.join(root,'Docs/Current'), output=path.join(docs,'_build/html');
@@ -32,6 +33,17 @@ const sourceMap=new Map(inventory.modules.map(m=>[path.resolve(root,m.path),m]))
 const search=[];
 const files=[];
 const attachments=new Map();
+
+/** 将文档链接定位到实际交付文件；仅收集公开规范和发布附件。 */
+function destination(target){
+  if(sourceMap.has(target))return path.join(output,'source',sourceMap.get(target).module+'.html');
+  if(target.startsWith(output+path.sep))return target;
+  if(target.startsWith(docs+path.sep))return path.join(output,htmlName(path.relative(docs,target)));
+  const repositoryRelative=path.relative(root,target);
+  if(!['Docs/Schema/','Docs/Release/'].some(prefix=>slash(repositoryRelative).startsWith(prefix)))throw new Error('文档附件超出公开范围: '+target);
+  const dest=path.join(output,'attachments',repositoryRelative);
+  attachments.set(target,dest);return dest;
+}
 
 /** 遍历源码文档，排除生成目录；返回排序稳定的文件清单。 */
 async function collect(dir){
@@ -117,18 +129,7 @@ for(const file of files){
   body=body.replace(/href="([^"#]+)(#[^"]*)?"/g,(whole,url,hash='')=>{
     if(/^[a-z]+:/i.test(url))return whole;
     const target=path.resolve(path.dirname(file),decodeURI(url));
-    let dest;
-    if(sourceMap.has(target))dest=path.join(output,'source',sourceMap.get(target).module+'.html');
-    else if(target.startsWith(output+path.sep))dest=target;
-    else if(target.startsWith(docs+path.sep))dest=path.join(output,htmlName(path.relative(docs,target)));
-    else {
-      // 只复制公开规范及发布说明；未知附件直接拒绝，避免沿链接带入内部资料。
-      const repositoryRelative=path.relative(root,target);
-      const allowed=['Docs/Schema/','Docs/Release/'].some(prefix=>slash(repositoryRelative).startsWith(prefix));
-      if(!allowed)throw new Error('文档附件超出公开范围: '+url);
-      dest=path.join(output,'attachments',repositoryRelative);
-      attachments.set(target,dest);
-    }
+    const dest=destination(target);
     return `href="${slash(path.relative(path.dirname(path.join(output,relative)),dest))}${hash}"`;
   });
   const dest=path.join(output,relative);await fs.mkdir(path.dirname(dest),{recursive:true});
@@ -165,10 +166,19 @@ if(path.relative(path.resolve(docs,'_build/html'),exampleOutput)!=='examples')th
 const exampleStat=await fs.lstat(exampleOutput).catch(error=>{if(error.code==='ENOENT')return null;throw error;});
 if(exampleStat?.isSymbolicLink())throw new Error('示例输出目录不能是符号链接');
 await fs.rm(exampleOutput,{recursive:true,force:true});
-await fs.cp(path.join(docs,'examples'),exampleOutput,{recursive:true});
+await fs.cp(path.join(docs,'examples'),exampleOutput,{recursive:true,filter:source=>path.basename(source)!=='__pycache__'&&!source.endsWith('.pyc')});
 for(const [source,dest] of attachments){
   await fs.mkdir(path.dirname(dest),{recursive:true});
-  await fs.copyFile(source,dest);
+  if(source.endsWith('.md')){
+    // 附件中的继续阅读同样需要映射；Map迭代也会处理新发现的版本规则等公开依赖。
+    const text=readingText(await fs.readFile(source,'utf8'));
+    await fs.writeFile(dest,rewriteLinks(text,url=>{
+      if(/^[a-z]+:/i.test(url)||url.startsWith('#'))return url;
+      const [local,hash]=url.split('#');
+      const target=destination(path.resolve(path.dirname(source),decodeURI(local)));
+      return slash(path.relative(path.dirname(dest),target))+(hash?'#'+hash:'');
+    }));
+  }else await fs.copyFile(source,dest);
 }
 // 三份当前规范互有相对引用，整体复制才能离线使用。
 await fs.mkdir(path.join(output,'attachments/Docs/Schema'),{recursive:true});

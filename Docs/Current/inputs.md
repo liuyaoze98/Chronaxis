@@ -17,6 +17,8 @@
 
 AnalysisRunner支持表中的BLF、ASC、原始CAN CSV、信号CSV和内存来源，也支持默认的`asc_or_blf`来源：按扩展名识别ASC/BLF，同一来源可依次读取两种格式。`signal_csv`专门读取已解码的物理量列；它不能直接把报文字节当成电压或电流。
 
+单一ASC/BLF来源的入门配置采用`execution.process_count: 4`，让不同文件并行读取和解码，再按选定顺序送入同一个分析会话。只有一个文件时实际最多用1个读取工作进程。CSV、内存和多个来源联合分析当前保持`process_count: 1`；若有多次独立试验，可在[批量任务](batch.md)中并行运行完整任务。进程数的默认值仍为1，完整使用条件见[连续记录多进程](continuous-files.md)。
+
 ### 先运行一个完整任务
 
 优先从[BLF／ASC快速开始](quickstart.md)运行随附的ASC日志和DBC，核对38J的能量。相同配置可将路径替换为自己的BLF，或者整个日志目录，无须中间转换成CSV。
@@ -39,23 +41,28 @@ chronaxis run analysis.yaml --output can-result
 |---|---|---|---|---|
 |name|字符串|否|source_1、source_2等|给来源取计划内唯一名称。只有一个可用来源时，signals.source也可省略；多个候选时必须明确选择。|
 |source_type|字符串|否|asc_or_blf|默认按扩展名识别ASC/BLF，可混合读取。仅要ASC可填can_asc，仅要BLF可填can_blf；CSV必须明确signal_csv或raw_can_csv，内存必须填memory。|
+|file_merge|字符串|否|concatenate|控制同一ASC/BLF来源中文件的记录顺序。concatenate：按paths顺序接续；time_order：要求文件内部所需记录有序，按共同时间稳定归并。不能填null；CSV和memory不支持此字段。进程数单独由execution.process_count控制，见[完整说明](continuous-files.md)。|
 |time|对象|否；CSV仍需声明时间单位|relative；CAN/内存单位s|组织时间类型、单位、共享起点和偏移。缺省来源起点相互独立，不自动宣称多个来源同步。|
 |metadata|对象|否|`{}`|记录本来源的说明信息。项目可自行填写键和值，例如采集仪型号；空对象或省略不增加说明。这里的键不会作为额外读取选项执行。|
 |path|路径文本或路径列表|文件来源须与paths二选一|无|可填文件、目录或通配符；与paths使用相同选择规则。通常统一使用paths；memory不填写。|
-|paths|路径文本或路径列表|文件来源须与path二选一|无|可填单文件、目录、通配符或显式列表。自动发现的文件自然排序，显式列表保持原顺序；默认ASC/BLF、显式can_asc和raw_can_csv的每项也可用{path: 文件, offset: 2s}；signal_csv与显式can_blf不接受逐文件offset。连续文件中所需记录不能时间回退；完整检查或原帧导出要求全来源时间有序。|
+|paths|路径文本或路径列表|文件来源须与path二选一|无|可填单文件、目录、通配符或显式列表。自动发现的文件自然排序，显式列表保持原顺序；默认ASC/BLF、显式can_asc和raw_can_csv的每项也可用{path: 文件, offset: 2s}；signal_csv与显式can_blf不接受逐文件offset。默认按声明顺序接续；重叠文件可明确选择file_merge: time_order，见file_merge项。|
 
 用load_analysis_plan加载时，相对路径以配置文件所在目录为起点；用AnalysisPlan.from_dict构建时，以传入的base_dir为起点，未传则用当前工作目录。
 
 ## 目录与连续文件
 
+下面是修改片段：以[analysis.yaml](examples/analysis.yaml)为基础，用自己的日志目录和DBC替换根级`sources`列表，并在根级`execution`中设置`process_count`。其他数据集、信号和计算段保留；目录与DBC须实际存在，DBC中须有配置引用的信号。
+
 ```yaml
-sources:                  # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - paths: data/can       # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
-    dbc_by_channel:       # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': network.dbc    # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+sources:                # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/can     # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:     # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': network.dbc  # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+execution:              # 与sources并列，控制本次分析的执行方式
+  process_count: 4      # 最多4个文件读取工作进程；实际不超过文件数
 ```
 
-目录内 `part1.asc、part2.blf、part10.asc`按1、2、10读取。只取ASC可写`paths: data/can/*.asc`；需要子目录时明确写`data/can/**/*.asc`。空目录或无匹配文件报错，不静默跳过。显式列表`[part10.asc, part2.asc]`保持原顺序。
+目录内 `part1.asc、part2.blf、part10.asc`最多由3个工作进程读取，主进程仍按1、2、10接续处理，保留跨文件信号和事件状态。只取ASC可写`paths: data/can/*.asc`；需要子目录时明确写`data/can/**/*.asc`。空目录或无匹配文件报错，不静默跳过。显式列表`[part10.asc, part2.asc]`保持原顺序。
 
 文件之间有已知时间偏移时，把它与文件写在一起，例如`paths: [{path: part1.asc, offset: 0s}, {path: part2.asc, offset: 100s}]`；偏移叠加来源的time.offset。逐文件偏移适用于默认ASC/BLF、显式can_asc和raw_can_csv；signal_csv与显式can_blf只支持来源统一的time.offset。适用来源也可写offsets数组，但不能与文件对象中的offset同时声明。独立试验要分别运行，见[批量任务](batch.md)。
 
@@ -80,20 +87,20 @@ sources:                  # 列出输入来源；每项规定数据位置、格�
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-sources:                  # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - path: trial.blf       # 指定单个输入文件；相对路径从本配置文件所在目录计算
-    dbc_by_channel:       # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': network.dbc    # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+sources:                # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - path: trial.blf     # 指定单个输入文件；相对路径从本配置文件所在目录计算
+    dbc_by_channel:     # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': network.dbc  # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
 ```
 
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`signals`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-signals:                     # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - name: voltage            # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                   # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: 0x100        # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: PackVoltage    # 填写DBC中的信号名称，大小写须一致
+signals:                   # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: voltage          # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: 0x100      # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: PackVoltage  # 填写DBC中的信号名称，大小写须一致
 ```
 
 本例假定DBC包含信号单位和该报文周期。程序从DBC推导数值类型、单位与帧类型；有效期默认是周期3倍。只有DBC没有周期且本任务需要有效期时，再填写`period`或`valid_for`。多通道/多帧候选不能唯一确定时才补充对应定位字段。
@@ -123,8 +130,8 @@ signals:                     # 把输入字段定义为有名称、类型、单�
 此字段位于每个CAN来源的reader映射内，控制如何处理DBC解码，适用于asc_or_blf、can_blf、can_asc、raw_can_csv；不是计算间隔或信号转换字段。替换已有来源bus的reader时，可写下面的子映射；只包含reader父键，不是完整sources列表：
 
 ```yaml
-reader:                    # 设置来源的读取选项；本片段放在对应sources列表项内
-  decode_policy: strict    # 选择已选CAN帧长度检查和解码失败处理；按输入章节的路径对照表选择
+reader:                  # 设置来源的读取选项；本片段放在对应sources列表项内
+  decode_policy: strict  # 选择已选CAN帧长度检查和解码失败处理；按输入章节的路径对照表选择
 ```
 
 |decode_policy|用途与行为|
@@ -149,7 +156,7 @@ reader.decode_policy决定已选数据帧的长度检查与解码失败处理。
 
 文本结构损坏、输入时间错误以及未列出的I/O或程序异常仍可能使任务失败；不能把partial理解成忽略所有错误。没有完整字段的短帧不补零。
 
-路径由规范化后的source_type决定：can_asc、raw_can_csv和保留为asc_or_blf的混合路径使用文本CAN适配层；can_blf使用旧BLF路径。省略source_type或填写asc_or_blf时，纯ASC归一为can_asc，包括设置了逐文件offsets的情况；纯BLF且未填offsets时归一为can_blf；混合ASC/BLF，或纯BLF且设置offsets时保留asc_or_blf。不能只看某一个文件后缀判断legacy行为。
+路径由规范化后的source_type决定：can_asc、raw_can_csv和保留为asc_or_blf的混合路径使用文本CAN适配层；can_blf沿用表中的纯BLF解码政策，单进程和文件并行采用相同的长度检查与DBC解码失败处理。省略source_type或填写asc_or_blf时，纯ASC归一为can_asc，包括设置了逐文件offsets的情况；纯BLF且未填offsets时归一为can_blf；混合ASC/BLF，或纯BLF且设置offsets时保留asc_or_blf。不能只看某一个文件后缀判断legacy行为。
 
 
 <a id="can-field"></a>
@@ -193,14 +200,14 @@ DBC标为FD但日志实际为经典CAN的已支持兼容继续保留，并记录
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-sources:                             # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - paths: [part1.csv, part2.csv]    # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
-    source_type: signal_csv          # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    time_column: time_ms             # 填写CSV时间列的实际表头，大小写和文件一致
-    time:                            # 说明输入时间数值的类型、单位、共同起点和校准偏移
-      unit: ms                       # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
-    reader:                          # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
-      missing_values: ['', NA]       # 列出CSV中表示缺失的文本；遇到它们产生无效更新，不按零计算
+sources:                           # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: [part1.csv, part2.csv]  # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    source_type: signal_csv        # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
+    time_column: time_ms           # 填写CSV时间列的实际表头，大小写和文件一致
+    time:                          # 说明输入时间数值的类型、单位、共同起点和校准偏移
+      unit: ms                     # 声明输入时间数值的单位；根据文件说明填写s/ms/us/ns等受支持单位
+    reader:                        # 设置当前来源的文本解析、列映射或解码行为；可用子字段取决于来源格式
+      missing_values: ['', NA]     # 列出CSV中表示缺失的文本；遇到它们产生无效更新，不按零计算
 ```
 
 下表位于`sources[]`；例如编码写在`sources[].reader.encoding`，不是来源顶层。
@@ -221,15 +228,15 @@ sources:                             # 列出输入来源；每项规定数据�
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`signals`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 示例文件名是待替换的输入路径，须准备相应CSV/DBC/CAN数据；本块本身不是完整任务。
 
 ```yaml
-signals:                 # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - name: current        # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field: Current_mA    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-    dtype: float64       # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-    unit: A              # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；按已知单位关系推导换算
-    valid_for: 200ms     # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    conversion:          # 设置读取后额外的单位换算；不重复DBC已执行的缩放和偏移
-      input_unit: mA     # 声明CSV解析或DBC解码后、额外换算前的单位；查列说明或DBC物理单位
-      scale: 0.001       # 设置额外数值乘数；按输入与目标单位的合法换算倍率填写，避免重复DBC换算
+signals:               # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: current      # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field: Current_mA  # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+    dtype: float64     # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+    unit: A            # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；按已知单位关系推导换算
+    valid_for: 200ms   # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    conversion:        # 设置读取后额外的单位换算；不重复DBC已执行的缩放和偏移
+      input_unit: mA   # 声明CSV解析或DBC解码后、额外换算前的单位；查列说明或DBC物理单位
+      scale: 0.001     # 设置额外数值乘数；按输入与目标单位的合法换算倍率填写，避免重复DBC换算
 ```
 
 上例0.001明确把毫安换为安培。`valid_for=200ms`仅是示意，真实项目应按采集方式确认。字段名与别名可以不同，表达式统一写`current`。
@@ -241,21 +248,21 @@ signals:                 # 把输入字段定义为有名称、类型、单位�
 应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 本段直接提供内存记录，不需要外部文件；信号和计算需在完整计划中另行定义。
 
 ```yaml
-sources:                   # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - source_type: memory    # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    rows:                  # 提供内存来源的记录列表；每条记录含时间及该时刻的字段值
-      - time: 0s           # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000      # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 1        # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
-      - time: 1s           # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000      # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 0        # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
-      - time: 8s           # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000      # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 0        # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
+sources:                 # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - source_type: memory  # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
+    rows:                # 提供内存来源的记录列表；每条记录含时间及该时刻的字段值
+      - time: 0s         # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+          active: 1      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
+      - time: 1s         # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+          active: 0      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
+      - time: 8s         # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+          active: 0      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
 ```
 
 下表位于`sources[]`；记录时间的完整路径为`sources[].rows[].time`。
@@ -279,17 +286,17 @@ sources:                   # 列出输入来源；每项规定数据位置、格
 将下面第一段放在CAN来源的列表项内，与`paths`同级，替换该来源原有的`time`：
 
 ```yaml
-time:                   # 该CAN来源的时间设置
-  clock: test_button    # 已确认的共同起点
+time:                 # 该CAN来源的时间设置
+  clock: test_button  # 已确认的共同起点
 ```
 
 将下面第二段放在CSV来源的列表项内，与`time_column`同级，替换该来源原有的`time`：
 
 ```yaml
-time:                   # 该CSV来源的时间设置
-  unit: ms              # 输入时间列以毫秒计
-  clock: test_button    # 与CAN使用同一个已确认起点
-  offset: -2s           # 仪器比共同起点早启动2秒
+time:                 # 该CSV来源的时间设置
+  unit: ms            # 输入时间列以毫秒计
+  clock: test_button  # 与CAN使用同一个已确认起点
+  offset: -2s         # 仪器比共同起点早启动2秒
 ```
 
 这两段分别是一个来源内的字段，不是完整`sources`数组。CSV原值5000ms先变为5秒，再减2秒，得到共同时间3秒。完整多来源配置见[CAN与CSV联合分析](examples.md#can-joint-analysis)。

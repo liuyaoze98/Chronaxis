@@ -2,40 +2,63 @@
 
 <a id="执行设置与资源管理"></a>
 
-The root `execution` object selects the calculation implementation, input batch size, managed memory and temporary disk limits, and the treatment of incomplete data. Select inputs in `sources` and analysis operations in `calculations`, `rules`, and related sections.
+The root `execution` object controls how one analysis runs: file workers, numerical implementation, managed resources and handling of incomplete results. Select inputs in `sources` and analysis operations in `calculations`, `rules` and related sections.
 
-For multiple independent analyses, set `process_count` at the root of a separate [batch configuration](batch.md). It does not belong inside `execution`; `batch_rows` is a sample count, not a process count.
+## Basic configuration: choose the process limit
+
+For ASC/BLF volumes from one experiment, start with a limit of four file workers. Ordinary-analysis workers read, parse and DBC-decode files; the main process preserves signal state, detects events and performs calculations. With the [high-performance integrator](fast-energy.md), workers also evaluate each message's contribution.
+
+Put this fragment at the root of a complete analysis configuration, aligned with `dataset` and `sources`. If `execution` already exists, add or replace only its `process_count` and retain the other settings. Do not duplicate the parent key.
+
+```yaml
+execution:          # Runtime settings for this analysis
+  process_count: 4  # At most four file workers, excluding the main process
+```
+
+Four is the recommended example limit, not the software default: omission still means `1`. Two files can use at most two file workers. A single file is not divided into four parallel calculations. Choose a positive integer such as `2`, `4` or `8` for the CPU, available memory and other applications on your computer. Start with the complete [continuous-volume example](../examples/continuous-parallel.yaml): its two ASC files jointly produce **38 J**, without restarting integration at the file boundary.
+
+| Input or task | Where to set the limit | Basic configuration |
+|---|---|---|
+| Continuous ASC/BLF volumes in one source | Analysis `execution.process_count` | Set `4` and keep the default requested-signal decoding. See [supported inputs](continuous-files.md). |
+| Independent experiments | Root `process_count` in a [batch configuration](batch.md) | Set the batch to `4` and each child analysis to `execution.process_count: 1` to avoid nested pools. |
+| CSV, memory, multiple sources or all-signal decoding | Analysis `execution.process_count` | Set `1` for now. Separate independent analyses can use the batch entry above. |
+
+`batch_rows` sets samples per analysis batch, not worker processes. Raising the process limit does not sort files; see [file continuation and time merging](continuous-files.md).
 
 <a id="完整最小例与执行扩展"></a>
 ## Minimal examples and optional settings
 
-[calculation-minimal.yaml](../examples/calculation-minimal.yaml) omits `execution` and `diagnostics` and produces 30 J with the defaults. [execution-diagnostics.yaml](../examples/execution-diagnostics.yaml) uses the same input with the reference backend, one sample per batch, a one-row result buffer, and input tracing. The value remains 30 J and `input_trace` becomes available. These tiny batches demonstrate batching; they are not performance recommendations.
+[calculation-minimal.yaml](../examples/calculation-minimal.yaml) reads one supplied ASC file, decodes power with teaching.dbc, and produces 30 J. It retains the basic limit `process_count: 4`. For this single ASC file with the default `file_merge: concatenate`, reading and analysis run in the current process without a file worker. This statement applies to this example's input and file organization.
+
+[execution-diagnostics.yaml](../examples/execution-diagnostics.yaml) uses the same ASC/DBC with the reference backend, one sample per batch, a one-row result buffer, and input tracing. The value remains 30 J and `input_trace` becomes available. These tiny batches demonstrate batching; they are not performance recommendations.
 
 [execution-report.yaml](../examples/execution-report.yaml) and [execution-strict.yaml](../examples/execution-strict.yaml) both request 0–12 seconds, while the 4000 W input is observed only through 8 seconds. They return 32000 J / `partial` and an empty value / `indeterminate`, respectively. Only `partial_policy` differs.
 
-Run `chronaxis run FILE.yaml --output OUTPUT_DIRECTORY`. Start with the minimal example and add settings only when needed. The following block shows every default; it is a reference, not a required template. To use it with [analysis.yaml](../examples/analysis.yaml), replace or add the root `execution` object and retain the other root fields. Do not add a second `execution` key.
+Run `chronaxis run FILE.yaml --output OUTPUT_DIRECTORY`. Choose the process limit using the table above, then add resource or diagnostic settings only when needed. The following block lists every software default for reference; ordinary ASC/BLF examples usually need only the process limit shown above. To use it with [analysis.yaml](../examples/analysis.yaml), replace or add the root `execution` object and retain the other root fields. Do not add a second `execution` key.
 
 ```yaml
-execution:                          # Runtime and resource settings
-  backend: numpy                    # Reference or NumPy numerical implementation
-  batch_rows: 65536                 # Maximum calculation rows processed in a batch
-  memory_budget_bytes: 268435456    # Shared analysis memory budget in bytes
-  result_buffer_rows: 4096          # Rows buffered before writing intermediate results
-  spool_quota_bytes: null           # Maximum temporary disk usage in bytes
-  partial_policy: report            # Whether incomplete observations may yield a partial value
-  on_budget_exceeded: error         # Action when the declared resource budget cannot be met
+execution:                        # Runtime and resource settings
+  process_count: 1                # Reading/decoding worker limit for this analysis, excluding the main process
+  backend: numpy                  # Reference or NumPy numerical implementation
+  batch_rows: 65536               # Maximum calculation rows processed in a batch
+  memory_budget_bytes: 268435456  # Shared analysis memory budget in bytes
+  result_buffer_rows: 4096        # Rows buffered before writing intermediate results
+  spool_quota_bytes: null         # Maximum temporary disk usage in bytes
+  partial_policy: report          # Whether incomplete observations may yield a partial value
+  on_budget_exceeded: error       # Action when the declared resource budget cannot be met
 ```
 
 <a id="全部运行字段"></a>
 ## All execution fields
 
-The paths below are relative to `execution`, for example `execution.backend`. The object and all seven fields are optional. Use an object when supplying it, such as `execution: {batch_rows: 1000}`. Only `spool_quota_bytes` accepts `null`; the other fields must not use `null` as a substitute for omission. Limits and row counts must be positive integers, excluding zero and Boolean values. See [configuration syntax](configuration-language.md).
+The paths below are relative to `execution`, for example `execution.backend`. The object and all eight fields are optional. Use an object when supplying it, such as `execution: {batch_rows: 1000}`. Only `spool_quota_bytes` accepts `null`; the other fields must not use `null` as a substitute for omission. Limits and row counts must be positive integers, excluding zero and Boolean values. See [configuration syntax](configuration-language.md).
 
 | Field | Type | Required | Default | Meaning and choices |
 |---|---|---|---|---|
+| process_count | integer | No | 1 | Positive reading/decoding worker limit for this analysis, excluding the main process and capped by file count. Choose for available CPU and memory; null and Boolean values are invalid. See [supported configurations](continuous-files.md). |
 | backend | string | No | `numpy` | `numpy` uses array calculations; `reference` uses an independent implementation for comparison. |
 | batch_rows | integer | No | 65536 | Maximum signal samples delivered in one batch; choose according to available memory and batch overhead. |
-| memory_budget_bytes | integer | No | 268435456 | Positive managed-memory limit, in bytes, for the analysis engine. |
+| memory_budget_bytes | integer | No | 268435456 | Positive shared managed-memory limit, in bytes, for analysis state and file-worker buffers. |
 | result_buffer_rows | integer | No | 4096 | Maximum result rows accumulated in memory before writing them to temporary storage. |
 | spool_quota_bytes | integer or null | No | `null` | Positive managed temporary-disk quota in bytes; `null` adds no quota. Physical disk capacity still applies. |
 | partial_policy | string | No | `report` | `report` returns the known portion and marks it; `strict` returns an empty value when required data is incomplete. |
@@ -99,21 +122,22 @@ Request 0–12 seconds at 4000 W, but suppose the recording stops at 8 seconds. 
 
 `report` neither guesses missing values nor replaces them with zero. With no calculable data at all it cannot return a normal zero.
 
-To change the default for all calculations, replace the root `execution` block in [analysis.yaml](../examples/analysis.yaml):
+In [analysis.yaml](../examples/analysis.yaml), add or change `partial_policy` inside the existing root `execution` object. Retain the process limit and other settings; do not duplicate the parent key:
 
 ```yaml
-execution:                  # Runtime and resource settings
-  partial_policy: strict    # Whether incomplete observations may yield a partial value
+execution:                # Runtime and resource settings
+  process_count: 4        # Retain this analysis's file-worker limit
+  partial_policy: strict  # Whether incomplete observations may yield a partial value
 ```
 
 A calculation can override that default. Replace the root `calculations` block with the following example while retaining the other declarations, including `power`:
 
 ```yaml
-calculations:                 # Requested statistics or selected rows
-  - name: session_energy      # Name used to identify and reference this object
-    expr: power               # Formula using the declared signal or derived names
-    partial_policy: report    # Whether incomplete observations may yield a partial value
-    operation: integral       # Calculation to apply to the expression
+calculations:               # Requested statistics or selected rows
+  - name: session_energy    # Name used to identify and reference this object
+    expr: power             # Formula using the declared signal or derived names
+    partial_policy: report  # Whether incomplete observations may yield a partial value
+    operation: integral     # Calculation to apply to the expression
 ```
 
 The calculation's policy takes precedence. These are fragments for a complete configuration; see [quick start](quickstart.md).
@@ -133,8 +157,8 @@ The root `diagnostics` object controls optional evidence. Its three independent 
 To enable tracing, add or replace the root object in [analysis.yaml](../examples/analysis.yaml):
 
 ```yaml
-diagnostics:     # Optional diagnostic material
-  trace: true    # Whether to retain binding and calculation trace records
+diagnostics:   # Optional diagnostic material
+  trace: true  # Whether to retain binding and calculation trace records
 ```
 
 Enable message contributions separately with `outputs.contributions: full`. Put descriptive notes in the root `metadata` object (default `{}`); it does not replace `execution` or `diagnostics`. Independent signal/CAN exports have the [device-label requirements](exports.md) described there.
@@ -169,6 +193,6 @@ It creates a new directory under the system temporary directory by default. `--o
 For an ordinary analysis:
 
 ```yaml
-metadata:                 # Optional descriptive metadata
-  device_label: lab_pc    # Device label recorded in this example
+metadata:               # Optional descriptive metadata
+  device_label: lab_pc  # Device label recorded in this example
 ```

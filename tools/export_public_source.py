@@ -25,7 +25,7 @@ PUBLIC_TOOLS = {
     'build_ai_guide.py', 'ai_field_views.py', 'english_docs.py', 'public_docs.py', 'doc_sources.py',
     'build_m2_docs.py', 'doc_type_links.py', 'doc_public_api.py', 'verify_m2_docs.py',
     'render_m2_docs.mjs', 'render_current_docs.mjs', 'manual_search.js',
-    'check_current_html.py', 'test_manual_search.mjs', 'package_current_docs.py',
+    'check_current_html.py', 'manual_markdown.mjs', 'test_manual_markdown.mjs', 'test_manual_search.mjs', 'package_current_docs.py',
     'check_ai_install.py', 'verify_ai_distribution.py', 'lock_ai_inputs.py',
     'test_public_docs.py', 'test_doc_sources.py', 'test_docs_reference.py', 'test_current_html.py',
     'test_manual_example_comments.py', 'test_manual_r2.py',

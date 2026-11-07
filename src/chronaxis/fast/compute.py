@@ -174,6 +174,15 @@ class _Metric:
 
     def consume(self, decoded):
         """消费一条已匹配记录。除零、溢出或缺值直接使本文件失败。"""
+        contribution, keep = self.contribution(decoded)
+        self.add(contribution, keep)
+
+    def contribution(self, decoded):
+        """只求当前帧贡献和方向选择，不修改累计状态。
+
+        参数: decoded为DBC物理数值字典。返回: (float64贡献, bool入选)。
+        异常: 类型、单位换算、公式或方向值错误；未入桶也必须先求值。
+        """
         contribution = _float(self.evaluate(decoded))
         if self.factor != 1:
             contribution = _affine(contribution, self.factor, 0, 'float64')
@@ -183,6 +192,14 @@ class _Metric:
             value = decoded[key]
             _number_type(value)
             keep = value > 0 if positive else value < 0
+        return contribution, keep
+
+    def add(self, contribution, keep):
+        """按原顺序提交一次贡献，零值仍计入入选数。
+
+        参数: contribution有限float；keep为方向是否入选。返回: None。
+        异常: 累计溢出；调用方已验证贡献来源，不进行重新求值。
+        """
         if keep:
             self.total = _float(self.total + contribution)
             self.selected += 1
@@ -196,7 +213,7 @@ class _Metric:
 
 
 def prepare_metric(spec):
-    """创建一个独立文件指标。参数为简单声明字典；拒绝冲突别名和未知指令。"""
+    """创建一个计算项的求值/累计状态。参数为简单声明字典；拒绝冲突别名和未知指令。"""
     signals, parameters = spec['signals'], spec.get('parameters', {})
     if signals.keys() & parameters.keys():
         raise ValueError('参数与信号名称冲突')

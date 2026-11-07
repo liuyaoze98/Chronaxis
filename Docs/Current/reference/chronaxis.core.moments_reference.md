@@ -41,7 +41,7 @@ ReferenceMoments(operation)
 ```
 
 
-源码：[`src/chronaxis/core/moments_reference.py:13`](../../../src/chronaxis/core/moments_reference.py#L13)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/moments_reference.py:13`](../../../src/chronaxis/core/moments_reference.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceMoments-__init__"></a>
 ### `ReferenceMoments.__init__`
@@ -66,7 +66,7 @@ ReferenceMoments.__init__(operation)
 
 调用方先做操作检查。
 
-源码：[`src/chronaxis/core/moments_reference.py:16`](../../../src/chronaxis/core/moments_reference.py#L16)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/moments_reference.py:16`](../../../src/chronaxis/core/moments_reference.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceMoments-push"></a>
 ### `ReferenceMoments.push`
@@ -92,7 +92,7 @@ ReferenceMoments.push(values, weights=None)
 
 无效权重或输入。
 
-源码：[`src/chronaxis/core/moments_reference.py:21`](../../../src/chronaxis/core/moments_reference.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/moments_reference.py:21`](../../../src/chronaxis/core/moments_reference.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceMoments-finish"></a>
 ### `ReferenceMoments.finish`
@@ -118,4 +118,4 @@ ReferenceMoments.finish(ddof, factor)
 
 配置错误。
 
-源码：[`src/chronaxis/core/moments_reference.py:36`](../../../src/chronaxis/core/moments_reference.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/moments_reference.py:36`](../../../src/chronaxis/core/moments_reference.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

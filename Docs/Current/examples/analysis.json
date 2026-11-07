@@ -36,5 +36,8 @@
       "operation": "time_weighted_mean",
       "expr": "power"
     }
-  ]
+  ],
+  "execution": {
+    "process_count": 4
+  }
 }

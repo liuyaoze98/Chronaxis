@@ -54,7 +54,7 @@ class TransformSpan
 |`point`|ScalarValue|是|无|区间起点经过同一时刻原子更新后的点值，与右侧连续视图分别保存。|
 |`pair_width`|int &#124; None|否|None|相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。|
 
-源码：[`src/chronaxis/execution/transform_window.py:15`](../../../src/chronaxis/execution/transform_window.py#L15)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:15`](../../../src/chronaxis/execution/transform_window.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-first_grid"></a>
 ## `first_grid`
@@ -81,7 +81,7 @@ first_grid(start, origin, step)
 
 步长非正。
 
-源码：[`src/chronaxis/execution/transform_window.py:26`](../../../src/chronaxis/execution/transform_window.py#L26)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:26`](../../../src/chronaxis/execution/transform_window.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow"></a>
 ## `TransformWindow`
@@ -93,7 +93,7 @@ TransformWindow(budget, window_ns, period_ns)
 ```
 
 
-源码：[`src/chronaxis/execution/transform_window.py:33`](../../../src/chronaxis/execution/transform_window.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:33`](../../../src/chronaxis/execution/transform_window.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-__init__"></a>
 ### `TransformWindow.__init__`
@@ -120,7 +120,7 @@ owner。
 
 非法窗口。
 
-源码：[`src/chronaxis/execution/transform_window.py:36`](../../../src/chronaxis/execution/transform_window.py#L36)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:36`](../../../src/chronaxis/execution/transform_window.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-append"></a>
 ### `TransformWindow.append`
@@ -145,7 +145,7 @@ TransformWindow.append(span)
 
 端点不连续或预算不足。
 
-源码：[`src/chronaxis/execution/transform_window.py:43`](../../../src/chronaxis/execution/transform_window.py#L43)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:43`](../../../src/chronaxis/execution/transform_window.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-_weight"></a>
 ### `TransformWindow._weight`
@@ -170,7 +170,7 @@ TransformWindow._weight(span)
 
 非正驱动跨度。
 
-源码：[`src/chronaxis/execution/transform_window.py:51`](../../../src/chronaxis/execution/transform_window.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:51`](../../../src/chronaxis/execution/transform_window.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-trim"></a>
 ### `TransformWindow.trim`
@@ -196,7 +196,7 @@ TransformWindow.trim()
 
 退款失败。
 
-源码：[`src/chronaxis/execution/transform_window.py:56`](../../../src/chronaxis/execution/transform_window.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:56`](../../../src/chronaxis/execution/transform_window.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-slices"></a>
 ### `TransformWindow.slices`
@@ -221,7 +221,7 @@ TransformWindow.slices(time)
 
 结构错误。
 
-源码：[`src/chronaxis/execution/transform_window.py:67`](../../../src/chronaxis/execution/transform_window.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:67`](../../../src/chronaxis/execution/transform_window.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-TransformWindow-close"></a>
 ### `TransformWindow.close`
@@ -247,4 +247,4 @@ TransformWindow.close()
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/transform_window.py:81`](../../../src/chronaxis/execution/transform_window.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/transform_window.py:81`](../../../src/chronaxis/execution/transform_window.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

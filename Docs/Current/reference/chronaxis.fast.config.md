@@ -1,6 +1,8 @@
 # `chronaxis.fast.config`
 
-把独立原始报文配置编译成每文件任务，共用 Chronaxis 的单位、类型与来源位置规则。
+把一个CAN来源编译成fast会话，共用Chronaxis的单位、类型与来源位置规则。
+
+会话保存完整输入序列、合并方式及资源额度，工作进程接收其中一个文件的声明。
 
 这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
@@ -14,17 +16,18 @@
 |---|---|
 |[`_unsupported`](#api-_unsupported)|构造可由已有配置诊断和 CLI 消费的错误。|
 |[`_capabilities`](#api-_capabilities)|仅检查显式请求，避免把通用计划的默认设置误判为用户要求。|
-|[`_source`](#api-_source)|取得唯一文件及其时钟参数，保持 ASC 与 BLF 各自的时间解释。|
+|[`_source`](#api-_source)|展开同一来源的文件和时间解释，不打开日志。|
 |[`_flag`](#api-_flag)|合并同一公式中每个信号和选择器的身份限制；显式矛盾不可合并。|
 |[`_metric`](#api-_metric)|静态验证本次请求的信号及原单位，将已检查的表达式树编码为简单数值指令。|
-|[`_compile_plan`](#api-_compile_plan)|编译公共静态计划的独立文件任务，仅需加载本计划的 DBC 元数据。|
+|[`_compile_plan`](#api-_compile_plan)|将公共分析计划编译为同一会话的多文件执行声明，冻结公式、来源和资源选项。|
 |[`compile_template_plan`](#api-compile_template_plan)|为 batch.template_jobs 展开的一个真实文件编译 fast 任务。|
-|[`compile_config`](#api-compile_config)|读取配置和导入定义，验证 DBC 与 fast 子集。默认返回可序列化单文件任务。|
+|[`compile_config`](#api-compile_config)|读取配置及导入定义，验证DBC与fast子集，返回可序列化的单会话文件清单和计算定义。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from dataclasses import asdict
+from hashlib import sha256
 from pathlib import Path
 from ..configuration import ConfigurationError, load_configuration
 from ..configuration.diagnostics import locate_error
@@ -56,7 +59,7 @@ _unsupported(path, message)
 |`path`|str|是|无|位置或关键字。不受支持设置的配置字段路径，如 $.outputs.contributions。|
 |`message`|str|是|无|位置或关键字。当前字段为什么不能按 fast 方式执行的具体原因。|
 
-源码：[`src/chronaxis/fast/config.py:17`](../../../src/chronaxis/fast/config.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:21`](../../../src/chronaxis/fast/config.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_capabilities"></a>
 ## `_capabilities`
@@ -73,12 +76,12 @@ _capabilities(raw)
 |---|---|---|---|---|
 |`raw`|dict|是|无|位置或关键字。显式声明的配置字段，在加默认值前检查 fast 能力限制。|
 
-源码：[`src/chronaxis/fast/config.py:22`](../../../src/chronaxis/fast/config.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:26`](../../../src/chronaxis/fast/config.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_source"></a>
 ## `_source`
 
-取得唯一文件及其时钟参数，保持 ASC 与 BLF 各自的时间解释。
+展开同一来源的文件和时间解释，不打开日志。
 
 ```python
 _source(plan)
@@ -90,7 +93,15 @@ _source(plan)
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。公开解析器构建的计划，含静态信号绑定及逐消息计算项。|
 
-源码：[`src/chronaxis/fast/config.py:67`](../../../src/chronaxis/fast/config.py#L67)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+### 返回说明
+
+可序列化会话声明。
+
+### 异常说明
+
+不支持来源或解码策略。
+
+源码：[`src/chronaxis/fast/config.py:73`](../../../src/chronaxis/fast/config.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_flag"></a>
 ## `_flag`
@@ -109,7 +120,7 @@ _flag(selector, fields, name)
 |`fields`|Iterable|是|无|位置或关键字。本公式涉及的信号字段，用于与选择器合并帧型限制。|
 |`name`|str|是|无|位置或关键字。要合并的帧型字段，取 is_extended 或 is_fd。|
 
-源码：[`src/chronaxis/fast/config.py:95`](../../../src/chronaxis/fast/config.py#L95)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:104`](../../../src/chronaxis/fast/config.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_metric"></a>
 ## `_metric`
@@ -128,12 +139,12 @@ _metric(plan, item, database)
 |`item`|MessageCalculationPlan|是|无|位置或关键字。一个已解析的逐消息累计项，含选择器、公式和方向规则。|
 |`database`|cantools.database.Database &#124; None|是|无|位置或关键字。预检时加载的 DBC，可交本次执行复用。|
 
-源码：[`src/chronaxis/fast/config.py:103`](../../../src/chronaxis/fast/config.py#L103)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:112`](../../../src/chronaxis/fast/config.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_compile_plan"></a>
 ## `_compile_plan`
 
-编译公共静态计划的独立文件任务，仅需加载本计划的 DBC 元数据。
+将公共分析计划编译为同一会话的多文件执行声明，冻结公式、来源和资源选项。
 
 ```python
 _compile_plan(plan, with_database)
@@ -146,7 +157,7 @@ _compile_plan(plan, with_database)
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。公开解析器构建的计划，含静态信号绑定及逐消息计算项。|
 |`with_database`|bool|是|无|位置或关键字。是否将已加载的数据库交给当前进程继续执行。|
 
-源码：[`src/chronaxis/fast/config.py:146`](../../../src/chronaxis/fast/config.py#L146)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:155`](../../../src/chronaxis/fast/config.py#L155)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compile_template_plan"></a>
 ## `compile_template_plan`
@@ -168,15 +179,12 @@ compile_template_plan(plan, *, template_path=None, _with_database=False)
 |`template_path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|仅关键字。原始模板路径，用于保持显式设置和拒绝位置。|
 |`_with_database`|bool|否|False|仅关键字。启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。|
 
-源码：[`src/chronaxis/fast/config.py:178`](../../../src/chronaxis/fast/config.py#L178)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:191`](../../../src/chronaxis/fast/config.py#L191)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compile_config"></a>
 ## `compile_config`
 
-读取配置和导入定义，验证 DBC 与 fast 子集。默认返回可序列化单文件任务。
-
-参数 path 是 JSON/YAML 文件路径；_with_database 仅给同进程立即执行时复用数据库。
-错误带配置路径。此入口只准备计算，不打开日志或创建输出目录。
+读取配置及导入定义，验证DBC与fast子集，返回可序列化的单会话文件清单和计算定义。
 
 ```python
 compile_config(path, *, _with_database=False)
@@ -191,4 +199,4 @@ compile_config(path, *, _with_database=False)
 |`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的文件路径。|
 |`_with_database`|bool|否|False|仅关键字。启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。|
 
-源码：[`src/chronaxis/fast/config.py:205`](../../../src/chronaxis/fast/config.py#L205)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/config.py:218`](../../../src/chronaxis/fast/config.py#L218)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

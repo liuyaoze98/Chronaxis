@@ -40,7 +40,7 @@ class ConfigurationGroupsTests(unittest.TestCase):
 
     def test_scope_objects_and_output_roundtrip(self):
         """规则/窗口引用只变声明位置，不改内部范围；全部窗口不会撞用户窗口名all。"""
-        raw=config();raw['rules']=[dict(name='high',rule_type='condition_duration',condition='power > 1',minimum_duration='0s')]
+        raw=config();raw['rules']=[dict(name='high',rule_type='condition_duration', duration_comparison='>=',condition='power > 1',minimum_duration='0s')]
         raw['windows']=[dict(name='around',rule='high')]
         raw['calculations'][0]['scope']={'rule':'high'}
         plan=AnalysisPlan.from_dict(raw)

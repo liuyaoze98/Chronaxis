@@ -20,3 +20,5 @@ presets:                                # 选择预先组合好的规则与计�
       enter_threshold: 80               # 设置进入报警的高阈值；必须大于恢复阈值
       exit_threshold: 75                # 设置恢复的低阈值；按业务允许恢复范围填写
     preset_type: threshold_excursion    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+execution:                              # 设置本次分析的并行处理方式
+  process_count: 4                      # 最多4个文件工作进程；实际并行数不超过输入文件数

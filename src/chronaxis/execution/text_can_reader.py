@@ -25,12 +25,13 @@ from .history import _metadata_bytes,_pending_bytes
 class BudgetedTextCANSourceAdapter:
     """拥有静态描述和活read集合，借用导出DBC上下文；关闭不会释放借用上下文。"""
 
-    def __init__(self,budget,spec,session_id,signals,*,backend='numpy',work_dir=None,retain_raw_frames=False,database_context=None,message_consumer=None,cycle_fields=(), metadata_fields=(),message_keys=(),integrity=True,trace=True,selected_ids=None,time_frame_ids=None):
+    def __init__(self,budget,spec,session_id,signals,*,backend='numpy',work_dir=None,retain_raw_frames=False,database_context=None,message_consumer=None,cycle_fields=(), metadata_fields=(),message_keys=(),integrity=True,trace=True,selected_ids=None,time_frame_ids=None,process_count=1,emit_frame_ids=None,blf_time_scope='source',legacy_blf_decode=False):
         """构造声明，不读取输入。参数: 预算/spec/会话/定义、后端、可选暂存目录及DBC上下文；message_keys为无值公式的完整触发定位；message_consumer同步接收必要消息，保留需自付预算；cycle_fields显式请求初始化DBC周期；metadata_fields仅确认驱动候选，两者不增加值解码。返回: adapter。异常: 配置/预算错。
 
         time_frame_ids将所需通道/ID的单调性检查与全来源范围统计分开，不改变原帧时间。
         selected_ids是纯消息计算需要的有限ID集合；仅在不要求全来源时间或原帧导出时
         下推给原始CSV读取器。此时观测范围是保留记录的范围，不能冒称全部来源范围。
+        legacy_blf_decode仅由纯can_blf并行转接设置，保留原legacy长度及解码失败政策；不是用户配置字段。
         """
         if type(spec) is not CANTextSpec or backend not in ('reference','numpy') or type(retain_raw_frames) is not bool:
             raise ValueError('文本CAN来源配置或后端非法')
@@ -47,6 +48,10 @@ class BudgetedTextCANSourceAdapter:
         require_cycle_fields(metadata_fields,spec.channel)
         if retain_raw_frames and time_frame_ids is not None:
             raise ValueError('原帧导出需要完整时间顺序检查')
+        self._process_count = process_count
+        self._emit_frame_ids = emit_frame_ids
+        self._blf_time_scope=blf_time_scope
+        self._legacy_blf_decode=legacy_blf_decode
         self._metadata_fields = metadata_fields
         self._selected_ids = selected_ids
         self._time_frame_ids = time_frame_ids
@@ -160,9 +165,18 @@ class TextCANObservationRead:
             _reserve_owned_ram(self,131072+_metadata_bytes((request,owner.signals))*32,'_fixed_cost')
             self._validator=BatchValidator(owner.describe(),request)
             try:
-                self._decoder=CANTextDecodeRead(owner.spec,self._budget,
+                factory = CANTextDecodeRead
+                parallel_options = {}
+                if owner._process_count > 1 or owner.spec.file_merge == 'time_order':
+                    from .parallel_can_decode import ParallelCANDecodeRead
+                    factory = ParallelCANDecodeRead
+                    parallel_options = dict(process_count=owner._process_count,work_dir=owner.work_dir,
+                                            emit_frame_ids=owner._emit_frame_ids,blf_time_scope=owner._blf_time_scope)
+                self._decoder=factory(owner.spec,self._budget,
                     owner.signals if owner._update_consumer is not None else self._definitions,
+                    **parallel_options,
                     database_context=owner.database_context, integrity=owner._integrity, trace=owner._trace,retain_source_time=owner.retain_raw_frames,
+                    legacy_blf_decode=owner._legacy_blf_decode,
                     classify_unselected=owner._update_consumer is None,
                     **({'cycle_fields':owner._cycle_fields} if owner._cycle_fields else {}),
                     **({'metadata_fields':owner._metadata_fields} if owner._metadata_fields else {}),
@@ -308,7 +322,7 @@ class TextCANObservationRead:
             self._column+=column_count
             # watermark含端点；尚待交付的别名可能从块首开始，因此只能推进到首点前1ns。
             progress=self._records[-1].raw.time_ns if self._column>=max(1,len(self._definitions)) else self._records[0].raw.time_ns
-            watermark=None if progress==-(1<<63) else progress-1
+            watermark=None if progress is None or progress==-(1<<63) else progress-1
             return self._accept(SignalBatch(self._owner.spec.name,self._request.session_id,columns,watermark,False,None))
         except StopIteration:
             raise
@@ -325,6 +339,7 @@ class TextCANObservationRead:
         raw=self._decoder
         fact=CANObservation(self._owner.spec.name,self._request.session_id,self._request,self.identity,
             raw.first_ns,raw.last_ns,raw.count,True,
+            self._owner._blf_time_scope if self._owner._blf_time_scope!='source' else
             'selected' if self._owner._selected_ids is not None and self._owner.spec.source_type=='raw_can_csv' else 'source',
             raw.retained_count)
         metadata=dict(raw.metadata,decode_calls=raw.decode_calls,record_count=raw.count,source_kind=self._owner.spec.source_type)

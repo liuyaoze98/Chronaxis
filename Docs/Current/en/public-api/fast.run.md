@@ -5,29 +5,32 @@
 <a id="api-run"></a>
 ## `run`
 
-High-performance integrator: read one ASC or BLF file, accumulate same-frame formulas per message, and publish results on success. This is not integration over actual inter-frame time.
+High-performance integrator: one session accumulates same-frame contributions from one or more ASC/BLF volumes in a deterministic order and publishes one summary.
 
 ```python
-run(config, output)
+run(config: str | pathlib.Path, output: str | pathlib.Path, *, process_count: int | None = None, work_dir: str | pathlib.Path | None = None, cancel_event: object | None = None) -> pathlib.Path
 ```
 
 | Name | Type | Required | Default | Purpose |
 |---|---|---|---|---|
-|`config`|See purpose|Yes|No default|str or Path to a single-file YAML/JSON configuration in the fast subset. DBC and input paths are relative to the declaring configuration file.|
-|`output`|See purpose|Yes|No default|str or Path to the result directory, which may already exist. This run uses timestamped filenames and does not overwrite existing results.|
+|`config`|str &#124; pathlib.Path|Yes|No default|YAML/JSON analysis path. One source lists all session volumes in paths; relative input/DBC paths resolve against the configuration. Only the fast current-message numeric subset is supported.|
+|`output`|str &#124; pathlib.Path|Yes|No default|Result directory, which may exist. Timestamped output files preserve earlier results.|
+|`process_count`|int &#124; None|No|None|Optional positive integer worker limit, excluding the main process. None uses execution.process_count, default 1 inline. Capped at file count; booleans are rejected and configuration is unchanged.|
+|`work_dir`|str &#124; pathlib.Path &#124; None|No|None|Optional parent directory for temporary contributions. None uses system temporary storage. This invocation removes its private temporary files after completion or failure.|
+|`cancel_event`|object &#124; None|No|None|Optional cancellation event with is_set(), such as threading.Event. set() requests cancellation and cleanup; run raises InterruptedError without publishing a successful summary.|
 
 ### Returns
 
-pathlib.Path to this run manifest. Read outputs for actual filenames. A file with no target frames has a null result and a reason, not a fabricated zero.
+pathlib.Path to the completion manifest. inputs lists every file and outputs names the result table. Missing values and valid zeros are determined per calculation across the session.
 
 ### Raises
 
-PlanValidationError for invalid configuration; read, decode, and formula errors propagate and prevent a normal result for the file. Output I/O failures propagate OSError. This single-file API has no cancel_event parameter.
+PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result.
 
 ### Execution and resources
 
-Reads configuration, DBC, and input; writes result files and publishes the completion manifest last. See the high-performance integrator tutorial for supported capabilities and complete configurations.
+Read configuration, DBC and volumes. Workers evaluate individual contributions; the main process accumulates them in order. One worker runs inline; multi-file time_order requires staging. Protect multiprocessing calls with `if __name__ == "__main__":` on Windows. Publish the manifest last.
 
 [High-performance integrator tutorial](../fast-energy.md)
 
-Source: [`src/chronaxis/fast/run.py:54`](../../../../src/chronaxis/fast/run.py#L54) (line at `e65c920526335247bcc1ed25852bcc967f55f2fd`).
+Source: [`src/chronaxis/fast/run.py:63`](../../../../src/chronaxis/fast/run.py#L63) (line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`).

@@ -3,25 +3,33 @@
 
 如果有三辆车、三次互不相干的试验，可以给每次试验各写一个analysis.yaml，再用批量配置一起运行。每个任务有自己的信号状态、报警计时、等待响应队列和输出目录。
 
-这和`execution.batch_rows`不是一回事。`batch_rows`只控制**一个任务一次处理多少信号样本**，不会重置状态；`batch run`调度**多个互相独立的任务**。同一次连续试验的part1.csv和part2.csv应放在同一来源的`paths`中，不能拆成两个独立任务后期望报警自动接续。
+批量配置放在单独文件中，通过 `chronaxis batch run` 或 `load_batch_plan`／`run_batch` 执行。根级 `process_count: 4` 表示最多同时执行四个独立任务；只准备了两个任务时最多启动两个分析工作进程。省略该字段仍默认 `1`，不会自动使用全部 CPU。
 
-批量配置是单独文件，入口为`chronaxis batch run`或`load_batch_plan`/`run_batch`。用jobs列出不同分析配置，或用template与inputs把同一个分析模板应用到多个文件；两种写法不能混用。根级`process_count`控制分析工作进程数，例如填4表示最多四个工作进程同时执行独立任务。
+用 `jobs` 列出不同分析配置，或用 `template` 与 `inputs` 把同一模板应用到多个独立文件；两种写法不能混用。每个子分析使用 `execution.process_count: 1` 和默认的 `file_merge: concatenate`，文件读取由该任务内部接续处理；并行由外层批量配置负责，不再嵌套文件进程池。
+
+同一次充电的连续分卷应放在同一来源的 `paths` 中，使用[连续多进程读取](continuous-files.md)。例如第一卷末尾仍在报警、第二卷继续记录时，连续分析会保留报警状态；拆成两个独立批量任务则不会延续。`execution.batch_rows` 只控制每批样本数，与批量任务数量、进程数量分别设置。
 
 ## 完整批量配置
 
 本页是独立批量文件，不嵌入普通分析配置。表中batch_version、jobs、process_count等均位于批量文件根级；子任务列表项的完整路径例如`jobs[].plan`。
 
-[batch-minimal.yaml](examples/batch-minimal.yaml)只引用主ASC分析例analysis.yaml，任务名自动生成，默认顺序运行，能量为38J。
+[batch-minimal.yaml](examples/batch-minimal.yaml)引用单进程子配置[batch/energy.yaml](examples/batch/energy.yaml)。批量上限为4，但只有一个任务，因此实际最多启动一个工作进程，得到38J。
 
-[batch-extended.yaml](examples/batch-extended.yaml)增加另一个ASC电压分析，最多两个任务同时运行。两个结果分别为38J和13V·s；它们是独立分析，不把两份记录拼成同一时间轴。文件与所引用的示例配置放在同一目录。
+[batch-extended.yaml](examples/batch-extended.yaml)增加另一个ASC电压子配置[batch/voltage.yaml](examples/batch/voltage.yaml)。本例将上限设为4，两个任务可同时运行，分别得到38J和13V·s。它们是独立分析，不把两份记录拼成同一时间轴。保留随册 examples 目录中的 batch 和 data 子目录结构，从 examples 目录运行。
 
 ```yaml
-batch_version: 1                    # 声明独立批量任务文件的结构版本；当前填写整数1
-jobs:                               # 列出互相独立的分析任务，每项引用一份分析配置
-  - plan: analysis.yaml             # 指定该任务的分析配置文件；相对于批量配置文件所在目录
-  - plan: input-asc-minimal.yaml    # 指定该任务的分析配置文件；相对于批量配置文件所在目录
-process_count: 2                    # 限制分析工作进程数；正整数，1表示一个工作进程依次执行
+batch_version: 1              # 声明独立批量任务文件的结构版本；当前填写整数1
+jobs:                         # 列出互相独立的分析任务，每项引用一份分析配置
+  - plan: batch/energy.yaml   # 独立能量分析，子配置设置单进程
+  - plan: batch/voltage.yaml  # 独立电压分析，路径相对本批量文件
+process_count: 4              # 最多4个独立分析进程；本例两个任务最多用两个
 ```
+
+```powershell
+python -m chronaxis batch run batch-extended.yaml --output batch-output
+```
+
+打开终端返回的本轮批量报告，先检查两项 `jobs` 的状态，再按各任务报告的输出位置读取结果。能量与电压积分分别核对为38J和13V·s，单位不同，不相加为一项总量。
 
 不需要给每个任务重复命名，也不需要把默认fail_fast或计算实现写出来。只有想为结果目录自定义名称时才填写jobs[].name。
 
@@ -41,15 +49,17 @@ analysis.yaml中的输入相对路径仍按**它自己的目录**解释。例如
 
 ## 一个模板处理整个目录
 
+从随册 examples 目录使用下面的模式时，只匹配 `data/can/quickstart.asc`，得到一个任务；它不会匹配 quickstart-parts 子目录。换成自己的文件集合后，任务数随实际匹配数量确定。
+
 此方式的template、inputs、source也位于批量文件根级，与jobs方式二选一；source不是写在jobs中。
 
-如果每个文件都是独立试验，输入列和分析方法又相同，不必复制多份配置。下面复用同目录的analysis.yaml，对data/can中匹配的ASC分别运行一次。自己的BLF可改成相应目录和*.blf；混合格式目录也可直接填写目录路径：
+如果每个文件都是独立试验，输入列和分析方法又相同，不必复制多份配置。下面复用[batch/energy.yaml](examples/batch/energy.yaml)，对data/can中匹配的ASC分别运行一次。自己的BLF可改成相应目录和*.blf；混合格式目录也可直接填写目录路径：
 
 ```yaml
-batch_version: 1                    # 声明独立批量任务文件的结构版本；当前填写整数1
-template: analysis.yaml             # 指定批量任务重复使用的分析配置路径；每个输入独立执行该配置
-inputs: data/can/quickstart*.asc    # 选择批量处理的文件、目录或通配符；每个文件是独立任务
-process_count: 2                    # 限制分析工作进程数；正整数，1表示一个工作进程依次执行
+batch_version: 1                  # 声明独立批量任务文件的结构版本；当前填写整数1
+template: batch/energy.yaml       # 复用单进程分析模板；每个输入独立执行
+inputs: data/can/quickstart*.asc  # 匹配当前目录的独立输入；不会进入子目录
+process_count: 4                  # 最多4个独立分析进程；随册文件实际匹配一个任务
 ```
 
 |字段|必填情况|用途和省略行为|
@@ -63,7 +73,7 @@ process_count: 2                    # 限制分析工作进程数；正整数，
 ## CLI与Python
 
 ```powershell
-python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 2
+python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 4
 ```
 
 `--process-count`可省略：先用批量文件中的process_count；文件也没填时使用1。批量CLI没有`--backend`选项，需在批量配置中填写backend；单任务run才有`--backend`。输出目录可以重复使用；任务子目录和批量报告使用本批时间后缀，不覆盖已有结果。
@@ -74,7 +84,7 @@ from chronaxis import load_batch_plan, run_batch
 def main():
     plan = load_batch_plan("batch-extended.yaml")
     # process_count省略或为None时沿用配置；填正整数只覆盖本次运行。
-    report = run_batch(plan, "batch-output", process_count=2)
+    report = run_batch(plan, "batch-output", process_count=4)
     try:
         print(report.worker_process_count)  # 本次实际启动的分析工作进程数
         print(report.to_dict())
@@ -89,7 +99,7 @@ if __name__ == "__main__":
 
 Windows使用spawn启动子进程，会重新导入脚本。`if __name__ == "__main__":`保证只有最初启动的脚本派发任务，避免子进程再次创建整批任务。将代码保存为`.py`文件运行；不要直接把启动代码放在模块顶层。进程模式已验证的环境为Windows/Python 3.12。
 
-API参数或CLI的`--process-count`优先于批量文件，再其次是默认值1；覆盖不改写原文件。`BatchPlan(..., process_count=4)`和`BatchRunner(process_count=4)`也使用同一含义。普通分析的`execution`和`AnalysisRunner`没有进程数参数；批量能力不表示把一个连续会话拆给多个进程计算。
+API参数或CLI的`--process-count`优先于批量文件，再其次是默认值1；覆盖不改写原文件。`BatchPlan(..., process_count=4)`和`BatchRunner(process_count=4)`也使用同一含义。普通分析另用`execution.process_count`和AnalysisRunner的同名覆盖，并行读取同一会话的文件；主进程连续计算。两类进程数不能混用，见[连续多进程](continuous-files.md)。
 
 实际启动数最多为`min(process_count, 任务数)`；空批次或开始前取消不启动。配置4但只有两个任务时启动两个分析工作进程。调度主进程和每个任务可能创建的CAN读取子进程不包含在这个数中，所以操作系统显示的总进程数可以更多。工作进程完成任务后复用，但不会沿用上一任务的信号或事件状态。
 

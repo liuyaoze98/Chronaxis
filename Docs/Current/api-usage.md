@@ -2,6 +2,8 @@
 
 公开入口位于`chronaxis`包。文件配置使用load_analysis_plan；程序生成配置使用AnalysisPlan.from_dict；AnalysisRunner执行，AnalysisResult读取和发布。先完成[安装](installation.md)，再按下面的完整流程运行。
 
+单一ASC/BLF来源的基础配置设置`execution.process_count: 4`，下面的`run(plan)`直接沿用它。要在一次调用中覆盖配置，使用`AnalysisRunner().run(plan, process_count=4)`；同一实例的`validate`和`explain`也接受这个仅关键字参数。`None`沿用配置且不修改原计划，正整数设置本次上限。CSV、内存和多来源联合分析保持1，独立批量任务在外层设置并行。完整范围见[连续记录多进程](continuous-files.md)。
+
 
 ## 如何读参数表
 
@@ -9,7 +11,7 @@
 
 ## 加载、检查和执行
 
-从源码仓库根目录运行下面的完整Python代码；离线示例目录可直接运行[api_example.py](examples/api_example.py)。后者默认读取同目录analysis.yaml，也接受自定义配置路径。
+把下面的完整代码保存成`.py`文件，从源码仓库根目录运行；保留`if __name__ == "__main__":`入口保护，避免Windows启动工作进程时重复运行主程序。离线示例目录可直接运行[api_example.py](examples/api_example.py)，后者默认读取同目录analysis.yaml，也接受自定义配置路径。
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan
@@ -34,7 +36,7 @@ if __name__ == "__main__":
     main()
 ```
 
-该合成 ASC 示例的实测终端输出如下，每行依次为计算名称、数值、单位和状态。
+配置中的进程上限为4，但本例只有一个ASC文件，实际最多使用1个读取工作进程。若要运行两卷的同一组数据，把加载路径换成`Docs/Current/examples/input-can-directory.yaml`；此时最多使用2个读取工作进程，计算结果相同。该合成示例的终端输出如下，每行依次为计算名称、数值、单位和状态。
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -47,7 +49,7 @@ load_analysis_plan读取主配置及明确的一层公共定义，相对路径�
 
 validate_analysis_plan返回静态ValidationReport；valid表示声明检查是否通过，execution_ready表示当前执行路径是否支持。explain_analysis_plan返回依赖和后端等ExplainReport。对已加载计划的静态检查不会读取业务数据；加载计划时，缺省CAN元数据可能需要读取DBC，仍不能证明真实数据有效。
 
-AnalysisRunner(backend=None, *, extensions=None)沿用计划的后端；reference采用独立参考实现，numpy采用数组计算。显式传入其中一个名称会覆盖本次执行设置。run(plan, work_dir=None)执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
+AnalysisRunner(backend=None, *, extensions=None)沿用计划的后端；reference采用独立参考实现，numpy采用数组计算。显式传入其中一个名称会覆盖本次执行设置。`run(plan, work_dir=None, *, process_count=None)`执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
 
 extensions 默认省略。只有 Python 宿主程序自行注册函数或滚动算子时，才在加载计划和创建 AnalysisRunner 时传入同一扩展注册对象，完整例子见[宿主扩展](host-extensions.md)。签名中的 * 表示其后的参数必须按名字填写。
 
@@ -65,7 +67,7 @@ iter_events、iter_segments、iter_sequences、iter_calculations、iter_selectio
 | AnalysisPlan.from_dict(config, *, base_dir=None, extensions=None) | 从字典构建计划；按需枚举目录、读取DBC，不扫描业务记录 |
 | validate_analysis_plan(plan) | 返回静态校验报告，不运行 |
 | explain_analysis_plan(plan) | 返回实际依赖、间隔和资源声明，不运行 |
-| AnalysisRunner(...).run(plan, work_dir=None) | 读输入、计算并占用暂存，返回需关闭的结果 |
+| AnalysisRunner(...).run(plan, work_dir=None, *, process_count=None) | 沿用或覆盖文件读取进程上限；读输入、计算并占用暂存，返回需关闭的结果 |
 | AnalysisResult.write(output_dir) | 向可重复使用的目录发布带时间后缀的表和运行清单，返回OutputManifest |
 | load_batch_plan(path)、run_batch(...) | 加载批量清单并运行独立任务；子计划到任务启动时才加载 |
 | build_preset(...)、resolve_preset_roles(...) | 检查预设角色并生成公共声明；通常直接写presets即可 |
@@ -122,6 +124,8 @@ SignalDefinition从chronaxis.core.binding导入；它没有根包同名导出。
 
 完整文件为[preset_api_example.py](examples/preset_api_example.py)。从examples目录执行`python preset_api_example.py --output preset-api-result`；该脚本为示例工作目录和发布目录创建共同的父目录，所以 --output 须填写新路径。得到 heat_duration=9.0s、complete。这里是Python API代码，字典是函数参数，不要求把用户YAML改写成JSON。
 
+这个接口示例直接提供内存记录，因此显式使用`process_count: 1`。处理自己的ASC/BLF分卷时，使用上方文件加载例及其`execution.process_count: 4`配置。
+
 ```python
 """从类型化信号到预设片段，再执行完整分析。参数: --output结果目录。返回: 报警时长。"""
 from pathlib import Path
@@ -145,6 +149,7 @@ def run(output):
     fragment=build_preset(spec,signals)  # 返回PlanFragment；此函数也会自行检查角色。
     nodes=fragment.to_dict()            # 仅节点声明，不包含sources、signals或运行结果。
     raw=dict(config_version=4,dataset=dict(name='preset_api'),
+        execution=dict(process_count=1),
         sources=[dict(name='table',source_type='memory',
             rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
         signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])

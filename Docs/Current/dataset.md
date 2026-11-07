@@ -9,8 +9,8 @@
 应用位置：以[analysis.yaml](examples/analysis.yaml)为基础，找到现有根级 `dataset:` 并用下面整段替换；其他段保持原样。`dataset` 是映射，不是列表，前面不加 `-`，也不要追加第二个同名父字段。
 
 ```yaml
-dataset:                # 设置本次分析名称及可选的对象、会话和时间范围
-  name: bench_run_01    # 命名本次分析数据集；名称写入结果身份字段
+dataset:              # 设置本次分析名称及可选的对象、会话和时间范围
+  name: bench_run_01  # 命名本次分析数据集；名称写入结果身份字段
 ```
 
 只有要区分设备与采集批次时才填写`entity`和`session`。例如一个设备有多次采集，可以另设设备名和采集批次名；这些是结果标签，不决定读取哪份文件，也不证明多来源已同步。只分析部分时间时才增加 `domain`，见下面示例。字段表供特殊需求查询，不是需要逐项填写的清单。
@@ -22,11 +22,11 @@ dataset:                # 设置本次分析名称及可选的对象、会话和
 将 [analysis.yaml](examples/analysis.yaml) 的原 `dataset` 段替换为：
 
 ```yaml
-dataset:          # 设置本次分析名称及可选的对象、会话和时间范围
-  name: energy    # 命名本次分析数据集；名称写入结果身份字段
-  domain:         # 限定本次分析请求的起止时间；应与来源采用相同时间基准
-    start: 2s     # 设置分析起点，包含该时刻；按希望分析的范围填写
-    end: 5s       # 设置分析终点；连续时长不包含该端点，按希望分析的范围填写
+dataset:        # 设置本次分析名称及可选的对象、会话和时间范围
+  name: energy  # 命名本次分析数据集；名称写入结果身份字段
+  domain:       # 限定本次分析请求的起止时间；应与来源采用相同时间基准
+    start: 2s   # 设置分析起点，包含该时刻；按希望分析的范围填写
+    end: 5s     # 设置分析终点；连续时长不包含该端点，按希望分析的范围填写
 ```
 
 字段表把这两个位置写作 `dataset.domain.start` 和 `dataset.domain.end`：先找到 `dataset`，再找它下面的 `domain`，最后找 `start` 或 `end`。实际键只有 `dataset`、`domain`、`start`、`end`，不要把点号连写进字段名。多行写法与 `domain: {start: 2s, end: 5s}` 含义相同；完整对照及缩进规则见[配置文件语法](configuration-language.md#field-paths)。

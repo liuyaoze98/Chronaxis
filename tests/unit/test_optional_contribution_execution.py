@@ -83,7 +83,7 @@ def make_can_fixture(root, *, backend='numpy', batch_rows=2, contributions='none
         execution=dict(backend=backend,batch_rows=batch_rows,result_buffer_rows=2,memory_budget_bytes=256*1024**2),
         outputs=dict(tables='jsonl',contributions=contributions),metadata=dict(device_label='home',data_kind='synthetic'))
     if mixed:
-        config['rules'] = [dict(name='active',rule_type='condition_duration',condition='power > 0',minimum_duration='0s')]
+        config['rules'] = [dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='power > 0',minimum_duration='0s')]
         config['windows'] = [dict(name='activity',rule='active',anchor='activity',pre='0s',post='0s',merge='none')]
         config['calculations'] = [dict(name='samples',scope='session',operation='select',expr='power')]
     return config, AnalysisPlan.from_dict(current_fixture(config),base_dir=root)

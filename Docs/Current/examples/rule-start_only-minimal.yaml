@@ -20,3 +20,5 @@ rules:                                              # 列出识别活动或瞬�
     name: detected                                  # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: start_only                           # 选择活动或变化识别算法；本例开始条件触发后，在window_duration内抑制重复触发
     window_duration: 5s                             # 设置start_only一次触发后抑制新触发的时长；配套窗口post必须与此值相等
+execution:                                          # 设置本次分析的并行处理方式
+  process_count: 4                                  # 最多4个文件工作进程；实际并行数不超过输入文件数

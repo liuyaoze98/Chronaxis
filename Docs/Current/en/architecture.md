@@ -36,7 +36,7 @@ CLI or Python API
 
 In the general entry, per-message calculations use a separate path: match a required message, use its current decoded values, evaluate, and accumulate. Summary-only tasks can accumulate directly when no other requested feature needs history. This differs from historical ChrgInfo profiles that may cache a previous value: a missing value in the current message is skipped, not carried forward. A configured per-message period must not also be multiplied by actual elapsed time. See [per-message calculations](message-calculations.md).
 
-The explicit fast entry processes independent ASC/BLF files. Each file worker reads the messages and accumulates same-frame formulas. A target frame missing a required formula value, or a formula evaluation error, fails that file. See [High-performance integrator](fast-energy.md) for complete inputs, configuration and results.
+Fast run treats volumes in one ASC/BLF source as one session. Workers stream messages, decode and evaluate current-message contributions; the main process accumulates each contribution in the order selected by file_merge. execution.process_count limits workers; 1 executes inline. A required volume failing to read, evaluate or close fails the session. Fast batch runs independent trials with local accumulation per job. See the [high-performance integrator guide](fast-energy.md).
 
 <a id="每一层解决什么问题"></a>
 ## 2. What each layer does

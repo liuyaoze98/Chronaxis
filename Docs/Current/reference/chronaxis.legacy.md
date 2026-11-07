@@ -65,4 +65,4 @@ AttributeError为未公开名称；模型模块导入错误原样传播。
 仅访问明确名称时导入其模型或累计模块，不读取日志或DBC；
     NumPy仅在调用者实际选择数组累计后加载。
 
-源码：[`src/chronaxis/legacy/__init__.py:24`](../../../src/chronaxis/legacy/__init__.py#L24)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/__init__.py:24`](../../../src/chronaxis/legacy/__init__.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

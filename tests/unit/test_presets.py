@@ -63,6 +63,7 @@ class PresetContractTests(unittest.TestCase):
         self.assertEqual((fragment.derived, fragment.calculations, fragment.windows), ((), (), ()))
         self.assertEqual(fragment.rules[0].condition, 'mode == 1 and current > 5')
         self.assertEqual((fragment.rules[0].minimum_duration_ns, fragment.rules[0].selection_origin), (1_000_000_000, 'onset'))
+        self.assertEqual(fragment.to_dict()['rules'][0]['duration_comparison'], '>=')
         # 请求Wh/Ah才生成相应功率与积分，部分政策缺省保留继承。
         fragment = build_preset(charge_spec(compute_energy=True, compute_charge=True, minimum_coverage=.95), definitions())
         self.assertEqual(fragment.derived[0].expr, 'voltage * current')

@@ -3,7 +3,7 @@ config_version: 4                      # 声明分析配置结构版本；当前
 dataset:                               # 设置本次分析名称及可选的对象、会话和时间范围
   name: energy_demo                    # 命名本次分析数据集；名称写入结果身份字段
 sources:                               # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - paths: data/run2.asc               # 指定本任务唯一ASC/BLF文件；相对路径基于本配置，展开后须恰好一个文件
+  - paths: data/run2.asc               # 指定本次会话输入；这里使用一个ASC文件，路径相对本配置
     dbc_by_channel:                    # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
       '1': data/power.dbc              # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
 signals:                               # 把输入字段定义为有名称、类型、单位和有效期的分析信号
@@ -22,3 +22,5 @@ message_calculations:                  # 按每条目标CAN报文计算贡献再
     unit: J                            # 声明累计结果的单位；须与表达式量纲相符
 outputs:                               # 选择额外导出的数据及格式；默认结果表由运行入口提供
   contributions: full                  # 选择是否导出每次贡献明细；用于检查逐消息求值及跳过原因
+execution:                             # 设置本次分析的并行处理方式
+  process_count: 4                     # 最多4个文件工作进程；实际并行数不超过输入文件数

@@ -31,7 +31,7 @@ class RollingTransformsTests(unittest.TestCase):
     def test_step_response_and_duration_on_real_grid(self):
         """参数: 无。返回: 无。异常: 阶跃真实网格、样本或持续确认时间错误。"""
         raw=self.config(((-10,0.),(0,10.),(12,10.)))
-        raw['rules']=[dict(name='active',rule_type='condition_duration',condition='trend >= 5',
+        raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='trend >= 5',
                            minimum_duration='3s')]
         raw['windows']=[dict(name='around',rule='active',anchor='activity',pre='0s',post='0s',merge='none')]
         raw['calculations'].extend([dict(name='event_avg',operation='sample_mean',expr='trend',scope={'rule':'active'}),

@@ -81,7 +81,10 @@ class RecordSourceCursor:
                     *((f.channel, f.frame_id, f.is_extended, f.is_fd) for f in fields))))
                 options.update(work_dir=work_dir, retain_raw_frames=retain_frames, cycle_fields=cycles, metadata_fields=fields,
                     message_keys=keys, message_consumer=self._consume_message)
-                if source.source_type == 'can_blf':
+                files = source.config.input_paths if source.source_type=='can_blf' else source.config.inputs
+                # 进程数是上限；一份文件的普通接续仍沿原路径，避免无益地更换读取政策。
+                parallel = min(plan.execution.process_count,len(files)) > 1 or getattr(source.config,'file_merge','concatenate') == 'time_order'
+                if source.source_type == 'can_blf' and not parallel:
                     factory, recovery = BudgetedLegacyCANSourceAdapter, 'can_source_cleanup_owner'
                     full = (source.config.input_check == 'full' or source.config.decode_scope == 'all') if requirements is None else requirements.input_check=='full'
                     scope = requirements.time_scope if requirements is not None else ('source' if full or grouped or observe_bounds or retain_frames else 'selected' if plan.dataset.domain is not None else 'none')
@@ -107,6 +110,21 @@ class RecordSourceCursor:
                         options['selected_ids'] = requirements.decode_frame_ids
                     if self._dbc_context is not None:
                         options['database_context']=self._dbc_context
+                    if parallel:
+                        options['process_count']=plan.execution.process_count
+                        if not retain_frames and requirements is not None:
+                            options['emit_frame_ids']=requirements.decode_frame_ids
+                        # 拼接保持纯BLF原按需时间范围；显式归并才增加排序键所需时间检查。
+                        if source.source_type=='can_blf':
+                            # 明确来源转换才保留旧BLF解码政策；不能按文件扩展名放松ASC/混合来源。
+                            options['legacy_blf_decode']=source.config.decode_policy=='legacy'
+                            options.pop('time_frame_ids',None)
+                            scope=requirements.time_scope if requirements is not None else 'source'
+                            if source.config.file_merge=='time_order':
+                                scope='source' if scope=='source' else 'selected'
+                            options['blf_time_scope']=scope
+                            if scope!='source':
+                                options['time_frame_ids']=requirements.decode_frame_ids
                 adapter_definitions = tuple(item for item in definitions if item.name in values)
                 names = ()
             else:
@@ -116,7 +134,15 @@ class RecordSourceCursor:
                 names = tuple(item.name for item in definitions)
                 options.update(clock_only=tuple(item.name for item in definitions if item.name in clocks-values),
                                retain_original=False)
-            self._adapter = self._new(factory, recovery, budget, source.config,
+            config=source.config
+            # 同一种BLF来源可使用两种同次暂存协议；导出按实际适配器选择连接方式。
+            self.legacy_frame_storage = factory is BudgetedLegacyCANSourceAdapter
+            if self._raw and parallel and source.source_type=='can_blf':
+                from ..sources.text_can_spec import CANTextSpec
+                from ..sources.blf import BLFSpec
+                config=CANTextSpec(config.name,tuple(BLFSpec(p,config.offset_ns) for p in config.input_paths),
+                    config.dbc_path,config.channel,config.timebase,config.decode_policy,config.input_check,config.file_merge)
+            self._adapter = self._new(factory, recovery, budget, config,
                                       plan.dataset.session_id, adapter_definitions, **options)
             self._read = self._adapter.iter_batches(ReadRequest(plan.dataset.session_id, names,
                 None if plan.dataset.domain is None else plan.dataset.domain.start_ns,

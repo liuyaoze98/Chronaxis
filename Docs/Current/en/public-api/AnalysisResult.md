@@ -426,19 +426,19 @@ On a normal with exit, close failures propagate. If the block already raised an 
 
 ## Source locations
 
-- [`src/chronaxis/results/result.py:194`](../../../../src/chronaxis/results/result.py#L194) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:204`](../../../../src/chronaxis/results/result.py#L204) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:326`](../../../../src/chronaxis/results/result.py#L326) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:351`](../../../../src/chronaxis/results/result.py#L351) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:384`](../../../../src/chronaxis/results/result.py#L384) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:396`](../../../../src/chronaxis/results/result.py#L396) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:400`](../../../../src/chronaxis/results/result.py#L400) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:405`](../../../../src/chronaxis/results/result.py#L405) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:415`](../../../../src/chronaxis/results/result.py#L415) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:531`](../../../../src/chronaxis/results/result.py#L531) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:693`](../../../../src/chronaxis/results/result.py#L693) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:744`](../../../../src/chronaxis/results/result.py#L744) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/results/result.py:752`](../../../../src/chronaxis/results/result.py#L752) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/results/result.py:194`](../../../../src/chronaxis/results/result.py#L194) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:204`](../../../../src/chronaxis/results/result.py#L204) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:326`](../../../../src/chronaxis/results/result.py#L326) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:351`](../../../../src/chronaxis/results/result.py#L351) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:384`](../../../../src/chronaxis/results/result.py#L384) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:396`](../../../../src/chronaxis/results/result.py#L396) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:400`](../../../../src/chronaxis/results/result.py#L400) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:405`](../../../../src/chronaxis/results/result.py#L405) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:415`](../../../../src/chronaxis/results/result.py#L415) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:531`](../../../../src/chronaxis/results/result.py#L531) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:693`](../../../../src/chronaxis/results/result.py#L693) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:744`](../../../../src/chronaxis/results/result.py#L744) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:752`](../../../../src/chronaxis/results/result.py#L752) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

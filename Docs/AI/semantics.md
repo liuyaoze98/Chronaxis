@@ -1,5 +1,9 @@
 # 先决定什么能算，再生成配置
 
+## 同一会话的连续分卷
+
+同一次充电的多个ASC/BLF放在同一sources来源，使用execution.process_count正整数设置文件读取/解码上限，默认1。普通run/validate/explain的--process-count及AnalysisRunner同名仅关键字参数可覆盖；主进程连续处理事件/TTL/积分。file_merge: concatenate按文件顺序接续；time_order在各文件内部所需时间有序且时钟可比较时稳定归并，不平移、不去重。不要拆成多个batch jobs再相加。当前仅一个ASC/BLF来源、requested解码；批量worker内不嵌套文件池。time_order使用本次受配额暂存；资源共用，不保证进程越多越快。参见[完整可运行指南](../Current/continuous-files.md)。
+
 ## 统计：功率波动与结果总体
 
 先确认问题中的“一次”指报文、有效保持时长、活动、最终片段，还是已算出的一行结果。样本用真实有效更新，时间方法用条件已知为真的有效时长。样本方差或标准差可取 `ddof: 0` 或 1，时间版本只取 0，RMS 省略 `ddof`。对象计数以具名规则或窗口为准。完整且确定为空可以计 0，未观测需保留状态。分位数需要 `q`，中位数省略，内部概率的精确排序使用本次内存预算。
@@ -20,6 +24,8 @@
 
 ## 从报告定位错误
 
+不要仅凭退出码1或2猜测错误类型。普通命令缺少配置文件通常返回1；fast validate/explain/run在准备配置、DBC或输入清单时失败返回2。fast batch有独立分类，最终批量报告写出失败也可能返回2。应同时读取stderr及已生成的任务报告，并按所用CLI命令的阶段说明判断；非零退出不表示既有结果已撤销。
+
 先记录用户要保留的信号、条件、范围和输出。用 validate 请求 JSON。已构建计划用 valid、execution_ready、errors、warnings、capability_status；加载失败时遍历 errors 数组，每项读取 code/source/path/line/column/message/hint 等实际提供值；blocked_checks说明被无效依赖阻断的检查。单错也使用数组，不再返回单独error。explain 的同一报告在 validation 下，依赖在 nodes 和 input_requirements 下。环境、I/O 或参数错误可能只有非零退出码和 stderr；没有 JSON 不能判断为通过。
 
 例如，把分析配置的 config_version 写成字符串 "4" 会被拒绝：只改成整数4，保留原计算，再重新检查。不要删筛选、调大有效期、忽略未知或把负号反过来“修复”诊断。修正两轮仍失败时交付真实错误和剩余事实，不伪造可运行输出。
@@ -35,7 +41,7 @@ origins回答字段来自哪个声明；resolve展示展开后的配置和当前
 
 ## 持续门槛与积分起点
 
-`condition_duration`的`minimum_duration: 60s`默认表示达到60秒。用户要求“超过60秒”时增加`duration_comparison: ">"`，不改成60.1秒。`selection_origin`默认`onset`，整个合格区间参与积分；只有用户要求从持续确认之后计算才选择`confirmed`。恰好60秒的活动：默认有事件，严格模式无事件。时间精度为1ns；实际模式最早在门槛后1ns确认，固定/DBC模式等下一条使累计严格超过门槛的驱动报文。
+`condition_duration`必须填写`duration_comparison`，没有默认比较方式。配合`minimum_duration: 60s`，用户要求“达到/至少60秒”时填`">="`，要求“超过60秒”时填`">"`，不改成60.1秒。未说明是否包含恰好60秒且会影响结果时，先向用户确认；不能擅自选择。`selection_origin`默认`onset`，整个合格区间参与积分；只有用户要求从持续确认之后计算才选择`confirmed`。恰好60秒的活动：`>=`有事件，`>`无事件。时间精度为1ns；实际模式最早在门槛后1ns确认，固定/DBC模式等下一条使累计严格超过门槛的驱动报文。
 
 ## 资源不足时保留原任务
 
@@ -57,7 +63,7 @@ ASC默认仅对本任务所需通道/ID检查时间先后；来源范围仍在�
 
 ## 独立批量的进程数
 
-批量文件根级process_count控制分析工作进程上限，正整数，默认1，不含调度主进程及CAN读取子进程。run_batch(plan, output, process_count=4)和CLI --process-count 4可覆盖计划；None仅在API表示沿用计划。配置不接受null或布尔值。Python脚本需在if __name__ == "__main__":保护内调用。普通AnalysisRunner没有此参数，同一会话连续paths不拆分到独立进程。
+批量文件根级process_count控制分析工作进程上限，正整数，默认1，不含调度主进程及CAN读取子进程。run_batch(plan, output, process_count=4)和CLI --process-count 4可覆盖计划；None仅在API表示沿用计划。配置不接受null或布尔值。Python脚本需在if __name__ == "__main__":保护内调用。普通AnalysisRunner另有读取/解码进程上限，配置为execution.process_count；同一会话连续paths保持一个分析状态，不拆成独立任务。
 
 每任务独立预算和输出，取消只阻止未启动任务。在途任务完成关闭；report.close()可重试远程清理。不要把未启动项或进程崩溃当成成功。旧workers/max_workers/--workers不再接受。
 
@@ -77,3 +83,11 @@ ASC默认仅对本任务所需通道/ID检查时间先后；来源范围仍在�
 ## 时序变换与宿主扩展
 
 先核对实际时基、TTL、输出网格和间隔口径。固定/DBC的网格点在两真实驱动帧中间时，等后帧计算周期重叠比例，保留原网格时刻。adjacent_rate使用真实数值更新，max_gap按实际时间判断；window_rate取两个边界值，sample_fit_slope只对真实样本等权拟合。默认strict预热不足为未知，下游保留partial质量。配置引用宿主操作时索取真实Python程序、固定端口、版本与后端；加载和运行都传同一个注册。YAML没有模块导入入口。
+
+## 选择连续分析的运行方式
+
+同一次记录的多个 ASC／BLF 分卷先按 `CONTINUOUS_FILES` 组织：一份分析配置、同一个来源，保留跨文件信号状态、事件和积分。需要持续条件、跨帧取值、事件/窗口或按实际时间积分时，使用普通分析入口；例如持续条件能量任务使用 `CONDITION_ENERGY`，不会因输入分成多个文件而改用 fast。
+
+只有公式的全部信号输入都来自当前报文、每条报文独立产生可累计贡献，且不需要上述能力时，才选择 `FAST_CONTINUOUS_SESSION`。此时 `execution.process_count` 控制读取、解码及同帧求值的工作进程上限，`file_merge` 控制文件组织顺序；主进程按规定顺序累计，不能用每文件部分和替代。多个独立试验按各自分析能力选择普通 batch 或 fast 的 `FAST_TEMPLATE_TOTAL`，不拆开连续会话。
+
+`fast.run` 取消时抛出 `InterruptedError`。受管理预算不是整个进程树的物理内存上限。

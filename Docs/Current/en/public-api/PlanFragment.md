@@ -39,5 +39,5 @@ No explicit parameters; reads the immutable generated declarations. Returns a di
 
 ## Source locations
 
-- [`src/chronaxis/planning/preset_models.py:154`](../../../../src/chronaxis/planning/preset_models.py#L154) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/planning/preset_models.py:167`](../../../../src/chronaxis/planning/preset_models.py#L167) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/planning/preset_models.py:154`](../../../../src/chronaxis/planning/preset_models.py#L154) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/planning/preset_models.py:167`](../../../../src/chronaxis/planning/preset_models.py#L167) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

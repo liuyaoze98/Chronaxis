@@ -25,3 +25,5 @@ calculations:                        # 输出一次会话统计
   - name: rated_power                # 结果表中的列名
     operation: sample_mean           # 每个实际电压读数计一次
     expr: lookup(voltage,'curve')    # 在两个点之间线性插值
+execution:                           # 设置本次分析的并行处理方式
+  process_count: 4                   # 最多4个文件工作进程；实际并行数不超过输入文件数

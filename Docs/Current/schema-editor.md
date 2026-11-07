@@ -10,7 +10,7 @@ JSON Schema是供编辑器与校验器读取的字段规范。规范文件用JSO
 | 批量batch_version: 1 | [batch-v1.schema.json](../Schema/batch-v1.schema.json) |
 | sources/signals/derived公共定义 | [definitions.schema.json](../Schema/definitions.schema.json) |
 
-将四份文件保存在同一目录，保持文件名，以便规范之间的相对引用工作。离线HTML包也包含这四份文件，不需要访问作者电脑。
+将这三份文件保存在同一目录，保持文件名，以便规范之间的相对引用工作。离线HTML包也包含这三份文件，可直接使用。
 
 ## YAML编辑器关联
 
@@ -20,7 +20,7 @@ JSON Schema是供编辑器与校验器读取的字段规范。规范文件用JSO
 
 ```yaml
 # yaml-language-server: $schema=schemas/analysis.schema.json
-config_version: 4    # 当前分析配置版本，填写整数4
+config_version: 4  # 当前分析配置版本，填写整数4
 ```
 
 这是关联方式片段，不是完整分析文件。注释中的路径相对于plan.yaml；移动文件后应调整。JSON可通过编辑器的文件关联设置选择规范，具体界面取决于编辑器。不要把`$schema`作为业务配置字段加入文件，Chronaxis会拒绝未声明字段。

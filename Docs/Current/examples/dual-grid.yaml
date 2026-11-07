@@ -36,3 +36,5 @@ outputs:                           # 选择额外导出的数据及格式；默�
           continuous: [Voltage]    # 填写允许线性插值的DBC信号名；不是signals中的分析别名
 metadata:                          # 保存说明性信息；字段不会自动校准数据或更改计算公式
   device_label: home               # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
+execution:                         # 设置本次分析的并行处理方式
+  process_count: 4                 # 最多4个文件工作进程；实际并行数不超过输入文件数

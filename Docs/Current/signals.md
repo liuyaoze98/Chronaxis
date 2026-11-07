@@ -19,24 +19,26 @@
 
 ```yaml
 # 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
-config_version: 4                       # 声明分析文件采用的字段结构版本；当前填写整数4
-dataset:                                # 设置本次分析名称及可选的对象、会话和时间范围
-  name: signal_example                  # 命名本次分析数据集；名称写入结果身份字段
-sources:                                # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - paths: data/can/signal-types.asc    # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
-    dbc_by_channel:                     # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': data/can/teaching.dbc        # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
-signals:                                # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - field:                              # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x101'                 # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Current_mA                # 填写DBC中的信号名称，大小写须一致
-    name: current                       # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    valid_for: 200ms                    # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-calculations:                           # 列出希望获得的统计或积分结果，每项独立选择范围和算法
-  - name: maximum_current               # 为这项计算结果取唯一名称；结果表用它区分计算项
-    operation: sample_maximum           # 选择计算方法；本例取范围内有效真实样本的最大值
-    expr: current                       # 指定参与计算的数值或信号表达式；引用前面已定义的信号
-    unit: mA                            # 选择结果的显示单位；将最大电流按毫安输出
+config_version: 4                     # 声明分析文件采用的字段结构版本；当前填写整数4
+dataset:                              # 设置本次分析名称及可选的对象、会话和时间范围
+  name: signal_example                # 命名本次分析数据集；名称写入结果身份字段
+sources:                              # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/can/signal-types.asc  # 选择输入文件、连续分卷列表或目录；相对路径基于本配置，目录按自然序读取
+    dbc_by_channel:                   # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/can/teaching.dbc      # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                              # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x101'               # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Current_mA              # 填写DBC中的信号名称，大小写须一致
+    name: current                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 200ms                  # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+calculations:                         # 列出希望获得的统计或积分结果，每项独立选择范围和算法
+  - name: maximum_current             # 为这项计算结果取唯一名称；结果表用它区分计算项
+    operation: sample_maximum         # 选择计算方法；本例取范围内有效真实样本的最大值
+    expr: current                     # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+    unit: mA                          # 选择结果的显示单位；将最大电流按毫安输出
+execution:                            # 本次分析的执行方式
+  process_count: 4                    # 最多4个工作进程；本例仅1个文件，实际最多1个
 ```
 
 在examples目录执行`chronaxis run signal-number-minimal.yaml --output out-number`，maximum_current应为7000mA。换为BLF只需替换日志路径，不改信号结构。普通最大值计算不需要配置conversion、scope或session。
@@ -46,26 +48,26 @@ calculations:                           # 列出希望获得的统计或积分�
 [signal-number-conversion.yaml](examples/signal-number-conversion.yaml)使用同一日志，修改信号换算、质量要求及计算输出单位设置。先用以下片段替换上一例的signals：
 
 ```yaml
-signals:                         # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - field:                       # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x101'          # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Current_mA         # 填写DBC中的信号名称，大小写须一致
-    invalid_values: [65535.0]    # 列出解析/解码后、额外换算前表示无效的值；按数据规范匹配实际类型和值
-    name: current                # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    valid_for: 200ms             # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    valid_range: [-100, 100]     # 检查换算后的值是否在含两端的上下限内；按传感器或业务允许范围填写
-    conversion:                  # 设置读取后额外的单位换算；不重复DBC已执行的缩放和偏移
-      input_unit: mA             # 声明CSV解析或DBC解码后、额外换算前的单位；查列说明或DBC物理单位
-    unit: A                      # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；未填scale/offset时按已登记的兼容单位换算
+signals:                       # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - field:                     # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x101'        # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Current_mA       # 填写DBC中的信号名称，大小写须一致
+    invalid_values: [65535.0]  # 列出解析/解码后、额外换算前表示无效的值；按数据规范匹配实际类型和值
+    name: current              # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 200ms           # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    valid_range: [-100, 100]   # 检查换算后的值是否在含两端的上下限内；按传感器或业务允许范围填写
+    conversion:                # 设置读取后额外的单位换算；不重复DBC已执行的缩放和偏移
+      input_unit: mA           # 声明CSV解析或DBC解码后、额外换算前的单位；查列说明或DBC物理单位
+    unit: A                    # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；未填scale/offset时按已登记的兼容单位换算
 ```
 
 然后删除上一例计算项中的`unit: mA`；完整的calculations段应为：
 
 ```yaml
-calculations:                    # 列出本例需要的计算结果
-  - name: maximum_current        # 标识最大电流结果
-    operation: sample_maximum    # 取有效真实样本的最大值
-    expr: current                # 使用上方已换算为A的电流，省略输出unit
+calculations:                  # 列出本例需要的计算结果
+  - name: maximum_current      # 标识最大电流结果
+    operation: sample_maximum  # 取有效真实样本的最大值
+    expr: current              # 使用上方已换算为A的电流，省略输出unit
 ```
 
 信号中的5000mA换成5A，计算结果按默认单位A显示为7A。若保留计算项的`unit: mA`，结果仍显示为7000mA。这个例子专门演示额外换算与异常码，因此保留conversion、invalid_values和valid_range；普通计算不需要这些字段。DBC对Current_mA按0.5缩放后输出浮点值，失效码填写解码后的65535.0。valid_range用换算后的安培检查：101A无效、100A有效。样例没有异常值，所以最大值仍为7A。
@@ -116,15 +118,15 @@ CAN的`dtype`和`unit`可以省略：程序读取所绑定信号的DBC定义，�
 以下是完整配置中的signals摘录，已包含在下载文件中。DBC周期100ms使voltage默认有效300ms；state显式覆盖为200ms。
 
 ```yaml
-signals:                       # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - frame_id: 0x120            # 选择本组所属报文；从DBC取得ID，所有子信号须属于该报文
-    signals:                   # 列出本报文需要的子信号；继承组级定位，可覆盖周期、有效期和同刻策略
-      - name: voltage          # 给分析信号取名称；后续表达式和计算通过此名称引用它
-        signal: PackVoltage    # 填写本组报文内的DBC信号名称；大小写须一致
-      - name: state            # 给分析信号取名称；后续表达式和计算通过此名称引用它
-        signal: ChargeState    # 填写本组报文内的DBC信号名称；大小写须一致
-        dtype: enum            # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-        valid_for: 200ms       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+signals:                     # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - frame_id: 0x120          # 选择本组所属报文；从DBC取得ID，所有子信号须属于该报文
+    signals:                 # 列出本报文需要的子信号；继承组级定位，可覆盖周期、有效期和同刻策略
+      - name: voltage        # 给分析信号取名称；后续表达式和计算通过此名称引用它
+        signal: PackVoltage  # 填写本组报文内的DBC信号名称；大小写须一致
+      - name: state          # 给分析信号取名称；后续表达式和计算通过此名称引用它
+        signal: ChargeState  # 填写本组报文内的DBC信号名称；大小写须一致
+        dtype: enum          # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+        valid_for: 200ms     # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
 ```
 
 实际输出：[计算表](examples/grouped/results/会话结果.csv)、[事件表](examples/grouped/results/事件结果.csv)。
@@ -187,28 +189,28 @@ CSV先按reader.missing_values匹配缺失标记，再解析布尔；例如NA在
 完整扩展文件[signal-state-combined.yaml](examples/signal-state-combined.yaml)同时绑定两个DBC信号，运行应得到100ms的一个enabled_running事件。以下片段替换最小数值例的signals；同时将calculations删除，并改用下方规则。两个信号和来源均已在本页日志及DBC中定义；本扩展示例保留手工choices以演示覆盖DBC映射，普通枚举最小例直接省略choices。
 
 ```yaml
-signals:                                        # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - choices:                                    # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+signals:                                      # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
-    field:                                      # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x102'                         # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Enabled                           # 填写DBC中的信号名称，大小写须一致
-    name: enabled                               # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    valid_for: 200ms                            # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - choices:                                    # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+    field:                                    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x102'                       # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Enabled                         # 填写DBC中的信号名称，大小写须一致
+    name: enabled                             # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 200ms                          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, idle]
       - [7, running]
-    field:                                      # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x103'                         # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: ModeCode                          # 填写DBC中的信号名称，大小写须一致
-    name: mode                                  # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    valid_for: 200ms                            # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    dtype: enum                                 # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-rules:                                          # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - condition: enabled and mode == "running"    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    name: enabled_running                       # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
-    rule_type: rising_edge                      # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+    field:                                    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x103'                       # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: ModeCode                        # 填写DBC中的信号名称，大小写须一致
+    name: mode                                # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    valid_for: 200ms                          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    dtype: enum                               # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+rules:                                        # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - condition: enabled and mode == "running"  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    name: enabled_running                     # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+    rule_type: rising_edge                    # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
 ```
 
 每项`choices`只有左右两个值：左边是输入代码，右边是分析值。`[7,running]`不表示从第7列读取；列由field选择。bool映射右边必须是YAML真假值，不能写字符串`"true"`；enum右边必须是非空文本。未列入映射的可解析代码成为无效更新，旧状态不再沿用。

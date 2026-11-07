@@ -365,7 +365,8 @@ class AnalysisPlanTests(unittest.TestCase):
         异常: 文件格式或路径结构被静默修复使测试失败。
         """
         # 同时path/paths及空paths都不能形成可读取的声明。
-        self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'path'), 'third.csv'), '$.sources[0]')
+        error = self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'path'), 'third.csv'), '$.sources[0].path')
+        self.assertEqual(error.message, '当前操作或配置下不能填写字段：path')
         self.assert_invalid(changed(csv_fixture(), ('sources', 0, 'paths'), []), '$.sources[0].paths')
         for key, value in (('delimiter', '\n'), ('encoding', 'nonexistent-codec'), ('missing_values', ['', ''])):
             with self.subTest(key=key):

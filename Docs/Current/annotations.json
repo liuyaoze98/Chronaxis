@@ -1,5 +1,11 @@
 {
   "_metadata": {
+    "doc_review_07": {
+      "updated_at": "2026-11-07T14:17:32+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "DOC-REVIEW-07/H03：按run与有效计划/清理实现恢复异常分类及真实恢复属性；不假定所有AnalysisError都有cause或diagnostics。"
+    },
     "doc_review_04": {
       "updated_at": "2026-11-05T19:36:47+08:00",
       "device_label": "home",
@@ -92,6 +98,17 @@
       "device_label": "home",
       "author": "liuyaoze",
       "change": "F02：source_prefix按当前主分析及公共定义根级调用解释，仅更新维护说明。"
+    },
+    "fast_session_01": {
+      "updated_at": "2026-11-07T01:43:58+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "核对新增贡献协议、流式读取、会话调度及公开API的逐参数类型/职责；无单文件限制残留。"
+    },
+    "doc_parallel_01": {
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "补充纯BLF并行内部参数说明，用户配置接口保持。"
     }
   },
   "chronaxis.legacy.vendor.sclicer_functions_v1.can_processor": {
@@ -1191,7 +1208,7 @@
       "worker_config": "本次执行worker配置说明，不将单线程标签当性能保证。",
       "dependency_versions": "实际记录的依赖(name,version)元组。",
       "limitations": "本次已知限制文本元组，发布时保持可见。",
-      "software_version": "软件版本文本，与设计版本和配置版本分开。",
+      "software_version": "软件发行版本文本；省略时取当前源码或安装包的发行版本。与设计版本、配置版本分开；显式传入的历史版本保持原值。",
       "device_label": "实际内容来源设备标签；不能根据文件所在路径猜home/work。",
       "started_at": "记录本次运行开始时间，由执行器生成带时区的ISO8601文本，例如2026-10-27T19:00:00+08:00；不是数据中第一条采样时间。",
       "session_boundaries": "记录实际会话边界，每项为(session_id,start_ns,end_ns)，时间为整数纳秒、范围左闭右开。由执行器取得，空元组表示未建立这些边界，不能当作已观测零时长。",
@@ -1781,6 +1798,22 @@
       "time_frame_ids": {
         "type": "tuple[int, ...] | None",
         "description": "本次需要检查时间顺序的CAN报文ID；同时限定来源的内部通道。None检查完整序列；空元组不交付帧但仍同次统计来源范围。完整检查或原帧导出不得传选择集合。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "文件读取/解码工作进程上限，正整数，默认1；time_order即使为1也使用文件工作进程。"
+      },
+      "emit_frame_ids": {
+        "type": "tuple[int, ...] | None",
+        "description": "限定实际交付的报文ID集合。None交付全部已解析帧；筛选不自动缩小任务要求的时间检查和观测范围。"
+      },
+      "blf_time_scope": {
+        "type": "str",
+        "description": "纯BLF按需时间范围：source检查并观测全部记录；selected只采目标时间；none明确不采时间，仅用于无需时间的逐消息累计。时间归并不能使用none。"
+      },
+      "legacy_blf_decode": {
+        "type": "bool",
+        "description": "默认False；仅规范化纯can_blf的legacy并行转接设置True，保留长度检查及DBC DecodeError的原处理。内部参数，不是分析配置字段；其他异常仍失败。"
       }
     },
     "fields": {},
@@ -2600,6 +2633,14 @@
       "time_frame_ids": {
         "type": "tuple[int, ...] | None",
         "description": "本次需要检查时间顺序的CAN报文ID；同时限定来源的内部通道。None检查完整序列；空元组不交付帧但仍同次统计来源范围。完整检查或原帧导出不得传选择集合。"
+      },
+      "emit_frame_ids": {
+        "type": "tuple[int, ...] | None",
+        "description": "限定实际交付的报文ID集合。None交付全部已解析帧；筛选不自动缩小任务要求的时间检查和观测范围。"
+      },
+      "blf_time_scope": {
+        "type": "str",
+        "description": "纯BLF按需时间范围：source检查并观测全部记录；selected只采目标时间；none明确不采时间，仅用于无需时间的逐消息累计。时间归并不能使用none。"
       }
     },
     "fields": {},
@@ -3277,7 +3318,7 @@
         "description": "保存start_end活动的StartEndSpec，包含超时限制与初始触发选择；仅此规则使用，其他类型填写None。"
       },
       "rule_type": "选择检测方法：condition_duration持续条件、rising_edge由假变真、falling_edge由真变假、start_only触发后抑制重复、window_delta窗口变化、hysteresis迟滞、debounce去抖、start_end起止活动。必须用这些精确名称；各自必需字段见规则指南。",
-      "duration_comparison": "持续时长比较符：>=表示达到minimum_duration，>表示严格超过；默认>=。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。"
+      "duration_comparison": "持续时长比较符：>=表示达到minimum_duration，>表示严格超过；此底层Python对象默认>=；用户配置中的condition_duration必须显式填写比较符。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。"
     },
     "summary": "保存一条已经解析的事件检测规则。rule_id用于窗口和计算引用，rule_type选择检测方法；其余字段按类型填写。运行时由检测器产生事件；具体行为见[事件检测规则](../rules.md)。本对象时间字段使用整数纳秒，YAML配置使用带单位的时长。"
   },
@@ -3290,9 +3331,10 @@
   "chronaxis.planning.models.ExecutionPlan": {
     "fields": {
       "backend": "`\"reference\"`使用独立参考计算，`\"numpy\"`使用NumPy数组计算。须明确选择一种，不在运行失败后自动换用另一种。",
-      "partial_policy": "`\"report\"`：数据不全时保留已知部分算出的数值，并标记partial；`\"strict\"`：所需范围内有数据缺失时返回None。它不会补出缺失数据。"
+      "partial_policy": "`\"report\"`：数据不全时保留已知部分算出的数值，并标记partial；`\"strict\"`：所需范围内有数据缺失时返回None。它不会补出缺失数据。",
+      "process_count": "控制本任务共用的读取/解码进程上限；正整数，默认1，不包含主进程；不根据CPU自动增加。文件不足时实际数量减少。"
     },
-    "summary": "本次分析的资源和读取设置，包括内存上限、分批大小、解码范围以及是否读取完整来源时间。各字段影响哪些工作会执行、怎样限制资源，不替代信号单位和时间基准的配置。完整例子见[运行参数](../execution.md)。"
+    "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、部分结果政策及文件读取/解码进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。"
   },
   "chronaxis.planning.preset_models.RoleBinding": {
     "fields": {
@@ -3334,7 +3376,8 @@
   "chronaxis.sources.can_spec.LegacyCANSpec": {
     "fields": {
       "decode_scope": "`\"requested\"`解码本次需要的报文和字段；`\"all\"`保留全解码与完整诊断。该字段记录或指定的是解码范围。",
-      "input_check": "`\"auto\"`按本计划实际要计算的内容检查输入；`\"full\"`检查全部原帧及时间，即使某帧不参与指标也检查它。"
+      "input_check": "`\"auto\"`按本计划实际要计算的内容检查输入；`\"full\"`检查全部原帧及时间，即使某帧不参与指标也检查它。",
+      "file_merge": "控制本来源文件记录的组合顺序。concatenate按声明文件顺序接续，沿用任务输入检查范围；time_order检查各文件所需时间非递减后，按时间/文件位置/局部序号稳定归并，不平移或去重。默认concatenate，与进程数独立。"
     }
   },
   "chronaxis.sources.models.FieldDescription": {
@@ -3374,7 +3417,7 @@
   "chronaxis.core.temporal.TemporalRule": {
     "fields": {
       "rule_type": "选择底层事件检测方法：condition_duration记录持续成立的活动，rising_edge记录由假变真，falling_edge记录由真变假，start_only在触发后的窗口内抑制重复点。其他公共规则由专用组件处理，不能直接传给此类。",
-      "duration_comparison": "持续时长比较符：>=表示达到minimum_duration，>表示严格超过；默认>=。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。"
+      "duration_comparison": "持续时长比较符：>=表示达到minimum_duration，>表示严格超过；此底层Python对象默认>=；用户配置中的condition_duration必须显式填写比较符。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。"
     }
   },
   "chronaxis.core.models.SourceSpec": {
@@ -4964,9 +5007,14 @@
         "type": "AnalysisPlan",
         "description": "提供已构建的AnalysisPlan：用load_analysis_plan(\"analysis.yaml\")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。",
         "type_evidence": "named model in description"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
       }
     },
-    "example": "\"\"\"从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。\"\"\"\nimport argparse\nfrom pathlib import Path\n\nfrom chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan\n\n\ndef main():\n    \"\"\"检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。\"\"\"\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')\n    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')\n    args = parser.parse_args()\n    plan = load_analysis_plan(args.plan)\n    report = validate_analysis_plan(plan)\n    if not report.valid or not report.execution_ready:\n        raise RuntimeError(report)\n    with AnalysisRunner().run(plan) as result:\n        rows = result.iter_calculations()\n        try:\n            for row in rows:\n                print(row.calculation_id, row.value, row.unit, row.status, row.reason)\n        finally:\n            rows.close()\n        if args.output is not None:\n            manifest = result.write(args.output)\n            print(manifest)\n\n\nif __name__ == '__main__':\n    main()\n"
+    "example": "\"\"\"从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。\"\"\"\nimport argparse\nfrom pathlib import Path\n\nfrom chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan\n\n\ndef main():\n    \"\"\"检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。\"\"\"\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')\n    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')\n    args = parser.parse_args()\n    plan = load_analysis_plan(args.plan)\n    report = validate_analysis_plan(plan)\n    if not report.valid or not report.execution_ready:\n        raise RuntimeError(report)\n    with AnalysisRunner().run(plan) as result:\n        rows = result.iter_calculations()\n        try:\n            for row in rows:\n                print(row.calculation_id, row.value, row.unit, row.status, row.reason)\n        finally:\n            rows.close()\n        if args.output is not None:\n            manifest = result.write(args.output)\n            print(manifest)\n\n\nif __name__ == '__main__':\n    main()\n",
+    "异常": "TypeError：plan不是AnalysisPlan，或其执行声明类型错误。ValueError：显式process_count不是正整数（含bool），或AnalysisRunner与计划未共享同一个扩展注册。\n\nAnalysisError：计划校验未通过、无法执行，或分析运行失败。运行失败被包装时可通过异常的__cause__读取原错误；原AnalysisError及直接校验错误的__cause__可能为空。附加清理信息在__notes__中（若有）。加载配置时的PlanValidationError另有diagnostics，不能假定所有AnalysisError都有此属性。\n\nKeyboardInterrupt和SystemExit原样传播。清理持续失败时，从捕获的异常读取getattr(exc, \"runner_cleanup_owner\", None)；如果存在恢复对象，排除资源故障后调用该对象.close()重试。未附此属性不表示分析成功；仍须处理原异常。"
   },
   "chronaxis.sources.asc.ASCRead.__exit__": {
     "parameters": {
@@ -9565,6 +9613,10 @@
         "type": "AnalysisPlan",
         "description": "plan为已构建AnalysisPlan。",
         "type_evidence": "type check"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "本次读取与解码进程上限的可选覆盖；None沿用原计划，正原生整数构建新的执行视图，不修改原计划；布尔值、非正数及其他类型抛ValueError。"
       }
     },
     "异常": "TypeError为非计划/执行声明；不重新解析配置或复制原输入行。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。"
@@ -9575,9 +9627,13 @@
         "type": "AnalysisPlan",
         "description": "提供已构建的AnalysisPlan：用load_analysis_plan(\"analysis.yaml\")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。",
         "type_evidence": "named model in description"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
       }
     },
-    "异常": "TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正常计划的静态问题通过ValidationReport.errors返回，执行能力看execution_ready；不读取输入，不能把空errors当作实际日志已验证。"
+    "异常": "TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正常计划的静态问题通过ValidationReport.errors返回，执行能力看execution_ready；不读取输入，不能把空errors当作实际日志已验证。\n\nValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。"
   },
   "chronaxis.runner.AnalysisRunner.explain": {
     "parameters": {
@@ -9585,9 +9641,13 @@
         "type": "AnalysisPlan",
         "description": "提供已构建的AnalysisPlan：用load_analysis_plan(\"analysis.yaml\")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。",
         "type_evidence": "named model in description"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
       }
     },
-    "异常": "TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏typed引用可能引发AttributeError/KeyError；重新使用from_dict/load_analysis_plan构造合法计划。函数不打开CSV/DBC，不测量实际耗时或内存。"
+    "异常": "TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏typed引用可能引发AttributeError/KeyError；重新使用from_dict/load_analysis_plan构造合法计划。函数不打开CSV/DBC，不测量实际耗时或内存。\n\nValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。"
   },
   "chronaxis.sources.asc.ASCRead.__init__": {
     "parameters": {
@@ -11744,7 +11804,11 @@
       "history_ns": "读取每个信号预计需要保留的历史时长，单位纳秒；None表示仍需读取DBC周期确定，不能按0处理。",
       "budget": "读取配置声明的资源预算映射；数值是计划限制，None表示该项没有数值预算，不是实际测得峰值。",
       "intervals": "读取记录间隔声明IntervalPlan；包含配置选择，不包含运行时才取得的DBC周期。",
-      "diagnostics": "读取诊断开关DiagnosticPlan；表示请求哪些诊断，不能证明这些诊断已执行。"
+      "diagnostics": "读取诊断开关DiagnosticPlan；表示请求哪些诊断，不能证明这些诊断已执行。",
+      "source_execution": {
+        "type": "tuple[Mapping, ...]",
+        "description": "每个CAN来源的静态文件执行说明：source是来源名；file_count是展开后的文件数；file_merge选择接续或按时间归并；read_process_limit为读取工作进程上限；continuous_session为True；temporary_merge_files表示是否需要归并暂存。没有扫描日志，也不是实测进程数。"
+      }
     }
   },
   "chronaxis.sources.asc.ASCSpec": {
@@ -18289,7 +18353,7 @@
   },
   "chronaxis.planning.plan.AnalysisPlan": {
     "fields": {
-      "config_version": "保存已加载配置的结构版本，接受整数3和4。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。",
+      "config_version": "保存本计划采用的分析配置结构版本。当前唯一合法值为整数4；字符串\"4\"、浮点数4.0、布尔值和其他版本均不接受。通常调用load_analysis_plan(path)或AnalysisPlan.from_dict(config)建立整个计划，不逐字段手工拼接。",
       "message_calculations": "保存message_calculations配置解析后的逐消息计算项元组；空元组表示没有此类计算。与普通calculations分别执行。",
       "sequences": "保存sequences配置解析后的请求/响应配对元组；空元组表示不进行配对。",
       "raw_config": "解析时保存的内部只读配置快照，不是用户原文，省略字段也未必全部写回。字段可能为内部解析形式；需要可编辑的当前公共配置时使用config resolve。",
@@ -18623,6 +18687,26 @@
       "selected_ids": {
         "type": "set[int] | None",
         "description": "仅处理这些CAN ID；None不过滤，在转换时间和记录对象前先筛ID。"
+      },
+      "emit_frame_ids": {
+        "type": "tuple[int, ...] | None",
+        "description": "限定实际交付的报文ID集合。None交付全部已解析帧；筛选不自动缩小任务要求的时间检查和观测范围。"
+      },
+      "channel": {
+        "type": "int | None",
+        "description": "投影需要的内部零基通道，来自已解析来源声明；不用文件名推断。"
+      },
+      "projection_only": {
+        "type": "bool",
+        "description": "True允许在auto路径只为目标帧建立完整模型；必须同时提供emit_frame_ids，其他情况下保留普通解析。"
+      },
+      "time_check_all": {
+        "type": "bool",
+        "description": "True要求投影前检查全来源记录顺序；False由目标记录检查决定，不能掩盖上层明确要求的完整检查。"
+      },
+      "time_scope": {
+        "type": "str",
+        "description": "纯BLF按需时间范围：source检查并观测全部记录；selected只采目标时间；none明确不采时间，仅用于无需时间的逐消息累计。时间归并不能使用none。"
       }
     }
   },
@@ -18680,7 +18764,8 @@
   },
   "chronaxis.sources.text_can_spec.CANTextSpec": {
     "fields": {
-      "input_check": "auto按任务所需的时间序列检查；full要求完整来源顺序。普通ASC/混合来源的auto只核所需通道/ID顺序，全部已解析帧在同次读取中用于来源最早/最晚范围；原帧导出仍要求完整顺序。不是解码范围或输出开关。"
+      "input_check": "auto按任务所需的时间序列检查；full要求完整来源顺序。普通ASC/混合来源的auto只核所需通道/ID顺序，全部已解析帧在同次读取中用于来源最早/最晚范围；原帧导出仍要求完整顺序。不是解码范围或输出开关。",
+      "file_merge": "控制本来源文件记录的组合顺序。concatenate按声明文件顺序接续，沿用任务输入检查范围；time_order检查各文件所需时间非递减后，按时间/文件位置/局部序号稳定归并，不平移或去重。默认concatenate，与进程数独立。"
     }
   },
   "chronaxis.results.analysis_outcome.RuleOutcome": {
@@ -22589,38 +22674,6 @@
       }
     }
   },
-  "chronaxis.fast.can_io._read_all": {
-    "parameters": {
-      "reader": {
-        "type": "Iterable",
-        "description": "该文件的原始报文迭代器，关闭由外层负责。"
-      },
-      "cancel_event": {
-        "type": "Event | None",
-        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
-      }
-    }
-  },
-  "chronaxis.fast.can_io._read": {
-    "parameters": {
-      "path": {
-        "type": "str | Path",
-        "description": "要读取的文件路径。"
-      },
-      "groups": {
-        "type": "dict",
-        "description": "以报文 ID 和帧型索引本文件的计算项，供筛选目标及检查时间。"
-      },
-      "spec": {
-        "type": "dict",
-        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
-      },
-      "cancel_event": {
-        "type": "Event | None",
-        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
-      }
-    }
-  },
   "chronaxis.fast.can_io._read.selected_time": {
     "parameters": {
       "frame": {
@@ -22863,7 +22916,8 @@
         "type": "bool",
         "description": "是否将已加载的数据库交给当前进程继续执行。"
       }
-    }
+    },
+    "summary": "将公共分析计划编译为同一会话的多文件执行声明，冻结公式、来源和资源选项。"
   },
   "chronaxis.fast.config.compile_template_plan": {
     "parameters": {
@@ -22891,13 +22945,14 @@
         "type": "bool",
         "description": "启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。"
       }
-    }
+    },
+    "summary": "读取配置及导入定义，验证DBC与fast子集，返回可序列化的单会话文件清单和计算定义。"
   },
   "chronaxis.fast.run.run_prepared": {
     "parameters": {
       "spec": {
         "type": "dict",
-        "description": "一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。"
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
       },
       "output": {
         "type": "str | Path",
@@ -22913,11 +22968,15 @@
       },
       "cancel_event": {
         "type": "Event | None",
-        "description": "已设置时取消本次操作，省略时按调用方的正常生命周期运行。"
+        "description": "外部取消事件，支持is_set()；设置后停止本次会话并清理，不返回成功结果。"
       },
       "_return_rows": {
         "type": "bool",
         "description": "请求跨文件总量时直接返回未舍入指标行。"
+      },
+      "work_dir": {
+        "type": "str | Path | None",
+        "description": "本次暂存目录的父路径；None使用系统临时目录，每次调用创建独立子目录。"
       }
     }
   },
@@ -22925,11 +22984,23 @@
     "parameters": {
       "config": {
         "type": "str | Path",
-        "description": "当前独立文件的分析计划路径。"
+        "description": "同一会话的YAML/JSON分析配置路径；一个来源可包含多个ASC/BLF分卷。"
       },
       "output": {
         "type": "str | Path",
         "description": "接收本次结果表和完成清单的目录。"
+      },
+      "work_dir": {
+        "type": "str | Path | None",
+        "description": "本次暂存目录的父路径；None使用系统临时目录，每次调用创建独立子目录。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "外部取消事件，支持is_set()；设置后停止本次会话并清理，不返回成功结果。"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "本次读取、解码、求值工作进程上限覆盖；None沿用声明，正整数且不接受布尔值。"
       }
     }
   },
@@ -23220,6 +23291,511 @@
       "node": {
         "type": "ast.AST",
         "description": "原配置的表达式语法位置，用于报告当前步骤发现的编译错误。"
+      }
+    }
+  },
+  "chronaxis.planning.diagnostic_collection.DiagnosticCollection.finish.priority": {
+    "parameters": {
+      "error": {
+        "type": "PlanValidationError",
+        "description": "已收集的配置错误；根据错误代码与字段路径，优先展示拼写建议和操作类型的根因，再展示其他独立错误。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "CANTextSpec",
+        "description": "冻结的同一来源文件、DBC、通道、时间及file_merge声明。文件按inputs位置标识，不把文件当独立会话。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "整个分析任务共享的预算，预付工作进程空间、传输缓冲和归并输入；不是每进程一份额度。"
+      },
+      "signals": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次消费者需要解码的同来源信号定义；只按这些字段及额外重建字段投影DBC物理值。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "正整数读取/解码进程上限，实际不超过文件数，不包含主进程。"
+      },
+      "work_dir": {
+        "type": "Path",
+        "description": "本次运行已分配的专用工作目录；time_order在其中创建唯一归并子目录，不使用输入目录。"
+      },
+      "emit_frame_ids": {
+        "type": "tuple[int, ...] | None",
+        "description": "限定实际交付的报文ID集合。None交付全部已解析帧；筛选不自动缩小任务要求的时间检查和观测范围。"
+      },
+      "options": {
+        "type": "dict",
+        "description": "传给同次CANTextDecodeRead的已核内部选项，包括trace、integrity、时间检查集合、周期字段及可重建的DBC上下文声明。不是任意用户回调。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._receive": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "本owner拥有的一个工作槽，保存process/control/data/tree及当前file/block/reply；不能传其他任务的进程槽。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._bytes": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "本owner拥有的一个工作槽，保存process/control/data/tree及当前file/block/reply；不能传其他任务的进程槽。"
+      },
+      "size": {
+        "type": "int",
+        "description": "控制消息声明的数据块字节数，须在1至WIRE_LIMIT之间；实收长度必须相等。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._assign": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "本owner拥有的一个工作槽，保存process/control/data/tree及当前file/block/reply；不能传其他任务的进程槽。"
+      },
+      "index": {
+        "type": "int",
+        "description": "来源inputs中的零基文件位置，限定在本次已登记文件范围；不是工作进程编号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._block": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "来源inputs中的零基文件位置，限定在本次已登记文件范围；不是工作进程编号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._next_task": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "来源inputs中的零基文件位置，限定在本次已登记文件范围；不是工作进程编号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._push": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "来源inputs中的零基文件位置，限定在本次已登记文件范围；不是工作进程编号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._stop_workers": {
+    "parameters": {
+      "completed": {
+        "type": "bool",
+        "description": "True要求所有工作进程在完整EOF后正常退出；False用于失败或取消，可终止本次仍在途进程。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_worker.plain": {
+    "parameters": {
+      "value": {
+        "type": "object",
+        "description": "有限且已核的冻结元数据；映射和序列递归变成可传输容器，原生叶值保留。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_worker.facts": {
+    "parameters": {
+      "reader": {
+        "type": "CANTextDecodeRead",
+        "description": "本文件同次读取owner，提供原行数、已见时间范围、顺序检查端点和解码次数；这些事实不当作消费水位。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_can_worker.worker_main": {
+    "parameters": {
+      "control": {
+        "type": "Connection",
+        "description": "父进程为本槽创建的双向控制连接，传文件任务、next许可、错误及完成通知。"
+      },
+      "data": {
+        "type": "Connection",
+        "description": "单向数据连接的发送端；只发送不超过WIRE_LIMIT的已序列化块，与控制通道分离。"
+      }
+    }
+  },
+  "chronaxis.planning.process_execution.process_execution_errors": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次已应用API/CLI覆盖的有效执行视图；只查声明，不读取业务输入或启动工作进程。"
+      }
+    }
+  },
+  "chronaxis.planning.process_execution.source_execution_facts": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "本次已应用API/CLI覆盖的有效执行视图；只查声明，不读取业务输入或启动工作进程。"
+      }
+    }
+  },
+  "chronaxis.sources.blf._UntimedBLFRecord": {
+    "fields": {
+      "frame": {
+        "type": "can.Message",
+        "description": "由本次BLFReader实际提供的消息，保留原身份和载荷供同帧解码；未读取其时间。"
+      },
+      "path": {
+        "type": "Path",
+        "description": "产生此消息的输入BLF路径，用于错误定位。"
+      },
+      "sequence": {
+        "type": "int",
+        "description": "当前文件内从0开始的原记录序号，包括此前跳过的非目标消息。"
+      },
+      "time_ns": {
+        "type": "None",
+        "description": "明确未采集分析时间，不能用作零纳秒或归并键。"
+      },
+      "raw_time": {
+        "type": "None",
+        "description": "二进制消息没有文本时间原文，本内部记录不伪造文字。"
+      },
+      "line_number": {
+        "type": "None",
+        "description": "BLF没有文本行号，定位使用sequence。"
+      }
+    }
+  },
+  "chronaxis.fast.blocks.encode": {
+    "parameters": {
+      "file_index": {
+        "type": "int",
+        "description": "文件在已展开输入列表中的从0开始位置，用于校验交付身份及稳定排序。"
+      },
+      "number": {
+        "type": "int",
+        "description": "本文件从0递增的贡献块序号；消费者要求连续且只消费一次。"
+      },
+      "records": {
+        "type": "Iterable[tuple]",
+        "description": "同一文件的有序贡献记录，每条为整数时间、原始记录序号、计算项贡献元组；不得传部分和。"
+      }
+    }
+  },
+  "chronaxis.fast.blocks.decode": {
+    "parameters": {
+      "payload": {
+        "type": "bytes",
+        "description": "包含版本、文件/块身份、binary64贡献和CRC的有界二进制数据；不得提前舍入。"
+      },
+      "file_index": {
+        "type": "int",
+        "description": "文件在已展开输入列表中的从0开始位置，用于校验交付身份及稳定排序。"
+      },
+      "number": {
+        "type": "int",
+        "description": "本文件从0递增的贡献块序号；消费者要求连续且只消费一次。"
+      },
+      "metric_count": {
+        "type": "int",
+        "description": "本会话计算项数量，用于拒绝未知、重复或超出范围的计算项编号。"
+      }
+    }
+  },
+  "chronaxis.fast.blocks.batches": {
+    "parameters": {
+      "stream": {
+        "type": "Iterator[tuple]",
+        "description": "按原始文件顺序产生单帧贡献的迭代器，只有成功读完并关闭才结束。"
+      }
+    }
+  },
+  "chronaxis.fast.session.effective_spec": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
+      },
+      "process_count": {
+        "type": "int | None",
+        "description": "本次读取、解码、求值工作进程上限覆盖；None沿用声明，正整数且不接受布尔值。"
+      }
+    }
+  },
+  "chronaxis.fast.session.file_specs": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
+      }
+    }
+  },
+  "chronaxis.fast.session.SessionAccumulator.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
+      }
+    }
+  },
+  "chronaxis.fast.session.SessionAccumulator.consume": {
+    "parameters": {
+      "record": {
+        "type": "tuple",
+        "description": "一条已求值贡献：(整数纳秒时间, 原始记录序号, (计算项序号, float64贡献, 入选bool)元组)。"
+      }
+    }
+  },
+  "chronaxis.fast.session.SessionAccumulator.finish_file": {
+    "parameters": {
+      "facts": {
+        "type": "dict",
+        "description": "已成功关闭文件的最终记录、目标、有效、入选、帧型和兼容信息；必须与实际消费相符。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.__init__": {
+    "parameters": {
+      "specs": {
+        "type": "list[dict]",
+        "description": "按声明顺序展开的单文件任务；所有成员共用一套会话计算定义。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "本次会话共享的受管理资源账本；先预约空间，再构造缓冲或暂存。"
+      },
+      "directory": {
+        "type": "str | Path",
+        "description": "本次会话私有暂存目录；所有贡献块均写到该目录，清理不涉及输入或旧结果。"
+      },
+      "cancel": {
+        "type": "Event | None",
+        "description": "调用方取消事件；is_set为真时停止继续读取或调度，None表示没有外部取消信号。"
+      },
+      "statistics": {
+        "type": "dict",
+        "description": "接收本次执行统计的字典；记录实际工作进程、暂存量和关闭后的预算，None使用内部字典。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.start": {
+    "parameters": {
+      "count": {
+        "type": "int",
+        "description": "这次实际启动的工作槽数量，已经按用户上限与输入文件数限制，不根据CPU自动增加。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.assign": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "一个实际工作进程的控制/数据连接及交付状态；由父调度器持有并管理关闭。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.grant": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "一个实际工作进程的控制/数据连接及交付状态；由父调度器持有并管理关闭。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.pump": {
+    "parameters": {
+      "blocking": {
+        "type": "bool",
+        "description": "True允许本次等待消息最多50毫秒，False只处理已经到达的消息；均检查取消和错误。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.message": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "一个实际工作进程的控制/数据连接及交付状态；由父调度器持有并管理关闭。"
+      },
+      "message": {
+        "type": "tuple",
+        "description": "worker发送的有限控制消息，包含类型、所属文件及块序号；按当前交付状态核验。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.packet_records": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "当前处理文件在本次输入列表中的从0开始位置，不能借完成先后改变它。"
+      },
+      "number": {
+        "type": "int",
+        "description": "本文件从0递增的贡献块序号；消费者要求连续且只消费一次。"
+      },
+      "packet": {
+        "type": "bytes",
+        "description": "当前完整贡献块的二进制内容；与预期文件、块号和计算项数量一起核验。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.read_spool": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "当前处理文件在本次输入列表中的从0开始位置，不能借完成先后改变它。"
+      },
+      "number": {
+        "type": "int",
+        "description": "本文件从0递增的贡献块序号；消费者要求连续且只消费一次。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.concatenate": {
+    "parameters": {
+      "accumulator": {
+        "type": "SessionAccumulator",
+        "description": "本次会话唯一的最终累计器；消费者按确定顺序逐条调用它，不能先按文件求和。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.file_records": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "当前处理文件在本次输入列表中的从0开始位置，不能借完成先后改变它。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.time_order": {
+    "parameters": {
+      "accumulator": {
+        "type": "SessionAccumulator",
+        "description": "本次会话唯一的最终累计器；消费者按确定顺序逐条调用它，不能先按文件求和。"
+      }
+    }
+  },
+  "chronaxis.fast.session.FilePool.close": {
+    "parameters": {
+      "success": {
+        "type": "bool",
+        "description": "True要求worker按协议正常退出；False进入失败清理并停止仍在工作的进程。"
+      }
+    }
+  },
+  "chronaxis.fast.session.run_session": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
+      },
+      "database": {
+        "type": "cantools.database.Database | None",
+        "description": "已加载的DBC定义，可在本进程复用；省略时由会话加载，不能与冻结声明冲突。"
+      },
+      "work_dir": {
+        "type": "str | Path | None",
+        "description": "本次暂存目录的父路径；None使用系统临时目录，每次调用创建独立子目录。"
+      },
+      "cancel_event": {
+        "type": "Event | None",
+        "description": "外部取消事件，支持is_set()；设置后停止本次会话并清理，不返回成功结果。"
+      },
+      "statistics": {
+        "type": "dict | None",
+        "description": "接收本次执行统计的字典；记录实际工作进程、暂存量和关闭后的预算，None使用内部字典。"
+      }
+    }
+  },
+  "chronaxis.fast.session_worker.worker_main": {
+    "parameters": {
+      "control": {
+        "type": "multiprocessing.connection.Connection",
+        "description": "双向控制连接，传递文件任务、交付许可、错误及最终计数；与完整数据传输分离。"
+      },
+      "data": {
+        "type": "multiprocessing.connection.Connection",
+        "description": "单向数据连接，传递获准直传的完整贡献块；暂存块只通过控制连接通知位置。"
+      },
+      "cancel": {
+        "type": "Event | None",
+        "description": "调用方取消事件；is_set为真时停止继续读取或调度，None表示没有外部取消信号。"
+      }
+    }
+  },
+  "chronaxis.fast.stream.FileContributions.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "dict",
+        "description": "本次已编译会话或单文件声明，包含来源、公式、顺序和执行资源；调用过程不改写它。"
+      },
+      "database": {
+        "type": "cantools.database.Database",
+        "description": "已加载的DBC定义，可在本进程复用；省略时由会话加载，不能与冻结声明冲突。"
+      },
+      "cancel": {
+        "type": "Event | None",
+        "description": "调用方取消事件；is_set为真时停止继续读取或调度，None表示没有外部取消信号。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "本次会话共享的受管理资源账本；先预约空间，再构造缓冲或暂存。"
+      }
+    }
+  },
+  "chronaxis.fast.stream.FileContributions._measured": {
+    "parameters": {
+      "iterator": {
+        "type": "Iterator",
+        "description": "底层ASC/BLF原始记录迭代器；诊断包装只计量每次读取，不修改记录。"
+      }
+    }
+  },
+  "chronaxis.fast.stream.FileContributions._selected_time": {
+    "parameters": {
+      "frame": {
+        "type": "can.Message",
+        "description": "当前原始CAN帧，用通道、ID和实际帧型判断是否需要时间顺序检查。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._Metric.contribution": {
+    "parameters": {
+      "decoded": {
+        "type": "dict[str, int | float]",
+        "description": "当前帧的DBC物理解码值；先计算贡献，再按原解码方向判断是否入选。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._Metric.add": {
+    "parameters": {
+      "contribution": {
+        "type": "float",
+        "description": "已核验的当前帧binary64贡献，按输入顺序逐条相加，不接收文件部分和。"
+      },
+      "keep": {
+        "type": "bool",
+        "description": "本帧是否进入请求方向桶；True即使贡献为0也增加入选数，False只增加有效目标计数。"
+      }
+    }
+  },
+  "chronaxis.fast.compute._Metric": {
+    "summary": "当前累计器及其已准备公式；FileContributions只调用无状态contribution，会话主进程按原顺序调用add。"
+  },
+  "chronaxis.fast.session._worker_process_limit": {
+    "parameters": {
+      "process_count": "已通过校验的正整数工作进程上限，不包含主进程。",
+      "file_count": "已经展开的输入文件数；仅能同时处理一份时在当前进程执行，返回0。"
+    }
+  },
+  "chronaxis.execution.parallel_can_worker.read_block": {
+    "parameters": {
+      "reader": {
+        "type": "Iterator[DecodedCANRecord]",
+        "description": "按原顺序交付解码记录的游标；本函数只读取当前可容纳的一批，不预读下一批，也不关闭游标。"
       }
     }
   }

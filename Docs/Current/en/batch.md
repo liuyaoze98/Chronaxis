@@ -4,24 +4,32 @@
 
 For separate vehicles or unrelated trials, create an analysis configuration for each trial and run them together. Each job has its own signal state, alarm timers, response queue, and output directory.
 
-`execution.batch_rows` controls how many samples **one analysis processes at a time**, preserving state. `batch run` schedules **independent analyses**. Put consecutive files from the same recording in one source's `paths`; splitting them into jobs does not carry alarms between them.
+Use a separate batch file with `chronaxis batch run` or `load_batch_plan` / `run_batch`. Its root `process_count: 4` permits up to four independent jobs at once. With two jobs, at most two analysis workers start. Omission still means `1`; the program does not automatically use every CPU.
 
-Use `chronaxis batch run` or `load_batch_plan` / `run_batch` with a separate batch file. List configurations in `jobs`, or apply `template` to multiple `inputs`; these forms are mutually exclusive. Root `process_count` limits the number of analysis workers.
+List different configurations in `jobs`, or apply one `template` to multiple independent `inputs`; these forms are mutually exclusive. Each child uses `execution.process_count: 1` and default `file_merge: concatenate`. The outer batch supplies parallelism; a child does not start another file-worker pool.
+
+Put volumes from the same charge in one source's `paths` and use [continuous-file multiprocessing](continuous-files.md). An alarm active at the end of volume one continues into volume two in a continuous analysis; independent batch jobs do not share that state. `execution.batch_rows` separately sets samples per batch, not jobs or worker processes.
 
 <a id="完整批量配置"></a>
 ## Complete batch configuration
 
 Fields such as `batch_version`, `jobs`, and `process_count` belong at the batch file's root. `jobs[].plan` belongs to a job item. This file is not embedded in an analysis configuration.
 
-[batch-minimal.yaml](../examples/batch-minimal.yaml) references the main ASC example `analysis.yaml`, uses an automatic job name and sequential execution, and produces 38 J. [batch-extended.yaml](../examples/batch-extended.yaml) adds an independent ASC voltage analysis and runs at most two jobs at once. Results are 38 J and 13 V·s; the recordings are not concatenated. Keep the batch file beside the referenced configurations.
+[batch-minimal.yaml](../examples/batch-minimal.yaml) uses the single-process child [batch/energy.yaml](../examples/batch/energy.yaml). Its batch limit is four, but one job needs at most one worker and produces 38 J. [batch-extended.yaml](../examples/batch-extended.yaml) adds [batch/voltage.yaml](../examples/batch/voltage.yaml). With a limit of four, these two jobs can run together and produce 38 J and 13 V·s. The recordings remain independent. Keep the bundled examples' `batch` and `data` subdirectories, and run from the examples directory.
 
 ```yaml
-batch_version: 1                    # Independent batch configuration version
-jobs:                               # Independent analysis tasks
-  - plan: analysis.yaml             # Analysis configuration path for this job
-  - plan: input-asc-minimal.yaml    # Analysis configuration path for this job
-process_count: 2                    # Maximum number of analysis worker processes
+batch_version: 1              # Independent batch configuration version
+jobs:                         # Independent analysis tasks
+  - plan: batch/energy.yaml   # Independent energy analysis; child uses one process
+  - plan: batch/voltage.yaml  # Independent voltage analysis; path relative to this batch file
+process_count: 4              # Up to four independent workers; these two jobs need at most two
 ```
+
+```powershell
+python -m chronaxis batch run batch-extended.yaml --output batch-output
+```
+
+Open this run's batch report returned by the command. Check both entries in `jobs`, then follow each job's output locations. Verify 38 J for energy and 13 V·s for voltage integration; their different units mean these values do not form one total.
 
 Omit job names, `fail_fast`, and backend settings unless you need to change their defaults. Use `jobs[].name` to customize output-directory names.
 
@@ -42,13 +50,15 @@ Input paths inside a child analysis remain relative to **that analysis file**: `
 <a id="一个模板处理整个目录"></a>
 ## Apply one template to a directory
 
+From the supplied examples directory, the pattern below matches only `data/can/quickstart.asc`, producing one job. It does not match files under quickstart-parts. With your own input set, the job count follows the actual matches.
+
 If each input file is an independent trial with the same signals and analysis, reuse one configuration. `template`, `inputs`, and optional `source` are root fields and replace the `jobs` form.
 
 ```yaml
-batch_version: 1                    # Independent batch configuration version
-template: analysis.yaml             # Analysis template applied independently to each input
-inputs: data/can/quickstart*.asc    # Files or file pattern expanded into independent tasks
-process_count: 2                    # Maximum number of analysis worker processes
+batch_version: 1                  # Independent batch configuration version
+template: batch/energy.yaml       # Single-process template applied independently to each input
+inputs: data/can/quickstart*.asc  # Match independent inputs in this directory, without recursion
+process_count: 4                  # Up to four independent workers; supplied files match one job
 ```
 
 Change the directory or pattern to your BLF files, or supply a directory containing mixed supported formats.
@@ -65,7 +75,7 @@ Names are `job_1`, `job_2`, etc. Only the selected source's paths change; other 
 ## CLI and Python
 
 ```powershell
-python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 2
+python -m chronaxis batch run batch-extended.yaml --output batch-output --process-count 4
 ```
 
 The override is optional: CLI/API override → batch file → default 1. Batch CLI has no `--backend`; set it in the batch file. Single-analysis `run` has that option. The output directory can be reused. Job directories and the batch report use this batch's timestamp suffix.
@@ -75,7 +85,7 @@ from chronaxis import load_batch_plan, run_batch
 
 def main():
     plan = load_batch_plan("batch-extended.yaml")
-    report = run_batch(plan, "batch-output", process_count=2)
+    report = run_batch(plan, "batch-output", process_count=4)
     try:
         print(report.worker_process_count)
         print(report.to_dict())
@@ -86,7 +96,7 @@ if __name__ == "__main__":
     main()
 ```
 
-Omitting API `process_count`, or passing `None`, uses the plan. A positive integer overrides only this run. `BatchPlan(..., process_count=4)` and `BatchRunner(process_count=4)` have the same meaning. Neither ordinary `execution` nor `AnalysisRunner` has a process-count parameter.
+Omitting API `process_count`, or passing `None`, uses the plan. A positive integer overrides only this run. `BatchPlan(..., process_count=4)` and `BatchRunner(process_count=4)` have the same meaning. Ordinary analysis separately uses `execution.process_count` and the AnalysisRunner override to read files from one continuous session; the main process maintains the calculation state. See [continuous multiprocessing](continuous-files.md).
 
 With `jobs`, `load_batch_plan` reads the batch file; each child's plan and input are read when it starts. With `template`, loading reads the template, expands inputs, and compiles independent plans; DBC metadata may be read to infer signal definitions, but business frames are not scanned yet.
 

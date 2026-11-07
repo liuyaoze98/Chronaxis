@@ -50,7 +50,7 @@ class RequiredCANFrame
 |`is_remote_frame`|bool|是|无|匹配时排除远程帧所需。|
 |`is_error_frame`|bool|是|无|匹配时排除错误帧所需。|
 
-源码：[`src/chronaxis/legacy/required_records.py:23`](../../../src/chronaxis/legacy/required_records.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:23`](../../../src/chronaxis/legacy/required_records.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RequiredCANFrame-__post_init__"></a>
 ### `RequiredCANFrame.__post_init__`
@@ -82,7 +82,7 @@ RequiredCANFrame.__post_init__()
 - `TypeError`：所需报文channel需要int/str/None。
 - `ValueError`：所需报文channel文本过长。
 
-源码：[`src/chronaxis/legacy/required_records.py:34`](../../../src/chronaxis/legacy/required_records.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:34`](../../../src/chronaxis/legacy/required_records.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-required_frame_to_dict"></a>
 ## `required_frame_to_dict`
@@ -111,7 +111,7 @@ TypeError。
 
 - `TypeError`：需要RequiredCANFrame。
 
-源码：[`src/chronaxis/legacy/required_records.py:48`](../../../src/chronaxis/legacy/required_records.py#L48)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:48`](../../../src/chronaxis/legacy/required_records.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RequiredDecodedFrame"></a>
 ## `RequiredDecodedFrame`
@@ -130,7 +130,7 @@ class RequiredDecodedFrame
 |`frame`|[RequiredCANFrame](chronaxis.legacy.required_records.md#api-RequiredCANFrame)|是|无|必要身份与可选时间。|
 |`values`|Mapping[str, int &#124; float &#124; bool]|是|无|缺键保持缺失，诊断非有限值保留。|
 
-源码：[`src/chronaxis/legacy/required_records.py:56`](../../../src/chronaxis/legacy/required_records.py#L56)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:56`](../../../src/chronaxis/legacy/required_records.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-RequiredDecodedFrame-__post_init__"></a>
 ### `RequiredDecodedFrame.__post_init__`
@@ -160,7 +160,7 @@ RequiredDecodedFrame.__post_init__()
 
 - `TypeError`：按需记录需要RequiredCANFrame与数值Mapping。
 
-源码：[`src/chronaxis/legacy/required_records.py:63`](../../../src/chronaxis/legacy/required_records.py#L63)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:63`](../../../src/chronaxis/legacy/required_records.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-required_to_dict"></a>
 ## `required_to_dict`
@@ -189,7 +189,7 @@ dict。
 
 - `TypeError`：需要RequiredDecodedFrame。
 
-源码：[`src/chronaxis/legacy/required_records.py:82`](../../../src/chronaxis/legacy/required_records.py#L82)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:82`](../../../src/chronaxis/legacy/required_records.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-required_from_dict"></a>
 ## `required_from_dict`
@@ -218,7 +218,7 @@ required_from_dict(value)
 
 - `TypeError`：required decoded values需要dict。
 
-源码：[`src/chronaxis/legacy/required_records.py:90`](../../../src/chronaxis/legacy/required_records.py#L90)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:90`](../../../src/chronaxis/legacy/required_records.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-required_from_packet"></a>
 ## `required_from_packet`
@@ -248,4 +248,4 @@ UTF-8、重复键、深度、裸非有限常量或模型错误；不解任意对
 - `ValueError`：按需记录需要65536字节内bytes。
 - `TypeError`：required decoded values需要dict。
 
-源码：[`src/chronaxis/legacy/required_records.py:101`](../../../src/chronaxis/legacy/required_records.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/legacy/required_records.py:101`](../../../src/chronaxis/legacy/required_records.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -17,9 +17,9 @@
 The following fragment assumes `signals` already binds the numeric signal `voltage` and the [export label requirement](exports.md) is met. Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `signal_csv` child. Keep the other output settings and unshown root fields; do not paste a duplicate `outputs` key.
 
 ```yaml
-outputs:                  # Additional result files to publish
-  signal_csv:             # Export selected signals as CSV
-    signals: [voltage]    # Use the signal name from the analysis definitions.
+outputs:                # Additional result files to publish
+  signal_csv:           # Export selected signals as CSV
+    signals: [voltage]  # Use the signal name from the analysis definitions.
 ```
 
 <a id="扩展设置"></a>
@@ -28,13 +28,13 @@ outputs:                  # Additional result files to publish
 Replace that `signal_csv` child with the following. The two fragments are alternatives, not two blocks to append together.
 
 ```yaml
-outputs:                       # Additional result files to publish
-  signal_csv:                  # Export selected signals as CSV
-    signals: [voltage]         # Names of the analysis signals to export
-    resampling:                # Optional output grid and value selection
-      continuous: [voltage]    # Only signals that can meaningfully be interpolated.
-      period: 250ms            # Spacing of exported values.
-      max_gap: 2s              # Largest permitted gap between actual observations.
+outputs:                     # Additional result files to publish
+  signal_csv:                # Export selected signals as CSV
+    signals: [voltage]       # Names of the analysis signals to export
+    resampling:              # Optional output grid and value selection
+      continuous: [voltage]  # Only signals that can meaningfully be interpolated.
+      period: 250ms          # Spacing of exported values.
+      max_gap: 2s            # Largest permitted gap between actual observations.
 ```
 
 These fields are relative to `outputs.signal_csv`. Its `signals` field selects names; it is not the root list that defines signals.

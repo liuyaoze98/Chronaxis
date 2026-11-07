@@ -58,7 +58,7 @@ _common_unit(compiler, args, call)
 
 ValueError为量种不兼容、未知单位异名或裸数字有多种尺度解释。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:19`](../../../src/chronaxis/core/expression_math_v4.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:19`](../../../src/chronaxis/core/expression_math_v4.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_common_dtype"></a>
 ## `_common_dtype`
@@ -85,7 +85,7 @@ _common_dtype(compiler, args, call)
 
 ValueError为原信号类型冲突、定宽字面量越界或不允许的提升。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:53`](../../../src/chronaxis/core/expression_math_v4.py#L53)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:53`](../../../src/chronaxis/core/expression_math_v4.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-check_integer_leaves"></a>
 ## `check_integer_leaves`
@@ -112,7 +112,7 @@ None。
 
 ValueError为叶节点定宽越界。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:85`](../../../src/chronaxis/core/expression_math_v4.py#L85)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:85`](../../../src/chronaxis/core/expression_math_v4.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compile_math"></a>
 ## `compile_math`
@@ -138,4 +138,4 @@ ExprNode；平方直接复用经过定宽溢出检查的乘法节点。
 
 ValueError为非法参数、越界常量、不可推导的单位或静态倒置边界。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:104`](../../../src/chronaxis/core/expression_math_v4.py#L104)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:104`](../../../src/chronaxis/core/expression_math_v4.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

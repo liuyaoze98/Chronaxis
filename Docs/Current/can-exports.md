@@ -19,9 +19,9 @@
 先运行最小配置；下方扩展配置增加可选控制。两段是替换关系，不同时重复写入同一个父键。
 
 ```yaml
-outputs:           # 选择额外导出的数据及格式；默认结果表由运行入口提供
-  can_frames:      # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
-    format: asc    # 选择输出报文文件格式；asc为文本，blf为二进制
+outputs:         # 选择额外导出的数据及格式；默认结果表由运行入口提供
+  can_frames:    # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
+    format: asc  # 选择输出报文文件格式；asc为文本，blf为二进制
 ```
 
 ### 扩展设置
@@ -29,15 +29,15 @@ outputs:           # 选择额外导出的数据及格式；默认结果表由�
 仍以同一基础文件为起点，用下面的can_frames子项替换上面同名子项，仍保留outputs下其他子项；新增字段的默认值、适用条件见后文。
 
 ```yaml
-outputs:                           # 选择额外导出的数据及格式；默认结果表由运行入口提供
-  can_frames:                      # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
-    format: asc                    # 选择输出报文文件格式；asc为文本，blf为二进制
-    resampling:                    # 设置重建CAN帧网格；根据DBC重写选定信号，其他位取基础帧
-      period: 500ms                # 指定重建CAN帧的网格周期；与信号CSV网格独立
-      max_gap: 2s                  # 限制重建帧使用的记录间隔；超过上限不伪造连续数据
-      messages:                    # 逐报文列出要重建的连续信号和保留字段
-        - frame_id: 0x100          # 选择要重建的报文ID；从DBC取得
-          continuous: [Voltage]    # 填写允许线性插值的DBC信号名；不是signals中的分析别名
+outputs:                         # 选择额外导出的数据及格式；默认结果表由运行入口提供
+  can_frames:                    # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
+    format: asc                  # 选择输出报文文件格式；asc为文本，blf为二进制
+    resampling:                  # 设置重建CAN帧网格；根据DBC重写选定信号，其他位取基础帧
+      period: 500ms              # 指定重建CAN帧的网格周期；与信号CSV网格独立
+      max_gap: 2s                # 限制重建帧使用的记录间隔；超过上限不伪造连续数据
+      messages:                  # 逐报文列出要重建的连续信号和保留字段
+        - frame_id: 0x100        # 选择要重建的报文ID；从DBC取得
+          continuous: [Voltage]  # 填写允许线性插值的DBC信号名；不是signals中的分析别名
 ```
 
 下表字段相对于`outputs.can_frames`；例如format完整写作`outputs.can_frames.format`。
@@ -105,12 +105,12 @@ BLF需要日历时间。假设确知试验在2026年10月23日北京时间08:00�
 应用位置：以[dual-grid.yaml](examples/dual-grid.yaml)为基础，找到根级outputs，仅加入或替换其中的`can_frames`子项，保留outputs下其他子项；代码中的outputs只表示位置，不重复粘贴父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
 ```yaml
-outputs:                          # 选择额外导出的数据及格式；默认结果表由运行入口提供
-  can_frames:                     # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
-    format: blf                   # 选择输出报文文件格式；asc为文本，blf为二进制
-    capture_date: '2026-10-23'    # 提供相对时间输出BLF的采集日期；与timezone及output_offset共同定位日历时间
-    output_offset: 28800s         # 给导出时间增加固定偏移；按目标文件的时间基准填写
-    timezone: +08:00              # 声明采集日期的时区偏移；按采集记录填写如+08:00
+outputs:                        # 选择额外导出的数据及格式；默认结果表由运行入口提供
+  can_frames:                   # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
+    format: blf                 # 选择输出报文文件格式；asc为文本，blf为二进制
+    capture_date: '2026-10-23'  # 提供相对时间输出BLF的采集日期；与timezone及output_offset共同定位日历时间
+    output_offset: 28800s       # 给导出时间增加固定偏移；按目标文件的时间基准填写
+    timezone: +08:00            # 声明采集日期的时区偏移；按采集记录填写如+08:00
 ```
 
 这里日期先定位到当天零点，再加28800秒，得到08:00。这个日期仅展示格式，实际填写采集日期。若原时间已经是从1970-01-01 UTC起算的绝对时间，则选择epoch，并省略capture_date及timezone。

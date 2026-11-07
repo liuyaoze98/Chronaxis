@@ -24,18 +24,18 @@ Both files run with `chronaxis run filename.yaml --output new-result`. The first
 A request occurs at 1 s and permits a response within 0–2 s. A response at 3 s succeeds with a 2 s delay. Without a response, distinguish a fully observed two-second wait from missing response data that prevents a conclusion. Root-level `sequences` makes this distinction.
 
 ```yaml
-rules:                         # Point events used for pairing
-  - name: request_edge         # Request rule name
-    condition: request         # Existing bool signal
-    rule_type: rising_edge     # False-to-true transition
-  - name: response_edge        # Response rule name
-    condition: response        # Existing bool signal
-    rule_type: rising_edge     # False-to-true transition
-sequences:                     # Pair requests with permitted responses
-  - name: pair                 # Unique pairing name
-    start: request_edge        # Request rule, not signal name
-    response: response_edge    # Response rule, not signal name
-    max_delay: 2s              # Maximum permitted response delay
+rules:                       # Point events used for pairing
+  - name: request_edge       # Request rule name
+    condition: request       # Existing bool signal
+    rule_type: rising_edge   # False-to-true transition
+  - name: response_edge      # Response rule name
+    condition: response      # Existing bool signal
+    rule_type: rising_edge   # False-to-true transition
+sequences:                   # Pair requests with permitted responses
+  - name: pair               # Unique pairing name
+    start: request_edge      # Request rule, not signal name
+    response: response_edge  # Response rule, not signal name
+    max_delay: 2s            # Maximum permitted response delay
 ```
 
 | Field | Type | Required/default | Meaning |

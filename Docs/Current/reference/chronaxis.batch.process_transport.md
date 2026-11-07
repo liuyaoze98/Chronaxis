@@ -64,7 +64,7 @@ job_packet(job)
 
 配置转换错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:19`](../../../src/chronaxis/batch/process_transport.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:19`](../../../src/chronaxis/batch/process_transport.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-restore_job"></a>
 ## `restore_job`
@@ -89,7 +89,7 @@ BatchJob。
 
 重建或身份不一致。
 
-源码：[`src/chronaxis/batch/process_transport.py:27`](../../../src/chronaxis/batch/process_transport.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:27`](../../../src/chronaxis/batch/process_transport.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker"></a>
 ## `ProcessWorker`
@@ -101,7 +101,7 @@ ProcessWorker(*, fast=False)
 ```
 
 
-源码：[`src/chronaxis/batch/process_transport.py:37`](../../../src/chronaxis/batch/process_transport.py#L37)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:37`](../../../src/chronaxis/batch/process_transport.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-__init__"></a>
 ### `ProcessWorker.__init__`
@@ -126,7 +126,7 @@ ProcessWorker.__init__(*, fast=False)
 
 启动/树登记失败立即回收。
 
-源码：[`src/chronaxis/batch/process_transport.py:40`](../../../src/chronaxis/batch/process_transport.py#L40)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:40`](../../../src/chronaxis/batch/process_transport.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-submit"></a>
 ### `ProcessWorker.submit`
@@ -153,7 +153,7 @@ None。
 
 转换或通信错误。
 
-源码：[`src/chronaxis/batch/process_transport.py:68`](../../../src/chronaxis/batch/process_transport.py#L68)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:68`](../../../src/chronaxis/batch/process_transport.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-submit_fast"></a>
 ### `ProcessWorker.submit_fast`
@@ -173,7 +173,7 @@ ProcessWorker.submit_fast(job, directory, spec, total)
 |`spec`|dict|是|无|位置或关键字。一个文件的已绑定参数，包括 DBC、通道、数值公式和输出单位。|
 |`total`|bool|是|无|位置或关键字。是否回传未舍入指标，供同一模板的成员按输入顺序相加。|
 
-源码：[`src/chronaxis/batch/process_transport.py:72`](../../../src/chronaxis/batch/process_transport.py#L72)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:72`](../../../src/chronaxis/batch/process_transport.py#L72)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-cancel_fast"></a>
 ### `ProcessWorker.cancel_fast`
@@ -187,7 +187,7 @@ ProcessWorker.cancel_fast()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/batch/process_transport.py:78`](../../../src/chronaxis/batch/process_transport.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:78`](../../../src/chronaxis/batch/process_transport.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-ready"></a>
 ### `ProcessWorker.ready`
@@ -213,7 +213,7 @@ bool。
 
 管道探测或进程状态检查发生 EOFError 或 OSError 时抛出 ChildProcessError，携带工作进程 PID 并保留原异常。探测时确认 EOF 或断管后，关闭阶段跳过远程握手。
 
-源码：[`src/chronaxis/batch/process_transport.py:89`](../../../src/chronaxis/batch/process_transport.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:89`](../../../src/chronaxis/batch/process_transport.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-receive"></a>
 ### `ProcessWorker.receive`
@@ -239,7 +239,7 @@ BatchJobResult。
 
 探测不到结果，或探测、读取遇到 EOF 或断管时，抛出带工作进程 PID 的 ChildProcessError。已收到的消息仍按正常协议校验，类型或种类不符报 RuntimeError，解包失败原样传播。
 
-源码：[`src/chronaxis/batch/process_transport.py:98`](../../../src/chronaxis/batch/process_transport.py#L98)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:98`](../../../src/chronaxis/batch/process_transport.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ProcessWorker-close"></a>
 ### `ProcessWorker.close`
@@ -269,4 +269,4 @@ None。
 
 管道可用时，先让工作进程重试待办清理，再发送关闭命令并等待退出。已知断管或关闭握手时遇到 EOF、断管，则先关闭本次作业对象以结束其工作进程及后代。没有作业对象时，只终止该拥有者持有的工作进程。断管后的每次退出等待最多五秒。进程退出后关闭剩余句柄。
 
-源码：[`src/chronaxis/batch/process_transport.py:119`](../../../src/chronaxis/batch/process_transport.py#L119)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/process_transport.py:119`](../../../src/chronaxis/batch/process_transport.py#L119)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -67,7 +67,7 @@ HistoricalTimeCalculation(history, context, bindings, compiled, spec, *, backend
 ```
 
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:27`](../../../src/chronaxis/execution/historical_time_calculation.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:27`](../../../src/chronaxis/execution/historical_time_calculation.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-__init__"></a>
 ### `HistoricalTimeCalculation.__init__`
@@ -101,7 +101,7 @@ HistoricalTimeCalculation.__init__(history, context, bindings, compiled, spec, *
 类型、能力、预算或构造错误；持续清理失败的原异常附
     historical_time_calculation_cleanup_owner，恢复环境后可调用其close。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:34`](../../../src/chronaxis/execution/historical_time_calculation.py#L34)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:34`](../../../src/chronaxis/execution/historical_time_calculation.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_make_reducer"></a>
 ### `HistoricalTimeCalculation._make_reducer`
@@ -126,7 +126,7 @@ HistoricalTimeCalculation._make_reducer(denominator=None)
 
 配置、数值模型或分配错误传播。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:96`](../../../src/chronaxis/execution/historical_time_calculation.py#L96)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:96`](../../../src/chronaxis/execution/historical_time_calculation.py#L96)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_make_blocks"></a>
 ### `HistoricalTimeCalculation._make_blocks`
@@ -152,7 +152,7 @@ HistoricalTimeCalculation._make_blocks()
 
 原构造/身份/预算错误。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:112`](../../../src/chronaxis/execution/historical_time_calculation.py#L112)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:112`](../../../src/chronaxis/execution/historical_time_calculation.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_reset_facts"></a>
 ### `HistoricalTimeCalculation._reset_facts`
@@ -178,7 +178,7 @@ HistoricalTimeCalculation._reset_facts()
 
 无。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:122`](../../../src/chronaxis/execution/historical_time_calculation.py#L122)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:122`](../../../src/chronaxis/execution/historical_time_calculation.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-closed"></a>
 ### `HistoricalTimeCalculation.closed`
@@ -206,7 +206,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:132`](../../../src/chronaxis/execution/historical_time_calculation.py#L132)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:132`](../../../src/chronaxis/execution/historical_time_calculation.py#L132)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-failed"></a>
 ### `HistoricalTimeCalculation.failed`
@@ -234,7 +234,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:137`](../../../src/chronaxis/execution/historical_time_calculation.py#L137)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:137`](../../../src/chronaxis/execution/historical_time_calculation.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-finished"></a>
 ### `HistoricalTimeCalculation.finished`
@@ -262,7 +262,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 无。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:142`](../../../src/chronaxis/execution/historical_time_calculation.py#L142)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:142`](../../../src/chronaxis/execution/historical_time_calculation.py#L142)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-result"></a>
 ### `HistoricalTimeCalculation.result`
@@ -294,7 +294,7 @@ CalculationResult。
 
 - `RuntimeError`：历史时间指标尚未成功完成。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:147`](../../../src/chronaxis/execution/historical_time_calculation.py#L147)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:147`](../../../src/chronaxis/execution/historical_time_calculation.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_require_open"></a>
 ### `HistoricalTimeCalculation._require_open`
@@ -324,7 +324,7 @@ ResultClosedError。
 
 - `ResultClosedError`：历史时间指标已关闭或正在清理。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:157`](../../../src/chronaxis/execution/historical_time_calculation.py#L157)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:157`](../../../src/chronaxis/execution/historical_time_calculation.py#L157)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_reserve"></a>
 ### `HistoricalTimeCalculation._reserve`
@@ -349,7 +349,7 @@ HistoricalTimeCalculation._reserve(amount)
 
 预算或取消错误。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:162`](../../../src/chronaxis/execution/historical_time_calculation.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:162`](../../../src/chronaxis/execution/historical_time_calculation.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_release"></a>
 ### `HistoricalTimeCalculation._release`
@@ -374,7 +374,7 @@ HistoricalTimeCalculation._release(amount)
 
 原释放/取消错误。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:174`](../../../src/chronaxis/execution/historical_time_calculation.py#L174)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:174`](../../../src/chronaxis/execution/historical_time_calculation.py#L174)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_append_facts"></a>
 ### `HistoricalTimeCalculation._append_facts`
@@ -407,7 +407,7 @@ HistoricalTimeCalculation._append_facts(facts)
 - `ValueError`：时间指标块有效与未知未完整划分。
 - `ValueError`：时间指标未知范围重叠。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:186`](../../../src/chronaxis/execution/historical_time_calculation.py#L186)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:186`](../../../src/chronaxis/execution/historical_time_calculation.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_facts_snapshot"></a>
 ### `HistoricalTimeCalculation._facts_snapshot`
@@ -438,7 +438,7 @@ TimeCalculationFacts。
 - `ValueError`：时间指标尚未完整消费真实交集。
 - `ValueError`：时间指标全窗覆盖划分不完整。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:233`](../../../src/chronaxis/execution/historical_time_calculation.py#L233)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:233`](../../../src/chronaxis/execution/historical_time_calculation.py#L233)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-_finish_pass"></a>
 ### `HistoricalTimeCalculation._finish_pass`
@@ -468,7 +468,7 @@ True表示进入第二遍，False表示最终完成。
 
 - `ValueError`：两遍时间均值的真实覆盖或来源不同。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:247`](../../../src/chronaxis/execution/historical_time_calculation.py#L247)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:247`](../../../src/chronaxis/execution/historical_time_calculation.py#L247)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-step"></a>
 ### `HistoricalTimeCalculation.step`
@@ -498,7 +498,7 @@ bool；完成后重复False。
 
 - `RuntimeError`：失败的时间指标只能关闭。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:290`](../../../src/chronaxis/execution/historical_time_calculation.py#L290)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:290`](../../../src/chronaxis/execution/historical_time_calculation.py#L290)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalTimeCalculation-close"></a>
 ### `HistoricalTimeCalculation.close`
@@ -524,4 +524,4 @@ None，重复关闭安全。
 
 关闭或释放取消可重试。
 
-源码：[`src/chronaxis/execution/historical_time_calculation.py:320`](../../../src/chronaxis/execution/historical_time_calculation.py#L320)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_time_calculation.py:320`](../../../src/chronaxis/execution/historical_time_calculation.py#L320)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

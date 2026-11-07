@@ -52,7 +52,7 @@ ReferenceConditionalTimeReduction(spec, input_unit, dtype, *, selected_duration_
 ```
 
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:29`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L29)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:29`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-__init__"></a>
 ### `ReferenceConditionalTimeReduction.__init__`
@@ -83,7 +83,7 @@ ReferenceConditionalTimeReduction.__init__(spec, input_unit, dtype, *, selected_
 
 配置或分配错误传播。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:32`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:32`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-selected_weight_seconds"></a>
 ### `ReferenceConditionalTimeReduction.selected_weight_seconds`
@@ -111,7 +111,7 @@ float或不适用None。
 
 权重求和故障。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:55`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L55)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:55`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-selected_duration_ns"></a>
 ### `ReferenceConditionalTimeReduction.selected_duration_ns`
@@ -139,7 +139,7 @@ ReferenceConditionalTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:65`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:65`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-value_valid_duration_ns"></a>
 ### `ReferenceConditionalTimeReduction.value_valid_duration_ns`
@@ -167,7 +167,7 @@ ReferenceConditionalTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:70`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L70)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:70`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-push"></a>
 ### `ReferenceConditionalTimeReduction.push`
@@ -200,7 +200,7 @@ ConditionalTimeCalculationFacts；mean权重故障只记数值质量，不改覆
 
 - `ValueError`：条件时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:74`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L74)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:74`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-ReferenceConditionalTimeReduction-finish"></a>
 ### `ReferenceConditionalTimeReduction.finish`
@@ -232,4 +232,4 @@ mean首遍RuntimeError、次遍分母不符ValueError；
 - `RuntimeError`：条件时间均值首遍只收事实，不能生成数值。
 - `ValueError`：条件均值次遍选择时长与全窗分母不同。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:186`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L186)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:186`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

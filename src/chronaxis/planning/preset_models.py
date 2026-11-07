@@ -183,7 +183,8 @@ class PlanFragment:
                 continue
             row['condition'] = item.condition
             if item.rule_type == 'condition_duration':
-                row.update(minimum_duration=f'{item.minimum_duration_ns}ns', selection_origin=item.selection_origin)
+                row.update(minimum_duration=f'{item.minimum_duration_ns}ns', duration_comparison='>=',
+                           selection_origin=item.selection_origin)
             else:
                 row['emit_initial'] = item.emit_initial
             rules.append(row)

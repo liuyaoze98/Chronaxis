@@ -228,7 +228,7 @@ class SequenceRunnerTests(unittest.TestCase):
         参数: 无。返回: None。异常: 错误配置误通过使测试失败。
         """
         config = config_fixture()
-        config['rules'][0].update(rule_type='condition_duration', minimum_duration='0ns')
+        config['rules'][0].update(rule_type='condition_duration', duration_comparison='>=', minimum_duration='0ns')
         with self.assertRaisesRegex(PlanValidationError, '点规则'):
             AnalysisPlan.from_dict(current_fixture(config))
         config = config_fixture()

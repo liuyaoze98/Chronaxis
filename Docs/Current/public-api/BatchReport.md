@@ -35,7 +35,7 @@ BatchReport(output_dir: pathlib.Path, jobs: tuple[chronaxis.batch.models.BatchJo
 |`report_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|已发布的实际批量报告路径；BatchRunner.run尚未写报告时为None，run_batch写完报告后提供。|
 |`_publication`|object|否|None|持有本批名称，关闭释放。|
 
-源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:179`](../../../src/chronaxis/batch/models.py#L179)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-status"></a>
 ### `BatchReport.status`
@@ -65,7 +65,7 @@ failed/cancelled/completed。
 
 返回类型：str。
 
-源码：[`src/chronaxis/batch/models.py:194`](../../../src/chronaxis/batch/models.py#L194)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:194`](../../../src/chronaxis/batch/models.py#L194)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-to_dict"></a>
 ### `BatchReport.to_dict`
@@ -93,7 +93,7 @@ JSON对象。
 
 返回类型：dict。
 
-源码：[`src/chronaxis/batch/models.py:200`](../../../src/chronaxis/batch/models.py#L200)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:200`](../../../src/chronaxis/batch/models.py#L200)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-BatchReport-close"></a>
 ### `BatchReport.close`
@@ -121,4 +121,4 @@ BatchReport.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/batch/models.py:211`](../../../src/chronaxis/batch/models.py#L211)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/batch/models.py:211`](../../../src/chronaxis/batch/models.py#L211)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

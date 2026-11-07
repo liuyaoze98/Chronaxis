@@ -1,6 +1,6 @@
 {
   "device_label": "home",
-  "updated_at": "2026-11-05T23:05:01+08:00",
+  "updated_at": "2026-11-07T17:54:31+08:00",
   "objects": [
     {
       "name": "TimeConversion",
@@ -843,7 +843,7 @@
       "qualified": "RunMetadata",
       "group": "Execution and results",
       "kind": "class",
-      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev2', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None",
+      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = '0.1.0.dev3', device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None",
       "parameters": [
         {
           "name": "run_id",
@@ -948,7 +948,7 @@
           "kind": "POSITIONAL_OR_KEYWORD",
           "type": "str",
           "required": false,
-          "default": "'0.1.0.dev2'"
+          "default": "'0.1.0.dev3'"
         },
         {
           "name": "device_label",
@@ -1509,21 +1509,42 @@
       "qualified": "run",
       "group": "High-performance integrator",
       "kind": "function",
-      "signature": "(config, output)",
+      "signature": "(config: str | pathlib.Path, output: str | pathlib.Path, *, process_count: int | None = None, work_dir: str | pathlib.Path | None = None, cancel_event: object | None = None) -> pathlib.Path",
       "parameters": [
         {
           "name": "config",
           "kind": "POSITIONAL_OR_KEYWORD",
-          "type": "",
+          "type": "str | pathlib.Path",
           "required": true,
           "default": null
         },
         {
           "name": "output",
           "kind": "POSITIONAL_OR_KEYWORD",
-          "type": "",
+          "type": "str | pathlib.Path",
           "required": true,
           "default": null
+        },
+        {
+          "name": "process_count",
+          "kind": "KEYWORD_ONLY",
+          "type": "int | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "work_dir",
+          "kind": "KEYWORD_ONLY",
+          "type": "str | pathlib.Path | None",
+          "required": false,
+          "default": "None"
+        },
+        {
+          "name": "cancel_event",
+          "kind": "KEYWORD_ONLY",
+          "type": "object | None",
+          "required": false,
+          "default": "None"
         }
       ],
       "target": "public-api/fast.run.md#api-run"
@@ -1818,6 +1839,6 @@
     "unchanged": true,
     "note": "另3个继承内建异常类没有inspect.signature，沿用异常类入口，不捏造签名。"
   },
-  "baseline": "e65c920526335247bcc1ed25852bcc967f55f2fd",
+  "baseline": "afc8d5eb1dc95c26176b20ebedaeda6a0a643540",
   "language": "en"
 }

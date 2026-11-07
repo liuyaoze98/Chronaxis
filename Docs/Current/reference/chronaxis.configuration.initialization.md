@@ -51,7 +51,7 @@ ValueError/IO/取消。
 先读取全部包资源再独占创建目录，入口最后写出。写入失败仅删除本次创建的文件和目录；
 清理失败附注原错误并保留残余，不删除其他进程写入的文件，不以成功掩盖部分写入。
 
-源码：[`src/chronaxis/configuration/initialization.py:7`](../../../src/chronaxis/configuration/initialization.py#L7)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/configuration/initialization.py:7`](../../../src/chronaxis/configuration/initialization.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 ## 内部匿名回调
 

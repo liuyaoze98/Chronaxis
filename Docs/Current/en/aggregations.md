@@ -9,12 +9,12 @@ Root `aggregations` summarizes calculation rows, events, window segments, or req
 Replace the root aggregations section in that file with this excerpt; its calculations already defines load_mean:
 
 ```yaml
-aggregations:                   # Summarize existing result rows
-  - name: load_mean_p95         # Name of this new aggregate result
-    source:                     # Select exactly one named result source
-      calculation: load_mean    # Mean power for each loaded activity
-    operation: quantile         # Quantile of those activity means
-    q: 0.95                     # Probability for P95
+aggregations:                 # Summarize existing result rows
+  - name: load_mean_p95       # Name of this new aggregate result
+    source:                   # Select exactly one named result source
+      calculation: load_mean  # Mean power for each loaded activity
+    operation: quantile       # Quantile of those activity means
+    q: 0.95                   # Probability for P95
 ```
 
 ## Choose a source and operation

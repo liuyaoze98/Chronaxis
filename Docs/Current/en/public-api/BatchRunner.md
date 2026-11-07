@@ -58,6 +58,6 @@ Side effects: starts at most process_count workers and publishes each job indepe
 
 ## Source locations
 
-- [`src/chronaxis/batch/runner.py:108`](../../../../src/chronaxis/batch/runner.py#L108) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/batch/runner.py:111`](../../../../src/chronaxis/batch/runner.py#L111) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
-- [`src/chronaxis/batch/runner.py:124`](../../../../src/chronaxis/batch/runner.py#L124) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/batch/runner.py:108`](../../../../src/chronaxis/batch/runner.py#L108) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/runner.py:111`](../../../../src/chronaxis/batch/runner.py#L111) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/runner.py:124`](../../../../src/chronaxis/batch/runner.py#L124) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

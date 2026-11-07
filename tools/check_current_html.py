@@ -4,6 +4,7 @@ from pathlib import Path
 import argparse
 import json
 import re
+import subprocess
 from public_docs import reading_text
 from urllib.parse import unquote, urlsplit
 
@@ -82,6 +83,11 @@ def verify_links(directory):
     """检查全部页面资源、锚点和搜索目标。返回计数；失效链接抛AssertionError。"""
     directory = directory.resolve()
     pages = {}
+    # Markdown随包可独立阅读，必须检查其内部导航；使用同一Markdown解析器忽略示例代码。
+    parsed = json.loads(subprocess.check_output(
+        ['node', str(Path(__file__).with_name('manual_markdown.mjs')), str(directory)],
+        text=True, encoding='utf8'))
+    markdown = { (directory / item['file']).resolve(): item for item in parsed }
     for path in directory.rglob('*.html'):
         page = Page()
         page.feed(path.read_text(encoding='utf8'))
@@ -107,15 +113,32 @@ def verify_links(directory):
         assert target.is_file(), (source, url, '目标不存在')
         if parts.fragment and target in pages:
             assert unquote(parts.fragment) in pages[target].ids, (source, url, '锚点不存在')
+        elif parts.fragment and target in markdown:
+            assert unquote(parts.fragment) in markdown[target]['ids'], (source, url, 'Markdown锚点不存在')
+        elif parts.fragment and target.suffix == '.json':
+            # AI资料也可直接链接JSON规范节点；逐段解码JSON Pointer并核对目标。
+            pointer=unquote(parts.fragment)
+            assert pointer.startswith('/'), (source, url, '未知JSON锚点')
+            node=json.loads(target.read_text(encoding='utf8'))
+            for part in pointer[1:].split('/'):
+                key=part.replace('~1','/').replace('~0','~')
+                if isinstance(node,list):
+                    assert re.fullmatch(r'0|[1-9][0-9]*',key), (source,url,'JSON数组下标格式错误')
+                try: node=node[int(key)] if isinstance(node,list) else node[key]
+                except (KeyError, IndexError, TypeError, ValueError) as error:
+                    raise AssertionError((source,url,'JSON节点不存在')) from error
         count += 1
     for source, page in pages.items():
         for link in page.links:
             check(source, link)
+    for source, document in markdown.items():
+        for link in document['links']:
+            check(source,link)
     raw = (directory / 'search-data.js').read_text(encoding='utf8')
     entries = json.loads(raw.removeprefix('window.DOC_SEARCH=').strip().removesuffix(';'))
     for entry in entries:
         check(directory / 'index.html', entry['url'])
-    return {'html_pages':len(pages), 'local_references':count, 'search_targets':len(entries)}
+    return {'html_pages':len(pages), 'markdown_pages':len(markdown), 'local_references':count, 'search_targets':len(entries)}
 
 
 def main():

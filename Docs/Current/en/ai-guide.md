@@ -20,3 +20,5 @@ These commands only print paths; they do not generate or extract files. The inst
 To save a separate offline copy, optionally use `python -m chronaxis guide --output my-guide.zip`. The target must be new and always contains both languages. This step is unnecessary for reading.
 
 Reading the guide does not require Chronaxis to be installed; the lookup script uses only Python's standard library. Running analysis examples requires Chronaxis and its dependencies. Select a matching example from the task index, check its inputs, time units, and expected result, then adapt it to your files. Resolve missing information that would affect the result before running the analysis.
+
+When generating a configuration, identify file relationships and choose the worker count: one continuous ASC/BLF source uses `execution.process_count: 4`; independent trials use batch-root `process_count: 4` with single-worker children. CSV, memory and multi-source plans use one worker under current support. See [execution settings](execution.md).

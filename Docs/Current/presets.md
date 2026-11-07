@@ -38,44 +38,44 @@
 基础文件已有的信号定义摘录：用于阅读，不重复插入；完整基础文件只有一个CAN来源，无需逐项重复source。信号的frame_id和signal来自随附DBC；类型与单位自动读取。此处显式保留20s有效期，保证稀疏教学记录之间仍有效，不代表实际设备的推荐设置。
 
 ```yaml
-signals:                                   # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - name: temperature                      # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x11d'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Temperature                  # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: voltage                          # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x11f'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Voltage                      # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    measurement_location: pack_terminal    # 声明实际测点；pack_terminal表示电池包端，须依据接线和设备定义
-  - name: current                          # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x114'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Current                      # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    measurement_location: pack_terminal    # 声明实际测点；pack_terminal表示电池包端，须依据接线和设备定义
-    sign_convention: positive_is_charge    # 声明正负值的业务含义；positive_is_charge表示正电流为充电，不执行取反
-  - name: mode                             # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x118'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Mode                         # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - name: request                          # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x11a'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Request                      # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                               # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+signals:                                 # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: temperature                    # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x11d'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Temperature                # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: voltage                        # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x11f'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Voltage                    # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    measurement_location: pack_terminal  # 声明实际测点；pack_terminal表示电池包端，须依据接线和设备定义
+  - name: current                        # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x114'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Current                    # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    measurement_location: pack_terminal  # 声明实际测点；pack_terminal表示电池包端，须依据接线和设备定义
+    sign_convention: positive_is_charge  # 声明正负值的业务含义；positive_is_charge表示正电流为充电，不执行取反
+  - name: mode                           # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x118'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Mode                       # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+  - name: request                        # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x11a'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Request                    # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                             # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
-  - name: response                         # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field:                                 # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-      frame_id: '0x11b'                    # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
-      signal: Response                     # 填写DBC中的信号名称，大小写须一致
-    valid_for: 20s                         # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-    choices:                               # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+  - name: response                       # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                               # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+      frame_id: '0x11b'                  # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
+      signal: Response                   # 填写DBC中的信号名称，大小写须一致
+    valid_for: 20s                       # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                             # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
       - [0, false]
       - [1, true]
 ```
@@ -218,14 +218,14 @@ signals:                                   # 把输入字段定义为有名称�
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`presets`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-presets:                             # 选择预先组合好的规则与计算，并提供角色信号和业务参数
-  - name: cmd                        # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
-    role_bindings:                   # 明确指定哪条已有信号担任每个角色；角色名由预设定义
-      request: request               # 为request角色选择上方已定义的分析信号名；仍须符合该角色要求
-      response: response             # 为response角色选择上方已定义的分析信号名；仍须符合该角色要求
-    parameters:                      # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
-      max_delay: 2s                  # 设置请求到响应的最大允许延迟；必须不小于最小延迟
-    preset_type: command_response    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+presets:                           # 选择预先组合好的规则与计算，并提供角色信号和业务参数
+  - name: cmd                      # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
+    role_bindings:                 # 明确指定哪条已有信号担任每个角色；角色名由预设定义
+      request: request             # 为request角色选择上方已定义的分析信号名；仍须符合该角色要求
+      response: response           # 为response角色选择上方已定义的分析信号名；仍须符合该角色要求
+    parameters:                    # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
+      max_delay: 2s                # 设置请求到响应的最大允许延迟；必须不小于最小延迟
+    preset_type: command_response  # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
 ```
 
 会生成`cmd_request`、`cmd_response`两条上升沿和`cmd_pair`配对。设置`emit_initial=true`同时允许两端初始为真时产生点；不要重复写同ID普通规则。配对结果和缺失处理见[请求响应](sequences.md)。
@@ -238,14 +238,14 @@ presets:                             # 选择预先组合好的规则与计算�
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`presets`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-presets:                                # 选择预先组合好的规则与计算，并提供角色信号和业务参数
-  - name: hot                           # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
-    role_bindings:                      # 明确指定哪条已有信号担任每个角色；角色名由预设定义
-      signal: temperature               # 为signal角色选择上方已定义的分析信号名；仍须符合该角色要求
-    parameters:                         # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
-      enter_threshold: 80               # 设置进入报警的高阈值；必须大于恢复阈值
-      exit_threshold: 75                # 设置恢复的低阈值；按业务允许恢复范围填写
-    preset_type: threshold_excursion    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+presets:                              # 选择预先组合好的规则与计算，并提供角色信号和业务参数
+  - name: hot                         # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
+    role_bindings:                    # 明确指定哪条已有信号担任每个角色；角色名由预设定义
+      signal: temperature             # 为signal角色选择上方已定义的分析信号名；仍须符合该角色要求
+    parameters:                       # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
+      enter_threshold: 80             # 设置进入报警的高阈值；必须大于恢复阈值
+      exit_threshold: 75              # 设置恢复的低阈值；按业务允许恢复范围填写
+    preset_type: threshold_excursion  # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
 ```
 
 固定使用“值≥80进入，值≤75退出”；进入阈值必须严格大于退出阈值。不能用此预设直接表示“过低报警”，那种需求应写自己的hysteresis条件。本例输入与分析单位都为degC。也可先在信号定义中按已知单位关系换算（例如degC转K），预设阈值再使用换算后的信号单位；阈值不能仍填摄氏温度数值。
@@ -287,18 +287,18 @@ presets:                                # 选择预先组合好的规则与计�
 应用位置：以[electrical-base.yaml](examples/electrical-base.yaml)为基础，在文件根级加入或替换`presets`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-presets:                           # 选择预先组合好的规则与计算，并提供角色信号和业务参数
-  - name: charge                   # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
-    role_bindings:                 # 明确指定哪条已有信号担任每个角色；角色名由预设定义
-      mode: mode                   # 为mode角色选择上方已定义的分析信号名；仍须符合该角色要求
-      current: current             # 为current角色选择上方已定义的分析信号名；仍须符合该角色要求
-      voltage: voltage             # 为voltage角色选择上方已定义的分析信号名；仍须符合该角色要求
-    parameters:                    # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
-      mode_value: 1                # 指定表示充电的模式代码；从设备状态编码表取得
-      current_min: 5               # 设置充电判断的电流下限；按业务目标填写，单位A
-      minimum_duration: 3s         # 设置充电条件连续成立多久才确认；按业务要求填写
-      compute_energy: true         # 选择是否计算充电能量；true需要电压角色，false不生成能量项
-    preset_type: charge_session    # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+presets:                         # 选择预先组合好的规则与计算，并提供角色信号和业务参数
+  - name: charge                 # 给本次预设实例取唯一名称；展开的规则/计算名称使用此前缀
+    role_bindings:               # 明确指定哪条已有信号担任每个角色；角色名由预设定义
+      mode: mode                 # 为mode角色选择上方已定义的分析信号名；仍须符合该角色要求
+      current: current           # 为current角色选择上方已定义的分析信号名；仍须符合该角色要求
+      voltage: voltage           # 为voltage角色选择上方已定义的分析信号名；仍须符合该角色要求
+    parameters:                  # 提供本预设的业务参数；各预设支持的字段不同，不能互相套用
+      mode_value: 1              # 指定表示充电的模式代码；从设备状态编码表取得
+      current_min: 5             # 设置充电判断的电流下限；按业务目标填写，单位A
+      minimum_duration: 3s       # 设置充电条件连续成立多久才确认；按业务要求填写
+      compute_energy: true       # 选择是否计算充电能量；true需要电压角色，false不生成能量项
+    preset_type: charge_session  # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
 ```
 
 <a id="preset-fault-example"></a>

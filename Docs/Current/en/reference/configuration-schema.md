@@ -371,7 +371,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.else`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.else`
 
 ```json
 {
@@ -382,7 +382,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.else.properties.max_gap`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.else.properties.max_gap`
 
 ```json
 {
@@ -390,7 +390,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then`
 
 ```json
 {
@@ -400,7 +400,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then.properties.window`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then.properties.window`
 
 ```json
 {
@@ -408,7 +408,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then.properties.step`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then.properties.step`
 
 ```json
 {
@@ -416,7 +416,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then.properties.origin`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then.properties.origin`
 
 ```json
 {
@@ -424,7 +424,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then.properties.partial_policy`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then.properties.partial_policy`
 
 ```json
 {
@@ -432,7 +432,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.then.properties.minimum_coverage`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.then.properties.minimum_coverage`
 
 ```json
 {
@@ -440,11 +440,30 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.transforms.items.if.properties.operation`
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].then.if.properties.operation`
 
 ```json
 {
   "const": "adjacent_rate",
+  "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].if`
+
+```json
+{
+  "required": [
+    "operation"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.transforms.items.allOf[0].if.properties.operation`
+
+```json
+{
+  "$ref": "#/properties/transforms/items/properties/operation",
   "description": "Named operation to run for this calculation."
 }
 ```
@@ -590,7 +609,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[0].else.properties.q`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[0].else.properties.q`
 
 ```json
 {
@@ -598,7 +617,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[0].then`
 
 ```json
 {
@@ -608,7 +627,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[0].if.properties.operation`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[0].if.properties.operation`
 
 ```json
 {
@@ -617,7 +636,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[1].else.properties.ddof`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[1].else.properties.ddof`
 
 ```json
 {
@@ -625,7 +644,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[1].if.properties.operation`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[1].if.properties.operation`
 
 ```json
 {
@@ -634,7 +653,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[2].then.properties.field`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[2].then.properties.field`
 
 ```json
 {
@@ -642,7 +661,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[2].then.properties.unit`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[2].then.properties.unit`
 
 ```json
 {
@@ -651,7 +670,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[2].if.properties.operation`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[2].if.properties.operation`
 
 ```json
 {
@@ -660,7 +679,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.group_by`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].then.then.properties.group_by`
 
 ```json
 {
@@ -668,7 +687,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.group_by.items`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].then.then.properties.group_by.items`
 
 ```json
 {
@@ -682,7 +701,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[3].then.properties.field`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].then.then.properties.field`
 
 ```json
 {
@@ -691,7 +710,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[3].if.properties.source`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].then.if.properties.source`
 
 ```json
 {
@@ -702,7 +721,26 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.group_by`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].if`
+
+```json
+{
+  "required": [
+    "source"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[3].if.properties.source`
+
+```json
+{
+  "$ref": "#/properties/aggregations/items/properties/source",
+  "description": "Select exactly one calculation, sequence, rule or window from the current run."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].then.then.properties.group_by`
 
 ```json
 {
@@ -710,7 +748,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.group_by.items`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].then.then.properties.group_by.items`
 
 ```json
 {
@@ -725,7 +763,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[4].then.properties.field`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].then.then.properties.field`
 
 ```json
 {
@@ -734,7 +772,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[4].if.properties.source`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].then.if.properties.source`
 
 ```json
 {
@@ -745,7 +783,26 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.group_by`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].if`
+
+```json
+{
+  "required": [
+    "source"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[4].if.properties.source`
+
+```json
+{
+  "$ref": "#/properties/aggregations/items/properties/source",
+  "description": "Select exactly one calculation, sequence, rule or window from the current run."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].then.then.properties.group_by`
 
 ```json
 {
@@ -753,7 +810,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.group_by.items`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].then.then.properties.group_by.items`
 
 ```json
 {
@@ -767,7 +824,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.operation`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].then.then.properties.operation`
 
 ```json
 {
@@ -776,7 +833,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[5].then.properties.field`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].then.then.properties.field`
 
 ```json
 {
@@ -784,7 +841,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[5].if.properties.source`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].then.if.properties.source`
 
 ```json
 {
@@ -795,7 +852,26 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.group_by`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].if`
+
+```json
+{
+  "required": [
+    "source"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[5].if.properties.source`
+
+```json
+{
+  "$ref": "#/properties/aggregations/items/properties/source",
+  "description": "Select exactly one calculation, sequence, rule or window from the current run."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].then.then.properties.group_by`
 
 ```json
 {
@@ -803,7 +879,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.group_by.items`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].then.then.properties.group_by.items`
 
 ```json
 {
@@ -817,7 +893,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.operation`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].then.then.properties.operation`
 
 ```json
 {
@@ -826,7 +902,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[6].then.properties.field`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].then.then.properties.field`
 
 ```json
 {
@@ -834,7 +910,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.aggregations.items.allOf[6].if.properties.source`
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].then.if.properties.source`
 
 ```json
 {
@@ -842,6 +918,44 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "window"
   ],
   "description": "Select the kind and name of the result to aggregate."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].if`
+
+```json
+{
+  "required": [
+    "source"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].then.allOf[6].if.properties.source`
+
+```json
+{
+  "$ref": "#/properties/aggregations/items/properties/source",
+  "description": "Select exactly one calculation, sequence, rule or window from the current run."
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].if`
+
+```json
+{
+  "required": [
+    "operation"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.aggregations.items.allOf[0].if.properties.operation`
+
+```json
+{
+  "$ref": "#/properties/aggregations/items/properties/operation",
+  "description": "Operation on the selected result rows. Mean and P95 response delay use successfully matched responses only."
 }
 ```
 
@@ -2730,6 +2844,19 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
+### `analysis.schema.json: $.properties.sources.items.oneOf[2].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "Controls how files in one source are combined. concatenate follows paths order and rejects time regressions only within the time-check scope required by the task. time_order requires each file to be ordered for the records being merged, then stably merges by timestamp, file position and local record sequence. Overlapping messages are retained; timestamps are not shifted and records are not deduplicated. This setting is independent of the process count."
+}
+```
+
 ### `analysis.schema.json: $.properties.sources.items.oneOf[3]`
 
 ```json
@@ -3290,6 +3417,19 @@ Start with the [configuration guide](../configuration.md). The paths below locat
   ],
   "default": "auto",
   "description": "auto checks time order according to actual consumers. Ordinary ASC analysis checks only required channels/IDs, while the source range uses the earliest/latest timestamps from all records read in the same pass. full and raw-frame export check all records. No mode automatically sorts records or changes timestamps."
+}
+```
+
+### `analysis.schema.json: $.properties.sources.items.oneOf[3].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "Controls how files in one source are combined. concatenate follows paths order and rejects time regressions only within the time-check scope required by the task. time_order requires each file to be ordered for the records being merged, then stably merges by timestamp, file position and local record sequence. Overlapping messages are retained; timestamps are not shifted and records are not deduplicated. This setting is independent of the process count."
 }
 ```
 
@@ -6922,6 +7062,19 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
+### `analysis.schema.json: $.properties.sources.items.oneOf[5].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "Controls how files in one source are combined. concatenate follows paths order and rejects time regressions only within the time-check scope required by the task. time_order requires each file to be ordered for the records being merged, then stably merges by timestamp, file position and local record sequence. Overlapping messages are retained; timestamps are not shifted and records are not deduplicated. This setting is independent of the process count."
+}
+```
+
 ### `analysis.schema.json: $.properties.signals`
 
 ```json
@@ -8391,7 +8544,8 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "name",
     "rule_type",
     "condition",
-    "minimum_duration"
+    "minimum_duration",
+    "duration_comparison"
   ],
   "additionalProperties": false
 }
@@ -8510,8 +8664,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     ">=",
     ">"
   ],
-  "default": ">=",
-  "description": "Comparison with minimum_duration: >= means reaching it (default), while > means strictly exceeding it. Exactly 60 seconds satisfies only >=. The activity start is unchanged; selection_origin still defaults to onset."
+  "description": "Required comparison between the continuous duration and minimum_duration: >= includes the threshold; > requires strictly longer. Exactly 60 seconds satisfies only >=. The activity start is unchanged; selection_origin still defaults to onset."
 }
 ```
 
@@ -10555,7 +10708,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].else.else`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].else.else`
 
 ```json
 {
@@ -10565,7 +10718,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].else.if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].else.if.properties.operation`
 
 ```json
 {
@@ -10578,7 +10731,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.oneOf[0]`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].then.oneOf[0]`
 
 ```json
 {
@@ -10588,7 +10741,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.oneOf[0].not`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].then.oneOf[0].not`
 
 ```json
 {
@@ -10598,7 +10751,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.oneOf[1]`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].then.oneOf[1]`
 
 ```json
 {
@@ -10608,7 +10761,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.oneOf[1].not`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].then.oneOf[1].not`
 
 ```json
 {
@@ -10618,7 +10771,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[0].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[0].if.properties.operation`
 
 ```json
 {
@@ -10627,7 +10780,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[1].else.not`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[1].else.not`
 
 ```json
 {
@@ -10637,7 +10790,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[1].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[1].if.properties.operation`
 
 ```json
 {
@@ -10646,7 +10799,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[2].else.properties.rule`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[2].else.properties.rule`
 
 ```json
 {
@@ -10654,7 +10807,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[2].then`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[2].then`
 
 ```json
 {
@@ -10664,7 +10817,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[2].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[2].if.properties.operation`
 
 ```json
 {
@@ -10676,7 +10829,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[3].else.properties.window`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[3].else.properties.window`
 
 ```json
 {
@@ -10684,7 +10837,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[3].then`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[3].then`
 
 ```json
 {
@@ -10694,7 +10847,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[3].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[3].if.properties.operation`
 
 ```json
 {
@@ -10705,7 +10858,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[4].then.properties.unit`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[4].then.properties.unit`
 
 ```json
 {
@@ -10714,7 +10867,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[4].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[4].if.properties.operation`
 
 ```json
 {
@@ -10728,7 +10881,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.scope`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.scope`
 
 ```json
 {
@@ -10737,7 +10890,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.expr`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.expr`
 
 ```json
 {
@@ -10745,7 +10898,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.condition`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.condition`
 
 ```json
 {
@@ -10753,7 +10906,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.method`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.method`
 
 ```json
 {
@@ -10761,7 +10914,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.minimum_coverage`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.minimum_coverage`
 
 ```json
 {
@@ -10769,7 +10922,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].then.properties.interval`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].then.properties.interval`
 
 ```json
 {
@@ -10777,7 +10930,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[5].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[5].if.properties.operation`
 
 ```json
 {
@@ -10790,7 +10943,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[6].else.properties.ddof`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[6].else.properties.ddof`
 
 ```json
 {
@@ -10798,7 +10951,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[6].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[6].if.properties.operation`
 
 ```json
 {
@@ -10812,7 +10965,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[7].then.properties.ddof`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[7].then.properties.ddof`
 
 ```json
 {
@@ -10821,7 +10974,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[7].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[7].if.properties.operation`
 
 ```json
 {
@@ -10833,7 +10986,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[8].else.properties.q`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[8].else.properties.q`
 
 ```json
 {
@@ -10841,7 +10994,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[8].then`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[8].then`
 
 ```json
 {
@@ -10851,12 +11004,31 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 }
 ```
 
-### `analysis.schema.json: $.properties.calculations.items.allOf[8].if.properties.operation`
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].then.allOf[8].if.properties.operation`
 
 ```json
 {
   "const": "sample_quantile",
   "description": "Named operation to run for this calculation."
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].if`
+
+```json
+{
+  "required": [
+    "operation"
+  ]
+}
+```
+
+### `analysis.schema.json: $.properties.calculations.items.allOf[0].if.properties.operation`
+
+```json
+{
+  "$ref": "#/properties/calculations/items/properties/operation",
+  "description": "Calculation operation. Sample statistics weight real samples equally; time statistics use the duration for which a value is valid. select returns matching rows, duration sums true time and integral uses zero-order hold. In version 4, sample_count counts valid samples, point_event_count counts points, activity_count counts activities and segment_count counts final segments. The enum lists the available operations."
 }
 ```
 
@@ -12844,6 +13016,17 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 {
   "type": "integer",
   "minimum": 1
+}
+```
+
+### `analysis.schema.json: $.properties.execution.properties.process_count`
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "default": 1,
+  "description": "Limit reading and DBC-decoding workers for this analysis, excluding the main process. Supply an integer of at least 1; default 1. An explicit API or CLI override takes precedence. All files remain part of one continuous session."
 }
 ```
 

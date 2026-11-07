@@ -20,11 +20,13 @@ program，以保留 v4 在表达式内部插入的单位换算。两条路径都
 |[`_syntax.literal`](#api-_syntax-literal)||
 |[`_syntax.visit`](#api-_syntax-visit)||
 |[`_bind`](#api-_bind)|在准备阶段创建标量运算函数，运行时只传当帧的解码字典。|
-|[`_Metric`](#api-_Metric)|只属于当前文件的累计器。求值和分桶均成功后才更新累计和计数。|
+|[`_Metric`](#api-_Metric)|当前累计器及其已准备公式；FileContributions只调用无状态contribution，会话主进程按原顺序调用add。|
 |[`_Metric.__init__`](#api-_Metric-__init__)||
 |[`_Metric.consume`](#api-_Metric-consume)|消费一条已匹配记录。除零、溢出或缺值直接使本文件失败。|
+|[`_Metric.contribution`](#api-_Metric-contribution)|只求当前帧贡献和方向选择，不修改累计状态。|
+|[`_Metric.add`](#api-_Metric-add)|按原顺序提交一次贡献，零值仍计入入选数。|
 |[`_Metric.result`](#api-_Metric-result)|区分无目标、空方向桶和贡献相消，以原始精度给出当前结果。|
-|[`prepare_metric`](#api-prepare_metric)|创建一个独立文件指标。参数为简单声明字典；拒绝冲突别名和未知指令。|
+|[`prepare_metric`](#api-prepare_metric)|创建一个计算项的求值/累计状态。参数为简单声明字典；拒绝冲突别名和未知指令。|
 
 <a id="api-_float"></a>
 ## `_float`
@@ -41,7 +43,7 @@ _float(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:17`](../../../src/chronaxis/fast/compute.py#L17)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:17`](../../../src/chronaxis/fast/compute.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_typed"></a>
 ## `_typed`
@@ -59,7 +61,7 @@ _typed(value, dtype)
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 |`dtype`|str|是|无|位置或关键字。要得到的 int64、uint64 或 float64，决定合法范围与转换规则。|
 
-源码：[`src/chronaxis/fast/compute.py:27`](../../../src/chronaxis/fast/compute.py#L27)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:27`](../../../src/chronaxis/fast/compute.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_number_type"></a>
 ## `_number_type`
@@ -76,7 +78,7 @@ _number_type(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:39`](../../../src/chronaxis/fast/compute.py#L39)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:39`](../../../src/chronaxis/fast/compute.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_affine"></a>
 ## `_affine`
@@ -96,7 +98,7 @@ _affine(value, scale, offset, dtype)
 |`offset`|int &#124; float|是|无|位置或关键字。乘倍率后增加的偏移，与输出类型一起核验。|
 |`dtype`|str|是|无|位置或关键字。要得到的 int64、uint64 或 float64，决定合法范围与转换规则。|
 
-源码：[`src/chronaxis/fast/compute.py:51`](../../../src/chronaxis/fast/compute.py#L51)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:51`](../../../src/chronaxis/fast/compute.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-encode_program"></a>
 ## `encode_program`
@@ -113,7 +115,7 @@ encode_program(node)
 |---|---|---|---|---|
 |`node`|ExprNode|是|无|位置或关键字。已通过类型和单位检查的表达式节点，编码后传给文件进程。|
 
-源码：[`src/chronaxis/fast/compute.py:61`](../../../src/chronaxis/fast/compute.py#L61)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:61`](../../../src/chronaxis/fast/compute.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_syntax"></a>
 ## `_syntax`
@@ -132,7 +134,7 @@ _syntax(text, signals, parameters)
 |`signals`|dict|是|无|位置或关键字。别名到本帧 DBC 信号、数值类型和线性变换的映射。|
 |`parameters`|dict|是|无|位置或关键字。公式引用的有限数值常量，名称不能与信号冲突。|
 
-源码：[`src/chronaxis/fast/compute.py:78`](../../../src/chronaxis/fast/compute.py#L78)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:78`](../../../src/chronaxis/fast/compute.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_syntax-literal"></a>
 ### `_syntax.literal`
@@ -149,7 +151,7 @@ _syntax.literal(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:86`](../../../src/chronaxis/fast/compute.py#L86)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:86`](../../../src/chronaxis/fast/compute.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_syntax-visit"></a>
 ### `_syntax.visit`
@@ -166,7 +168,7 @@ _syntax.visit(node)
 |---|---|---|---|---|
 |`node`|ast.AST|是|无|位置或关键字。正在检查的语法树节点，仅接受数值算术和受支持的名称。|
 
-源码：[`src/chronaxis/fast/compute.py:89`](../../../src/chronaxis/fast/compute.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:89`](../../../src/chronaxis/fast/compute.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_bind"></a>
 ## `_bind`
@@ -185,19 +187,19 @@ _bind(node, signals, depth=0)
 |`signals`|dict|是|无|位置或关键字。别名到本帧 DBC 信号、数值类型和线性变换的映射。|
 |`depth`|int|否|0|位置或关键字。当前绑定的指令嵌套深度，用来限制递归。|
 
-源码：[`src/chronaxis/fast/compute.py:115`](../../../src/chronaxis/fast/compute.py#L115)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:115`](../../../src/chronaxis/fast/compute.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Metric"></a>
 ## `_Metric`
 
-只属于当前文件的累计器。求值和分桶均成功后才更新累计和计数。
+当前累计器及其已准备公式；FileContributions只调用无状态contribution，会话主进程按原顺序调用add。
 
 ```python
 _Metric(spec, formula)
 ```
 
 
-源码：[`src/chronaxis/fast/compute.py:159`](../../../src/chronaxis/fast/compute.py#L159)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:159`](../../../src/chronaxis/fast/compute.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Metric-__init__"></a>
 ### `_Metric.__init__`
@@ -215,7 +217,7 @@ _Metric.__init__(spec, formula)
 |`spec`|dict|是|无|位置或关键字。一个指标的绑定、公式、输出尺度和可选方向桶。|
 |`formula`|Callable|是|无|位置或关键字。已绑定的数值函数，输入当前帧的物理解码字典。|
 
-源码：[`src/chronaxis/fast/compute.py:162`](../../../src/chronaxis/fast/compute.py#L162)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:162`](../../../src/chronaxis/fast/compute.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Metric-consume"></a>
 ### `_Metric.consume`
@@ -232,7 +234,58 @@ _Metric.consume(decoded)
 |---|---|---|---|---|
 |`decoded`|dict|是|无|位置或关键字。当前 DBC 报文的信号名到物理值映射，供求值后按原方向分桶。|
 
-源码：[`src/chronaxis/fast/compute.py:175`](../../../src/chronaxis/fast/compute.py#L175)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:175`](../../../src/chronaxis/fast/compute.py#L175)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+
+<a id="api-_Metric-contribution"></a>
+### `_Metric.contribution`
+
+只求当前帧贡献和方向选择，不修改累计状态。
+
+```python
+_Metric.contribution(decoded)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`decoded`|dict[str, int &#124; float]|是|无|位置或关键字。当前帧的DBC物理解码值；先计算贡献，再按原解码方向判断是否入选。|
+
+#### 返回说明
+
+(float64贡献, bool入选)。
+
+#### 异常说明
+
+类型、单位换算、公式或方向值错误；未入桶也必须先求值。
+
+源码：[`src/chronaxis/fast/compute.py:180`](../../../src/chronaxis/fast/compute.py#L180)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+
+<a id="api-_Metric-add"></a>
+### `_Metric.add`
+
+按原顺序提交一次贡献，零值仍计入入选数。
+
+```python
+_Metric.add(contribution, keep)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`contribution`|float|是|无|位置或关键字。已核验的当前帧binary64贡献，按输入顺序逐条相加，不接收文件部分和。|
+|`keep`|bool|是|无|位置或关键字。本帧是否进入请求方向桶；True即使贡献为0也增加入选数，False只增加有效目标计数。|
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+累计溢出；调用方已验证贡献来源，不进行重新求值。
+
+源码：[`src/chronaxis/fast/compute.py:197`](../../../src/chronaxis/fast/compute.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_Metric-result"></a>
 ### `_Metric.result`
@@ -246,12 +299,12 @@ _Metric.result()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/fast/compute.py:191`](../../../src/chronaxis/fast/compute.py#L191)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:208`](../../../src/chronaxis/fast/compute.py#L208)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-prepare_metric"></a>
 ## `prepare_metric`
 
-创建一个独立文件指标。参数为简单声明字典；拒绝冲突别名和未知指令。
+创建一个计算项的求值/累计状态。参数为简单声明字典；拒绝冲突别名和未知指令。
 
 ```python
 prepare_metric(spec)
@@ -263,7 +316,7 @@ prepare_metric(spec)
 |---|---|---|---|---|
 |`spec`|dict|是|无|位置或关键字。一个指标的绑定、公式、输出尺度和可选方向桶。|
 
-源码：[`src/chronaxis/fast/compute.py:198`](../../../src/chronaxis/fast/compute.py#L198)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/fast/compute.py:215`](../../../src/chronaxis/fast/compute.py#L215)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 ## 内部匿名回调
 

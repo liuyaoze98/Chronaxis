@@ -23,3 +23,5 @@ presets:                           # 选择预先组合好的规则与计算，�
       pre: 1s                      # 设置故障点之前保留的时长；按需要观察的故障前过程填写
       post: 2s                     # 设置故障点之后保留的时长；与pre至少一项大于0
     preset_type: fault_context     # 选择业务任务；charge_session充电、fault_context报警上下文、command_response配对、threshold_excursion阈值
+execution:                         # 设置本次分析的并行处理方式
+  process_count: 4                 # 最多4个文件工作进程；实际并行数不超过输入文件数

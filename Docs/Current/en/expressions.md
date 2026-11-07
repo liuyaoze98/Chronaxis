@@ -16,43 +16,43 @@ The language resembles a restricted subset of Python. A numeric expression produ
 The shared [electrical-base.yaml](../examples/electrical-base.yaml) reads synthetic ASC data through a DBC and analyzes its observed range. The following signal definitions illustrate the names used on this page. They are already in the base configuration: do not append a second `signals` section. The 20 s validity is chosen for these sparse teaching records, not as a production recommendation.
 
 ```yaml
-signals:                     # Names available to expressions.
-  - name: temperature        # Analysis name for the DBC temperature signal.
-    field:                   # Locate the original signal.
-      frame_id: '0x11d'      # CAN message identifier.
-      signal: Temperature    # Signal name in the DBC.
-    valid_for: 20s           # Validity for the sparse synthetic example.
-  - name: voltage            # Voltage alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x11f'      # CAN message identifier.
-      signal: Voltage        # Signal name in the DBC.
-    valid_for: 20s           # Validity for this example.
-  - name: current            # Current alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x114'      # CAN message identifier.
-      signal: Current        # Signal name in the DBC.
-    valid_for: 20s           # Validity for this example.
-  - name: mode               # State alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x118'      # CAN message identifier.
-      signal: Mode           # Signal name in the DBC.
-    valid_for: 20s           # Validity for this example.
-  - name: request            # Boolean request alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x11a'      # CAN message identifier.
-      signal: Request        # Signal name in the DBC.
-    choices:                 # Explicit code-to-boolean mapping.
-      - [0, false]           # Inactive.
-      - [1, true]            # Active.
-    valid_for: 20s           # Validity for this example.
-  - name: response           # Boolean response alias.
-    field:                   # Original CAN signal.
-      frame_id: '0x11b'      # CAN message identifier.
-      signal: Response       # Signal name in the DBC.
-    choices:                 # Explicit code-to-boolean mapping.
-      - [0, false]           # Inactive.
-      - [1, true]            # Active.
-    valid_for: 20s           # Validity for this example.
+signals:                   # Names available to expressions.
+  - name: temperature      # Analysis name for the DBC temperature signal.
+    field:                 # Locate the original signal.
+      frame_id: '0x11d'    # CAN message identifier.
+      signal: Temperature  # Signal name in the DBC.
+    valid_for: 20s         # Validity for the sparse synthetic example.
+  - name: voltage          # Voltage alias.
+    field:                 # Original CAN signal.
+      frame_id: '0x11f'    # CAN message identifier.
+      signal: Voltage      # Signal name in the DBC.
+    valid_for: 20s         # Validity for this example.
+  - name: current          # Current alias.
+    field:                 # Original CAN signal.
+      frame_id: '0x114'    # CAN message identifier.
+      signal: Current      # Signal name in the DBC.
+    valid_for: 20s         # Validity for this example.
+  - name: mode             # State alias.
+    field:                 # Original CAN signal.
+      frame_id: '0x118'    # CAN message identifier.
+      signal: Mode         # Signal name in the DBC.
+    valid_for: 20s         # Validity for this example.
+  - name: request          # Boolean request alias.
+    field:                 # Original CAN signal.
+      frame_id: '0x11a'    # CAN message identifier.
+      signal: Request      # Signal name in the DBC.
+    choices:               # Explicit code-to-boolean mapping.
+      - [0, false]         # Inactive.
+      - [1, true]          # Active.
+    valid_for: 20s         # Validity for this example.
+  - name: response         # Boolean response alias.
+    field:                 # Original CAN signal.
+      frame_id: '0x11b'    # CAN message identifier.
+      signal: Response     # Signal name in the DBC.
+    choices:               # Explicit code-to-boolean mapping.
+      - [0, false]         # Inactive.
+      - [1, true]          # Active.
+    valid_for: 20s         # Validity for this example.
 ```
 
 <a id="配置片段-功率-工作事件与能量"></a>
@@ -61,20 +61,21 @@ signals:                     # Names available to expressions.
 For that base file, replace the root-level `derived`, `rules`, and `calculations` sections with this fragment. Do not nest them under `signals` or append duplicate root keys.
 
 ```yaml
-derived:                                        # Reusable calculated signals, keyed by name.
-  power:                                        # Name used by later expressions.
-    expr: voltage * current                     # V multiplied by A produces W.
-rules:                                          # Event detection rules.
-  - name: working                               # Rule name.
-    condition: current > 5 and voltage > 300    # Both conditions must be true.
-    minimum_duration: 2s                        # Require two continuous seconds.
-    rule_type: condition_duration               # Detect sustained conditions.
-calculations:                                   # Requested results.
-  - name: energy                                # Calculation name.
-    expr: power                                 # Reuse the derived signal.
-    operation: integral                         # Integrate W over time to obtain J.
-    scope:                                      # Restrict the calculation range.
-      rule: working                             # Calculate over this rule's activity.
+derived:                                      # Reusable calculated signals, keyed by name.
+  power:                                      # Name used by later expressions.
+    expr: voltage * current                   # V multiplied by A produces W.
+rules:                                        # Event detection rules.
+  - name: working                             # Rule name.
+    condition: current > 5 and voltage > 300  # Both conditions must be true.
+    duration_comparison: ">="                 # Include the threshold; use > for strictly longer.
+    minimum_duration: 2s                      # Require two continuous seconds.
+    rule_type: condition_duration             # Detect sustained conditions.
+calculations:                                 # Requested results.
+  - name: energy                              # Calculation name.
+    expr: power                               # Reuse the derived signal.
+    operation: integral                       # Integrate W over time to obtain J.
+    scope:                                    # Restrict the calculation range.
+      rule: working                           # Calculate over this rule's activity.
 ```
 
 If a formula is used only once, write it directly in that calculation's `expr`. A named derived signal is useful when several rules or calculations reuse it.

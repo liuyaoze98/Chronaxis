@@ -55,7 +55,7 @@ FrameSort(path, budget, *, check_cancel=None, buffer_rows=64, integrity=True)
 ```
 
 
-源码：[`src/chronaxis/results/frame_sort.py:19`](../../../src/chronaxis/results/frame_sort.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:19`](../../../src/chronaxis/results/frame_sort.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-__init__"></a>
 ### `FrameSort.__init__`
@@ -89,7 +89,7 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 - `ValueError`：报文排序缓冲需要1至64行。
 - `ValueError`：报文排序不能写RefProjects。
 
-源码：[`src/chronaxis/results/frame_sort.py:22`](../../../src/chronaxis/results/frame_sort.py#L22)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:22`](../../../src/chronaxis/results/frame_sort.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_check"></a>
 ### `FrameSort._check`
@@ -119,7 +119,7 @@ FrameSort._check()
 
 - `ResultClosedError`：报文排序已关闭。
 
-源码：[`src/chronaxis/results/frame_sort.py:44`](../../../src/chronaxis/results/frame_sort.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:44`](../../../src/chronaxis/results/frame_sort.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_open"></a>
 ### `FrameSort._open`
@@ -145,7 +145,7 @@ FrameSort._open(path, mode)
 
 打开或登记失败。
 
-源码：[`src/chronaxis/results/frame_sort.py:52`](../../../src/chronaxis/results/frame_sort.py#L52)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:52`](../../../src/chronaxis/results/frame_sort.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_close_file"></a>
 ### `FrameSort._close_file`
@@ -170,7 +170,7 @@ FrameSort._close_file(stream)
 
 关闭错保责任。
 
-源码：[`src/chronaxis/results/frame_sort.py:60`](../../../src/chronaxis/results/frame_sort.py#L60)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:60`](../../../src/chronaxis/results/frame_sort.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_mac"></a>
 ### `FrameSort._mac`
@@ -197,7 +197,7 @@ FrameSort._mac(path, index, body)
 
 原类型错。
 
-源码：[`src/chronaxis/results/frame_sort.py:65`](../../../src/chronaxis/results/frame_sort.py#L65)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:65`](../../../src/chronaxis/results/frame_sort.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_write"></a>
 ### `FrameSort._write`
@@ -229,7 +229,7 @@ FrameSort._write(stream, index, packet)
 - `ResultFormatError`：报文排序单行超过64KiB。
 - `OSError`：报文排序写入无进展。
 
-源码：[`src/chronaxis/results/frame_sort.py:73`](../../../src/chronaxis/results/frame_sort.py#L73)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:73`](../../../src/chronaxis/results/frame_sort.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_read"></a>
 ### `FrameSort._read`
@@ -261,7 +261,7 @@ FrameSort._read(path)
 - `ResultFormatError`：报文排序行结构非法。
 - `ResultFormatError`：报文排序结束记录不一致。
 
-源码：[`src/chronaxis/results/frame_sort.py:89`](../../../src/chronaxis/results/frame_sort.py#L89)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:89`](../../../src/chronaxis/results/frame_sort.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-append"></a>
 ### `FrameSort.append`
@@ -292,7 +292,7 @@ FrameSort.append(key, packet)
 - `ValueError`：报文排序需要building及有限标量键。
 - `ResultFormatError`：报文记录超过排序行能力。
 
-源码：[`src/chronaxis/results/frame_sort.py:122`](../../../src/chronaxis/results/frame_sort.py#L122)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:122`](../../../src/chronaxis/results/frame_sort.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_flush"></a>
 ### `FrameSort._flush`
@@ -318,7 +318,7 @@ FrameSort._flush()
 
 排序/I/O/配额错。
 
-源码：[`src/chronaxis/results/frame_sort.py:137`](../../../src/chronaxis/results/frame_sort.py#L137)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:137`](../../../src/chronaxis/results/frame_sort.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-_merge"></a>
 ### `FrameSort._merge`
@@ -345,7 +345,7 @@ FrameSort._merge(left, right, target)
 
 输入校验/写入/关闭错。
 
-源码：[`src/chronaxis/results/frame_sort.py:150`](../../../src/chronaxis/results/frame_sort.py#L150)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:150`](../../../src/chronaxis/results/frame_sort.py#L150)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-seal"></a>
 ### `FrameSort.seal`
@@ -375,7 +375,7 @@ FrameSort.seal()
 
 - `ResultClosedError`：报文排序不能重复封口。
 
-源码：[`src/chronaxis/results/frame_sort.py:183`](../../../src/chronaxis/results/frame_sort.py#L183)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:183`](../../../src/chronaxis/results/frame_sort.py#L183)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-rows"></a>
 ### `FrameSort.rows`
@@ -405,7 +405,7 @@ FrameSort.rows()
 
 - `ResultClosedError`：报文排序未封口或已交付游标。
 
-源码：[`src/chronaxis/results/frame_sort.py:201`](../../../src/chronaxis/results/frame_sort.py#L201)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:201`](../../../src/chronaxis/results/frame_sort.py#L201)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-FrameSort-close"></a>
 ### `FrameSort.close`
@@ -431,7 +431,7 @@ FrameSort.close()
 
 原关闭/释放错可重试。
 
-源码：[`src/chronaxis/results/frame_sort.py:210`](../../../src/chronaxis/results/frame_sort.py#L210)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/results/frame_sort.py:210`](../../../src/chronaxis/results/frame_sort.py#L210)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 ## 内部匿名回调
 

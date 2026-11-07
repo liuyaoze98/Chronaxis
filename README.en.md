@@ -31,20 +31,20 @@ The project originated from automotive and battery test analysis. Its intended a
 
 ## Installation and environment
 
-The current version is **0.1.0.dev2**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev2.en.md) before upgrading.
+This source tree and its documentation correspond to **0.1.0.dev3**, a development preview. Use **Windows and Python 3.12** to install and run it. Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev3.en.md) before upgrading.
 
-Install from PyPI:
+Install from the matching source tree, at the root containing `pyproject.toml`:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev2"
+.\.venv\Scripts\python.exe -m pip install .
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-To install from source, run `python -m pip install .` at the repository root containing `pyproject.toml`. If you have a release wheel, replace the installation command with:
+If you have a wheel for this version, use its actual file path in this installation command instead:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev2-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
 ```
 
 Installation automatically includes the dependencies needed for CAN reading, DBC decoding, and other features. For offline installation, prepare the dependency packages in advance; see the [installation guide](Docs/Current/en/installation.md).

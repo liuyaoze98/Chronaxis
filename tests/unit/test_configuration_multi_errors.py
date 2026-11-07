@@ -52,7 +52,7 @@ class MultiDiagnosticTests(unittest.TestCase):
         """坏电流不让报警信号产生假错，另一条未知引用仍被发现。参数: 无。返回: None。异常: 断言失败。"""
         value = config()
         value['signals'][0]['valid_for'] = '-1s'
-        value['rules'].append({'name':'independent_bad','rule_type':'condition_duration',
+        value['rules'].append({'name':'independent_bad','rule_type':'condition_duration', 'duration_comparison': '>=',
                               'condition':'missing > 0','minimum_duration':'1s'})
         error = self.error(value)
         self.assertEqual({item.path for item in error.diagnostics},

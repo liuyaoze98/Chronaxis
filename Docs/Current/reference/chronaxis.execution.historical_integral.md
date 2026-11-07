@@ -53,7 +53,7 @@ HistoricalIntegral(blocks: HistoricalCalculationBlocks, observation: Interval, *
 ```
 
 
-源码：[`src/chronaxis/execution/historical_integral.py:25`](../../../src/chronaxis/execution/historical_integral.py#L25)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:25`](../../../src/chronaxis/execution/historical_integral.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-__init__"></a>
 ### `HistoricalIntegral.__init__`
@@ -81,7 +81,7 @@ None，初始化新的分析 owner。
 配置、预算、分配和取消原样传播。
 持续清理失败时原异常.historical_integral_cleanup_owner 提供重试 close 的句柄。
 
-源码：[`src/chronaxis/execution/historical_integral.py:33`](../../../src/chronaxis/execution/historical_integral.py#L33)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:33`](../../../src/chronaxis/execution/historical_integral.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-closed"></a>
 ### `HistoricalIntegral.closed`
@@ -111,7 +111,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_integral.py:86`](../../../src/chronaxis/execution/historical_integral.py#L86)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:86`](../../../src/chronaxis/execution/historical_integral.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-failed"></a>
 ### `HistoricalIntegral.failed`
@@ -141,7 +141,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_integral.py:91`](../../../src/chronaxis/execution/historical_integral.py#L91)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:91`](../../../src/chronaxis/execution/historical_integral.py#L91)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-finished"></a>
 ### `HistoricalIntegral.finished`
@@ -171,7 +171,7 @@ True表示规定的处理步骤已全部完成；False表示尚未完成。完�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_integral.py:96`](../../../src/chronaxis/execution/historical_integral.py#L96)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:96`](../../../src/chronaxis/execution/historical_integral.py#L96)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-result"></a>
 ### `HistoricalIntegral.result`
@@ -205,7 +205,7 @@ CalculationResult。
 
 返回类型：[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)。
 
-源码：[`src/chronaxis/execution/historical_integral.py:101`](../../../src/chronaxis/execution/historical_integral.py#L101)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:101`](../../../src/chronaxis/execution/historical_integral.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-_require_open"></a>
 ### `HistoricalIntegral._require_open`
@@ -237,7 +237,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_integral.py:111`](../../../src/chronaxis/execution/historical_integral.py#L111)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:111`](../../../src/chronaxis/execution/historical_integral.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-_reserve"></a>
 ### `HistoricalIntegral._reserve`
@@ -264,7 +264,7 @@ HistoricalIntegral._reserve(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_integral.py:116`](../../../src/chronaxis/execution/historical_integral.py#L116)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:116`](../../../src/chronaxis/execution/historical_integral.py#L116)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-_release"></a>
 ### `HistoricalIntegral._release`
@@ -291,7 +291,7 @@ HistoricalIntegral._release(amount: int) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_integral.py:129`](../../../src/chronaxis/execution/historical_integral.py#L129)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:129`](../../../src/chronaxis/execution/historical_integral.py#L129)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-_finish"></a>
 ### `HistoricalIntegral._finish`
@@ -319,7 +319,7 @@ HistoricalIntegral._finish() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_integral.py:141`](../../../src/chronaxis/execution/historical_integral.py#L141)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:141`](../../../src/chronaxis/execution/historical_integral.py#L141)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-step"></a>
 ### `HistoricalIntegral.step`
@@ -351,7 +351,7 @@ True为消费了一块，False为已完成；完成后重复调用安全。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/historical_integral.py:160`](../../../src/chronaxis/execution/historical_integral.py#L160)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:160`](../../../src/chronaxis/execution/historical_integral.py#L160)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-HistoricalIntegral-close"></a>
 ### `HistoricalIntegral.close`
@@ -379,4 +379,4 @@ None，重复成功关闭无副作用。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/historical_integral.py:197`](../../../src/chronaxis/execution/historical_integral.py#L197)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/execution/historical_integral.py:197`](../../../src/chronaxis/execution/historical_integral.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

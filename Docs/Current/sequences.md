@@ -29,18 +29,18 @@
 应用位置：以[teaching-base.yaml](examples/teaching-base.yaml)为基础，在文件根级加入或替换`rules, sequences`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。
 
 ```yaml
-rules:                         # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - name: request_edge         # 窗口或计算引用的规则名称
-    condition: request         # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    rule_type: rising_edge     # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
-  - name: response_edge        # 窗口或计算引用的规则名称
-    condition: response        # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    rule_type: rising_edge     # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
-sequences:                     # 把请求事件与响应事件按允许等待时间配对
-  - name: pair                 # 为请求响应配对取唯一名称；结果通过此名区分配对任务
-    start: request_edge        # 选择请求事件规则；填写前面rules的name
-    response: response_edge    # 选择响应事件规则；填写前面rules的name
-    max_delay: 2s              # 设置响应的最大允许延迟；依据协议或业务要求填写，不能小于min_delay
+rules:                       # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
+  - name: request_edge       # 窗口或计算引用的规则名称
+    condition: request       # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    rule_type: rising_edge   # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+  - name: response_edge      # 窗口或计算引用的规则名称
+    condition: response      # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
+    rule_type: rising_edge   # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+sequences:                   # 把请求事件与响应事件按允许等待时间配对
+  - name: pair               # 为请求响应配对取唯一名称；结果通过此名区分配对任务
+    start: request_edge      # 选择请求事件规则；填写前面rules的name
+    response: response_edge  # 选择响应事件规则；填写前面rules的name
+    max_delay: 2s            # 设置响应的最大允许延迟；依据协议或业务要求填写，不能小于min_delay
 ```
 
 |字段|数据类型|必填|省略时的值|可填写的值及用途|

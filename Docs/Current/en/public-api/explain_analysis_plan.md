@@ -31,4 +31,4 @@ print(explain_analysis_plan(plan))
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:431`](../../../../src/chronaxis/planning/reports.py#L431) — line at `e65c920526335247bcc1ed25852bcc967f55f2fd`.
+- [`src/chronaxis/planning/reports.py:432`](../../../../src/chronaxis/planning/reports.py#L432) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.

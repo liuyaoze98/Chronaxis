@@ -3,7 +3,7 @@
 
 Root-level `message_calculations` evaluates an expression once per target CAN message and adds the contributions. It uses values in the current message and directly adds each message's `expr` result. Declare `parameters` only when the formula needs constants, using names of your choice. Include a time factor when deriving energy from power; add an existing energy contribution directly. Ordinary signal-time integration uses `calculations`; its timing basis is different.
 
-This page uses the general `run` entry point. For independent files with a single ASC/BLF source and formula inputs entirely from the current message, check the [high-performance integrator guide](fast-energy.md) before choosing `fast`. Use the general entry point for continuous file sequences or per-message contribution details; check each entry point's supported inputs and outputs.
+This page uses the general `run` entry point. For one ASC/BLF source with all formula inputs in the current message, consider [fast](fast-energy.md); volumes of one recording stay in one source. Held cross-message values, events and individual contribution rows require the general entry. Check supported fields and outputs for the selected engine.
 
 <a id="完整最小例与方向分组扩展"></a>
 ## Complete examples and direction groups
@@ -23,16 +23,16 @@ The examples declare signal `period: 100ms` because the public runner initialize
 Use [message-energy.yaml](../examples/message-energy.yaml), which defines power and has one CAN source, selected automatically. Replace its root `message_calculations` list with this block; do not nest the parent key inside a list item.
 
 ```yaml
-message_calculations:       # Evaluate and accumulate each target message
-  - name: energy            # Calculation name in results
-    update_message:         # Message that triggers one evaluation
-      frame_id: 0x100       # ID from the DBC
-    parameters:             # Constants referenced by the formula
-      period:               # Duration represented by one message
-        value: 0.1          # Period from protocol or business rules
-        unit: s             # Seconds
-    expr: power * period    # Contribution from this message
-    unit: J                 # Contribution and total unit
+message_calculations:     # Evaluate and accumulate each target message
+  - name: energy          # Calculation name in results
+    update_message:       # Message that triggers one evaluation
+      frame_id: 0x100     # ID from the DBC
+    parameters:           # Constants referenced by the formula
+      period:             # Duration represented by one message
+        value: 0.1        # Period from protocol or business rules
+        unit: s           # Seconds
+    expr: power * period  # Contribution from this message
+    unit: J               # Contribution and total unit
 ```
 
 Two simultaneous 4000 W messages contribute 400 J each; a third missing-value message is skipped as `missing_input`. Non-target IDs are not attempts. The total is 800 J from 3 attempts, 2 contributions and 1 skip. This period is explicit and fixed; it is neither inferred from nor multiplied by actual inter-message time.

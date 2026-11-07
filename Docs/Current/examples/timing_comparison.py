@@ -9,12 +9,13 @@ from chronaxis import AnalysisPlan, AnalysisRunner
 
 def config():
     """参数: 无。返回: 相对本脚本data路径的完整分析字典。异常: 无。"""
-    return dict(config_version=4,dataset=dict(name='timing'),
+    # 与下载配置一致，最多并行处理4个文件；本例只有1个文件。
+    return dict(config_version=4,dataset=dict(name='timing'),execution=dict(process_count=4),
         sources=[dict(paths='data/timing.asc',dbc_by_channel={'1':'data/timing.dbc'})],
         signals=[dict(name=name,field=dict(frame_id='0x100',signal=field),dtype=dtype,unit=unit,valid_for='10s',**({'choices':[[0,False],[1,True]]} if dtype=='bool' else {}))
             for name,field,dtype,unit in [('request','Request','bool','1'),('response','Response','bool','1'),('temperature','Temperature','float64','degC'),('voltage','Voltage','float64','V')]],
         rules=[dict(name='request_edge',rule_type='rising_edge',condition='request'),dict(name='response_edge',rule_type='rising_edge',condition='response'),
-            dict(name='hot',rule_type='condition_duration',condition='temperature >= 80',minimum_duration='1.5s'),
+            dict(name='hot',rule_type='condition_duration',condition='temperature >= 80',minimum_duration='1.5s',duration_comparison='>='),
             dict(name='change',rule_type='window_delta',signal='voltage',window='4s',direction='rise',threshold=5,emit_initial=True)],
         sequences=[dict(name='pair',start='request_edge',response='response_edge',min_delay='0s',max_delay='3s')],
         calculations=[dict(name='hot_duration',operation='duration',condition='temperature >= 80')])

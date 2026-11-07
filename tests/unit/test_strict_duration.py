@@ -14,6 +14,7 @@ from chronaxis.core.temporal import ConditionTick, TemporalRule
 from chronaxis.core.temporal_reference import ReferenceTemporalDetector
 from chronaxis.core.temporal_numpy import NumpyTemporalDetector
 from chronaxis.core.types import Truth as T, QualityFlag as Q
+from chronaxis.planning.checks import PlanValidationError
 
 
 class StrictDurationTests(unittest.TestCase):
@@ -91,7 +92,8 @@ class StrictDurationTests(unittest.TestCase):
 
     def test_public_continuous_files_and_integral_origin(self):
         """参数: 无。返回: None。异常: 原I/O/运行错误；分卷不断开候选，积分保持实际范围。"""
-        for backend, origin, end in product(('reference', 'numpy'), ('onset', 'confirmed'), (60, 61)):
+        for backend, origin, end, comparison in product(
+                ('reference', 'numpy'), ('onset', 'confirmed'), (60, 61), ('>=', '>')):
             with TemporaryDirectory(dir='work', prefix='strict-duration-') as directory:
                 root = Path(directory)
                 (root / 'part1.csv').write_text('time,power,active\n0,4000,1\n30,4000,1\n', encoding='utf-8')
@@ -102,22 +104,45 @@ class StrictDurationTests(unittest.TestCase):
                     signals=[dict(name=name, field=name, dtype='float64', unit=unit, valid_for='120s')
                              for name, unit in (('power', 'W'), ('active', '1'))],
                     rules=[dict(name='activity', rule_type='condition_duration', condition='active >= 1',
-                                minimum_duration='60s', duration_comparison='>', selection_origin=origin)],
+                                minimum_duration='60s', duration_comparison=comparison, selection_origin=origin)],
                     calculations=[dict(name='energy', operation='integral', expr='power', unit='kWh',
                                        scope=dict(rule='activity'))], execution=dict(batch_rows=1))
                 with AnalysisRunner(backend).run(AnalysisPlan.from_dict(raw, base_dir=root), root / 'work') as result:
                     events, rows = tuple(result.iter_events()), tuple(result.iter_calculations())
-                    self.assertEqual(len(events), int(end > 60))
-                    self.assertEqual(len(rows), int(end > 60))
+                    self.assertEqual(len(events), int(end >= 60 if comparison == '>=' else end > 60))
+                    self.assertEqual(len(rows), len(events))
                     if rows:
-                        self.assertEqual(events[0].confirmed_ns, 60_000_000_001)
-                        seconds = 61 if origin == 'onset' else 1 - 1e-9
-                        self.assertAlmostEqual(rows[0].value, 4000 * seconds / 3_600_000)
+                        self.assertEqual(events[0].confirmed_ns, 60_000_000_000 + (comparison == '>'))
+                        seconds = end if origin == 'onset' else end - 60 - (1e-9 if comparison == '>' else 0)
+                        if seconds == 0:
+                            # 恰好确认即结束时，confirmed选区为空，不伪造有效零能量。
+                            self.assertIsNone(rows[0].value)
+                        else:
+                            self.assertAlmostEqual(rows[0].value, 4000 * seconds / 3_600_000)
                         self.assertEqual(rows[0].parent_id, events[0].event_id)
+
+    def test_configuration_requires_explicit_duration_comparison(self):
+        """参数: 无。返回: None。异常: 断言失败；省略比较符不得替用户决定恰好门槛是否入选。"""
+        raw = dict(config_version=4, dataset=dict(name='data', domain=dict(start='0s', end='60s')),
+            sources=[dict(name='input', source_type='memory', rows=[
+                dict(time='0s', values=dict(power=4000)), dict(time='60s', values=dict(power=0))])],
+            signals=[dict(name='power', field='power', dtype='float64', unit='W', valid_for='120s')],
+            rules=[dict(name='active', rule_type='condition_duration', condition='power > 0',
+                        minimum_duration='60s')])
+        with self.assertRaises(PlanValidationError) as caught:
+            AnalysisPlan.from_dict(raw)
+        errors = caught.exception.diagnostics
+        self.assertEqual([(error.code, error.path) for error in errors],
+                         [('missing_field', '$.rules[0].duration_comparison')])
+        self.assertNotIn('duration_comparison', raw['rules'][0])
+        for comparison in ('>=', '>'):
+            raw['rules'][0]['duration_comparison'] = comparison
+            self.assertEqual(AnalysisPlan.from_dict(raw).rules[0].duration_comparison, comparison)
 
     def test_invalid_comparison_rejected(self):
         """参数: 无。返回: None。异常: 断言失败；不能把开关套给边沿或采用未知比较。"""
         rule = TemporalRule('active', 'data', 'session', 'condition_duration')
+        self.assertEqual(rule.duration_comparison, '>=')
         for changes in (dict(duration_comparison='=='), dict(rule_type='rising_edge', duration_comparison='>')):
             with self.assertRaises(ValueError):
                 replace(rule, **changes)

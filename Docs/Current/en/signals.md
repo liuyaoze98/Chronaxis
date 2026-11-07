@@ -21,24 +21,26 @@ The complete [signal-number-minimal.yaml](../examples/signal-number-minimal.yaml
 
 ```yaml
 # Synthetic teaching configuration; use the bundled inputs to reproduce this example.
-config_version: 4                       # Current analysis configuration version
-dataset:                                # Analysis identity and optional input range
-  name: signal_example                  # Name used to identify and reference this object
-sources:                                # Input sources used by this analysis
-  - paths: data/can/signal-types.asc    # File, continuous file list or directory; relative to this configuration
-    dbc_by_channel:                     # DBC files indexed by user-facing CAN channel
-      '1': data/can/teaching.dbc        # DBC for channel 1; channel keys are strings
-signals:                                # Signals available to expressions
-  - field:                              # Locate the original input field
-      frame_id: '0x101'                 # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Current_mA                # Exact signal name defined in the DBC
-    name: current                       # Name used to identify and reference this object
-    valid_for: 200ms                    # Maximum time for retaining the latest valid reading
-calculations:                           # Requested statistics or selected rows
-  - name: maximum_current               # Name used to identify and reference this object
-    operation: sample_maximum           # Calculation to apply to the expression
-    expr: current                       # Formula using the declared signal or derived names
-    unit: mA                            # Output unit; display the maximum current in milliamperes
+config_version: 4                     # Current analysis configuration version
+dataset:                              # Analysis identity and optional input range
+  name: signal_example                # Name used to identify and reference this object
+sources:                              # Input sources used by this analysis
+  - paths: data/can/signal-types.asc  # File, continuous file list or directory; relative to this configuration
+    dbc_by_channel:                   # DBC files indexed by user-facing CAN channel
+      '1': data/can/teaching.dbc      # DBC for channel 1; channel keys are strings
+signals:                              # Signals available to expressions
+  - field:                            # Locate the original input field
+      frame_id: '0x101'               # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Current_mA              # Exact signal name defined in the DBC
+    name: current                     # Name used to identify and reference this object
+    valid_for: 200ms                  # Maximum time for retaining the latest valid reading
+calculations:                         # Requested statistics or selected rows
+  - name: maximum_current             # Name used to identify and reference this object
+    operation: sample_maximum         # Calculation to apply to the expression
+    expr: current                     # Formula using the declared signal or derived names
+    unit: mA                          # Output unit; display the maximum current in milliamperes
+execution:                            # Execution settings for this analysis
+  process_count: 4                    # At most four workers; this one-file example uses one
 ```
 
 From the examples directory, run `chronaxis run signal-number-minimal.yaml --output out-number`. `maximum_current` should be 7000 mA. For BLF, change the log path without changing the signal structure. An ordinary maximum needs no `conversion`, `scope`, or `session` declaration.
@@ -49,26 +51,26 @@ From the examples directory, run `chronaxis run signal-number-minimal.yaml --out
 [signal-number-conversion.yaml](../examples/signal-number-conversion.yaml) uses the same log with additional conversion and quality requirements. First replace the previous `signals` section with:
 
 ```yaml
-signals:                         # Signals available to expressions
-  - field:                       # Locate the original input field
-      frame_id: '0x101'          # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Current_mA         # Exact signal name defined in the DBC
-    invalid_values: [65535.0]    # Decoded invalid value, before extra conversion
-    name: current                # Name used to identify and reference this object
-    valid_for: 200ms             # Maximum time for retaining the latest valid reading
-    valid_range: [-100, 100]     # Inclusive range after conversion, in A
-    conversion:                  # Optional unit conversion after decoding
-      input_unit: mA             # DBC-decoded unit
-    unit: A                      # Target analysis unit; compatible registered units convert when scale/offset are omitted
+signals:                       # Signals available to expressions
+  - field:                     # Locate the original input field
+      frame_id: '0x101'        # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Current_mA       # Exact signal name defined in the DBC
+    invalid_values: [65535.0]  # Decoded invalid value, before extra conversion
+    name: current              # Name used to identify and reference this object
+    valid_for: 200ms           # Maximum time for retaining the latest valid reading
+    valid_range: [-100, 100]   # Inclusive range after conversion, in A
+    conversion:                # Optional unit conversion after decoding
+      input_unit: mA           # DBC-decoded unit
+    unit: A                    # Target analysis unit; compatible registered units convert when scale/offset are omitted
 ```
 
 Then remove `unit: mA` from the previous calculation. The complete `calculations` section is:
 
 ```yaml
-calculations:                    # Results requested by this example
-  - name: maximum_current        # Identify the maximum-current result
-    operation: sample_maximum    # Maximum of valid observed samples
-    expr: current                # Current converted to A above; omit output unit
+calculations:                  # Results requested by this example
+  - name: maximum_current      # Identify the maximum-current result
+    operation: sample_maximum  # Maximum of valid observed samples
+    expr: current              # Current converted to A above; omit output unit
 ```
 
 The signal converts 5000 mA to 5 A, and the calculation displays 7 A using its default output unit. Keeping `unit: mA` on the calculation would still display 7000 mA. These extra fields demonstrate conversion and invalid codes; ordinary calculations do not need them. The DBC scales `Current_mA` by 0.5 and returns a float, so the sentinel is the decoded float `65535.0`. `valid_range` is checked in amperes: 101 A is invalid, while 100 A is valid. The example has no invalid values, so the maximum remains 7 A.
@@ -121,15 +123,15 @@ Signals from one message can share location and period. This example uses separa
 The following section is already in the complete configuration. The DBC period of 100 ms gives voltage a default validity of 300 ms; state overrides it to 200 ms.
 
 ```yaml
-signals:                       # Signals available to expressions
-  - frame_id: 0x120            # Shared message location
-    signals:                   # Signals available to expressions
-      - name: voltage          # Name used to identify and reference this object
-        signal: PackVoltage    # Exact signal name defined in the DBC
-      - name: state            # Name used to identify and reference this object
-        signal: ChargeState    # Exact signal name defined in the DBC
-        dtype: enum            # Use the DBC enumeration
-        valid_for: 200ms       # Override only this signal's validity
+signals:                     # Signals available to expressions
+  - frame_id: 0x120          # Shared message location
+    signals:                 # Signals available to expressions
+      - name: voltage        # Name used to identify and reference this object
+        signal: PackVoltage  # Exact signal name defined in the DBC
+      - name: state          # Name used to identify and reference this object
+        signal: ChargeState  # Exact signal name defined in the DBC
+        dtype: enum          # Use the DBC enumeration
+        valid_for: 200ms     # Override only this signal's validity
 ```
 
 Actual outputs: [session results](../examples/grouped/results/会话结果.csv) and [event results](../examples/grouped/results/事件结果.csv). From their input/configuration directory run `chronaxis run analysis.yaml --output pack-result`. Voltage is 40, 42, and 41 V at 0, 0.1, and 0.2 seconds; `peak_voltage` is 42 V. State is idle, charging, idle, producing a charging rising edge at 0.1 seconds. An unrelated message at 0.4 seconds only establishes the source endpoint.
@@ -193,28 +195,28 @@ The Boolean example maps `Enabled` integer 0 to false and 1 to true: `condition:
 [signal-state-combined.yaml](../examples/signal-state-combined.yaml) binds both signals and produces one `enabled_running` event at 100 ms. Replace the numeric example's signals, remove its calculations, and use the rule below. Both fields exist in this page's log/DBC. Manual choices demonstrate overriding DBC mapping; the ordinary minimal enum example omits them.
 
 ```yaml
-signals:                                        # Signals available to expressions
-  - choices:                                    # Map input codes to Boolean or enum analysis values
-      - [0, false]                              # Input integer → Boolean
+signals:                                      # Signals available to expressions
+  - choices:                                  # Map input codes to Boolean or enum analysis values
+      - [0, false]                            # Input integer → Boolean
       - [1, true]
-    field:                                      # Locate the original input field
-      frame_id: '0x102'                         # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Enabled                           # Exact signal name defined in the DBC
-    name: enabled                               # Name used to identify and reference this object
-    valid_for: 200ms                            # Maximum time for retaining the latest valid reading
-  - choices:                                    # Map input codes to Boolean or enum analysis values
-      - [0, idle]                               # Input integer → state label
+    field:                                    # Locate the original input field
+      frame_id: '0x102'                       # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Enabled                         # Exact signal name defined in the DBC
+    name: enabled                             # Name used to identify and reference this object
+    valid_for: 200ms                          # Maximum time for retaining the latest valid reading
+  - choices:                                  # Map input codes to Boolean or enum analysis values
+      - [0, idle]                             # Input integer → state label
       - [7, running]
-    field:                                      # Locate the original input field
-      frame_id: '0x103'                         # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: ModeCode                          # Exact signal name defined in the DBC
-    name: mode                                  # Name used to identify and reference this object
-    valid_for: 200ms                            # Maximum time for retaining the latest valid reading
-    dtype: enum                                 # Analysis value type
-rules:                                          # Conditions or transitions that produce events
-  - condition: enabled and mode == "running"    # Boolean expression used to select an activity
-    name: enabled_running                       # Name used to identify and reference this object
-    rule_type: rising_edge                      # Event detection algorithm
+    field:                                    # Locate the original input field
+      frame_id: '0x103'                       # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: ModeCode                        # Exact signal name defined in the DBC
+    name: mode                                # Name used to identify and reference this object
+    valid_for: 200ms                          # Maximum time for retaining the latest valid reading
+    dtype: enum                               # Analysis value type
+rules:                                        # Conditions or transitions that produce events
+  - condition: enabled and mode == "running"  # Boolean expression used to select an activity
+    name: enabled_running                     # Name used to identify and reference this object
+    rule_type: rising_edge                    # Event detection algorithm
 ```
 
 Each choice has exactly two values: input code and analysis value. `[7,running]` does not mean column 7; `field` selects the column. Bool targets must be YAML Booleans, not string `"true"`; enum targets must be nonempty text. A parseable but unmapped code becomes an invalid update and replaces the old state.

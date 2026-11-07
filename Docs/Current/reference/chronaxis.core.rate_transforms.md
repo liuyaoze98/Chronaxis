@@ -56,7 +56,7 @@ rate_unit(input_unit)
 
 ValueError为未登记或非法单位，不以未知标签证明量纲。
 
-源码：[`src/chronaxis/core/rate_transforms.py:14`](../../../src/chronaxis/core/rate_transforms.py#L14)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_transforms.py:14`](../../../src/chronaxis/core/rate_transforms.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_quality"></a>
 ## `_quality`
@@ -82,7 +82,7 @@ _quality(backend, samples)
 
 TypeError/ValueError为模型或静态dtype不符。
 
-源码：[`src/chronaxis/core/rate_transforms.py:32`](../../../src/chronaxis/core/rate_transforms.py#L32)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_transforms.py:32`](../../../src/chronaxis/core/rate_transforms.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_position"></a>
 ## `_position`
@@ -107,7 +107,7 @@ _position(value)
 
 TypeError为单位/类型不符。
 
-源码：[`src/chronaxis/core/rate_transforms.py:52`](../../../src/chronaxis/core/rate_transforms.py#L52)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_transforms.py:52`](../../../src/chronaxis/core/rate_transforms.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-rate_difference"></a>
 ## `rate_difference`
@@ -135,7 +135,7 @@ FLOAT64数值或带原因的无效值，合法负斜率不受原无符号dtype�
 
 非数值、后端或坐标类型错误直接拒绝。非正跨度属于DOMAIN_ERROR。
 
-源码：[`src/chronaxis/core/rate_transforms.py:62`](../../../src/chronaxis/core/rate_transforms.py#L62)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_transforms.py:62`](../../../src/chronaxis/core/rate_transforms.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-rate_fit"></a>
 ## `rate_fit`
@@ -162,4 +162,4 @@ FLOAT64每秒斜率；少于两个样本为MISSING，非递增位置为DOMAIN_ER
 
 ValueError为长度不符，类型错误原样传播。
 
-源码：[`src/chronaxis/core/rate_transforms.py:81`](../../../src/chronaxis/core/rate_transforms.py#L81)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/rate_transforms.py:81`](../../../src/chronaxis/core/rate_transforms.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

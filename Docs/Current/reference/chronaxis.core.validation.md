@@ -52,7 +52,7 @@ TypeError为非文本；ValueError为空或全空白。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/validation.py:23`](../../../src/chronaxis/core/validation.py#L23)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/validation.py:23`](../../../src/chronaxis/core/validation.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_identifier"></a>
 ## `require_identifier`
@@ -80,7 +80,7 @@ TypeError为非文本；ValueError为语法、关键字或保留名冲突。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/validation.py:42`](../../../src/chronaxis/core/validation.py#L42)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/validation.py:42`](../../../src/chronaxis/core/validation.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_sequence"></a>
 ## `require_sequence`
@@ -112,7 +112,7 @@ TypeError为非整数或bool；ValueError为负序号。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/validation.py:59`](../../../src/chronaxis/core/validation.py#L59)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/validation.py:59`](../../../src/chronaxis/core/validation.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-require_scalar"></a>
 ## `require_scalar`
@@ -144,4 +144,4 @@ TypeError: 输入不是允许的原生标量类型。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/validation.py:80`](../../../src/chronaxis/core/validation.py#L80)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/validation.py:80`](../../../src/chronaxis/core/validation.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

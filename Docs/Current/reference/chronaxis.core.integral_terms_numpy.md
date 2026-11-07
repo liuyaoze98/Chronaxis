@@ -46,7 +46,7 @@ class NumpyIntegralTerms
 |`valid`|np.ndarray|是|无|bool形状(N-1,)，True位置可归约。|
 |`facts`|[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)|是|无|当前块原请求/覆盖/诊断和完整真实来源。|
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:21`](../../../src/chronaxis/core/integral_terms_numpy.py#L21)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:21`](../../../src/chronaxis/core/integral_terms_numpy.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-NumpyIntegralTerms-__post_init__"></a>
 ### `NumpyIntegralTerms.__post_init__`
@@ -77,7 +77,7 @@ TypeError/ValueError为数组或事实错误。
 - `TypeError`：数组积分项需要同长一维float64/bool及IntegralFacts。
 - `ValueError`：数组积分项必须只读且有限，无效位置仅0存储。
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:28`](../../../src/chronaxis/core/integral_terms_numpy.py#L28)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:28`](../../../src/chronaxis/core/integral_terms_numpy.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-compute_integral_terms_numpy"></a>
 ## `compute_integral_terms_numpy`
@@ -106,4 +106,4 @@ NumpyIntegralTerms；实际临时/输出列为N或N-1，面积单位input_unit�
 
 输入/单位/时间/分配错误传播；浮点故障追加质量并使对应项无效。
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:44`](../../../src/chronaxis/core/integral_terms_numpy.py#L44)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:44`](../../../src/chronaxis/core/integral_terms_numpy.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

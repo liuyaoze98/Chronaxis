@@ -21,7 +21,7 @@ class DocSourceTests(unittest.TestCase):
         self.root = Path(self.area.name)
         for name in ('src/chronaxis', 'Docs/AI', 'Docs/Schema', 'tools'):
             (self.root/name).mkdir(parents=True)
-        for name in ('build_ai_guide.py', 'public_docs.py'):
+        for name in ('build_ai_guide.py', 'public_docs.py', 'ai_resource_bytes.py'):
             shutil.copyfile(ROOT/'tools'/name, self.root/'tools'/name)
         source = b'"""Example."""\nvalue = 1\n'
         schema = b'{"type":"object"}\n'

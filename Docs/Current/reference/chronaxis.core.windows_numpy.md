@@ -66,4 +66,4 @@ Segment或compact的CompactSegment tuple；bounds为已解析的实际边界。�
 扩展前校验int64上下界，批量建立连接掩码/组索引、归约、裁剪及覆盖。
     恢复Interval时校验请求跨度，再做安全整数差；不改变原事件。
 
-源码：[`src/chronaxis/core/windows_numpy.py:18`](../../../src/chronaxis/core/windows_numpy.py#L18)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/windows_numpy.py:18`](../../../src/chronaxis/core/windows_numpy.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -50,7 +50,7 @@ _diagnostics(error) -> tuple[str, ...]
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/_batch_worker.py:8`](../../../src/chronaxis/_batch_worker.py#L8)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/_batch_worker.py:8`](../../../src/chronaxis/_batch_worker.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -76,4 +76,4 @@ None。
 
 断管退出，父进程负责树清理。
 
-源码：[`src/chronaxis/_batch_worker.py:19`](../../../src/chronaxis/_batch_worker.py#L19)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/_batch_worker.py:19`](../../../src/chronaxis/_batch_worker.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

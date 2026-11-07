@@ -17,13 +17,16 @@ COMMON = {
 
 NOTES = {
  'fast.run': {
-  'summary': ('高性能积分器：读取一个ASC或BLF文件，对同帧公式逐报文累计，成功后发布结果。不是按真实帧间隔积分。', 'High-performance integrator: read one ASC or BLF file, accumulate same-frame formulas per message, and publish results on success. This is not integration over actual inter-frame time.'),
+  'summary': ('高性能积分器：一个会话管理一个或多个ASC/BLF分卷，按确定顺序累计同帧贡献并发布一次汇总。', 'High-performance integrator: one session accumulates same-frame contributions from one or more ASC/BLF volumes in a deterministic order and publishes one summary.'),
   'parameters': {
-   'config': ('str或Path：单文件YAML/JSON配置路径。只接受fast支持的同帧逐报文累计配置；DBC与报文路径相对声明它们的配置文件。', 'str or Path to a single-file YAML/JSON configuration in the fast subset. DBC and input paths are relative to the declaring configuration file.'),
-   'output': ('str或Path：结果目录，可已存在；使用本次时间标记文件，不覆盖既有结果。', 'str or Path to the result directory, which may already exist. This run uses timestamped filenames and does not overwrite existing results.')},
-  'returns': ('pathlib.Path：本次run_manifest完成清单；从outputs取得实际结果文件名。没有目标帧时结果为空且保留原因，不伪造零。', 'pathlib.Path to this run manifest. Read outputs for actual filenames. A file with no target frames has a null result and a reason, not a fabricated zero.'),
-  'raises': ('无效配置抛PlanValidationError；读取、解码或公式错误传播对应异常，本文件不发布正常累计结果。输出I/O失败传播OSError。此单文件入口没有cancel_event参数。', 'PlanValidationError for invalid configuration; read, decode, and formula errors propagate and prevent a normal result for the file. Output I/O failures propagate OSError. This single-file API has no cancel_event parameter.'),
-  'behavior': ('读取配置/DBC/输入，创建并发布结果文件，最后发布完成清单。支持范围与完整配置见高性能积分器教程。', 'Reads configuration, DBC, and input; writes result files and publishes the completion manifest last. See the high-performance integrator tutorial for supported capabilities and complete configurations.')},
+   'config': ('YAML/JSON分析配置路径；一个来源的paths列出同一会话分卷，内部路径相对配置文件。仅支持fast当前帧数值子集。', 'YAML/JSON analysis path. One source lists all session volumes in paths; relative input/DBC paths resolve against the configuration. Only the fast current-message numeric subset is supported.'),
+   'output': ('结果目录，可已存在；使用本次时间标记文件，不覆盖既有结果。', 'Result directory, which may exist. Timestamped output files preserve earlier results.'),
+   'process_count': ('可选正整数工作进程上限，不含主进程；None沿用execution.process_count，默认1内联。超过文件数时按文件数限制，拒绝bool，不修改原配置。', 'Optional positive integer worker limit, excluding the main process. None uses execution.process_count, default 1 inline. Capped at file count; booleans are rejected and configuration is unchanged.'),
+   'work_dir': ('可选暂存父目录，None使用系统临时目录；本次创建的私有暂存完成或失败后清理。', 'Optional parent directory for temporary contributions. None uses system temporary storage. This invocation removes its private temporary files after completion or failure.'),
+   'cancel_event': ('可选带is_set()的取消事件，例如threading.Event；set()请求停止调度并清理，run抛InterruptedError，不发布成功汇总。', 'Optional cancellation event with is_set(), such as threading.Event. set() requests cancellation and cleanup; run raises InterruptedError without publishing a successful summary.')},
+  'returns': ('pathlib.Path：本次完成清单。inputs列出全部文件，outputs列出结果表；每项独立判断空值/有效零，某分卷无目标不使其他有效贡献失效。', 'pathlib.Path to the completion manifest. inputs lists every file and outputs names the result table. Missing values and valid zeros are determined per calculation across the session.'),
+  'raises': ('PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。', 'PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result.'),
+  'behavior': ('读取配置/DBC及分卷；工作进程求单帧贡献，主进程逐条累计。单进程内联；time_order多文件需暂存。Windows多进程调用须置于`if __name__ == "__main__":`保护中，清单最后发布。', 'Read configuration, DBC and volumes. Workers evaluate individual contributions; the main process accumulates them in order. One worker runs inline; multi-file time_order requires staging. Protect multiprocessing calls with `if __name__ == "__main__":` on Windows. Publish the manifest last.')},
  'fast.batch.run_batch': {
   'summary': ('并行执行相互独立的高性能积分任务；连续来源paths不能借此拆成独立文件。', 'Run independent high-performance integration jobs in parallel. Do not use this to split paths that belong to one continuous source.'),
   'parameters': {

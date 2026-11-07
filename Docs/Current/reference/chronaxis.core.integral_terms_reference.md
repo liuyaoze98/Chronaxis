@@ -55,4 +55,4 @@ ReferenceIntegralTerms，areas/valid长度N-1；面积单位为input_unit乘秒�
 
 输入/单位/时间/分配错误传播；数值精度/溢出/下溢写入质量并使面积无效。
 
-源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -312,7 +312,7 @@ class MessageCalculationPlanningTests(unittest.TestCase):
         参数: 无。返回: None。异常: 任一重复被接受或缺失具体位置则失败。
         """
         config = legacy_config()
-        config['rules'] = [dict(name='active', rule_type='condition_duration', condition='power > 0', minimum_duration='0s')]
+        config['rules'] = [dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='power > 0', minimum_duration='0s')]
         config['windows'] = [dict(name='context', rule='active', anchor='activity', pre='0s', post='0s')]
         config['calculations'] = [dict(name='ordinary', scope='session', operation='integral', expr='power', unit='J')]
         for identifier in ('active', 'context', 'ordinary'):

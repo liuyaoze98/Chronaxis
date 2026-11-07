@@ -1,9 +1,14 @@
 <a id="数据来源"></a>
+
 # Data sources
 
 Root-level `sources` is a list describing where records come from and how to interpret their original times. With one source, omit its name and `signals[].source`. BLF/ASC are detected by extension. After choosing log paths and DBC, configure [signal bindings](signals.md). [dataset](dataset.md) defines analysis identity and the requested range.
 
+For ASC/BLF sources, optional `file_merge` controls record ordering: `concatenate` (default) consumes files in declared order; `time_order` validates each file and stably merges a verified shared timeline. It rejects null and is unsupported for CSV/memory. Set `execution.process_count` independently. See [continuous-file multiprocessing](continuous-files.md).
+
 A reader opens the source and interprets its records. `source_type` selects the format: CSV physical-value text is parsed into values; CAN bytes are decoded through a DBC. Signals then name, optionally convert, and validate those values. “Original value” therefore depends on the stage: in a signal declaration it has already been parsed/decoded and is not necessarily the file's original text or bytes.
+
+Basic single-source ASC/BLF configurations use `execution.process_count: 4`: workers read and decode different files, then feed one analysis session in the selected order. A single file uses at most one reading worker. CSV, memory, and multi-source analyses currently keep `process_count: 1`. For independent experiments, use [batch execution](batch.md) to run whole tasks in parallel. The program default remains one; see [continuous-file multiprocessing](continuous-files.md) for supported combinations.
 
 <a id="选择输入格式"></a>
 ## Choose an input format
@@ -41,24 +46,29 @@ Paths below are relative to `sources[]`. Thus `sources[].paths` means the `paths
 |---|---|---|---|
 | `name` | Optional string | `source_1`, `source_2`, etc. | Unique plan name. A signal can omit its source only when there is a unique usable source; otherwise choose explicitly. |
 | `source_type` | Optional string | `asc_or_blf` | Detect ASC/BLF by extension, including mixed input. `can_asc` and `can_blf` restrict the format. CSV requires `signal_csv` or `raw_can_csv`; memory requires `memory`. |
+| `file_merge` | Optional string | `concatenate` | Order files within one ASC/BLF source. `concatenate` consumes files in `paths` order; `time_order` stably merges a shared timeline after checking required records within each file. Rejects null; CSV/memory do not support this field. Worker count is set independently by `execution.process_count`. See [continuous-file multiprocessing](continuous-files.md). |
 | `time` | Optional object; CSV still needs a time unit | Relative; CAN/memory unit s | Groups time type, unit, shared origin, and offset. Source origins are independent by default, not implicitly synchronized. |
 | `metadata` | Optional object | `{}` | Source notes, such as acquisition-device model. Keys follow your project conventions and do not execute as extra reader options. |
 | `path` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, or wildcard with the same selection rules as `paths`. Prefer consistent `paths`; not used for memory. |
-| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list. Discovered files use natural order; explicit lists preserve order. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Required records cannot move backwards across continuous files; full checking/raw export requires the entire source to be ordered. |
+| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list. Discovered files use natural order; explicit lists preserve order. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Files are concatenated by default; overlapping ASC/BLF files may explicitly select `file_merge: time_order`, described above. |
 
 `load_analysis_plan` resolves paths from the declaring configuration file. `AnalysisPlan.from_dict` uses `base_dir`, or the current directory when omitted.
 
 <a id="目录与连续文件"></a>
 ## Directories and continuous files
 
+This is an editing fragment. Starting with [analysis.yaml](../examples/analysis.yaml), replace its root `sources` list with your log directory and DBC, and set `process_count` inside root `execution`. Keep the dataset, signal and calculation sections. The paths must exist and the DBC must contain the signals referenced by the configuration.
+
 ```yaml
-sources:                  # Input sources used by this analysis
-  - paths: data/can       # Directory, relative to this configuration
-    dbc_by_channel:       # DBC files indexed by user-facing CAN channel
-      '1': network.dbc    # DBC for public channel 1
+sources:                # Input sources used by this analysis
+  - paths: data/can     # Directory, relative to this configuration
+    dbc_by_channel:     # DBC files indexed by user-facing CAN channel
+      '1': network.dbc  # DBC for public channel 1
+execution:              # Sibling of sources; control how the analysis runs
+  process_count: 4      # Up to four file-reading workers, capped by the number of files
 ```
 
-Files `part1.asc`, `part2.blf`, and `part10.asc` are read in order 1, 2, 10. Use `paths: data/can/*.asc` for ASC only and explicit `data/can/**/*.asc` for subdirectories. Empty directories or unmatched patterns are errors, not silently skipped. Explicit `[part10.asc, part2.asc]` retains that order.
+Files `part1.asc`, `part2.blf`, and `part10.asc` use at most three reading workers. The main process still consumes them in order 1, 2, 10 and retains signal and event state between files. Use `paths: data/can/*.asc` for ASC only and explicit `data/can/**/*.asc` for subdirectories. Empty directories or unmatched patterns are errors, not silently skipped. Explicit `[part10.asc, part2.asc]` retains that order.
 
 For known per-file offsets, write `paths: [{path: part1.asc, offset: 0s}, {path: part2.asc, offset: 100s}]`. They add to source `time.offset`. These offsets apply to default ASC/BLF, explicit `can_asc`, and `raw_can_csv`; `signal_csv` and explicit `can_blf` support only source-wide `time.offset`. Applicable sources also accept an `offsets` array, but not together with embedded file offsets. Use [batch tasks](batch.md) for independent experiments.
 
@@ -83,18 +93,18 @@ The field is always `sources[].time.timezone`, though accepted values depend on 
 Place the first excerpt in root `sources`, the second in root `signals`. These are partial configurations, requiring your actual `trial.blf`, `network.dbc`, and remaining task declarations. Replace existing lists rather than nesting a second parent key inside an item.
 
 ```yaml
-sources:                  # Input sources used by this analysis
-  - path: trial.blf       # Replace with your actual input
-    dbc_by_channel:       # DBC files indexed by user-facing CAN channel
-      '1': network.dbc    # DBC for channel 1; channel keys are strings
+sources:                # Input sources used by this analysis
+  - path: trial.blf     # Replace with your actual input
+    dbc_by_channel:     # DBC files indexed by user-facing CAN channel
+      '1': network.dbc  # DBC for channel 1; channel keys are strings
 ```
 
 ```yaml
-signals:                     # Signals available to expressions
-  - name: voltage            # Name used to identify and reference this object
-    field:                   # Locate the original input field
-      frame_id: 0x100        # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: PackVoltage    # Actual case-sensitive DBC name
+signals:                   # Signals available to expressions
+  - name: voltage          # Name used to identify and reference this object
+    field:                 # Locate the original input field
+      frame_id: 0x100      # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: PackVoltage  # Actual case-sensitive DBC name
 ```
 
 This assumes the DBC supplies a unit and message period. Numeric type, unit, and frame type are inferred; validity defaults to three periods. Add `period` or `valid_for` when the needed period is unavailable. Add location fields only when multiple channels/frame candidates cannot be distinguished.
@@ -127,8 +137,8 @@ Only the `can_blf` entry point accepts these options: explicit `source_type: can
 This child of each CAN source's `reader` controls DBC decoding in `asc_or_blf`, `can_blf`, `can_asc`, and `raw_can_csv`. It is neither interval selection nor signal conversion. The excerpt belongs inside a source item, replacing its reader mapping where appropriate:
 
 ```yaml
-reader:                    # Input-format parsing options
-  decode_policy: strict    # Length checks and decoding-failure behavior
+reader:                  # Input-format parsing options
+  decode_policy: strict  # Length checks and decoding-failure behavior
 ```
 
 | Policy | Purpose and behavior |
@@ -154,7 +164,7 @@ These policies apply to selected data frames. Use strict for full-length records
 
 Malformed structure, invalid input time, and other I/O or programming errors can still fail a task. Partial does not ignore all errors or fill unavailable fields with zero.
 
-Normalized `source_type` determines the path. `can_asc`, `raw_can_csv`, and retained mixed `asc_or_blf` use the text CAN adapter. `can_blf` uses the historical BLF path. Omitted/`asc_or_blf` normalizes pure ASC to `can_asc`, including with offsets; pure BLF without offsets becomes `can_blf`. Mixed formats, or pure BLF with offsets, retain `asc_or_blf`. A single filename extension therefore does not establish legacy behavior.
+Normalized `source_type` determines the path. `can_asc`, `raw_can_csv`, and retained mixed `asc_or_blf` use the text CAN adapter. `can_blf` retains the pure-BLF decoding policies in the table, with the same length checks and DBC decoding-failure handling in serial and file-parallel execution. Omitted/`asc_or_blf` normalizes pure ASC to `can_asc`, including with offsets; pure BLF without offsets becomes `can_blf`. Mixed formats, or pure BLF with offsets, retain `asc_or_blf`. A single filename extension therefore does not establish legacy behavior.
 
 <a id="can-field"></a>
 <a id="signalsfield选择can报文中的信号"></a>
@@ -197,14 +207,14 @@ Rules, windows, calculations, and exports can omit `dataset.domain` and use actu
 This partial root `sources` section requires actual `part1.csv` and `part2.csv` files containing `time_ms` and the referenced signal columns. Replace the existing root list; do not nest another `sources` key inside an item.
 
 ```yaml
-sources:                             # Input sources used by this analysis
-  - paths: [part1.csv, part2.csv]    # File, continuous file list or directory; relative to this configuration
-    source_type: signal_csv          # Input adapter; CSV or memory must be declared explicitly
-    time_column: time_ms             # Exact header
-    time:                            # Input timestamp interpretation
-      unit: ms                       # Unit of the input timestamp values
-    reader:                          # Input-format parsing options
-      missing_values: ['', NA]       # Invalid updates, not zero
+sources:                           # Input sources used by this analysis
+  - paths: [part1.csv, part2.csv]  # File, continuous file list or directory; relative to this configuration
+    source_type: signal_csv        # Input adapter; CSV or memory must be declared explicitly
+    time_column: time_ms           # Exact header
+    time:                          # Input timestamp interpretation
+      unit: ms                     # Unit of the input timestamp values
+    reader:                        # Input-format parsing options
+      missing_values: ['', NA]     # Invalid updates, not zero
 ```
 
 | Field relative to `sources[]` | Type and requirement | Default | Meaning |
@@ -221,15 +231,15 @@ With the example missing tokens, current 5 A followed by `NA` becomes unknown at
 Bind original `Current_mA` as `current` with this root `signals` excerpt:
 
 ```yaml
-signals:                 # Signals available to expressions
-  - name: current        # Name used to identify and reference this object
-    field: Current_mA    # Locate the original input field
-    dtype: float64       # Analysis value type
-    unit: A              # Unit in which this value is interpreted or the result is displayed
-    valid_for: 200ms     # Example; establish for actual acquisition
-    conversion:          # Optional unit conversion after decoding
-      input_unit: mA     # Unit of the parsed or decoded input value
-      scale: 0.001       # Explicit mA-to-A conversion
+signals:               # Signals available to expressions
+  - name: current      # Name used to identify and reference this object
+    field: Current_mA  # Locate the original input field
+    dtype: float64     # Analysis value type
+    unit: A            # Unit in which this value is interpreted or the result is displayed
+    valid_for: 200ms   # Example; establish for actual acquisition
+    conversion:        # Optional unit conversion after decoding
+      input_unit: mA   # Unit of the parsed or decoded input value
+      scale: 0.001     # Explicit mA-to-A conversion
 ```
 
 This explicitly converts milliamperes to amperes. `valid_for` is illustrative and needs an acquisition-based choice in a real task. Expressions use `current` even though the column has another name.
@@ -240,21 +250,21 @@ This explicitly converts milliamperes to amperes. `valid_for` is illustrative an
 Memory `rows` contains original times and values, useful for hand-checkable examples. The following root `sources` section needs no external files; add signals and calculations in a complete plan.
 
 ```yaml
-sources:                   # Input sources used by this analysis
-  - source_type: memory    # Input adapter; CSV or memory must be declared explicitly
-    rows:                  # Explicit input records for the memory source
-      - time: 0s           # Timestamp of this explicit input record
-        values:            # Signal values in this input record
-          power: 4000      # Power value or named power signal settings in this example
-          active: 1        # Activity state in this input record
-      - time: 1s           # Timestamp of this explicit input record
-        values:            # Signal values in this input record
-          power: 4000      # Power value or named power signal settings in this example
-          active: 0        # Activity state in this input record
-      - time: 8s           # Timestamp of this explicit input record
-        values:            # Signal values in this input record
-          power: 4000      # Power value or named power signal settings in this example
-          active: 0        # Activity state in this input record
+sources:                 # Input sources used by this analysis
+  - source_type: memory  # Input adapter; CSV or memory must be declared explicitly
+    rows:                # Explicit input records for the memory source
+      - time: 0s         # Timestamp of this explicit input record
+        values:          # Signal values in this input record
+          power: 4000    # Power value or named power signal settings in this example
+          active: 1      # Activity state in this input record
+      - time: 1s         # Timestamp of this explicit input record
+        values:          # Signal values in this input record
+          power: 4000    # Power value or named power signal settings in this example
+          active: 0      # Activity state in this input record
+      - time: 8s         # Timestamp of this explicit input record
+        values:          # Signal values in this input record
+          power: 4000    # Power value or named power signal settings in this example
+          active: 0      # Activity state in this input record
 ```
 
 | Field relative to `sources[]` | Type and requirement | Meaning |
@@ -275,17 +285,17 @@ Subtract 2 seconds from CSV time to combine them. Conversion first changes units
 Put this block inside the CAN source item, beside `paths`, replacing its existing `time`:
 
 ```yaml
-time:                   # Time settings for the CAN source
-  clock: test_button    # Established common origin
+time:                 # Time settings for the CAN source
+  clock: test_button  # Established common origin
 ```
 
 Put this separate block inside the CSV source item, beside `time_column`, replacing its existing `time`:
 
 ```yaml
-time:                   # Time settings for the CSV source
-  unit: ms              # Input time column uses milliseconds
-  clock: test_button    # Same established origin as CAN
-  offset: -2s           # Instrument started 2 seconds earlier
+time:                 # Time settings for the CSV source
+  unit: ms            # Input time column uses milliseconds
+  clock: test_button  # Same established origin as CAN
+  offset: -2s         # Instrument started 2 seconds earlier
 ```
 
 Each block belongs to one source; neither is a complete `sources` list. CSV 5000 ms first becomes 5 seconds, then shifts to common time 3 seconds. See the [CAN/CSV example](examples.md#can-joint-analysis) for a complete configuration.

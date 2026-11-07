@@ -51,4 +51,4 @@ int，用户配置的通道1转换为内部编号0。
 
 PlanValidationError，值的类型或取值不符合上述规则，或文本整数超过解析能力。
 
-源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

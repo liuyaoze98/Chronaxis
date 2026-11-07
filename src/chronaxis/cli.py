@@ -19,16 +19,18 @@ def _parser() -> argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser(prog='chronaxis', description='Chronaxis当前配置检查与分析')
     commands = parser.add_subparsers(dest='command', required=True)
-    fast = commands.add_parser('fast', help='校验、解释或执行单文件同帧累计')
+    fast = commands.add_parser('fast', help='校验、解释或执行单会话同帧累计')
     actions = fast.add_subparsers(dest='fast_command',required=True)
     for action in ('validate','explain','run'):
         sub = actions.add_parser(action)
         sub.add_argument('config')
+        sub.add_argument('--process-count', type=int, default=None, help='覆盖本次读取、解码和单帧求值工作进程上限')
         if action == 'run':
             sub.add_argument('--output',required=True)
     fast_batch = actions.add_parser('batch',help='并行运行独立文件并发布批量报告')
     fast_batch.add_argument('config')
     fast_batch.add_argument('--output',required=True)
+    fast_batch.add_argument('--process-count', type=int, default=None, help='覆盖独立任务工作进程数；不建立嵌套池')
     fast_batch.add_argument('--total',action='store_true',help='对同一模板内可比指标求总量')
     guide = commands.add_parser('guide', help='显示可直接阅读的AI指南路径')
     guide.add_argument('--language', choices=('zh', 'en'), default='zh', help='阅读入口语言，默认zh；不写文件')
@@ -60,6 +62,7 @@ def _parser() -> argparse.ArgumentParser:
         check.add_argument('plan', help='分析计划YAML或JSON；来源相对路径按配置文件目录解释')
         check.add_argument('--backend', choices=('reference', 'numpy'), default=None,
                            help='显式覆盖本次后端；省略则沿用计划声明')
+        check.add_argument('--process-count', type=int, default=None, help='覆盖本次读取解码进程上限；正整数，省略沿用配置')
         check.add_argument('--format', choices=('text','json'), default='text',
                            help='默认显示易读说明；json用于程序读取')
     # 结果目录可复用；文件由本次时间区分，数值与格式仍来自同一个计划。
@@ -69,6 +72,7 @@ def _parser() -> argparse.ArgumentParser:
     execute.add_argument('--work-dir', default=None, help='可选全新工作目录；省略沿AnalysisRunner唯一专用暂存')
     execute.add_argument('--backend', choices=('reference', 'numpy'), default=None,
                          help='显式覆盖本次后端；省略沿用计划声明')
+    execute.add_argument('--process-count', type=int, default=None, help='覆盖本次读取解码进程上限；正整数，省略沿用配置')
     batch = commands.add_parser('batch', help='独立分析任务批量运行')
     batch_actions = batch.add_subparsers(dest='batch_command', required=True)
     batch_run = batch_actions.add_parser('run', help='执行批量YAML或JSON并保存逐任务状态')
@@ -82,7 +86,8 @@ def main(argv=None) -> int:
     """执行共享CLI并给出固定退出码，完整事实保在报告和原异常中。
 
     参数: argv为参数字符串序列或None（使用进程参数）。
-    返回: 0成功、2配置错误、1文件/平台错误、130取消。
+    返回: 0成功、130取消；失败按入口/阶段返回1或2。普通文件失败为1，
+        fast单会话准备失败（含文件错误）为2、运行失败为1；批量规则见手册CLI。
     异常: argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程错误不伪装配置错误。
     副作用: 静态命令只读计划；run分析后发布本次时间文件到可复用目录。
     """

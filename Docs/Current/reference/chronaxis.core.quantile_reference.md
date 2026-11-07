@@ -51,4 +51,4 @@ ordered_reference(chunks, index, remainder, denominator)
 
 排序需要的内存由调用方预付，分配错误直接传播。
 
-源码：[`src/chronaxis/core/quantile_reference.py:9`](../../../src/chronaxis/core/quantile_reference.py#L9)（行号属于 `e65c920526335247bcc1ed25852bcc967f55f2fd`）。
+源码：[`src/chronaxis/core/quantile_reference.py:9`](../../../src/chronaxis/core/quantile_reference.py#L9)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。

@@ -44,8 +44,8 @@
 默认格式名是readable_csv，无需手填。程序若依赖原表字段，在配置根部增加以下内容；已有outputs时在原映射内增加tables，不再写第二个outputs：
 
 ```yaml
-outputs:         # 只在程序需要原交换字段时增加这段
-  tables: csv    # 保留原平坦表、字段名和整数纳秒
+outputs:       # 只在程序需要原交换字段时增加这段
+  tables: csv  # 保留原平坦表、字段名和整数纳秒
 ```
 
 可选值只有readable_csv、csv、jsonl。csv使用events.csv、calculations.csv等原表；jsonl使用对应逐行JSON（包含row_schema_version和row）。选择一种只输出一套结果，不同时生成可读和交换副本。Python的iter_events、iter_calculations等始终返回原类型化行，不受输出格式影响；低层AnalysisResult构造器仍保留csv默认，AnalysisRunner跟随计划默认readable_csv。

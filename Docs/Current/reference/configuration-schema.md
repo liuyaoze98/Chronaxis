@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 基线e65c920526335247bcc1ed25852bcc967f55f2fd；device_label: home。
+> 基线afc8d5eb1dc95c26176b20ebedaeda6a0a643540；device_label: home。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 
@@ -308,51 +308,71 @@
     "operation",
     "expr"
   ],
-  "additionalProperties": false,
+  "additionalProperties": false
+}
+```
+
+## `$.properties.transforms.items.allOf[0]`
+
+```json
+{
   "if": {
+    "required": [
+      "operation"
+    ],
     "properties": {
       "operation": {
-        "const": "adjacent_rate",
+        "$ref": "#/properties/transforms/items/properties/operation",
         "description": "选择这项计算执行的具名操作。"
       }
     }
   },
   "then": {
-    "required": [
-      "max_gap"
-    ],
-    "properties": {
-      "window": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 window。"
-      },
-      "step": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 step。"
-      },
-      "origin": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 origin。"
-      },
-      "partial_policy": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 partial_policy。"
-      },
-      "minimum_coverage": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
+    "if": {
+      "properties": {
+        "operation": {
+          "const": "adjacent_rate",
+          "description": "选择这项计算执行的具名操作。"
+        }
       }
-    }
-  },
-  "else": {
-    "required": [
-      "window",
-      "step"
-    ],
-    "properties": {
-      "max_gap": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 max_gap。"
+    },
+    "then": {
+      "required": [
+        "max_gap"
+      ],
+      "properties": {
+        "window": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 window。"
+        },
+        "step": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 step。"
+        },
+        "origin": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 origin。"
+        },
+        "partial_policy": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 partial_policy。"
+        },
+        "minimum_coverage": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
+        }
+      }
+    },
+    "else": {
+      "required": [
+        "window",
+        "step"
+      ],
+      "properties": {
+        "max_gap": {
+          "not": {},
+          "description": "在当前版本或操作下不能填写字段 max_gap。"
+        }
       }
     }
   }
@@ -505,232 +525,271 @@
 ```json
 {
   "if": {
-    "properties": {
-      "operation": {
-        "const": "quantile",
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
     "required": [
-      "q"
+      "operation"
+    ],
+    "properties": {
+      "operation": {
+        "$ref": "#/properties/aggregations/items/properties/operation",
+        "description": "对引用的结果行执行的聚合。成功响应的延迟均值和P95只使用已成功配对的延迟。"
+      }
+    }
+  },
+  "then": {
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "quantile",
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "q"
+          ]
+        },
+        "else": {
+          "properties": {
+            "q": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 q。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "variance",
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "ddof": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 ddof。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "count",
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "field": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 field。"
+            },
+            "unit": {
+              "const": "1",
+              "description": "希望结果采用的单位，必须与计算量兼容。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "required": [
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "$ref": "#/properties/aggregations/items/properties/source",
+              "description": "选择本次运行要汇总的结果。只引用一个计算、配对、规则或窗口。"
+            }
+          }
+        },
+        "then": {
+          "if": {
+            "properties": {
+              "source": {
+                "required": [
+                  "sequence"
+                ],
+                "description": "指定聚合所用的一种结果及其名称。"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "group_by": {
+                "items": {
+                  "enum": [
+                    "dataset_id",
+                    "entity_id",
+                    "session_id",
+                    "sequence_id"
+                  ],
+                  "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+                },
+                "description": "用选定来源已有的标识对结果行分组。"
+              },
+              "field": {
+                "const": "delay_ns",
+                "description": "指定这项统计从结果行读取的数值列。"
+              }
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "required": [
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "$ref": "#/properties/aggregations/items/properties/source",
+              "description": "选择本次运行要汇总的结果。只引用一个计算、配对、规则或窗口。"
+            }
+          }
+        },
+        "then": {
+          "if": {
+            "properties": {
+              "source": {
+                "required": [
+                  "calculation"
+                ],
+                "description": "指定聚合所用的一种结果及其名称。"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "group_by": {
+                "items": {
+                  "enum": [
+                    "dataset_id",
+                    "entity_id",
+                    "session_id",
+                    "calculation_id",
+                    "parent_id"
+                  ],
+                  "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+                },
+                "description": "用选定来源已有的标识对结果行分组。"
+              },
+              "field": {
+                "const": "value",
+                "description": "指定这项统计从结果行读取的数值列。"
+              }
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "required": [
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "$ref": "#/properties/aggregations/items/properties/source",
+              "description": "选择本次运行要汇总的结果。只引用一个计算、配对、规则或窗口。"
+            }
+          }
+        },
+        "then": {
+          "if": {
+            "properties": {
+              "source": {
+                "required": [
+                  "rule"
+                ],
+                "description": "指定聚合所用的一种结果及其名称。"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "group_by": {
+                "items": {
+                  "enum": [
+                    "dataset_id",
+                    "entity_id",
+                    "session_id",
+                    "rule_id"
+                  ],
+                  "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+                },
+                "description": "用选定来源已有的标识对结果行分组。"
+              },
+              "operation": {
+                "const": "count",
+                "description": "选择这项计算执行的具名操作。"
+              },
+              "field": {
+                "not": {},
+                "description": "在当前版本或操作下不能填写字段 field。"
+              }
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "required": [
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "$ref": "#/properties/aggregations/items/properties/source",
+              "description": "选择本次运行要汇总的结果。只引用一个计算、配对、规则或窗口。"
+            }
+          }
+        },
+        "then": {
+          "if": {
+            "properties": {
+              "source": {
+                "required": [
+                  "window"
+                ],
+                "description": "指定聚合所用的一种结果及其名称。"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "group_by": {
+                "items": {
+                  "enum": [
+                    "dataset_id",
+                    "entity_id",
+                    "session_id",
+                    "window_id"
+                  ],
+                  "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
+                },
+                "description": "用选定来源已有的标识对结果行分组。"
+              },
+              "operation": {
+                "const": "count",
+                "description": "选择这项计算执行的具名操作。"
+              },
+              "field": {
+                "not": {},
+                "description": "在当前版本或操作下不能填写字段 field。"
+              }
+            }
+          }
+        }
+      }
     ]
-  },
-  "else": {
-    "properties": {
-      "q": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 q。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[1]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "const": "variance",
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "else": {
-    "properties": {
-      "ddof": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 ddof。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[2]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "const": "count",
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "field": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 field。"
-      },
-      "unit": {
-        "const": "1",
-        "description": "希望结果采用的单位，必须与计算量兼容。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[3]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "source": {
-        "required": [
-          "sequence"
-        ],
-        "description": "指定聚合所用的一种结果及其名称。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "group_by": {
-        "items": {
-          "enum": [
-            "dataset_id",
-            "entity_id",
-            "session_id",
-            "sequence_id"
-          ],
-          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
-        },
-        "description": "用选定来源已有的标识对结果行分组。"
-      },
-      "field": {
-        "const": "delay_ns",
-        "description": "指定这项统计从结果行读取的数值列。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[4]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "source": {
-        "required": [
-          "calculation"
-        ],
-        "description": "指定聚合所用的一种结果及其名称。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "group_by": {
-        "items": {
-          "enum": [
-            "dataset_id",
-            "entity_id",
-            "session_id",
-            "calculation_id",
-            "parent_id"
-          ],
-          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
-        },
-        "description": "用选定来源已有的标识对结果行分组。"
-      },
-      "field": {
-        "const": "value",
-        "description": "指定这项统计从结果行读取的数值列。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[5]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "source": {
-        "required": [
-          "rule"
-        ],
-        "description": "指定聚合所用的一种结果及其名称。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "group_by": {
-        "items": {
-          "enum": [
-            "dataset_id",
-            "entity_id",
-            "session_id",
-            "rule_id"
-          ],
-          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
-        },
-        "description": "用选定来源已有的标识对结果行分组。"
-      },
-      "operation": {
-        "const": "count",
-        "description": "选择这项计算执行的具名操作。"
-      },
-      "field": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 field。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.aggregations.items.allOf[6]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "source": {
-        "required": [
-          "window"
-        ],
-        "description": "指定聚合所用的一种结果及其名称。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "group_by": {
-        "items": {
-          "enum": [
-            "dataset_id",
-            "entity_id",
-            "session_id",
-            "window_id"
-          ],
-          "description": "当前结果来源可用的分组字段；每个字段最多选一次。"
-        },
-        "description": "用选定来源已有的标识对结果行分组。"
-      },
-      "operation": {
-        "const": "count",
-        "description": "选择这项计算执行的具名操作。"
-      },
-      "field": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 field。"
-      }
-    }
   }
 }
 ```
@@ -2560,6 +2619,19 @@
 }
 ```
 
+## `$.properties.sources.items.oneOf[2].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "控制同一来源的多个文件如何衔接。concatenate按paths顺序读取，仅在任务要求检查的时间范围内拒绝回退；time_order要求各文件中参与排序的记录时间有序，按记录时间、文件位置、原记录顺序稳定归并。保留重叠报文，不自动平移时间或去重。该选择与进程数无关。"
+}
+```
+
 ## `$.properties.sources.items.oneOf[3]`
 
 ```json
@@ -3102,6 +3174,19 @@
   ],
   "default": "auto",
   "description": "auto按实际消费者检查时间顺序；ASC普通分析仅检查所需通道/ID，来源范围仍取同次全部记录的最早/最晚时间。full或原帧导出检查全部记录顺序；任何模式都不自动排序或修改时间。"
+}
+```
+
+## `$.properties.sources.items.oneOf[3].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "控制同一来源的多个文件如何衔接。concatenate按paths顺序读取，仅在任务要求检查的时间范围内拒绝回退；time_order要求各文件中参与排序的记录时间有序，按记录时间、文件位置、原记录顺序稳定归并。保留重叠报文，不自动平移时间或去重。该选择与进程数无关。"
 }
 ```
 
@@ -6444,6 +6529,19 @@
 }
 ```
 
+## `$.properties.sources.items.oneOf[5].properties.file_merge`
+
+```json
+{
+  "enum": [
+    "concatenate",
+    "time_order"
+  ],
+  "default": "concatenate",
+  "description": "控制同一来源的多个文件如何衔接。concatenate按paths顺序读取，仅在任务要求检查的时间范围内拒绝回退；time_order要求各文件中参与排序的记录时间有序，按记录时间、文件位置、原记录顺序稳定归并。保留重叠报文，不自动平移时间或去重。该选择与进程数无关。"
+}
+```
+
 ## `$.properties.signals`
 
 ```json
@@ -7799,7 +7897,8 @@
     "name",
     "rule_type",
     "condition",
-    "minimum_duration"
+    "minimum_duration",
+    "duration_comparison"
   ],
   "additionalProperties": false
 }
@@ -7913,8 +8012,7 @@
     ">=",
     ">"
   ],
-  "default": ">=",
-  "description": "持续时间与minimum_duration的比较：>=达到（默认），>严格超过。60秒整仅符合>=；不更改活动起点，selection_origin仍默认onset。"
+  "description": "持续时间与minimum_duration的比较，必须明确填写：>=达到，>严格超过。60秒整仅符合>=；不更改活动起点，selection_origin仍默认onset。"
 }
 ```
 
@@ -9906,295 +10004,272 @@
 ```json
 {
   "if": {
+    "required": [
+      "operation"
+    ],
     "properties": {
       "operation": {
-        "const": "duration",
-        "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。 固定值：\"duration\"（条件为真的累计时长）。"
+        "$ref": "#/properties/calculations/items/properties/operation",
+        "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。可选值：\"select\"：选择符合条件的记录；\"sample_minimum\"：有效样本最小值；\"sample_maximum\"：有效样本最大值；\"sample_mean\"：有效样本等权均值；\"min_time\"：有效持续区间内的最小值；\"max_time\"：有效持续区间内的最大值；\"time_weighted_mean\"：按有效持续时间加权的均值；\"duration\"：条件为真的累计时长；\"integral\"：按前值保持计算积分。 版本4另支持计数：sample_count计有效样本，point_event_count计点事件，activity_count计活动，segment_count计最终片段。"
       }
     }
   },
   "then": {
-    "oneOf": [
+    "allOf": [
       {
-        "required": [
-          "expr"
-        ],
-        "not": {
-          "required": [
-            "condition"
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "duration",
+              "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。 固定值：\"duration\"（条件为真的累计时长）。"
+            }
+          }
+        },
+        "then": {
+          "oneOf": [
+            {
+              "required": [
+                "expr"
+              ],
+              "not": {
+                "required": [
+                  "condition"
+                ]
+              }
+            },
+            {
+              "required": [
+                "condition"
+              ],
+              "not": {
+                "required": [
+                  "expr"
+                ]
+              }
+            }
           ]
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "operation": {
+                "enum": [
+                  "point_event_count",
+                  "activity_count",
+                  "segment_count"
+                ],
+                "description": "选择这项计算执行的具名操作。"
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "expr"
+            ]
+          }
         }
       },
       {
-        "required": [
-          "condition"
-        ],
-        "not": {
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "integral",
+              "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。 固定值：\"integral\"（按前值保持计算积分）。"
+            }
+          }
+        },
+        "else": {
+          "not": {
+            "required": [
+              "method"
+            ]
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "point_event_count",
+                "activity_count"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
           "required": [
-            "expr"
+            "rule"
           ]
+        },
+        "else": {
+          "properties": {
+            "rule": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 rule。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "segment_count"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "window"
+          ]
+        },
+        "else": {
+          "properties": {
+            "window": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 window。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "sample_count",
+                "point_event_count",
+                "activity_count",
+                "segment_count"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "unit": {
+              "const": "1",
+              "description": "希望结果采用的单位，必须与计算量兼容。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "point_event_count",
+                "activity_count",
+                "segment_count"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "scope": {
+              "const": "session",
+              "description": "选择本次计算所用的会话、事件或窗口范围。"
+            },
+            "expr": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 expr。"
+            },
+            "condition": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 condition。"
+            },
+            "method": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 method。"
+            },
+            "minimum_coverage": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
+            },
+            "interval": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 interval。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "sample_variance",
+                "sample_stddev",
+                "time_variance",
+                "time_stddev"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "ddof": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 ddof。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "enum": [
+                "time_variance",
+                "time_stddev"
+              ],
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "ddof": {
+              "const": 0,
+              "description": "方差或标准差分母使用的自由度修正。"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "sample_quantile",
+              "description": "选择这项计算执行的具名操作。"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "q"
+          ]
+        },
+        "else": {
+          "properties": {
+            "q": {
+              "not": {},
+              "description": "在当前版本或操作下不能填写字段 q。"
+            }
+          }
         }
       }
     ]
-  },
-  "else": {
-    "if": {
-      "properties": {
-        "operation": {
-          "enum": [
-            "point_event_count",
-            "activity_count",
-            "segment_count"
-          ],
-          "description": "选择这项计算执行的具名操作。"
-        }
-      }
-    },
-    "else": {
-      "required": [
-        "expr"
-      ]
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[1]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "const": "integral",
-        "description": "计算操作。明确区分样本统计和时间加权统计，不接受含义不明的mean/min/max。 固定值：\"integral\"（按前值保持计算积分）。"
-      }
-    }
-  },
-  "else": {
-    "not": {
-      "required": [
-        "method"
-      ]
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[2]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "point_event_count",
-          "activity_count"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "rule"
-    ]
-  },
-  "else": {
-    "properties": {
-      "rule": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 rule。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[3]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "segment_count"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "window"
-    ]
-  },
-  "else": {
-    "properties": {
-      "window": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 window。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[4]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "sample_count",
-          "point_event_count",
-          "activity_count",
-          "segment_count"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "unit": {
-        "const": "1",
-        "description": "希望结果采用的单位，必须与计算量兼容。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[5]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "point_event_count",
-          "activity_count",
-          "segment_count"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "scope": {
-        "const": "session",
-        "description": "选择本次计算所用的会话、事件或窗口范围。"
-      },
-      "expr": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 expr。"
-      },
-      "condition": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 condition。"
-      },
-      "method": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 method。"
-      },
-      "minimum_coverage": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 minimum_coverage。"
-      },
-      "interval": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 interval。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[6]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "sample_variance",
-          "sample_stddev",
-          "time_variance",
-          "time_stddev"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "else": {
-    "properties": {
-      "ddof": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 ddof。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[7]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "enum": [
-          "time_variance",
-          "time_stddev"
-        ],
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "ddof": {
-        "const": 0,
-        "description": "方差或标准差分母使用的自由度修正。"
-      }
-    }
-  }
-}
-```
-
-## `$.properties.calculations.items.allOf[8]`
-
-```json
-{
-  "if": {
-    "properties": {
-      "operation": {
-        "const": "sample_quantile",
-        "description": "选择这项计算执行的具名操作。"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "q"
-    ]
-  },
-  "else": {
-    "properties": {
-      "q": {
-        "not": {},
-        "description": "在当前版本或操作下不能填写字段 q。"
-      }
-    }
   }
 }
 ```
@@ -12093,6 +12168,17 @@
 {
   "type": "integer",
   "minimum": 1
+}
+```
+
+## `$.properties.execution.properties.process_count`
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "default": 1,
+  "description": "控制本次分析最多使用多少个读取和DBC解码工作进程，不包含主分析进程。填写大于等于1的整数；默认1保留串行读取。API或CLI显式参数优先于配置。多个文件仍属于同一个连续会话。"
 }
 ```
 

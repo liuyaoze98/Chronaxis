@@ -41,44 +41,44 @@ The complete [electrical-base.yaml](../examples/electrical-base.yaml) uses synth
 There is one CAN source, so the signals need no repeated `source`. IDs and signal names come from the DBC, which also supplies types and units. The explicit 20 s validity is for sparse teaching records, not a recommended device setting.
 
 ```yaml
-signals:                                   # Signals available to presets.
-  - name: temperature                      # Name used by the threshold role.
-    field:                                 # Original CAN signal.
-      frame_id: '0x11d'                    # Message ID from the DBC.
-      signal: Temperature                  # Case-sensitive DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-  - name: voltage                          # Voltage role candidate.
-    field:                                 # Original CAN signal.
-      frame_id: '0x11f'                    # Message ID from the DBC.
-      signal: Voltage                      # DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-    measurement_location: pack_terminal    # Actual measurement is at the pack terminals.
-  - name: current                          # Current role candidate.
-    field:                                 # Original CAN signal.
-      frame_id: '0x114'                    # Message ID from the DBC.
-      signal: Current                      # DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-    measurement_location: pack_terminal    # Actual measurement location.
-    sign_convention: positive_is_charge    # Positive values mean charging; no sign conversion.
-  - name: mode                             # Integer operating-mode signal.
-    field:                                 # Original CAN signal.
-      frame_id: '0x118'                    # Message ID from the DBC.
-      signal: Mode                         # DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-  - name: request                          # Boolean request signal.
-    field:                                 # Original CAN signal.
-      frame_id: '0x11a'                    # Message ID from the DBC.
-      signal: Request                      # DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-    choices:                               # Input code to boolean value.
+signals:                                 # Signals available to presets.
+  - name: temperature                    # Name used by the threshold role.
+    field:                               # Original CAN signal.
+      frame_id: '0x11d'                  # Message ID from the DBC.
+      signal: Temperature                # Case-sensitive DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+  - name: voltage                        # Voltage role candidate.
+    field:                               # Original CAN signal.
+      frame_id: '0x11f'                  # Message ID from the DBC.
+      signal: Voltage                    # DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+    measurement_location: pack_terminal  # Actual measurement is at the pack terminals.
+  - name: current                        # Current role candidate.
+    field:                               # Original CAN signal.
+      frame_id: '0x114'                  # Message ID from the DBC.
+      signal: Current                    # DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+    measurement_location: pack_terminal  # Actual measurement location.
+    sign_convention: positive_is_charge  # Positive values mean charging; no sign conversion.
+  - name: mode                           # Integer operating-mode signal.
+    field:                               # Original CAN signal.
+      frame_id: '0x118'                  # Message ID from the DBC.
+      signal: Mode                       # DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+  - name: request                        # Boolean request signal.
+    field:                               # Original CAN signal.
+      frame_id: '0x11a'                  # Message ID from the DBC.
+      signal: Request                    # DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+    choices:                             # Input code to boolean value.
       - [0, false]
       - [1, true]
-  - name: response                         # Boolean response signal.
-    field:                                 # Original CAN signal.
-      frame_id: '0x11b'                    # Message ID from the DBC.
-      signal: Response                     # DBC signal name.
-    valid_for: 20s                         # Validity for this teaching input.
-    choices:                               # Input code to boolean value.
+  - name: response                       # Boolean response signal.
+    field:                               # Original CAN signal.
+      frame_id: '0x11b'                  # Message ID from the DBC.
+      signal: Response                   # DBC signal name.
+    valid_for: 20s                       # Validity for this teaching input.
+    choices:                             # Input code to boolean value.
       - [0, false]
       - [1, true]
 ```
@@ -234,14 +234,14 @@ Optional semantic text on original `signals` may be omitted or null. If `semanti
 Add or replace the root `presets` section in [electrical-base.yaml](../examples/electrical-base.yaml). This fragment includes its parent key; do not place that key inside the preset list.
 
 ```yaml
-presets:                             # Predefined combinations of analysis nodes.
-  - name: cmd                        # Prefix for generated node names.
-    role_bindings:                   # Select existing signals for each role.
-      request: request               # Previously defined boolean request.
-      response: response             # Previously defined boolean response.
-    parameters:                      # Parameters for command_response.
-      max_delay: 2s                  # Inclusive maximum response delay.
-    preset_type: command_response    # Request/response preset.
+presets:                           # Predefined combinations of analysis nodes.
+  - name: cmd                      # Prefix for generated node names.
+    role_bindings:                 # Select existing signals for each role.
+      request: request             # Previously defined boolean request.
+      response: response           # Previously defined boolean response.
+    parameters:                    # Parameters for command_response.
+      max_delay: 2s                # Inclusive maximum response delay.
+    preset_type: command_response  # Request/response preset.
 ```
 
 This generates `cmd_request`, `cmd_response`, and `cmd_pair`. Setting `emit_initial: true` permits initially true values on both ends. Do not define ordinary rules with those same names. See [sequences](sequences.md) for pairing and missing data.
@@ -255,14 +255,14 @@ This generates `cmd_request`, `cmd_response`, and `cmd_pair`. Setting `emit_init
 Add or replace the root `presets` section in the electrical base:
 
 ```yaml
-presets:                                # Predefined analysis nodes.
-  - name: hot                           # Prefix for generated names.
-    role_bindings:                      # Explicit signal selection is required here.
-      signal: temperature               # Previously defined numeric signal.
-    parameters:                         # Threshold and recovery requirements.
-      enter_threshold: 80               # Enter at or above 80.
-      exit_threshold: 75                # Clear at or below 75.
-    preset_type: threshold_excursion    # Hysteresis alarm preset.
+presets:                              # Predefined analysis nodes.
+  - name: hot                         # Prefix for generated names.
+    role_bindings:                    # Explicit signal selection is required here.
+      signal: temperature             # Previously defined numeric signal.
+    parameters:                       # Threshold and recovery requirements.
+      enter_threshold: 80             # Enter at or above 80.
+      exit_threshold: 75              # Clear at or below 75.
+    preset_type: threshold_excursion  # Hysteresis alarm preset.
 ```
 
 This preset always means value >= upper threshold to enter and <= lower threshold to exit. Entry must be strictly above exit. For a low-value alarm, write custom `hysteresis` conditions. This example uses degC for both input and analysis. You can convert a signal using registered unit relationships, such as degC to K. Preset thresholds must then use the converted signal unit and values, not the original Celsius numbers.
@@ -303,18 +303,18 @@ The summary covers actual observation. If analysis requests through 12 s but the
 The charging preset below requires mode 1, current strictly above 5 A, and a continuous duration of at least 3 s, and calculates voltage × current energy. Replace the electrical base's root `presets` section:
 
 ```yaml
-presets:                           # Predefined analysis nodes.
-  - name: charge                   # Prefix for generated names.
-    role_bindings:                 # Existing signals fulfilling the role requirements.
-      mode: mode                   # Integer charging-mode signal.
-      current: current             # Current in A, charging-positive at pack terminals.
-      voltage: voltage             # Voltage in V at pack terminals.
-    parameters:                    # Charging requirements.
-      mode_value: 1                # Device's charging-mode code.
-      current_min: 5               # Strict lower current threshold in A.
-      minimum_duration: 3s         # Minimum continuous qualifying duration.
-      compute_energy: true         # Generate power and Wh energy calculation.
-    preset_type: charge_session    # Charging-period preset.
+presets:                         # Predefined analysis nodes.
+  - name: charge                 # Prefix for generated names.
+    role_bindings:               # Existing signals fulfilling the role requirements.
+      mode: mode                 # Integer charging-mode signal.
+      current: current           # Current in A, charging-positive at pack terminals.
+      voltage: voltage           # Voltage in V at pack terminals.
+    parameters:                  # Charging requirements.
+      mode_value: 1              # Device's charging-mode code.
+      current_min: 5             # Strict lower current threshold in A.
+      minimum_duration: 3s       # Minimum continuous qualifying duration.
+      compute_energy: true       # Generate power and Wh energy calculation.
+    preset_type: charge_session  # Charging-period preset.
 ```
 
 <a id="preset-fault-example"></a>

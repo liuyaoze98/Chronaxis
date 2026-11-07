@@ -148,7 +148,7 @@ def static_configuration(backend='numpy', *, can=False):
         'dataset': {'name': 'static_cli', 'entity': 'synthetic', 'session': 'trial',
                     'domain': {'start': '0s', 'end': '10s'}},
         'sources': [source], 'signals': signals, 'derived': {'power': {'expr': 'voltage * current', 'unit': 'W'}},
-        'rules': [{'name': 'active', 'rule_type': 'condition_duration', 'condition': 'current > 0', 'minimum_duration': '1s'}],
+        'rules': [{'name': 'active', 'rule_type': 'condition_duration', 'duration_comparison': '>=', 'condition': 'current > 0', 'minimum_duration': '1s'}],
         'windows': [{'name': 'context', 'rule': 'active', 'anchor': 'activity', 'pre': '1s',
                      'post': '0s', 'merge': 'exit_delay', 'exit_delay': '2s'}],
         'calculations': [{'name': 'energy', 'scope': 'segment:context', 'operation': 'integral', 'expr': 'power', 'unit': 'J'},
@@ -170,7 +170,8 @@ def explanation_dict(report):
         'input_check': item.input_check, 'time_scope': item.time_scope,
         'required_aliases': list(item.required_aliases), 'decode_frame_ids': list(item.decode_frame_ids),
         'reasons': list(item.reasons), 'active': item.active} for item in requirements.sources]
-    return {'input_requirements': scopes, 'validation': validation_dict(report.validation), 'plan_identity': report.plan_identity,
+    return {'source_execution': [dict(item) for item in report.source_execution],
+        'input_requirements': scopes, 'validation': validation_dict(report.validation), 'plan_identity': report.plan_identity,
         'source_names': list(report.source_names), 'nodes': [{'node_id': item.node_id, 'node_type': item.node_type,
             'dependencies': list(item.dependencies), 'unit': item.unit, 'backend': item.backend} for item in report.nodes],
         'history_ns': dict(report.history_ns), 'budget': dict(report.budget),
@@ -253,7 +254,7 @@ class StaticCLITests(unittest.TestCase):
         plan = load_analysis_plan(self.config)
         actual = self.success(self.invoke(['explain', self.config]))
         self.assertEqual(actual, explanation_dict(AnalysisRunner().explain(plan)))
-        self.assertEqual(set(actual), {'input_requirements', 'validation', 'plan_identity', 'source_names', 'nodes', 'history_ns', 'budget', 'intervals', 'diagnostics'})
+        self.assertEqual(set(actual), {'source_execution', 'input_requirements', 'validation', 'plan_identity', 'source_names', 'nodes', 'history_ns', 'budget', 'intervals', 'diagnostics'})
         self.assertEqual(len(actual['input_requirements']), 1)
         scope = actual['input_requirements'][0]
         self.assertEqual((scope['source'], scope['input_check'], scope['time_scope']), ('table', 'auto', 'source'))

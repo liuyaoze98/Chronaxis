@@ -9,7 +9,7 @@ The root-level `calculations` list declares scalar calculations or selected samp
 
 The **general time integrator** multiplies each valid held value by its duration under the chosen time basis, then adds those contributions. Set calculations[].operation to integral and provide expr. Actual elapsed time is the default; see [calculation intervals](intervals.md) for alternatives. The previous value lasts only until its next update or valid_for expiry. Missing data are not zero-filled, and the result reports completeness. Integrating power yields energy; integrating current yields charge. Other physical quantities can also be integrated.
 
-For independent ASC/BLF files with all inputs available in one message and an explicitly defined contribution per message, consider the [high-performance integrator (same-frame per-message accumulation)](fast-energy.md). Its expr supplies each contribution; include the time factor explicitly when needed. It does not automatically use elapsed time between messages. A general integral configuration cannot switch engines merely by changing the command. Use the general path for cross-message holds, sustained conditions, or event windows.
+For an ASC/BLF source, including volumes of one recording, with all inputs available in one message and an explicitly defined contribution per message, consider the [high-performance integrator (same-frame per-message accumulation)](fast-energy.md). Its expr supplies each contribution; include the time factor explicitly when needed. It does not automatically use elapsed time between messages. A general integral configuration cannot switch engines merely by changing the command. Use the general path for cross-message holds, sustained conditions, or event windows.
 
 
 ## Complete examples and operation comparison
@@ -62,10 +62,10 @@ Open the timestamped session CSV (`会话结果`) to check these values. In the 
 Use [analysis.yaml](../examples/analysis.yaml), which already defines `power` in W. Replace its root `calculations` list with one of the following blocks. Each name identifies a separate result. These blocks are alternatives: do not repeat the parent key or nest it inside a list item.
 
 ```yaml
-calculations:              # Calculations to return
-  - name: energy           # Name shown in results
-    operation: integral    # Sum value multiplied by valid duration
-    expr: power            # Previously defined power signal
+calculations:            # Calculations to return
+  - name: energy         # Name shown in results
+    operation: integral  # Sum value multiplied by valid duration
+    expr: power          # Previously defined power signal
 ```
 
 <a id="扩展设置"></a>
@@ -74,11 +74,11 @@ calculations:              # Calculations to return
 This version adds a 90% coverage requirement. It keeps the default J unit, `zoh` integration and `report` partial-result policy. Set another supported unit or `strict` only when needed.
 
 ```yaml
-calculations:                # Calculations to return
-  - name: energy             # Name shown in results
-    operation: integral      # Integrate power over the selected range
-    expr: power              # Previously defined power signal
-    minimum_coverage: 0.9    # Required data coverage, between 0 and 1
+calculations:              # Calculations to return
+  - name: energy           # Name shown in results
+    operation: integral    # Integrate power over the selected range
+    expr: power            # Previously defined power signal
+    minimum_coverage: 0.9  # Required data coverage, between 0 and 1
 ```
 
 <a id="字段参考"></a>

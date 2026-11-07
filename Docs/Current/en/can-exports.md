@@ -21,9 +21,9 @@ With one DBC-configured CAN source, `source` can be omitted. Message IDs and fie
 Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `can_frames` child. Keep other output settings and root fields; do not paste a second `outputs` key.
 
 ```yaml
-outputs:           # Additional result files to publish
-  can_frames:      # Export the selected original CAN frames
-    format: asc    # Text CAN log; use blf for binary BLF output.
+outputs:         # Additional result files to publish
+  can_frames:    # Export the selected original CAN frames
+    format: asc  # Text CAN log; use blf for binary BLF output.
 ```
 
 <a id="扩展设置"></a>
@@ -32,15 +32,15 @@ outputs:           # Additional result files to publish
 Replace the preceding `can_frames` child with this version. The two fragments are alternatives, not blocks to append together.
 
 ```yaml
-outputs:                           # Additional result files to publish
-  can_frames:                      # Export the selected original CAN frames
-    format: asc                    # Output message file format
-    resampling:                    # Optional output grid and value selection
-      period: 500ms                # Independent of the signal CSV grid.
-      max_gap: 2s                  # Maximum actual gap used for interpolation.
-      messages:                    # CAN message definitions selected for output
-        - frame_id: 0x100          # Message ID from the DBC.
-          continuous: [Voltage]    # DBC signal names, not analysis aliases.
+outputs:                         # Additional result files to publish
+  can_frames:                    # Export the selected original CAN frames
+    format: asc                  # Output message file format
+    resampling:                  # Optional output grid and value selection
+      period: 500ms              # Independent of the signal CSV grid.
+      max_gap: 2s                # Maximum actual gap used for interpolation.
+      messages:                  # CAN message definitions selected for output
+        - frame_id: 0x100        # Message ID from the DBC.
+          continuous: [Voltage]  # DBC signal names, not analysis aliases.
 ```
 
 These fields are relative to `outputs.can_frames`:
@@ -110,12 +110,12 @@ If one automatic rule matches two actual frame types, it asks you to specify the
 BLF requires calendar time. If the experiment is known to have started at 08:00 Beijing time on 2026-10-23 and original timestamps start at zero, use the following fragment. In [dual-grid.yaml](../examples/dual-grid.yaml), replace only the existing `outputs.can_frames` child and retain other settings.
 
 ```yaml
-outputs:                          # Additional result files to publish
-  can_frames:                     # Export the selected original CAN frames
-    format: blf                   # Output message file format
-    capture_date: '2026-10-23'    # Actual capture date from experiment records.
-    output_offset: 28800s         # Eight hours after that date's midnight.
-    timezone: +08:00              # Capture timezone.
+outputs:                        # Additional result files to publish
+  can_frames:                   # Export the selected original CAN frames
+    format: blf                 # Output message file format
+    capture_date: '2026-10-23'  # Actual capture date from experiment records.
+    output_offset: 28800s       # Eight hours after that date's midnight.
+    timezone: +08:00            # Capture timezone.
 ```
 
 The date sets midnight; adding 28800 seconds gives 08:00. Use your actual capture date. If original times already count from 1970-01-01 UTC, choose `epoch` and omit `capture_date` and `timezone`.

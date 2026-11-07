@@ -1,5 +1,5 @@
-batch_version: 1                    # 声明独立批量任务文件的结构版本；当前填写整数1
-process_count: 2                    # 限制分析工作进程数；正整数，1表示一个工作进程依次执行
-jobs:                               # 列出互相独立的分析任务，每项引用一份分析配置
-  - plan: analysis.yaml             # 指定该任务的分析配置文件；相对于批量配置文件所在目录
-  - plan: input-asc-minimal.yaml    # 指定该任务的分析配置文件；相对于批量配置文件所在目录
+batch_version: 1                # 声明独立批量任务文件的结构版本；当前填写整数1
+process_count: 4                # 外层最多同时执行4个独立任务；实际并行数不超过任务数
+jobs:                           # 列出互相独立的分析任务，每项引用一份分析配置
+  - plan: batch/energy.yaml     # 指定该任务的分析配置文件；相对于批量配置文件所在目录
+  - plan: batch/voltage.yaml    # 指定该任务的分析配置文件；相对于批量配置文件所在目录
