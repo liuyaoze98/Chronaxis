@@ -29,16 +29,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release download v0.1.0.dev2 --repo "$GITHUB_REPOSITORY" \
-            --pattern Chronaxis-Manual-0.1.0.dev2.zip
+          gh release download v0.1.0.dev3 --repo "$GITHUB_REPOSITORY" \
+            --pattern Chronaxis-Manual-0.1.0.dev3.zip
           sha256sum --strict --check - <<'SHA256'
-          99df96937dc848a517be619c04bfd54d45205cf4b876bcda37e5b7d096e281d8  Chronaxis-Manual-0.1.0.dev2.zip
+          6d1bebdbe565a9bb6a3b2cdc69e90affcebc1c9cb8e56ad133ba43babbd121f0  Chronaxis-Manual-0.1.0.dev3.zip
           SHA256
           python3 - <<'PY'
           from pathlib import Path
           from zipfile import ZipFile
           target = Path("manual").resolve()
-          with ZipFile("Chronaxis-Manual-0.1.0.dev2.zip") as archive:
+          with ZipFile("Chronaxis-Manual-0.1.0.dev3.zip") as archive:
               for item in archive.infolist():
                   if not (target / item.filename).resolve().is_relative_to(target):
                       raise ValueError("Archive member escapes the manual directory")
