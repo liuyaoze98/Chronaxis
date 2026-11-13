@@ -65,7 +65,8 @@ class GuideAccessTests(unittest.TestCase):
         (entry.parent / "inputs.lock.json").write_text("{}", encoding="utf8")
         with patch.object(user_guide, "__file__", str(repo / "src/chronaxis/user_guide.py")), \
                 patch.object(user_guide, "run_path", side_effect=AssertionError("源码阅读不能构建")):
-            self.assertEqual(user_guide.guide_path(), entry)
+            # 指南返回规范绝对路径；Windows 临时目录可能使用 8.3 短名。
+            self.assertEqual(user_guide.guide_path(), entry.resolve())
 
     def test_optional_export_ignores_extra_files_and_refuses_overwrite(self):
         """参数: 无。返回: 无。异常: ZIP混入缓存、覆盖文件或改写源资料时失败。"""

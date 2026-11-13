@@ -132,8 +132,9 @@ def check(wheel, guide, deps, report, device):
         raise ValueError('安装验证设备标签必须为非空文本')
     expected_can_versions = dependency_can_versions(deps)
     # 使用系统临时目录创建一次性独立运行区；必须实际位于项目根目录外。
-    area = Path(tempfile.mkdtemp(prefix="chronaxis-user-"))
-    if area.resolve().is_relative_to(ROOT):
+    # Windows临时目录可能使用8.3短名；后续隔离判断统一比较真实路径。
+    area = Path(tempfile.mkdtemp(prefix="chronaxis-user-")).resolve(strict=True)
+    if area.is_relative_to(ROOT):
         raise ValueError("隔离安装目录应在仓库之外")
     runtime = area / "runtime"
     env = {k:v for k,v in os.environ.items() if k.upper() not in {"PYTHONHOME","PYTHONPATH","VIRTUAL_ENV"}}
@@ -165,7 +166,7 @@ def check(wheel, guide, deps, report, device):
     # 不向隔离环境添加项目PYTHONPATH，只复制已准备好的第三方依赖，排除旧包和pth。
     command("venv",[sys.executable,"-m","venv","--without-pip",runtime])
     python = runtime / ("Scripts/python.exe" if os.name=="nt" else "bin/python")
-    site = Path(command("purelib",[python,"-I","-c","import sysconfig;print(sysconfig.get_path('purelib'))"]).strip())
+    site = Path(command("purelib",[python,"-I","-c","import sysconfig;print(sysconfig.get_path('purelib'))"]).strip()).resolve(strict=True)
     shutil.copytree(deps,site,dirs_exist_ok=True,
         ignore=shutil.ignore_patterns("*.pth","*editable*","chronaxis*","__pycache__","pip","pip-*","setuptools*","wheel*","_distutils_hack","pkg_resources"))
     command("install",[sys.executable,"-m","pip","--python",python,"install","--no-index","--no-deps",wheel])

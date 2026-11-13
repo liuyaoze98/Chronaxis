@@ -10,12 +10,76 @@ import json
 from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'tools'))
 from check_ai_install import CAN_VERSION_CHECK, check, dependency_can_versions
+
+
+class ReachedGuideLookup(RuntimeError):
+    """测试专用停止点：路径隔离已通过，尚未开始任何任务查询或分析。"""
+
+
+def installation_path_probe(root, *, outside=False, wrong_english=False):
+    """在真实临时目录运行安装检查的路径分支，安装子进程由受控结果代替。
+
+    参数: 临时根目录及两种越界场景。返回: 无；通过路径检查后抛ReachedGuideLookup。
+    使用含..的实际可访问别名模拟短名与真实目录拼写不同，适用于Windows及其他平台。
+    异常: 保留生产检查的AssertionError，不把隔离失败转换成成功。
+    """
+    root = root.resolve()
+    area = root/'installation'
+    area.mkdir()
+    (root/'alias-segment').mkdir()
+    alias = root/'alias-segment'/'..'/'installation'
+    site = area/'runtime/Lib/site-packages'
+    site.mkdir(parents=True)
+    guide = (root/'outside' if outside else site)/'chronaxis/guide'
+    (guide/'en').mkdir(parents=True)
+    (guide/'README.md').write_text('guide', encoding='utf-8')
+    (guide/'en/README.md').write_text('English guide', encoding='utf-8')
+    (guide/'manifest.json').write_text('{"package_version":"0.1.0.dev4"}', encoding='utf-8')
+    wheel, archive, report = root/'candidate.whl', root/'guide.zip', root/'report.json'
+    wheel.write_bytes(b'wheel fixture')
+    archive.write_bytes(b'guide fixture')
+    versions = {'python-can':'4.6.1', 'cantools':'45.1.2', 'natsort':'8.4.0'}
+
+    def command(argv, **kwargs):
+        """返回安装步骤的受控结果，仅真实执行被测工具的目录和文件检查。
+
+        参数: 子进程命令及调用选项。返回: 退出码、标准输出及错误输出的替代结果。
+        异常: ReachedGuideLookup标记路径检查已通过；临时文件I/O错误原样传播。
+        """
+        argv = list(map(str, argv))
+        output = ''
+        if '-c' in argv:
+            code = argv[argv.index('-c')+1]
+            if "sysconfig.get_path('purelib')" in code:
+                output = str(alias/'runtime/Lib/site-packages')
+            elif code == CAN_VERSION_CHECK:
+                output = json.dumps(versions)
+            elif 'import chronaxis,pathlib,sys' in code:
+                output = str(site/'chronaxis/__init__.py')
+            elif 'RunMetadata' in code:
+                output = '0.1.0.dev4'
+        elif 'guide' in argv:
+            if '--output' in argv:
+                Path(argv[argv.index('--output')+1]).write_bytes(archive.read_bytes())
+            else:
+                english = '--language' in argv and not wrong_english
+                output = str(guide/('en/README.md' if english else 'README.md'))
+        elif any(value.endswith('lookup.py') for value in argv):
+            raise ReachedGuideLookup('安装目录隔离和双语入口检查均已通过')
+        return SimpleNamespace(returncode=0, stdout=output, stderr='')
+
+    with patch('check_ai_install.tempfile.mkdtemp', return_value=str(alias)), \
+            patch('check_ai_install.dependency_can_versions', return_value=versions), \
+            patch('check_ai_install.shutil.copytree'), \
+            patch('check_ai_install.subprocess.run', side_effect=command):
+        check(wheel, archive, root, report, 'ci')
 
 
 def distribution(directory, folder, name, version):
@@ -107,6 +171,27 @@ class AIInstallDependenciesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, '缺少所需发行元数据'):
                 check(root/'candidate.whl', root/'guide.zip', root, root/'report.json', 'ci')
             create.assert_not_called()
+
+    def test_equivalent_path_spelling_reaches_guide_lookup(self):
+        """参数: 无。返回: None。异常: 同一真实目录因路径拼写差异而误拒绝时失败。"""
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with self.assertRaises(ReachedGuideLookup):
+                installation_path_probe(root)
+            report = json.loads((root/'report.json').read_bytes())
+            self.assertEqual(report['directory'], str((root/'installation').resolve()))
+
+    def test_guide_outside_installed_directory_remains_rejected(self):
+        """参数: 无。返回: None。异常: 规范路径后把外部指南当安装资源时失败。"""
+        with TemporaryDirectory() as temporary:
+            with self.assertRaises(AssertionError):
+                installation_path_probe(Path(temporary), outside=True)
+
+    def test_wrong_english_entry_remains_rejected(self):
+        """参数: 无。返回: None。异常: 中文入口被当作英文README接受时失败。"""
+        with TemporaryDirectory() as temporary:
+            with self.assertRaises(AssertionError):
+                installation_path_probe(Path(temporary), wrong_english=True)
 
 
 if __name__ == '__main__':
