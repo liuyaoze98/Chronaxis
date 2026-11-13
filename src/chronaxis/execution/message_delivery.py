@@ -19,7 +19,7 @@ def deliver_message(owner, projection, consumer, frame, sequence, values, time_n
     update = None
     # 费用只取所选字段；无关解码值不遍历、不复制进计算输入。
     cost = 16384 + sum(1024 + 16 * _metadata_bytes(values.get(
-        field.key if canonical_keys else field.signal)) for field in fields)
+        projection._canonical_key(field) if canonical_keys else field.signal)) for field in fields)
     _reserve_owned_ram(owner, cost, '_update_cost')
     try:
         update = projection.build(frame, sequence, values, time_ns, canonical_keys=canonical_keys)

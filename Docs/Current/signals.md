@@ -96,13 +96,29 @@ calculations:                  # 列出本例需要的计算结果
 | `valid_range` | 两个数的列表，可省略 | 限制换算后数值的允许上下界，含两端。按传感器量程或分析要求填，例如安培范围`[-100,100]`；下限不得大于上限。101A记OUT_OF_RANGE，既不裁剪成100也不补0。省略时不额外限制该物理范围，类型、缺失等检查仍执行。[]/null非法，bool/enum不适用。 |
 | `invalid_values` | 标量列表，默认[] | 列出表示无效的输入值，在额外换算前按类型和值排除。查设备无效码，并确认CSV解析或DBC解码得到的值；例如输入整数65535填`[65535]`，不能填换算后65.535。省略或[]不增加这项排除；null不能代替列表。详见原值类型表。 |
 | `sample_policy` | 字符串，默认backward_hold | 选择两次更新之间如何取得信号值。目前仅支持`backward_hold`：在有效期内沿用最近一次更新；不做线性插值。通常省略。 |
-| `same_time_policy` | 字符串，默认error | 控制同一信号同一时刻的多条更新如何处理。`error`：值、值类型、有效性或质量有冲突时报错，相同更新可合并；`last_by_sequence`：选来源稳定序号最大的更新。依据重复记录处理要求选，不按数值大小或文件名挑选。 |
+| `same_time_policy` | 字符串，默认error | 控制同一信号同一时刻的多条更新如何处理。`error`：值、值类型、有效性、质量或枚举原码有冲突时报错；这些内容相同的更新合并，并取来源序号最大的一条。`last_by_sequence`：有冲突时也选来源稳定序号最大的更新。依据重复记录处理要求选，不按数值大小或文件名挑选。 |
 | `semantic_id` | 非空字符串或null，默认null | 声明业务含义，供预设自动寻找角色或结果追溯。普通计算可省略；自动查找时按[角色表](presets.md#preset-role-requirements)填如`battery.current`，不能自行猜名称。表达式仍用name，不用此点分名称。 |
-| `semantic_contract_version` | 非空字符串或null，默认null | 标明semantic_id采用哪一版含义约定。普通计算可省略；预设自动查找须填写字符串`"1"`并提供semantic_id，含义和单位按预设角色表核对。普通信号可记录其他非空版本文本，但不会因此满足自动查找条件。这是业务角色规范的独立版本；预设自动查找使用字符串`"1"`，不随分析配置的整数config_version变化。 |
+| `semantic_contract_version` | 非空字符串或null，默认null | 标明semantic_id采用哪一版业务含义约定。只要版本非空，任何信号都必须同时给出semantic_id；普通计算可同时省略这两个字段。普通信号可记录项目自定的非空版本文本；预设自动查找要求字符串`"1"`，含义和单位须符合预设角色表。这是独立业务版本，不随分析配置的整数config_version变化。 |
 | `mapping_version` | 非空字符串或null，默认null | 记录原字段到此分析信号的绑定版本，供结果追溯。由项目维护者自行编号，如`"meter-map-2026-01"`；改变列/DBC对应关系时按项目规则更新。省略不影响普通计算，也不会自动生成版本。 |
 | `sign_convention` | 非空字符串或null，默认null | 声明正负值对应的物理方向。按设备规范及实际数据核对后填写；充电预设电流要求`positive_is_charge`，即正值表示充电。普通信号可省略或用项目约定非空文本。此声明不取反、不校准；数据方向不符须先处理输入。 |
 | `measurement_location` | 非空字符串或null，默认null | 记录实际测量位置。查接线/传感器说明；电池包端填`pack_terminal`。普通信号可省略或填项目约定位置文本；充电预设的电流、电压角色必须为pack_terminal，包括显式角色绑定。不会由信号名称推断或改变测点。 |
 | `metadata` | 映射，默认{} | 保存本信号自定义说明，例如`{sensor_serial: S001}`；键和值由项目记录规则决定。省略/{}无附加说明，不能放入这里来启用换算或质量功能。 |
+
+例如同一信号在第1秒收到两条10 A更新，类型和质量相同，普通分析合并为一个更新；收到10 A和20 A时，默认error报错，last_by_sequence采用来源序号较大的值，不按工作进程到达顺序选择。同一别名重复使用同一来源序号仍是错误。此规则用于普通信号更新；逐消息累计保留每条报文的贡献，不因数值相同而去重。
+
+下面两段分别追加到已有的一个`signals`列表项中，不是完整信号配置。第一段用于记录项目自定含义；第二段用于按预设角色查找，仍须按[角色表](presets.md#preset-role-requirements)提供正确单位、方向和测量位置。
+
+```yaml
+semantic_id: example.power       # 本项目对功率信号的业务命名
+semantic_contract_version: "2"  # 上述业务定义的项目自定版本
+```
+
+```yaml
+semantic_id: battery.current     # 预设角色表约定的电流含义
+semantic_contract_version: "1"  # 当前预设自动查找要求的业务版本
+```
+
+只填`semantic_contract_version: "2"`而没有`semantic_id`会在配置加载时报错；单独填写`semantic_id`可以记录业务含义，但不等于满足预设自动查找要求。
 
 <a id="signal-field-decisions"></a>
 ## CAN信号的默认值与报文集中绑定
@@ -265,7 +281,7 @@ missing_values匹配CSV原始单元格文字，invalid_values匹配解析后的�
 
 ## valid_for：最近值可以沿用多久
 
-不填写`valid_for`时，程序使用当前信号周期的3倍：先取该信号的`period`，没有填写时再从DBC读取所属报文周期。没有DBC的已解码CSV或内存信号可填写`period`。需要沿用历史样本、但不能取得周期时，会要求补充`period`或`valid_for`，不按相邻记录的间隔猜测周期。逐消息计算本身不沿用旧值，但当前公开运行入口仍会补齐已使用信号的默认有效期；因此也须提供可用的period、valid_for或DBC报文周期。公式参数parameters.period不会自动填入信号period。
+不填写`valid_for`时，程序使用当前信号周期的3倍：先取该信号的`period`，没有填写时再从DBC读取所属报文周期。没有DBC的已解码CSV或内存信号可填写`period`。需要沿用历史样本、但不能取得周期时，会要求补充`period`或`valid_for`，不按相邻记录的间隔猜测周期。普通入口`chronaxis run`及`AnalysisRunner.run`在启动时补齐已使用信号的有效期；即使只做逐消息计算，也须提供可用的`period`、`valid_for`或DBC报文周期。[高性能积分器](fast-energy.md)的`fast run`只读取当条报文，不保持前值，无需为此填写信号周期或有效期。公式中的自定义时间参数（如`parameters.frame_duration`）不会自动填入信号`period`。
 
 例如电压周期100ms，默认有效期300ms；电流周期10ms，默认有效期30ms。各信号独立确定，不把计算驱动信号的周期套给其他信号。`valid_for: 500ms`会覆盖这项默认值。到期判断始终使用报文实际时间：电压在1秒更新，300ms有效期意味着1.3秒起旧电压不可用，不会因为固定周期计数较慢而继续使用。
 

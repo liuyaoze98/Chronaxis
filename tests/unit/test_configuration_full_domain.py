@@ -2,7 +2,7 @@
 from copy import deepcopy
 from pathlib import Path
 from published_paths import published_file, export_root
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from uuid import uuid4
 import unittest
 from unittest.mock import patch
@@ -44,8 +44,7 @@ class FullDomainConfigurationTests(unittest.TestCase):
             for batch in (1,3):
                 with self.subTest(backend=backend,batch=batch):
                     raw=self.config(batch=batch)
-                    with patch('chronaxis.execution.history.DecodedHistoryStore',side_effect=AssertionError('extra history')):
-                        calculations,_,_=self.run_config(raw,backend)
+                    calculations,_,_=self.run_config(raw,backend)
                     self.assertEqual(calculations[0].value,4.)
                     raw=self.config(rows=[])
                     raw['rules']=[dict(name='always',rule_type='condition_duration', duration_comparison='>=',condition='True',minimum_duration='0s')]
@@ -173,7 +172,6 @@ class FullDomainRawTests(unittest.TestCase):
 
     def test_three_formats_full_range_and_requested_exports(self):
         """两后端actual1344J/fixed880J；原帧和信号导出可与省略范围联合运行。"""
-        from chronaxis.execution.can_reader import BudgetedLegacyCANSourceAdapter
         from chronaxis.execution.text_can_reader import BudgetedTextCANSourceAdapter
         for kind,path in self.fixtures().items():
             for backend in ('reference','numpy'):
@@ -185,7 +183,7 @@ class FullDomainRawTests(unittest.TestCase):
                         raw['outputs']['can_frames']=dict(source=raw['sources'][0]['name'],format='asc')
                         raw.setdefault('execution',{})['batch_rows']=1
                     plan=self.plan(kind,path,mode,edit)
-                    adapter=BudgetedLegacyCANSourceAdapter if kind=='can_blf' else BudgetedTextCANSourceAdapter
+                    adapter=BudgetedTextCANSourceAdapter
                     original=adapter.iter_batches;scans=[]
                     def scan(owner,*args,**kwargs):
                         """核对只读一次。参数: 原调用参数。返回: 原读取器。异常: 原错。"""

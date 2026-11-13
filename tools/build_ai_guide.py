@@ -38,7 +38,7 @@ def source_bytes(path):
     return resource_bytes(path.relative_to(ROOT).as_posix(), data)
 
 
-def public_card(page):
+def public_card(page, *, language="", api_names=()):
     """参数: page为Current公开页文本。返回: 面向安装用户的独立成员/参数说明。异常: 缺少公开正文时报错。"""
     # 从第一个公开锚点起保留成员说明及完整调用例；只去除源码位置等开发导航。
     page = reading_text(page)
@@ -51,9 +51,34 @@ def public_card(page):
     body = body.replace("Docs/Current/examples/", "examples/")
     body = body.replace("从仓库根目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
     body = body.replace("Run from the repository root", "Run from the AI guide root (the directory containing examples)")
-    # 内容保留类型名称；本资料中的API文件与Current网页的相对目录不同。
-    # 只取不含方括号的叶级链接；外层tuple/list的括号必须原样保留。
-    return re.sub(r"\[([^\[\]\n]+)\]\([^\)\n]+\)", r"\1", body).strip()
+    # 共享注册实例例从各语言README目录执行；路径转换与代码中的目录说明一起派生。
+    if language:
+        body = body.replace('# Run from the manual root (the directory containing examples).',
+                            '# Run from the English AI README directory (en).')
+        body = body.replace('load_analysis_plan("examples/calculation-minimal.yaml", extensions=registry)',
+                            'load_analysis_plan("../examples/calculation-minimal.yaml", extensions=registry)')
+    else:
+        body = body.replace('# 从手册根目录（包含 examples 子目录）运行。',
+                            '# 从中文 AI README 所在目录运行（该目录包含 examples 子目录）。')
+    # HTML仍保留这些类型链接；独立卡片不含内部参考，不承诺存在已移除的链接。
+    body = body.replace('The linked lower-level types are Chinese implementation references.\n', '')
+    # 卡片链接以卡片文件所在目录为起点；命令仍按各阅读入口声明的工作目录执行。
+    def rewrite(match):
+        """改写随包链接。参数: Markdown匹配。返回: 链接或类型名称。异常: 无；不读写文件。"""
+        label, target = match.groups()
+        root = "../../" if language else "../"
+        if target == "../host-extensions.md":
+            config_label = "configuration" if language else "配置"
+            return (f"[{label}]({root}examples/temporal/host_extensions.py) "
+                    f"([{config_label}]({root}examples/temporal/host-analysis.yaml))")
+        if target.startswith("../examples/"):
+            return f"[{label}]({root}{target.removeprefix('../')})"
+        filename = target.partition('#')[0]
+        if target.startswith(("#", "https://", "http://")) or filename in {name + '.md' for name in api_names}:
+            return f"[{label}]({target})"
+        # 未随包分发的内部源码类型保留名称，不创建悬空网页链接。
+        return label
+    return re.sub(r"\[([^\[\]\n]+)\]\(([^\)\n]+)\)", rewrite, body).strip()
 
 
 def add_english(files, sources, meta):
@@ -87,9 +112,11 @@ def add_english(files, sources, meta):
             if right[key] != expected:
                 raise ValueError(f"English task changed machine data: {left['id']}.{key}")
     api = []
-    for item in json.loads(sources["Docs/Current/en/public-api.json"])["objects"]:
+    public = json.loads(sources["Docs/Current/en/public-api.json"])["objects"]
+    for item in public:
         name = item["name"]
-        card = public_card(sources[f"Docs/Current/en/public-api/{name}.md"].decode("utf8"))
+        card = public_card(sources[f"Docs/Current/en/public-api/{name}.md"].decode("utf8"),
+                           language="en/", api_names=[row["name"] for row in public])
         # 这三页沿用英文README的en工作目录；AnalysisPlan已显式声明根目录，保持其例外。
         if name in {"load_analysis_plan", "validate_analysis_plan", "explain_analysis_plan"}:
             card = card.replace('load_analysis_plan("examples/analysis.yaml")',
@@ -110,6 +137,7 @@ def add_english(files, sources, meta):
         if name == "fields/index.json":
             value["use"] = "Look up a field within its schema and branch; validate the complete plan before running it."
         else:
+            value["original"] = value["original"].replace("schemas/", "../schemas/", 1)
             for row in value["fields"]:
                 row["source"] = row["source"].replace("schemas/", "../schemas/", 1)
                 row["conditions"] = [x.replace("schemas/", "../schemas/", 1) for x in row["conditions"]]
@@ -266,6 +294,69 @@ def validate_task_references(files):
     return checked
 
 
+def validate_field_references(files):
+    """校核双语字段分片的全部规范定位，不只验证内层字段。
+
+    参数: files为最终指南相对路径到bytes的映射。返回: 实际检查的指针数量。
+    异常: ValueError表示文件或JSON Pointer缺失；只读内存，不改Schema。
+    """
+    schemas = {}
+    checked = 0
+    for name, content in files.items():
+        language = 'en/' if name.startswith('en/') else ''
+        relative = name.removeprefix(language)
+        if not relative.startswith('fields/') or not relative.endswith('.json') or relative == 'fields/index.json':
+            continue
+        page = json.loads(content)
+        references = [page['original']]
+        for row in page['fields']:
+            references.extend([row['source'], *row['conditions']])
+        for reference in references:
+            path, separator, fragment = reference.partition('#')
+            target = posixpath.normpath(language + path)
+            if target not in files or not target.startswith('schemas/') or not separator or (fragment and not fragment.startswith('/')):
+                raise ValueError('字段规范定位无效：' + name + ' -> ' + reference)
+            if target not in schemas:
+                schemas[target] = json.loads(files[target])
+            node = schemas[target]
+            try:
+                for part in fragment.split('/')[1:]:
+                    key = part.replace('~1', '/').replace('~0', '~')
+                    if isinstance(node, list):
+                        if not re.fullmatch(r'0|[1-9][0-9]*', key):
+                            raise ValueError('数组定位必须为规范的非负整数')
+                        node = node[int(key)]
+                    else:
+                        node = node[key]
+            except (KeyError, IndexError, ValueError, TypeError) as error:
+                raise ValueError('字段JSON Pointer无效：' + name + ' -> ' + reference) from error
+            checked += 1
+    return checked
+
+
+def validate_api_links(files):
+    """检查独立API卡片保留的链接及锚点。
+
+    参数: files为最终分发映射。返回: 本地链接数量。异常: ValueError表示目标缺失。
+    链接相对于卡片本身，不把中文/英文命令的工作目录当作Markdown解析起点。
+    """
+    checked = 0
+    for name, data in files.items():
+        if not name.endswith('.md') or not name.startswith(('api/', 'en/api/')):
+            continue
+        for target in re.findall(r'\[[^\[\]\n]+\]\(([^)\n]+)\)', data.decode('utf8')):
+            if target.startswith(('https://', 'http://')):
+                continue
+            path, _, fragment = target.partition('#')
+            destination = posixpath.normpath(posixpath.dirname(name) + '/' + path) if path else name
+            if destination not in files:
+                raise ValueError('API卡片链接缺少随包文件：' + name + ' -> ' + target)
+            if fragment and f'id="{fragment}"' not in files[destination].decode('utf8'):
+                raise ValueError('API卡片锚点不存在：' + name + ' -> ' + target)
+            checked += 1
+    return checked
+
+
 def check_runtime(lock):
     """参数: lock为带产品树摘要的发行清单。返回: 无。异常: 可分发产品文件改变或增删时报错。"""
     material = []
@@ -332,7 +423,8 @@ def build_files(*, verify_runtime=True):
     for item in public:
         name = item["name"]
         rel = f"api/{name}.md"
-        card = public_card(sources[f"Docs/Current/public-api/{name}.md"].decode())
+        card = public_card(sources[f"Docs/Current/public-api/{name}.md"].decode(),
+                           api_names=[row["name"] for row in public])
         module, symbol = item.get("import_module", "chronaxis"), item.get("import_name", name)
         files[rel] = (f"# {name}\n\n推荐导入：`from {module} import {symbol}`\n\n{card}\n").encode()
         api.append(dict(name=name, import_module=module, import_name=symbol, group=item["group"], signature=item["signature"], file=rel))
@@ -363,6 +455,8 @@ def build_files(*, verify_runtime=True):
     add_english(files, sources, meta)
     add_task_topics(files, sources)
     validate_task_references(files)
+    validate_field_references(files)
+    validate_api_links(files)
     validate_result_summaries(files)
     files["manifest.json"] = json_bytes(dict(package="chronaxis", package_version=version,
         guide_revision=3, languages={"zh": "README.md", "en": "en/README.md"},

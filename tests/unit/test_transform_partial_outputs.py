@@ -2,7 +2,7 @@
 
 from contextlib import closing
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from chronaxis import AnalysisPlan,AnalysisRunner
 from chronaxis.core.models import Interval

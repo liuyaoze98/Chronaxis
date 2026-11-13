@@ -2,7 +2,7 @@
 
 输入为八个手定原帧和一字节DBC；正活动为[0,2)、[3,4)，半开筛选应导出
 原帧索引(0,1,2)/(4,5)，包括不参与信号分析的未知扩展帧和12字节FD帧。
-运行前用真正BLFReader建立有限逻辑真值，生产运行仍只初始化一次原read；
+运行前用真正BLFReader建立有限逻辑真值，生产运行只创建一个解码owner并打开一次BLF；
 run完成全部原writer后，write向两个新目录只复制并核验封口BLF/索引。
 空输入、无窗口、无事件、EOF零长交集、不同origin、文件篡改及复制取消分别
 验证实际公开路径。测试只写work独立目录，不改变旧链、Ref或生产调用参数。
@@ -23,7 +23,8 @@ from unittest.mock import patch
 from chronaxis import AnalysisError, AnalysisPlan, AnalysisRunner
 from chronaxis.core.models import Interval
 from chronaxis.legacy.export_write import LegacyCANProcessWrite
-from chronaxis.legacy.process_read import LegacyCANProcessRead
+from chronaxis.sources.blf import BLFRead
+from chronaxis.sources.text_can_decode import CANTextDecodeRead
 from chronaxis.results import ResultFormatError
 from chronaxis.results.artifact_exports import ArtifactExportStore
 
@@ -100,25 +101,28 @@ class CANRawRunnerTests(unittest.TestCase):
 
     @contextmanager
     def process_observation(self):
-        """透传实际start并记录真实对象及首次启动，不修改原worker或旧函数链。
+        """观察实际读取owner与writer启动，不改变调用或帧处理。
 
-        参数: 无。返回: 上下文内可见的有限观察dict。异常: 被观察原错误原样传播。
-        副作用: 只在with内包装父client方法，spawn的原worker参数和行为保持不变。
+        参数: 无。返回: 包含解码、文件读取和writer对象的有限dict。
+        异常: 被观察原错误原样传播；补丁仅在本上下文中生效。
         """
-        observed = dict(read_entries=[], write_entries=[], reads=[], writers=[])
-        read_start, write_start = LegacyCANProcessRead.start, LegacyCANProcessWrite.start
+        observed = dict(write_entries=[], reads=[], raw_reads=[], writers=[])
+        decode_init = CANTextDecodeRead.__init__
+        raw_init = BLFRead.__init__
+        write_start = LegacyCANProcessWrite.start
 
-        def start_read(owner):
-            """观察实际read启动。参数: 原owner。返回: 原start返回。异常: 原错误不变。"""
-            before = owner._started
-            observed['read_entries'].append(owner)
-            result = read_start(owner)
-            if not before and owner._started:
-                observed['reads'].append(owner)
-            return result
+        def start_decode(owner, *args, **kwargs):
+            """记录真实解码owner。参数: 原构造参数。返回: None。异常: 原错误。"""
+            decode_init(owner, *args, **kwargs)
+            observed['reads'].append(owner)
+
+        def start_raw(owner, *args, **kwargs):
+            """记录实际文件打开。参数: 原构造参数。返回: None。异常: 原错误。"""
+            raw_init(owner, *args, **kwargs)
+            observed['raw_reads'].append(owner)
 
         def start_write(owner):
-            """观察实际writer启动。参数: 原owner。返回: 原start返回。异常: 原错误不变。"""
+            """记录首次writer启动。参数: 原owner。返回: 原start返回。异常: 原错误。"""
             before = owner._started
             observed['write_entries'].append(owner)
             result = write_start(owner)
@@ -126,18 +130,20 @@ class CANRawRunnerTests(unittest.TestCase):
                 observed['writers'].append(owner)
             return result
 
-        with patch.object(LegacyCANProcessRead, 'start', new=start_read), \
+        with patch.object(CANTextDecodeRead, '__init__', new=start_decode), \
+                patch.object(BLFRead, '__init__', new=start_raw), \
                 patch.object(LegacyCANProcessWrite, 'start', new=start_write):
             yield observed
 
     @contextmanager
     def forbid_original_processes(self):
-        """禁止重复读、解码或旧writer启动，发布必须仅复制已存在工件。
+        """禁止再次读取、解码或启动writer；发布仅复制已存在工件。
 
-        参数: 无。返回: with上下文。异常: 任一start入口被调用时AssertionError。
+        参数: 无。返回: with上下文。异常: 任一构造或start被调用时AssertionError。
         """
-        with patch.object(LegacyCANProcessRead, 'start', side_effect=AssertionError('发布重启原read')), \
-                patch.object(LegacyCANProcessWrite, 'start', side_effect=AssertionError('发布重启旧writer')):
+        with patch.object(CANTextDecodeRead, '__init__', side_effect=AssertionError('发布重建解码owner')), \
+                patch.object(BLFRead, '__init__', side_effect=AssertionError('发布重读BLF')), \
+                patch.object(LegacyCANProcessWrite, 'start', side_effect=AssertionError('发布重启writer')):
             yield
 
     def run_plan(self, work, plan):
@@ -180,20 +186,28 @@ class CANRawRunnerTests(unittest.TestCase):
         return store.path / record['directory'] / fact['name'], fact
 
     def assert_processes_finished(self, observed, frames, writers):
-        """核所有真实read/writer已在返回结果前退出及关闭，计数不靠业务输出推测。
+        """核真实读取EOF、文件关闭及writer退出；计数不从业务结果反推。
 
-        参数: observed为透传观察；frames为原帧总数；writers为实际writer数量。
-        返回: None。异常: 真实句柄、进程、EOF或许可计数不符使断言失败。
+        参数: observed为透传观察；frames为原帧数；writers为实际writer数。
+        返回: None。异常: 文件、进程、EOF或计数不符使断言失败。
         """
         self.assertEqual(len(observed['reads']), 1)
-        self.assertEqual(len(observed['writers']), writers)
-        # owner对象保活后直接比身份；操作系统允许PID复用，不能把PID不同当额外合同。
-        self.assertEqual(len(set(observed['writers'])), writers)
+        self.assertEqual(len(observed['raw_reads']), 1)
         reader = observed['reads'][0]
-        # 本例至多8帧，全部完整记录和EOF均放进唯一有界许可；不能再假装逐条PULL。
-        self.assertEqual(reader.counters, dict(pulls_issued=1, items_returned=frames,
-            items_accepted=frames, frames_authorized=4096, records_returned=frames))
-        for owner in (*observed['reads'], *observed['writers']):
+        raw = observed['raw_reads'][0]
+        self.assertEqual(reader.count, frames)
+        self.assertEqual(raw.count, frames)
+        self.assertTrue(reader.exhausted)
+        self.assertTrue(reader.closed)
+        self.assertTrue(raw.closed)
+        for slot in ('_raw', '_db', '_binding_resolver'):
+            self.assertIsNone(getattr(reader, slot))
+        for slot in ('_file', '_reader', '_iterator'):
+            self.assertIsNone(getattr(raw, slot))
+        self.assertEqual(len(observed['writers']), writers)
+        # 操作系统允许PID复用；对象身份与真实退出/句柄事实一起证明每个writer已完成。
+        self.assertEqual(len(set(observed['writers'])), writers)
+        for owner in observed['writers']:
             self.assertTrue(owner.finished)
             self.assertTrue(owner.closed)
             self.assertTrue(owner._process_stopped)
@@ -336,8 +350,10 @@ class CANRawRunnerTests(unittest.TestCase):
         self.assertEqual(len(observed['reads']), 1)
         # 当前在创建输出消费者时拒绝不同时间基准；读取器真实关闭但没有消费到EOF。
         self.assertTrue(observed['reads'][0].closed)
-        self.assertFalse(observed['reads'][0].finished)
-        self.assertIsNone(observed['reads'][0]._process)
+        self.assertFalse(observed['reads'][0].exhausted)
+        self.assertEqual(observed['reads'][0].count, 0)
+        self.assertIsNone(observed['reads'][0]._raw)
+        self.assertEqual(observed['raw_reads'], [])
         self.assertIsInstance(caught.exception.__cause__, ValueError)
         self.assertIn('共同时间基准', str(caught.exception.__cause__))
         owner = caught.exception.runner_cleanup_owner

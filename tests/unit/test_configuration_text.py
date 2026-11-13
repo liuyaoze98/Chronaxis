@@ -1,4 +1,6 @@
 """真实CLI默认说明与显式机器报告；验证叙述依据及无数据读取，不用快照自证正确。"""
+
+from workspace_fixtures import test_directory
 from contextlib import redirect_stdout
 import io
 import json
@@ -27,7 +29,7 @@ class ConfigurationTextTests(unittest.TestCase):
 
     def setUp(self):
         """保存有单位/规则/计算的合成YAML。参数: 无。返回: None。异常: IO。"""
-        self.root=Path(tempfile.mkdtemp(prefix='configuration-text-',dir='work')).resolve()
+        self.root=Path(test_directory(self,prefix='configuration-text-',dir='work')).resolve()
         self.path=self.root/'plan.yaml'
         self.write(config_fixture())
 
@@ -88,16 +90,24 @@ class ConfigurationTextTests(unittest.TestCase):
         self.assertEqual(json.loads(missing.stdout)['errors'][0]['code'],'load_error')
 
     def test_text_static_path_never_opens_declared_csv_or_creates_output(self):
-        """默认文本和机器报告共同保持静态边界；实际打开只允许配置。参数: 无。返回: None。异常: 断言。"""
+        """静态入口只读配置及随软件提供的规范，不读取日志。参数: 无。返回: None。异常: 断言。"""
         self.write(static_configuration())
         original=Path.open;opened=[]
+        from chronaxis.planning import diagnostic_collection
+        diagnostic_collection.schema_validator.cache_clear()
+        package=Path(diagnostic_collection.__file__).resolve().parents[1]
+        schemas={package/'schemas'/'analysis.schema.json',
+                 package.parents[1]/'Docs/Schema/analysis.schema.json'}
         def only_configuration(path,*args,**kwargs):
-            """观察真实FD打开。参数: 路径/参数。返回: FD。异常: 非配置I/O断言。"""
-            self.assertEqual(path,self.path);opened.append(path)
+            """允许冷启动只读规范。参数: 路径/参数。返回: FD。异常: 数据读取或写入断言。"""
+            self.assertIn(args[0] if args else kwargs.get('mode','r'), ('r','rt','rb'))
+            self.assertTrue(path==self.path or path in schemas, str(path))
+            if path==self.path:
+                opened.append(path)
             return original(path,*args,**kwargs)
         for command in ('validate','explain'):
             output=io.StringIO()
-            args=SimpleNamespace(plan=self.path,command=command,backend=None,format='text')
+            args=SimpleNamespace(plan=self.path,command=command,backend=None,process_count=None,format='text')
             with patch.object(Path,'open',only_configuration),redirect_stdout(output),\
                  patch.object(AnalysisRunner,'run',side_effect=AssertionError('静态不得运行')):
                 self.assertEqual(run_static(args),0)

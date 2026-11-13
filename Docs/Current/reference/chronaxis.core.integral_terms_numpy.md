@@ -2,7 +2,7 @@
 
 用NumPy计算每个时间段的前值保持积分面积。先裁剪时间范围，再用左端有效值乘以实际秒数；返回面积数组、有效标记、覆盖时长和缺失原因。这里不先求各块总和，也不换算最终单位。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -46,7 +46,7 @@ class NumpyIntegralTerms
 |`valid`|np.ndarray|是|无|bool形状(N-1,)，True位置可归约。|
 |`facts`|[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)|是|无|当前块原请求/覆盖/诊断和完整真实来源。|
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:21`](../../../src/chronaxis/core/integral_terms_numpy.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:21`](../../../src/chronaxis/core/integral_terms_numpy.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyIntegralTerms-__post_init__"></a>
 ### `NumpyIntegralTerms.__post_init__`
@@ -77,7 +77,7 @@ TypeError/ValueError为数组或事实错误。
 - `TypeError`：数组积分项需要同长一维float64/bool及IntegralFacts。
 - `ValueError`：数组积分项必须只读且有限，无效位置仅0存储。
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:28`](../../../src/chronaxis/core/integral_terms_numpy.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:28`](../../../src/chronaxis/core/integral_terms_numpy.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_integral_terms_numpy"></a>
 ## `compute_integral_terms_numpy`
@@ -106,4 +106,4 @@ NumpyIntegralTerms；实际临时/输出列为N或N-1，面积单位input_unit�
 
 输入/单位/时间/分配错误传播；浮点故障追加质量并使对应项无效。
 
-源码：[`src/chronaxis/core/integral_terms_numpy.py:44`](../../../src/chronaxis/core/integral_terms_numpy.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms_numpy.py:44`](../../../src/chronaxis/core/integral_terms_numpy.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

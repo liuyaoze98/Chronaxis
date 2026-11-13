@@ -108,7 +108,10 @@ class RecordWindows:
         parents=bounds=segments=None
         primary=None
         try:
-            _reserve_owned_ram(self,65536+sum(8192+16*_metadata_bytes(item[0]) for item in entries),'_workspace_cost')
+            # 入队费用是8192+32*事件元数据；工作副本仍收8192+16*元数据。
+            # 从已核费用推导同一金额，不重新遍历长合并组中未变化的父事件。
+            workspace = 65536 + sum(4096 + item[1] // 2 for item in entries)
+            _reserve_owned_ram(self,workspace,'_workspace_cost')
             parents=tuple(item[0] for item in entries)
             bounds=None if self._steps[name] is None else tuple(item[2] for item in entries)
             segments=self._build(parents,self._specs[name],self._observation[name],bounds=bounds,compact=True)

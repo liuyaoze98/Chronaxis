@@ -34,8 +34,6 @@ class FrameSort:
         try:
             # 两路解码树/编码/缓冲及句柄均有固定工作空间，实际行缓冲另计。
             _reserve_owned_ram(self,6*1048576,'_fixed_cost')
-            if any(p.casefold()=='refprojects' for p in (*self.path.parts,*self.path.resolve().parts)):
-                raise ValueError('报文排序不能写RefProjects')
             self.path.mkdir(parents=True,exist_ok=False); self.secret=token_bytes(32) if integrity else None
         except BaseException as error:
             _cleanup_owner(self,error,'frame_sort_cleanup_owner','报文排序构造')

@@ -2,7 +2,7 @@
 
 输入写入work/m2-run-tests/budgeted-csv唯一目录，device_label为work；旧快照只读。
 原入口与预算入口在reference/numpy和四种切分下完整事实相同，另有手算真值。
-长行/引用多行/Unicode提升/同刻状态必须显式失败，清理不删除输入，原错误链保留。
+长行/引用多行/Unicode提升按容量计费，超限明确失败；同刻状态不漏账，清理不删除输入。
 小夹具物化仅用于测试比较，不能作为生产有界实现或RSS性能证明。
 """
 
@@ -19,7 +19,9 @@ from chronaxis.core.binding import SignalDefinition
 from chronaxis.core.models import TimebaseSpec, SourceRef
 from chronaxis.core.types import SignalDType as D, TimeType
 from chronaxis.execution.csv_reader import BudgetedSignalCSVSourceAdapter
-from chronaxis.execution.history import DecodedHistoryStore
+from chronaxis.execution.batch_signal_groups import BatchSignalGroups
+from chronaxis.execution.calculation_values import scalar_from_column
+from chronaxis.execution.history_records import HistorySample
 from chronaxis.results import BudgetExceededError, ResultFormatError
 from chronaxis.execution.history_records import encode_record, decode_record
 from chronaxis.results.budget import ResourceBudget
@@ -123,7 +125,7 @@ class BudgetedCSVTests(unittest.TestCase):
 
         参数: 无。返回: None。异常: 超限被忽略或原错误链/释放错误断言失败。
         """
-        path = self.write('long.csv', 'ns,v,id,mode,note\n' + f'{self.start},1,1,scope,' + 'x' * 10000 + '\n')
+        path = self.write('long.csv', 'ns,v,id,mode,note\n' + f'{self.start},1,1,scope,' + 'x' * 100000 + '\n')
         adapter, request = self.build(budget=ResourceBudget(1000000), spec=replace(self.spec, paths=(path,)))
         baseline = adapter.budget.ram_bytes
         with patch('chronaxis.sources.signal_csv.pack_decoded') as pack:
@@ -133,14 +135,14 @@ class BudgetedCSVTests(unittest.TestCase):
         self.assertIsInstance(caught.exception.__cause__, BudgetExceededError)
         self.assertEqual(adapter.budget.ram_bytes, baseline)
         self.assertFalse(adapter.handles)
-        self.assertEqual(len(path.read_text(encoding='utf-8').splitlines()[-1]), len(f'{self.start},1,1,scope,') + 10000)
+        self.assertEqual(len(path.read_text(encoding='utf-8').splitlines()[-1]), len(f'{self.start},1,1,scope,') + 100000)
 
     def test_multiline_record_accumulates_before_pack(self):
         """各物理行很短但一个引用记录累积超限，不能用逐行释放绕过限制。
 
         参数: 无。返回: None。异常: 多行记录资源未累计或开始数组分配断言失败。
         """
-        path = self.write('quoted.csv', f'ns,v,id,mode,note\n{self.start},1,1,scope,"' + ('x\n' * 400) + 'end"\n')
+        path = self.write('quoted.csv', f'ns,v,id,mode,note\n{self.start},1,1,scope,"' + ('x\n' * 40000) + 'end"\n')
         adapter, request = self.build(budget=ResourceBudget(1000000), spec=replace(self.spec, paths=(path,)))
         baseline = adapter.budget.ram_bytes
         with patch('chronaxis.sources.signal_csv.pack_decoded') as pack:
@@ -151,28 +153,29 @@ class BudgetedCSVTests(unittest.TestCase):
         self.assertEqual(adapter.budget.ram_bytes, baseline)
         self.assertFalse(adapter.handles)
 
-    def test_unicode_promotion_budget_precedes_pack(self):
-        """64个原str有一个4096字符，NumPy定宽提升预留失败；reference独立可运行。
+    def test_unicode_promotion_fits_real_workspace_and_splits_when_needed(self):
+        """按一份 UTF32 原列计费，8MiB 可容纳原夹具，较小预算按容量提前交批。
 
-        参数: 无。返回: None。异常: 先数组分配、自动回退或独立参考被误拒绝断言失败。
+        参数: 无。返回: None。异常: 丢样本、错误回退、容量超限或清理残留时失败。
         """
-        path = self.write('unicode.csv', 'ns,mode\n' + '\n'.join(f'{self.start + i},' + ('x' * 4096 if i == 0 else 'z') for i in range(64)) + '\n')
-        spec = replace(self.spec, paths=(path,))
         definition = self.signals[2]
-        for backend in ('reference', 'numpy'):
-            adapter, request = self.build(backend, 64, budget=ResourceBudget(8 * 1024 ** 2), spec=spec, signals=(definition,))
-            baseline = adapter.budget.ram_bytes
-            if backend == 'numpy':
-                with patch('chronaxis.sources.signal_csv.pack_decoded') as pack:
-                    with self.assertRaises(SourceReadError) as caught:
-                        next(adapter.iter_batches(request))
-                pack.assert_not_called()
-                self.assertIsInstance(caught.exception.__cause__, BudgetExceededError)
-            else:
+        for budget_bytes, count in ((8 * 1024 ** 2, 64), (2 * 1024 ** 2, 1024)):
+            path = self.write(f'unicode-{count}.csv', 'ns,mode\n' +
+                              '\n'.join(f'{self.start + i},' + ('x' * 4096 if i == 0 else 'z')
+                                        for i in range(count)) + '\n')
+            spec = replace(self.spec, paths=(path,))
+            for backend in ('reference', 'numpy'):
+                adapter, request = self.build(backend, count, budget=ResourceBudget(budget_bytes),
+                                              spec=spec, signals=(definition,))
+                baseline = adapter.budget.ram_bytes
                 batches = list(adapter.iter_batches(request))
-                self.assertEqual(sum(batch.sample_count for batch in batches), 64)
+                self.assertEqual(sum(batch.sample_count for batch in batches), count)
                 self.assertTrue(all(not col.valid.any() for batch in batches for col in batch.series.values()))
-            self.assertEqual(adapter.budget.ram_bytes, baseline)
+                self.assertEqual([int(t) for batch in batches for col in batch.series.values() for t in col.time_ns],
+                                 list(range(self.start, self.start + count)))
+                if backend == 'numpy' and count == 1024:
+                    self.assertGreater(len(batches), 1)
+                self.assertEqual(adapter.budget.ram_bytes, baseline)
 
     def test_unstarted_and_multiple_requests_close_independently(self):
         """重复未开始close不积累登记；两个活动读取器只关闭自有请求。
@@ -243,16 +246,21 @@ class BudgetedCSVTests(unittest.TestCase):
         """
         for backend in ('reference', 'numpy'):
             adapter, request = self.build(backend, 2)
-            history = DecodedHistoryStore(adapter.budget, self.work / ('history-' + backend), (adapter.describe(),), {'table': request})
-            self.addCleanup(history.close)
+            groups = []
+            grouping = BatchSignalGroups(adapter.budget, self.signals, 'session', groups.append)
+            self.addCleanup(grouping.close)
+            first = None
             for batch in adapter.iter_batches(request):
-                history.append(batch)
+                grouping.consume(batch)
+                column = batch.series.get('current')
+                if first is None and column is not None and len(column.time_ns):
+                    first = HistorySample(0, 'current', int(column.time_ns[0]), int(column.sequence[0]),
+                        column.values[0].item(), scalar_from_column(column, 0), column.unit,
+                        column.source_ref[0], True, column.original_values[0])
+            grouping.finish()
             adapter.close()
-            history.seal()
-            groups = list(history.iter_groups())
             self.assertEqual([len(group.samples) for group in groups], [6, 3, 3])
             self.assertEqual([group.time_ns for group in groups], [self.start, self.start + 1, self.start + 2])
-            first = next(sample for sample in groups[0].samples if sample.name == 'current' and sample.sequence == 0)
             self.assertIsInstance(first.source_ref, CSVSourceRef)
             self.assertEqual((first.source_ref.line_number, first.source_ref.time_text, first.source_ref.value_text), (3, str(self.start), '1000'))
             self.assertEqual(first.value.value, 1.)
@@ -278,7 +286,7 @@ class BudgetedCSVTests(unittest.TestCase):
                 damaged = (json.dumps(current_fixture(packed)) + '\n').encode('utf-8')
                 with self.assertRaises(ResultFormatError):
                     decode_record(damaged, 65536)
-            history.close()
+            grouping.close()
             self.assertEqual(adapter.budget.ram_bytes, 0)
 
     def test_header_only_empty_projection_and_static_describe(self):

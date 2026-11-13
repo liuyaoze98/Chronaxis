@@ -4,7 +4,7 @@
 端点的分母独立检查。另用小型ASC/DBC运行真实的驱动周期查询。
 """
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from chronaxis import AnalysisPlan, AnalysisRunner
 
@@ -112,8 +112,8 @@ class RateRunnerTests(unittest.TestCase):
                 for name,value in (('out_r',5.),('out_w',3.),('out_f',3.)):
                     point = rows[name][3*10**9]
                     self.assertAlmostEqual(point.value,value)
-                    # 项目单位目录将W/s规范显示为V*A/s，数值倍率仍为1。
-                    self.assertEqual(point.unit,'V*A/s')
+                    # 电功率变化率规范显示为W/s，数值倍率仍为1。
+                    self.assertEqual(point.unit,'W/s')
 
     def test_independent_driver_preserves_both_actual_value_updates(self):
         """在两驱动帧之间保留两次电流实测，等后一帧确定间距后回填0.09秒。

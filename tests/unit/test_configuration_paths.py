@@ -50,6 +50,43 @@ class ConfigurationPathsTests(unittest.TestCase):
         paths = expand_input_paths(dict(paths='**/*.asc', source_type='can_asc'), self.root, '$.sources[0]')
         self.assertEqual({item.name for item in paths}, {'part1.asc', 'part2.asc', 'part10.ASC', 'extra.asc'})
 
+    def test_wildcard_extension_case_is_consistent_without_changing_recursion(self):
+        """受支持扩展名忽略大小写，格式筛选和显式递归仍独立生效。
+
+        参数: 无。返回: None。异常: 漏掉大写扩展、误收无关格式或隐式递归使断言失败。
+        """
+        (self.root / 'part3.BLF').write_bytes(b'')
+        (self.root / 'part4.blF').write_bytes(b'')
+        for pattern in ('*.asc', '*.ASC', '*.aSc'):
+            with self.subTest(pattern=pattern):
+                paths = expand_input_paths(dict(paths=pattern, source_type='can_asc'),
+                                           self.root, '$.sources[0]')
+                self.assertEqual([item.name for item in paths],
+                                 ['part1.asc', 'part2.asc', 'part10.ASC'])
+        paths = expand_input_paths(dict(paths='*.bLf', source_type='can_blf'),
+                                   self.root, '$.sources[0]')
+        self.assertEqual([item.name for item in paths], ['part3.BLF', 'part4.blF'])
+        paths = expand_input_paths(dict(paths='**/*.aSc', source_type='can_asc'),
+                                   self.root, '$.sources[0]')
+        self.assertEqual({item.name for item in paths},
+                         {'part1.asc', 'part2.asc', 'part10.ASC', 'extra.asc'})
+
+    def test_text_wildcard_extension_case_and_offsets_preserve_file_identity(self):
+        """CSV/TXT扩展匹配不改变显式条目顺序或逐文件偏移。
+
+        参数: 无。返回: None。异常: 不同格式混入或偏移错配使断言失败。
+        """
+        for name in ('data10.CSV', 'data2.csv', 'data3.TXT'):
+            (self.root / name).write_text('', encoding='utf-8')
+        paths, shifts = expand_source_files(dict(source_type='raw_can_csv', paths=[
+            dict(path='*.CsV', offset='2s'), dict(path='data3.TXT', offset='3s')]),
+            self.root, '$.sources[0]')
+        self.assertEqual([item.name for item in paths], ['data2.csv', 'data10.CSV', 'data3.TXT'])
+        self.assertEqual(shifts, ('2s', '2s', '3s'))
+        paths = expand_input_paths(dict(source_type='raw_can_csv', paths='data*.tXt'),
+                                   self.root, '$.sources[0]')
+        self.assertEqual([item.name for item in paths], ['data3.TXT'])
+
     def test_empty_unknown_and_ambiguous_declarations(self):
         """参数: 无。返回: None。异常: 断言失败；错误目录/空匹配/两种路径并填都拒绝。"""
         for raw in (dict(paths=[]), dict(paths='*.blf'), dict(paths='missing-folder'),

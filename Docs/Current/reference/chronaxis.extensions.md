@@ -6,7 +6,7 @@
 的工厂。注册表冻结名称、版本、类型、单位和后端能力，以稳定摘要标识协议。
 本模块不发现模块、不读取配置中的文件或导入路径，也不在注册时创建运行状态。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -63,7 +63,7 @@ class ValueSpec
 |`dtype`|SignalDType|是|无|固定端口的数值或BOOL逻辑类型；枚举应先通过enum_code取得代码。|
 |`unit`|str|是|无|端口读取或返回的已登记单位；BOOL端口必须使用单位1。|
 
-源码：[`src/chronaxis/extensions.py:33`](../../../src/chronaxis/extensions.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:33`](../../../src/chronaxis/extensions.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ValueSpec-__post_init__"></a>
 ### `ValueSpec.__post_init__`
@@ -89,7 +89,7 @@ None。
 
 ValueError为非法端口。
 
-源码：[`src/chronaxis/extensions.py:39`](../../../src/chronaxis/extensions.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:39`](../../../src/chronaxis/extensions.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BackendSpec"></a>
 ## `_BackendSpec`
@@ -101,7 +101,7 @@ class _BackendSpec
 ```
 
 
-源码：[`src/chronaxis/extensions.py:47`](../../../src/chronaxis/extensions.py#L47)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:47`](../../../src/chronaxis/extensions.py#L47)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BackendSpec-require_backend"></a>
 ### `_BackendSpec.require_backend`
@@ -126,7 +126,7 @@ _BackendSpec.require_backend(backend)
 
 缺实现报ValueError。
 
-源码：[`src/chronaxis/extensions.py:50`](../../../src/chronaxis/extensions.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:50`](../../../src/chronaxis/extensions.py#L50)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BackendSpec-_check"></a>
 ### `_BackendSpec._check`
@@ -151,7 +151,7 @@ None。
 
 非法描述报错。
 
-源码：[`src/chronaxis/extensions.py:59`](../../../src/chronaxis/extensions.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:59`](../../../src/chronaxis/extensions.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FunctionSpec"></a>
 ## `FunctionSpec`
@@ -178,7 +178,7 @@ FunctionSpec(name: str, version: str, inputs: tuple[chronaxis.extensions.ValueSp
 |`reference`|Callable[[tuple[ScalarValue, ...], ExtensionResources], ScalarValue] &#124; None|否|None|单点标量实现；缺失时不支持reference后端。|
 |`numpy`|Callable[[tuple[NumericArray, ...], ExtensionResources], NumericArray] &#124; None|否|None|对整批有效行运行的数组实现；缺失时不支持numpy后端。|
 
-源码：[`src/chronaxis/extensions.py:73`](../../../src/chronaxis/extensions.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:73`](../../../src/chronaxis/extensions.py#L73)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FunctionSpec-__post_init__"></a>
 ### `FunctionSpec.__post_init__`
@@ -204,7 +204,7 @@ None。
 
 声明或实现不合法时拒绝注册。
 
-源码：[`src/chronaxis/extensions.py:86`](../../../src/chronaxis/extensions.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:86`](../../../src/chronaxis/extensions.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReductionSpec"></a>
 ## `ReductionSpec`
@@ -233,7 +233,7 @@ ReductionSpec(name: str, version: str, input: chronaxis.extensions.ValueSpec, ou
 |`state_bytes`|int|否|0|新建本范围或会话状态前要预付的固定字节数，动态空间另由资源视图申请。|
 |`mergeable`|bool|否|False|是否允许在同一注册及后端下调用merge(other)合并两个未结束的状态。|
 
-源码：[`src/chronaxis/extensions.py:92`](../../../src/chronaxis/extensions.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:92`](../../../src/chronaxis/extensions.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReductionSpec-__post_init__"></a>
 ### `ReductionSpec.__post_init__`
@@ -259,7 +259,7 @@ None。
 
 资源/合并能力或端口不合规时拒绝。
 
-源码：[`src/chronaxis/extensions.py:107`](../../../src/chronaxis/extensions.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:107`](../../../src/chronaxis/extensions.py#L107)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformSpec"></a>
 ## `TransformSpec`
@@ -290,7 +290,7 @@ TransformSpec(name: str, version: str, input: chronaxis.extensions.ValueSpec, ou
 |`history_ns`|int|否|0|该宿主时序算法支持的最大回看宽度（选定口径的正纳秒数）。|
 |`interval_modes`|tuple[str, ...]|否|('actual', 'fixed', 'dbc')|本实现能够解释的间隔模式集合，可含actual、fixed和dbc且不得重复。|
 
-源码：[`src/chronaxis/extensions.py:117`](../../../src/chronaxis/extensions.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:117`](../../../src/chronaxis/extensions.py#L117)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformSpec-__post_init__"></a>
 ### `TransformSpec.__post_init__`
@@ -316,7 +316,7 @@ None。
 
 非数值端口、非正历史或非法资源费时拒绝。
 
-源码：[`src/chronaxis/extensions.py:134`](../../../src/chronaxis/extensions.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:134`](../../../src/chronaxis/extensions.py#L134)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionRegistry"></a>
 ## `ExtensionRegistry`
@@ -336,7 +336,7 @@ ExtensionRegistry(functions=(), reductions=(), transforms=())
 |`transforms`|Mapping[str, [TransformSpec](chronaxis.extensions.md#api-TransformSpec)]|不直接填写|由自定义构造器建立；见 __init__|只读名称映射，按时序操作查网格状态和历史契约。|
 |`identity`|str|不直接填写|由自定义构造器建立；见 __init__|对协议名称、版本、端口、后端及资源规则计算的稳定SHA-256摘要。|
 
-源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionRegistry-__init__"></a>
 ### `ExtensionRegistry.__init__`
@@ -363,7 +363,7 @@ ExtensionRegistry.__init__(functions=(), reductions=(), transforms=())
 
 重名或模型错误。
 
-源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-using_extension_budget"></a>
 ## `using_extension_budget`
@@ -390,4 +390,4 @@ using_extension_budget(budget)
 
 回调/执行发生异常时直接交给调用者处理。
 
-源码：[`src/chronaxis/extensions.py:179`](../../../src/chronaxis/extensions.py#L179)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:179`](../../../src/chronaxis/extensions.py#L179)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

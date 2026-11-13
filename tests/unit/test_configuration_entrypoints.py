@@ -1,4 +1,6 @@
 """从实际YAML/JSON文件走公开API、CLI和批量隔离，证明共享语法已接三个入口。"""
+
+from workspace_fixtures import test_directory
 from copy import deepcopy
 import csv
 import json
@@ -19,7 +21,7 @@ class ConfigurationEntrypointTests(unittest.TestCase):
 
     def setUp(self):
         """建立三行真实CSV及独立配置目录。参数: 无。返回: None。异常: 实际IO错误。"""
-        self.root=Path(tempfile.mkdtemp(prefix='yaml-entrypoints-',dir='work')).resolve()
+        self.root=Path(test_directory(self,prefix='yaml-entrypoints-',dir='work')).resolve()
         self.folder=self.root/'configuration';self.folder.mkdir()
         (self.folder/'input.csv').write_text('t,p\n0,2\n1,4\n2,100\n',encoding='utf-8')
         self.config=dict(config_version=4,dataset=dict(name='demo',entity='object',session='session',

@@ -9,11 +9,11 @@
 下一报文。本模块不读取报文或DBC，不修改输入，不持有全局状态；完整内存
 原型会保存历史和时间轴，不能据此认定生产资源预算已经满足。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[ConditionTick](chronaxis.core.temporal.md#api-ConditionTick)、[ConditionTimeline](chronaxis.core.temporal.md#api-ConditionTimeline)、[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)、[TemporalRule](chronaxis.core.temporal.md#api-TemporalRule)、[Truth](chronaxis.core.types.md#api-Truth)
+[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[ConditionTick](chronaxis.core.temporal.md#api-ConditionTick)、[ConditionTimeline](chronaxis.core.temporal.md#api-ConditionTimeline)、[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)、[TemporalRule](chronaxis.core.temporal.md#api-TemporalRule)、[Truth](chronaxis.core.types.md#api-Truth)
 
 ## 对象导航
 
@@ -72,7 +72,7 @@ TypeError/ValueError为类型、非BOOL根或会话冲突。
 - `TypeError`：memory时序需要真实内存SignalBindings，不能使用解码历史绑定。
 - `ValueError`：时序条件需BOOL且规则与绑定session一致。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:32`](../../../src/chronaxis/core/temporal_memory_reference.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:32`](../../../src/chronaxis/core/temporal_memory_reference.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_evidence"></a>
 ## `_evidence`
@@ -99,7 +99,7 @@ ConditionTick tuple，实际因果、EOF及诊断保留。
 
 模型/保持/表达式校验错误传播，不吞UNKNOWN原因。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:51`](../../../src/chronaxis/core/temporal_memory_reference.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:51`](../../../src/chronaxis/core/temporal_memory_reference.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-build_timeline_reference"></a>
 ## `build_timeline_reference`
@@ -129,7 +129,7 @@ TypeError、ValueError或OverflowError: 计划、同步、输入或时间协议�
 
 分配本次依赖历史和完整时间轴，不重排原行，不读取或解码旧来源。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:107`](../../../src/chronaxis/core/temporal_memory_reference.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:107`](../../../src/chronaxis/core/temporal_memory_reference.py#L107)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-detect_memory_reference"></a>
 ## `detect_memory_reference`
@@ -156,4 +156,4 @@ Event tuple，来源/质量/稳定ID均来自当前任务。
 
 时间/计划/批大小错误传播，内部候选不作为最终输出。
 
-源码：[`src/chronaxis/core/temporal_memory_reference.py:162`](../../../src/chronaxis/core/temporal_memory_reference.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_reference.py:162`](../../../src/chronaxis/core/temporal_memory_reference.py#L162)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

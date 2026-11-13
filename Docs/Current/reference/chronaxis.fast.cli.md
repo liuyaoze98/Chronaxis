@@ -2,7 +2,7 @@
 
 fast单会话及独立批量命令的JSON响应；静态命令不读取报文文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -41,7 +41,7 @@ execute(args)
 |---|---|---|---|---|
 |`args`|argparse.Namespace|是|无|位置或关键字。命令行解析出的 fast 操作、配置路径、输出和总量选项。|
 
-源码：[`src/chronaxis/fast/cli.py:12`](../../../src/chronaxis/fast/cli.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/cli.py:12`](../../../src/chronaxis/fast/cli.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_batch"></a>
 ## `_batch`
@@ -58,4 +58,4 @@ _batch(args)
 |---|---|---|---|---|
 |`args`|argparse.Namespace|是|无|位置或关键字。命令行解析出的 fast 操作、配置路径、输出和总量选项。|
 
-源码：[`src/chronaxis/fast/cli.py:47`](../../../src/chronaxis/fast/cli.py#L47)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/cli.py:54`](../../../src/chronaxis/fast/cli.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

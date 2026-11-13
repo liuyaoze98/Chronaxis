@@ -1,4 +1,4 @@
-"""NEXT-UX-02/B3：从真实封存历史及原子提交状态验证活动分支的更新与有效期。
+"""NEXT-UX-02/B3：从真实原子提交状态验证活动分支的更新与有效期。
 
 条件刷新、值相等的真实更新、同时切换、有间隙的恢复保留不同证据。
 合成时间均为整数纳秒；两个独立数值后端分别与手算时间表比较。
@@ -6,55 +6,43 @@
 
 import unittest
 from chronaxis.core.binding import SignalDefinition
-from chronaxis.core.calculations import CalculationDefinition
 from chronaxis.core.expression import validate_expression
-from chronaxis.core.models import MemoryRow
+from chronaxis.core.models import Interval, TimebaseSpec
+from chronaxis.core.declarations import DeclarationBindings, DeclaredSource
+from chronaxis.core.types import TimeType
+from chronaxis.execution.groups import DecodedTimeGroup
+from chronaxis.execution.state import LatestSignalState
+from chronaxis.results.budget import ResourceBudget
+from types import SimpleNamespace
+from test_stream_state import make_sample
 from chronaxis.core.types import SignalDType as D
 from chronaxis.execution.driver_expression import DriverExpression
-from chronaxis.execution.historical_sample_calculation import HistoricalSampleCalculation
-from chronaxis.execution.historical_selection_rows import HistoricalSelectionRows
-import test_window_replay as replay
 
 
 class WhereUpdateTests(unittest.TestCase):
     """核对逐组驱动、历史选行以及整窗平均值；不以两个后端相等代替手算。"""
 
     def fixture(self, backend, *, noise=False, gate_ttl=20):
-        """构造三个独立更新时钟。参数: 后端、未选分支额外更新、条件TTL。返回: 历史夹具。异常: 来源错误。"""
-        factory = replay.WindowReplayTests('runTest')
-        self.addCleanup(lambda: self.assertTrue(factory.doCleanups()))
+        """构造三个独立更新时钟。参数: 后端、未选分支额外更新、条件TTL。返回: 声明/状态/完整组。异常: 模型错误。"""
         declarations = (('gate', D.BOOL, gate_ttl), ('a', D.INT64, 20), ('b', D.INT64, 2))
         definitions = tuple(SignalDefinition(n, n+'src', 'raw.'+n, dtype, '1', ttl, config_version=4)
                             for n, dtype, ttl in declarations)
         signals = {'gate': ((0, True), (1, True), (4, False), (5, False), (8, True)),
                    'a': ((0, 8), (2, 8)),
                    'b': ((0, 50),) + (((1, None), (2, 12), (3, 99)) if noise else ()) + ((4, 30), (7, 15))}
-        rows = {n+'src': tuple(MemoryRow(t, {'raw.'+n: v}, i) for i, (t, v) in enumerate(items))
-                for n, items in signals.items()}
-        return factory.fixture(domain=(0, 10), definitions=definitions, rows_by_source=rows, size=1,
-                               texts=('where(gate,a,b)',), backend=backend)
-
-    def test_history_frequency_keeps_selection_mean_and_coverage(self):
-        """[0,10) 有5个有效样本及1ns过期间隙；多加未选更新不改结果。参数: 无。返回: 无。异常: 断言。"""
-        for backend in ('reference', 'numpy'):
-            for noise in (False, True):
-                with self.subTest(backend=backend, noise=noise):
-                    f = self.fixture(backend, noise=noise)
-                    args = f.history, f.holds._context, f.lease.bindings, f.compiled[0]
-                    owner = HistoricalSampleCalculation(*args, CalculationDefinition('avg', 'sample_mean', f.domain),
-                                                        backend=backend, batch_intervals=1)
-                    self.addCleanup(owner.close)
-                    while owner.step():
-                        pass
-                    result = owner.result
-                    self.assertEqual((result.valid_sample_count, result.value_valid_duration_ns), (5, 9))
-                    self.assertAlmostEqual(result.value, 13.8)
-                    owner.close()
-                    rows = HistoricalSelectionRows(*args, CalculationDefinition('pick', 'select', f.domain),
-                                                   backend=backend, batch_intervals=2)
-                    self.addCleanup(rows.close)
-                    self.assertEqual([(r.time_ns, r.value.value) for r in rows], [(0,8), (2,8), (4,30), (7,15), (8,8)])
-                    rows.close()
+        clock = TimebaseSpec('clock', TimeType.RELATIVE, 'where-update-test')
+        declared = DeclarationBindings('session', clock, Interval(0, 10),
+            tuple(DeclaredSource(d.source, clock, d.source) for d in definitions), definitions)
+        budget = ResourceBudget()
+        state = LatestSignalState(budget, definitions, 'session')
+        self.addCleanup(lambda: self.assertEqual(budget.ram_bytes, 0))
+        self.addCleanup(state.close)
+        samples = {}
+        for definition in definitions:
+            for sequence, (time, value) in enumerate(signals[definition.name]):
+                samples.setdefault(time, []).append(make_sample(definition, time, sequence, value))
+        groups = tuple(DecodedTimeGroup(time, tuple(items)) for time, items in sorted(samples.items()))
+        return SimpleNamespace(declarations=declared, state=state, groups=groups)
 
     def test_driver_ttl_refresh_unknown_and_unselected_eof(self):
         """未选来源不能截断输出，条件会过期。参数: 无。返回: 无。异常: 截止/恢复与手算不符。"""
@@ -103,7 +91,3 @@ class WhereUpdateTests(unittest.TestCase):
                 if driver.actual_update_at(time) and value.valid:
                     observed.append(time)
             self.assertEqual(observed, [0, 4, 8])
-            rows = HistoricalSelectionRows(f.history, f.holds._context, f.lease.bindings, f.compiled[0],
-                CalculationDefinition('pick', 'select', f.domain), backend=backend, batch_intervals=1)
-            self.addCleanup(rows.close)
-            self.assertEqual([r.time_ns for r in rows if r.value.valid], observed)

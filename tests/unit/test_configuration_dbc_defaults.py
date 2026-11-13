@@ -40,7 +40,7 @@ class ConfigurationDBCDefaultsTests(unittest.TestCase):
         from test_configuration_schema import ConfigurationSchemaTests
         ConfigurationSchemaTests.setUpClass()
         ConfigurationSchemaTests.validators['analysis.schema.json'].validate(self.raw)
-        with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load',wraps=cantools.database.load) as load:
             plan=AnalysisPlan.from_dict(self.raw)
         self.assertEqual(load.call_count,1)
         voltage,state=(s.definition for s in plan.signals)
@@ -69,11 +69,11 @@ class ConfigurationDBCDefaultsTests(unittest.TestCase):
         self.raw['signals'][0].update(dtype='float64',unit='V',conversion={'input_unit':'V'})
         self.raw['signals'][1].update(dtype='enum',unit='1',conversion={'input_unit':'1'},choices=[[0,'idle'],[1,'running']])
         self.raw['rules'][0]['condition']='state == "running"'
-        with patch('cantools.database.load_file',side_effect=AssertionError('unexpected DBC load')):
+        with patch('cantools.database.load',side_effect=AssertionError('unexpected DBC load')):
             plan=AnalysisPlan.from_dict(self.raw)
         self.assertEqual(plan.signals[1].definition.choices,((0,'idle'),(1,'running')))
         self.raw['signals'][1].pop('dtype')
-        with patch('cantools.database.load_file',side_effect=AssertionError('unexpected DBC load')):
+        with patch('cantools.database.load',side_effect=AssertionError('unexpected DBC load')):
             self.assertEqual(AnalysisPlan.from_dict(self.raw).signals[1].definition.dtype.value,'enum')
 
     def test_enum_missing_fractional_or_colliding_table_is_clear_error(self):
@@ -110,7 +110,7 @@ class ConfigurationDBCDefaultsTests(unittest.TestCase):
         self.raw['rules'][0]['condition']='state == "ON"'
         path=self.root/'plan.json';path.write_text(json.dumps(self.raw),encoding='utf-8')
         for defaults in (False,True):
-            with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+            with patch('cantools.database.load',wraps=cantools.database.load) as load:
                 resolved=resolved_configuration(path,defaults=defaults)
             self.assertEqual(load.call_count,1)
             self.assertEqual('dtype' in resolved['signals'][0],defaults)

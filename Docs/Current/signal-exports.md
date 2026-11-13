@@ -4,7 +4,7 @@
 
 ## 完整最小例与网格扩展
 
-[export-signal-minimal.yaml](examples/export-signal-minimal.yaml)从随附的quickstart.asc和teaching.dbc读取power，积分仍为38J，额外导出[0,6)内0、1、3、4秒的4条原更新。来源、信号及当前导出所需的设备标签都已定义。
+[export-signal-minimal.yaml](examples/export-signal-minimal.yaml)从随附的quickstart.asc和teaching.dbc读取power，积分仍为38J，额外导出[0,6)内0、1、3、4秒的4条原更新。来源和信号已定义；设备标签为可选说明，省略不影响导出。
 
 [export-signal-grid.yaml](examples/export-signal-grid.yaml)增加500ms网格、max_gap=3s，输出12行网格点0～5.5秒。0.5秒线性估计为3W；4.5、5、5.5秒缺少范围内右端更新，保留missing而不外推。积分仍为38J。运行`chronaxis run 文件名.yaml --output 结果目录`，读取CLI返回的manifest，再按其中exports.index_file和exports.directory定位本次导出索引及original.csv或resampled.csv。
 

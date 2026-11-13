@@ -24,8 +24,6 @@ from chronaxis.sources.models import ReadRequest
 from chronaxis.sources.text_can_spec import CANTextSpec
 from chronaxis.execution.text_can_reader import BudgetedTextCANSourceAdapter
 from chronaxis.execution.frame_capture import FrameDBCContext
-from chronaxis.execution.history import DecodedHistoryStore
-from chronaxis.execution.observed_ingestion import ObservedSourceScan
 from chronaxis.results.frame_patch import FrameRebuildRule
 from chronaxis.results.errors import ResultClosedError
 
@@ -81,21 +79,21 @@ class TextCANPublicTests(unittest.TestCase):
         parser=self.asc('0 1 100 Rx d 2 01 05\n1 1 100 Rx d 2 03 06\n2 1 777 Rx d 1 ff\n')
         plan=AnalysisPlan.from_dict(current_fixture(self.config(parser))); source=plan.sources[0]
         rule=FrameRebuildRule(0,256,('Voltage',),False,False)
-        with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load',wraps=cantools.database.load) as load:
             context=FrameDBCContext(source.config.dbc_path,(rule,),self.budget)
             adapter=BudgetedTextCANSourceAdapter(self.budget,source.config,plan.dataset.session_id,
                 tuple(s.definition for s in plan.signals),work_dir=self.root,retain_raw_frames=True,database_context=context)
             request=ReadRequest(plan.dataset.session_id,('voltage',),0,4*10**9,1)
-            history=DecodedHistoryStore(self.budget,self.root/'history',(adapter.describe(),),{'bus':request})
-            scan=ObservedSourceScan(history,source,adapter,request)
-            scan.consume(); history.seal()
-            self.assertEqual(scan.observation.row_count,3)
+            read=adapter.iter_batches_with_observation(request)
+            for _ in read:
+                pass
+            self.assertEqual(read.observation.row_count,3)
             self.assertEqual(load.call_count,1)
-            first=tuple(scan._raw_store.iter_samples()); second=tuple(scan._raw_store.iter_samples())
+            first=tuple(read._raw_store.iter_samples()); second=tuple(read._raw_store.iter_samples())
             self.assertEqual(first,second)
             self.assertEqual(first[0].values,(('Voltage',3),))
             self.assertEqual([s.record.sequence for s in first],[0,1,2])
-            scan.close(); adapter.close(); history.close(); context.close()
+            read.close(); adapter.close(); context.close()
         self.assertEqual(self.budget.ram_bytes,0)
 
     def test_missing_input_releases_read_and_adapter(self):
@@ -168,7 +166,7 @@ class TextCANPublicTests(unittest.TestCase):
                 'messages':[dict(channel=1,frame_id=256,is_extended=False,is_fd=False,continuous=['Voltage'])]}}}
         for signal in config['signals']:
             signal['conversion']={'input_unit':signal['unit']}
-        with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load',wraps=cantools.database.load) as load:
             result=AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(config)),work_dir=self.root/'run-exports')
             budget=result.spool.budget
             try:

@@ -7,7 +7,7 @@
 原时间字符串或第二套时间。LegacyDecodedUpdate是已有计算模型的名称，
 使用它不代表复现旧程序的缓存行为。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -25,6 +25,7 @@
 |[`CANUpdateProjection._matching`](#api-CANUpdateProjection-_matching)|按已解析DBC候选匹配实际帧，并拒绝迟到的身份歧义。|
 |[`CANUpdateProjection.accepts_frame`](#api-CANUpdateProjection-accepts_frame)|判断是否有值或触发需求。|
 |[`CANUpdateProjection.fields_for`](#api-CANUpdateProjection-fields_for)|定位目标数据帧，未知ID/其他通道或帧型不参与本投影。|
+|[`CANUpdateProjection._canonical_key`](#api-CANUpdateProjection-_canonical_key)|借用当前投影已编码的字段键，不按原帧增加缓存。|
 |[`CANUpdateProjection.build`](#api-CANUpdateProjection-build)|只拣选计算字段，复用已有有时间/无时间更新及其严格值检查。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -63,7 +64,7 @@ require_message_keys(keys, *, channel=None)
 
 ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:17`](../../../src/chronaxis/sources/can_updates.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:17`](../../../src/chronaxis/sources/can_updates.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection"></a>
 ## `CANUpdateProjection`
@@ -75,7 +76,7 @@ CANUpdateProjection(source, session_id, fields, *, message_keys=(), clock_fields
 ```
 
 
-源码：[`src/chronaxis/sources/can_updates.py:31`](../../../src/chronaxis/sources/can_updates.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:31`](../../../src/chronaxis/sources/can_updates.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-__init__"></a>
 ### `CANUpdateProjection.__init__`
@@ -104,7 +105,7 @@ None；初始化实例状态。
 
 TypeError/ValueError为字段、身份或同帧信号定位冲突。
 
-源码：[`src/chronaxis/sources/can_updates.py:34`](../../../src/chronaxis/sources/can_updates.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:34`](../../../src/chronaxis/sources/can_updates.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-configure_metadata"></a>
 ### `CANUpdateProjection.configure_metadata`
@@ -129,7 +130,7 @@ None；在当前投影保存已验证的有限DBC候选。
 
 定位或元数据不合法时传播TypeError/ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:67`](../../../src/chronaxis/sources/can_updates.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:70`](../../../src/chronaxis/sources/can_updates.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-for_read"></a>
 ### `CANUpdateProjection.for_read`
@@ -154,7 +155,7 @@ CANUpdateProjection.for_read(facts)
 
 定位或元数据不合法时传播TypeError/ValueError。
 
-源码：[`src/chronaxis/sources/can_updates.py:74`](../../../src/chronaxis/sources/can_updates.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:77`](../../../src/chronaxis/sources/can_updates.py#L77)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-_matching"></a>
 ### `CANUpdateProjection._matching`
@@ -179,7 +180,7 @@ CANUpdateProjection._matching(frame)
 
 ValueError：同一自动绑定遇到另一种实际类型。
 
-源码：[`src/chronaxis/sources/can_updates.py:85`](../../../src/chronaxis/sources/can_updates.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:88`](../../../src/chronaxis/sources/can_updates.py#L88)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-accepts_frame"></a>
 ### `CANUpdateProjection.accepts_frame`
@@ -204,7 +205,7 @@ bool。
 
 非原帧属性错。
 
-源码：[`src/chronaxis/sources/can_updates.py:128`](../../../src/chronaxis/sources/can_updates.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:131`](../../../src/chronaxis/sources/can_updates.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-fields_for"></a>
 ### `CANUpdateProjection.fields_for`
@@ -229,7 +230,32 @@ CANUpdateProjection.fields_for(frame)
 
 非原帧对象缺少必需属性时AttributeError；不吞读取错误。
 
-源码：[`src/chronaxis/sources/can_updates.py:132`](../../../src/chronaxis/sources/can_updates.py#L132)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:135`](../../../src/chronaxis/sources/can_updates.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-CANUpdateProjection-_canonical_key"></a>
+### `CANUpdateProjection._canonical_key`
+
+借用当前投影已编码的字段键，不按原帧增加缓存。
+
+```python
+CANUpdateProjection._canonical_key(field)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`field`|[LegacyCANField](chronaxis.legacy.records.md#api-LegacyCANField)|是|无|位置或关键字。已属于当前投影声明的字段定位；取得初始化时共享的规范键，不逐帧重编码JSON。|
+
+#### 返回说明
+
+初始化时验证并生成的规范JSON字符串。
+
+#### 异常说明
+
+非本投影字段时KeyError，不猜测或临时加入新的绑定。
+
+源码：[`src/chronaxis/sources/can_updates.py:144`](../../../src/chronaxis/sources/can_updates.py#L144)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUpdateProjection-build"></a>
 ### `CANUpdateProjection.build`
@@ -258,4 +284,4 @@ LegacyDecodedUpdate/LegacyUntimedUpdate；非目标数据帧返回None。
 
 类型/数值/身份错误原样传播，不缓存前条值补齐缺失。
 
-源码：[`src/chronaxis/sources/can_updates.py:141`](../../../src/chronaxis/sources/can_updates.py#L141)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/can_updates.py:153`](../../../src/chronaxis/sources/can_updates.py#L153)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

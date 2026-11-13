@@ -19,9 +19,11 @@
 
 PyPI 通过 GitHub 的短期身份凭据接收文件，无需向 AI 提供密码或令牌。现有可信发布配置可以用于后续版本；更改仓库、工作流文件名或环境名时，需要重新核对绑定。两个工作流均手动触发，上传源码不会自动发布网站或安装包。
 
+下一次发布前，还须核对候选公开源码的`verify.yml`四组持续测试及独立安装结果，详见[持续测试要求](../Current/maintenance.md#持续测试与发布前检查)。该验证工作流不改变两个发布入口的手动触发规则；不要用历史dev1/dev3报告代替本次候选的检查。
+
 ## 1. 本地打包与验收
 
-先同步 `pyproject.toml` 中的版本、README、中文和英文安装说明、AI 指南及本版说明。结果中的 `RunMetadata.software_version` 和缺依赖提示里的 wheel 文件名也要同步。`Documentation` 固定指向在线 HTML，`Changelog` 指向本次版本说明；README 的相对文件链接在构建时转换为本次公开标签下的地址。
+以 `pyproject.toml` 的 `project.version` 为唯一发行版本来源，修改该值并同步 README、中英文安装示例、AI 指南和本版说明。构建器自动写入安装包版本；`RunMetadata.software_version` 的默认值从当前软件取得，不另维护版本常量，显式传入的历史版本保持原值。验收时核对运行版本、包元数据和 AI 清单一致。`Documentation` 指向在线 HTML，`Changelog` 指向发行记录入口；README 的相对文件链接在构建时转换为本次公开标签下的地址。
 
 在内部仓库完成验证和提交，再从明确的提交导出。以下工具是本次实际使用的构建链路；参数中的提交必须是已审阅版本。
 
@@ -69,7 +71,7 @@ git -C $PublicRepo push origin "v$Version"
 |`.github/workflows/pages.yml`|Release 标签、手册 ZIP 文件名及 SHA256|`contents: read`、`pages: write`、`id-token: write`|
 |`.github/workflows/pypi-publish.yml`|版本说明、Release 标签、该标签指向的公开源码 SHA、wheel/sdist 文件名及各自 SHA256|`contents: read`、`id-token: write`|
 
-两项均限定本仓库和 `main`，官方 Action 固定到提交。源码标签冻结后，可以另外提交发布工作流到 `main`，不为填入公开源码 SHA 而移动标签。本次 `dev1` 就采用这个顺序。当前已提交工作流仍锁定 `0.1.0.dev1`，下一版运行前必须更新。
+两项均限定本仓库和 `main`，官方 Action 固定到提交。源码标签冻结后，可以另外提交发布工作流到 `main`，不为填入公开源码 SHA 而移动标签。本次 `dev1` 就采用这个顺序。工作流锁定的版本和摘要以当前文件为准，不从这份历史记录推断。新候选尚未确定公开源码提交和附件摘要时，保留已有工作流；实际发布前再一次性更新并核对，不能填占位摘要或提前运行。
 
 ## 4. HTML上线
 

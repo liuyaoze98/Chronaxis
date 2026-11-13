@@ -1,9 +1,9 @@
 """验证已授权的DBC FD声明与真实经典CAN帧之间的单向兼容。
 
-测试现场生成独立DBC/BLF，通过真实spawn旧链和公开AnalysisRunner读取；不改Ref/vendor、
+测试现场生成独立DBC/BLF，通过现役共用读取链和公开AnalysisRunner读取；不改Ref/vendor、
 原reader/decoder或真实帧flags。仅DBC为FD而selector及实际帧为经典CAN可继续，
 同时要求结果与发布清单留下固定结构化提示。相反方向、错误定位、非法READY提示
-仍严格拒绝。原load/next/parse由隔离观察包装透传计数，不代替任何原调用。
+仍严格拒绝。load/next/decode由同进程观察包装透传计数，不代替实际调用。
 小夹具只含四帧，结果游标有限耗尽；每个正常或失败路径都核真实read关闭及RAM0。
 本文件只在work产生夹具与发布物，可选CAN依赖确实缺失才skip，不将skip视为通过。
 """
@@ -167,21 +167,35 @@ class CANDBCFrameFormatTests(unittest.TestCase):
         return work, AnalysisPlan.from_dict(current_fixture(config), base_dir=work)
 
     def run_observed(self, plan, work, children):
-        """只替换私有测试缝的spawn目标为透传观察器，保原构造和执行。
-
-        参数: plan/work为真输入；children收集实际read。返回: 公开AnalysisResult。
-        异常: 原AnalysisRunner错误传播，已创建read仍可在children检查真实关闭事实。
-        """
-        original = process_module.LegacyCANProcessRead.__init__
-
-        def initialize(read, *args, **kwargs):
-            """记录真实read并调用原构造。参数: 原args/kwargs。返回: None。异常: 原构造错。"""
-            original(read, *args, **kwargs)
+        """观察现役共用读取/解码，不替换输入、返回值或公开Runner。"""
+        from chronaxis.sources.text_can_decode import CANTextDecodeRead
+        from chronaxis.sources.blf import BLFRead
+        import chronaxis.sources.text_can_decode as decode_module
+        original_init=CANTextDecodeRead.__init__
+        original_load=decode_module.load_dbc_file
+        original_next=BLFRead.__next__
+        original_decode=CANTextDecodeRead._decode
+        def log(row):
+            with (work/'process-trace.jsonl').open('a',encoding='utf-8') as output:
+                output.write(json.dumps(row)+'\n')
+        def initialize(read,*args,**kwargs):
+            original_init(read,*args,**kwargs)
             children.append(read)
-
-        with patch.object(process_module.LegacyCANProcessRead, '__init__', new=initialize), \
-                patch.object(batch_module, 'batch_worker_main', new=observed_worker):
-            return AnalysisRunner().run(plan, work_dir=work / 'run')
+        def load(*args,**kwargs):
+            log({'rule':'load_file'})
+            return original_load(*args,**kwargs)
+        def advance(read):
+            log({'rule':'next'})
+            return original_next(read)
+        def decode(read,raw):
+            log(dict(rule='parse',timestamp=raw.frame.timestamp,
+                     arbitration_id=raw.frame.arbitration_id,data_hex=raw.frame.data.hex()))
+            return original_decode(read,raw)
+        with patch.object(CANTextDecodeRead,'__init__',new=initialize), \
+                patch.object(decode_module,'load_dbc_file',new=load), \
+                patch.object(BLFRead,'__next__',new=advance), \
+                patch.object(CANTextDecodeRead,'_decode',new=decode):
+            return AnalysisRunner().run(plan,work_dir=work/'run')
 
     def rows(self, result):
         """有限耗尽并关闭真实指标游标。参数: result。返回: tuple。异常: 原读取/关闭错误。"""
@@ -217,8 +231,8 @@ class CANDBCFrameFormatTests(unittest.TestCase):
         self.assertEqual(len(children), 1)
         for read in children:
             self.assertTrue(read.closed)
-            self.assertIsNone(read._process)
-            self.assertIsNone(read._connection)
+            self.assertIsNone(read._raw)
+            self.assertIsNone(read._db)
             self.assertEqual(read._budget.ram_bytes, 0)
 
     def test_fd_dbc_classic_frames_publish_structured_notice(self):
@@ -254,46 +268,37 @@ class CANDBCFrameFormatTests(unittest.TestCase):
                                                requested_is_fd=False, code='dbc_fd_classic_selector')])
                         self.assertTrue(any('DBC声明CAN FD' in text and '原帧未转换' in text
                                             for text in manifest['run']['limitations']))
-                    self.assertEqual(children[0].counters,
-                        {'pulls_issued': 1, 'items_returned': 4, 'items_accepted': 4,
-                         'frames_authorized': 4096, 'records_returned': 3})
+                    self.assertEqual((children[0].count,children[0].decode_calls),(4,4))
                     self.assert_trace(work, next_count=5, parse_count=4)
                 finally:
                     result.close()
                 self.assert_closed_reads(children)
 
     def test_equal_frame_formats_have_no_notice(self):
-        """普通经典及普通FD均不产生提示，当前READY与简明清单仍一致。
-
-        参数: 无。返回: None。异常: 无差异路径错误、额外字段或资源泄漏即失败。
-        """
-        original = batch_module.LegacyCANBatchRead._check_ready
-        for fd in (False, True):
+        """普通经典/FD不产生兼容提示，同次实际元数据与发布保持一致。"""
+        from chronaxis.sources.text_can_decode import CANTextDecodeRead
+        original=CANTextDecodeRead._start
+        for fd in (False,True):
             with self.subTest(fd=fd):
-                work, plan = self.fixture(dbc_fd=fd, actual_fd=fd, selector_fd=fd)
-                packets, children = [], []
-
-                def check(read, packet):
-                    """观察真实READY后调用原核查。参数: read/packet。返回: 原结果。异常: 原协议错。"""
-                    packets.append(packet)
-                    return original(read, packet)
-
-                with patch.object(batch_module.LegacyCANBatchRead, '_check_ready', new=check):
-                    result = self.run_observed(plan, work, children)
+                work,plan=self.fixture(dbc_fd=fd,actual_fd=fd,selector_fd=fd)
+                packets,children=[],[]
+                def prepare(read):
+                    original(read)
+                    packets.append(read.metadata)
+                with patch.object(CANTextDecodeRead,'_start',new=prepare):
+                    result=self.run_observed(plan,work,children)
                 try:
-                    self.assertEqual(len(self.rows(result)), 2)
-                    self.assertEqual(len(packets), 1)
-                    self.assertEqual(set(packets[0]), {'op', 'version', 'profile', 'worker_pid',
-                        'fields', 'dependency_versions', 'vendor_sha256', 'base_version', 'input_paths', 'decode_policy'})
-                    self.assertEqual(set(packets[0]['fields'][0]), {'locator', 'unit'})
-                    self.assertEqual(packets[0]['decode_policy'], 'strict')
-                    self.assertEqual(result.metadata.frame_format_notices, ())
-                    self.assertNotIn('frame_format_notices', result.metadata.to_dict())
-                    self.assertNotIn('can_sources', result.metadata.to_dict())
+                    self.assertEqual(len(self.rows(result)),2)
+                    self.assertEqual(len(packets),1)
+                    self.assertEqual(set(packets[0]['fields'][0]),{'locator','unit'})
+                    self.assertEqual(packets[0]['selected_length_check'],'exact')
+                    self.assertEqual(packets[0]['decode_scope'],'all')
+                    self.assertEqual(result.metadata.frame_format_notices,())
+                    self.assertNotIn('frame_format_notices',result.metadata.to_dict())
+                    self.assertNotIn('can_sources',result.metadata.to_dict())
                     self.assertFalse(any('DBC声明CAN FD' in text for text in result.metadata.limitations))
-                    self.assert_trace(work, next_count=5, parse_count=4)
-                finally:
-                    result.close()
+                    self.assert_trace(work,next_count=5,parse_count=4)
+                finally:result.close()
                 self.assert_closed_reads(children)
 
     def test_text_formats_publish_same_notice_without_diagnostics(self):
@@ -370,14 +375,9 @@ class CANDBCFrameFormatTests(unittest.TestCase):
                 else:
                     with self.assertRaisesRegex(Exception, 'FD'):
                         self.run_observed(plan, work, children)
-                self.assertEqual(children[0].counters['pulls_issued'], pulls)
-                # 新批协议已获准在取消/拒绝前有一批读出；四帧夹具恰好在首批内。
-                # 原错误仍在首个目标值交付前拒绝，不伪造只读取一条的旧计数。
-                returned = 4 if pulls else 0
-                self.assertEqual(children[0].counters['items_returned'], returned)
-                self.assertEqual(children[0].counters['items_accepted'], returned)
-                self.assertEqual(children[0].counters['records_returned'], 3 if pulls else 0)
-                self.assertEqual(children[0].counters['frames_authorized'], 4096 if pulls else 0)
+                returned=4 if pulls else 0
+                self.assertEqual(children[0].count,returned)
+                self.assertEqual(children[0].decode_calls,returned)
                 self.assert_trace(work, next_count=5 if pulls else 0, parse_count=returned)
                 self.assert_closed_reads(children)
 
@@ -396,8 +396,8 @@ class CANDBCFrameFormatTests(unittest.TestCase):
                 children = []
                 with self.assertRaises(Exception) as caught:
                     self.run_observed(plan, work, children)
-                self.assertIn('旧CAN子进程metadata失败', str(caught.exception))
-                self.assertEqual(children[0].counters['pulls_issued'], 0)
+                self.assertIn('DBC', str(caught.exception))
+                self.assertEqual(children[0].count,0)
                 self.assert_trace(work, next_count=0, parse_count=0)
                 self.assert_closed_reads(children)
 
@@ -457,43 +457,29 @@ class CANDBCFrameFormatTests(unittest.TestCase):
             result.close()
         self.assert_closed_reads(children)
 
-    def test_compatibility_ready_reserve_cancel_keeps_original_and_closes_owner(self):
-        """真实兼容READY复制预约前后取消都保原对象，尚未PULL且最高链清至RAM0。
-
-        参数: 无。返回: None。异常: 取消未命中、原对象被换、原帧超读或实际责任未释放即失败。
-        """
-        original_check = batch_module.LegacyCANBatchRead._check_ready
-        original_reserve = ResourceBudget.reserve_ram
-        for after in (False, True):
+    def test_compatibility_metadata_reserve_cancel_keeps_original_and_closes_owner(self):
+        """实际兼容元数据预付前后取消，尚未读取原帧，保原错并清空自有预算。"""
+        import chronaxis.sources.text_can_decode as decode_module
+        original=decode_module._reserve_owned_ram
+        for after in (False,True):
             with self.subTest(after=after):
-                work, plan = self.fixture()
-                marker = KeyboardInterrupt('compatibility metadata reserve cancellation')
-                state = {'amount': None, 'hits': 0}
-                children = []
-
-                def check(read, packet):
-                    """核实际READY后定位下一真实复制预约。参数: 原参数。返回: None。异常: 原校验错。"""
-                    original_check(read, packet)
-                    self.assertIn('frame_format_compatibility', packet['fields'][0])
-                    state['amount'] = 4096 + 16 * process_module._wire_metadata_bytes(packet)
-
-                def reserve(budget, amount):
-                    """只在已核READY真实预约处前/后取消。参数: 原budget/amount。返回: None。异常: marker。"""
-                    if state['amount'] is not None and amount == state['amount'] and state['hits'] == 0:
-                        state['hits'] += 1
-                        if after:
-                            original_reserve(budget, amount)
+                work,plan=self.fixture()
+                marker=KeyboardInterrupt('compatibility metadata reserve cancellation')
+                children=[];hits=[]
+                def reserve(owner,amount,slot):
+                    if slot=='_metadata_cost':
+                        self.assertTrue(owner._db.messages[0].is_fd)
+                        hits.append(owner)
+                        if after:original(owner,amount,slot)
                         raise marker
-                    return original_reserve(budget, amount)
-
-                with patch.object(batch_module.LegacyCANBatchRead, '_check_ready', new=check), \
-                        patch.object(ResourceBudget, 'reserve_ram', new=reserve), \
+                    return original(owner,amount,slot)
+                with patch.object(decode_module,'_reserve_owned_ram',new=reserve), \
                         self.assertRaises(KeyboardInterrupt) as caught:
-                    self.run_observed(plan, work, children)
-                self.assertIs(caught.exception, marker)
-                self.assertEqual(state['hits'], 1)
-                self.assertEqual(children[0].counters['pulls_issued'], 0)
-                self.assert_trace(work, next_count=0, parse_count=0)
+                    self.run_observed(plan,work,children)
+                self.assertIs(caught.exception,marker)
+                self.assertEqual(len(hits),1)
+                self.assertEqual(children[0].count,0)
+                self.assert_trace(work,next_count=0,parse_count=0)
                 self.assert_closed_reads(children)
 
 

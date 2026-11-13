@@ -9,9 +9,9 @@ from ..core.models import SourceRef
 from ..results.errors import ResultClosedError
 from ..results.spool import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from .groups import DecodedTimeGroup
-from .record_sample import RecordSample
+from .record_sample import _record_from_validated_fields
 from ..core.types import SignalDType as D
-from .calculation_values import scalar_from_column
+from .calculation_values import _scalar_from_validated_column
 from .history import _metadata_bytes
 
 
@@ -50,8 +50,9 @@ class BatchSignalGroups:
                     if self._last is not None and time <= self._last:
                         raise ValueError('来源在已交付同刻组之后又返回旧样本')
                     _reserve_owned_ram(self, 8192, '_sample_cost')
-                    value = scalar_from_column(column, index)
-                    sample = RecordSample(column.name, time, int(column.sequence[index]),
+                    # 本批列已由适配器校验并由本次运行拥有，不再重复构造校验模型。
+                    value = _scalar_from_validated_column(column, index)
+                    sample = _record_from_validated_fields(column.name, time, int(column.sequence[index]),
                         value, column.unit,self._refs[column.name],
                         column.values[index].item() if value.dtype is D.ENUM else None)
                     heapq.heappush(self._heap, (time, self._serial, sample))

@@ -7,10 +7,11 @@
 from collections.abc import Mapping
 from dataclasses import replace
 import os
-import pickle
 import signal
 from time import perf_counter
 
+from .._control_wire import ControlChannel
+from .can_block_codec import encode_block, encode_metadata
 from ..results.budget import ResourceBudget
 from ..sources.text_can_decode import CANTextDecodeRead
 
@@ -74,6 +75,8 @@ def worker_main(control, data):
     生命周期由父拥有；正常文件结束关闭解析器，异常先发错误控制消息再关闭。
     任意时刻取消可由父终止工作进程；不等待满数据管道才能报告错误。
     """
+    if type(control) is not ControlChannel:
+        raise TypeError('CAN工作进程需要固定字节控制端点')
     reader = context = None
     block_number = 0
     # 控制台取消由父负责结束完整进程树，不能让子在写块中途单独捕获Ctrl+C。
@@ -96,7 +99,7 @@ def worker_main(control, data):
                     context=FrameDBCContext(spec.dbc_path,rules,budget,cycle_periods=cycles,integrity=integrity)
                 reader=CANTextDecodeRead(spec,budget,signals,database_context=context,**options)
                 metadata=plain(reader.prepare_metadata())
-                packet=pickle.dumps(metadata,protocol=5)
+                packet=encode_metadata(metadata)
                 if len(packet)>WIRE_LIMIT:
                     raise ValueError('CAN文件元数据超过传输块上限')
                 # 先给控制通知，父再接有上限的数据，避免等待相反通道造成死锁。
@@ -110,7 +113,7 @@ def worker_main(control, data):
             records,eof=read_block(reader)
             decoded=perf_counter()-started
             started=perf_counter()
-            packet=pickle.dumps((block_number,records,eof,facts(reader)),protocol=5)
+            packet=encode_block(block_number,records,eof,facts(reader))
             serialized=perf_counter()-started
             if len(packet)>WIRE_LIMIT:
                 raise ValueError('CAN数据块超过字节上限；不能扩大队列或丢弃记录')

@@ -6,7 +6,7 @@
 """
 
 # 清单字段冻结；带时区时间及int64会话边界与核心协议一致。
-from dataclasses import dataclass, asdict, fields
+from dataclasses import dataclass, asdict, field, fields
 from datetime import datetime
 from math import isfinite, isnan
 from pathlib import Path
@@ -52,7 +52,7 @@ class RunMetadata:
     worker_config: str = 'single-thread'
     dependency_versions: tuple[tuple[str, str], ...] = ()
     limitations: tuple[str, ...] = ()
-    software_version: str = software_version()  # 默认记录当前源码/构建包版本；显式历史身份保持调用值。
+    software_version: str = field(default_factory=software_version)  # 构造本次元数据时读取版本；显式历史值保持。
     device_label: str = 'pending'
     signal_bindings: tuple[SignalDefinition, ...] = ()  # 本次实际完整定义，不含样本或输入行。
     preset_bindings: tuple[PresetBindingMetadata, ...] = ()  # 原预设版本及最终角色。

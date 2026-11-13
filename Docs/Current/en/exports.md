@@ -8,12 +8,12 @@ Analysis tables describe what happened and the calculated values. Signal CSV fil
 
 **Resampling** produces values at regularly spaced times you specify. For example, if voltage is 10 V at 10 ms and 120 V at 120 ms, an output every 100 ms can estimate 100 V at 100 ms along the straight line between those observations. The output marks that value `estimated`; it is not an actual sample at 100 ms. Because it uses the later 120 ms observation, this is an offline operation. Rules and integration still use the original data, not these estimates.
 
-<a id="当前导出环境限制"></a>
-## Current export environment limitation
+<a id="设备标签与输出位置"></a>
+## Device labels and output locations
 
-Signal CSV and CAN frame exports currently require root `metadata.device_label` to be `home` or `work`. This is an existing development-device label restriction; the label does not affect times or numerical results. `home` in an export example identifies the environment where that example was made, not a label every user should adopt.
+`metadata.device_label` records the device associated with this run. It is optional and defaults to `pending`. To record a device, supply any nonblank string, such as `lab-pc` or `试验台一号`. The same rule applies to ordinary analysis, signal CSV exports, and CAN frame exports. Labels do not affect calculations. Empty, whitespace-only, or non-string values fail configuration validation.
 
-Ordinary CSV analysis does not require this field. Batch report labels can use nonempty custom text; those rules do not apply to standalone exports. A missing or unsupported label causes these exports to fail, but does not affect analyses that do not request them.
+Choose your output directory freely. Existing result directories can be reused: each run receives new filenames and preserves existing files. An explicit working directory must still be new. Ordinary CLI analysis does not override this label from the environment; see [Batch tasks](batch.md) for the batch report label.
 
 <a id="outputs的全部字段"></a>
 ## All `outputs` fields

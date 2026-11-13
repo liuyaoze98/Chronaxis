@@ -2,7 +2,7 @@
 
 输入为BASELINE下src/chronaxis的Python源文件及schema；输出在Docs/<版本>/reference，
 清单记录文件哈希、定义、参数和字段，供独立覆盖检查。AST遍历包含私有、嵌套、
-property和vendor定义；模块导出另列。人工教程不由本脚本覆盖。只读取Git对象，
+property定义；模块导出另列。人工教程不由本脚本覆盖。只读取Git对象，
 不读取RefProjects、不执行reader、不混入工作区未提交或后续修改。Current公开签名
 在隔离子进程中导入选定源码反射；其余模块只作AST分析。重复构建结果相同。
 """
@@ -330,7 +330,7 @@ def render_module(path, source, overrides):
     if EDITION == 'Current':
         # 模块标识符中的双下划线不能被Markdown当作强调标记吞掉。
         out = [f'# `{module}`\n\n', plain(intro or doc) + '\n\n',
-               '这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。'
+               '这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。'
                '签名来自固定源码，公开类构造签名经实际Python接口核对。\n\n']
     if intro and doc and intro != doc and EDITION not in ('M3', 'Current'):
         out += ['<details><summary>原代码模块说明（供维护者核对）</summary>\n\n', plain(doc), '\n\n</details>\n\n']
@@ -536,7 +536,7 @@ def main():
     index = [f'# {EDITION}完整API参考\n\n> 固定源码基线{BASELINE}；device_label: {LABEL}。\n\n',
              '覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。'
              '测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。'
-             'vendor模块原样保留，只在本参考解释；不包含RefProjects及未跟踪的同步冲突副本。\n\n',
+             '不包含RefProjects及未跟踪的同步冲突副本。\n\n',
              '用户优先从[公开API用法](../api-usage.md)开始；需要修改内部实现时再按包查找。'
              '源码无类型注解时不会伪造签名，业务类型/单位以说明为准。\n\n',
              '## 模块\n\n|模块|职责|定义数|\n|---|---|---|\n']

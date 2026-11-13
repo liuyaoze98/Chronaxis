@@ -2,11 +2,11 @@
 
 逐个处理真实更新，计算样本最小值、最大值和算术平均值，供NumPy实现对照。整数极值保留整数精度；平均值按输入顺序累加。保持出来的值和窗口边界不算新样本。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[ExactQuantileBuffer](chronaxis.core.quantiles.md#api-ExactQuantileBuffer)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[SampleCalculationFacts](chronaxis.core.sample_reduction.md#api-SampleCalculationFacts)、[SampleReductionResult](chronaxis.core.sample_reduction.md#api-SampleReductionResult)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[ExactQuantileBuffer](chronaxis.core.quantiles.md#api-ExactQuantileBuffer)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[SampleCalculationFacts](chronaxis.core.sample_reduction.md#api-SampleCalculationFacts)、[SampleReductionResult](chronaxis.core.sample_reduction.md#api-SampleReductionResult)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -49,7 +49,7 @@ ReferenceSampleReduction(spec, input_unit, dtype, *, partial_limit=4096, quantil
 ```
 
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:24`](../../../src/chronaxis/core/sample_reduction_reference.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:24`](../../../src/chronaxis/core/sample_reduction_reference.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-__init__"></a>
 ### `ReferenceSampleReduction.__init__`
@@ -78,7 +78,7 @@ ReferenceSampleReduction.__init__(spec, input_unit, dtype, *, partial_limit=4096
 
 配置或分配错误传播。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:27`](../../../src/chronaxis/core/sample_reduction_reference.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:27`](../../../src/chronaxis/core/sample_reduction_reference.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-selected_duration_ns"></a>
 ### `ReferenceSampleReduction.selected_duration_ns`
@@ -106,7 +106,7 @@ ReferenceSampleReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:47`](../../../src/chronaxis/core/sample_reduction_reference.py#L47)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:47`](../../../src/chronaxis/core/sample_reduction_reference.py#L47)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-value_valid_duration_ns"></a>
 ### `ReferenceSampleReduction.value_valid_duration_ns`
@@ -134,7 +134,7 @@ ReferenceSampleReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:52`](../../../src/chronaxis/core/sample_reduction_reference.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:52`](../../../src/chronaxis/core/sample_reduction_reference.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-valid_sample_count"></a>
 ### `ReferenceSampleReduction.valid_sample_count`
@@ -162,7 +162,7 @@ ReferenceSampleReduction.valid_sample_count
 
 无。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:57`](../../../src/chronaxis/core/sample_reduction_reference.py#L57)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:57`](../../../src/chronaxis/core/sample_reduction_reference.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-push"></a>
 ### `ReferenceSampleReduction.push`
@@ -178,7 +178,7 @@ ReferenceSampleReduction.push(series, *, sample_consumer=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`series`|CalculationSeries|是|无|位置或关键字。本次要处理的一块时间和值，单位、dtype和绑定必须与构造时一致。带条件的计算还需要与值对齐的BOOL条件；push处理当前块后保留累计结果，下一块可继续调用。|
-|`sample_consumer`|Callable[[tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...]], None] &#124; None|否|None|仅关键字。可选的宿主消费入口，只收到本块实际更新且通过选择和质量检查的数值。|
+|`sample_consumer`|Callable[[tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...]], None] &#124; None|否|None|仅关键字。可选的宿主消费入口，只收到本块实际更新且通过选择和质量检查的数值。|
 
 #### 返回说明
 
@@ -192,7 +192,7 @@ SampleCalculationFacts；mean精度失败进入输入覆盖，求和故障不改
 
 - `ValueError`：样本归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:61`](../../../src/chronaxis/core/sample_reduction_reference.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:61`](../../../src/chronaxis/core/sample_reduction_reference.py#L61)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-finish"></a>
 ### `ReferenceSampleReduction.finish`
@@ -218,7 +218,7 @@ SampleReductionResult快照，不清空状态或分类覆盖政策。
 
 配置/分配错误传播；原序和、除法、精度或换算故障返回None及质量。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:138`](../../../src/chronaxis/core/sample_reduction_reference.py#L138)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:138`](../../../src/chronaxis/core/sample_reduction_reference.py#L138)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceSampleReduction-close"></a>
 ### `ReferenceSampleReduction.close`
@@ -244,4 +244,4 @@ None。
 
 预算释放失败时保留可重试的子缓冲。
 
-源码：[`src/chronaxis/core/sample_reduction_reference.py:178`](../../../src/chronaxis/core/sample_reduction_reference.py#L178)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/sample_reduction_reference.py:178`](../../../src/chronaxis/core/sample_reduction_reference.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

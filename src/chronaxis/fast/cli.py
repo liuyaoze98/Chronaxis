@@ -18,7 +18,7 @@ def execute(args):
         spec = effective_spec(compile_config(args.config,_with_database=True), getattr(args,'process_count',None))
         database = spec.pop('_database')
         if args.fast_command != 'run':
-            _prepare(spec,database)
+            _prepare(spec,database,_programs_checked=True)
     except (ValueError, OSError, TypeError) as error:
         details = {'valid':False,'errors':[item.to_dict() for item in error.diagnostics]
                    if isinstance(error,PlanValidationError) else [{'message':str(error)}]}
@@ -28,7 +28,7 @@ def execute(args):
         return 2
     if args.fast_command == 'run':
         try:
-            path = run_prepared(spec,args.output,engine='base_hpc_v1',database=database)
+            path = run_prepared(spec,args.output,engine='base_hpc_v1',database=database,_programs_checked=True)
         except (ValueError,OSError,RuntimeError,ArithmeticError) as error:
             print(json.dumps({'errors':[{'message':str(error)}]},ensure_ascii=False),file=sys.stderr)
             return 1
@@ -40,6 +40,13 @@ def execute(args):
                         validity='only_current_message', **spec)
     else:
         response = dict(valid=True,engine='base_hpc_v1')
+    if args.fast_command != 'run':
+        # fast内联时间归并不创建工作进程，不能套用普通读取的time_order判断。
+        from ..process_capabilities import managed_worker_warnings
+        hints = managed_worker_warnings(
+            _worker_process_limit(spec['process_count'], len(spec['inputs'])) > 0, '本fast计划')
+        if hints:
+            response['warnings'] = hints
     print(json.dumps(response,ensure_ascii=False,allow_nan=False))
     return 0
 

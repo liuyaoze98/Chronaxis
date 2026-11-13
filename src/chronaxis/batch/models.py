@@ -73,8 +73,8 @@ class BatchPlan:
             raise ValueError('process_count需要正原生int')
         if type(self.fail_fast) is not bool:
             raise TypeError('fail_fast需要bool')
-        if self.backend is not None and (type(self.backend) is not str or self.backend not in ('reference', 'numpy')):
-            raise ValueError('backend需要reference、numpy或null')
+        if self.backend is not None and (type(self.backend) is not str or self.backend not in ('reference', 'numpy', 'auto')):
+            raise ValueError('backend需要auto、reference、numpy或null')
 
     @classmethod
     def from_dict(cls, config, *, base_dir=None):
@@ -129,7 +129,7 @@ class BatchPlan:
         return model_at(cls, '$', tuple(jobs),
             number_at(raw.get('process_count',1),'$.process_count',integer=True,minimum=1),
             choice_at(raw.get('fail_fast',False),(False,True),'$.fail_fast'),
-            choice_at(raw.get('backend'),(None,'reference','numpy'),'$.backend'))
+            choice_at(raw.get('backend'),(None,'reference','numpy','auto'),'$.backend'))
 
 
 @dataclass(frozen=True)

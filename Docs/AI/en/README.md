@@ -20,17 +20,17 @@ The relative commands below illustrate a source or standalone guide directory. F
 
 ## Install Chronaxis and its default dependencies
 
-A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install the local 0.1.0.dev3 wheel matching this guide. Substitute its actual file path:
+A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install the local 0.1.0.dev4 wheel matching this guide. Substitute its actual file path:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-You can also obtain the matching source tree, create the environment at its root containing `pyproject.toml`, and replace the installation command with `.\.venv\Scripts\python.exe -m pip install .`. When upgrading, supply `duration_comparison` for sustained conditions according to their intended meaning: `">="` means at least the threshold, and `">"` means strictly more than the threshold.
+You can also obtain the matching source tree, create the environment at its root containing `pyproject.toml`, and replace the installation command with `.\.venv\Scripts\python.exe -m pip install .`.
 
-Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is optional. This version declares and has been checked with `python-can==4.6.1`, `cantools==39.4.3`, and `natsort==8.4.0`, installed through the wheel's default dependencies. Do not install an arbitrary latest version to fix a missing module, or change signals, thresholds, or the DBC. Other dependency versions are not thereby verified; use the actual distribution's installation metadata. Prepare dependency wheels in advance for offline installation.
+Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is optional. Python 3.12 and 3.13 are allowed. Default CAN dependencies are `python-can==4.6.1`, `cantools>=39.4.3,<46` and `natsort==8.4.0`, constrained by the installed wheel metadata. NumPy requires `>=1.26.3,<2.6` on Python 3.12 and `>=2.1,<2.6` on Python 3.13; jsonschema requires `>=4.25.1,<4.27`. The source `requirements/` directory contains four exact Windows environment snapshots. Allowed ranges do not prove every intermediate or cross-combination was tested. Use the release or wheel requested by the user, and prepare dependency wheels for offline installation. Do not change signals, thresholds or the DBC to fix an installation error.
 
 `dependency_missing` means the environment lacks required CAN dependencies, not that a signal binding is wrong. Follow the local-wheel installation command in the error. Even if every signal's metadata is supplied manually and static validation passes, execution still needs the appropriate reading and decoding dependencies.
 
@@ -67,12 +67,12 @@ For continuous volumes from one ASC/BLF source, add this block at the analysis r
 
 ```yaml
 execution:                     # Execution settings for this analysis
-  process_count: 4             # At most four workers, capped by the number of files
+  process_count: 4             # File-worker limit 4; creation and count depend on inputs and merge mode
 ```
 
-In a general analysis, workers read and decode while the main process preserves events and integration across files. High-performance integrator workers also evaluate same-frame contributions. Four is this manual's starting limit; the software default remains one. A single file uses at most one worker. Four is not optimal on every machine: more workers use more resources, so adjust it for your inputs.
+In a general analysis, workers read and decode while the main process preserves events and integration across files. High-performance integrator workers also evaluate same-frame contributions. Four is this manual's starting limit; the software default remains one. A single ASC using default concatenation reads in the current process, with ordinary `read_process_limit: 0`. Ordinary `time_order` uses one file child even at a configured limit of 1. Plan limits are not measured PIDs. Four is not optimal on every machine: more workers use more resources, so adjust it for your inputs.
 
-Independent trials use batch-root `process_count: 4` and `execution.process_count: 1` in each child plan to avoid nested file pools. A single CSV, memory, multi-source or all-signal-decoding plan currently uses one worker. Independent trials can run in an outer batch; do not split a continuous session merely to obtain parallelism. Put Python execution under `if __name__ == "__main__":`; the supplied `run_analysis.py` already does this.
+Independent trials use batch-root `process_count: 4` and `execution.process_count: 1` in each child plan to avoid nested file pools. A CSV, memory, multi-source or `decode_scope: all` plan currently sets the limit to 1 and reads in the current process. Independent trials can run in an outer batch; do not split a continuous session merely to obtain parallelism. Put Python execution under `if __name__ == "__main__":`; the supplied `run_analysis.py` already does this.
 
 ## A complete task
 

@@ -9,7 +9,7 @@
 逐个关闭实际文件，未关闭句柄和未退费用仍保留在owner._merge_run_resources，
 调用方可通过同一owner.close重试；关闭失败不能被当成归并成功或资源已经释放。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -51,7 +51,7 @@ _MergeResources(owner)
 ```
 
 
-源码：[`src/chronaxis/results/merge_runs.py:24`](../../../src/chronaxis/results/merge_runs.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:24`](../../../src/chronaxis/results/merge_runs.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_MergeResources-__init__"></a>
 ### `_MergeResources.__init__`
@@ -76,7 +76,7 @@ None；初始化实例状态。
 
 分配错误。
 
-源码：[`src/chronaxis/results/merge_runs.py:31`](../../../src/chronaxis/results/merge_runs.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:31`](../../../src/chronaxis/results/merge_runs.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_MergeResources-open"></a>
 ### `_MergeResources.open`
@@ -103,7 +103,7 @@ _MergeResources.open(path, mode, buffering)
 
 原打开/登记/取消错误；已打开的FD仍由pending或handles持有。
 
-源码：[`src/chronaxis/results/merge_runs.py:37`](../../../src/chronaxis/results/merge_runs.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:37`](../../../src/chronaxis/results/merge_runs.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_MergeResources-_close_slot"></a>
 ### `_MergeResources._close_slot`
@@ -128,7 +128,7 @@ _MergeResources._close_slot(position)
 
 原close错误；未关对象保原槽。
 
-源码：[`src/chronaxis/results/merge_runs.py:50`](../../../src/chronaxis/results/merge_runs.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:50`](../../../src/chronaxis/results/merge_runs.py#L50)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_MergeResources-close"></a>
 ### `_MergeResources.close`
@@ -155,7 +155,7 @@ None；closed后幂等。
 首个清理错误为主，其他错误附note；
     存活FD或未抵销费用时保owner._merge_run_resources，绝不释放借用余额。
 
-源码：[`src/chronaxis/results/merge_runs.py:65`](../../../src/chronaxis/results/merge_runs.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:65`](../../../src/chronaxis/results/merge_runs.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-merge_runs"></a>
 ## `merge_runs`
@@ -188,4 +188,4 @@ None；目标JSONL经真实关闭后才成功返回。
 
 相等键按输入路序稳定取出；每次写后先丢旧行再读该路下一行。
 
-源码：[`src/chronaxis/results/merge_runs.py:133`](../../../src/chronaxis/results/merge_runs.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/merge_runs.py:133`](../../../src/chronaxis/results/merge_runs.py#L133)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

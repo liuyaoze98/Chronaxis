@@ -13,7 +13,7 @@ BLF沿用sclicer-functions-v1旧读取链；新文本CAN使用can-text-v1独立�
 信号表及原帧导出可分别选择原始采样或连续量重采样，配置和边界见当前用户手册的输入与导出章节。
 具体配置和输入限制见当前用户手册。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -70,4 +70,4 @@ AttributeError: 名称未在公开名单中。
 
 导入planning及其依赖；不缓存任何会话输入或绑定。
 
-源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

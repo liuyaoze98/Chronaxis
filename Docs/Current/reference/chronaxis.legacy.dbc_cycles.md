@@ -5,7 +5,7 @@
 周期取同次已加载DBC的message.cycle_time（毫秒），精确换算一次供运行状态复用。
 缺失或非法周期直接拒绝，不用快速发送周期、信号周期或实际差作替代。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -53,7 +53,7 @@ require_cycle_fields(fields, channel=None)
 
 TypeError/ValueError为类型、数量、重复或通道不符。
 
-源码：[`src/chronaxis/legacy/dbc_cycles.py:14`](../../../src/chronaxis/legacy/dbc_cycles.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/dbc_cycles.py:14`](../../../src/chronaxis/legacy/dbc_cycles.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-cycle_time_ns"></a>
 ## `cycle_time_ns`
@@ -79,4 +79,4 @@ cycle_time_ns(value)
 TypeError/ValueError/TimeOverflowError为缺失、类型、
     非正、非有限、不能精确到纳秒或越界；不为非法值选择默认周期。
 
-源码：[`src/chronaxis/legacy/dbc_cycles.py:28`](../../../src/chronaxis/legacy/dbc_cycles.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/dbc_cycles.py:28`](../../../src/chronaxis/legacy/dbc_cycles.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

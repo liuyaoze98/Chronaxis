@@ -12,6 +12,7 @@ import subprocess
 from zipfile import ZipFile
 from public_docs import reading_text
 from ai_resource_bytes import resource_bytes, validate_result_summaries
+from example_inventory import validate_example_inventory
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDED_TESTS = {
@@ -32,6 +33,12 @@ PUBLIC_TOOLS = {
     'export_public_source.py', 'pypi_readme.py', 'ai_resource_bytes.py',
     'test_ai_result_bytes.py', 'public_api_catalog.py', 'public_api_notes.py', 'public_api_english.py',
     'annotate_manual_examples.py', 'manual_example_comments.py',
+    'run_ci_tests.py',
+    'example_inventory.py', 'test_manual_j_generation.py', 'test_manual_j_inputs.py',
+    'test_manual_j_api.py', 'test_manual_j_examples.py',
+    'test_manual_followup_fields.py', 'test_manual_review_11_tasks.py',
+    'check_manual_followup_api.py', 'test_manual_followup_api.py',
+    'example_result_contracts.py', 'test_example_result_contracts.py', 'test_power_statistics_example.py',
 }
 
 
@@ -44,7 +51,16 @@ def included(name):
         return False
     if name in {'README.md', 'README.en.md', 'LICENSE', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes'}:
         return True
-    if name in {'.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml'}:
+    # 精确公开已核对的约束快照，不把工作目录或私人环境文件带入发行。
+    if name in {
+        'requirements/README.md',
+        'requirements/constraints-windows-py312-min.txt',
+        'requirements/constraints-windows-py312-max.txt',
+        'requirements/constraints-windows-py313-min.txt',
+        'requirements/constraints-windows-py313-max.txt',
+    }:
+        return True
+    if name in {'.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml', '.github/workflows/verify.yml'}:
         return True
     if name.startswith(('src/chronaxis/', 'examples/', 'tests/fixtures/',
                         'Docs/Current/', 'Docs/AI/', 'Docs/Schema/', 'Docs/Release/')):
@@ -65,8 +81,11 @@ def export(destination, revision='HEAD'):
     paths = ['src', 'tests', 'examples', 'tools', 'Docs/Current', 'Docs/AI',
              'Docs/Schema', 'Docs/Release', 'README.md', 'README.en.md', 'LICENSE',
              'pyproject.toml', 'setup.py', 'MANIFEST.in', '.gitattributes']
+    # 约束目录在旧提交中不存在；先核目录，保持历史源码导出可用。
+    if subprocess.check_output(['git', 'ls-tree', '--name-only', revision, '--', 'requirements'], cwd=ROOT).strip():
+        paths.append('requirements')
     # 旧提交可能尚无发布工作流；只导出该版本实际存在的明确文件。
-    for workflow in ('.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml'):
+    for workflow in ('.github/workflows/pypi-publish.yml', '.github/workflows/pages.yml', '.github/workflows/verify.yml'):
         if subprocess.check_output(['git', 'ls-tree', '--name-only', revision, '--', workflow], cwd=ROOT).strip():
             paths.append(workflow)
     data = subprocess.check_output(['git', 'archive', '--format=zip', revision, *paths], cwd=ROOT)
@@ -94,6 +113,9 @@ def export(destination, revision='HEAD'):
     validate_result_summaries({name.removeprefix('Docs/Current/'): content
                                for name, content in files.items()
                                if name.startswith('Docs/Current/examples/results/')})
+    validate_example_inventory({name.removeprefix('Docs/Current/'): content
+                                for name, content in files.items()
+                                if name.startswith('Docs/Current/examples/')})
     files['Docs/AI/inputs.lock.json'] = (json.dumps(lock, indent=2)+'\n').encode()
     files['.gitignore'] = b'__pycache__/\n*.py[cod]\n.venv/\nwork/\nbuild/\ndist/\n*.egg-info/\nDocs/Current/_build/\n'
     # 所有路径来自Git受审白名单，仍核对最终目标避免意外越界。

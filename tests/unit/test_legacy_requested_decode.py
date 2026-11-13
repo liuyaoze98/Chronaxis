@@ -3,9 +3,10 @@
 内存旧链替身逐次记录next/parse，独立检查默认READY/批字节、固定集合与原帧保留、
 未选原帧错误。真实BLF/DBC和spawn验证原时间、完整选中值、调用次数、预取与EOF。
 独立账本故障覆盖策略预约及退款前后取消和持续Process.close失败，借款不得误还。
-文件导入不打开来源；真实夹具只写新work目录，不改vendor或RefProjects。
+文件导入不打开来源；真实夹具只写新work目录，不改产品源码或RefProjects。
 """
 
+from chronaxis.can_dependencies import runtime_dependency_versions
 from functools import partial
 from collections.abc import Mapping
 import math
@@ -53,7 +54,7 @@ class AlternatingChain(ControlledOriginalChain):
 
 
 def observed_requested_worker(connection, *, ids):
-    """让既有真实旧链追踪器调用同一个正式批worker，不改任何旧文件。
+    """让既有真实读取/解码追踪器调用同一个正式批worker，不改任何旧文件。
 
     参数: 实际spawn端点和固定ID，None代表原all。返回: 原返回。异常: 原worker错误。
     """
@@ -70,9 +71,7 @@ def ready_for(read, *, scope='requested'):
     packet = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
         'worker_pid': read._worker_pid,
         'fields': [{'locator': field_to_dict(value), 'unit': 'V'} for value in read._request.fields],
-        'dependency_versions': {'python': platform.python_version(), 'python-can': '4.6.1',
-                               'cantools': '39.4.3', 'natsort': '8.4.0'},
-        'vendor_sha256': worker.VENDOR_SHA256.copy()}
+        'dependency_versions': runtime_dependency_versions()}
     if scope == 'requested':
         packet.update(version=3, decode_scope='requested', decode_frame_ids=list(read._decode_frame_ids),
                       decoded_values_policy='requested_fields-v1')
@@ -110,9 +109,12 @@ class RequestedWorkerTests(unittest.TestCase):
         self.configure_db(chain, fields)
         metadata_fields = [{'locator': field_to_dict(field), 'unit': None} for field in fields]
         processor = SimpleNamespace(parse_frame=chain.parse_frame,
-            cantools=SimpleNamespace(database=SimpleNamespace(load_file=chain.load_file)))
+            cantools=SimpleNamespace(database=SimpleNamespace()))
         with patch.object(worker, '_request', return_value=request), \
-                patch.object(worker, '_load_vendor', return_value=(chain, processor, {})), \
+                patch.object(batch_worker, 'load_dbc_file', side_effect=lambda path,module: chain.load_file(path)), \
+                patch.object(worker, '_load_can_runtime', return_value=(getattr(chain,'can',None),processor.cantools)), \
+                patch.object(worker, '_iter_blf', side_effect=chain.iter_frames), \
+                patch.object(batch_worker, '_parse_selected', side_effect=lambda db,frame,message,duplicates: processor.parse_frame(frame,db)), \
                 patch.object(worker, '_field_metadata', return_value=metadata_fields), \
                 patch.object(batch_worker.metadata, 'version', return_value='controlled'):
             kwargs = {} if omit_scope else {'decode_frame_ids': ids}
@@ -135,7 +137,7 @@ class RequestedWorkerTests(unittest.TestCase):
         self.assertEqual((second.next_calls, second.parse_calls), (5, 4))
         header = decode_packet(a.sent[0][0])
         self.assertEqual(set(header), {'op', 'version', 'profile', 'worker_pid', 'fields',
-                                     'dependency_versions', 'vendor_sha256'})
+                                     'dependency_versions'})
         self.assertEqual(header['version'], 1)
 
     def test_requested_reads_all_and_keeps_complete_selected_bytes(self):
@@ -266,9 +268,12 @@ class RequestedWorkerTests(unittest.TestCase):
         request = LegacyCANRequest(Path('synthetic.blf'), Path('synthetic.dbc'), (field,))
         self.configure_db(chain, (field,))
         processor = SimpleNamespace(parse_frame=chain.parse_frame,
-            cantools=SimpleNamespace(database=SimpleNamespace(load_file=chain.load_file)))
+            cantools=SimpleNamespace(database=SimpleNamespace()))
         with patch.object(worker, '_request', return_value=request), \
-                patch.object(worker, '_load_vendor', return_value=(chain, processor, {})), \
+                patch.object(batch_worker, 'load_dbc_file', side_effect=lambda path,module: chain.load_file(path)), \
+                patch.object(worker, '_load_can_runtime', return_value=(getattr(chain,'can',None),processor.cantools)), \
+                patch.object(worker, '_iter_blf', side_effect=chain.iter_frames), \
+                patch.object(batch_worker, '_parse_selected', side_effect=lambda db,frame,message,duplicates: processor.parse_frame(frame,db)), \
                 patch.object(worker, '_field_metadata',
                     return_value=[{'locator': field_to_dict(field), 'unit': None}]), \
                 patch.object(batch_worker.metadata, 'version', return_value='controlled'):

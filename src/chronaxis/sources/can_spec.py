@@ -1,5 +1,6 @@
-"""声明固定旧函数链的有序BLF来源，并保存解码样本的完整CAN定位。
+"""声明有序BLF来源，并保存解码样本的完整CAN定位。
 
+公共Runner将LegacyCANSpec接到共用BLF读取器，低层旧适配器仍可消费此声明。
 LegacyCANSpec接收首个Path、可选连续paths、一个DBC Path、明确通道、TimebaseSpec和原浮点秒
 表示，输出冻结声明；构造只查类型、后缀和纳秒偏移，不open/stat/resolve，不加载
 旧模块、CAN库或DBC，也不猜时区、单位、方向、实际观测范围和解码质量。
@@ -56,7 +57,7 @@ class LegacyCANSpec:
 
     name: str  # 当前计划来源的安全简单名称，不是DBC消息名。
     path: Path  # 首个BLF声明；不扫描目录，连续文件由paths显式提供。
-    dbc_path: Path  # 同次worker原load_file的唯一DBC声明，不在此读取。
+    dbc_path: Path  # 同次worker加载的唯一DBC声明，不在此读取。
     channel: int  # 明确单通道，非负原生int，不猜缺失通道。
     timebase: TimebaseSpec  # 完整时基声明，来源名称相同不自动证明同步。
     unit: str = 's'  # 原函数返回浮点秒，首版只接受s，不按文件名推断。

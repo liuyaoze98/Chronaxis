@@ -226,6 +226,8 @@ def explanation_text(plan,report,*,backend_override=None):
     backend=plan.execution.backend if backend_override is None else backend_override
     lines.append('  执行后端='+backend+('（命令行覆盖）' if backend_override is not None else
         '（配置指定）' if _declared(plan,'execution','backend') else '（默认）'))
+    if report.requested_backend == 'auto':
+        lines.append('  本次选择='+report.selected_backend+'；'+report.backend_reason)
     for field,label in (('process_count','读取解码工作进程上限'),('batch_rows','每批记录上限'),('memory_budget_bytes','分析层内存预算/字节'),
                         ('result_buffer_rows','结果缓冲行数'),('spool_quota_bytes','暂存磁盘预算/字节')):
         value=report.budget[field] if field=='process_count' else getattr(plan.execution,field)

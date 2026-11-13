@@ -44,7 +44,7 @@ class SignalCSVSpec:
     unit: str  # s/ms/us/ns或absolute的ISO8601。
     offset_ns: int = 0  # 显式固定偏移，不能证明同步。
     timezone: tzinfo | None = None  # ISO无offset时明确采用的时区。
-    encoding: str = 'utf-8'  # 不猜文件编码。
+    encoding: str = 'utf-8-sig'  # 默认接受普通UTF-8及文件开头BOM；显式编码仍优先。
     delimiter: str = ','  # 单字符分隔符，不自动sniff。
     missing_values: tuple[str, ...] = ('',)  # 精确匹配原cell，不strip标记。
 

@@ -71,7 +71,7 @@ class ConfigurationResolveTests(unittest.TestCase):
         source=source.with_suffix('.json');source.write_text(json.dumps(raw),encoding='utf-8')
         resolved=resolved_configuration(source,defaults=True)
         self.assertEqual(resolved['calculations'][0]['partial_policy'],'strict')
-        self.assertEqual(resolved['execution']['backend'],'numpy')
+        self.assertEqual(resolved['execution']['backend'],'auto')
         self.assertFalse(resolved['diagnostics']['trace'])
 
     def test_cli_stdout_and_export_no_business_input_reads(self):
@@ -83,7 +83,7 @@ class ConfigurationResolveTests(unittest.TestCase):
         with patch.object(Path,'open',guard):resolved_configuration(source,defaults=True)
         printed=self.command('config','resolve',source,'--defaults','--format','json')
         self.assertEqual(printed.returncode,0,printed.stderr)
-        self.assertEqual(json.loads(printed.stdout)['execution']['backend'],'numpy')
+        self.assertEqual(json.loads(printed.stdout)['execution']['backend'],'auto')
         self.assertEqual(self.command('config','resolve',source,'--output',source).returncode,1)
         self.assertEqual(self.command('config','resolve',source,'--output',self.root/'bad.json','--format','yaml').returncode,2)
         self.assertFalse((self.root/'bad.json').exists())

@@ -10,7 +10,7 @@ NumPy字符串按最大原宽度×N核算Unicode数组/临时副本，不能只�
 超限明确失败，不偷偷减小batch_rows、切换后端或丢样本。所有预算至EOF/close释放，
 外部长期保存owned批次不在本封装内部预算保证内；不读取CSV、旧日志或DBC。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -64,7 +64,7 @@ BudgetedMemorySourceAdapter(budget: ResourceBudget, source: SourceSpec, session_
 ```
 
 
-源码：[`src/chronaxis/execution/memory_reader.py:24`](../../../src/chronaxis/execution/memory_reader.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:24`](../../../src/chronaxis/execution/memory_reader.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-__init__"></a>
 ### `BudgetedMemorySourceAdapter.__init__`
@@ -96,7 +96,7 @@ BudgetedMemorySourceAdapter.__init__(budget: ResourceBudget, source: SourceSpec,
 配置/预算/原适配器初始化原错；持续清理失败附
     memory_source_cleanup_owner，恢复后从该真实owner重试close。
 
-源码：[`src/chronaxis/execution/memory_reader.py:33`](../../../src/chronaxis/execution/memory_reader.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:33`](../../../src/chronaxis/execution/memory_reader.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-_ensure_open"></a>
 ### `BudgetedMemorySourceAdapter._ensure_open`
@@ -128,7 +128,7 @@ SourceClosedError为已关闭。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/memory_reader.py:70`](../../../src/chronaxis/execution/memory_reader.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:70`](../../../src/chronaxis/execution/memory_reader.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-describe"></a>
 ### `BudgetedMemorySourceAdapter.describe`
@@ -156,7 +156,7 @@ SourceDescription。
 
 返回类型：[SourceDescription](chronaxis.sources.models.md#api-SourceDescription)。
 
-源码：[`src/chronaxis/execution/memory_reader.py:78`](../../../src/chronaxis/execution/memory_reader.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:78`](../../../src/chronaxis/execution/memory_reader.py#L78)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-_request_cost"></a>
 ### `BudgetedMemorySourceAdapter._request_cost`
@@ -187,7 +187,7 @@ ValueError为请求会话/别名错误，其他预算错误由申请点报告。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/memory_reader.py:86`](../../../src/chronaxis/execution/memory_reader.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:86`](../../../src/chronaxis/execution/memory_reader.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-iter_batches"></a>
 ### `BudgetedMemorySourceAdapter.iter_batches`
@@ -215,7 +215,7 @@ BudgetedMemorySourceAdapter.iter_batches(request: ReadRequest) -> Iterator[Signa
 
 返回类型：Iterator[[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)]。
 
-源码：[`src/chronaxis/execution/memory_reader.py:107`](../../../src/chronaxis/execution/memory_reader.py#L107)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:107`](../../../src/chronaxis/execution/memory_reader.py#L107)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedMemorySourceAdapter-close"></a>
 ### `BudgetedMemorySourceAdapter.close`
@@ -244,7 +244,7 @@ BudgetedMemorySourceAdapter.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/memory_reader.py:133`](../../../src/chronaxis/execution/memory_reader.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:133`](../../../src/chronaxis/execution/memory_reader.py#L133)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BudgetedBatches"></a>
 ## `_BudgetedBatches`
@@ -256,7 +256,7 @@ _BudgetedBatches(owner: BudgetedMemorySourceAdapter, request: ReadRequest, cost:
 ```
 
 
-源码：[`src/chronaxis/execution/memory_reader.py:173`](../../../src/chronaxis/execution/memory_reader.py#L173)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:173`](../../../src/chronaxis/execution/memory_reader.py#L173)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BudgetedBatches-__init__"></a>
 ### `_BudgetedBatches.__init__`
@@ -284,7 +284,7 @@ _BudgetedBatches.__init__(owner: BudgetedMemorySourceAdapter, request: ReadReque
 预算或原请求初始化原错，持续清理失败附memory_read_cleanup_owner；
     未实际入账不抵销，返回途中取消仍登记原cost槽。
 
-源码：[`src/chronaxis/execution/memory_reader.py:176`](../../../src/chronaxis/execution/memory_reader.py#L176)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:176`](../../../src/chronaxis/execution/memory_reader.py#L176)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BudgetedBatches-__iter__"></a>
 ### `_BudgetedBatches.__iter__`
@@ -312,7 +312,7 @@ _BudgetedBatches.__iter__() -> '_BudgetedBatches'
 
 返回类型：'[_BudgetedBatches](chronaxis.execution.memory_reader.md#api-_BudgetedBatches)'。
 
-源码：[`src/chronaxis/execution/memory_reader.py:195`](../../../src/chronaxis/execution/memory_reader.py#L195)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:195`](../../../src/chronaxis/execution/memory_reader.py#L195)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BudgetedBatches-__next__"></a>
 ### `_BudgetedBatches.__next__`
@@ -344,7 +344,7 @@ EOF/关闭/原来源错误，故障清理保留根因。
 
 返回类型：[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)。
 
-源码：[`src/chronaxis/execution/memory_reader.py:202`](../../../src/chronaxis/execution/memory_reader.py#L202)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:202`](../../../src/chronaxis/execution/memory_reader.py#L202)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BudgetedBatches-close"></a>
 ### `_BudgetedBatches.close`
@@ -373,4 +373,4 @@ _BudgetedBatches.close() -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/memory_reader.py:223`](../../../src/chronaxis/execution/memory_reader.py#L223)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/memory_reader.py:223`](../../../src/chronaxis/execution/memory_reader.py#L223)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

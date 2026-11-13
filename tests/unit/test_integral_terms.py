@@ -11,7 +11,6 @@ from dataclasses import replace
 from math import fsum
 import unittest
 import numpy as np
-import test_calculation_blocks as real_history
 from chronaxis.core.integral_terms import ReferenceIntegralTerms
 from chronaxis.core.integral_terms_reference import compute_integral_terms_reference
 from chronaxis.core.integral_terms_numpy import NumpyIntegralTerms, compute_integral_terms_numpy
@@ -157,60 +156,7 @@ class IntegralTermsTests(unittest.TestCase):
                 self.assertEqual(facts.value_valid_duration_ns, 2)
                 self.assertEqual(facts.quality, Q.NONE)
 
-    def test_actual_history_blocks_keep_valid_term_order_under_all_splits(self):
-        """真实memory/CSV块1/2/7的有效项顺序和未知范围一致，末点不加面积。
 
-        参数: 无。返回: None。异常: 输入分割改变顺序、来源或借用状态断言失败。
-        """
-        rows = {'table': (MemoryRow(0, {'raw.a': 1}, 0), MemoryRow(5, {'raw.a': 2}, 1), MemoryRow(8, {'raw.a': 2}, 2))}
-        for kind in ('memory', 'csv'):
-            for backend in ('reference', 'numpy'):
-                for count in (1, 2, 7):
-                    helper = real_history.CalculationBlocksTests('runTest')
-                    fixture = helper.fixture(kind=kind, backend=backend, rows_by_source=rows, size=count)
-                    spec = CalculationDefinition('area', 'integral', Interval(2, 7))
-                    owner = helper.owner(fixture, spec, backend=backend, batch_intervals=count)
-                    selected, unknown, duration, samples = [], [], 0, 0
-                    for block in owner:
-                        try:
-                            areas, keep, facts = self.summary(self.terms(block.series, spec, backend))
-                            selected.extend(area for area, valid in zip(areas, keep) if valid)
-                            unknown.extend(facts.value_unknown_ranges)
-                            duration += facts.value_valid_duration_ns
-                            samples += facts.valid_sample_count
-                            self.assertEqual(facts.binding_identity, fixture.compiled[0].identity)
-                            self.assertTrue(facts.source_refs)
-                        finally:
-                            block.close()
-                    self.assertEqual(selected, [1e-9, 4e-9])
-                    self.assertEqual(merge_ranges(unknown), (Interval(3, 5),))
-                    self.assertEqual((duration, samples), (3, 1))
-                    self.assertEqual(fixture.state.revision, 0)
-                    self.assertTrue(helper.doCleanups())
-
-    def test_source_eof_and_constant_have_different_known_area_evidence(self):
-        """真实EOF后的连续值未知；无依赖常量仍在已声明domain上有已知面积且无样本。
-
-        参数: 无。返回: None。异常: EOF假延长或常量假样本断言失败。
-        """
-        for backend in ('reference', 'numpy'):
-            for constant in (False, True):
-                helper = real_history.CalculationBlocksTests('runTest')
-                fixture = helper.fixture(kind='csv', texts=('2.0',) if constant else ('a',))
-                spec = CalculationDefinition('area', 'integral', Interval(2, 7))
-                owner = helper.owner(fixture, spec, backend=backend, batch_intervals=1)
-                selected, duration = [], 0
-                for block in owner:
-                    try:
-                        areas, keep, facts = self.summary(self.terms(block.series, spec, backend))
-                        selected.extend(area for area, valid in zip(areas, keep) if valid)
-                        duration += facts.value_valid_duration_ns
-                        self.assertEqual(facts.valid_sample_count, 0)
-                    finally:
-                        block.close()
-                self.assertAlmostEqual(fsum(selected), 1e-8 if constant else 1e-9, places=20)
-                self.assertEqual(duration, 5 if constant else 1)
-                self.assertTrue(helper.doCleanups())
 
     def test_inputs_wrong_operator_condition_unit_or_span_rejected(self):
         """未支持条件/算子、单位冲突及不能表示的dt在数值计算前拒绝。

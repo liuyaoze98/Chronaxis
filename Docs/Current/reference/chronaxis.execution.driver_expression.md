@@ -4,16 +4,16 @@
 
 输入是经过来源校验、归一化和同一时刻政策处理的LatestSignalState，以及静态
 表达式声明；每个驱动更新最多返回一个(time, value, valid_until)计算点。
-按实际更新时间判断valid_for，复用既有独立参考/NumPy算术内核；固定周期
+按实际更新时间判断valid_for，参考及生产逐点数值核独立；真正批量数组入口不变。固定周期
 不进入此组件。最新值归state持有，临时求值空间在共享预算中预付。
 这是新按需执行的内部接点，不生成CompiledExpression或伪造EOF/绑定证据，
 不改变公开表达式入口拒绝StaticExpression的契约。来源读取/同一时刻归组由调用方负责。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings)、[LatestSignalState](chronaxis.execution.state.md#api-LatestSignalState)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)
+[D](chronaxis.core.types.md#api-SignalDType)、[DeclarationBindings](chronaxis.core.declarations.md#api-DeclarationBindings)、[LatestSignalState](chronaxis.execution.state.md#api-LatestSignalState)、[PointProgram](chronaxis.core.expression_point.md#api-PointProgram)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[StaticExpression](chronaxis.core.expression.md#api-StaticExpression)
 
 ## 对象导航
 
@@ -23,7 +23,7 @@
 |[`DriverExpression.__init__`](#api-DriverExpression-__init__)|核对声明与实际状态映射，预付树和依赖引用费用。|
 |[`DriverExpression._require_open`](#api-DriverExpression-_require_open)|拒绝失败或关闭后的求值。|
 |[`DriverExpression._context_at`](#api-DriverExpression-_context_at)|读取当前持有值在实际时刻的有效性。|
-|[`DriverExpression._evaluate_values`](#api-DriverExpression-_evaluate_values)|复用所选后端。|
+|[`DriverExpression._evaluate_values`](#api-DriverExpression-_evaluate_values)|使用独立逐点实现。|
 |[`DriverExpression.actual_update_at`](#api-DriverExpression-actual_update_at)|检查真实数值更新。|
 |[`DriverExpression.active_end_at`](#api-DriverExpression-active_end_at)|检查活动来源末端。|
 |[`DriverExpression.actual_unknown_at`](#api-DriverExpression-actual_unknown_at)|区分真实中断与并列 TTL。|
@@ -38,8 +38,9 @@
 
 ```python
 from dataclasses import replace
-from ..core import expression_reference, expression_numpy
+from ..core import expression_reference
 from ..core.expression import StaticExpression, validate_expression
+from ..core.expression_point import PointProgram
 from ..core.lookup import pack_requested_lookups
 from ..core.where_updates import contains_where
 from ..core.enum_codes import expire_value
@@ -50,9 +51,9 @@ from ..results.budget import _reserve_owned_ram, _release_owned_ram, _cleanup_ow
 from ..results.errors import ResultClosedError
 from ..timebase.conversion import require_int64_ns
 from .history import _metadata_bytes
-from .calculation_values import scalar_from_column
+from .static_metadata import static_metadata_bytes
 from .state import LatestSignalState
-from .where_state import before_context, scalar_columns, group_updates, group_active
+from .where_state import before_context, group_updates, group_active
 ```
 
 </details>
@@ -67,7 +68,7 @@ DriverExpression(static, state, driver, *, backend='numpy', derived=(), observat
 ```
 
 
-源码：[`src/chronaxis/execution/driver_expression.py:29`](../../../src/chronaxis/execution/driver_expression.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:30`](../../../src/chronaxis/execution/driver_expression.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-__init__"></a>
 ### `DriverExpression.__init__`
@@ -98,7 +99,7 @@ DriverExpression.__init__(static, state, driver, *, backend='numpy', derived=(),
 声明不一致、非数值/BOOL表达式、预算或取消错误；
     构造清理失败提供driver_expression_cleanup_owner重试句柄。
 
-源码：[`src/chronaxis/execution/driver_expression.py:32`](../../../src/chronaxis/execution/driver_expression.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:33`](../../../src/chronaxis/execution/driver_expression.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-_require_open"></a>
 ### `DriverExpression._require_open`
@@ -124,7 +125,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/driver_expression.py:95`](../../../src/chronaxis/execution/driver_expression.py#L95)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:102`](../../../src/chronaxis/execution/driver_expression.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-_context_at"></a>
 ### `DriverExpression._context_at`
@@ -150,12 +151,12 @@ context及未来到期点。
 
 模型/分配错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:100`](../../../src/chronaxis/execution/driver_expression.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:107`](../../../src/chronaxis/execution/driver_expression.py#L107)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-_evaluate_values"></a>
 ### `DriverExpression._evaluate_values`
 
-复用所选后端。
+使用独立逐点实现。
 
 ```python
 DriverExpression._evaluate_values(context, unobserved=None)
@@ -165,7 +166,7 @@ DriverExpression._evaluate_values(context, unobserved=None)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。当前时刻各依赖别名的值与有效状态；缺失和过期必须保持无效。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。当前时刻各依赖别名的值与有效状态；缺失和过期必须保持无效。|
 |`unobserved`|set[str] &#124; None|否|None|位置或关键字。可选的可写别名集合，仅记录此刻求值实际访问而尚未有观测的输入。|
 
 #### 返回说明
@@ -176,7 +177,7 @@ ScalarValue。
 
 原计算/分配错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:127`](../../../src/chronaxis/execution/driver_expression.py#L127)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:134`](../../../src/chronaxis/execution/driver_expression.py#L134)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-actual_update_at"></a>
 ### `DriverExpression.actual_update_at`
@@ -201,7 +202,7 @@ bool。
 
 状态/预算/后端错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:147`](../../../src/chronaxis/execution/driver_expression.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:157`](../../../src/chronaxis/execution/driver_expression.py#L157)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-active_end_at"></a>
 ### `DriverExpression.active_end_at`
@@ -226,7 +227,7 @@ bool。
 
 状态/预算/后端错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:151`](../../../src/chronaxis/execution/driver_expression.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:161`](../../../src/chronaxis/execution/driver_expression.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-actual_unknown_at"></a>
 ### `DriverExpression.actual_unknown_at`
@@ -242,7 +243,7 @@ DriverExpression.actual_unknown_at(time_ns, point)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`time_ns`|int|是|无|位置或关键字。按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。调用方在当前时刻已求出的无效点值，用于区分真实无效更新与恰好发生的过期。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。调用方在当前时刻已求出的无效点值，用于区分真实无效更新与恰好发生的过期。|
 
 #### 返回说明
 
@@ -252,7 +253,7 @@ bool。
 
 状态/求值错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:155`](../../../src/chronaxis/execution/driver_expression.py#L155)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:165`](../../../src/chronaxis/execution/driver_expression.py#L165)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-_point_evidence"></a>
 ### `DriverExpression._point_evidence`
@@ -269,7 +270,7 @@ DriverExpression._point_evidence(time_ns, kind, point=None)
 |---|---|---|---|---|
 |`time_ns`|int|是|无|位置或关键字。按原记录时间轴给出的纳秒查询时刻，用于核对该刻原子组或来源终点。|
 |`kind`|str|是|无|位置或关键字。请求哪一种证据，updated 询问真实更新、invalid 询问真实中断、source_end 询问活动来源结束。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue) &#124; None|否|None|位置或关键字。检查 invalid 时提供当前点的实际数值及质量，其他证据种类可省略。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None|否|None|位置或关键字。检查 invalid 时提供当前点的实际数值及质量，其他证据种类可省略。|
 
 #### 返回说明
 
@@ -279,7 +280,7 @@ bool。
 
 状态、预算及后端求值错误；失败后需要关闭资源。
 
-源码：[`src/chronaxis/execution/driver_expression.py:159`](../../../src/chronaxis/execution/driver_expression.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:169`](../../../src/chronaxis/execution/driver_expression.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-_output_deadline"></a>
 ### `DriverExpression._output_deadline`
@@ -295,7 +296,7 @@ DriverExpression._output_deadline(time, output, deadlines)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`time`|int|是|无|位置或关键字。当前观察时刻的纳秒坐标，只评估此刻及之后的候选截止点。|
-|`output`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。本次表达式求值结果，按当前类型、有效性与数值比较后续可见变化。|
+|`output`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。本次表达式求值结果，按当前类型、有效性与数值比较后续可见变化。|
 |`deadlines`|Iterable[int]|是|无|位置或关键字。依赖输入的有效期及来源观测终点候选，依时间递增寻找第一个会影响输出的时刻。|
 
 #### 返回说明
@@ -306,7 +307,7 @@ DriverExpression._output_deadline(time, output, deadlines)
 
 候选边界上的求值错误。
 
-源码：[`src/chronaxis/execution/driver_expression.py:206`](../../../src/chronaxis/execution/driver_expression.py#L206)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:218`](../../../src/chronaxis/execution/driver_expression.py#L218)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-evaluate"></a>
 ### `DriverExpression.evaluate`
@@ -337,7 +338,7 @@ None或(time_ns, ScalarValue,
 
 必须在每次完整组提交后调用，不能用最新状态补算丢掉的历史组。
 
-源码：[`src/chronaxis/execution/driver_expression.py:221`](../../../src/chronaxis/execution/driver_expression.py#L221)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:233`](../../../src/chronaxis/execution/driver_expression.py#L233)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-invalidated_at"></a>
 ### `DriverExpression.invalidated_at`
@@ -365,7 +366,7 @@ int或None。
 
 关闭/失败。
 
-源码：[`src/chronaxis/execution/driver_expression.py:309`](../../../src/chronaxis/execution/driver_expression.py#L309)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:322`](../../../src/chronaxis/execution/driver_expression.py#L322)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-evaluate_at"></a>
 ### `DriverExpression.evaluate_at`
@@ -393,7 +394,7 @@ DriverExpression.evaluate_at(time_ns, *, continuous=True, unobserved=None)
 
 时间/状态/预算/数值错误；失败后仅可关闭，费用释放失败仍保原责任。
 
-源码：[`src/chronaxis/execution/driver_expression.py:314`](../../../src/chronaxis/execution/driver_expression.py#L314)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:327`](../../../src/chronaxis/execution/driver_expression.py#L327)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DriverExpression-close"></a>
 ### `DriverExpression.close`
@@ -419,4 +420,4 @@ None。
 
 释放失败可重试。
 
-源码：[`src/chronaxis/execution/driver_expression.py:358`](../../../src/chronaxis/execution/driver_expression.py#L358)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/driver_expression.py:371`](../../../src/chronaxis/execution/driver_expression.py#L371)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

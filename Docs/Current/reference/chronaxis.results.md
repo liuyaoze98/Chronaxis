@@ -6,7 +6,7 @@
 实际请求ResultSpool或AnalysisResult时才导入暂存与发布模块及其依赖。
 输入读取由执行层负责；本模块预算跟踪已登记资源，不保证整个进程的RSS上限。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -63,4 +63,4 @@ AttributeError为未知名称；实际模块导入错误原样传播。
 
 访问对应类才加载实现及其依赖，不读取输入或启动分析。
 
-源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/__init__.py:17`](../../../src/chronaxis/results/__init__.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

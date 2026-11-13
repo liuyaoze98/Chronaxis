@@ -2,7 +2,7 @@
 
 准备和执行单会话同帧累计，仅在全部输入、累计和资源关闭成功后发布结果。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -31,7 +31,7 @@ from ..results.publication import PublicationNames, output_root
 执行冻结会话并最后发布清单。
 
 ```python
-run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | None=None, cancel_event: object | None=None, _return_rows: bool=False, work_dir: str | Path | None=None) -> Path | tuple[Path, tuple]
+run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | None=None, cancel_event: object | None=None, _return_rows: bool=False, work_dir: str | Path | None=None, _programs_checked: bool=False) -> Path | tuple[Path, tuple]
 ```
 
 ### 参数
@@ -45,6 +45,7 @@ run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | 
 |`cancel_event`|Event &#124; None|否|None|仅关键字。外部取消事件，支持is_set()；设置后停止本次会话并清理，不返回成功结果。|
 |`_return_rows`|bool|否|False|仅关键字。请求跨文件总量时直接返回未舍入指标行。|
 |`work_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|仅关键字。本次暂存目录的父路径；None使用系统临时目录，每次调用创建独立子目录。|
+|`_programs_checked`|bool|否|False|仅关键字。spec编译声明，output结果目录，engine执行器标识，database可复用DBC， cancel_event可选取消，_return_rows控制独立batch同时取得未舍入行，work_dir暂存父目录。 _programs_checked仅供紧接公共编译器的内部调用|
 
 ### 返回说明
 
@@ -56,7 +57,7 @@ run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | 
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), tuple]。
 
-源码：[`src/chronaxis/fast/run.py:11`](../../../src/chronaxis/fast/run.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/run.py:11`](../../../src/chronaxis/fast/run.py#L11)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-run"></a>
 ## `run`
@@ -87,4 +88,4 @@ pathlib.Path，本次成功清单。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/fast/run.py:63`](../../../src/chronaxis/fast/run.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

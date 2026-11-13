@@ -7,7 +7,7 @@ float64；NumPy实现以一维longdouble数组计算后转float64，计算内核
 整数纳秒先作精确相对差，避免把很大的绝对时间直接转浮点。输出为估计值，
 不声称恢复真实观测；无文件、预算或全局状态。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -57,7 +57,7 @@ float tuple。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/export_interpolation.py:14`](../../../src/chronaxis/core/export_interpolation.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-linear_numpy"></a>
 ## `linear_numpy`
@@ -91,4 +91,4 @@ shape(N,) float64 ndarray。
 - `ValueError`：插值需要有效有序两端与内部目标。
 - `ValueError`：插值结果非有限。
 
-源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/export_interpolation.py:29`](../../../src/chronaxis/core/export_interpolation.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

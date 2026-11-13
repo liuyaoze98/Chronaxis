@@ -5,7 +5,7 @@
 输入为已通过表达式编译器统一数值类型/尺度的等长列。运算沿同一行跨参数
 择值或开方；掩码控制无效位置。没有逐样本Python循环，不修改借用输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -50,4 +50,4 @@ math_numpy(name, args)
 
 ValueError为内部未注册名称。内存分配异常直接传播。
 
-源码：[`src/chronaxis/core/expression_math_numpy.py:12`](../../../src/chronaxis/core/expression_math_numpy.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_numpy.py:12`](../../../src/chronaxis/core/expression_math_numpy.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

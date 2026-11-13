@@ -19,7 +19,5 @@ calculations:                 # 列出希望获得的统计或积分结果，每
 outputs:                      # 选择额外导出的数据及格式；默认结果表由运行入口提供
   can_frames:                 # 配置原始或重建CAN帧的额外导出；与信号CSV分别设置
     format: asc               # 选择输出报文文件格式；asc为文本，blf为二进制
-metadata:                     # 保存说明性信息；字段不会自动校准数据或更改计算公式
-  device_label: home          # 示例制作于home；实际使用改为本次设备标签（home/work），不会自动识别
 execution:                    # 设置本次分析的并行处理方式
   process_count: 4            # 最多4个文件工作进程；实际并行数不超过输入文件数

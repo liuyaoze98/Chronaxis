@@ -41,7 +41,7 @@ python -m chronaxis batch run batch-extended.yaml --output batch-output
 |jobs[].plan|字符串|是|无|指定该任务的完整分析配置；从实际保存的YAML/JSON路径取得。分析计划文件的路径，例如`"a/analysis.yaml"`。相对路径以批量配置所在目录为起点。|
 |process_count|整数|否|`1`|控制分析工作进程数量上限。填正整数：`1`用一个工作进程依次执行，`2`最多两个工作进程并行，`4`最多四个。根据可用CPU、内存和磁盘选择；不会自动使用全部CPU。不能填0、负数、浮点数、布尔值、字符串或null。|
 |fail_fast|布尔值|否|`false`|控制发现失败后是否继续启动尚未运行的任务。`false`：某个任务失败后仍尝试后续任务；`true`：发现失败后不再启动新任务，已经启动的任务继续执行并收尾。|
-|backend|字符串或null|否|`null`|控制是否统一覆盖子任务的计算实现；无需统一时省略或null。`null`沿用每个分析计划的设置；`"reference"`让本批所有任务使用便于核对的参考计算；`"numpy"`让所有任务使用数组计算。两种实现应给出相同含义的结果，详见[运行参数](execution.md)。|
+|backend|字符串或null|否|`null`|控制是否统一覆盖子任务的计算实现；无需统一时省略或null。`null`沿用每个分析计划的设置；`"reference"`让本批所有任务使用便于核对的参考计算；`"numpy"`让所有任务使用numpy；`"auto"`让每个子任务按自己的计划选择。两种实际计算实现应给出相同含义的结果，详见[运行参数](execution.md)。|
 
 任务名称用英文字母或下划线开头，后面可接英文字母、数字、下划线；不能用Python关键字（如`for`、`class`）或表达式函数名`abs`、`isclose`。例如`trial_a`有效，`trial-a`和`a/b`无效。它还要能在当前系统上创建同名目录，应避开Windows的CON、NUL等设备名称。
 
@@ -97,11 +97,11 @@ if __name__ == "__main__":
 
 使用jobs时，`load_batch_plan`只读批量文件，任务启动时才读取各自计划和输入。使用template时，加载阶段读取模板、展开inputs并编译每个独立计划；需要补全CAN信号定义时会读取DBC，但此时不扫描业务报文。`run_batch`还写出带时间后缀的batch_report文件，实际路径由report.report_path提供。更低层的`BatchRunner.run()`返回报告对象，单独使用时需调用`write_batch_report()`写报告，不能假定已经发布报告文件。所有签名见[批量API](reference/chronaxis.batch.api.md)、[BatchRunner](reference/chronaxis.batch.runner.md)、[模型](reference/chronaxis.batch.models.md)。
 
-Windows使用spawn启动子进程，会重新导入脚本。`if __name__ == "__main__":`保证只有最初启动的脚本派发任务，避免子进程再次创建整批任务。将代码保存为`.py`文件运行；不要直接把启动代码放在模块顶层。进程模式已验证的环境为Windows/Python 3.12。
+Windows使用spawn启动子进程，会重新导入脚本。`if __name__ == "__main__":`保证只有最初启动的脚本派发任务，避免子进程再次创建整批任务。将代码保存为`.py`文件运行；不要直接把启动代码放在模块顶层。Linux进程清理还依赖[安装说明](installation.md)列出的系统能力，不能仅凭Python版本判断支持。
 
 API参数或CLI的`--process-count`优先于批量文件，再其次是默认值1；覆盖不改写原文件。`BatchPlan(..., process_count=4)`和`BatchRunner(process_count=4)`也使用同一含义。普通分析另用`execution.process_count`和AnalysisRunner的同名覆盖，并行读取同一会话的文件；主进程连续计算。两类进程数不能混用，见[连续多进程](continuous-files.md)。
 
-实际启动数最多为`min(process_count, 任务数)`；空批次或开始前取消不启动。配置4但只有两个任务时启动两个分析工作进程。调度主进程和每个任务可能创建的CAN读取子进程不包含在这个数中，所以操作系统显示的总进程数可以更多。工作进程完成任务后复用，但不会沿用上一任务的信号或事件状态。
+实际启动数最多为`min(process_count, 任务数)`；空批次或开始前取消不启动。配置4但只有两个任务时启动两个分析工作进程。该数量不包含调度主进程。任务内的ASC/BLF接续读取在该分析工作进程内执行，不再额外建立纯BLF读取子进程；请求BLF导出等功能仍可能启动其他工作进程，所以操作系统总进程数不能直接等同于任务工作进程数。工作进程完成任务后复用，但不会沿用上一任务的信号或事件状态。
 
 报告中`process_count`保存本次生效的上限，`worker_process_count`保存实际启动数，`jobs[].worker_pid`保存执行该任务的进程PID，未启动项为null。已复用的工作进程可能出现在多个任务中。汇总按声明顺序排列，不按完成时间重排。
 
@@ -131,6 +131,8 @@ Python调用不自动读取这个环境变量，应按需要传`run_batch(plan, 
 通过API的cancel_event或Ctrl+C取消时，也会停止启动后续任务，并在报告中保留已经完成的结果。
 
 取消会等待已派发任务完成写出和关闭，不会立即强杀它们。普通任务失败按fail_fast处理；工作进程异常退出属于调度故障，会停止新派发、保留已完成输出，并清理它留下的CAN读取子进程。Python调用中的基础设施异常携带`batch_report`，可检查报告并调用其`close()`。
+
+如果 Ctrl+C 恰好发生在工作进程创建期间，而且该进程仍未完成清理，调用会保留并抛出原 `KeyboardInterrupt`，可同时附带 `batch_report` 和 `batch_worker_cleanup_owner`。报告用于查看已完成任务并重试报告所管理的清理；尚未完成构造的工作进程可能不在报告的任务项中，需要对异常上实际存在的 `batch_worker_cleanup_owner` 调用 `close()`。已经完成清理的 Ctrl+C 仍按正常取消流程返回报告。
 
 关闭持续失败时，工作进程暂停接收新任务，报告的`cleanup_pending`为true。资源仍由该进程持有；修复占用或环境问题后调用`report.close()`会远程重试。若所有工作进程都在等待清理，尚未启动的任务标为cancelled，不会假报完成。JSON报告保存发布时的清理状态，内存报告的`to_dict()`可读取重试后的状态。
 

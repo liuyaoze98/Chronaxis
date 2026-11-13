@@ -1,13 +1,13 @@
-"""在独立进程中逐次请求旧CAN函数，确认退出后才交付完整EOF。
+"""在独立进程中逐次读取并解码BLF，确认退出后才交付完整EOF。
 
-输入是冻结的单BLF请求和借用ResourceBudget，输出原函数已经返回的
-LegacyDecodedFrame。构造不启动进程；start只初始化旧DBC和公开元数据；
-每次next只授权一个PULL，不预取下一帧，也不改变原读取或解码参数。
-原reader没有公开的可靠关闭接口，因此本层关闭自己的管道并等待或终止
-自己启动的进程。只有确认退出才释放进程责任；这没有修复旧reader。
+输入是冻结的单BLF请求和借用ResourceBudget，输出LegacyDecodedFrame。
+构造不启动进程；start加载DBC和公开元数据。每次next只授权一个PULL，
+不预取下一帧；子进程通过共用BLFRead读取，并按显式串行政策解码。
+子进程在EOF、STOP或失败时关闭自己持有的读取器；父层关闭管道，等待
+或终止自己启动的进程，确认退出后才释放对应进程责任。
 
 固定状态、IPC最大包、元数据和当前记录分别计入新层保守RAM费用。
-旧DBC、旧reader和解释器的整进程RSS未测，不能由本账本上限代替。
+DBC、第三方读取器与解释器的整进程RSS未由本账本限制。
 本层不写源文件、不导出BLF、不关闭借用账本或其他read。失败时保留原父
 异常；清理仍失败时以can_process_read_cleanup_owner暴露同一真实owner。
 跨进程只能保留远端异常事实，不能承诺远端异常对象与父对象相同。
@@ -16,14 +16,14 @@ LegacyDecodedFrame。构造不启动进程；start只初始化旧DBC和公开元
 # 进程和传输对象仅在start中建立，普通导入不加载CAN库或DBC。
 from collections.abc import Mapping
 import multiprocessing
-import platform
+from ..can_dependencies import runtime_dependency_versions
 from sys import getsizeof
 from types import MappingProxyType
 
 # 原样数据模型和有界JSON协议由worker与父进程共用，不接任意pickle对象。
 from .records import (MAX_WIRE_BYTES, LegacyCANRequest, decode_packet,
                       decoded_from_dict, encode_packet, field_from_dict, field_to_dict)
-from .worker import VENDOR_SHA256, worker_main
+from .worker import worker_main
 from ..results.budget import ResourceBudget
 from ..results.errors import AnalysisError, ResultClosedError
 from ..results.spool import _cleanup_owner, _release_owned_ram, _reserve_owned_ram
@@ -206,7 +206,7 @@ class LegacyCANProcessRead:
         if self._started:
             return self
         try:
-            # 两进程的有界wire和解码临时容器预先计费；旧DBC/RSS另列限制。
+            # 两进程的有界wire和解码临时容器预先计费；DBC及整进程RSS另列限制。
             _reserve_owned_ram(self, 128 * MAX_WIRE_BYTES, '_wire_cost')
             _reserve_owned_ram(self, 65536, '_pipe_cost')
             context = multiprocessing.get_context('spawn')
@@ -241,7 +241,7 @@ class LegacyCANProcessRead:
         异常: SourceReadError为profile/版本/PID/字段位置不符。
         """
         if (set(packet) != {'op', 'version', 'profile', 'worker_pid', 'fields',
-                           'dependency_versions', 'vendor_sha256'}
+                           'dependency_versions'}
                 or packet.get('op') != 'ready' or type(packet.get('version')) is not int or packet.get('version') != 1
                 or packet.get('profile') != self._request.profile
                 or type(packet.get('worker_pid')) is not int
@@ -250,7 +250,7 @@ class LegacyCANProcessRead:
         self._check_ready_metadata(packet)
 
     def _check_ready_metadata(self, packet, *, cycle_fields=(), metadata_fields=()):
-        """核两种READY共有的字段定位、单位、依赖与原vendor，不改协议头。
+        """核两种READY共有的字段定位、单位、依赖，不改协议头。
 
         参数: packet已由对应读取入口核过完整键集、版本、profile和真实PID；
             cycle_fields仅由确认了周期请求的新版批读取器传入，默认不允许cycle_ns；metadata_fields仅增加有限候选声明。
@@ -299,13 +299,10 @@ class LegacyCANProcessRead:
                         or notice['dbc_is_fd'] is not True or notice['requested_is_fd'] is not False
                         or locator.is_fd is not False):
                     raise SourceReadError('旧CAN READY帧型兼容提示非法或与原定位不同')
-        # 此profile仅接受声明的依赖版本与读取链；不能静默接受另一条旧链。
-        expected_versions = {'python': platform.python_version(), 'python-can': '4.6.1',
-                             'cantools': '39.4.3', 'natsort': '8.4.0'}
+        # 安装范围由包元数据约束；父子必须使用同一解释器与实际依赖版本。
+        expected_versions = runtime_dependency_versions()
         if packet['dependency_versions'] != expected_versions:
-            raise SourceReadError('旧CAN READY依赖版本不符合已验证profile')
-        if packet['vendor_sha256'] != VENDOR_SHA256:
-            raise SourceReadError('旧CAN READY原样vendor哈希不符')
+            raise SourceReadError('CAN READY依赖版本与父进程不一致')
 
     def _exchange(self, packet):
         """完成一个有界请求/回应；STATUS/ACK也不隐含PULL许可。

@@ -2,7 +2,7 @@
 
 用NumPy逐块计算时间最小值、最大值、加权平均值或条件成立时长。每段用左端值代表该段持续时间；time_weighted_mean先取得总有效时长，再按各段时长比例累计。块之间只保留计算状态，不保存此前整列数据。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -50,7 +50,7 @@ NumpyTimeReduction(spec, input_unit, dtype, *, selected_duration_ns=None, partia
 ```
 
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:29`](../../../src/chronaxis/core/time_reduction_numpy.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:29`](../../../src/chronaxis/core/time_reduction_numpy.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-__init__"></a>
 ### `NumpyTimeReduction.__init__`
@@ -81,7 +81,7 @@ NumpyTimeReduction.__init__(spec, input_unit, dtype, *, selected_duration_ns=Non
 
 配置、数组分配错误传播。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:36`](../../../src/chronaxis/core/time_reduction_numpy.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:36`](../../../src/chronaxis/core/time_reduction_numpy.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-selected_weight_seconds"></a>
 ### `NumpyTimeReduction.selected_weight_seconds`
@@ -109,7 +109,7 @@ float或不适用None。
 
 数值故障。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:59`](../../../src/chronaxis/core/time_reduction_numpy.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:59`](../../../src/chronaxis/core/time_reduction_numpy.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-selected_duration_ns"></a>
 ### `NumpyTimeReduction.selected_duration_ns`
@@ -137,7 +137,7 @@ NumpyTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:69`](../../../src/chronaxis/core/time_reduction_numpy.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:69`](../../../src/chronaxis/core/time_reduction_numpy.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-value_valid_duration_ns"></a>
 ### `NumpyTimeReduction.value_valid_duration_ns`
@@ -165,7 +165,7 @@ NumpyTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:74`](../../../src/chronaxis/core/time_reduction_numpy.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:74`](../../../src/chronaxis/core/time_reduction_numpy.py#L74)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-push"></a>
 ### `NumpyTimeReduction.push`
@@ -198,7 +198,7 @@ TimeCalculationFacts；数值权重故障与输入覆盖有效性分别记录。
 
 - `ValueError`：时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:78`](../../../src/chronaxis/core/time_reduction_numpy.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:78`](../../../src/chronaxis/core/time_reduction_numpy.py#L78)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTimeReduction-finish"></a>
 ### `NumpyTimeReduction.finish`
@@ -230,4 +230,4 @@ RuntimeError为mean第一遍；ValueError为有效时长与全窗分母不符；
 - `RuntimeError`：时间均值第一遍只收事实，不能生成数值。
 - `ValueError`：时间均值第二遍有效时长与整窗分母不同。
 
-源码：[`src/chronaxis/core/time_reduction_numpy.py:175`](../../../src/chronaxis/core/time_reduction_numpy.py#L175)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_numpy.py:175`](../../../src/chronaxis/core/time_reduction_numpy.py#L175)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

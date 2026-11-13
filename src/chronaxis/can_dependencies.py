@@ -8,7 +8,7 @@ from importlib import import_module
 
 CAN_INSTALL_HINT = (
     '请在运行分析的同一个 Python 环境重新安装本地 wheel，默认会安装 CAN 依赖：'
-    'python -m pip install "./chronaxis-0.1.0.dev2-py3-none-any.whl"。'
+    'python -m pip install "./chronaxis-<版本>-py3-none-any.whl"。'
     '将文件路径替换为实际收到的安装包；离线时需备齐该 wheel 声明版本的依赖。'
     '不要通过修改信号字段解决环境缺依赖，也不要仅安装未核实版本的 cantools。'
 )
@@ -40,3 +40,19 @@ def import_can_dependency(module_name):
     except ModuleNotFoundError as error:
         # 间接依赖也可能缺失；保留具体名字供定位完整安装问题。
         raise CANDependencyError(error.name or module_name) from error
+
+
+def runtime_dependency_versions():
+    """取得当前解释器与CAN依赖的实际版本，用于父子环境一致性核对。
+
+    参数: 无。返回: python、python-can、cantools、natsort版本字符串字典。
+    异常: 缺少分发元数据时PackageNotFoundError；不导入CAN库或打开业务输入。
+    支持版本范围由安装元数据和兼容矩阵定义，不用历史固定补丁号拒绝已验证版本。
+    """
+    from importlib import metadata
+    import platform
+    # 元数据只核对实际父子环境，不在模块导入时载入第三方CAN库。
+    return {
+        'python': platform.python_version(),
+        **{name: metadata.version(name) for name in ('python-can', 'cantools', 'natsort')},
+    }

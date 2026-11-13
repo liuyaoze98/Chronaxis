@@ -5,7 +5,7 @@
 输入为精简结果的标量，输出为CSV单元格或清单说明。整数纳秒用整数运算
 转换为十进制秒，不经过浮点，不补造日期。此模块无文件和输入读取副作用。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -39,7 +39,7 @@ seconds(value)
 
 TypeError为非整数输入；不接受bool或浮点纳秒。
 
-源码：[`src/chronaxis/results/readable_format.py:38`](../../../src/chronaxis/results/readable_format.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/readable_format.py:38`](../../../src/chronaxis/results/readable_format.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-quality_text"></a>
 ## `quality_text`
@@ -64,7 +64,7 @@ quality_text(value)
 
 类型错误传播；未知位明确保留提示，不能静默丢失。
 
-源码：[`src/chronaxis/results/readable_format.py:54`](../../../src/chronaxis/results/readable_format.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/readable_format.py:54`](../../../src/chronaxis/results/readable_format.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-explanation"></a>
 ## `explanation`
@@ -89,7 +89,7 @@ explanation(row)
 
 缺失字段错误传播。
 
-源码：[`src/chronaxis/results/readable_format.py:67`](../../../src/chronaxis/results/readable_format.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/readable_format.py:67`](../../../src/chronaxis/results/readable_format.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-outcome_messages"></a>
 ## `outcome_messages`
@@ -114,4 +114,4 @@ outcome_messages(outcome)
 
 无；有未知与已有完整事件可以同时出现。
 
-源码：[`src/chronaxis/results/readable_format.py:79`](../../../src/chronaxis/results/readable_format.py#L79)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/readable_format.py:79`](../../../src/chronaxis/results/readable_format.py#L79)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

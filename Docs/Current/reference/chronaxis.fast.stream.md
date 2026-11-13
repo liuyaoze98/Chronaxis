@@ -5,7 +5,7 @@
 输入为已编译声明和DBC；输出(time_ns, 原记录序号, 计算项贡献tuple)。
 只保存当前帧，文件关闭后才提供最终计数。父会话负责顺序和结果发布。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -22,13 +22,14 @@
 |[`FileContributions.__iter__`](#api-FileContributions-__iter__)|返回自身。|
 |[`FileContributions.__next__`](#api-FileContributions-__next__)|跳过无关帧并返回一条目标贡献。|
 |[`FileContributions.summary`](#api-FileContributions-summary)|取得关闭后的文件事实。|
-|[`FileContributions.close`](#api-FileContributions-close)|释放读取器。|
+|[`FileContributions.close`](#api-FileContributions-close)|关闭本读取器及未返回的实际来源子所有者，失败保留原对象供重试。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from pathlib import Path
 from time import perf_counter
+from ..results.budget import _cleanup_owner
 from ..legacy.decode_policy import check_decode_length
 from ..timebase.conversion import convert_time, checked_add_ns
 from .can_io import _prepare, _UNSUPPORTED_FD
@@ -42,11 +43,11 @@ from .can_io import _prepare, _UNSUPPORTED_FD
 持有一个读取器和有限公式组；同帧仅解码一次，计数按计算项隔离。
 
 ```python
-FileContributions(spec, database, cancel=None, budget=None)
+FileContributions(spec, database, cancel=None, budget=None, *, _programs_checked=False)
 ```
 
 
-源码：[`src/chronaxis/fast/stream.py:16`](../../../src/chronaxis/fast/stream.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:17`](../../../src/chronaxis/fast/stream.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-__init__"></a>
 ### `FileContributions.__init__`
@@ -54,7 +55,7 @@ FileContributions(spec, database, cancel=None, budget=None)
 打开单文件。
 
 ```python
-FileContributions.__init__(spec, database, cancel=None, budget=None)
+FileContributions.__init__(spec, database, cancel=None, budget=None, *, _programs_checked=False)
 ```
 
 #### 参数
@@ -65,6 +66,7 @@ FileContributions.__init__(spec, database, cancel=None, budget=None)
 |`database`|cantools.database.Database|是|无|位置或关键字。已加载的DBC定义，可在本进程复用；省略时由会话加载，不能与冻结声明冲突。|
 |`cancel`|Event &#124; None|否|None|位置或关键字。调用方取消事件；is_set为真时停止继续读取或调度，None表示没有外部取消信号。|
 |`budget`|[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)|否|None|位置或关键字。本次会话共享的受管理资源用量记录；先预约空间，再构造缓冲或暂存。|
+|`_programs_checked`|bool|否|False|仅关键字。仅由内部调用传入的公式已检查标志；默认 False，普通入口仍核对原始公式和指令，不读取配置中的同名值。|
 
 #### 返回说明
 
@@ -72,9 +74,11 @@ FileContributions.__init__(spec, database, cancel=None, budget=None)
 
 #### 异常说明
 
-配置、文件或DBC错误；构造失败不遗留读取器。
+配置、文件或DBC错误；已取得的读取器在后续构造失败时清理。
+ASC/BLF共用各自文件owner；第三方BLF文件头构造失败也保留实际文件关闭责任。
+_programs_checked只供已完成公式准备的内部调用；普通调用仍检查原公式。
 
-源码：[`src/chronaxis/fast/stream.py:19`](../../../src/chronaxis/fast/stream.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:20`](../../../src/chronaxis/fast/stream.py#L20)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-_measured"></a>
 ### `FileContributions._measured`
@@ -100,7 +104,7 @@ FileContributions._measured(iterator)
 原错误。
 正式执行不使用此包装，避免每条原始报文计时开销。
 
-源码：[`src/chronaxis/fast/stream.py:59`](../../../src/chronaxis/fast/stream.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:76`](../../../src/chronaxis/fast/stream.py#L76)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-_selected_time"></a>
 ### `FileContributions._selected_time`
@@ -126,7 +130,7 @@ bool。
 无。
 范围过滤前选择，零贡献和方向不影响集合；无时间消费者不加强检查。
 
-源码：[`src/chronaxis/fast/stream.py:73`](../../../src/chronaxis/fast/stream.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:90`](../../../src/chronaxis/fast/stream.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-__iter__"></a>
 ### `FileContributions.__iter__`
@@ -152,7 +156,7 @@ FileContributions.__iter__()
 
 无。
 
-源码：[`src/chronaxis/fast/stream.py:81`](../../../src/chronaxis/fast/stream.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:98`](../../../src/chronaxis/fast/stream.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-__next__"></a>
 ### `FileContributions.__next__`
@@ -178,7 +182,7 @@ FileContributions.__next__()
 
 解析、时间、解码、公式错误或取消；EOF在读取资源成功关闭后抛出。
 
-源码：[`src/chronaxis/fast/stream.py:85`](../../../src/chronaxis/fast/stream.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:102`](../../../src/chronaxis/fast/stream.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-summary"></a>
 ### `FileContributions.summary`
@@ -204,12 +208,12 @@ FileContributions.summary()
 
 未成功EOF时拒绝。
 
-源码：[`src/chronaxis/fast/stream.py:152`](../../../src/chronaxis/fast/stream.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:169`](../../../src/chronaxis/fast/stream.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FileContributions-close"></a>
 ### `FileContributions.close`
 
-释放读取器。
+关闭本读取器及未返回的实际来源子所有者，失败保留原对象供重试。
 
 ```python
 FileContributions.close()
@@ -228,6 +232,6 @@ None。
 
 #### 异常说明
 
-原关闭错误，不伪造完成。
+原关闭错误；失败继续保留实际owner供重试。
 
-源码：[`src/chronaxis/fast/stream.py:159`](../../../src/chronaxis/fast/stream.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/stream.py:177`](../../../src/chronaxis/fast/stream.py#L177)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

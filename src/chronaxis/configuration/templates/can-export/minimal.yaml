@@ -19,7 +19,5 @@ calculations:
 outputs:
   can_frames:
     format: asc
-metadata:               # 当前导出API要求来源标签；普通分析不需要此字段
-  device_label: home    # 示例制作于home；实际使用改为本次设备标签（home/work），不会自动识别
 execution:              # 设置本次分析的并行处理方式
   process_count: 4      # 最多4个文件工作进程；实际并行数不超过输入文件数

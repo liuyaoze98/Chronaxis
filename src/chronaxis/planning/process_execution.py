@@ -52,9 +52,9 @@ def source_execution_facts(plan):
         files=config.input_paths if source.source_type=='can_blf' else config.inputs
         requested=plan.execution.process_count
         merge=config.file_merge
-        # 1进程拼接保原路径：BLF原来已有读取子进程，ASC在主进程读取。
-        limit=(min(requested,len(files)) if requested>1 or merge=='time_order'
-               else 1 if source.source_type=='can_blf' else 0)
+        # 接续只有多文件且有效上限大于1才建读取进程；时间归并沿独立工作槽。
+        effective=min(requested,len(files))
+        limit=effective if effective>1 or merge=='time_order' else 0
         result.append(dict(source=source.name,file_count=len(files),file_merge=merge,
             read_process_limit=limit,continuous_session=True,
             temporary_merge_files=merge=='time_order'))

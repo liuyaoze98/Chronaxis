@@ -60,7 +60,7 @@ def _parser() -> argparse.ArgumentParser:
                             ('explain', '显示依赖、节点后端与预算声明')):
         check = commands.add_parser(name, help=help_text)
         check.add_argument('plan', help='分析计划YAML或JSON；来源相对路径按配置文件目录解释')
-        check.add_argument('--backend', choices=('reference', 'numpy'), default=None,
+        check.add_argument('--backend', choices=('reference', 'numpy', 'auto'), default=None,
                            help='显式覆盖本次后端；省略则沿用计划声明')
         check.add_argument('--process-count', type=int, default=None, help='覆盖本次读取解码进程上限；正整数，省略沿用配置')
         check.add_argument('--format', choices=('text','json'), default='text',
@@ -70,7 +70,7 @@ def _parser() -> argparse.ArgumentParser:
     execute.add_argument('plan', help='分析计划YAML或JSON')
     execute.add_argument('--output', required=True, help='结果目录，可重复使用；不覆盖已有文件')
     execute.add_argument('--work-dir', default=None, help='可选全新工作目录；省略沿AnalysisRunner唯一专用暂存')
-    execute.add_argument('--backend', choices=('reference', 'numpy'), default=None,
+    execute.add_argument('--backend', choices=('reference', 'numpy', 'auto'), default=None,
                          help='显式覆盖本次后端；省略沿用计划声明')
     execute.add_argument('--process-count', type=int, default=None, help='覆盖本次读取解码进程上限；正整数，省略沿用配置')
     batch = commands.add_parser('batch', help='独立分析任务批量运行')

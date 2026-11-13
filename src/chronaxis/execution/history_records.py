@@ -10,6 +10,7 @@
 from dataclasses import dataclass
 from math import isfinite
 import json
+from sys import getsizeof
 from ..core.models import SourceRef, SignalSample, require_identifier, require_scalar
 from ..sources.csv_spec import CSVSourceRef
 from ..sources.can_spec import CANSourceRef
@@ -17,7 +18,7 @@ from ..sources.text_can_ref import CANTextSourceRef
 from ..core.numeric import ScalarValue
 from .record_sample import RecordSample
 from ..timebase.conversion import require_int64_ns
-from ..core.types import SignalDType
+from ..core.types import SignalDType, QualityFlag
 from ..results.codec import _pack, _unpack, _unique_object, _reject_constant, _estimate
 from ..results.errors import ResultFormatError
 
@@ -144,6 +145,13 @@ def record_values(record: HistoryRecord) -> tuple:
     raise TypeError('未知历史记录类型')
 
 
+# 这些是固定结构的费用，不包含任何当前样本值或来源文本。
+# 规则与codec._estimate逐字段相同：tuple每槽32，模型每字段256，原生叶子另加64。
+_RECORD_STRUCTURE_BYTES = getsizeof((None,) * 7) + 7 * 32 + 5 * 64
+_SCALAR_STRUCTURE_BYTES = 5 * 256 + 2 * 512 + 64 + getsizeof(True) + 64 + getsizeof(())
+_SOURCE_STRUCTURE_BYTES = 3 * (256 + 64)
+
+
 def estimate_record_bytes(record: HistoryRecord) -> int:
     """保守估算一行装箱、JSON结构和UTF8副本的临时RAM。
 
@@ -152,6 +160,27 @@ def estimate_record_bytes(record: HistoryRecord) -> int:
     """
     # 系数覆盖Python容器、unicode及编码副本，长文本不按固定小行估计。
     if type(record) is RecordSample:
+        value, ref = record.value, record.source_ref
+        # 现役普通记录只持基本来源和普通标量；固定布局无需重复dataclass反射。
+        # 任何扩展引用、枚举域/原码或非原生字段仍沿通用估算，保持类型及深度错误。
+        if (type(value) is ScalarValue and type(ref) is SourceRef
+                and type(value.dtype) is SignalDType and type(value.quality) is QualityFlag
+                and type(value.valid) is bool and type(value.partial) is bool
+                and type(value.labels) is tuple and not value.labels and value.code is None
+                and type(value.value) in (int, float, bool, str, type(None))
+                and type(record.name) is str and type(record.unit) is str
+                and type(record.time_ns) is int and type(record.sequence) is int
+                and type(record.enum_code) in (int, type(None))
+                and type(ref.session_id) is str and type(ref.source_name) is str and type(ref.field) is str):
+            # 文本和整数仍按实际对象大小收费，包括长诊断值与大序号；不缓存整行单价。
+            scalar = getsizeof(value) + _SCALAR_STRUCTURE_BYTES + getsizeof(value.value)
+            if value.partial:
+                scalar += 256 + getsizeof(value.partial) + 64
+            source = (getsizeof(ref) + _SOURCE_STRUCTURE_BYTES + getsizeof(ref.session_id)
+                      + getsizeof(ref.source_name) + getsizeof(ref.field))
+            return (_RECORD_STRUCTURE_BYTES + getsizeof(record.name) + getsizeof(record.time_ns)
+                    + getsizeof(record.sequence) + getsizeof(record.unit) + getsizeof(record.enum_code)
+                    + scalar + source) * 16 + 4096
         return _estimate((record.name,record.time_ns,record.sequence,record.value,record.unit,record.source_ref,record.enum_code))*16+4096
     return _estimate(record_values(record)) * 16 + 8192
 

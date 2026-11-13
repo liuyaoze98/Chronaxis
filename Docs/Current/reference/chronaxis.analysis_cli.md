@@ -11,7 +11,7 @@ run先检查输出根与独占工作路径，再交给AnalysisRunner运行，在
 
 本模块仅在实际计划命令时加载；CLI帮助与参数错误仍只需要标准库。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -24,7 +24,7 @@ run先检查输出根与独占工作路径，再交给AnalysisRunner运行，在
 |[`validation_json`](#api-validation_json)|保留公共校验报告的全部固定字段和未验证警告。|
 |[`explanation_json`](#api-explanation_json)|将依赖、节点后端、历史需求和预算声明完整交给CLI使用者。|
 |[`run_static`](#api-run_static)|只加载配置并输出共享AnalysisRunner报告，不触碰来源或创建分析产物。|
-|[`_new_output`](#api-_new_output)|在扫描来源前检查可复用输出根、历史目录和冲突工作路径。|
+|[`_new_output`](#api-_new_output)|在扫描来源前检查可复用输出根和冲突工作路径。|
 |[`_cause_chain`](#api-_cause_chain)|取得有限且不重复的真实cause链，供诊断和致命异常判断共用。|
 |[`run_analysis`](#api-run_analysis)|复用真实分析和发布，成功关闭所有结果资源后才报告completed。|
 
@@ -64,7 +64,7 @@ validation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-explanation_json"></a>
 ## `explanation_json`
@@ -91,7 +91,7 @@ explanation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-run_static"></a>
 ## `run_static`
@@ -122,12 +122,12 @@ run_static(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:68`](../../../src/chronaxis/analysis_cli.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:70`](../../../src/chronaxis/analysis_cli.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_new_output"></a>
 ## `_new_output`
 
-在扫描来源前检查可复用输出根、历史目录和冲突工作路径。
+在扫描来源前检查可复用输出根和冲突工作路径。
 
 ```python
 _new_output(arguments) -> Path
@@ -137,7 +137,7 @@ _new_output(arguments) -> Path
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`arguments`|str|是|无|位置或关键字。arguments包含output和可选work_dir，由argparse限定为路径文本。|
+|`arguments`|argparse.Namespace|是|无|位置或关键字。arguments包含output和可选work_dir，由argparse限定为路径文本。|
 
 ### 返回说明
 
@@ -145,16 +145,15 @@ _new_output(arguments) -> Path
 
 ### 异常说明
 
-FileExistsError或原lstat错误为文件失败；PlanValidationError为Ref或路径冲突。
+FileExistsError或原lstat错误为文件失败；PlanValidationError为工作目录与输出目录冲突。
 
 本函数直接报告的具体错误：
 
-- `PlanValidationError`：$.cli.output。
 - `PlanValidationError`：$.cli.work_dir。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/analysis_cli.py:98`](../../../src/chronaxis/analysis_cli.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:100`](../../../src/chronaxis/analysis_cli.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_cause_chain"></a>
 ## `_cause_chain`
@@ -181,7 +180,7 @@ _cause_chain(error) -> tuple
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/analysis_cli.py:130`](../../../src/chronaxis/analysis_cli.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:129`](../../../src/chronaxis/analysis_cli.py#L129)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-run_analysis"></a>
 ## `run_analysis`
@@ -213,4 +212,4 @@ AnalysisRunner建立专用暂存并读来源，write在输出根新增本次文�
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:146`](../../../src/chronaxis/analysis_cli.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/analysis_cli.py:145`](../../../src/chronaxis/analysis_cli.py#L145)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

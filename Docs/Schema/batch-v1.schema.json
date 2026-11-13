@@ -28,10 +28,11 @@
       "enum": [
         null,
         "reference",
-        "numpy"
+        "numpy",
+        "auto"
       ],
       "default": null,
-      "description": "数值计算实现选择。两后端服从相同业务语义，不表示所有规则都会数组化。可选值：null：沿用每个分析计划的后端；\"reference\"：采用独立参考实现；\"numpy\"：采用NumPy数值实现。"
+      "description": "数值计算实现选择。null沿用每个分析计划；auto分别按每个计划的静态类别选择；reference采用独立参考实现；numpy采用NumPy数值实现。显式选择保持，不因运行错误切换后端。"
     },
     "jobs": {
       "type": "array",

@@ -5,7 +5,7 @@
 每个窗口只保最后可能继续合并的父组及有限新父；记录周期借共享实际时刻索引。
 边界扩展/合并继续使用既有两个独立窗口核，默认输出精简片段。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,7 +54,7 @@ RecordWindows(plan, budget, indexes, steps, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/record_windows.py:21`](../../../src/chronaxis/execution/record_windows.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:21`](../../../src/chronaxis/execution/record_windows.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-__init__"></a>
 ### `RecordWindows.__init__`
@@ -83,7 +83,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_windows.py:24`](../../../src/chronaxis/execution/record_windows.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:24`](../../../src/chronaxis/execution/record_windows.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-_bounds"></a>
 ### `RecordWindows._bounds`
@@ -109,7 +109,7 @@ RecordWindows._bounds(window, event)
 
 原查找错。
 
-源码：[`src/chronaxis/execution/record_windows.py:54`](../../../src/chronaxis/execution/record_windows.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:54`](../../../src/chronaxis/execution/record_windows.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-_coverage"></a>
 ### `RecordWindows._coverage`
@@ -137,7 +137,7 @@ RecordWindows._coverage(window, segment, parents)
 原时间读取错。
 actual沿原请求秒数；周期模式按已选记录跨度与请求周期数比较。
 
-源码：[`src/chronaxis/execution/record_windows.py:68`](../../../src/chronaxis/execution/record_windows.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:68`](../../../src/chronaxis/execution/record_windows.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-_process"></a>
 ### `RecordWindows._process`
@@ -163,7 +163,7 @@ None。
 
 预算/窗口/发布原错，责任保留到close。
 
-源码：[`src/chronaxis/execution/record_windows.py:99`](../../../src/chronaxis/execution/record_windows.py#L99)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:99`](../../../src/chronaxis/execution/record_windows.py#L99)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-finish"></a>
 ### `RecordWindows.finish`
@@ -190,7 +190,7 @@ None。
 缺范围/短读/损坏/预算/发布原错。
 未请求窗口时调用方不创建本对象，空事件不建立额外中间仓。
 
-源码：[`src/chronaxis/execution/record_windows.py:146`](../../../src/chronaxis/execution/record_windows.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:149`](../../../src/chronaxis/execution/record_windows.py#L149)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-closed"></a>
 ### `RecordWindows.closed`
@@ -218,7 +218,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_windows.py:219`](../../../src/chronaxis/execution/record_windows.py#L219)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:222`](../../../src/chronaxis/execution/record_windows.py#L222)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordWindows-close"></a>
 ### `RecordWindows.close`
@@ -244,4 +244,4 @@ None。
 
 原关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_windows.py:223`](../../../src/chronaxis/execution/record_windows.py#L223)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_windows.py:226`](../../../src/chronaxis/execution/record_windows.py#L226)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

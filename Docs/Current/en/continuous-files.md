@@ -42,7 +42,7 @@ This example requests four workers but has only two files, so at most two file w
 
 File 1 supplies 2 W at 0 s and 4 W at 1 s; file 2 supplies 8 W at 3 s and 10 W at 4 s, with source observation through 6 s. Holding 4 W across the file boundary gives `2×1 + 4×2 + 8×1 + 10×2 = 38 J`. All holds are within the declared validity.
 
-After completion, locate the calculation CSV through `outputs` in this run's completion manifest. Its `energy` row should contain **38**, unit **J**, and complete status. The `explain` output's `source_execution` should describe two files and a limit of two read processes. This is a planned limit, not a measured speedup.
+After completion, locate the session CSV through `outputs` in this run's completion manifest. In its first record, `energy（J）` must be **38** and `energy：状态` must be `完整` (complete), with no reason text. The unit is part of the value column name. The `explain` output's `source_execution` should describe two files and a limit of two read processes. This is a planned limit, not a measured speedup.
 
 ## Choose the file ordering
 
@@ -67,7 +67,7 @@ Two files starting at zero are not evidence of synchronization. Configure a know
 
 Parallel reading and time merging currently support one ASC/BLF CAN source, including mixed files, with `reader.decode_scope: requested`. Multiple sources, CSV/memory sources and `all` decoding are rejected before execution; their existing default single-process concatenation remains available. An independent batch worker cannot start an inner file pool. Run a continuous analysis directly with ordinary `run`.
 
-With default `1` and `concatenate`, pure BLF retains its existing single reader subprocess; ASC/mixed inputs are read in the main process. Explicit `time_order` uses file workers even with a limit of one. `explain.source_execution` reports file count, ordering, reader-process limit and temporary-merge use. These are static facts, not measured worker counts or evidence that the log contents are ordered.
+With default `1` and `concatenate`, pure BLF, ASC, and mixed inputs are read and decoded in the current process without a file-reading worker. Explicit `time_order` uses file workers even with a limit of one. `explain.source_execution` reports file count, ordering, reader-process limit and temporary-merge use. These are static facts, not measured worker counts or evidence that the log contents are ordered.
 
 ```powershell
 chronaxis validate continuous-parallel.yaml --process-count 4

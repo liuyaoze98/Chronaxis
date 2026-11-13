@@ -2,11 +2,11 @@
 
 逐段计算时间最小值、最大值、加权平均值或条件成立时长，供NumPy实现对照。push接收下一块数据，finish整理最终值。time_weighted_mean需要先统计总有效时长，再按时长比例计算；整数极值不先转成浮点数。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[TimeCalculationFacts](chronaxis.core.time_reduction.md#api-TimeCalculationFacts)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
+[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[TimeCalculationFacts](chronaxis.core.time_reduction.md#api-TimeCalculationFacts)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
 
 ## 对象导航
 
@@ -53,7 +53,7 @@ ReferenceTimeReduction(spec, input_unit, dtype, *, selected_duration_ns=None, pa
 ```
 
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:30`](../../../src/chronaxis/core/time_reduction_reference.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:30`](../../../src/chronaxis/core/time_reduction_reference.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-__init__"></a>
 ### `ReferenceTimeReduction.__init__`
@@ -84,7 +84,7 @@ ReferenceTimeReduction.__init__(spec, input_unit, dtype, *, selected_duration_ns
 
 配置或分配错误原样传播。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:38`](../../../src/chronaxis/core/time_reduction_reference.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:38`](../../../src/chronaxis/core/time_reduction_reference.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-selected_weight_seconds"></a>
 ### `ReferenceTimeReduction.selected_weight_seconds`
@@ -112,7 +112,7 @@ float或不适用None。
 
 数值故障。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:62`](../../../src/chronaxis/core/time_reduction_reference.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:62`](../../../src/chronaxis/core/time_reduction_reference.py#L62)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-selected_duration_ns"></a>
 ### `ReferenceTimeReduction.selected_duration_ns`
@@ -140,7 +140,7 @@ ReferenceTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:72`](../../../src/chronaxis/core/time_reduction_reference.py#L72)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:72`](../../../src/chronaxis/core/time_reduction_reference.py#L72)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-value_valid_duration_ns"></a>
 ### `ReferenceTimeReduction.value_valid_duration_ns`
@@ -168,7 +168,7 @@ ReferenceTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:77`](../../../src/chronaxis/core/time_reduction_reference.py#L77)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:77`](../../../src/chronaxis/core/time_reduction_reference.py#L77)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-push"></a>
 ### `ReferenceTimeReduction.push`
@@ -201,7 +201,7 @@ TimeCalculationFacts；mean权重故障另记数值失败，不改变有效覆�
 
 - `ValueError`：时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:81`](../../../src/chronaxis/core/time_reduction_reference.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:81`](../../../src/chronaxis/core/time_reduction_reference.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceTimeReduction-finish"></a>
 ### `ReferenceTimeReduction.finish`
@@ -228,4 +228,4 @@ TimeReductionResult，覆盖分类由外层负责。
 RuntimeError为mean第一遍；ValueError为第二遍有效时长与分母不符；
     配置/分配错误传播，数值范围错误按calculation_failed返回。
 
-源码：[`src/chronaxis/core/time_reduction_reference.py:175`](../../../src/chronaxis/core/time_reduction_reference.py#L175)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction_reference.py:175`](../../../src/chronaxis/core/time_reduction_reference.py#L175)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

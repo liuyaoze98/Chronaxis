@@ -95,9 +95,12 @@ class DemandWorkerTests(unittest.TestCase):
             is_extended_frame=False, is_fd=False, signals=(SimpleNamespace(name='x'),)),)
         request = LegacyCANRequest(Path('synthetic.blf'), Path('synthetic.dbc'), (field,))
         processor = SimpleNamespace(parse_frame=chain.parse_frame,
-            cantools=SimpleNamespace(database=SimpleNamespace(load_file=chain.load_file)))
+            cantools=SimpleNamespace(database=SimpleNamespace()))
         with patch.object(worker, '_request', return_value=request), \
-                patch.object(worker, '_load_vendor', return_value=(chain, processor, {})), \
+                patch.object(batch_worker, 'load_dbc_file', side_effect=lambda path,module: chain.load_file(path)), \
+                patch.object(worker, '_load_can_runtime', return_value=(getattr(chain,'can',None),processor.cantools)), \
+                patch.object(worker, '_iter_blf', side_effect=chain.iter_frames), \
+                patch.object(batch_worker, '_parse_selected', side_effect=lambda db,frame,message,duplicates: processor.parse_frame(frame,db)), \
                 patch.object(worker, '_field_metadata', return_value=[{'locator': field_to_dict(field), 'unit': None}]), \
                 patch.object(batch_worker.metadata, 'version', return_value='controlled'):
             if error:

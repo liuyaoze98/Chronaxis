@@ -41,12 +41,10 @@ class DocSources:
             cwd=self.root, text=True).splitlines()
 
     def text(self, relative):
-        """读取源码；Windows 检出文本还原为 Git 换行，原样保存的旧模块保留字节。"""
+        """读取源码；当前发行树的Windows检出文本还原为Git换行。"""
         if self.tree:
             data = (self.root/relative).read_bytes()
-            # .gitattributes 将这三份历史模块标为 -text，Git 也保留其原始换行。
-            if not Path(relative).match('src/chronaxis/legacy/vendor/sclicer_functions_v1/*.py'):
-                data = data.replace(b'\r\n', b'\n')
+            data = data.replace(b'\r\n', b'\n')
             return data.decode('utf-8-sig')
         return subprocess.check_output(
             ['git', 'show', self.baseline+':'+relative], cwd=self.root).decode('utf-8-sig')

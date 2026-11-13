@@ -1,34 +1,17 @@
-"""在独立spawn进程按一条PULL许可推进一次冻结Sclicer公开函数链。
+"""在独立spawn进程按单条PULL许可调用共用BLF读取与串行解码政策。
 
-静态只导入标准库和records；INIT校验后才核三份原样vendor哈希、导入真实依赖，
-原load_file一次并创建原iter_frames，不提前next。READY的单位来自同次db公开
-messages/signals；每PULL只next一次、对同msg/db原parse_frame一次，返当前ITEM
-后等待下一命令。STATUS/ACK不授予读取许可，STOP不取后继，正常EOF后退出。
+有效INIT后导入依赖并加载一次DBC；惰性读取器在首次PULL才打开输入，READY不取帧。
+每次许可按原序读取和解码一次，STATUS/ACK/STOP不授予读取许可。只使用限长JSON
+bytes协议，异常发送有限事实，实际子退出和父侧预算清理由协议控制器确认。"""
 
-本进程只发送最大65536字节的严格JSON bytes，不使用Connection.send/recv的pickle。
-记录保原msg全部公开写出字段和全部原返回数值，不窥视generator frame、补decode、
-增加筛选或缩放。finally只关本连接和原生成器，不声称旧reader底层FD已确定关闭；
-父进程须等待本进程确实退出，OS才回收本进程旧FD。外部解释器/DBC/reader的RSS
-不受父共享账目保证。失败发送有限原错误事实并以非零退出，不伪称原异常对象跨进程。
-"""
-
-# spawn加载时不触及CAN库、原vendor或输入；这些依赖只在收到有效INIT后加载。
-from hashlib import sha256
-from importlib import metadata, util
+# spawn加载时不触及CAN库或输入；读取依赖只在收到有效INIT后加载。
+from importlib import metadata
 import os
 from pathlib import Path
 import platform
-import sys
+from ..dbc_loading import load_dbc_file
 from .records import (LegacyCANRequest, LegacyDecodedFrame, LegacyRawFrame, MAX_WIRE_BYTES,
     PROFILE_ID, decode_packet, decoded_to_dict, encode_packet, field_from_dict, field_to_dict)
-
-# vendor文件复制自历史Sclicer项目；以下哈希用于核对原始文件字节。
-VENDOR_SHA256 = {
-    'utils.py': 'cf3737ad5ab0a399dc7576585102339e0312b9babe690a1ba8decf543a71c2fd',
-    'file_processor.py': '5f37bd996ccd31eedd95bec5ed39289cd7f2fe3049110ebbe195db0cbefb1db6',
-    'can_processor.py': '3c96e67a1ec47ac181657b5bf5a9cabf7e35a1d5e2709577718c22d1293878e2',
-}
-
 
 def _send(connection, packet):
     """通过bytes接口发送一个有界JSON包，不调用pickle通道。
@@ -62,7 +45,7 @@ def _request(packet):
     """解析唯一INIT，只接受单个实际BLF和原DBC路径，不读取其内容摘要。
 
     参数: packet为INIT dict。返回: LegacyCANRequest。
-    异常: 类型/形状/版本/路径错误；不调用旧reader或load_file。
+    异常: 类型/形状/版本/路径错误；不打开BLF或加载DBC。
     """
     _exact(packet, ('op', 'version', 'path', 'dbc_path', 'fields'))
     if packet['op'] != 'init' or type(packet['version']) is not int or packet['version'] != 1:
@@ -79,43 +62,47 @@ def _request(packet):
     return request
 
 
-def _load_vendor():
-    """核原样三模块字节后在独立child安装其原名称，保绝对utils导入。
+def _load_can_runtime():
+    """在有效INIT后导入真实CAN依赖，模块导入本身只使用标准库。
 
-    参数: 无。返回: (file_processor模块,can_processor模块,实际哈希dict)。
-    异常: 哈希、同名模块污染或原模块依赖导入错误；不猴补函数、reader或计数器。
+    参数: 无。返回: python-can与cantools模块。异常: 保留缺失依赖的可执行提示。
+    不读取来源、DBC或原项目文件，不安装同名vendor模块。
     """
-    root = Path(__file__).resolve().parent / 'vendor' / 'sclicer_functions_v1'
-    actual = {}
-    for name, expected in VENDOR_SHA256.items():
-        actual[name] = sha256((root / name).read_bytes()).hexdigest()
-        if actual[name] != expected:
-            raise ValueError('旧CAN vendor哈希不匹配: ' + name)
-    # 原file_processor使用from utils导入；仅child内按原模块名加载，不碰父sys.modules。
-    modules = {}
-    sys.dont_write_bytecode = True
-    for name in ('utils', 'file_processor', 'can_processor'):
-        if name in sys.modules:
-            raise RuntimeError('隔离旧CAN进程存在同名模块: ' + name)
-        spec = util.spec_from_file_location(name, root / (name + '.py'))
-        if spec is None or spec.loader is None:
-            raise ImportError('无法加载原vendor模块: ' + name)
-        module = util.module_from_spec(spec)
-        sys.modules[name] = module
-        try:
-            spec.loader.exec_module(module)
-        except ModuleNotFoundError as error:
-            # 保持冻结模块原导入顺序，仅补充真实缺失依赖的可执行处理建议。
-            from ..can_dependencies import CANDependencyError
-            raise CANDependencyError(error.name or '未知模块') from error
-        modules[name] = module
-    return modules['file_processor'], modules['can_processor'], actual
+    from ..can_dependencies import import_can_dependency
+    return import_can_dependency('can'), import_can_dependency('cantools')
+
+
+def _iter_blf(path):
+    """按许可惰性创建共用BLF读取器，原消息顺序交付且可靠关闭本次文件。
+
+    参数: 已检查的BLF路径。返回: can.Message生成器。异常: 真实读取/关闭错误。
+    创建生成器不打开文件；第一次next才调用BLFRead，STOP或EOF关闭同一owner。
+    """
+    from ..sources.blf import BLFRead, BLFSpec
+    from ..results.budget import ResourceBudget, _cleanup_owner
+    reader = primary = None
+    try:
+        reader = BLFRead(BLFSpec(Path(path)), ResourceBudget(), frame_only=True)
+        yield from reader
+    except BaseException as error:
+        primary = error
+        if reader is None:
+            pending=getattr(error,'blf_read_cleanup_owner',None)
+            if pending is not None:
+                _cleanup_owner(pending,error,'blf_read_cleanup_owner','协议BLF构造')
+        raise
+    finally:
+        if reader is not None and not reader.closed:
+            if primary is None or isinstance(primary,GeneratorExit):
+                reader.close()
+            else:
+                _cleanup_owner(reader,primary,'blf_read_cleanup_owner','协议BLF读取器')
 
 
 def _field_metadata(db, fields, *, cycle_fields=()):
     """只读同次db公开messages/signals核定位唯一，并返回原单位。
 
-    参数: db为唯一原load_file结果；fields为原LegacyCANField tuple；
+    参数: db为同次加载的唯一DBC数据库；fields为原LegacyCANField tuple；
         cycle_fields仅指定需要周期的字段，须在fields中。默认不访问cycle_time。
     返回: 按请求顺序的字段事实；周期请求的字段另含正cycle_ns。
         仅DBC为FD而定位为经典CAN时增加固定兼容提示。
@@ -165,9 +152,9 @@ def _field_metadata(db, fields, *, cycle_fields=()):
 
 
 def _frame(msg):
-    """在一次原parse之后保存同次msg公开写出字段，不重建CAN消息。
+    """保存当前消息的公开写出字段，不重建CAN消息或执行解码。
 
-    参数: msg为本次原iter_frames刚yield的can.Message。返回: LegacyRawFrame。
+    参数: msg为共用BLF读取器返回的can.Message。返回: LegacyRawFrame。
     异常: 新边界字段校验失败；data仅无损复制为bytes，不改timestamp/DLC/标志。
     """
     if len(msg.data) > 64:
@@ -250,36 +237,36 @@ def _report_error(connection, exc, phase, request_id):
 
 
 def worker_main(connection):
-    """作为spawn目标按INIT/PULL协议调用冻结旧公开链，等待许可时不预取。
+    """作为spawn目标按INIT/PULL协议调用共用BLF读取与串行兼容解码，等待许可时不预取。
 
     参数: connection为父传来的独立duplex Connection。返回: 正常STOP或真实EOF时None。
     异常: 原错误尽力发ERROR后以SystemExit(1)退出；连接/生成器附加关闭错误也非零。
-    副作用: 本child内一次load_file、一次iter_frames、每许可一次next/parse；不额外扫描。
+    副作用: 本child内一次DBC加载、一次iter_frames、每许可一次next/parse；不额外扫描。
     """
     iterator, failure, request_id = None, None, None
     phase = 'init'
     pulls_received = frames_returned = parse_calls = 0
     try:
         request = _request(_receive(connection))
-        phase = 'vendor'
-        files, processor, vendor = _load_vendor()
+        phase = 'dependencies'
+        can, cantools = _load_can_runtime()
         phase = 'dbc'
-        # 通过原模块实际导入的cantools执行唯一原load_file，不加选项或第二次解析。
-        db = processor.cantools.database.load_file(str(request.dbc_path))
+        # 共用安全DBC加载函数执行一次加载，不做第二次解析。
+        db = load_dbc_file(str(request.dbc_path), cantools)
         phase = 'metadata'
         from .binding import FrameBindingResolver
-        from .batch_worker import _parse_selected
+        from .decode_policy import decode_serial_frame as _parse_selected
         from collections import Counter
         resolver = FrameBindingResolver(db, request.fields)
         duplicate_ids = {frame_id for frame_id, count in Counter(message.frame_id for message in db.messages).items()
                          if count > 1}
         phase = 'metadata'
         fields = _field_metadata(db, request.fields)
-        iterator = files.iter_frames(str(request.input_path))
+        iterator = _iter_blf(str(request.input_path))
         versions = {'python': platform.python_version(), 'python-can': metadata.version('python-can'),
             'cantools': metadata.version('cantools'), 'natsort': metadata.version('natsort')}
         _send(connection, {'op': 'ready', 'version': 1, 'profile': PROFILE_ID, 'worker_pid': os.getpid(),
-            'fields': fields, 'dependency_versions': versions, 'vendor_sha256': vendor})
+            'fields': fields, 'dependency_versions': versions})
         # 只在收到下一条PULL时取原下一帧；STATUS/ACK/STOP均不授予此许可。
         while True:
             phase, request_id = 'control', None
@@ -320,7 +307,7 @@ def worker_main(connection):
             parse_calls += 1
             fields_for_frame = resolver.fields_for(msg)
             message = resolver.message_for(msg, fields_for_frame)
-            values = _parse_selected(processor, db, msg, message, duplicate_ids)
+            values = _parse_selected(db, msg, message, duplicate_ids)
             phase = 'item'
             record = LegacyDecodedFrame(frames_returned, _frame(msg), values)
             _send(connection, {'op': 'item', 'request_id': request_id, 'record': decoded_to_dict(record)})
@@ -331,7 +318,7 @@ def worker_main(connection):
         failure = exc
         _report_error(connection, exc, phase, request_id)
     finally:
-        # 旧生成器close不是底层FD关闭证明；进程退出才由OS回收旧未公开reader资源。
+        # 生成器退出时关闭共用BLF owner；父进程仍须确认实际子退出。
         if iterator is not None:
             try:
                 iterator.close()

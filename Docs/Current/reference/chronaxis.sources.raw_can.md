@@ -6,7 +6,7 @@
 字段模型供后续DBC和写出接口使用。其float秒是兼容表示，不替代精确时间。
 本模块不打开文件、不加载DBC、不生成信号，CAN身份不会进入通用时序核心。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -44,7 +44,7 @@ CANTextError(path, line_number, reason)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/sources/raw_can.py:15`](../../../src/chronaxis/sources/raw_can.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_can.py:15`](../../../src/chronaxis/sources/raw_can.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextError-__init__"></a>
 ### `CANTextError.__init__`
@@ -71,7 +71,7 @@ CANTextError.__init__(path, line_number, reason)
 
 无；不包含整行私人载荷或隐式记录日志。
 
-源码：[`src/chronaxis/sources/raw_can.py:18`](../../../src/chronaxis/sources/raw_can.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_can.py:18`](../../../src/chronaxis/sources/raw_can.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawCANRecord"></a>
 ## `RawCANRecord`
@@ -93,11 +93,11 @@ class RawCANRecord
 |`sequence`|int|是|无|同次读取从0开始，允许同时间不同载荷。|
 |`raw_time`|str &#124; None|是|无|仅原文诊断请求保留；普通计算为None。|
 |`parser_version`|str|是|无|固定格式版本，不在半途自动切换。|
-|`dlc_code`|int &#124; None|是|无|真正DLC编码，错误帧没有该值。|
+|`dlc_code`|int &#124; None|是|无|真正DLC编码；错误帧及未声明长度的远程帧没有该值。|
 |`time_quantized`|bool|否|False|文本比纳秒更细时的实际舍入事实。|
 |`source_time_ns`|int &#124; None|否|None|显式平移前的精确时间；手工旧构造省略时与time_ns相同。|
 
-源码：[`src/chronaxis/sources/raw_can.py:30`](../../../src/chronaxis/sources/raw_can.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_can.py:30`](../../../src/chronaxis/sources/raw_can.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawCANRecord-__post_init__"></a>
 ### `RawCANRecord.__post_init__`
@@ -130,4 +130,4 @@ RawCANRecord.__post_init__()
 - `ValueError`：文本CAN记录需要时间原文、版本和量化标志。
 - `ValueError`：DLC编码需0到15或None。
 
-源码：[`src/chronaxis/sources/raw_can.py:44`](../../../src/chronaxis/sources/raw_can.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_can.py:44`](../../../src/chronaxis/sources/raw_can.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -8,7 +8,7 @@
 
 本模块不读取数据源，也不计算条件表达式。关闭失败时，异常中的temporal_detector_cleanup_owner保留待清理对象，供调用方继续关闭；不会关闭传入的共享资源管理器。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -47,6 +47,8 @@
 |[`BudgetedTemporalDetector._register`](#api-BudgetedTemporalDetector-_register)|只构造结果；外层取得本地引用后才登记并负责异常清理。|
 |[`BudgetedTemporalDetector._discard_unreturned`](#api-BudgetedTemporalDetector-_discard_unreturned)|撤销本次未交付结果，预算仍由外层一次抵销，不关闭先前批。|
 |[`BudgetedTemporalDetector._fail`](#api-BudgetedTemporalDetector-_fail)|丢弃部分推进的core并永久禁止重试，保留此前结果和固定元数据诊断。|
+|[`BudgetedTemporalDetector._release_failed_workspace`](#api-BudgetedTemporalDetector-_release_failed_workspace)|退还未交付批的实际申请，释放完成后取消也立即清槽。|
+|[`BudgetedTemporalDetector._refund_failed_workspace`](#api-BudgetedTemporalDetector-_refund_failed_workspace)|接管本次未交付批的费用并尝试归还，保留原推进错误和最高owner。|
 |[`BudgetedTemporalDetector.push`](#api-BudgetedTemporalDetector-push)|在预算内整批推进独立core，随后正式排空当前最终事件。|
 |[`BudgetedTemporalDetector.finish`](#api-BudgetedTemporalDetector-finish)|在core已消费真正terminal后封闭检测器，返回剩余增量批且不重发旧事件。|
 |[`BudgetedTemporalDetector.close`](#api-BudgetedTemporalDetector-close)|关闭全部自有批和固定申请，不关闭调用方budget或删除任何数据。|
@@ -81,7 +83,7 @@ _BatchRegistry()
 ```
 
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:34`](../../../src/chronaxis/execution/temporal_buffer.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:34`](../../../src/chronaxis/execution/temporal_buffer.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-__init__"></a>
 ### `_BatchRegistry.__init__`
@@ -107,7 +109,7 @@ _BatchRegistry.__init__()
 
 MemoryError。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:41`](../../../src/chronaxis/execution/temporal_buffer.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:41`](../../../src/chronaxis/execution/temporal_buffer.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-__bool__"></a>
 ### `_BatchRegistry.__bool__`
@@ -133,7 +135,7 @@ True表示仍登记着未释放的结果批；False表示没有。
 
 无。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:46`](../../../src/chronaxis/execution/temporal_buffer.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:46`](../../../src/chronaxis/execution/temporal_buffer.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-__len__"></a>
 ### `_BatchRegistry.__len__`
@@ -161,7 +163,7 @@ int。
 
 该诊断接口按需遍历，不建立随批数增长的辅助计数容器。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:51`](../../../src/chronaxis/execution/temporal_buffer.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:51`](../../../src/chronaxis/execution/temporal_buffer.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-__iter__"></a>
 ### `_BatchRegistry.__iter__`
@@ -187,7 +189,7 @@ _BatchRegistry.__iter__()
 
 内部链损坏。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:64`](../../../src/chronaxis/execution/temporal_buffer.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:64`](../../../src/chronaxis/execution/temporal_buffer.py#L64)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-add"></a>
 ### `_BatchRegistry.add`
@@ -216,7 +218,7 @@ ValueError为重复/跨登记器安装；取消由owner撤销部分安装。
 
 - `ValueError`：时序事件批已登记。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:73`](../../../src/chronaxis/execution/temporal_buffer.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:73`](../../../src/chronaxis/execution/temporal_buffer.py#L73)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_BatchRegistry-discard"></a>
 ### `_BatchRegistry.discard`
@@ -241,7 +243,7 @@ None；不属于本登记器时无副作用。
 
 内部链损坏；不抵销批预算，由其生命周期边界负责释放。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:90`](../../../src/chronaxis/execution/temporal_buffer.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:90`](../../../src/chronaxis/execution/temporal_buffer.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TemporalEventBatch"></a>
 ## `TemporalEventBatch`
@@ -256,7 +258,7 @@ TemporalEventBatch(owner, cost, events)
 ```
 
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:111`](../../../src/chronaxis/execution/temporal_buffer.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:111`](../../../src/chronaxis/execution/temporal_buffer.py#L111)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TemporalEventBatch-__init__"></a>
 ### `TemporalEventBatch.__init__`
@@ -283,7 +285,7 @@ TemporalEventBatch.__init__(owner, cost, events)
 
 MemoryError为构造失败，由owner清理本次申请并进入failed。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:118`](../../../src/chronaxis/execution/temporal_buffer.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:118`](../../../src/chronaxis/execution/temporal_buffer.py#L118)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TemporalEventBatch-closed"></a>
 ### `TemporalEventBatch.closed`
@@ -311,7 +313,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:131`](../../../src/chronaxis/execution/temporal_buffer.py#L131)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:131`](../../../src/chronaxis/execution/temporal_buffer.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TemporalEventBatch-events"></a>
 ### `TemporalEventBatch.events`
@@ -343,7 +345,7 @@ ResultClosedError。
 
 - `ResultClosedError`：时序事件批已关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:137`](../../../src/chronaxis/execution/temporal_buffer.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:137`](../../../src/chronaxis/execution/temporal_buffer.py#L137)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TemporalEventBatch-close"></a>
 ### `TemporalEventBatch.close`
@@ -370,7 +372,7 @@ None，重复关闭安全。
 内部账本不一致或取消；若已抵销则完成最小脱链/关闭后传播，
     尚未抵销时保持开放，可再次关闭。共用的资源用量记录遵守其单线程契约。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:145`](../../../src/chronaxis/execution/temporal_buffer.py#L145)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:145`](../../../src/chronaxis/execution/temporal_buffer.py#L145)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector"></a>
 ## `BudgetedTemporalDetector`
@@ -386,7 +388,7 @@ BudgetedTemporalDetector(budget: ResourceBudget, rule: TemporalRule, start_ns: i
 ```
 
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:178`](../../../src/chronaxis/execution/temporal_buffer.py#L178)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:178`](../../../src/chronaxis/execution/temporal_buffer.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-__init__"></a>
 ### `BudgetedTemporalDetector.__init__`
@@ -420,7 +422,7 @@ BudgetedTemporalDetector.__init__(budget: ResourceBudget, rule: TemporalRule, st
 类型/后端/规则/域/来源/预算/构造原错误；本次固定申请清理持续失败时，
     原异常附temporal_detector_cleanup_owner供恢复close，不改变调用方预算所有权。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:186`](../../../src/chronaxis/execution/temporal_buffer.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:186`](../../../src/chronaxis/execution/temporal_buffer.py#L186)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_ensure_open"></a>
 ### `BudgetedTemporalDetector._ensure_open`
@@ -450,7 +452,7 @@ ResultClosedError。
 
 - `ResultClosedError`：预算时序检测器已关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:244`](../../../src/chronaxis/execution/temporal_buffer.py#L244)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:245`](../../../src/chronaxis/execution/temporal_buffer.py#L245)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_ensure_active"></a>
 ### `BudgetedTemporalDetector._ensure_active`
@@ -480,7 +482,7 @@ ResultClosedError或AnalysisError为不可继续。
 
 - `AnalysisError`：预算时序检测器已失败，禁止重试当前状态。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:250`](../../../src/chronaxis/execution/temporal_buffer.py#L250)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:251`](../../../src/chronaxis/execution/temporal_buffer.py#L251)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-rule"></a>
 ### `BudgetedTemporalDetector.rule`
@@ -508,7 +510,7 @@ TemporalRule。
 
 对象处于下列状态时抛ResultClosedError：预算时序检测器已关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:261`](../../../src/chronaxis/execution/temporal_buffer.py#L261)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:264`](../../../src/chronaxis/execution/temporal_buffer.py#L264)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-start_ns"></a>
 ### `BudgetedTemporalDetector.start_ns`
@@ -536,7 +538,7 @@ int ns。
 
 对象处于下列状态时抛ResultClosedError：预算时序检测器已关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:268`](../../../src/chronaxis/execution/temporal_buffer.py#L268)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:271`](../../../src/chronaxis/execution/temporal_buffer.py#L271)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-end_ns"></a>
 ### `BudgetedTemporalDetector.end_ns`
@@ -564,7 +566,7 @@ int ns。
 
 对象处于下列状态时抛ResultClosedError：预算时序检测器已关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:275`](../../../src/chronaxis/execution/temporal_buffer.py#L275)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:278`](../../../src/chronaxis/execution/temporal_buffer.py#L278)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-next_deadline_ns"></a>
 ### `BudgetedTemporalDetector.next_deadline_ns`
@@ -592,7 +594,7 @@ int或None。
 
 关闭或失败。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:282`](../../../src/chronaxis/execution/temporal_buffer.py#L282)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:285`](../../../src/chronaxis/execution/temporal_buffer.py#L285)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-closed"></a>
 ### `BudgetedTemporalDetector.closed`
@@ -620,7 +622,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:289`](../../../src/chronaxis/execution/temporal_buffer.py#L289)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:292`](../../../src/chronaxis/execution/temporal_buffer.py#L292)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-failed"></a>
 ### `BudgetedTemporalDetector.failed`
@@ -648,7 +650,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无；close不掩盖失败。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:295`](../../../src/chronaxis/execution/temporal_buffer.py#L295)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:298`](../../../src/chronaxis/execution/temporal_buffer.py#L298)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-duration_counts"></a>
 ### `BudgetedTemporalDetector.duration_counts`
@@ -676,7 +678,7 @@ BudgetedTemporalDetector.duration_counts
 
 关闭、失败或尚未结束错误。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:301`](../../../src/chronaxis/execution/temporal_buffer.py#L301)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:304`](../../../src/chronaxis/execution/temporal_buffer.py#L304)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-extend_observed_end"></a>
 ### `BudgetedTemporalDetector.extend_observed_end`
@@ -701,7 +703,7 @@ None。
 
 已封闭或末端回退。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:309`](../../../src/chronaxis/execution/temporal_buffer.py#L309)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:312`](../../../src/chronaxis/execution/temporal_buffer.py#L312)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-set_observed_end"></a>
 ### `BudgetedTemporalDetector.set_observed_end`
@@ -726,7 +728,7 @@ None。不生成terminal或结果，不回撤已处理组。
 
 类型/范围或已完成错误；非法调用不改变core与owner边界。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:323`](../../../src/chronaxis/execution/temporal_buffer.py#L323)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:326`](../../../src/chronaxis/execution/temporal_buffer.py#L326)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_workspace_cost"></a>
 ### `BudgetedTemporalDetector._workspace_cost`
@@ -752,7 +754,7 @@ BudgetedTemporalDetector._workspace_cost(ticks, maximum_events)
 
 元数据估算错误；尚未调用core，不改变业务状态。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:341`](../../../src/chronaxis/execution/temporal_buffer.py#L341)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:344`](../../../src/chronaxis/execution/temporal_buffer.py#L344)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_register"></a>
 ### `BudgetedTemporalDetector._register`
@@ -778,7 +780,7 @@ BudgetedTemporalDetector._register(cost, events)
 
 构造/返回取消由推进边界抵销并failed。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:353`](../../../src/chronaxis/execution/temporal_buffer.py#L353)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:356`](../../../src/chronaxis/execution/temporal_buffer.py#L356)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_discard_unreturned"></a>
 ### `BudgetedTemporalDetector._discard_unreturned`
@@ -803,7 +805,7 @@ BudgetedTemporalDetector._discard_unreturned(result)
 
 内部登记不一致；不调用result.close以免重复释放本批申请。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:362`](../../../src/chronaxis/execution/temporal_buffer.py#L362)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:365`](../../../src/chronaxis/execution/temporal_buffer.py#L365)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-_fail"></a>
 ### `BudgetedTemporalDetector._fail`
@@ -829,7 +831,56 @@ BudgetedTemporalDetector._fail()
 
 无主动异常；不声称旧业务状态已回滚。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:377`](../../../src/chronaxis/execution/temporal_buffer.py#L377)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:380`](../../../src/chronaxis/execution/temporal_buffer.py#L380)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-BudgetedTemporalDetector-_release_failed_workspace"></a>
+### `BudgetedTemporalDetector._release_failed_workspace`
+
+退还未交付批的实际申请，释放完成后取消也立即清槽。
+
+```python
+BudgetedTemporalDetector._release_failed_workspace()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+原退款错误；尚未释放的金额留给下一次close。
+本槽与固定申请、此前已交付批分开；只围绕一次直接账本调用判断副作用。
+
+源码：[`src/chronaxis/execution/temporal_buffer.py:389`](../../../src/chronaxis/execution/temporal_buffer.py#L389)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-BudgetedTemporalDetector-_refund_failed_workspace"></a>
+### `BudgetedTemporalDetector._refund_failed_workspace`
+
+接管本次未交付批的费用并尝试归还，保留原推进错误和最高owner。
+
+```python
+BudgetedTemporalDetector._refund_failed_workspace(cost, original)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`cost`|int|是|无|位置或关键字。本批已实际预约但尚未交付的工作区字节数，先登记责任再尝试退回。|
+|`original`|BaseException|是|无|位置或关键字。推进或取消时最先发生的异常；退款失败只附加说明及实际恢复对象，不替换它。|
+
+#### 返回说明
+
+None。退款失败只追加说明；调用方继续抛原异常，close负责重试。
+
+源码：[`src/chronaxis/execution/temporal_buffer.py:407`](../../../src/chronaxis/execution/temporal_buffer.py#L407)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-push"></a>
 ### `BudgetedTemporalDetector.push`
@@ -866,7 +917,7 @@ BudgetedTemporalDetector.push(ticks: tuple[ConditionTick, ...], exit_ticks=None,
 
 返回类型：[TemporalEventBatch](chronaxis.execution.temporal_buffer.md#api-TemporalEventBatch)。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:386`](../../../src/chronaxis/execution/temporal_buffer.py#L386)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:420`](../../../src/chronaxis/execution/temporal_buffer.py#L420)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-finish"></a>
 ### `BudgetedTemporalDetector.finish`
@@ -898,7 +949,7 @@ BudgetedTemporalDetector.finish() -> TemporalEventBatch
 
 返回类型：[TemporalEventBatch](chronaxis.execution.temporal_buffer.md#api-TemporalEventBatch)。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:443`](../../../src/chronaxis/execution/temporal_buffer.py#L443)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:477`](../../../src/chronaxis/execution/temporal_buffer.py#L477)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetedTemporalDetector-close"></a>
 ### `BudgetedTemporalDetector.close`
@@ -925,4 +976,4 @@ None，幂等且支持部分构造失败。
 内部账本不一致或取消；已释放固定申请时完成最小收尾后传播。
     failed标志保留用于说明此前失败；尚未释放时可重试关闭。
 
-源码：[`src/chronaxis/execution/temporal_buffer.py:481`](../../../src/chronaxis/execution/temporal_buffer.py#L481)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/temporal_buffer.py:515`](../../../src/chronaxis/execution/temporal_buffer.py#L515)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

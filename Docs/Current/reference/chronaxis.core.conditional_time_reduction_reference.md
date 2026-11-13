@@ -2,11 +2,11 @@
 
 逐段计算带筛选条件的时间统计，供NumPy实现对照。push接收下一块数据并保留累计结果；time_weighted_mean需要两遍读取，第一遍统计总有效时长，第二遍按时长比例计算平均值。每块处理完后不再保存该块的整列输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[ConditionalTimeCalculationFacts](chronaxis.core.conditional_time_reduction.md#api-ConditionalTimeCalculationFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
+[ConditionalTimeCalculationFacts](chronaxis.core.conditional_time_reduction.md#api-ConditionalTimeCalculationFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[MeanTimeBlock](chronaxis.core.time_reduction.md#api-MeanTimeBlock)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ReferenceMoments](chronaxis.core.moments_reference.md#api-ReferenceMoments)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[TimeReductionResult](chronaxis.core.time_reduction.md#api-TimeReductionResult)
 
 ## 对象导航
 
@@ -52,7 +52,7 @@ ReferenceConditionalTimeReduction(spec, input_unit, dtype, *, selected_duration_
 ```
 
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:29`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:29`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-__init__"></a>
 ### `ReferenceConditionalTimeReduction.__init__`
@@ -83,7 +83,7 @@ ReferenceConditionalTimeReduction.__init__(spec, input_unit, dtype, *, selected_
 
 配置或分配错误传播。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:32`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:32`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-selected_weight_seconds"></a>
 ### `ReferenceConditionalTimeReduction.selected_weight_seconds`
@@ -111,7 +111,7 @@ float或不适用None。
 
 权重求和故障。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:55`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:55`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L55)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-selected_duration_ns"></a>
 ### `ReferenceConditionalTimeReduction.selected_duration_ns`
@@ -139,7 +139,7 @@ ReferenceConditionalTimeReduction.selected_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:65`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:65`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-value_valid_duration_ns"></a>
 ### `ReferenceConditionalTimeReduction.value_valid_duration_ns`
@@ -167,7 +167,7 @@ ReferenceConditionalTimeReduction.value_valid_duration_ns
 
 无。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:70`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:70`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-push"></a>
 ### `ReferenceConditionalTimeReduction.push`
@@ -200,7 +200,7 @@ ConditionalTimeCalculationFacts；mean权重故障只记数值质量，不改覆
 
 - `ValueError`：条件时间归约不能跨绑定身份累计。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:74`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:74`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L74)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceConditionalTimeReduction-finish"></a>
 ### `ReferenceConditionalTimeReduction.finish`
@@ -232,4 +232,4 @@ mean首遍RuntimeError、次遍分母不符ValueError；
 - `RuntimeError`：条件时间均值首遍只收事实，不能生成数值。
 - `ValueError`：条件均值次遍选择时长与全窗分母不同。
 
-源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:186`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_time_reduction_reference.py:186`](../../../src/chronaxis/core/conditional_time_reduction_reference.py#L186)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

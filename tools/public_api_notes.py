@@ -15,6 +15,18 @@ COMMON = {
     'interval_modes': ('本实现支持的actual/fixed/dbc非空、无重复元组；不要声明尚未正确实现的权重口径。', 'Nonempty unique tuple drawn from actual/fixed/dbc. Declare only the weighting modes implemented correctly.'),
 }
 
+# 未写Python注解的公开参数，依据实际参数检查维护展示类型；签名仍保留源码原貌。
+PARAMETER_TYPES = {
+    'fast.batch.run_batch': {
+        'plan_path': 'str | pathlib.Path', 'output': 'str | pathlib.Path',
+        'process_count': 'int | None', 'cancel_event': 'threading.Event | None', 'total': 'bool',
+    },
+    'ExtensionRegistry': {
+        'functions': 'tuple[FunctionSpec, ...]', 'reductions': 'tuple[ReductionSpec, ...]',
+        'transforms': 'tuple[TransformSpec, ...]',
+    },
+}
+
 NOTES = {
  'fast.run': {
   'summary': ('高性能积分器：一个会话管理一个或多个ASC/BLF分卷，按确定顺序累计同帧贡献并发布一次汇总。', 'High-performance integrator: one session accumulates same-frame contributions from one or more ASC/BLF volumes in a deterministic order and publishes one summary.'),
@@ -25,7 +37,7 @@ NOTES = {
    'work_dir': ('可选暂存父目录，None使用系统临时目录；本次创建的私有暂存完成或失败后清理。', 'Optional parent directory for temporary contributions. None uses system temporary storage. This invocation removes its private temporary files after completion or failure.'),
    'cancel_event': ('可选带is_set()的取消事件，例如threading.Event；set()请求停止调度并清理，run抛InterruptedError，不发布成功汇总。', 'Optional cancellation event with is_set(), such as threading.Event. set() requests cancellation and cleanup; run raises InterruptedError without publishing a successful summary.')},
   'returns': ('pathlib.Path：本次完成清单。inputs列出全部文件，outputs列出结果表；每项独立判断空值/有效零，某分卷无目标不使其他有效贡献失效。', 'pathlib.Path to the completion manifest. inputs lists every file and outputs names the result table. Missing values and valid zeros are determined per calculation across the session.'),
-  'raises': ('PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。', 'PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result.'),
+  'raises': ('PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。会话异常保留原类型；清理未完成时，原异常可能带fast_session_cleanup_owner，排除资源故障后调用该对象close，不必分别关闭子对象。该属性不保证存在，也可能在后续重试后指向已关闭对象。', 'PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result. Session errors keep their original type. If cleanup remains incomplete, the original exception may expose fast_session_cleanup_owner; resolve the resource fault and call that object\'s close(), without separately closing its children. The attribute is optional and may refer to an object closed by a later retry.'),
   'behavior': ('读取配置/DBC及分卷；工作进程求单帧贡献，主进程逐条累计。单进程内联；time_order多文件需暂存。Windows多进程调用须置于`if __name__ == "__main__":`保护中，清单最后发布。', 'Read configuration, DBC and volumes. Workers evaluate individual contributions; the main process accumulates them in order. One worker runs inline; multi-file time_order requires staging. Protect multiprocessing calls with `if __name__ == "__main__":` on Windows. Publish the manifest last.')},
  'fast.batch.run_batch': {
   'summary': ('并行执行相互独立的高性能积分任务；连续来源paths不能借此拆成独立文件。', 'Run independent high-performance integration jobs in parallel. Do not use this to split paths that belong to one continuous source.'),
@@ -36,7 +48,7 @@ NOTES = {
    'cancel_event': ('`threading.Event`或`None`。调用`set()`请求取消：停止派发尚未启动的任务，并通知在途fast任务停止；协作退出超过5秒时启动进程回收。已完成任务可保留completed状态，其他任务以报告中的status、error_type和error_message为准。只有is_set()方法的其他对象不被接受。', '`threading.Event` or `None`. Call `set()` to stop pending dispatch and request running fast jobs to stop. After a five-second cooperative grace period, process cleanup begins. Already finished jobs may remain completed; inspect each job\'s status, error_type and error_message. Other objects merely providing is_set() are not accepted.'),
    'total': ('布尔值，True请求同模板且定义一致的全批总量；按计算项完整性判定，不把缺失值当0。默认不额外汇总。', 'Boolean. True requests totals for a same-template batch with matching definitions. Completeness is checked per calculation; missing values are not zero. No extra total is computed by default.')},
   'returns': ('pathlib.Path：本次批量报告路径。报告可包含失败或未启动任务；返回路径不代表每个任务成功，须检查报告。', 'pathlib.Path to the batch report. It can contain failed or unstarted jobs; returning a path does not mean every job succeeded. Inspect the report.'),
-  'raises': ('配置错误抛PlanValidationError；非法total抛TypeError。基础设施异常继续传播，可能通过异常的batch_report附带已保存报告。任务失败按计划fail_fast政策记录。', 'PlanValidationError for invalid plans and TypeError for an invalid total argument. Infrastructure errors propagate and may carry a saved batch_report. Job failures follow the plan fail_fast policy.'),
+  'raises': ('参数或组合错误直接抛出，不返回正常批量报告：total不是bool时抛TypeError；process_count不是正原生int（包括bool）时抛ValueError；cancel_event不是threading.Event或None时抛TypeError；jobs配置请求total=True时抛ValueError，只有同一template展开且计算定义一致的独立文件支持总计。total类型在加载配置前检查，其余覆盖值和组合在配置准备后、任务派发前检查。\n\n配置解析或fast能力检查失败抛PlanValidationError。已派发任务的普通失败记录在报告jobs的status、error_type和error_message中，按fail_fast决定是否继续派发；返回报告路径不代表全部成功。\n\n通信、调度、清理及报告发布等基础设施异常继续传播，可能通过异常的batch_report附带已保存报告，但启动前或报告发布错误不保证有该属性。worker构造期间中断且清理未完成时，原异常还可带batch_worker_cleanup_owner；该worker可能不在报告任务中，需要对实际存在的恢复对象单独close。', 'Parameter and combination errors raise directly instead of returning a normal batch report: TypeError for a non-bool total; ValueError for process_count that is not a positive native int, including bool; TypeError for cancel_event other than threading.Event or None; ValueError for total=True with jobs. Totals require independent files expanded from one template with matching calculation definitions. The total type is checked before loading configuration; the other overrides and combinations are checked after configuration preparation and before dispatch.\n\nConfiguration parsing or fast-capability failures raise PlanValidationError. Ordinary failures in dispatched jobs appear in report.jobs with status, error_type, and error_message; fail_fast controls further dispatch. Returning a report path does not mean every job succeeded.\n\nCommunication, scheduling, cleanup, and report-publication errors propagate. An exception may carry a saved batch_report, but pre-dispatch and publication failures do not guarantee that attribute. If worker construction is interrupted and cleanup remains incomplete, the original exception may also expose batch_worker_cleanup_owner. That unfinished worker may not belong to a report job; close an available recovery object separately.'),
   'behavior': ('创建工作进程、读取每个任务输入并写报告；内部关闭批量资源。Windows脚本必须在`if __name__ == "__main__":`保护内调用。', 'Starts worker processes, reads job inputs, writes reports, and closes batch resources internally. On Windows, call inside an `if __name__ == "__main__":` guard.')},
  'ExtensionRegistry': {
   'summary': ('构造不可变宿主扩展注册表；创建计划与执行计划须传同一个注册实例。配置只引用已注册名称，不自动导入Python模块。', 'Construct an immutable host-extension registry. Pass the same instance when building and running the plan. Configuration references registered names; it does not import Python modules.'),
@@ -90,7 +102,10 @@ def render_note(item, source_page, language):
         name = parameter['name']
         required = ('Yes' if parameter['required'] else 'No') if index else ('是' if parameter['required'] else '否')
         default = parameter['default'] if parameter['default'] is not None else ('No default' if index else '无默认值')
-        typename = parameter['type'] or ('See purpose' if index else '见用途')
+        typename = parameter['type'] or PARAMETER_TYPES.get(item['name'], {}).get(name)
+        if not typename:
+            # 仅检查由NOTES维护的公开页；不要求内部或自动生成方法补造类型。
+            raise ValueError('公开API参数缺少已核对类型：'+item['name']+'.'+name)
         values = (f'`{name}`', typename, required, default, notes['parameters'][name][index])
         out.append('|'+ '|'.join(v.replace('|', '&#124;') for v in values)+'|\n')
     for key, labels in (('returns',('返回','Returns')),('raises',('异常','Raises')),('behavior',('执行与资源','Execution and resources'))):

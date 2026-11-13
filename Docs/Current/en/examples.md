@@ -106,7 +106,7 @@ chronaxis run fault-demo/plan.yaml --output fault-result
 | `can-export` | Original CAN frames | plan.yaml | Analysis 13 V·s; original frames within the range retain order, without resampling. |
 | `batch` | Two independent jobs | batch.yaml | Both read the same synthetic input independently and complete with 38 J each; they are not slices of one session. |
 
-Run ordinary templates with `chronaxis run DIRECTORY/plan.yaml --output NEW_DIRECTORY`; use `chronaxis batch run DIRECTORY/batch.yaml --output NEW_DIRECTORY` for batch. CAN dependencies are part of the ordinary package installation. Export device labels reflect the [current implementation restriction](exports.md), not a universal label for every machine.
+Run ordinary templates with `chronaxis run DIRECTORY/plan.yaml --output OUTPUT_DIRECTORY`; use `chronaxis batch run DIRECTORY/batch.yaml --output OUTPUT_DIRECTORY` for batch. CAN dependencies are part of the ordinary package installation. Exports do not require a device label; add a nonblank custom label only when needed, as described in [Outputs](exports.md).
 
 
 
@@ -149,7 +149,7 @@ chronaxis run message-energy.yaml --output message-result
 <a id="信号250ms与can500ms两个导出网格"></a>
 ### A 250 ms signal grid and 500 ms CAN grid
 
-[dual-grid.yaml](../examples/dual-grid.yaml) uses the same joint.asc and joint.dbc, exporting voltage and reconstructed CAN frames. The analysis alias is `voltage`; the DBC field is `Voltage`. They are not interchangeable. The synthetic example uses `metadata.device_label: home` under the current [export limitation](exports.md).
+[dual-grid.yaml](../examples/dual-grid.yaml) uses the same joint.asc and joint.dbc, exporting voltage and reconstructed CAN frames. The analysis alias is `voltage`; the DBC field is `Voltage`. They are not interchangeable. The synthetic example records its origin with `metadata.device_label: home`; with your own data, omit it or provide your nonblank device label. See [Outputs](exports.md).
 
 ```powershell
 chronaxis run dual-grid.yaml --output grid-result

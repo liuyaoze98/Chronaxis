@@ -5,11 +5,11 @@
 输入为已编译节点与带有明确类型的标量元组。Python整数保存精确的中间数，
 判定范围后才构造目标ScalarValue。转float复用公共精度检查。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -40,7 +40,7 @@ integer_reference(node, args)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`node`|ExprNode|是|无|位置或关键字。已通过静态检查的操作节点，携带操作类型、输入依赖和输出单位。|
-|`args`|Sequence[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。按配置位置排好的整数或显式类型转换操作数，每个保留本批数值与质量。|
+|`args`|Sequence[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。按配置位置排好的整数或显式类型转换操作数，每个保留本批数值与质量。|
 
 ### 返回说明
 
@@ -50,4 +50,4 @@ ScalarValue，质量非零时不产生有效值。
 
 ValueError为未登记的内部操作；有效输入的数值失败写入质量。
 
-源码：[`src/chronaxis/core/expression_integer_reference.py:11`](../../../src/chronaxis/core/expression_integer_reference.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_integer_reference.py:11`](../../../src/chronaxis/core/expression_integer_reference.py#L11)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

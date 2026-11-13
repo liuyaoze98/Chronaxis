@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import signal
 from threading import Event
+from ._control_wire import ControlChannel
 
 def _diagnostics(error) -> tuple[str, ...]:
     """保留有限异常链而不持有栈。参数: error原异常。返回: 文本tuple。异常: 原异常格式错误。"""
@@ -18,6 +19,8 @@ def _diagnostics(error) -> tuple[str, ...]:
 
 def worker_main(connection, fast_cancel=None):
     """处理run/cleanup/close命令。参数: 私有管道。返回: None。异常: 断管退出，父进程负责树清理。"""
+    if type(connection) is not ControlChannel:
+        raise TypeError('batch工作进程需要固定字节控制端点')
     if fast_cancel is None:
         from .batch.runner import _run_job
         from .planning import process_execution

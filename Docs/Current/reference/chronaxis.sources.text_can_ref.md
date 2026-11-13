@@ -6,7 +6,7 @@
 字段键仍区分通道、消息、信号、ID及帧型；本引用另外保留文件次序与文件内序号。
 不打开文件、不解码、不将float秒当作精确时间，也不冒称冻结旧profile的输出。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 继承字段
 
@@ -58,7 +58,7 @@ class CANTextSourceRef(SourceRef)
 |`raw_time`|str &#124; None|是|无|文本原文字；BLF没有时间文字，不构造副本。|
 |`time_quantized`|bool|是|无|源文字转纳秒时是否实际量化。|
 
-源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:15`](../../../src/chronaxis/sources/text_can_ref.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextSourceRef-__post_init__"></a>
 ### `CANTextSourceRef.__post_init__`
@@ -88,4 +88,4 @@ CANTextSourceRef.__post_init__()
 
 - `TypeError`：文本CAN量化标志需要bool。
 
-源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_ref.py:27`](../../../src/chronaxis/sources/text_can_ref.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

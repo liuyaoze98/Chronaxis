@@ -4,7 +4,7 @@
 CSV与JSONL使用同一套平坦摘要字段，不保留旧row_json或结果包装副本。
 成功生成表、质量记录及完成清单后才安装目录；已有目标拒绝，失败保留诊断临时目录。
 close关闭所有活跃迭代器且幂等；默认清理自有暂存，保留原输入和已发布文件。无旧reader/decoder/writer调用。
-当前原子安装通过Windows不覆盖rename实现；其他平台明确拒绝，尚未验收的能力不静默承诺。
+单个文件或目录按平台不覆盖移动；Windows保留有限共享冲突重试。
 元数据、读槽和发布workspace分别记录实际RAM费用，预算更新后取消仍可恢复清账。
 读取器真实handle.close失败保留句柄并拒绝继续读；结果close失败可重试，不提前标closed。
 上述重试保证只覆盖托管的结果资源，不覆盖任意局部文件句柄的持续关闭失败。
@@ -69,12 +69,20 @@ class _DigestOutput:
         self.stream=stream;self.digest=hashlib.sha256();self.size=0
 
     def write(self,payload):
-        """完整写出有限payload后更新摘要。参数: str/bytes。返回: 原长度。异常: 短写/IO。"""
-        count=self.stream.write(payload)
-        if count!=len(payload): raise OSError('结果写入不完整')
-        encoded=payload.encode('utf-8') if isinstance(payload,str) else payload
-        self.digest.update(encoded);self.size+=len(encoded)
-        return count
+        """完整写出有限payload后更新摘要，不关闭借用流。
+
+        参数: str/bytes。返回: 原长度。异常: 短写/IO；回溯不保留本层载荷引用。
+        """
+        encoded=None
+        try:
+            count=self.stream.write(payload)
+            if count!=len(payload): raise OSError('结果写入不完整')
+            encoded=payload.encode('utf-8') if isinstance(payload,str) else payload
+            self.digest.update(encoded);self.size+=len(encoded)
+            return count
+        finally:
+            # 只解除本函数的两份引用，不清调用者或写入器的异常帧。
+            payload=encoded=None
 
     def info(self,name):
         """返回已关闭文件的有限事实。参数: 文件名。返回: dict。异常: 无。"""
@@ -154,7 +162,7 @@ class _RowIterator:
             return row
         except BaseException as exc:
             # 解码/读取原异常优先；清理仍失败时父登记和恢复属性保存实际读取器。
-            payload = row = entry = None
+            payload = row = None
             try:
                 self.close()
             except BaseException as cleanup:
@@ -164,7 +172,7 @@ class _RowIterator:
             raise
         finally:
             # return已先求值；原TB不额外持有本层行和读取bytes。
-            payload = row = entry = None
+            payload = row = None
 
     def close(self) -> None:
         """抵销槽位、取消登记并关闭句柄；重复调用安全。
@@ -491,33 +499,40 @@ class AnalysisResult:
         参数: path为已关闭输出文件。返回: 名称/bytes/SHA256。
         异常: IO错误；调用侧已预留发布临时槽位。
         """
-        if (not self.metadata.detailed_diagnostics):
+        if not self.metadata.detailed_diagnostics:
             return {'name': path.name, 'bytes': path.stat().st_size}
         digest = hashlib.sha256()
-        with path.open('rb') as handle:
-            while chunk := handle.read(65536):
-                digest.update(chunk)
-        return {'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
+        chunk = None
+        try:
+            with path.open('rb') as handle:
+                while chunk := handle.read(65536):
+                    digest.update(chunk)
+            return {'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
+        finally:
+            # 保留原异常栈和摘要策略，只释放本层当前块。
+            chunk = None
 
     def _install_directory(self, temporary: Path, destination: Path) -> None:
-        """在Windows同文件系统安装单个文件或目录，短暂占用时有限等待且拒绝覆盖。
+        """同文件系统不覆盖安装；Windows短暂共享冲突保留原有限等待。
 
         参数: temporary为目标父目录临时目录，destination为全新目标。
-        返回: None。异常: AnalysisError为未支持平台；FileExistsError/IO错误为安装失败。
+        返回: None。异常: NotImplementedError为平台缺少不覆盖移动能力；FileExistsError/IO错误为安装失败。
         边界: 仅原rename的Win5/32最多尝试六次，五次等待合计0.77秒；
-        系统调用本身不受该等待时长约束。其他错误立即传播，最终保留原异常与源目录。
+        系统调用本身不受该等待时长约束。移动未完成时保留源目录；移动后的检查或关闭也可能报错，不能仅凭异常断定源目录仍在。
         副作用: 只重试当前路径安装，不重新读取、分析或生成任何输出文件。
         """
         # Windows rename对已存在目录拒绝；POSIX普通rename可覆盖空目录，不能静默复用。
+        from .platform_files import move_no_replace
         if os.name != 'nt':
-            raise AnalysisError('原子目录安装目前只验收Windows；其他平台需不覆盖安装实现')
+            move_no_replace(temporary,destination)
+            return
         delays = (.02, .05, .1, .2, .4)
         for attempt in range(len(delays) + 1):
             # 每次等待后重新保护新出现的目标；检查之后的竞争仍由Windows rename拒绝。
             if destination.exists():
                 raise FileExistsError(destination)
             try:
-                os.rename(temporary, destination)
+                move_no_replace(temporary, destination)
                 return
             except PermissionError as exc:
                 # 仅恢复短暂访问/共享冲突；权限长期不允许时仍保最后真实OS错误及现场。
@@ -548,8 +563,6 @@ class AnalysisResult:
                 raise ValueError('发布目录不能放在关闭后删除的本次私有工作目录内')
             from .publication import PublicationNames, output_root
             destination = output_root(destination)
-            if os.name != 'nt':
-                raise AnalysisError('当前未实现该平台的不覆盖原子目录安装')
             # 转换/CSV/质量/hash临时对象也计入账本，不只计算读取数组。
             _reserve_owned_ram(self, self.spool.reader_cost, '_writer_cost')
             destination.parent.mkdir(parents=True, exist_ok=True)

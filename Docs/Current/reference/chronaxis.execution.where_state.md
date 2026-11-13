@@ -5,11 +5,11 @@
 同一组可能同时替换条件与两个分支。取状态已保存的旧规范标量，在本时刻检查
 TTL 和来源范围，两种后端分别解释前后条件。所需临时空间由调用侧查询预付。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -48,8 +48,8 @@ before_context(state, names, time, *, ends=None, bounds=None, continuous=False, 
 |`time`|int|是|无|位置或关键字。用于组前保持和 TTL、来源观测边界检查的实际纳秒时刻。|
 |`ends`|Mapping[str, int] &#124; None|否|None|仅关键字。可选的来源到观测结束纳秒数映射，未提供完整起止范围时使用。|
 |`bounds`|Mapping[str, tuple[int, int]] &#124; None|否|None|仅关键字。可选的来源到观测起止纳秒坐标映射，优先于只包含终点的 ends。|
-|`continuous`|bool|否|False|仅关键字。查询连续区间时，观测终点本身不再向后贡献时长。|
-|`left_limit`|bool|否|False|仅关键字。为真时取该时刻之前的保持值，用于区分更新前后。|
+|`continuous`|bool|否|False|仅关键字。是否按连续右侧保持视图判断来源末端有效性。|
+|`left_limit`|bool|否|False|仅关键字。是否取本时刻左极限；有效期恰好到期以及来源边界按左侧规则判断。|
 
 ### 返回说明
 
@@ -59,7 +59,7 @@ before_context(state, names, time, *, ends=None, bounds=None, continuous=False, 
 
 声明或类型错误；不回退状态。
 
-源码：[`src/chronaxis/execution/where_state.py:12`](../../../src/chronaxis/execution/where_state.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/where_state.py:12`](../../../src/chronaxis/execution/where_state.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-scalar_columns"></a>
 ## `scalar_columns`
@@ -74,7 +74,7 @@ scalar_columns(context)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。当前标量视图，将每个别名装成单行列供数组后端求值。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。当前标量视图，将每个别名装成单行列供数组后端求值。|
 
 ### 返回说明
 
@@ -84,7 +84,7 @@ scalar_columns(context)
 
 非法标签或列类型。
 
-源码：[`src/chronaxis/execution/where_state.py:40`](../../../src/chronaxis/execution/where_state.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/where_state.py:40`](../../../src/chronaxis/execution/where_state.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-group_updates"></a>
 ## `group_updates`
@@ -92,7 +92,7 @@ scalar_columns(context)
 计算原子组是否更新输出。
 
 ```python
-group_updates(root, context, previous, updates, backend)
+group_updates(root, context, previous, updates, backend, *, point_program=None)
 ```
 
 ### 参数
@@ -100,10 +100,11 @@ group_updates(root, context, previous, updates, backend)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`root`|ExprNode|是|无|位置或关键字。要遍历的编译表达式树，从其中定位 where 的条件和可见分支。|
-|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。原子更新提交后的当前标量视图，选取活动条件及分支。|
-|`previous`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。同一时间坐标上排除刚提交更新的组前值，判定条件切换或恢复。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。原子更新提交后的当前标量视图，选取活动条件及分支。|
+|`previous`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。同一时间坐标上排除刚提交更新的组前值，判定条件切换或恢复。|
 |`updates`|Mapping[str, bool]|是|无|位置或关键字。标记哪些别名在本次原子组实际收到新观测。|
 |`backend`|str|是|无|位置或关键字。本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。|
+|`point_program`|[chronaxis.core.expression_point.PointProgram](chronaxis.core.expression_point.md#api-PointProgram) &#124; None|否|None|仅关键字。当前表达式已准备的生产逐点程序；NumPy 流式路径提供它，reference 分支仍使用自己的实现。|
 
 ### 返回说明
 
@@ -113,7 +114,7 @@ bool。
 
 求值原错。
 
-源码：[`src/chronaxis/execution/where_state.py:57`](../../../src/chronaxis/execution/where_state.py#L57)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/where_state.py:57`](../../../src/chronaxis/execution/where_state.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-group_active"></a>
 ## `group_active`
@@ -121,7 +122,7 @@ bool。
 检查标记输入是否活动。
 
 ```python
-group_active(root, context, flags, backend)
+group_active(root, context, flags, backend, *, point_program=None)
 ```
 
 ### 参数
@@ -129,9 +130,10 @@ group_active(root, context, flags, backend)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`root`|ExprNode|是|无|位置或关键字。要遍历的编译表达式树，从其中定位 where 的条件和可见分支。|
-|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。原子更新提交后的当前标量视图，选取活动条件及分支。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。原子更新提交后的当前标量视图，选取活动条件及分支。|
 |`flags`|Mapping[str, bool]|是|无|位置或关键字。待检查的输入标志，如结束、无效或缺失原因，只检查活动分支。|
 |`backend`|str|是|无|位置或关键字。本次已经选定的 reference 或 numpy 后端，按相同更新语义分别求值。|
+|`point_program`|[chronaxis.core.expression_point.PointProgram](chronaxis.core.expression_point.md#api-PointProgram) &#124; None|否|None|仅关键字。当前表达式已准备的生产逐点程序；NumPy 流式路径提供它，reference 分支仍使用自己的实现。|
 
 ### 返回说明
 
@@ -141,4 +143,4 @@ bool。
 
 求值错误。
 
-源码：[`src/chronaxis/execution/where_state.py:68`](../../../src/chronaxis/execution/where_state.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/where_state.py:70`](../../../src/chronaxis/execution/where_state.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -22,6 +22,7 @@ from .message_calculations import require_message_calculation
 from .legacy_execution import require_can_decode_scope
 from .input_requirements import InputRequirements, collect_input_requirements
 from .sequences import sequence_dependencies
+from .backend_selection import BACKENDS, select_backend
 from .intervals import IntervalPlan, DiagnosticPlan, require_interval_declarations
 from .export_options import require_export_options,SignalCSVOutput,CANFramesOutput
 # 只检查原冻结来源配置的类型，不导入会读输入的adapter或重建原memory行。
@@ -32,7 +33,7 @@ from ..sources.text_can_spec import CANTextSpec
 from ..legacy.records import PROFILE_ID
 
 # 静态校验和explain共用同一真实能力表，显式后端覆盖由调用方的有效plan view传入。
-_BACKENDS = ('reference', 'numpy')
+_BACKENDS = BACKENDS
 _RULES = ('condition_duration', 'rising_edge', 'falling_edge', 'start_only', 'window_delta', 'debounce', 'hysteresis', 'start_end')
 _MERGES = ('none', 'overlap', 'overlap_and_adjacent', 'exit_delay')
 _CALCULATIONS = ('integral', 'sample_minimum', 'sample_maximum', 'sample_mean', 'min_time',
@@ -48,7 +49,7 @@ class ValidationReport:
 
     valid: bool  # 静态配置检查结果。
     errors: tuple[str, ...]  # 不支持的typed替换声明等静态能力错误；合法计划为空。
-    warnings: tuple[str, ...]  # 实际字段/范围/角色尚未核实等限制。
+    warnings: tuple[str, ...]  # 实际字段/范围/角色及当前平台能力等限制。
     capability_status: Mapping[str, str]  # 明确implemented/partial/unavailable/declared状态。
     execution_ready: bool  # 当前声明是否有公共执行路径，不代表输入已读或RAM实测通过。
 
@@ -57,7 +58,8 @@ class ValidationReport:
 class ExplainNode:
     """保存单声明节点的实际依赖和预计执行层。
 
-    backend说明数组/状态驱动或未接线，不把整个NumPy计划假称全数组化。
+    backend说明数值实现、状态驱动或未接线；numpy路径包含内建逐点与批量数组，
+    不表示每个步骤都使用数组。
     """
 
     node_id: str  # 当前计划节点身份。
@@ -90,6 +92,9 @@ class ExplainReport:
     intervals: IntervalPlan | None = None  # 当前有限声明；不含实际DBC周期或运行记录。
     diagnostics: DiagnosticPlan | None = None  # 独立诊断开关；声明不证明已执行。
     source_execution: tuple[Mapping, ...] = ()  # 每来源文件组织/读取进程上限；不是实际运行进程数。
+    requested_backend: str | None = None  # 本次配置或调用覆盖；auto不代表一个独立数值实现。
+    selected_backend: str | None = None  # 整个计划实际将使用的数值后端。
+    backend_reason: str | None = None  # 静态选择依据，不是实测耗时。
 
 
 def _window_available(window, rules) -> bool:
@@ -128,7 +133,7 @@ def _static_errors(plan: AnalysisPlan) -> tuple[str, ...]:
     返回: 错误tuple；已支持的构建计划为空。异常: 非法模型属性错误原样传播。
     边界: 这不是第二套配置解析器，不重算AST、原rows、绑定或计划identity。
     """
-    # 当前只执行配置3和两个已接入后端；不以原raw_config覆盖typed替换。
+    # 当前只执行配置4；auto须在运行前选定已接入后端，不以raw_config覆盖typed替换。
     errors = []
     if type(plan.config_version) is not int or plan.config_version != 4:
         errors.append('当前执行只支持config_version=4')
@@ -273,7 +278,7 @@ def _extension_backend_errors(plan):
     errors = []
     for name, spec in sorted(required.items()):
         try:
-            spec.require_backend(plan.execution.backend)
+            spec.require_backend(select_backend(plan).selected)
         except ValueError as error:
             errors.append(f'{name}: {error}')
     return tuple(errors)
@@ -299,6 +304,12 @@ def validate_analysis_plan(plan: AnalysisPlan) -> ValidationReport:
         raise TypeError('validate_analysis_plan需要AnalysisPlan')
     # 限制逐来源保留，不以dataset.domain冒充观测范围。
     errors, warnings = _static_errors(plan) + _extension_backend_errors(plan), []
+    # 仅实际会创建受管读取进程的来源检查当前Linux能力；普通串行不需该接口。
+    from .process_execution import source_execution_facts
+    from ..process_capabilities import managed_worker_warnings
+    if not errors:
+        warnings.extend(managed_worker_warnings(
+            any(item['read_process_limit'] > 0 for item in source_execution_facts(plan)), '本分析计划'))
     # 明示待查周期，静态报告不能把None误解为无限保持或完成了DBC核实。
     pending_validity = tuple(item.definition.name for item in plan.signals
                              if item.definition.valid_for_ns is None)
@@ -372,10 +383,10 @@ def validate_analysis_plan(plan: AnalysisPlan) -> ValidationReport:
             # 无额外reader/DBC加载兑现静态字段验证。
             warnings.append(f'{source.name}：文件存在性与实际表头尚未读取，metadata_status=declared')
         elif source.source_type == 'can_blf':
-            # 声明路径可执行不等于实际DBC字段/单位已核实，也不补旧parse没有的错误原因。
-            warnings.append(f'{source.name}：仅单BLF与原样{PROFILE_ID}；输入/DBC字段及运行单位核对deferred，metadata_status=declared')
-            warnings.append(f'{source.name}：旧parse返回空字典无法区分未知ID/解码失败；同类报文缺信号记None/MISSING，其他帧不更新，不猜DECODE_ERROR')
-            warnings.append(f'{source.name}：旧reader不保证关闭所有内部文件句柄；本包装由进程退出回收FD，旧路径和进程RSS不在新层账本保证内')
+            # 静态声明不能证明实际DBC字段/单位；进程行为由当前来源调度单独报告。
+            warnings.append(f'{source.name}：实际输入及DBC字段、单位将在读取时核对，metadata_status=declared')
+            warnings.append(f'{source.name}：匹配报文缺少所需信号时记为无效，其他报文不更新该信号；解码策略按本来源配置执行')
+            warnings.append(f'{source.name}：内存预算记录本层估算费用，不代表读取库或工作进程的RSS上限')
             if isinstance(source.config, LegacyCANSpec) and source.config.decode_scope == 'requested':
                 warnings.append(f'{source.name}：只解码本次结果实际需要的信号和逐消息选择器对应报文；'
                     '所有报文仍按原顺序读取，其他报文不调用DBC解码；时间按实际消费者处理。')
@@ -450,11 +461,12 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
     requirements = collect_input_requirements(plan) if validation.valid else None
     # 节点依赖由实际白名单编译结果提供；有效view仅覆盖backend，不重建声明身份。
     nodes = []
-    backend = plan.execution.backend if plan.execution.backend in _BACKENDS else 'unavailable'
+    backend_selection = select_backend(plan)
+    backend = backend_selection.selected
     for transform in plan.transforms:
         nodes.append(ExplainNode(transform.name,'transform:'+transform.operation,transform.expression.dependencies,
                                  transform.output.unit,backend))
-    # 派生运算使用已实现标量/真实数组核，但当前树仍是静态声明。
+    # 派生声明选择数值实现；实际执行可用生产逐点或批量数组核，此处不运行数据。
     for item, expression in zip(plan.derived, plan.derived_expressions):
         # 不把semantic名称当原依赖。
         nodes.append(ExplainNode(item.definition.name, 'derived', expression.dependencies, expression.root.unit, backend))
@@ -602,4 +614,5 @@ def explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport:
         tuple(nodes), MappingProxyType(history), MappingProxyType(budget), requirements,
         plan.intervals if type(plan.intervals) is IntervalPlan else None,
         plan.diagnostics if type(plan.diagnostics) is DiagnosticPlan else None,
-        tuple(MappingProxyType(item) for item in source_execution_facts(plan)))
+        tuple(MappingProxyType(item) for item in source_execution_facts(plan)),
+        backend_selection.requested, backend_selection.selected, backend_selection.reason)

@@ -1,7 +1,7 @@
 """在独立信号CSV读取、引用记录累积和数组分配前申请共享预算。
 
 输入沿用SignalCSVSpec、声明及ReadRequest；输出沿用原SignalBatch和CSVSourceRef。
-原csv.reader/解析/文件顺序/批次边界保持；检查器只给内部入口提供资源申请。
+原csv.reader、解析和文件顺序保持；批次达到样本上限或剩余容量前交付。
 物理行readline限制按当时剩余RAM计算，跨物理行的引用记录保守累计，超限失败。
 原样本/ref、定宽Unicode提升、owned数组交接与协议pending副本分别计账。
 close释放本来源/请求引用和预算，文件保留；不是全进程RSS或外部保留全部输出保证。
@@ -11,6 +11,7 @@ close释放本来源/请求引用和预算，文件保留；不是全进程RSS�
 
 # 新来源仍使用既有CSV解释和数值归一化，资源模型不依赖旧CAN链。
 from collections.abc import Iterator
+from sys import getsizeof, int_info
 from ..results.budget import ResourceBudget
 from ..results.errors import BudgetExceededError
 from ..results.spool import _cleanup_owner, _reserve_owned_ram, _release_owned_ram
@@ -22,6 +23,30 @@ from ..core.binding import SignalDefinition
 from .history import _metadata_bytes
 
 
+def _expanded_integer_bytes(text):
+    """按十进制文本估算整数展开空间，不重复执行 Decimal 或实际整数转换。
+
+    参数: text 为待解析单元格。返回: 最多 4096 位十进制整数所需的字节上界。
+    异常: 不把坏文本提前当成合法数值；语法和指数边界仍由原解析器拒绝。
+    """
+    # 普通短整数由记录的固定标量留量覆盖；仅指数或长数值需要额外空间。
+    exponent_at = max(text.find('e'), text.find('E'))
+    if exponent_at < 0 and len(text) <= 20:
+        return 32
+    digits = len(text) if exponent_at < 0 else exponent_at
+    if exponent_at >= 0:
+        exponent = text[exponent_at + 1:].strip()
+        if not exponent.startswith('-'):
+            exponent = exponent.lstrip('+').lstrip('0')
+            if exponent and exponent.isdecimal():
+                # 原解析器最多允许 4096 位；不为估算构造任意长度的指数整数。
+                digits += int(exponent) if len(exponent) <= 4 else 4096
+    digits = min(4096, max(1, digits))
+    # log2(10) < 3.322；按本 Python 的 PyLong 数字位宽计算，不依赖 float 舍入。
+    limbs = (digits * 3322 + int_info.bits_per_digit * 1000 - 1) // (int_info.bits_per_digit * 1000)
+    return getsizeof(0) + max(0, limbs - 1) * int_info.sizeof_digit
+
+
 class BudgetedSignalCSVSourceAdapter(SignalCSVSourceAdapter):
     """为各请求独立持有检查器，固定声明一次计账，关闭不删除输入。
 
@@ -31,15 +56,19 @@ class BudgetedSignalCSVSourceAdapter(SignalCSVSourceAdapter):
     """
 
     def __init__(self, budget: ResourceBudget, spec: SignalCSVSpec, session_id: str,
-                 signals: tuple[SignalDefinition, ...], *, backend: str = 'numpy', clock_only=(), retain_original=True):
+                 signals: tuple[SignalDefinition, ...], *, backend: str = 'numpy', clock_only=(), retain_original=True, consumer_sample_bytes=0):
         """先计声明，再建立不读取文件的原CSV适配器。
 
         参数: budget为共享RAM账本；其余沿用原CSV入口，backend默认numpy。
             clock_only只取时间；retain_original=False省去逐行原文引用，默认保留旧入口行为。
+            consumer_sample_bytes为接收方每样本最坏排队费用，只用于容量协调，不重复预约。
         返回: 新预算CSV来源。异常: 类型/配置/预算失败；持续清理失败附csv_source_cleanup_owner。
         """
         if not isinstance(budget, ResourceBudget) or not isinstance(spec, SignalCSVSpec) or type(signals) is not tuple:
             raise TypeError('预算CSV需要ResourceBudget/SignalCSVSpec/信号tuple')
+        if type(consumer_sample_bytes) is not int or consumer_sample_bytes < 0:
+            raise ValueError('CSV接收方样本费用须为非负整数')
+        self._consumer_sample_bytes = consumer_sample_bytes
         # 路径/元数据和choices固定容器在原适配器构造前保守计数。
         # Path/tzinfo不是结果层可序列化模型；路径计原文本，时区只保留原对象引用。
         declaration = (spec.name, spec.timebase,
@@ -68,7 +97,7 @@ class BudgetedSignalCSVSourceAdapter(SignalCSVSourceAdapter):
         参数: request为ReadRequest，投影/会话由原入口验证；observe_bounds仅收计算所需首末时刻。
         返回: 独立预算游标，不生成额外观测报告。
         异常: 关闭/配置/预算/读取错误传播；未返回请求持续清理失败保最高恢复owner，
-            无自动后端回退或批次缩小。
+            不切换后端；batch_rows 是上限，容量不足时提前交付已有样本。
         """
         self._ensure_open()
         # 只限制创建新请求；已有其他活read仍可推进，不能覆盖尚未返回的最高子责任。
@@ -448,6 +477,8 @@ class _CSVResources:
         self._fixed_cost = self._reading_cost = self._header_cost = self._row_cost = 0
         self._pending_cost = self._work_cost = self._array_cost = self._protocol_cost = 0
         self.charges, self.line_source, self.array_cost = {}, None, 0
+        self._sample_count, self._column_count = 0, {}
+        self._string_layout = {}
         # TextIO解码缓冲和固定容器保守64KiB，不声称整进程RSS。
         try:
             self._add('fixed', 65536)
@@ -523,33 +554,108 @@ class _CSVResources:
         """
         return _CSVRecords(self, reader)
 
-    def before_sample(self, time_text, text, path):
-        """在值解析/CSVSourceRef创建/原记录append前预留引用与原文本。
+    def _sample_estimate(self, time_text, text, definition):
+        """估算新记录独有的容器、数值和文本，不重复计算来源路径或声明。
 
-        参数: time_text/text原单元格；path实际文件。返回: None。异常: 预算超限。
+        参数: time_text/text 为原单元格；definition 为当前信号声明。
+        返回: (记录费用, 字符串原值长度)，长度为零表示没有定宽字符串列。
+        异常: 输入已由读取器限定；声明查找错误直接传播。
         """
-        # 每样本固定容器加原字符串/路径；共享文本也保守重复计数。
-        self._add('pending', 8192 + _metadata_bytes((time_text, text, str(path))) * 16)
+        # 四项 tuple、list 槽、时间/序号/原值和 CSVSourceRef 的实例/字典留量。
+        # 路径、字段、会话和来源名均引用固定声明；不按每条样本重新递归收费。
+        cost = 384 + getsizeof(text) + getsizeof(time_text)
+        width = 0
+        if text not in self.owner.spec.missing_values:
+            choices = self.owner.choices[definition.name]
+            if text in choices:
+                original = choices[text]
+                width = len(original) if type(original) is str else 0
+                if type(original) is int:
+                    cost += max(0, getsizeof(original) - 32)
+            elif any(type(code) is str for code, _ in definition.choices):
+                width = len(text)
+            else:
+                # 例如 1e4095 只有六个字符，却会在原解析器中展开为 1840B 整数。
+                cost += max(0, _expanded_integer_bytes(text) - 32)
+        return cost, width
+
+    def _pack_estimate(self, validator, count, columns, unicode_bytes):
+        """分别计算最终列、归一化工作区和跨批同刻检查状态的峰值。
+
+        参数: validator 为现有协议状态，其余为候选批大小、列数和字节估算。
+        返回: (保留列费用, 打包峰值费用)。异常: 无预期异常。
+        """
+        # 输出五个数组每项至多 27B，附原码列、引用 tuple 和数组对象留量。
+        # 输出仍引用的原值/CSVSourceRef/文本已在 pending 付费，交付时转交 array，
+        # 不在临时工作区再付第二次；这里只预留新增数组、指针 tuple 和模型对象。
+        retained = 4096 + columns * 1024 + count * 64
+        # 384B/样本覆盖类型分组 tuple/索引、临时 records、原值指针、数值数组及掩码。
+        # Unicode 仅归一化时存在一份原始 UTF32 数组，不是八份长期输出。
+        identities = sum(len(state[1]) for state in validator.pending.values())
+        state_cost = 4096 + len(self.owner.signals) * 512 + identities * 256 + count * 256
+        workspace = retained + count * 384 + unicode_bytes + state_cost
+        return retained, workspace
+
+    def should_flush(self, time_text, text, definition, validator):
+        """在再接收一条样本之前判断是否应先交付当前批。
+
+        参数: 原文本、声明和当前协议状态；不解析值、不修改缓冲或预算。
+        返回: bool；已有样本且继续累积会挤占打包空间时为 True。
+        异常: 无预期异常；单条无法容纳由实际预约明确失败。
+        """
+        if not self._sample_count:
+            return False
+        cost, width = self._sample_estimate(time_text, text, definition)
+        columns = len(self._column_count) + (definition.name not in self._column_count)
+        old_count, old_width = self._string_layout.get(definition.name, (0, 0))
+        unicode_bytes = max((n * w * 4 for name, (n, w) in self._string_layout.items()
+                             if name != definition.name), default=0)
+        if width:
+            unicode_bytes = max(unicode_bytes, (old_count + 1) * max(old_width, width) * 4)
+        else:
+            unicode_bytes = max(unicode_bytes, old_count * old_width * 4)
+        if self.owner.backend != 'numpy':
+            unicode_bytes = 0
+        _, workspace = self._pack_estimate(validator, self._sample_count + 1, columns,
+                                           unicode_bytes)
+        # 为下一物理行和当前解析结果交接保留 64KiB；不修改用户的 batch_rows。
+        available = self.budget.memory_budget_bytes - self.budget.ram_bytes
+        receiver_peak = (self._sample_count + 1) * self.owner._consumer_sample_bytes
+        # 有接收队列时，输入打包与队列最多使用当前余量的一半，另一半供正在
+        # 计算的积分/统计申请临时数组。此处只决定批大小，不把余量重复登记为费用。
+        capacity = available // 2 if self.owner._consumer_sample_bytes else available
+        return cost + workspace + receiver_peak + 65536 > capacity
+
+    def before_sample(self, time_text, text, path, definition):
+        """在值解析及原记录 append 前预留记录独有的数据。
+
+        参数: 原单元格、实际路径及信号声明；路径已在来源构造时计费。
+        返回: None。异常: 预算超限或预约取消，仍保留真实已付金额。
+        """
+        cost, width = self._sample_estimate(time_text, text, definition)
+        self._add('pending', cost)
+        self._sample_count += 1
+        self._column_count[definition.name] = self._column_count.get(definition.name, 0) + 1
+        if width:
+            count, maximum = self._string_layout.get(definition.name, (0, 0))
+            self._string_layout[definition.name] = (count + 1, max(maximum, width))
 
     def before_pack(self, pending, validator):
-        """预留(N,)数组/掩码副本、Unicode定宽提升及validator集合副本。
+        """在创建数组前预留实际候选批的峰值，不按最大批大小预先拒绝。
 
-        参数: pending为原缓冲；validator为本请求协议状态。返回: None。
-        异常: 超限在pack_decoded/validator.accept之前失败，无丢样本或回退。
+        参数: pending 为有限原缓冲；validator 为跨批协议状态。返回: None。
+        异常: 单批真实工作区超限或取消；不丢样本，也不切换计算后端。
         """
         count = sum(len(records) for records in pending.values())
-        # 4096/sample覆盖数值数组nbytes、归一化副本、分组/装箱与输出模型检查。
-        array_cost = 65536 + len(pending) * 8192 + count * 4096
+        unicode_bytes = 0
         if self.owner.backend == 'numpy':
             for records in pending.values():
-                # 同列str分组会按最长字符提升为UTF32，八份保守计入临时副本。
+                # 各列依次打包，原始 Unicode 数组在返回数值列前释放，只取最大列峰值。
                 widths = [len(item[2]) for item in records if type(item[2]) is str]
-                array_cost += len(widths) * max(widths, default=0) * 4 * 8
-        # old pending在accept内部复制；N可能全在同刻，增长不能从预算中漏掉。
-        identities = sum(len(state[1]) for state in validator.pending.values())
-        state_cost = 4096 + len(self.owner.signals) * 512 + identities * 256 + count * 512
-        self._add('work', array_cost + state_cost)
-        self.array_cost = array_cost
+                unicode_bytes = max(unicode_bytes, len(widths) * max(widths, default=0) * 4)
+        retained, workspace = self._pack_estimate(validator, count, len(pending), unicode_bytes)
+        self._add('work', workspace)
+        self.array_cost = retained
 
     def after_pack(self, validator):
         """校验完成后把工作预留转为当前owned数组和保留协议状态。
@@ -560,16 +666,21 @@ class _CSVResources:
         # 旧batch已被原生成器和包装游标交接；新数组预留早已申请，不重复申请。
         self._release('array')
         self._release('protocol')
+        # 原对象由缓冲与新列共享，既有付款转交输出责任，不申请第二份费用。
+        self._move('pending', 'array', self._pending_cost)
         self._move('work', 'array', self.array_cost)
         self._move('work', 'protocol', state_cost)
         self._release('work')
 
     def clear_pending(self):
-        """原生成器yield恢复且清空缓冲后抵销原记录预留。
+        """原生成器恢复并清空缓冲后重置计数，不重复抵销已转交的共享费用。
 
         参数: 无。返回: None。异常: 账本一致性错误。
         """
         self._release('pending')
+        self._sample_count = 0
+        self._column_count.clear()
+        self._string_layout.clear()
 
     def end_file(self):
         """局部行/表头引用丢弃后抵销预算，跨文件样本与协议预算保留。
@@ -607,17 +718,31 @@ class _PhysicalLines:
         """返回物理行游标。参数: 无。返回: self。异常: 无。"""
         return self
 
+    def _retained_line_bytes(self, text, first_line):
+        """计算当前逻辑记录仍需保存的解析字符和字段开销。
+
+        参数: text 为刚读取的物理行；first_line 表示该逻辑记录的第一行。
+        返回: 字节估算。异常: 无预期异常。
+        """
+        if not text:
+            return 0
+        # 原文本、CSV 的 UTF32 字符缓冲及结果字符串按 16B/字符预留。
+        # 每个分隔符另加字段对象/列表槽费用；引号内分隔符保守计入。
+        # 固定容器按逻辑记录计一次，不能对引用单元格的每一行重复收 8KiB。
+        return (256 if first_line else 0) + len(text) * 16 + text.count(self.resources.owner.spec.delimiter) * 48
+
     def __next__(self):
         """有界读完整物理行，超限不把截断内容交给csv.reader。
 
         参数: 无。返回: 含原换行的str；EOF停止。异常: BudgetExceededError/原I/O错误。
         """
         budget = self.resources.budget
-        # 64/字符覆盖UTF32文本、csv字符缓冲、短字段对象/指针及记录交接。
-        capacity = (budget.memory_budget_bytes - budget.ram_bytes - 8192) // 64 - 1
+        # 16B/字符先覆盖文本与字符缓冲；实际分隔符对应的字段费用在交给 CSV 解析器前另加。
+        capacity = (budget.memory_budget_bytes - budget.ram_bytes - 8192) // 16 - 1
         if capacity <= 0:
             raise BudgetExceededError('CSV物理行/引用记录累积超出剩余RAM估算')
-        amount = 8192 + (capacity + 1) * 64
+        amount = 8192 + (capacity + 1) * 16
+        first_line = not self.resources._reading_cost
         self.resources._add('reading', amount)
         try:
             # 多读一字符仅判别完整物理行，不能把部分未闭合引号当另一记录。
@@ -628,8 +753,11 @@ class _PhysicalLines:
             except BaseException as cleanup:
                 exc.add_note(f'默认CSV物理行清理附加失败: {type(cleanup).__name__}')
             raise
-        retained = 0 if not text else 8192 + len(text) * 64
-        self.resources._release_amount('reading', amount - retained)
+        retained = self._retained_line_bytes(text, first_line)
+        if retained > amount:
+            self.resources._add('reading', retained - amount)
+        else:
+            self.resources._release_amount('reading', amount - retained)
         if len(text) > capacity:
             raise BudgetExceededError('CSV物理行超过剩余RAM允许长度，未解析截断行')
         if not text:

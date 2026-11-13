@@ -13,9 +13,9 @@ ExtensionRegistry(functions=(), reductions=(), transforms=())
 
 |名称|类型|必填|默认值|用途|
 |---|---|---|---|---|
-|`functions`|见用途|否|()|FunctionSpec元组；省略为空，表示没有自定义逐点函数。|
-|`reductions`|见用途|否|()|ReductionSpec元组；省略为空，表示没有自定义样本归约。|
-|`transforms`|见用途|否|()|TransformSpec元组；省略为空，表示没有自定义时序变换。|
+|`functions`|tuple[FunctionSpec, ...]|否|()|FunctionSpec元组；省略为空，表示没有自定义逐点函数。|
+|`reductions`|tuple[ReductionSpec, ...]|否|()|ReductionSpec元组；省略为空，表示没有自定义样本归约。|
+|`transforms`|tuple[TransformSpec, ...]|否|()|TransformSpec元组；省略为空，表示没有自定义时序变换。|
 
 ### 返回
 
@@ -31,6 +31,6 @@ ExtensionRegistry(functions=(), reductions=(), transforms=())
 
 [完整宿主示例](../host-extensions.md)
 
-源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
-源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

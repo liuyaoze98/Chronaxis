@@ -20,17 +20,17 @@ python "$guide/run_analysis.py" "$guide/examples/conditional-energy.yaml" result
 
 ## 安装Chronaxis及默认运行依赖
 
-普通安装会自动安装完整运行依赖，支持 BLF、ASC、原始报文 CSV、DBC 解码、已解码信号 CSV 和内存任务。下面在 Windows PowerShell 中创建环境，并安装与本指南对应的 0.1.0.dev3 本地 wheel；请填写实际文件路径：
+普通安装会自动安装完整运行依赖，支持 BLF、ASC、原始报文 CSV、DBC 解码、已解码信号 CSV 和内存任务。下面在 Windows PowerShell 中创建环境，并安装与本指南对应的 0.1.0.dev4 本地 wheel；请填写实际文件路径：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-也可取得同版源码，在包含 `pyproject.toml` 的源码根目录创建环境，将安装命令改为 `.\.venv\Scripts\python.exe -m pip install .`。升级时按业务含义为持续条件补齐 `duration_comparison`：`">="` 表示达到，`">"` 表示严格超过。
+也可取得同版源码，在包含 `pyproject.toml` 的源码根目录创建环境，将安装命令改为 `.\.venv\Scripts\python.exe -m pip install .`。
 
-在后续命令中用同一个 `.venv\Scripts\python.exe`；无需激活环境。该版本声明并已验证的 CAN 依赖为 `python-can==4.6.1`、`cantools==39.4.3`、`natsort==8.4.0`，由 wheel 的默认依赖统一安装。不要为了消除缺模块错误单独安装任意最新版，也不要更改信号、阈值或 DBC。其他依赖版本不代表已验证支持；实际发布物以其安装元数据为准。按用户指定的发布版本或wheel安装，不把其他版本的行为当成本指南依据。离线安装须事先备齐依赖。
+在后续命令中用同一个 `.venv\Scripts\python.exe`；无需激活环境。Python支持3.12和3.13。默认CAN依赖为 `python-can==4.6.1`、`cantools>=39.4.3,<46`、`natsort==8.4.0`，以所安装wheel的元数据为准。NumPy在Python3.12要求 `>=1.26.3,<2.6`，在Python3.13要求 `>=2.1,<2.6`；jsonschema要求 `>=4.25.1,<4.27`。源码 `requirements/` 保存四个Windows精确环境快照；允许范围不代表所有中间版本及交叉组合都经过测试。按用户指定的发布版本或wheel安装，离线安装须事先备齐依赖；不要为解决安装错误更改信号、阈值或DBC。
 
 `dependency_missing` 表示运行环境缺少 CAN 依赖，不是信号绑定内容错误；按错误中的本地 wheel 安装命令修复。即使全部信号元数据已经手填、静态校验通过，实际运行仍需要相应读取/解码依赖。
 
@@ -65,12 +65,12 @@ py -3.12 -m venv .venv
 
 ```yaml
 execution:                     # 本次分析的执行方式
-  process_count: 4             # 最多4个工作进程，文件不足4个时按实际数量运行
+  process_count: 4             # 文件工作进程上限4；是否启动及数量由输入和归并方式决定
 ```
 
-普通分析的工作进程读取和解码，主进程延续跨文件事件及积分；高性能积分器的工作进程还计算同帧贡献。4是本手册选择的起始上限，程序默认仍是1；单文件实际最多1个工作进程。它不是所有机器上的最优值，增加进程会增加资源使用，应结合实际输入调整。
+普通分析的工作进程读取和解码，主进程延续跨文件事件及积分；高性能积分器的工作进程还计算同帧贡献。4是本手册选择的起始上限，程序默认仍是1；单个ASC按默认接续方式在当前进程读取，普通`explain`的`read_process_limit`为0；普通`time_order`即使上限1也使用一个文件子进程。计划上限不等于已测PID数量。它不是所有机器上的最优值，增加进程会增加资源使用，应结合实际输入调整。
 
-独立试验使用批量配置根级 `process_count: 4`，子计划保留 `execution.process_count: 1`，避免再建立文件进程池。CSV、内存、多来源或全信号解码的单个计划目前使用1；独立试验可在外层批量并行，不能为了并行拆开连续会话。Python运行须放在 `if __name__ == "__main__":` 内，附带的 `run_analysis.py` 已这样处理。
+独立试验使用批量配置根级 `process_count: 4`，子计划保留 `execution.process_count: 1`，避免再建立文件进程池。CSV、内存、多来源或`decode_scope: all`的单个计划目前将进程上限设为1，在当前进程读取；独立试验可在外层批量并行，不能为了并行拆开连续会话。Python运行须放在 `if __name__ == "__main__":` 内，附带的 `run_analysis.py` 已这样处理。
 
 ## 一个从输入到结果的任务
 

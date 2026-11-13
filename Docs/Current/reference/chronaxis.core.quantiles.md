@@ -6,7 +6,7 @@ q为0或1时只维护原dtype的极值。其余q保留被选中的真实样本�
 本次预算付款，排序临时空间另行预付并释放。标量及数组后端各自完成排序
 和线性插值；本对象只共享寿命、秩、预算协议，不读取来源或生成临时文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -20,6 +20,7 @@ q为0或1时只维护原dtype的极值。其余q保留被选中的真实样本�
 |[`ExactQuantileBuffer`](#api-ExactQuantileBuffer)|保存单个统计范围的已选样本或端点极值；只持有自己预付的空间。|
 |[`ExactQuantileBuffer.__init__`](#api-ExactQuantileBuffer-__init__)|配置确定的概率、输入dtype和真实后端，创建空存储。|
 |[`ExactQuantileBuffer._reserve`](#api-ExactQuantileBuffer-_reserve)|在保存样本或创建排序副本之前申请空间，保留具体预算错误。|
+|[`ExactQuantileBuffer._append_memory_bytes`](#api-ExactQuantileBuffer-_append_memory_bytes)|给分块调用者计算下一批保留样本的新增费用，不提前占用预算。|
 |[`ExactQuantileBuffer.append`](#api-ExactQuantileBuffer-append)|累加一批真正选中的有效样本；空批直接返回。|
 |[`ExactQuantileBuffer.finish`](#api-ExactQuantileBuffer-finish)|读取截至当前批次的分位数快照，不按块分别求分位数再合并。|
 |[`ExactQuantileBuffer.close`](#api-ExactQuantileBuffer-close)|放弃样本并退回本实例的全部收费，释放被取消时可再次调用。|
@@ -59,7 +60,7 @@ Fraction；中位数固定为1/2，其他概率按配置值的十进制表示解
 
 ValueError为多余、缺失、非有限、越界或布尔概率。
 
-源码：[`src/chronaxis/core/quantiles.py:16`](../../../src/chronaxis/core/quantiles.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:16`](../../../src/chronaxis/core/quantiles.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer"></a>
 ## `ExactQuantileBuffer`
@@ -71,7 +72,7 @@ ExactQuantileBuffer(operation, q, dtype, backend, budget=None)
 ```
 
 
-源码：[`src/chronaxis/core/quantiles.py:33`](../../../src/chronaxis/core/quantiles.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:33`](../../../src/chronaxis/core/quantiles.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer-__init__"></a>
 ### `ExactQuantileBuffer.__init__`
@@ -100,7 +101,7 @@ ExactQuantileBuffer.__init__(operation, q, dtype, backend, budget=None)
 
 非法参数在读取样本前失败。
 
-源码：[`src/chronaxis/core/quantiles.py:36`](../../../src/chronaxis/core/quantiles.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:36`](../../../src/chronaxis/core/quantiles.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer-_reserve"></a>
 ### `ExactQuantileBuffer._reserve`
@@ -126,7 +127,32 @@ None。
 
 BudgetExceededError或取消原样传播，close可重试清理。
 
-源码：[`src/chronaxis/core/quantiles.py:54`](../../../src/chronaxis/core/quantiles.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:54`](../../../src/chronaxis/core/quantiles.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-ExactQuantileBuffer-_append_memory_bytes"></a>
+### `ExactQuantileBuffer._append_memory_bytes`
+
+给分块调用者计算下一批保留样本的新增费用，不提前占用预算。
+
+```python
+ExactQuantileBuffer._append_memory_bytes(count)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`count`|int|是|无|位置或关键字。下一批可能保存的非负样本数；用于查询所需费用，不追加样本或扣减账本。|
+
+#### 返回说明
+
+新增字节数；空批和只保留极值的q端点为0。
+
+#### 异常说明
+
+无；实际追加仍通过_reserve检查预算及取消。
+
+源码：[`src/chronaxis/core/quantiles.py:68`](../../../src/chronaxis/core/quantiles.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer-append"></a>
 ### `ExactQuantileBuffer.append`
@@ -152,7 +178,7 @@ None。
 
 值/掩码不符、预算不足、关闭后调用或分配失败。
 
-源码：[`src/chronaxis/core/quantiles.py:68`](../../../src/chronaxis/core/quantiles.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:82`](../../../src/chronaxis/core/quantiles.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer-finish"></a>
 ### `ExactQuantileBuffer.finish`
@@ -179,7 +205,7 @@ ExactQuantileBuffer.finish()
 
 已关闭/失败时拒绝，排序额度不足或分配失败原样传播。
 
-源码：[`src/chronaxis/core/quantiles.py:114`](../../../src/chronaxis/core/quantiles.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:128`](../../../src/chronaxis/core/quantiles.py#L128)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExactQuantileBuffer-close"></a>
 ### `ExactQuantileBuffer.close`
@@ -205,7 +231,7 @@ None。
 
 原预算释放异常传播，不改变其他owner的费用。
 
-源码：[`src/chronaxis/core/quantiles.py:153`](../../../src/chronaxis/core/quantiles.py#L153)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:175`](../../../src/chronaxis/core/quantiles.py#L175)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_quantile_series"></a>
 ## `compute_quantile_series`
@@ -233,4 +259,4 @@ compute_quantile_series(series, spec, sample_kernel, budget)
 
 配置、预算或计算器失败传播；正常/异常退出均释放临时所有权。
 
-源码：[`src/chronaxis/core/quantiles.py:171`](../../../src/chronaxis/core/quantiles.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantiles.py:193`](../../../src/chronaxis/core/quantiles.py#L193)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

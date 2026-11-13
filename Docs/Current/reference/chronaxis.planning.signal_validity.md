@@ -6,7 +6,7 @@
 保留None，执行启动再从本次已有DBC元数据取得周期。已解码数据不能借用
 别的信号或计算驱动的周期。所有数值以正int64纳秒表示，无I/O或全局缓存。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -56,7 +56,7 @@ PlanValidationError：周期非法或乘3后溢出。
 
 无，不读取文件。
 
-源码：[`src/chronaxis/planning/signal_validity.py:12`](../../../src/chronaxis/planning/signal_validity.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/signal_validity.py:12`](../../../src/chronaxis/planning/signal_validity.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-declared_valid_for"></a>
 ## `declared_valid_for`
@@ -87,4 +87,4 @@ PlanValidationError：空值、非法时长、无周期依据或默认有效期�
 
 无；validate/explain不会因此打开DBC。
 
-源码：[`src/chronaxis/planning/signal_validity.py:28`](../../../src/chronaxis/planning/signal_validity.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/signal_validity.py:28`](../../../src/chronaxis/planning/signal_validity.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

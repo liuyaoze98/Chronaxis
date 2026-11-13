@@ -27,15 +27,11 @@ from chronaxis import AnalysisRunner, load_analysis_plan, AnalysisResult, Analys
 from chronaxis.core.models import Interval
 from chronaxis.core.selection import SelectionRow
 from chronaxis.core.types import QualityFlag as Q
-from chronaxis.execution.bindings import DecodedBindingLease
 from chronaxis.execution.csv_observation import CSVObservationRead
 from chronaxis.execution.csv_reader import BudgetedSignalCSVSourceAdapter, _CSVRequest
 from chronaxis.execution.record_session_calculations import RecordSessionCalculations
 from chronaxis.execution.record_source_cursor import RecordSourceCursor
 from chronaxis.execution.memory_reader import BudgetedMemorySourceAdapter
-from chronaxis.execution.history import DecodedHistoryStore
-from chronaxis.execution.observed_ingestion import ObservedSourceScan
-from chronaxis.execution.historical_observation import HistoricalObservationScopes
 from chronaxis.execution.run_session import RunSession
 from chronaxis.results.codec import decode_row
 from chronaxis.results.errors import BudgetExceededError, ResultClosedError
@@ -400,8 +396,8 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(self.rows(second).events)
         self.close_result(second)
 
-    def test_existing_and_protected_work_paths_rejected_before_any_protected_write(self):
-        """已有工作目录原内容保留，RefProjects目标在实际mkdir之前拒绝。
+    def test_existing_work_path_rejected_and_customer_named_path_is_allowed(self):
+        """已有工作目录原内容保留，测试根内的客户同名目录可正常分析。
 
         参数: 无。返回: None。异常: 覆盖已有内容或尝试向历史快照写目录断言失败。
         """
@@ -415,25 +411,16 @@ class RunnerTests(unittest.TestCase):
         self.assertIsInstance(existing_error.exception.__cause__, FileExistsError)
         self.assertEqual(tuple(existing.iterdir()), (marker,))
         self.assertEqual(marker.read_text(encoding='utf-8'), 'keep this original file')
-        protected = Path(__file__).resolve().parents[2] / 'RefProjects'
-        target = protected / ('runner-must-not-create-' + uuid4().hex)
-        original = Path.mkdir
-
-        def forbid_protected_mkdir(path, *args, **kwargs):
-            """在测试层禁止实际写入历史快照，产品未提前拒绝时明确失败。
-
-            参数: path真实Path及原mkdir参数。返回: 非保护路径原返回值。
-            异常: AssertionError为尝试写保护路径；其余原目录错误传播。
-            """
-            if path.resolve().is_relative_to(protected.resolve()):
-                raise AssertionError('产品试图在RefProjects创建目录')
-            return original(path, *args, **kwargs)
-
-        with patch.object(Path, 'mkdir', autospec=True, side_effect=forbid_protected_mkdir):
-            with self.assertRaises(AnalysisError) as protected_error:
-                AnalysisRunner().run(data.plan, work_dir=target)
-        self.assertIsInstance(protected_error.exception.__cause__, ValueError)
-        self.assertFalse(target.exists())
+        customer=data.work/'RefProjects'
+        customer.mkdir()
+        sentinel=customer/'user.txt'
+        sentinel.write_bytes(b'keep')
+        result=AnalysisRunner().run(data.plan,work_dir=customer/'analysis')
+        try:
+            self.assertTrue(self.rows(result).events)
+        finally:
+            self.close_result(result)
+        self.assertEqual(sentinel.read_bytes(),b'keep')
 
     def test_validate_and_explain_do_not_read_sources_or_hide_unknown_backend(self):
         """静态公共检查不读来源、不建RunSession，非法后端及plan类型明确拒绝。

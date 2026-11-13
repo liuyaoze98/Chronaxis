@@ -2,7 +2,7 @@
 
 保存一次CAN读取的记录：使用的输入和DBC、原始报文暂存信息、声明单位与DBC单位的比较结果。记录来自实际执行；仅仅构造这些对象不会重新读取或验证文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -58,7 +58,7 @@ _integer(value, name, minimum=0)
 
 TypeError为非原生int，ValueError为小于下限。
 
-源码：[`src/chronaxis/results/can_metadata.py:19`](../../../src/chronaxis/results/can_metadata.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:19`](../../../src/chronaxis/results/can_metadata.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_sha256"></a>
 ## `_sha256`
@@ -84,7 +84,7 @@ None，保大小写原值。
 
 TypeError/ValueError为类型、长度或非hex字符；不读取文件证明实际内容。
 
-源码：[`src/chronaxis/results/can_metadata.py:31`](../../../src/chronaxis/results/can_metadata.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:31`](../../../src/chronaxis/results/can_metadata.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_pairs"></a>
 ## `_pairs`
@@ -111,7 +111,7 @@ _pairs(value, name, hashes=False)
 
 TypeError/ValueError为结构、空文本、重复键或非法SHA。
 
-源码：[`src/chronaxis/results/can_metadata.py:43`](../../../src/chronaxis/results/can_metadata.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:43`](../../../src/chronaxis/results/can_metadata.py#L43)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUnitCheck"></a>
 ## `CANUnitCheck`
@@ -131,7 +131,7 @@ class CANUnitCheck
 |`dbc_unit`|str &#124; None|是|无|同次公开signal.unit原值，None/空字符串均原样保留。|
 |`status`|str|是|无|verified或declared；不表示物理测量已验。|
 
-源码：[`src/chronaxis/results/can_metadata.py:65`](../../../src/chronaxis/results/can_metadata.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:65`](../../../src/chronaxis/results/can_metadata.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANUnitCheck-__post_init__"></a>
 ### `CANUnitCheck.__post_init__`
@@ -164,7 +164,7 @@ TypeError/ValueError为字段类型或状态与原单位冲突。
 - `ValueError`：verified需要非空DBC单位与原input_unit完全相同。
 - `ValueError`：declared仅用于DBC单位None或空字符串。
 
-源码：[`src/chronaxis/results/can_metadata.py:73`](../../../src/chronaxis/results/can_metadata.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:73`](../../../src/chronaxis/results/can_metadata.py#L73)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANFrameFormatNotice"></a>
 ## `CANFrameFormatNotice`
@@ -191,7 +191,7 @@ class CANFrameFormatNotice
 |`requested_is_fd`|bool|是|无|兼容处理中选中的经典CAN，固定False；既可能来自显式选择，也可能是自动识别结果。|
 |`code`|str|否|'dbc_fd_classic_selector'|稳定机器码，不接受其他自由兼容政策。|
 
-源码：[`src/chronaxis/results/can_metadata.py:92`](../../../src/chronaxis/results/can_metadata.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:92`](../../../src/chronaxis/results/can_metadata.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANFrameFormatNotice-__post_init__"></a>
 ### `CANFrameFormatNotice.__post_init__`
@@ -223,7 +223,7 @@ TypeError/ValueError为非法类型、方向或固定code。
 - `ValueError`：仅兼容DBC FD声明与显式经典CAN定位。
 - `ValueError`：CAN帧型提示code非法。
 
-源码：[`src/chronaxis/results/can_metadata.py:108`](../../../src/chronaxis/results/can_metadata.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:108`](../../../src/chronaxis/results/can_metadata.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANSourceMetadata"></a>
 ## `CANSourceMetadata`
@@ -242,7 +242,7 @@ class CANSourceMetadata
 |`session_id`|str|是|无|同次分析会话，运行清单另核会话归属。|
 |`legacy_profile`|str|是|无|固定sclicer-functions-v1。|
 |`path`|str|是|无|原单BLF路径文本，不在元数据模型中resolve。|
-|`dbc_path`|str|是|无|同次原load_file路径，不是DBC内容哈希。|
+|`dbc_path`|str|是|无|同次DBC加载路径，不是DBC内容哈希。|
 |`channel`|int|是|无|明确单通道，非负原生int。|
 |`read_identity`|str|是|无|同次实际read身份，不与随机运行ID或物理行号混淆。|
 |`worker_pid`|int|是|无|实际子进程正整数PID，不能用bool表示。|
@@ -253,7 +253,7 @@ class CANSourceMetadata
 |`raw_store_sha256`|str &#124; None|是|无|仅实际保存原帧时给整流SHA，不冒充原BLF或DBC的SHA。|
 |`raw_spool_bytes`|int|是|无|本raw_store累计预留字节，不是RSS或已归还磁盘。|
 |`dependency_versions`|tuple[tuple[str, str], ...]|是|无|同次READY版本事实，键唯一。|
-|`vendor_sha256`|tuple[tuple[str, str], ...]|是|无|同次三原模块证据，键唯一、值为SHA。|
+|`vendor_sha256`|tuple[tuple[str, str], ...]|是|无|历史结果的原模块证据；当前共用路径为空，键唯一、值为SHA。|
 |`unit_checks`|tuple[[CANUnitCheck](chronaxis.results.can_metadata.md#api-CANUnitCheck), ...]|是|无|每别名单位事实，不能重复别名。|
 |`frame_format_notices`|tuple[[CANFrameFormatNotice](chronaxis.results.can_metadata.md#api-CANFrameFormatNotice), ...]|否|()|无差异保空，不新增旧序列化键或费用。|
 |`decode_scope`|str|否|'all'|`"requested"`解码本次需要的报文和字段；`"all"`保留全解码与完整诊断。该字段记录或指定的是解码范围。|
@@ -267,7 +267,7 @@ class CANSourceMetadata
 |`selected_first_ns`|int &#124; None|否|None|仅selected提供目标首时间。 None表示没有选中的目标时间或本路径不采集selected时间。|
 |`selected_last_ns`|int &#124; None|否|None|目标末时间，不是文件末时间。 None表示没有选中的目标时间或本路径不采集selected时间。|
 
-源码：[`src/chronaxis/results/can_metadata.py:125`](../../../src/chronaxis/results/can_metadata.py#L125)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:125`](../../../src/chronaxis/results/can_metadata.py#L125)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANSourceMetadata-__post_init__"></a>
 ### `CANSourceMetadata.__post_init__`
@@ -294,4 +294,4 @@ CANSourceMetadata.__post_init__()
 TypeError/ValueError为类型、范围或内部事实冲突，
     OverflowError为非空首末超int64；不把声明校验写成实际EOF/哈希验证成功。
 
-源码：[`src/chronaxis/results/can_metadata.py:157`](../../../src/chronaxis/results/can_metadata.py#L157)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/can_metadata.py:157`](../../../src/chronaxis/results/can_metadata.py#L157)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

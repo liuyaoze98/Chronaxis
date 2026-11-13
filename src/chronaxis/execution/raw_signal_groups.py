@@ -14,8 +14,8 @@ from ..sources.can_spec import can_field_from_key
 from ..sources.packing import pack_message_values
 from .groups import DecodedTimeGroup
 from .history import _metadata_bytes
-from .record_sample import RecordSample
-from .calculation_values import scalar_from_column
+from .record_sample import _record_from_validated_fields
+from .calculation_values import _scalar_from_validated_column
 from ..core.numeric import ScalarValue
 from ..core.types import QualityFlag as Q,SignalDType as D
 
@@ -134,9 +134,10 @@ class RawSignalGroups:
                     array_value=False if definition.dtype is D.BOOL else 0. if definition.dtype is D.FLOAT64 else 0
                 else:
                     column = pack_message_values(definition, (update.values.get(name),), self._backend)
-                    value = scalar_from_column(column, 0)
+                    value = _scalar_from_validated_column(column, 0)
                     array_value=column.values[0].item() if definition.dtype is D.ENUM else None
-                sample = RecordSample(definition.name, update.time_ns, update.sequence,
+                # pack_message_values刚完成数值检查；时间/序号来自已校验更新。
+                sample = _record_from_validated_fields(definition.name, update.time_ns, update.sequence,
                     value, definition.unit, ref, array_value if definition.dtype is D.ENUM else None)
                 self._samples.append(sample)
         except BaseException as exc:

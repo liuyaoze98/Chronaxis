@@ -6,7 +6,7 @@
 语义仍由原解析器检查。只跳过无效声明，不改配置、不补假值，不创建可运行残缺计划。
 上下文仅覆盖本次同步构建，退出后恢复；schema来自唯一维护的Docs/Schema，安装时随包提供。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -77,7 +77,7 @@ validator。
 
 原生整数检查与带有明确类型的 API一致，不让bool或1.0冒充整数；不访问网络引用。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:22`](../../../src/chronaxis/planning/diagnostic_collection.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:22`](../../../src/chronaxis/planning/diagnostic_collection.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_host_validator"></a>
 ## `_host_validator`
@@ -105,7 +105,7 @@ _host_validator(validator, extensions)
 
 只复制变化的字典路径；内置操作和无注册的 CLI 始终使用原规范，不改变共享缓存。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:37`](../../../src/chronaxis/planning/diagnostic_collection.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:37`](../../../src/chronaxis/planning/diagnostic_collection.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_specific_errors"></a>
 ## `_specific_errors`
@@ -131,7 +131,7 @@ _specific_errors(error)
 无。
 优先匹配已有字段的const/enum判别，再选择错误最少的分支；未知判别值保留父错误。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:55`](../../../src/chronaxis/planning/diagnostic_collection.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:55`](../../../src/chronaxis/planning/diagnostic_collection.py#L55)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection"></a>
 ## `DiagnosticCollection`
@@ -143,7 +143,7 @@ DiagnosticCollection(config, schema_name='analysis.schema.json', *, extensions=N
 ```
 
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:89`](../../../src/chronaxis/planning/diagnostic_collection.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:89`](../../../src/chronaxis/planning/diagnostic_collection.py#L89)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-__init__"></a>
 ### `DiagnosticCollection.__init__`
@@ -170,7 +170,7 @@ DiagnosticCollection.__init__(config, schema_name='analysis.schema.json', *, ext
 
 资源错误。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:92`](../../../src/chronaxis/planning/diagnostic_collection.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:92`](../../../src/chronaxis/planning/diagnostic_collection.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-add"></a>
 ### `DiagnosticCollection.add`
@@ -195,7 +195,7 @@ None。
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:191`](../../../src/chronaxis/planning/diagnostic_collection.py#L191)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:191`](../../../src/chronaxis/planning/diagnostic_collection.py#L191)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-usable"></a>
 ### `DiagnosticCollection.usable`
@@ -220,7 +220,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:196`](../../../src/chronaxis/planning/diagnostic_collection.py#L196)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:196`](../../../src/chronaxis/planning/diagnostic_collection.py#L196)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-block"></a>
 ### `DiagnosticCollection.block`
@@ -246,7 +246,7 @@ None。
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:201`](../../../src/chronaxis/planning/diagnostic_collection.py#L201)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:201`](../../../src/chronaxis/planning/diagnostic_collection.py#L201)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-stage"></a>
 ### `DiagnosticCollection.stage`
@@ -275,7 +275,7 @@ DiagnosticCollection.stage(path, *, requires=True, check=True)
 
 非配置错误传播。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:208`](../../../src/chronaxis/planning/diagnostic_collection.py#L208)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:208`](../../../src/chronaxis/planning/diagnostic_collection.py#L208)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-finish"></a>
 ### `DiagnosticCollection.finish`
@@ -301,7 +301,7 @@ None。
 
 PlanValidationError。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:225`](../../../src/chronaxis/planning/diagnostic_collection.py#L225)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:225`](../../../src/chronaxis/planning/diagnostic_collection.py#L225)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DiagnosticCollection-finish-priority"></a>
 ### `DiagnosticCollection.finish.priority`
@@ -326,7 +326,7 @@ DiagnosticCollection.finish.priority(error)
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:229`](../../../src/chronaxis/planning/diagnostic_collection.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:229`](../../../src/chronaxis/planning/diagnostic_collection.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-current_collection"></a>
 ## `current_collection`
@@ -352,7 +352,7 @@ current_collection()
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:240`](../../../src/chronaxis/planning/diagnostic_collection.py#L240)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:240`](../../../src/chronaxis/planning/diagnostic_collection.py#L240)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-collecting"></a>
 ## `collecting`
@@ -379,7 +379,7 @@ collecting(collection)
 
 原异常传播，始终恢复上下文。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:246`](../../../src/chronaxis/planning/diagnostic_collection.py#L246)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:246`](../../../src/chronaxis/planning/diagnostic_collection.py#L246)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-usable_node"></a>
 ## `usable_node`
@@ -405,7 +405,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:255`](../../../src/chronaxis/planning/diagnostic_collection.py#L255)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:255`](../../../src/chronaxis/planning/diagnostic_collection.py#L255)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-collect_node_error"></a>
 ## `collect_node_error`
@@ -432,7 +432,7 @@ None。
 
 原错误。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:292`](../../../src/chronaxis/planning/diagnostic_collection.py#L292)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:292`](../../../src/chronaxis/planning/diagnostic_collection.py#L292)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_expression_dependencies"></a>
 ## `require_expression_dependencies`
@@ -461,7 +461,7 @@ None。
 
 只读取AST名称，不执行表达式；真正的语法、dtype和单位仍由表达式编译器检查。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:307`](../../../src/chronaxis/planning/diagnostic_collection.py#L307)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:307`](../../../src/chronaxis/planning/diagnostic_collection.py#L307)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-expression_scope"></a>
 ## `expression_scope`
@@ -489,7 +489,7 @@ expression_scope(text, bindings, derived)
 原模型错误。
 全计划仍逐项检查所有派生；此处不创建运行计划或修改输入配置。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:334`](../../../src/chronaxis/planning/diagnostic_collection.py#L334)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:334`](../../../src/chronaxis/planning/diagnostic_collection.py#L334)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-diagnose_plan"></a>
 ## `diagnose_plan`
@@ -516,7 +516,7 @@ diagnose_plan(function)
 
 合法输入只构建一次；错误输入从不返回局部计划，且始终恢复上层上下文。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:363`](../../../src/chronaxis/planning/diagnostic_collection.py#L363)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:363`](../../../src/chronaxis/planning/diagnostic_collection.py#L363)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-diagnose_plan-checked"></a>
 ### `diagnose_plan.checked`
@@ -545,7 +545,7 @@ diagnose_plan.checked(config, *args, **kwargs)
 
 汇总配置错误。
 
-源码：[`src/chronaxis/planning/diagnostic_collection.py:369`](../../../src/chronaxis/planning/diagnostic_collection.py#L369)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/diagnostic_collection.py:369`](../../../src/chronaxis/planning/diagnostic_collection.py#L369)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 ## 内部匿名回调
 

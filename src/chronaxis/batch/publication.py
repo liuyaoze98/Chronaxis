@@ -1,7 +1,7 @@
 """关闭批量汇总JSON后独占安装正式报告，保留各任务已发布的独立输出。
 
 报告只汇总状态、身份和错误，不合并指标或把失败会话当作零结果。沿现有结果
-发布的Windows平台范围使用不覆盖rename；其他平台明确拒绝，失败暂存保留。
+发布使用平台不覆盖移动；不支持的环境明确拒绝，失败暂存保留。
 """
 
 import json
@@ -25,11 +25,9 @@ def _write_batch_report(report, extra):
     if not isinstance(report, BatchReport):
         raise TypeError('需要BatchReport')
     root = report.output_dir.absolute()
-    # 本函数也可独立调用；不能仅依赖调度器已经检查过模型中的路径。
-    if any(p.casefold() == 'refprojects' for p in (*root.parts, *root.resolve().parts)):
-        raise ValueError('批量报告不能位于RefProjects')
-    if platform.system() != 'Windows':
-        raise NotImplementedError('批量报告原子发布目前只验收Windows')
+    # 本函数也可独立调用；平台和已有结果的发布规则仍须在此检查。
+    from ..results.platform_files import require_publication_platform
+    require_publication_platform()
     from ..results.publication import PublicationNames
     publication = report._publication or PublicationNames(root, ('batch_report.json',))
     destination = root / publication.names['batch_report.json']

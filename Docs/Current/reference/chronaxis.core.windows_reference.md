@@ -8,7 +8,7 @@ single按真实活动间隔判断，pre重叠不扩大分组；相等deadline重
 本实现不调用NumPy数值，只共享协议与元数据包装，不读写旧日志或重写事件。
 输入和输出均完整保存在内存中，调用方负责资源预算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -62,4 +62,4 @@ Segment或compact的CompactSegment tuple；bounds为按所选周期解析的真�
 逐事件精确扩展，按none/重叠/相邻/真实退出间隔分组，逐组裁剪。
     不改变原Event，不增加旧writer调用，不凭EOF外的请求补观测。
 
-源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/windows_reference.py:17`](../../../src/chronaxis/core/windows_reference.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

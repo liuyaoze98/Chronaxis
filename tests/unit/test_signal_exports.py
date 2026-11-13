@@ -169,12 +169,16 @@ class SignalExportTests(unittest.TestCase):
         for path,content in before.items(): self.assertEqual(path.read_bytes(),content)
         self.assertEqual(self.budget.ram_bytes,0)
 
-    def test_protected_output_precedes_any_write(self):
-        """历史目录在创建文件前拒绝。参数: 无。返回: None。异常: 断言失败。
-        """
-        with patch.object(Path,'mkdir',side_effect=AssertionError('不能创建')):
-            with self.assertRaisesRegex(ValueError,'RefProjects'):
-                export_signal_csv([],self.spec,Interval(0,1),Path('RefProjects/forbidden'),self.budget,device_label='home')
+    def test_customer_refprojects_directory_preserves_existing_content(self):
+        """客户目录可与开发资料同名，信号导出保留已有文件；只在测试根内写入。"""
+        target=self.root/'RefProjects'/'output'
+        target.mkdir(parents=True)
+        sentinel=target/'user.txt'
+        sentinel.write_bytes(b'keep')
+        result=self.run_export([sample(1,3.0)],target='RefProjects/output')
+        self.assertEqual(len(self.rows(result)),1)
+        self.assertEqual(sentinel.read_bytes(),b'keep')
+        self.assertEqual(self.budget.ram_bytes,0)
 
     def test_real_file_close_failure_has_retryable_owner(self):
         """真实已写FD关闭持续失败时保owner，恢复关闭后清账且不发布。参数: 无。返回: None。异常: 断言失败。

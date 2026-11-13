@@ -168,7 +168,7 @@ class DecodedMessageStore:
 
     def __init__(self, budget, work_dir, source_name, session_id, *, decoder_profile,
                  read_identity, max_row_bytes=MAX_DECODED_MESSAGE_ROW_BYTES, sparse_sequences=False, integrity=True):
-        """预付有限状态并在显式全新目录打开唯一writer，拒绝Ref和已有目录。
+        """预付有限状态并在显式全新目录打开唯一writer，拒绝已有目录。
 
         参数: budget为借用ResourceBudget；work_dir为新原生str/Path；source_name/session_id
             为原生str简单名称；decoder_profile/read_identity为原生非空文本；max_row_bytes为
@@ -214,10 +214,8 @@ class DecodedMessageStore:
             require_text(decoder_profile, 'decoder_profile')
             require_text(read_identity, 'read_identity')
             requested = Path(work_dir)
-            # resolve后的实际路径先检查保护边界和存在性，不写已有目录或错误诊断文件。
+            # 先解析实际路径并检查存在性，不写已有目录或错误诊断文件。
             resolved = requested.resolve()
-            if any(part.casefold() == 'refprojects' for part in resolved.parts):
-                raise ValueError('解码仓禁止写入RefProjects')
             if resolved.exists():
                 raise FileExistsError(resolved)
             self.path = self.work_dir = resolved

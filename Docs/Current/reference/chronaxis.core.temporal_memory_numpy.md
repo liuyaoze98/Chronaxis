@@ -9,7 +9,7 @@
 本模块依赖NumPy和当前核心模型，不读取旧来源或DBC，不修改输入，也没有
 全局绑定。完整内存历史和时间轴需占用内存，不保证生产资源预算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -69,7 +69,7 @@ tuple[ConditionTick, ...]: 每个查询时刻的完整状态、质量及更新�
 TypeError、ValueError或OverflowError: 列类型、形状、计划或数值协议错误。
     MemoryError: 数组分配失败；不丢弃数据继续执行。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:35`](../../../src/chronaxis/core/temporal_memory_numpy.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:35`](../../../src/chronaxis/core/temporal_memory_numpy.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-build_timeline_numpy"></a>
 ## `build_timeline_numpy`
@@ -95,7 +95,7 @@ ConditionTimeline；计时器没有actual更新，不产生假边沿。
 
 输入/同步/类型/时间错误传播；超域deadline不会wrap。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:121`](../../../src/chronaxis/core/temporal_memory_numpy.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:121`](../../../src/chronaxis/core/temporal_memory_numpy.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-detect_memory_numpy"></a>
 ## `detect_memory_numpy`
@@ -122,4 +122,4 @@ Event tuple；结果/质量/来源/稳定ID可与独立参考比较。
 
 当前模型/时间/配置/批大小错误传播，不静默截断。
 
-源码：[`src/chronaxis/core/temporal_memory_numpy.py:170`](../../../src/chronaxis/core/temporal_memory_numpy.py#L170)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_memory_numpy.py:170`](../../../src/chronaxis/core/temporal_memory_numpy.py#L170)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -39,6 +39,6 @@ outputs:                             # 选择额外导出的数据及格式；�
     scope:                           # 选择导出的时间范围；session整段会话、{window: 名称}单窗口、{windows: all}全部窗口
       windows: all                   # 选择导出全部已定义窗口的片段；当前填写all
 metadata:                            # 保存说明性信息；字段不会自动校准数据或更改计算公式
-  device_label: home                 # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
+  device_label: home                 # 可选设备标签；任意非空文本，省略为pending，不影响计算或导出
 execution:                           # 设置本次分析的并行处理方式
   process_count: 4                   # 最多4个文件工作进程；实际并行数不超过输入文件数

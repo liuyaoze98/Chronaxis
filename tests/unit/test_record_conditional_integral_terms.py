@@ -8,7 +8,6 @@ from chronaxis.core.numeric import ScalarValue
 from chronaxis.core.types import SignalDType as D, QualityFlag as Q
 from chronaxis.core.conditional_integral_terms_reference import compute_conditional_integral_terms_reference
 from chronaxis.core.conditional_integral_terms_numpy import compute_conditional_integral_terms_numpy
-from chronaxis.core.conditional_integral_result import make_conditional_integral_result
 from chronaxis.core.integral_sum_reference import ReferenceIntegralSum
 from chronaxis.core.integral_sum_numpy import NumpyIntegralSum
 
@@ -55,8 +54,6 @@ class RecordConditionalIntegralTermsTests(unittest.TestCase):
                     self.assertEqual(facts.ranges_retained, retain)
                     if not retain:
                         self.assertEqual((facts.value_unknown_ranges, facts.condition_unknown_ranges), ((), ()))
-                        with self.assertRaisesRegex(ValueError, '未保留范围'):
-                            make_conditional_integral_result(facts, total.finish('J'))
                 self.assertEqual(facts_seen[0], facts_seen[1])
 
     def test_window_overlap_uses_original_pair(self):

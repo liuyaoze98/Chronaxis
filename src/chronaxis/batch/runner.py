@@ -142,6 +142,11 @@ class BatchRunner:
             raise TypeError('cancel_event需要threading.Event')
         if type(device_label) is not str or not device_label.strip():
             raise ValueError('device_label需要非空文本')
+        # 有待派发任务的独立batch即使上限为1也会创建受管工作进程。
+        # 在创建输出前提示；不修改既有派发、失败报告或退出码。
+        from ..process_capabilities import warn_managed_worker
+        warn_managed_worker(bool(jobs) and not (cancel_event is not None and cancel_event.is_set()),
+                            '本独立批量任务')
         root = _new_root(output_dir)
         from ..results.publication import PublicationNames
         publication = PublicationNames(root, (*[j.job_id for j in jobs], 'batch_report.json'))
@@ -210,8 +215,12 @@ class BatchRunner:
                     # 所有工作进程若都因未完成清理而暂停，剩余任务不再派发。
                     break
                 _pause()
-            except KeyboardInterrupt:
+            except KeyboardInterrupt as error:
                 interrupted, stopped = True, True
+                # 构造取消且清理持续失败时，原异常拥有尚未关闭的真实worker；
+                # 不能仅返回取消报告而丢失该恢复入口。已清理的Ctrl+C仍按原流程返回。
+                if getattr(error, 'batch_worker_cleanup_owner', None) is not None:
+                    infrastructure = infrastructure or error
             except Exception as error:
                 infrastructure, stopped = infrastructure or error, True
         # 在途任务已结束；持续关闭失败留远程owner，不因结束调度而丢掉恢复入口。

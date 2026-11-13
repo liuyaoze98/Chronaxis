@@ -30,4 +30,4 @@ print(report.valid, report.execution_ready)
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:282`](../../../../src/chronaxis/planning/reports.py#L282) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/planning/reports.py:287`](../../../../src/chronaxis/planning/reports.py#L287) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

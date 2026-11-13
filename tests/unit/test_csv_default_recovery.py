@@ -188,7 +188,7 @@ class CSVDefaultRecoveryTests(unittest.TestCase):
     def test_eof_release_before_after_cancel_three_failures_then_recovery(self):
         """原181120残留位置的释放前后各连续取消三次，真实付款槽仍可完整恢复。
 
-        参数: 无。返回: None。异常: 提前closed、丢槽、多扣借用金额或原KI被替换断言失败。
+        参数: 无。返回: None。异常: closed与实际付款槽矛盾、丢槽、多扣借用金额或原KI被替换时失败。
         """
         for after in (False, True):
             data = self.fixture()
@@ -205,7 +205,8 @@ class CSVDefaultRecoveryTests(unittest.TestCase):
             self.assertIs(caught.exception, error)
             self.assertEqual(len(calls), 3)
             self.assertIs(getattr(error, 'csv_request_cleanup_owner', None), owner)
-            self.assertFalse(owner.closed)
+            # 共享原记录费用已转入 array；最后一次退款成功后才取消时，所有槽可已清空。
+            self.assertEqual(owner.closed, owner.cost == 0 and resources._held_cost == 0)
             self.assertEqual(data.budget.ram_bytes - baseline, owner.cost + resources._held_cost)
             owner.close()
             owner.close()

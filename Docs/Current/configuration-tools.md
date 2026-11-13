@@ -34,7 +34,7 @@ chronaxis run demo/plan.yaml --output result
 
 init的场景名必须来自清单；--output必须是尚不存在的目录，父目录必须存在。默认annotated版本包含逐项注释；--style minimal生成配置内容相同的简洁版。ASC、BLF与批量场景需要的小型合成数据会一起写出；CSV专用场景仍可从清单选择。普通模板不重复写默认值，只有本场景确有用途的业务参数才出现。已有目录即使为空也不覆盖。失败时清理本次创建的内容，无法清理的路径保留在原异常说明中。
 
-can-export和signal-export模板中的metadata.device_label初始为home，表示随包合成示例的制作设备；程序不会自动识别你当前的电脑。把模板用于自己的数据时，应改为本次产出设备对应的标签；当前独立导出只接受home/work，具体约束见[导出说明](exports.md)。模板清单catalog.json自身的device_label和data_kind只描述随包资源来源，不会自动填入运行清单。
+can-export和signal-export模板省略metadata.device_label，运行时默认记录pending。需要记录产出设备时，可添加这个可选字段，填写任意非空设备标签。程序不会自动识别当前电脑，见[导出说明](exports.md)。模板清单catalog.json自身的device_label和data_kind只描述随包资源来源，不会自动填入运行清单。
 
 生成后，编辑 `demo/plan.yaml` 中现有的对应段，不要把命令或字段表的点号路径粘贴成配置键。缩进、列表及整段替换方法见[配置文件语法](configuration-language.md)。
 

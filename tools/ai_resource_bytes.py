@@ -1,6 +1,6 @@
 """统一AI资料锁与构建器的文件字节规则，并校核教学结果的内层摘要。
 
-说明文本允许统一换行；已有字节大小和哈希记录的结果目录必须原样保存。
+说明文本允许统一换行；教学数据和已有字节摘要的结果目录必须原样保存。
 输入为仓库相对路径及字节、或最终指南文件映射；返回规范化字节及检查数量。
 函数只操作内存，不读写文件，不在普通分析运行中调用。
 """
@@ -13,12 +13,15 @@ def resource_bytes(relative, data):
     """按资源用途决定是否规范换行，保留带摘要的结果文件原始字节。
 
     参数: relative为仓库相对路径，data为原始bytes。
-    返回: bytes；结果目录及二进制不变，其余已登记文本转换CRLF为LF。
+    返回: bytes；教学数据、结果目录及二进制不变，其余已登记文本转换CRLF为LF。
     异常: 无主动异常；错误参数类型由基础操作拒绝。
     """
     path = PurePosixPath(str(relative).replace('\\', '/'))
     suffix = path.suffix.lower()
-    if path.as_posix().startswith('Docs/Current/examples/results/'):
+    if path.as_posix().startswith(('Docs/Current/examples/results/', 'Docs/Current/examples/data/')):
+        return data
+    # fast、temporal等专题的输入也按格式保留，不能只覆盖主data目录。
+    if path.as_posix().startswith('Docs/Current/examples/') and suffix in {'.csv', '.asc', '.dbc', '.blf', '.txt'}:
         return data
     if suffix in {'.json', '.yaml', '.md', '.csv', '.asc', '.dbc', '.ini', '.py'}:
         return data.replace(b'\r\n', b'\n')

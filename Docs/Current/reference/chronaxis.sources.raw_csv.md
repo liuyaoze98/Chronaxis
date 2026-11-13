@@ -2,7 +2,7 @@
 
 按明确列映射和时间格式直接读取原始CAN报文CSV，得到原始报文和行位置；不先转换为ASC。DBC解码由上层继续处理。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -72,7 +72,7 @@ class CSVTimeSpec
 |`timezone_offset_minutes`|int &#124; None|否|None|仅ISO无时区文本的显式补充。 None表示不为ISO文本补时区；无时区ISO值需显式提供偏移。|
 |`rollover_min_drop_ns`|int &#124; None|否|None|两种日内格式可选：回退至少此纳秒数才按次日解释。|
 
-源码：[`src/chronaxis/sources/raw_csv.py:32`](../../../src/chronaxis/sources/raw_csv.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:32`](../../../src/chronaxis/sources/raw_csv.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVTimeSpec-__post_init__"></a>
 ### `CSVTimeSpec.__post_init__`
@@ -105,7 +105,7 @@ CSVTimeSpec.__post_init__()
 - `ValueError`：只有ISO时间可声明整数分钟时区偏移。
 - `ValueError`：跨午夜阈值需日内时间格式的0到一天之间整数纳秒。
 
-源码：[`src/chronaxis/sources/raw_csv.py:41`](../../../src/chronaxis/sources/raw_csv.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:41`](../../../src/chronaxis/sources/raw_csv.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVSpec"></a>
 ## `CANCSVSpec`
@@ -128,7 +128,7 @@ class CANCSVSpec
 |`channel_origin`|int|否|0|原列从0或1开始，统一转换为0基通道。|
 |`payload_style`|str|否|'spaced'|spaced逐字节，或contiguous连续偶数位十六进制。|
 
-源码：[`src/chronaxis/sources/raw_csv.py:62`](../../../src/chronaxis/sources/raw_csv.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:62`](../../../src/chronaxis/sources/raw_csv.py#L62)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVSpec-__post_init__"></a>
 ### `CANCSVSpec.__post_init__`
@@ -161,7 +161,7 @@ CANCSVSpec.__post_init__()
 - `ValueError`：CSV ID/长度进制需要10或16。
 - `ValueError`：CSV通道起点或载荷布局错误。
 
-源码：[`src/chronaxis/sources/raw_csv.py:73`](../../../src/chronaxis/sources/raw_csv.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:73`](../../../src/chronaxis/sources/raw_csv.py#L73)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_uint"></a>
 ## `_uint`
@@ -189,7 +189,7 @@ int。
 
 ValueError为符号/字符/隐式转换或越界，不允许bool/下划线。
 
-源码：[`src/chronaxis/sources/raw_csv.py:91`](../../../src/chronaxis/sources/raw_csv.py#L91)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:91`](../../../src/chronaxis/sources/raw_csv.py#L91)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_payload"></a>
 ## `_payload`
@@ -220,7 +220,7 @@ bytes。
 - `ValueError`：分隔载荷需不超过64个十六进制字节。
 - `ValueError`：连续载荷需不超过64字节的偶数位十六进制。
 
-源码：[`src/chronaxis/sources/raw_csv.py:118`](../../../src/chronaxis/sources/raw_csv.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:118`](../../../src/chronaxis/sources/raw_csv.py#L118)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVClock"></a>
 ## `CSVClock`
@@ -232,7 +232,7 @@ CSVClock(spec)
 ```
 
 
-源码：[`src/chronaxis/sources/raw_csv.py:133`](../../../src/chronaxis/sources/raw_csv.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:133`](../../../src/chronaxis/sources/raw_csv.py#L133)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVClock-__init__"></a>
 ### `CSVClock.__init__`
@@ -261,7 +261,7 @@ CSVClock.__init__(spec)
 
 - `TypeError`：CSVClock需要CSVTimeSpec。
 
-源码：[`src/chronaxis/sources/raw_csv.py:136`](../../../src/chronaxis/sources/raw_csv.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:136`](../../../src/chronaxis/sources/raw_csv.py#L136)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVClock-parse"></a>
 ### `CSVClock.parse`
@@ -294,7 +294,7 @@ CSVClock.parse(value)
 - `ValueError`：日内时分秒越界。
 - `ValueError`：CSV日内时间回退，未满足明确跨午夜规则。
 
-源码：[`src/chronaxis/sources/raw_csv.py:143`](../../../src/chronaxis/sources/raw_csv.py#L143)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:143`](../../../src/chronaxis/sources/raw_csv.py#L143)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_csv_frame"></a>
 ## `_csv_frame`
@@ -332,7 +332,7 @@ ID/通道/载荷/标志/DLC不一致。
 - `ValueError`：CSV DLC编码与载荷长度不一致。
 - `ValueError`：CAN FD字节数不能对应合法DLC编码。
 
-源码：[`src/chronaxis/sources/raw_csv.py:200`](../../../src/chronaxis/sources/raw_csv.py#L200)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:200`](../../../src/chronaxis/sources/raw_csv.py#L200)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_CSVLines"></a>
 ## `_CSVLines`
@@ -344,7 +344,7 @@ _CSVLines(owner)
 ```
 
 
-源码：[`src/chronaxis/sources/raw_csv.py:256`](../../../src/chronaxis/sources/raw_csv.py#L256)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:256`](../../../src/chronaxis/sources/raw_csv.py#L256)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_CSVLines-__init__"></a>
 ### `_CSVLines.__init__`
@@ -369,7 +369,7 @@ _CSVLines.__init__(owner)
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv.py:259`](../../../src/chronaxis/sources/raw_csv.py#L259)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:259`](../../../src/chronaxis/sources/raw_csv.py#L259)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_CSVLines-__iter__"></a>
 ### `_CSVLines.__iter__`
@@ -395,7 +395,7 @@ _CSVLines.__iter__()
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv.py:264`](../../../src/chronaxis/sources/raw_csv.py#L264)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:264`](../../../src/chronaxis/sources/raw_csv.py#L264)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_CSVLines-__next__"></a>
 ### `_CSVLines.__next__`
@@ -421,7 +421,7 @@ _CSVLines.__next__()
 
 EOF、定位编码错、超限或取消。
 
-源码：[`src/chronaxis/sources/raw_csv.py:269`](../../../src/chronaxis/sources/raw_csv.py#L269)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:269`](../../../src/chronaxis/sources/raw_csv.py#L269)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead"></a>
 ## `CANCSVRead`
@@ -433,7 +433,7 @@ CANCSVRead(spec, budget, *, check_cancel=None, retain_original=True, retain_sour
 ```
 
 
-源码：[`src/chronaxis/sources/raw_csv.py:295`](../../../src/chronaxis/sources/raw_csv.py#L295)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:295`](../../../src/chronaxis/sources/raw_csv.py#L295)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-__init__"></a>
 ### `CANCSVRead.__init__`
@@ -469,7 +469,7 @@ reader，不预读数据。
 - `TypeError`：CANCSVRead需要CANCSVSpec和ResourceBudget。
 - `TypeError`：CSV取消检查需要可调用对象。
 
-源码：[`src/chronaxis/sources/raw_csv.py:298`](../../../src/chronaxis/sources/raw_csv.py#L298)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:298`](../../../src/chronaxis/sources/raw_csv.py#L298)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-closed"></a>
 ### `CANCSVRead.closed`
@@ -497,7 +497,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv.py:338`](../../../src/chronaxis/sources/raw_csv.py#L338)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:338`](../../../src/chronaxis/sources/raw_csv.py#L338)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-__iter__"></a>
 ### `CANCSVRead.__iter__`
@@ -523,7 +523,7 @@ CANCSVRead.__iter__()
 
 无，不另开文件。
 
-源码：[`src/chronaxis/sources/raw_csv.py:343`](../../../src/chronaxis/sources/raw_csv.py#L343)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:343`](../../../src/chronaxis/sources/raw_csv.py#L343)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-_next_row"></a>
 ### `CANCSVRead._next_row`
@@ -549,7 +549,7 @@ str列表。
 
 EOF/定位语法错/取消。
 
-源码：[`src/chronaxis/sources/raw_csv.py:348`](../../../src/chronaxis/sources/raw_csv.py#L348)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:348`](../../../src/chronaxis/sources/raw_csv.py#L348)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-_initialize"></a>
 ### `CANCSVRead._initialize`
@@ -575,7 +575,7 @@ CANCSVRead._initialize()
 
 缺表头/缺列或EOF。
 
-源码：[`src/chronaxis/sources/raw_csv.py:363`](../../../src/chronaxis/sources/raw_csv.py#L363)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:363`](../../../src/chronaxis/sources/raw_csv.py#L363)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-__next__"></a>
 ### `CANCSVRead.__next__`
@@ -601,7 +601,7 @@ RawCANRecord。
 
 EOF/定位坏行/预算/取消原错。
 
-源码：[`src/chronaxis/sources/raw_csv.py:388`](../../../src/chronaxis/sources/raw_csv.py#L388)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:388`](../../../src/chronaxis/sources/raw_csv.py#L388)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-close"></a>
 ### `CANCSVRead.close`
@@ -627,7 +627,7 @@ CANCSVRead.close()
 
 关闭/预算原错。
 
-源码：[`src/chronaxis/sources/raw_csv.py:441`](../../../src/chronaxis/sources/raw_csv.py#L441)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:441`](../../../src/chronaxis/sources/raw_csv.py#L441)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-__enter__"></a>
 ### `CANCSVRead.__enter__`
@@ -653,7 +653,7 @@ CANCSVRead.__enter__()
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv.py:457`](../../../src/chronaxis/sources/raw_csv.py#L457)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:457`](../../../src/chronaxis/sources/raw_csv.py#L457)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVRead-__exit__"></a>
 ### `CANCSVRead.__exit__`
@@ -680,4 +680,4 @@ False。
 
 无原错时关闭失败。
 
-源码：[`src/chronaxis/sources/raw_csv.py:462`](../../../src/chronaxis/sources/raw_csv.py#L462)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv.py:462`](../../../src/chronaxis/sources/raw_csv.py#L462)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

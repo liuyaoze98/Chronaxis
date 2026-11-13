@@ -15,7 +15,25 @@ npm install --prefix Docs/Current/_build/tooling marked@17.0.5 highlight.js@11.1
 
 Installation may contact package registries; rendering and reading do not require a network connection. Existing module files can be selected through `CHRONAXIS_MARKED_PATH` and `CHRONAXIS_HIGHLIGHT_PATH`. Highlight styles come from the versioned tooling directory, so retain the matching highlight.js stylesheets.
 
+## Reproduce dependency combinations
+
+The source `requirements/` directory contains four complete Windows `pip freeze --all` snapshots for Python 3.12 and 3.13 lower/upper combinations. Install with the matching constraints and record the interpreter, dependency versions and actual test group result. An environment snapshot is not a passing test report. Runtime version ranges live in `pyproject.toml`; `.[test]` does not override them with a narrower jsonschema pin. Keep the existing CI environment below distinct from additional compatibility runs.
+
 <a id="从公开源码重建"></a>
+## Continuous tests and pre-release checks
+
+`.github/workflows/verify.yml` runs on push, pull_request, or manual dispatch with Windows 2022 and Python 3.12.4. Its four groups cover core/configuration, input/execution/export, bilingual documentation with an actual HTML build, and a wheel built from sdist followed by bundled tasks outside the checkout. The workflow has read-only permissions and does not publish to PyPI or deploy the site. Both publishing workflows remain manual.
+
+`tools/run_ci_tests.py` discovers public tests automatically. Each module belongs to exactly one group; new unclassified modules enter core. The existing nine tests requiring internal material remain excluded from public source. JSON reports list exclusions, failures, and skip reasons; a skip is not a verified result. The docs group explicitly installs Node.js 24.22.1, marked 17.0.5, and highlight.js 11.11.1. Missing tools or stale documentation locks fail instead of silently refreshing the locks.
+
+From clean public source with `.[test]`, documentation dependencies, and matching reviewed sources/locks, run one group as follows. Replace core with input, docs, or install to select another group:
+
+```powershell
+python -X utf8 -B tools/run_ci_tests.py --group core --report work/ci/core.json
+```
+
+Beyond grouped tests, docs and install must complete the workflow's HTML, AI ZIP, sdist/wheel, and isolated installation checks. Before release, verify all four groups and installation artifacts for the same candidate source. Fix failures and record unexecuted or environment-skipped checks explicitly. Local success is not evidence of a cloud CI run, and a test report does not itself authorize publication.
+
 ## Rebuild from public source
 
 Public source exports do not include internal development Git history. To use their release lock manifest, explicitly set this variable before building:
@@ -52,7 +70,7 @@ At the product's agreed documentation review point, refresh frozen inputs explic
 
 Build wheels from a clean checkout. Run `tests/ai_release/check_bundle.py` for standalone guidance, `tools/verify_ai_distribution.py` for sdist-to-wheel, direct reading, and optional export, and `tools/check_ai_install.py` to rerun bundled cases in a fresh environment without a source checkout. Record independent-model evaluation separately from programmatic checks.
 
-Regenerate pages after changing source docstrings or manual annotations; do not fix only generated output. Compare public constructor signatures with actual Python interfaces at the selected baseline, and read-check members, parameters, returns, and exceptions. Published HTML omits development change histories, while original source histories remain available. Keep implementation references, frozen vendor sources, and public entry points distinct.
+Regenerate pages after changing source docstrings or manual annotations; do not fix only generated output. Compare public constructor signatures with actual Python interfaces at the selected baseline, and read-check members, parameters, returns, and exceptions. Published HTML omits development change histories, while original source histories remain available. Keep implementation references and public entry points distinct. Historical source material stays in read-only RefProjects; the current distribution does not contain the Sclicer vendor copies.
 
 Static coverage, links, and search tests establish their specific structural behavior. They do not replace browser appearance, keyboard/clipboard checks, complete example execution, or user reading. `_build` is reproducible output and is not committed to Git; rebuild it in a fresh checkout.
 

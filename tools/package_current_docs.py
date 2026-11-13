@@ -15,6 +15,7 @@ import tempfile
 from zipfile import ZipFile
 from build_ai_guide import build as build_ai_guide
 from english_docs import check_reviewed
+from example_inventory import validate_example_inventory
 
 
 def hashes(folder, *, exclude_cache=False):
@@ -48,6 +49,8 @@ def main():
         assert set(hashes(html / 'ai-guide')) == set(guide.namelist())
         for name in guide.namelist():
             assert (html / 'ai-guide' / name).read_bytes() == guide.read(name), name
+            if name.startswith('examples/') and Path(name).suffix.lower() in {'.csv', '.asc', '.dbc', '.blf', '.txt'}:
+                assert (html / name).read_bytes() == guide.read(name), ('AI与手册教学输入字节不同', name)
     for path in (docs / 'reference/inventory.json', html / 'documentation.json',
                  html / 'build-manifest.json', html / 'reference/inventory.json'):
         assert json.loads(path.read_text(encoding='utf8'))['baseline'] == baseline, path
@@ -56,6 +59,8 @@ def main():
     for source in (repo / 'Docs/Schema').glob('*.json'):
         assert source.read_bytes() == (html / 'attachments/Docs/Schema' / source.name).read_bytes(), source
     assert hashes(docs / 'examples',exclude_cache=True) == hashes(html / 'examples'), '随册示例不一致'
+    validate_example_inventory({'examples/' + p.relative_to(html/'examples').as_posix(): p.read_bytes()
+                                for p in (html/'examples').rglob('*') if p.is_file()})
     caches=[str(p.relative_to(html)) for p in html.rglob('*') if p.name=='__pycache__' or p.suffix=='.pyc']
     assert not caches, ('交付目录包含Python缓存',caches)
 

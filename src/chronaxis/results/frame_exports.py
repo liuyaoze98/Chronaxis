@@ -13,7 +13,7 @@ import json
 from math import isfinite
 
 from ..core.models import Interval
-from ..core.validation import require_identifier
+from ..core.validation import require_identifier, require_text
 from ..execution.history import _metadata_bytes
 from ..legacy.records import LegacyRawFrame, StoredRawFrame, frame_to_dict
 from ..legacy.export_write import LegacyCANProcessWrite
@@ -80,12 +80,15 @@ class ExportCANFrame:
     frame: LegacyRawFrame
     provenance: tuple[tuple[str,str | int | float | bool | None],...]
     frame_origin: str = 'passthrough'
+    remote_dlc_known: bool = True  # 远程帧的长度是否由原记录明确给出；未知不能写成零。
 
     def __post_init__(self):
         """核静态字段。参数: 无。返回: None。异常: 类型、范围、重复定位或非有限值。
         """
         if type(self.sequence) is not int or self.sequence<0 or type(self.frame) is not LegacyRawFrame:
             raise TypeError('导出帧需要非负原序及LegacyRawFrame')
+        if type(self.remote_dlc_known) is not bool or not self.remote_dlc_known and not self.frame.is_remote_frame:
+            raise ValueError('只有远程帧可以缺少DLC')
         require_int64_ns(self.time_ns); require_int64_ns(self.output_time_ns)
         if self.frame_origin not in ('passthrough','generated') or type(self.provenance) is not tuple or len(self.provenance)>32:
             raise ValueError('导出帧种类或定位非法')
@@ -134,7 +137,8 @@ def as_export_frame(record, *, compact=False):
             provenance+=(('input_index',record.input_index),('decode_status',record.status))
         # 分析offset只决定筛选位置；导出日期应叠加原始日内时间，不能叠加归零后的分析时间。
         source_ns=raw.time_ns if raw.source_time_ns is None else raw.source_time_ns
-        return ExportCANFrame(record.sequence,raw.time_ns,source_ns,raw.frame,provenance)
+        return ExportCANFrame(record.sequence,raw.time_ns,source_ns,raw.frame,provenance,
+            remote_dlc_known=not (raw.frame.is_remote_frame and raw.dlc_code is None))
     raise TypeError('帧导出需要同次原始/解码暂存记录')
 
 
@@ -165,7 +169,9 @@ def _asc_line(record,output_ns):
         if frame.is_remote_frame:
             if frame.is_fd or frame.data or not 0<=frame.dlc<=8:
                 raise ValueError('ASC远程帧需要经典CAN、空数据和0至8 DLC')
-            body=f'{channel} {identifier} {direction} r {frame.dlc:x}'
+            # ASC允许省略远程帧DLC；原记录没有提供时保持省略。
+            suffix=f' {frame.dlc:x}' if record.remote_dlc_known else ''
+            body=f'{channel} {identifier} {direction} r{suffix}'
         elif frame.is_fd:
             lengths=(0,1,2,3,4,5,6,7,8,12,16,20,24,32,48,64)
             if frame.dlc!=len(frame.data) or frame.dlc not in lengths:
@@ -194,8 +200,9 @@ def export_can_frames(records,spec,interval,destination,budget,*,source,device_l
     if type(spec) is not FrameExportSpec or type(interval) is not Interval:
         raise TypeError('帧导出需要FrameExportSpec和Interval')
     require_identifier(source,'frame_export.source')
-    if device_label not in ('home','work') or check_cancel is not None and not callable(check_cancel):
-        raise ValueError('帧导出需要实际设备及可选取消回调')
+    require_text(device_label, 'device_label')
+    if check_cancel is not None and not callable(check_cancel):
+        raise ValueError('帧导出取消回调必须可调用')
     date_origin=spec.date_origin_ns()
     output_offset=checked_add_ns(date_origin,spec.output_offset_ns)
     if file_consumer is not None and not callable(file_consumer):
@@ -251,6 +258,9 @@ def export_can_frames(records,spec,interval,destination,budget,*,source,device_l
                     payload,losses=_asc_line(record,output_ns)
                     owner.select_file('frames.asc'); owner.append(payload)
                 else:
+                    # BLF写接口需要明确长度；不得把内部占位值0当作原始DLC。
+                    if not record.remote_dlc_known:
+                        raise ValueError('远程帧未提供DLC，不能无损导出BLF；请导出ASC或提供含明确DLC的输入')
                     # 不调用旧库的隐式“相对时间头归零”分支；缺日期先要求显式映射。
                     if output_ns<631152000*10**9:
                         raise ValueError('现有BLF写库不支持1990年以前的日期，不能改写为固定参考日期')
@@ -268,6 +278,8 @@ def export_can_frames(records,spec,interval,destination,budget,*,source,device_l
                     packet={'index':count,'source':source,'sequence':record.sequence,'analysis_time_ns':record.time_ns,
                         'source_time_ns':record.output_time_ns,'output_time_ns':output_ns,'frame_origin':record.frame_origin,
                         'provenance':dict(record.provenance),'frame':frame_to_dict(record.frame),'format_limits':losses}
+                    if not record.remote_dlc_known:
+                        packet['frame']['dlc']=None
                     owner.append((json.dumps(packet,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n').encode('utf-8'))
                 count+=1; generated+=record.frame_origin=='generated'; limited+=bool(losses)
             finally:

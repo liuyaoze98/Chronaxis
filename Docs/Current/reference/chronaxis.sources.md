@@ -1,24 +1,17 @@
 # `chronaxis.sources`
 
-公开内存来源、已解码信号表及公共批次协议。
+按需公开来源适配器和批次模型；读取 BLF 不加载无关的数组后端。
 
-MemorySourceAdapter接收已有内存原行，SignalCSVSourceAdapter接收明确格式
-的已解码CSV配置；二者逐批输出SignalSeries和SignalBatch，并共用
-SourceDescription、ReadRequest及BatchValidator的身份与进度检查。
-导入只加载类型和计算模块，不打开输入文件或DBC，也不创建工作目录。
-CAN配置与原报文定位在can_spec，公共AnalysisRunner已接单BLF/单DBC的旧公开链；
-本模块的内存/CSV入口不代替CAN运行包装，也不代表其他旧入口已迁移。
+公开名称、类身份与原模块保持一致；只在访问相应名称时导入定义。
+导入本包不打开输入、DBC 或工作目录，也不创建进程。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
-
-## 相关类型
-
-[BatchValidator](chronaxis.sources.protocol.md#api-BatchValidator)、[CSVSourceRef](chronaxis.sources.csv_spec.md#api-CSVSourceRef)、[FieldDescription](chronaxis.sources.models.md#api-FieldDescription)、[FieldLocation](chronaxis.sources.models.md#api-FieldLocation)、[MemorySourceAdapter](chronaxis.sources.memory.md#api-MemorySourceAdapter)、[ReadRequest](chronaxis.sources.models.md#api-ReadRequest)、[SignalBatch](chronaxis.sources.models.md#api-SignalBatch)、[SignalCSVSourceAdapter](chronaxis.sources.signal_csv.md#api-SignalCSVSourceAdapter)、[SignalCSVSpec](chronaxis.sources.csv_spec.md#api-SignalCSVSpec)、[SignalSeries](chronaxis.sources.models.md#api-SignalSeries)、[SourceAdapter](chronaxis.sources.protocol.md#api-SourceAdapter)、[SourceCapabilities](chronaxis.sources.models.md#api-SourceCapabilities)、[SourceClosedError](chronaxis.sources.protocol.md#api-SourceClosedError)、[SourceDescription](chronaxis.sources.models.md#api-SourceDescription)、[SourceReadError](chronaxis.sources.protocol.md#api-SourceReadError)
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
 |对象|用途|
 |---|---|
+|[`__getattr__`](#api-__getattr__)|按公开名称返回原对象；未知名称抛 AttributeError，不导入其他来源。|
 
 ## 导出名称
 
@@ -31,11 +24,26 @@ CAN配置与原报文定位在can_spec，公共AnalysisRunner已接单BLF/单DBC
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from .memory import MemorySourceAdapter
-from .csv_spec import CSVSourceRef, SignalCSVSpec
-from .signal_csv import SignalCSVSourceAdapter
-from .models import FieldDescription, FieldLocation, ReadRequest, SignalBatch, SignalSeries, SourceCapabilities, SourceDescription
-from .protocol import BatchValidator, SourceAdapter, SourceClosedError, SourceReadError
+from importlib import import_module
 ```
 
 </details>
+
+<a id="api-__getattr__"></a>
+## `__getattr__`
+
+按公开名称返回原对象；未知名称抛 AttributeError，不导入其他来源。
+
+```python
+__getattr__(name: str) -> object
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`name`|str|是|无|位置或关键字。调用者请求的来源模块公开名称；按名称延迟导入对应对象，未知名称报告AttributeError。|
+
+返回类型：object。
+
+源码：[`src/chronaxis/sources/__init__.py:22`](../../../src/chronaxis/sources/__init__.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -46,4 +46,4 @@ ReductionSpec.require_backend(backend)
 
 [完整宿主示例](../host-extensions.md)
 
-源码：[`src/chronaxis/extensions.py:92`](../../../src/chronaxis/extensions.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extensions.py:92`](../../../src/chronaxis/extensions.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

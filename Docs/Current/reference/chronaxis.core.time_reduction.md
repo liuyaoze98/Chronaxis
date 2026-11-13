@@ -2,7 +2,7 @@
 
 定义按持续时间计算统计结果时保存的内容，包括有效时长、缺失区间、样本数量及计算值。min_time/max_time寻找实际持续过的最小/最大值，time_weighted_mean按持续时间加权，duration累计条件成立的秒数。本模块定义这些数据和检查规则，不执行计算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -68,7 +68,7 @@ class TimeCalculationFacts
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 |`ranges_retained`|bool|否|True|精简执行可不构造未知位置，不能用于完整覆盖证据。|
 
-源码：[`src/chronaxis/core/time_reduction.py:24`](../../../src/chronaxis/core/time_reduction.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:24`](../../../src/chronaxis/core/time_reduction.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TimeCalculationFacts-__post_init__"></a>
 ### `TimeCalculationFacts.__post_init__`
@@ -105,7 +105,7 @@ TypeError/ValueError为结构或矛盾时长。
 - `TypeError`：时间事实需要带有明确类型的质量和完整来源tuple。
 - `ValueError`：时间事实未知范围无序、重叠或越界。
 
-源码：[`src/chronaxis/core/time_reduction.py:45`](../../../src/chronaxis/core/time_reduction.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:45`](../../../src/chronaxis/core/time_reduction.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TimeReductionResult"></a>
 ## `TimeReductionResult`
@@ -129,7 +129,7 @@ class TimeReductionResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|仅本次数值归约故障，输入原因在facts。|
 |`valid_term_count`|int|是|无|原值经算子门槛后有效的正区间数。|
 
-源码：[`src/chronaxis/core/time_reduction.py:87`](../../../src/chronaxis/core/time_reduction.py#L87)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:87`](../../../src/chronaxis/core/time_reduction.py#L87)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TimeReductionResult-__post_init__"></a>
 ### `TimeReductionResult.__post_init__`
@@ -162,7 +162,7 @@ TypeError/ValueError为字段或状态矛盾。
 - `ValueError`：时间计算故障需要有效项、None和质量原因。
 - `ValueError`：时间成功数值、项数或质量矛盾。
 
-源码：[`src/chronaxis/core/time_reduction.py:100`](../../../src/chronaxis/core/time_reduction.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:100`](../../../src/chronaxis/core/time_reduction.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-MeanTimeBlock"></a>
 ## `MeanTimeBlock`
@@ -184,7 +184,7 @@ class MeanTimeBlock
 |`values`|object|是|无|已通过均值精度门槛的有限数值列。|
 |`weights`|object|是|无|与values同长的正权重，周期模式为折算秒数。|
 
-源码：[`src/chronaxis/core/time_reduction.py:122`](../../../src/chronaxis/core/time_reduction.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:122`](../../../src/chronaxis/core/time_reduction.py#L122)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_time_config"></a>
 ## `require_time_config`
@@ -221,7 +221,7 @@ TypeError/ValueError为不支持能力或非法配置。
 - `ValueError`：时间算子与dtype不匹配。
 - `ValueError`：仅时间均值第二遍接受正原生int64整窗有效时长。
 
-源码：[`src/chronaxis/core/time_reduction.py:134`](../../../src/chronaxis/core/time_reduction.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:134`](../../../src/chronaxis/core/time_reduction.py#L134)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_time_series"></a>
 ## `require_time_series`
@@ -255,7 +255,7 @@ TypeError/ValueError/OverflowError。
 - `ValueError`：时间归约只接受同单位同dtype的无条件输入。
 - `OverflowError`：时间统计正交集时长超过int64。
 
-源码：[`src/chronaxis/core/time_reduction.py:165`](../../../src/chronaxis/core/time_reduction.py#L165)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:165`](../../../src/chronaxis/core/time_reduction.py#L165)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_time_options"></a>
 ## `require_time_options`
@@ -283,4 +283,4 @@ None。
 
 类型、长度或将合成边界当周期记录时拒绝。
 
-源码：[`src/chronaxis/core/time_reduction.py:182`](../../../src/chronaxis/core/time_reduction.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/time_reduction.py:182`](../../../src/chronaxis/core/time_reduction.py#L182)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -2,6 +2,8 @@
 
 > 本页使用随册合成数据，结果由实际运行产生；不能作为其他日志的预期值。
 
+随包`examples/results/index.json`的`input_digest_policy`说明摘要算法：配置先用安全YAML解析，再对UTF-8 JSON（键排序、保留中文、紧凑分隔符、不接受NaN）计算SHA-256，忽略注释及缩进；其他输入和结果直接对最终交付文件的原始字节计算SHA-256，不转换换行。算法不额外保存第二套摘要。
+
 本页覆盖76份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
 
 命令以`examples`为当前目录，结果目录可复用，每次输出增加时间文件名。普通例默认中文可读CSV，时间列为精确秒、同区间指标合并，各指标分别显示状态和说明。显式csv/jsonl交换格式及原帧/信号导出仍采用各自约定；空单元格不是零。
@@ -1102,7 +1104,7 @@ chronaxis run power-statistics.yaml --output result-power-statistics-yaml
 
 **会话结果：[下载完整 会话结果.csv](examples/results/power-statistics-yaml/会话结果.csv)（1行）**
 
-| cycles（1） | cycles：状态 | cycles：说明 | held_rms（W） | held_rms：状态 | held_rms：说明 | held_spread（W） | held_spread：状态 | held_spread：说明 | held_variance（V^2*A^2） | held_variance：状态 | held_variance：说明 | loads（1） | loads：状态 | loads：说明 | reading_median（W） | reading_median：状态 | reading_median：说明 | reading_p95（W） | reading_p95：状态 | reading_p95：说明 | reading_rms（W） | reading_rms：状态 | reading_rms：说明 | reading_spread（W） | reading_spread：状态 | reading_spread：说明 | reading_variance（V^2*A^2） | reading_variance：状态 | reading_variance：说明 | readings（1） | readings：状态 | readings：说明 | starts（1） | starts：状态 | starts：说明 |
+| cycles（1） | cycles：状态 | cycles：说明 | held_rms（W） | held_rms：状态 | held_rms：说明 | held_spread（W） | held_spread：状态 | held_spread：说明 | held_variance（W^2） | held_variance：状态 | held_variance：说明 | loads（1） | loads：状态 | loads：说明 | reading_median（W） | reading_median：状态 | reading_median：说明 | reading_p95（W） | reading_p95：状态 | reading_p95：说明 | reading_rms（W） | reading_rms：状态 | reading_rms：说明 | reading_spread（W） | reading_spread：状态 | reading_spread：说明 | reading_variance（W^2） | reading_variance：状态 | reading_variance：说明 | readings（1） | readings：状态 | readings：说明 | starts（1） | starts：状态 | starts：说明 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 完整 | — | 11.055415967851332 | 完整 | — | 7.85674201318386 | 完整 | — | 61.72839506172837 | 完整 | — | 2 | 完整 | — | 0.0 | 完整 | — | 18.0 | 完整 | — | 10.0 | 完整 | — | 8.000000000000002 | 完整 | — | 80.00000000000004 | 完整 | — | 5 | 完整 | — | 2 | 完整 | — |
 

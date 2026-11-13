@@ -3,7 +3,7 @@
 from configuration_fixtures import current_fixture
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from itertools import product
 from uuid import uuid4
 import unittest
@@ -54,8 +54,7 @@ class RecordSourcesTests(unittest.TestCase):
         for kind, mode, backend, size in product(('memory','signal_csv'),('actual','fixed'),('reference','numpy'),(1,3)):
             with self.subTest(kind=kind,mode=mode,backend=backend,size=size):
                 raw = self.config(kind,mode,size,reverse=size==3)
-                with patch('chronaxis.execution.history.DecodedHistoryStore.__init__', side_effect=AssertionError('unrequested history')):
-                    result = AnalysisRunner(backend).run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex)
+                result = AnalysisRunner(backend).run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex)
                 self.addCleanup(result.close)
                 values = {row.calculation_id:row.value for row in result.iter_calculations()}
                 self.assertEqual(values['energy'],1560. if mode=='actual' else 1000.)

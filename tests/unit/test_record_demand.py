@@ -94,7 +94,10 @@ class RecordDemandTests(unittest.TestCase):
             self.assertIsNone(raw.raw_time);self.assertIsNone(raw.source_time_ns)
             text_rows.append(raw.sequence);return decode(owner,raw)
         for kind,path in self.fixtures().items():
+            # ASC、原帧CSV及BLF均走共享解码入口；逐格式核三条实际帧。
+            text_rows.clear()
             with patch.object(RecordSourceCursor,'_enqueue',inspect),patch.object(CANTextDecodeRead,'_decode',no_text):
                 with AnalysisRunner().run(self.plan(kind,path,'fixed'),self.root/uuid4().hex) as result:
                     self.assertAlmostEqual(next(result.iter_calculations()).value,880,places=3)
-        self.assertTrue(seen);self.assertEqual(len(text_rows),6)
+            self.assertEqual(len(text_rows),3,kind)
+        self.assertTrue(seen)

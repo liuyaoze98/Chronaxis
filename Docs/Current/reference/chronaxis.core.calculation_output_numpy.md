@@ -5,7 +5,7 @@
 输入为归约标量、原类型和编译期转换；用单元素带有明确类型的列复用数组仿射核，
 输出值与质量。这里只转换最终结果，不按样本循环或创建额外历史。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -52,4 +52,4 @@ convert_result_numpy(value, input_dtype, conversion)
 
 非法模型、分配或系数错误传播；数值故障写入质量。
 
-源码：[`src/chronaxis/core/calculation_output_numpy.py:13`](../../../src/chronaxis/core/calculation_output_numpy.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculation_output_numpy.py:13`](../../../src/chronaxis/core/calculation_output_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

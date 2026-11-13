@@ -5,11 +5,11 @@
 别名、来源、单位和枚举标签留在有限声明中，行内用序号引用。
 定长数据按实际时间二分，不构造原文、输入指纹或逐条来源JSON。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
+[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
 
 ## 对象导航
 
@@ -50,7 +50,7 @@ RecordExportSamples(budget, path, definitions, session)
 ```
 
 
-源码：[`src/chronaxis/execution/record_export_samples.py:17`](../../../src/chronaxis/execution/record_export_samples.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:17`](../../../src/chronaxis/execution/record_export_samples.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-__init__"></a>
 ### `RecordExportSamples.__init__`
@@ -78,7 +78,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:19`](../../../src/chronaxis/execution/record_export_samples.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:19`](../../../src/chronaxis/execution/record_export_samples.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-append"></a>
 ### `RecordExportSamples.append`
@@ -103,7 +103,7 @@ None。
 
 顺序/预算/短写。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:37`](../../../src/chronaxis/execution/record_export_samples.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:37`](../../../src/chronaxis/execution/record_export_samples.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-_fields"></a>
 ### `RecordExportSamples._fields`
@@ -128,7 +128,7 @@ RecordExportSamples._fields(index)
 
 越界/短读。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:54`](../../../src/chronaxis/execution/record_export_samples.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:54`](../../../src/chronaxis/execution/record_export_samples.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-_lower"></a>
 ### `RecordExportSamples._lower`
@@ -153,7 +153,7 @@ RecordExportSamples._lower(time_ns)
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:63`](../../../src/chronaxis/execution/record_export_samples.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:63`](../../../src/chronaxis/execution/record_export_samples.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-rows"></a>
 ### `RecordExportSamples.rows`
@@ -178,7 +178,7 @@ RecordExportSamples.rows(interval)
 
 原读取/模型错。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:72`](../../../src/chronaxis/execution/record_export_samples.py#L72)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:72`](../../../src/chronaxis/execution/record_export_samples.py#L72)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-closed"></a>
 ### `RecordExportSamples.closed`
@@ -206,7 +206,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:85`](../../../src/chronaxis/execution/record_export_samples.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:85`](../../../src/chronaxis/execution/record_export_samples.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordExportSamples-close"></a>
 ### `RecordExportSamples.close`
@@ -232,4 +232,4 @@ None。
 
 原关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_export_samples.py:89`](../../../src/chronaxis/execution/record_export_samples.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_export_samples.py:89`](../../../src/chronaxis/execution/record_export_samples.py#L89)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

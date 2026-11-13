@@ -27,7 +27,7 @@ def raw(time,sequence,*,data=b'\x01\x02',identifier=0x123,**changes):
         is_rx=True,bitrate_switch=False,error_state_indicator=False)
     fields.update(changes)
     return RawCANRecord(LegacyRawFrame(**fields),time,Path('synthetic.asc'),sequence+1,sequence,
-                        str(time),'synthetic-v1',None,False)
+                        str(time),'synthetic-v1',fields['dlc'] if fields['is_remote_frame'] else None,False)
 
 
 class FrameExportTests(unittest.TestCase):

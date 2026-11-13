@@ -1,20 +1,20 @@
 # `chronaxis.legacy.export_write`
 
-在独立进程把原始帧交给冻结旧BLF writer，真实收尾后才确认完成。
+在独立进程把原始帧交给共用BLF写入器，真实收尾后才确认完成。
 
 LegacyCANProcessWrite接收共享ResourceBudget和新输出路径，构造只计有限状态、
-核路径而不spawn或执行旧IO。start实际加载锁定依赖/vendor并创建原writer；每次
+核路径而不spawn或打开输出。start加载依赖并由共用BLFWrite取得文件和写入器；每次
 write只发一个有界PUT，收到同序ACK才承认该帧，FINISH没有额外帧写入许可。
-finish须原stop成功、实际exitcode0、所有Pipe/Process及自有RAM清完，并核输出
+finish须BLFWrite完成收尾、实际exitcode0、所有Pipe/Process及自有RAM清完，并核输出
 stat不超过本writer直接预留，才公开finished。提前close、失败或取消不能伪完成。
 
 进程/管道/wire/READY/当前帧分别先付并记真实槽；释放前后取消可重试，最高
 can_process_write_cleanup_owner始终指向同一实际owner。磁盘在start前保守预留
 65536 bytes、每PUT前4096 bytes，累计保留且不倒扣；不凭共享余额差接管费用。
 原BLF压缩、库内部缓存及整进程RSS未测，也不承诺文件与源BLF字节一致。
-这里只写控制器新工作根下的新文件，不读源CAN/DBC，不修改原read/records/vendor。
+这里只写控制器新工作根下的新文件，不读取来源CAN或DBC。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -27,7 +27,7 @@ can_process_write_cleanup_owner始终指向同一实际owner。磁盘在start前
 |[`LegacyCANWriteError`](#api-LegacyCANWriteError)|报告新外部writer协议或原子进程失败；远端原错仅作为明确事实cause。|
 |[`LegacyCANProcessWrite`](#api-LegacyCANProcessWrite)|拥有一个真实writer子进程与独立费用，共用的资源用量记录但不关闭其他owner。|
 |[`LegacyCANProcessWrite.__init__`](#api-LegacyCANProcessWrite-__init__)|预约固定协调状态并检查新路径，不启动进程或创建目标文件。|
-|[`LegacyCANProcessWrite._check_path`](#api-LegacyCANProcessWrite-_check_path)|拒绝已有/受保护目标及缺少的新工作根，不创建目录或文件。|
+|[`LegacyCANProcessWrite._check_path`](#api-LegacyCANProcessWrite-_check_path)|拒绝已有目标及缺少的新工作根，不创建目录或文件。|
 |[`LegacyCANProcessWrite.output_path`](#api-LegacyCANProcessWrite-output_path)|读取实际新目标。|
 |[`LegacyCANProcessWrite.closed`](#api-LegacyCANProcessWrite-closed)|读取全部自有责任关闭状态。|
 |[`LegacyCANProcessWrite.finished`](#api-LegacyCANProcessWrite-finished)|读取完整FINISH事实。|
@@ -40,7 +40,7 @@ can_process_write_cleanup_owner始终指向同一实际owner。磁盘在start前
 |[`LegacyCANProcessWrite._reserve_spool`](#api-LegacyCANProcessWrite-_reserve_spool)|逐笔记录本次直接磁盘预留，回调执行后取消也保留真实归属。|
 |[`LegacyCANProcessWrite._fail`](#api-LegacyCANProcessWrite-_fail)|以实际父错误为主收尾，普通底层错误包装并保cause及最高恢复owner。|
 |[`LegacyCANProcessWrite.start`](#api-LegacyCANProcessWrite-start)|实际创建独立spawn及原writer，READY不包含任何帧许可。|
-|[`LegacyCANProcessWrite._check_ready`](#api-LegacyCANProcessWrite-_check_ready)|核同次实际PID及锁定依赖/vendor，不接受bool伪版本或自称READY。|
+|[`LegacyCANProcessWrite._check_ready`](#api-LegacyCANProcessWrite-_check_ready)|核同次实际PID及现有依赖，不接受bool伪版本或自称READY。|
 |[`LegacyCANProcessWrite._exchange`](#api-LegacyCANProcessWrite-_exchange)|同步交换唯一控制包，禁止第二个在途PUT或把子退出当成ACK。|
 |[`LegacyCANProcessWrite.write`](#api-LegacyCANProcessWrite-write)|完整发送一个原始帧并等唯一ACK，不缓存后继或按ID筛帧。|
 |[`LegacyCANProcessWrite.finish`](#api-LegacyCANProcessWrite-finish)|完成原stop、真实正常退出及全部费用，再核实际文件未超过预留。|
@@ -52,10 +52,10 @@ can_process_write_cleanup_owner始终指向同一实际owner。磁盘在start前
 
 ```python
 from pathlib import Path
-from .export_worker import WRITE_DEPENDENCIES, worker_main
+from .export_worker import worker_main
+from ..can_dependencies import runtime_dependency_versions
 from .process_read import RemoteLegacyError, _freeze, _wire_metadata_bytes
 from .records import MAX_WIRE_BYTES, PROFILE_ID, LegacyRawFrame, decode_packet, encode_packet, frame_to_dict
-from .worker import VENDOR_SHA256
 from ..results.budget import ResourceBudget
 from ..results.errors import AnalysisError, ResultClosedError
 from ..results.spool import _cleanup_owner, _release_owned_ram, _reserve_owned_ram
@@ -75,7 +75,7 @@ class LegacyCANWriteError(AnalysisError)
 继承关系：[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/legacy/export_write.py:29`](../../../src/chronaxis/legacy/export_write.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:28`](../../../src/chronaxis/legacy/export_write.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite"></a>
 ## `LegacyCANProcessWrite`
@@ -91,7 +91,7 @@ LegacyCANProcessWrite(budget, output_path)
 ```
 
 
-源码：[`src/chronaxis/legacy/export_write.py:33`](../../../src/chronaxis/legacy/export_write.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:32`](../../../src/chronaxis/legacy/export_write.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-__init__"></a>
 ### `LegacyCANProcessWrite.__init__`
@@ -107,7 +107,7 @@ LegacyCANProcessWrite.__init__(budget, output_path)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`budget`|[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)|是|无|位置或关键字。本次运行共用的ResourceBudget对象，用于检查内存和临时磁盘用量。当前对象在分配前申请额度，用完后归还；同一次运行的组件应使用同一个对象。|
-|`output_path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。output_path为控制器已有新工作根下的     str/Path目标，须为.blf后缀，不能已存在或位于RefProjects。|
+|`output_path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。output_path为控制器已有新工作根下的str/Path目标，须为.blf后缀，目标不能已存在。|
 
 #### 返回说明
 
@@ -123,12 +123,12 @@ LegacyCANProcessWrite.__init__(budget, output_path)
 - `TypeError`：原CAN写出需要ResourceBudget和新输出路径。
 - `ValueError`：原CAN输出路径超过本层有限能力。
 
-源码：[`src/chronaxis/legacy/export_write.py:41`](../../../src/chronaxis/legacy/export_write.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:40`](../../../src/chronaxis/legacy/export_write.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_check_path"></a>
 ### `LegacyCANProcessWrite._check_path`
 
-拒绝已有/受保护目标及缺少的新工作根，不创建目录或文件。
+拒绝已有目标及缺少的新工作根，不创建目录或文件。
 
 ```python
 LegacyCANProcessWrite._check_path()
@@ -147,10 +147,10 @@ LegacyCANProcessWrite._check_path()
 
 #### 异常说明
 
-ValueError为后缀/RefProjects，FileExistsError为已有目标，
+ValueError为后缀错误，FileExistsError为已有目标，
     FileNotFoundError为父目录不存在；真正独占创建由child执行。
 
-源码：[`src/chronaxis/legacy/export_write.py:72`](../../../src/chronaxis/legacy/export_write.py#L72)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:71`](../../../src/chronaxis/legacy/export_write.py#L71)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-output_path"></a>
 ### `LegacyCANProcessWrite.output_path`
@@ -178,7 +178,7 @@ resolved Path或构造前失败时None。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:88`](../../../src/chronaxis/legacy/export_write.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:87`](../../../src/chronaxis/legacy/export_write.py#L87)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-closed"></a>
 ### `LegacyCANProcessWrite.closed`
@@ -206,7 +206,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:93`](../../../src/chronaxis/legacy/export_write.py#L93)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:92`](../../../src/chronaxis/legacy/export_write.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-finished"></a>
 ### `LegacyCANProcessWrite.finished`
@@ -234,7 +234,7 @@ bool，失败/提前close为False。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:98`](../../../src/chronaxis/legacy/export_write.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:97`](../../../src/chronaxis/legacy/export_write.py#L97)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-failed"></a>
 ### `LegacyCANProcessWrite.failed`
@@ -262,7 +262,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:103`](../../../src/chronaxis/legacy/export_write.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:102`](../../../src/chronaxis/legacy/export_write.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-worker_pid"></a>
 ### `LegacyCANProcessWrite.worker_pid`
@@ -290,7 +290,7 @@ int或None，关闭后保留。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:108`](../../../src/chronaxis/legacy/export_write.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:107`](../../../src/chronaxis/legacy/export_write.py#L107)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-spool_bytes"></a>
 ### `LegacyCANProcessWrite.spool_bytes`
@@ -318,7 +318,7 @@ int bytes，不倒扣。
 
 无。
 
-源码：[`src/chronaxis/legacy/export_write.py:113`](../../../src/chronaxis/legacy/export_write.py#L113)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:112`](../../../src/chronaxis/legacy/export_write.py#L112)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-counters"></a>
 ### `LegacyCANProcessWrite.counters`
@@ -346,7 +346,7 @@ LegacyCANProcessWrite.counters
 
 原小容器分配错误；不向child发送额外控制或写入。
 
-源码：[`src/chronaxis/legacy/export_write.py:118`](../../../src/chronaxis/legacy/export_write.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:117`](../../../src/chronaxis/legacy/export_write.py#L117)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-metadata"></a>
 ### `LegacyCANProcessWrite.metadata`
@@ -378,7 +378,7 @@ ResultClosedError为关闭/失败，RuntimeError为尚无实际READY。
 
 - `RuntimeError`：原CAN writer尚未READY。
 
-源码：[`src/chronaxis/legacy/export_write.py:128`](../../../src/chronaxis/legacy/export_write.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:127`](../../../src/chronaxis/legacy/export_write.py#L127)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_require_open"></a>
 ### `LegacyCANProcessWrite._require_open`
@@ -408,7 +408,7 @@ ResultClosedError为不可推进；close仍可重复恢复。
 
 - `ResultClosedError`：原CAN writer已关闭、清理中或失败。
 
-源码：[`src/chronaxis/legacy/export_write.py:137`](../../../src/chronaxis/legacy/export_write.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:136`](../../../src/chronaxis/legacy/export_write.py#L136)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_reserve_spool"></a>
 ### `LegacyCANProcessWrite._reserve_spool`
@@ -433,7 +433,7 @@ LegacyCANProcessWrite._reserve_spool(amount)
 
 原配额/取消，文件及累计值不倒扣。
 
-源码：[`src/chronaxis/legacy/export_write.py:144`](../../../src/chronaxis/legacy/export_write.py#L144)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:143`](../../../src/chronaxis/legacy/export_write.py#L143)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_fail"></a>
 ### `LegacyCANProcessWrite._fail`
@@ -460,7 +460,7 @@ LegacyCANProcessWrite._fail(exc, phase)
 KI/SystemExit/AnalysisError原对象，其余LegacyCANWriteError保原cause；
     两次有限cleanup副错只附note，绝不伪称写出完成。
 
-源码：[`src/chronaxis/legacy/export_write.py:156`](../../../src/chronaxis/legacy/export_write.py#L156)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:155`](../../../src/chronaxis/legacy/export_write.py#L155)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-start"></a>
 ### `LegacyCANProcessWrite.start`
@@ -486,12 +486,12 @@ self，重复成功调用不重建或重复预留。
 
 路径/依赖/管道/协议/配额/预算或父原取消，最高owner按实际槽可恢复。
 
-源码：[`src/chronaxis/legacy/export_write.py:171`](../../../src/chronaxis/legacy/export_write.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:170`](../../../src/chronaxis/legacy/export_write.py#L170)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_check_ready"></a>
 ### `LegacyCANProcessWrite._check_ready`
 
-核同次实际PID及锁定依赖/vendor，不接受bool伪版本或自称READY。
+核同次实际PID及现有依赖，不接受bool伪版本或自称READY。
 
 ```python
 LegacyCANProcessWrite._check_ready(packet)
@@ -515,7 +515,7 @@ LegacyCANWriteError为结构/类型/profile/PID/版本/摘要不符。
 
 - `LegacyCANWriteError`：原CAN writer READY身份、版本、实际PID或vendor不符。
 
-源码：[`src/chronaxis/legacy/export_write.py:207`](../../../src/chronaxis/legacy/export_write.py#L207)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:206`](../../../src/chronaxis/legacy/export_write.py#L206)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_exchange"></a>
 ### `LegacyCANProcessWrite._exchange`
@@ -541,7 +541,7 @@ LegacyCANProcessWrite._exchange(packet)
 父原取消/管道/编码错误或LegacyCANWriteError；远端失败以明确
     RemoteLegacyError事实为cause，不能声称跨进程保留异常对象身份。
 
-源码：[`src/chronaxis/legacy/export_write.py:221`](../../../src/chronaxis/legacy/export_write.py#L221)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:219`](../../../src/chronaxis/legacy/export_write.py#L219)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-write"></a>
 ### `LegacyCANProcessWrite.write`
@@ -571,7 +571,7 @@ TypeError为非原模型；原预算/磁盘/取消或writer/协议失败，之�
 - `TypeError`：原CAN writer.write需要LegacyRawFrame。
 - `LegacyCANWriteError`：原CAN writer ACK不属于本次唯一PUT。
 
-源码：[`src/chronaxis/legacy/export_write.py:253`](../../../src/chronaxis/legacy/export_write.py#L253)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:251`](../../../src/chronaxis/legacy/export_write.py#L251)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-finish"></a>
 ### `LegacyCANProcessWrite.finish`
@@ -598,7 +598,7 @@ self，成功后重复调用不重发FINISH或重写文件。
 原取消/预算/关闭错误，或LegacyCANWriteError为不完整回应、异常退出
     或实际stat超本writer累计预留；任何失败都不置finished。
 
-源码：[`src/chronaxis/legacy/export_write.py:285`](../../../src/chronaxis/legacy/export_write.py#L285)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:283`](../../../src/chronaxis/legacy/export_write.py#L283)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_close_connection"></a>
 ### `LegacyCANProcessWrite._close_connection`
@@ -623,7 +623,7 @@ LegacyCANProcessWrite._close_connection(slot)
 
 原close/取消；执行后异常也按真实closed确认，不丢未关句柄。
 
-源码：[`src/chronaxis/legacy/export_write.py:313`](../../../src/chronaxis/legacy/export_write.py#L313)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:311`](../../../src/chronaxis/legacy/export_write.py#L311)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-_close_process"></a>
 ### `LegacyCANProcessWrite._close_process`
@@ -651,7 +651,7 @@ LegacyCANProcessWrite._close_process()
     未确认时保原进程/费用并附稳定退出诊断。显式join上限为.5/.5/5秒，
     Windows kill仍是TerminateProcess，必须实际exitcode非None。
 
-源码：[`src/chronaxis/legacy/export_write.py:325`](../../../src/chronaxis/legacy/export_write.py#L325)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:323`](../../../src/chronaxis/legacy/export_write.py#L323)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessWrite-close"></a>
 ### `LegacyCANProcessWrite.close`
@@ -678,4 +678,4 @@ None，完成后重复调用幂等。
 原关闭/预算/取消附can_process_write_cleanup_owner，当前槽供持续恢复；
     提前关闭不发送额外帧或FINISH，不设置finished，不修改借用预算的其他费用。
 
-源码：[`src/chronaxis/legacy/export_write.py:356`](../../../src/chronaxis/legacy/export_write.py#L356)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_write.py:354`](../../../src/chronaxis/legacy/export_write.py#L354)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -1,26 +1,25 @@
-"""在独立进程把原始帧交给冻结旧BLF writer，真实收尾后才确认完成。
+"""在独立进程把原始帧交给共用BLF写入器，真实收尾后才确认完成。
 
 LegacyCANProcessWrite接收共享ResourceBudget和新输出路径，构造只计有限状态、
-核路径而不spawn或执行旧IO。start实际加载锁定依赖/vendor并创建原writer；每次
+核路径而不spawn或打开输出。start加载依赖并由共用BLFWrite取得文件和写入器；每次
 write只发一个有界PUT，收到同序ACK才承认该帧，FINISH没有额外帧写入许可。
-finish须原stop成功、实际exitcode0、所有Pipe/Process及自有RAM清完，并核输出
+finish须BLFWrite完成收尾、实际exitcode0、所有Pipe/Process及自有RAM清完，并核输出
 stat不超过本writer直接预留，才公开finished。提前close、失败或取消不能伪完成。
 
 进程/管道/wire/READY/当前帧分别先付并记真实槽；释放前后取消可重试，最高
 can_process_write_cleanup_owner始终指向同一实际owner。磁盘在start前保守预留
 65536 bytes、每PUT前4096 bytes，累计保留且不倒扣；不凭共享余额差接管费用。
 原BLF压缩、库内部缓存及整进程RSS未测，也不承诺文件与源BLF字节一致。
-这里只写控制器新工作根下的新文件，不读源CAN/DBC，不修改原read/records/vendor。
+这里只写控制器新工作根下的新文件，不读取来源CAN或DBC。
 """
 
-# 仅导入标准库和既有轻量协议；真实旧模块与CAN依赖留在独立spawn子内。
+# 仅导入标准库和既有轻量协议；CAN依赖留在独立spawn子内。
 import multiprocessing
 from pathlib import Path
-import platform
-from .export_worker import WRITE_DEPENDENCIES, worker_main
+from .export_worker import worker_main
+from ..can_dependencies import runtime_dependency_versions
 from .process_read import RemoteLegacyError, _freeze, _wire_metadata_bytes
 from .records import MAX_WIRE_BYTES, PROFILE_ID, LegacyRawFrame, decode_packet, encode_packet, frame_to_dict
-from .worker import VENDOR_SHA256
 from ..results.budget import ResourceBudget
 from ..results.errors import AnalysisError, ResultClosedError
 from ..results.spool import _cleanup_owner, _release_owned_ram, _reserve_owned_ram
@@ -42,7 +41,7 @@ class LegacyCANProcessWrite:
         """预约固定协调状态并检查新路径，不启动进程或创建目标文件。
 
         参数: budget为借用ResourceBudget；output_path为控制器已有新工作根下的
-            str/Path目标，须为.blf后缀，不能已存在或位于RefProjects。
+            str/Path目标，须为.blf后缀，不能已存在。
         返回: 未启动的独立writer。异常: 类型、路径或预算原错；未返回构造的持续
             清理失败附can_process_write_cleanup_owner，同对象恢复后close。
         """
@@ -70,15 +69,15 @@ class LegacyCANProcessWrite:
             raise
 
     def _check_path(self):
-        """拒绝已有/受保护目标及缺少的新工作根，不创建目录或文件。
+        """拒绝已有目标及缺少的新工作根，不创建目录或文件。
 
         参数: 无，使用已保存resolved路径。返回: None。
-        异常: ValueError为后缀/RefProjects，FileExistsError为已有目标，
+        异常: ValueError为后缀错误，FileExistsError为已有目标，
             FileNotFoundError为父目录不存在；真正独占创建由child执行。
         """
         path = self._output_path
-        if path.suffix.lower() != '.blf' or any(part.casefold() == 'refprojects' for part in path.parts):
-            raise ValueError('原CAN写出仅支持RefProjects之外的新BLF')
+        if path.suffix.lower() != '.blf':
+            raise ValueError('原CAN写出仅支持新的BLF文件')
         if path.exists():
             raise FileExistsError(path)
         if not path.parent.is_dir():
@@ -205,18 +204,17 @@ class LegacyCANProcessWrite:
             self._fail(exc, '初始化')
 
     def _check_ready(self, packet):
-        """核同次实际PID及锁定依赖/vendor，不接受bool伪版本或自称READY。
+        """核同次实际PID及现有依赖，不接受bool伪版本或自称READY。
 
         参数: packet为decode_packet得到的dict。返回: None。
         异常: LegacyCANWriteError为结构/类型/profile/PID/版本/摘要不符。
         """
-        if (set(packet) != {'op', 'version', 'profile', 'worker_pid', 'dependency_versions', 'vendor_sha256'}
+        if (set(packet) != {'op', 'version', 'profile', 'worker_pid', 'dependency_versions'}
                 or packet.get('op') != 'ready' or type(packet.get('version')) is not int or packet['version'] != 1
                 or type(packet.get('profile')) is not str or packet['profile'] != PROFILE_ID
                 or type(packet.get('worker_pid')) is not int or packet['worker_pid'] != self._worker_pid
-                or packet['dependency_versions'] != {'python': platform.python_version(), **WRITE_DEPENDENCIES}
-                or packet['vendor_sha256'] != VENDOR_SHA256):
-            raise LegacyCANWriteError('原CAN writer READY身份、版本、实际PID或vendor不符')
+                or packet['dependency_versions'] != runtime_dependency_versions()):
+            raise LegacyCANWriteError('原CAN writer READY身份、版本或实际PID不符')
 
     def _exchange(self, packet):
         """同步交换唯一控制包，禁止第二个在途PUT或把子退出当成ACK。

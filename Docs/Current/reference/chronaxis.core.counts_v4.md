@@ -5,7 +5,7 @@
 样本计数沿用既有真实更新与选择政策，对象计数只计指定规则或窗口在本会话
 最终产生的对象。计数保留整数；有证据的空集、发现不完整及没有观测分别报告。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -52,4 +52,4 @@ classify_count(count, policy, *, observed, determinate, complete)
 
 ValueError为计数或数据不全时的处理方式不合法。
 
-源码：[`src/chronaxis/core/counts_v4.py:14`](../../../src/chronaxis/core/counts_v4.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/counts_v4.py:14`](../../../src/chronaxis/core/counts_v4.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

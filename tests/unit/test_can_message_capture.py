@@ -22,8 +22,6 @@ from chronaxis.core.binding import SignalDefinition
 from chronaxis.core.models import TimebaseSpec
 from chronaxis.core.types import QualityFlag as Q, SignalDType as D, TimeType
 from chronaxis.execution import can_reader as module
-from chronaxis.execution.history import DecodedHistoryStore
-from chronaxis.execution.observed_ingestion import ObservedSourceScan
 from chronaxis.legacy.message_store import DecodedMessageStore
 from chronaxis.legacy.process_read import LegacyCANProcessRead
 from chronaxis.legacy.records import LegacyCANField
@@ -169,21 +167,6 @@ class CaptureFixture(unittest.TestCase):
         self.receivers.append(receiver)
         return receiver
 
-    def history_scan(self, adapter, *, projection=()):
-        """以原adapter/spec/request建立真实building历史及scan。
-
-        参数: adapter及读取投影；不构造观测证明或替代绑定。
-        返回: (history,scan,原request)。异常: 原历史/扫描构造错误。
-        """
-        request = ReadRequest('session', projection, 0, 1000000000, 1)
-        history = DecodedHistoryStore(self.budget, self.root / ('history-' + str(len(self.histories))),
-            (adapter.describe(),), {'bus': request})
-        self.histories.append(history)
-        source = SourcePlan('bus', 'can_blf', adapter.spec, 's', None,
-            'capture-source-home', MappingProxyType({}))
-        scan = ObservedSourceScan(history, source, adapter, request)
-        self.scans.append(scan)
-        return history, scan, request
 
     def write_input(self, rows=None):
         """现场生成可手算的原DBC/BLF，writer实际stop后才读取。
@@ -220,21 +203,19 @@ class CaptureStaticTests(CaptureFixture):
                 _, second = self.read(explicit)
                 enabled = self.adapter(capture=True)
                 _, third = self.read(enabled)
-                history, scan, _ = self.history_scan(enabled)
         self.assertEqual(first._fixed_cost, second._fixed_cost)
         self.assertEqual(implicit._fixed_cost, explicit._fixed_cost)
         self.assertFalse(implicit.capture_message_updates or first.capture_message_updates)
-        self.assertTrue(enabled.capture_message_updates and third.capture_message_updates and scan.capture_message_updates)
+        self.assertTrue(enabled.capture_message_updates and third.capture_message_updates)
         self.assertIsNone(third._process)
         self.assertIsNone(third._message_store)
         self.assertFalse(third._work_path.exists())
-        for owner in (enabled, third, scan):
+        for owner in (enabled, third):
             with self.assertRaises(AttributeError):
                 owner.capture_message_updates = False
         # 未开始读取也只能由原父close，不从readonly flag猜已经完成或取得仓。
         with self.assertRaises(ResultClosedError):
             third.take_message_store(self.receiver())
-        self.assertFalse(history.closed)
 
     def test_capture_switch_rejects_non_native_bool_before_new_directory(self):
         """0/1/None/文本不按truthiness打开捕获，拒绝前不创建adapter目录或付款。
@@ -410,46 +391,6 @@ class CaptureActualTests(CaptureFixture):
                 read.close()
                 adapter.close()
 
-    def test_scan_transfers_actual_store_before_closing_read_and_borrowed_input(self):
-        """实际空投影scan写同一history，原消息仓经scan移交后独立存活。
-
-        参数: 无。返回: None。异常: 原生产错或原对象/READY/EOF/费用归属断言失败。
-        """
-        # 原工厂返回对象只被观察，不用手造仓、相等readid或外部read替代扫描。
-        self.write_input()
-        adapter = self.adapter(capture=True)
-        history, scan, request = self.history_scan(adapter)
-        captured = []
-
-        def create_actual(*args, **kwargs):
-            """观察真实构造返回。参数: 原仓构造参数。返回: 实际仓。异常: 原构造错。"""
-            store = DecodedMessageStore(*args, **kwargs)
-            captured.append(store)
-            return store
-
-        with patch.object(module, 'DecodedMessageStore', side_effect=create_actual):
-            scan.consume()
-        self.assertEqual(len(captured), 1)
-        store = captured[0]
-        self.assertTrue(scan.finished and scan.capture_message_updates)
-        self.assertIs(scan._message_store, store)
-        self.assertIsNone(scan._read)
-        self.assertIs(scan.request, request)
-        self.assertEqual(scan.counts, (5, 0))
-        self.assertEqual(scan.observation.row_count, store.count)
-        self.assertEqual(store.read_identity, scan.read_identity)
-        self.assertEqual(store.decoder_profile, scan.runtime_metadata['profile'])
-        # 再次移交后逐个关闭原父与借用输入，账本只能剩新父的真实仓费。
-        receiver = self.receiver()
-        self.assertIs(scan.take_message_store(receiver), store)
-        self.assertIsNone(scan._message_store)
-        scan.close()
-        self.assertTrue(scan.closed)
-        self.assertFalse(adapter.closed or history.closed or store.closed)
-        adapter.close()
-        history.close()
-        self.assertEqual(self.budget.ram_bytes, self.borrowed + store._held_cost)
-        self.assertEqual(len(tuple(store.iter_records())), 4)
 
     def test_read_receiver_cancel_before_after_keeps_one_actual_parent(self):
         """父安装前仍归read，安装后即归新父；同一KI不丢仓且重复移交拒绝。
@@ -484,35 +425,6 @@ class CaptureActualTests(CaptureFixture):
                 self.assertFalse(store.closed)
                 receiver.close()
 
-    def test_scan_receiver_cancel_before_after_retains_actual_scan_or_parent(self):
-        """scan完成后父安装前后取消均有真实槽，关闭scan不越权关闭已移交仓。
-
-        参数: 无。返回: None。异常: 原生产错或最高scan/父槽/关闭断言失败。
-        """
-        # 使用真实finished scan覆盖第二级移交，不能只测read一级后推结论。
-        self.write_input()
-        for after in (False, True):
-            with self.subTest(after=after):
-                adapter = self.adapter(capture=True)
-                _, scan, _ = self.history_scan(adapter)
-                scan.consume()
-                receiver, store = self.receiver(), scan._message_store
-                marker = KeyboardInterrupt('scan receiver')
-                receiver.install_error, receiver.after = marker, after
-                try:
-                    with self.assertRaises(KeyboardInterrupt) as raised:
-                        scan.take_message_store(receiver)
-                    self.assertIs(raised.exception, marker)
-                    self.assertIs(marker.observed_source_scan_cleanup_owner, scan)
-                    self.assertIs(receiver._message_store if after else scan._message_store, store)
-                finally:
-                    receiver.install_error = None
-                if not after:
-                    self.assertIs(scan.take_message_store(receiver), store)
-                with self.assertRaises(ValueError):
-                    scan.take_message_store(receiver)
-                scan.close()
-                self.assertFalse(store.closed)
 
     def test_message_constructor_reserve_cancel_has_actual_unreturned_store_owner(self):
         """首PULL前消息仓固定费前后取消，实际未返回子由最高read持有恢复。

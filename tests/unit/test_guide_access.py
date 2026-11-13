@@ -79,8 +79,17 @@ class GuideAccessTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             user_guide.export_guide(output)
         self.assertEqual(output.read_bytes(), before)
-        with self.assertRaises(ValueError):
-            user_guide.export_guide(self.root / "RefProjects/guide.zip")
+        named=self.root / "RefProjects/guide.zip"
+        named.parent.mkdir()
+        user_guide.export_guide(named)
+        with ZipFile(named) as actual, ZipFile(output) as expected:
+            self.assertEqual(actual.namelist(),expected.namelist())
+            for name in actual.namelist():
+                self.assertEqual(actual.read(name),expected.read(name))
+        named_before=named.read_bytes()
+        with self.assertRaises(FileExistsError):
+            user_guide.export_guide(named)
+        self.assertEqual(named.read_bytes(),named_before)
 
     def test_export_rejects_outside_manifest_member(self):
         """参数: 无。返回: 无。异常: 越界成员必须在读取外部文件或创建输出前拒绝。"""

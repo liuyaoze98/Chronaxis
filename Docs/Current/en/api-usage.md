@@ -39,7 +39,7 @@ if __name__ == "__main__":
     main()
 ```
 
-The configuration allows four workers, but this example has one ASC file and uses at most one reading worker. To run two parts of the same data, load `Docs/Current/examples/input-can-directory.yaml` instead: at most two reading workers produce the same calculation results. The synthetic example produces the following terminal output. Each row gives the calculation name, value, unit and status.
+The configuration permits up to four workers, but this example has one ASC and default concatenation, so it reads in the current process; `explain` reports `read_process_limit: 0`. To run two parts of the same data, load `Docs/Current/examples/input-can-directory.yaml` instead: `read_process_limit` becomes 2 and the calculation results remain the same. This is a plan limit, not a measured PID count. The synthetic example produces the following terminal output. Each row gives the calculation name, value, unit and status.
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -50,9 +50,9 @@ Power values of 2, 4, 8 and 10 W last 1, 2, 1 and 2 seconds, respectively. The i
 
 `load_analysis_plan` reads the main configuration and its explicit, single-level shared definitions. Relative paths are resolved from the file in which they are declared. `AnalysisPlan.from_dict(config, base_dir=...)` accepts a Python dictionary rather than reading a main file; omitted `base_dir` means the current directory. Both entry points may enumerate input directories and read DBC metadata to infer CAN types, units, or enumerations. They do not scan business messages or CSV records at this stage. `from_dict` rejects unexpanded `imports`: use the file loader or `chronaxis config resolve` first. Both check unknown fields, name collisions, expressions, and references.
 
-`validate_analysis_plan` returns a static `ValidationReport`. `valid` reports declaration validity; `execution_ready` reports whether the execution path supports the plan. `explain_analysis_plan` returns an `ExplainReport` containing dependencies and backend decisions. Static checks on a loaded plan do not read business records. DBC metadata read during loading is not proof that actual data is valid.
+`validate_analysis_plan` returns a static `ValidationReport`. `valid` reports declaration validity; `execution_ready` reports whether the execution path supports the plan. `explain_analysis_plan` returns an `ExplainReport` containing dependencies and backend decisions. Static checks on a loaded plan do not read business records. DBC metadata read during loading is not proof that actual data is valid. Neither valid nor execution_ready certifies whole-file contents: malformed records, backwards timestamps, runtime permissions or insufficient resources may be discovered only by run.
 
-`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's backend. `reference` uses the independent reference implementation; `numpy` uses array calculations. Explicitly supplying either name overrides the backend for that run. `run(plan, work_dir=None, *, process_count=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
+`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's setting. Omitting backend in the configuration selects auto, which chooses reference or numpy from the whole plan. Reference uses the independent numerical implementation; NumPy uses point or array execution as appropriate. Explicit auto, reference or numpy overrides that run. See [execution settings](execution.md) for the selection scope. `run(plan, work_dir=None, *, process_count=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
 
 Omit extensions for built-in operations. A Python host that registers custom functions or rolling operators must pass the same extension registry when loading the plan and constructing AnalysisRunner. See [Custom analysis operators](host-extensions.md). An asterisk in a signature marks the following arguments as keyword-only.
 
@@ -101,13 +101,15 @@ print(explain_analysis_plan(plan))
 | Stage | Common exception or result | Caller action |
 |---|---|---|
 | Configuration loading | `PlanValidationError` | Inspect `path`, `source`, and available line/column positions; correct and reload. Business logs have not yet been read. |
-| Execution | `AnalysisError`, preserving the original cause | Check paths, timestamps, decoding, and budgets. Do not treat failure as empty output. |
+| Execution | `AnalysisError`; a newly wrapped runtime failure preserves its original error in `__cause__` | Check paths, timestamps, decoding, and budgets. Do not treat failure as empty output. |
 | Creating or reading a result cursor | `ResultClosedError`, `BudgetExceededError`, `ResultFormatError`, `OSError` | Close the cursor and retain the exception. Check lifetime, budgets, or temporary files; consult the method reference for exact exceptions. |
 | Reading unrequested details | `ContributionsUnavailableError`; `AnalysisError` if input tracing is disabled | Enable `outputs.contributions` or `diagnostics.trace` only if required, and rerun. |
 | Publication | `AnalysisError` or `ResultClosedError` | Check the path, write permissions, platform, and original cause chain. If the result remains usable, retry `write` to the same or another directory. |
 | Batch tasks | `failed` or `cancelled` in the report | Inspect every task status. A normal return from `run_batch` does not mean every task succeeded. |
 
 Import `AnalysisError` and `ResultClosedError` from `chronaxis`. Other result exceptions are defined in [chronaxis.results.errors](../reference/chronaxis.results.errors.md), a Chinese implementation reference. Results and cursors own resources independently: use `with` for the result and `finally` for cursors. After closing a result, its `run_manifest` still provides a small diagnostic snapshot, but data cannot be read or published again.
+
+If cleanup fails, retain the original exception and the result object. For an ordinary run failure, inspect `getattr(exc, "runner_cleanup_owner", None)` on the caught exception; publication or result-close failures may provide `analysis_result_cleanup_owner`. Resolve the resource fault, then call `close()` on an available recovery object or retry closing the result you still hold. Recovery releases this invocation's resources; it does not rerun calculations or undo published results. An attribute may still refer to an already closed object, so its presence alone does not establish that resources remain open.
 
 <a id="时间与预设入口"></a>
 ## Time and preset entry points

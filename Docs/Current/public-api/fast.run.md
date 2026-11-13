@@ -25,7 +25,7 @@ pathlib.Path：本次完成清单。inputs列出全部文件，outputs列出结�
 
 ### 异常
 
-PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。
+PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协议问题；资源超额、worker故障可抛RuntimeError；取消抛InterruptedError；文件和发布错误可抛OSError。任一必需文件失败均不发布正常会话结果。会话异常保留原类型；清理未完成时，原异常可能带fast_session_cleanup_owner，排除资源故障后调用该对象close，不必分别关闭子对象。该属性不保证存在，也可能在后续重试后指向已关闭对象。
 
 ### 执行与资源
 
@@ -33,4 +33,4 @@ PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协�
 
 [高性能积分器教程](../fast-energy.md)
 
-源码：[`src/chronaxis/fast/run.py:63`](../../../src/chronaxis/fast/run.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -5,7 +5,8 @@
 """
 from math import isfinite
 from ..core.numeric import ScalarValue
-from ..core.types import QualityFlag as Q
+from ..core.scalar import _scalar_from_validated_fields
+from ..core.types import QualityFlag as Q, _QUALITY_BY_MASK
 from ..legacy.sum import LegacySkipReason
 
 
@@ -15,7 +16,29 @@ def scalar_from_column(column, index):
     参数: column为本批SignalSeries；index为匹配列位置。返回: ScalarValue。
     异常: 原类型/布局错误；不做第二次数值转换。
     """
-    valid, quality = bool(column.valid[index]), Q(int(column.quality[index]))
+    return _extract_scalar(column, index, ScalarValue)
+
+
+def _scalar_from_validated_column(column, index):
+    """借用当前适配器刚核过且未交给外部的列，不重验每个标签域。
+
+    参数: 本次运行拥有的已校验NumericArray/SignalSeries和位置。
+    返回: ScalarValue；不复制列或保留另一份值。异常: 索引/分配原错。
+    公开或来源不明的列须用scalar_from_column，不使用本内部入口。
+    """
+    return _extract_scalar(column, index, _scalar_from_validated_fields)
+
+
+def _extract_scalar(column, index, factory):
+    """按列原有规则取值并交给内部选定的构造器。
+
+    参数: 数值列、位置、构造函数。返回: ScalarValue。
+    异常: 索引、标签或构造错误传播；无效值不读取数组占位为真值。
+    """
+    mask = int(column.quality[index])
+    # 内部列已验证范围；公开入口仍由枚举拒绝未知位与负值。
+    quality = _QUALITY_BY_MASK[mask] if factory is _scalar_from_validated_fields else Q(mask)
+    valid = bool(column.valid[index])
     # ENUM有效值还原实际逻辑标签；其他有效值取原生标量。
     if valid:
         value = column.labels[int(column.values[index])] if column.labels else column.values[index].item()
@@ -24,8 +47,8 @@ def scalar_from_column(column, index):
         originals=getattr(column,'original_values',None)
         value = originals[index] if originals is not None else None
     code = getattr(column, 'code', None)
-    return ScalarValue(value, column.dtype, valid, quality, column.labels,
-                       None if code is None else scalar_from_column(code, index))
+    return factory(value, column.dtype, valid, quality, column.labels,
+                   None if code is None else _extract_scalar(code, index, factory))
 
 def direction_bucket_state(raw, bucket):
     """按同条原值判桶，既不转换单位也不把缺值或非有限当正常零。

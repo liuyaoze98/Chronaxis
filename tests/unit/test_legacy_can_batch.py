@@ -5,6 +5,7 @@
 保留原逐条接口的全部测试，新增批次必须核完整原时间、同刻数据、稀疏序号和借款。
 """
 
+from chronaxis.can_dependencies import runtime_dependency_versions
 from functools import partial
 import os
 import platform
@@ -17,7 +18,6 @@ from chronaxis.legacy.batch_wire import (HEADER, LENGTH, MAX_BATCH_BYTES, MIN_BA
     MAX_BATCH_ROWS, BATCH_MAGIC, decode_batch, encode_batch)
 from chronaxis.legacy.records import (LegacyCANRequest, LegacyDecodedFrame, LegacyRawFrame,
     MAX_WIRE_BYTES, PROFILE_ID, decode_packet, decoded_to_dict, encode_packet)
-from chronaxis.legacy.worker import VENDOR_SHA256
 from chronaxis.results.budget import ResourceBudget
 from chronaxis.results.errors import BudgetExceededError
 from chronaxis.sources.protocol import SourceReadError
@@ -67,8 +67,7 @@ def controlled_batch_worker(connection, *, mode='data'):
     initial = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))
     ready = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
         'worker_pid': os.getpid(), 'fields': [{'locator': x, 'unit': 'V'} for x in initial['fields']],
-        'dependency_versions': {'python': platform.python_version(), 'python-can': '4.6.1',
-            'cantools': '39.4.3', 'natsort': '8.4.0'}, 'vendor_sha256': VENDOR_SHA256}
+        'dependency_versions': runtime_dependency_versions()}
     connection.send_bytes(encode_packet(ready))
     try:
         packet = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))

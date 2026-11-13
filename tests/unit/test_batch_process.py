@@ -156,6 +156,17 @@ class BatchProcessTests(unittest.TestCase):
         directories = tuple((self.root/'crashed').glob('crash_*'))
         self.assertEqual(len(directories), 1)
         pid = int((directories[0]/'child-pid.txt').read_text())
+        if os.name!='nt':
+            # 只观察本例由原worker报告的后代PID，不扫描主机进程。
+            deadline=time.monotonic()+5
+            while True:
+                try:
+                    with open(f'/proc/{pid}/stat') as stream:active=stream.read().split(') ',1)[1].split()[0]!='Z'
+                except FileNotFoundError:active=False
+                if not active:break
+                if time.monotonic()>=deadline:self.fail('本次工作进程后代仍在运行')
+                time.sleep(.01)
+            return
         api = ctypes.WinDLL('kernel32', use_last_error=True)
         api.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
         api.OpenProcess.restype = wintypes.HANDLE

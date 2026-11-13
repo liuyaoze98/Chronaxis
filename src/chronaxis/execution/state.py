@@ -14,9 +14,10 @@ from math import isnan
 from types import MappingProxyType
 from ..core.binding import SignalDefinition
 from ..core.numeric import ScalarValue
+from ..core.scalar import _scalar_from_validated_fields
 from ..core.types import SignalDType
 from ..core.validation import require_identifier
-from ..results.budget import ResourceBudget
+from ..results.budget import ResourceBudget, _reserve_owned_ram
 from ..results.errors import ResultClosedError
 from .groups import DecodedTimeGroup
 from .history import _metadata_bytes
@@ -41,6 +42,20 @@ class CommittedUpdates:
             raise ValueError('提交结果需唯一别名与非负原生冲突数')
 
 
+def _committed_from_validated_fields(time_ns, updates, conflict_count):
+    """包装本次已完成绑定/冲突选择的结果，不再遍历一次时间组。
+
+    参数: 原完整组时刻、每别名唯一的选定tuple、非负冲突数。
+    返回: CommittedUpdates。异常: 分配错误传播，不安装部分状态。
+    只由LatestSignalState.apply在全部检查后使用；公开构造仍完整验证。
+    """
+    result = object.__new__(CommittedUpdates)
+    object.__setattr__(result, 'time_ns', time_ns)
+    object.__setattr__(result, 'updates', updates)
+    object.__setattr__(result, 'conflict_count', conflict_count)
+    return result
+
+
 def _same_fact(left: HistorySample, right: HistorySample) -> bool:
     """按现有核心比较逻辑值/类型/valid/quality，NaN诊断可以同因一致。
 
@@ -62,16 +77,19 @@ class _StateSnapshot:
     conflict_count: int
     retained_cost: int
     revision: int  # 成功完整组提交次数，仅用于内部两段查询证明提交顺序。
+    costs: MappingProxyType  # 每别名最新记录的已核费用；与latest在同一快照内替换。
     prior: dict | None = None  # 仅v4最近一组被替换的(时间,规范标量)，无原记录定位。
 
 
 class LatestSignalState:
     """持有固定声明与每别名一个最新记录；成功完整组严格递增，不按批次重置。"""
 
-    def __init__(self, budget: ResourceBudget, definitions: tuple[SignalDefinition, ...], session_id: str):
+    def __init__(self, budget: ResourceBudget, definitions: tuple[SignalDefinition, ...], session_id: str,
+                 *, declaration_owner=None):
         """先申请声明/容器预算，再检查唯一别名并创建空状态。
 
         参数: budget共享账本；definitions当前冻结声明，常量计划可为空tuple；session_id当前会话。
+            declaration_owner仅供运行树传入仍持有同一声明的RunSession；独立调用省略。
         返回: 新状态。异常: 配置/预算/取消；保留原异常并清理成功申请，包括申请返回取消。
             持续清理失败时，原异常的state_cleanup_owner提供本次状态的恢复close入口。
         """
@@ -82,15 +100,32 @@ class LatestSignalState:
         if any(item.valid_for_ns is None for item in definitions):
             raise ValueError('状态需要已确定的有效期；请先读取DBC周期或提供period/valid_for')
         require_identifier(session_id, 'state.session_id')
-        cost = 32768 + len(definitions) * 8192 + _metadata_bytes((definitions, session_id)) * 16
+        # 新增费用映射只借用声明中的名称，自己拥有字典槽、只读代理和整数费用。
+        # 固定申请覆盖一份持有映射；apply另外申请新副本，不能把新旧同时存在算成一份。
+        cache_cost = 512 + len(definitions) * 128
+        from .static_metadata import static_metadata_bytes
+        borrowed = ()
+        if declaration_owner is not None:
+            from .run_session import RunSession
+            if (not isinstance(declaration_owner, RunSession) or declaration_owner.closed or declaration_owner._closing
+                    or declaration_owner._budget is not budget):
+                raise ValueError('共享声明必须由同一账本中仍开放的运行会话持有')
+            borrowed = declaration_owner._plan.bindings.signals
+        # 运行树保证先关子state再释放父声明；不接受数字/布尔标志作为共享证明。
+        # 只有与父会话完全相同的声明对象才借用；DBC补全或类型变换产生的新对象照付。
+        # 独立使用时没有父owner，完整声明在本状态中计一次，驱动只借此状态。
+        cost = (32768 + len(definitions) * 8192 + cache_cost
+                + static_metadata_bytes((definitions, session_id), borrowed=borrowed)
+                + sum(512 + 64 * len(item.choices) for item in definitions))
         # 自有状态只经私有指针更新，公开属性不能绕过绑定检查或改写预算所有权。
         self._budget, self._closed, self._session_id = budget, False, session_id
         self._fixed_cost, self._definitions, self._labels, self._snapshot = 0, None, None, None
-        before = budget.ram_bytes
+        # _held_cost记录本对象实际已付总额；与当前快照费用的差额是未提交事务。
+        # 这项差额从当前快照推导，成功时只需安装一个快照指针，不再同步第二个标志。
+        self._held_cost = 0
         try:
             # 申请也在保护区；单线程账本可辨别操作成功但返回被取消的交接。
-            budget.reserve_ram(cost)
-            self._fixed_cost = cost
+            _reserve_owned_ram(self, cost, '_fixed_cost')
             # 同一别名不能隐式选首声明；模型本身已校验别名/策略/单位。
             if len({item.name for item in definitions}) != len(definitions):
                 raise ValueError('状态定义别名重复')
@@ -98,10 +133,9 @@ class LatestSignalState:
             # ENUM物理下标按声明标签的首次出现顺序，连无效观测也必须携带同一域。
             self._labels = MappingProxyType({item.name: tuple(dict.fromkeys(label for _, label in item.choices))
                                             for item in definitions if item.dtype is SignalDType.ENUM})
-            self._snapshot = _StateSnapshot(MappingProxyType({item.name: None for item in definitions}), None, 0, 0, 0)
+            self._snapshot = _StateSnapshot(MappingProxyType({item.name: None for item in definitions}), None, 0, 0, 0,
+                                            MappingProxyType({item.name: 0 for item in definitions}))
         except BaseException as exc:
-            if self._fixed_cost == 0 and budget.ram_bytes == before + cost:
-                self._fixed_cost = cost
             # 构造异常不能被释放取消替换；只重试一次，未抵销费用仍归本状态owner。
             try:
                 self.close()
@@ -158,6 +192,11 @@ class LatestSignalState:
         return 0 if self._snapshot is None else self._snapshot.retained_cost
 
     @property
+    def _transaction_delta(self) -> int:
+        """取得实际已付量与当前快照的差额。参数: 无。返回: 带符号bytes。异常: 无。"""
+        return self._held_cost - self._fixed_cost - self.retained_cost
+
+    @property
     def last_time_ns(self) -> int | None:
         """返回最后完整组时间。参数: 无。返回: int ns或None。异常: 无。"""
         return None if self._snapshot is None else self._snapshot.last_time_ns
@@ -208,22 +247,31 @@ class LatestSignalState:
         异常: 类型/时间/绑定/同刻冲突错误或预算超限；不部分更新或重做转换。
         """
         self._ensure_open()
+        if self._transaction_delta:
+            raise ResultClosedError('最新信号状态尚有未恢复的事务费用，请先关闭state_cleanup_owner')
         if not isinstance(group, DecodedTimeGroup):
             raise TypeError('状态只能提交完整DecodedTimeGroup')
         if self.last_time_ns is not None and group.time_ns <= self.last_time_ns:
             raise ValueError('状态完整组必须严格递增，不能重复提交或回退')
-        # 先计输入选定记录/分组引用及固定别名副本，再建立任何临时容器。
-        work = 4096 + len(self.definitions) * 512 + sum(512 + estimate_record_bytes(item) for item in group.samples)
+        # 先付分组引用、费用索引及固定别名副本，再建立临时容器。
+        # 额外每条256覆盖本组id→费用索引；不持有跨组/跨运行的记录缓存。
+        work = (4096 + len(self.definitions) * 512 + 512 + len(self.definitions) * 128
+                + 768 * len(group.samples))
         # 旧历史只有原始整数时，当前组要额外构造并保留一个定宽整数 ScalarValue。
         # 每字段包装及安全倍数与 estimate_record_bytes 一致，uint64 最大值覆盖两种原码。
         enrich = sum(1 for item in group.samples if item.name in self.definitions and
                      self.definitions[item.name].capture_code and item.value.code is None)
-        if enrich:
-            from ..results.codec import _estimate
-            work += enrich * 16 * (256 + _estimate(ScalarValue((1 << 64) - 1, SignalDType.UINT64)))
-        self.budget.reserve_ram(work)
-        workspace_owned = True
+        costs = snapshot = record_costs = None
         try:
+            self._change_budget(work)
+            # 当前输入对象不可变，临时费用与最终保留费用可共用本次估算。
+            record_costs = {id(item): estimate_record_bytes(item) for item in group.samples}
+            payload_cost = sum(record_costs.values())
+            if enrich:
+                from ..results.codec import _estimate
+                payload_cost += enrich * 16 * (256 + _estimate(ScalarValue((1 << 64) - 1, SignalDType.UINT64)))
+            self._change_budget(payload_cost)
+            work += payload_cost
             candidates, identities = {}, set()
             for sample in group.samples:
                 definition = self.definitions.get(sample.name)
@@ -254,8 +302,10 @@ class LatestSignalState:
                 # 按原来源sequence选择，与组内遍历顺序无关；相同事实不记冲突。
                 selected.append(max(records, key=_sequence))
                 conflicts += 0 if same else len(records) - 1
-            result = CommittedUpdates(group.time_ns, tuple(selected), conflicts)
+            result = _committed_from_validated_fields(group.time_ns, tuple(selected), conflicts)
             latest = dict(self.latest)
+            costs = dict(self._snapshot.costs)
+            retained = self.retained_cost
             # v4 where 查询可以在任意次状态提交后才开始，不能靠上次查询缓存区分
             # “条件刷新”和“切换”。每别名最多一项及已计费的规范标签域，包含在
             # 按声明数量/宽度预付的固定状态内；不保留原始定位及无效输入大原文。
@@ -267,28 +317,74 @@ class LatestSignalState:
                 prior[item.name] = None
                 if old is not None:
                     value = old.value
-                    prior[item.name] = (old.time_ns, ScalarValue(value.value if value.valid else None,
+                    prior[item.name] = (old.time_ns, _scalar_from_validated_fields(value.value if value.valid else None,
                         value.dtype, value.valid, value.quality, self._labels.get(item.name, ()), value.code,
                         partial=value.partial))
-            latest.update((sample.name, sample) for sample in selected)
-            retained = sum(estimate_record_bytes(item) for item in latest.values() if item is not None)
+                # 只估算本组真正选中的替换记录；未更新别名沿用不可变快照中的已核费用。
+                # 原码补齐发生在选择前，因此这里收费的是最终保留对象，不是原始输入副本。
+                cost = record_costs.get(id(item))
+                # 补齐原码会产生新对象；只有该情况重新核算最终保留内容。
+                if cost is None:
+                    cost = estimate_record_bytes(item)
+                retained += cost - costs[item.name]
+                costs[item.name] = cost
+                latest[item.name] = item
             # 工作申请包含所有新增记录；原未变记录由原持有申请覆盖。
             change = retained - self.retained_cost
             if change > work:
                 raise ValueError('状态内部预估不足，拒绝提交')
             # 构造映射、累计整数和整帧均可能分配；必须在安装前完成才能保持失败原子性。
             snapshot = _StateSnapshot(MappingProxyType(latest), group.time_ns, self.conflict_count + conflicts,
-                                      retained, self.revision + 1, prior)
+                                      retained, self.revision + 1, MappingProxyType(costs), prior)
             release_amount = work - change
+            record_costs = None
             # 账本转账也先完成；之后仅赋值一个已有指针，没有计数算术或容器构造。
-            self.budget.release_ram(release_amount)
-            workspace_owned = False
+            self._change_budget(-release_amount)
             self._snapshot = snapshot
             return result
+        except BaseException as error:
+            # 新缓存没有交付时不由异常栈延长其寿命；外部输入和旧只读快照仍归原所有者。
+            costs = snapshot = record_costs = None
+            self._restore_transaction(error)
+            raise
+
+    def _change_budget(self, delta):
+        """为一次直接预算操作登记实际增减，操作完成后取消也不会遗失归属。
+
+        参数: delta为带符号费用，正数申请、负数退款。返回: None。
+        异常: 原预算或取消传播；只观察本次直接调用，不按共享余额计算其他费用。
+        """
+        if delta == 0:
+            return
+        before = self._budget.ram_bytes
+        try:
+            if delta > 0:
+                self._budget.reserve_ram(delta)
+            else:
+                self._budget.release_ram(-delta)
         finally:
-            # 成功已转账新增持有量；失败只抵销本次临时申请，旧状态及预算保持。
-            if workspace_owned:
-                self.budget.release_ram(work)
+            if self._budget.ram_bytes == before + delta:
+                self._held_cost += delta
+
+    def _restore_transaction(self, primary):
+        """恢复未提交事务的实际费用差额，清理失败不替换最先发生的错误。
+
+        参数: primary为提交中的原异常。返回: None。异常: 不主动替换主异常；
+        两次恢复仍失败时附state_cleanup_owner，禁止再次apply，由同一对象close处理。
+        """
+        for attempt in range(2):
+            delta = self._transaction_delta
+            if delta == 0:
+                return
+            try:
+                # 正差额退回未交付工作区；负差额则补回刚退掉的旧记录费用。
+                # 后者不增加实际数据，所需余量正是本事务先前释放的量。
+                self._change_budget(-delta)
+            except BaseException as cleanup:
+                primary.add_note(f'状态事务恢复第{attempt + 1}次附加失败: {type(cleanup).__name__}')
+        if self._transaction_delta:
+            primary.state_cleanup_owner = self
+            primary.add_note('费用恢复后调用state_cleanup_owner.close()')
 
     def close(self) -> None:
         """丢弃自有声明与最新记录，抵销账本，不删除历史或修改返回对象。
@@ -298,7 +394,9 @@ class LatestSignalState:
         if self.closed:
             return
         # 外部只读旧视图不改；以账本实际变化区分操作前后取消，避免二次扣账。
-        cost, before, released = self.fixed_cost + self.retained_cost, self.budget.ram_bytes, False
+        # 失败事务可能尚有正/负差额；只退本对象真实已付金额，不拿旧快照的逻辑费用
+        # 代替账本，也不从共享总余额反推本对象需要退多少。
+        cost, before, released = self._held_cost, self.budget.ram_bytes, False
         try:
             self.budget.release_ram(cost)
             released = True
@@ -306,7 +404,7 @@ class LatestSignalState:
             if released or self.budget.ram_bytes == before - cost:
                 self._closed = True
                 self._snapshot = self._definitions = self._labels = None
-                self._fixed_cost = 0
+                self._fixed_cost = self._held_cost = 0
 
 
 def _sequence(sample: HistorySample) -> int:

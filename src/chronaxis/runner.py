@@ -30,16 +30,17 @@ class AnalysisRunner:
     def __init__(self, backend=None, *, extensions=None):
         """选择是否覆盖计划后端，不读取任何来源或配置文件。
 
-        参数: backend为None/reference/numpy；None使用各次计划原execution.backend。
+        参数: backend为None/auto/reference/numpy；None使用各次计划原execution.backend。
             extensions 为创建计划时使用的同一个宿主注册；省略时运行内置操作。
-        返回: None；初始化实例状态。异常: TypeError为非文本覆盖；ValueError为未知后端。
+        返回: None；初始化实例状态。异常: TypeError为非文本后端覆盖，或extensions不是ExtensionRegistry；
+            ValueError为未知后端。注册对象与计划是否相同，在validate/explain/run收到计划时检查。
         """
         # 明确拒绝任意对象和隐藏回退，不能把拼错的后端当成默认NumPy。
         if backend is not None:
             if type(backend) is not str:
-                raise TypeError('AnalysisRunner backend需要reference、numpy或None')
-            if backend not in ('reference', 'numpy'):
-                raise ValueError('AnalysisRunner仅支持reference与numpy后端')
+                raise TypeError('AnalysisRunner backend需要auto、reference、numpy或None')
+            if backend not in ('reference', 'numpy', 'auto'):
+                raise ValueError('AnalysisRunner仅支持auto、reference与numpy后端')
         if extensions is not None:
             from .extensions import ExtensionRegistry
             if type(extensions) is not ExtensionRegistry:
@@ -51,7 +52,7 @@ class AnalysisRunner:
     def backend(self):
         """读取构造时的覆盖选择，不表示某个尚未运行计划的实际后端。
 
-        参数: 无。返回: None/reference/numpy。异常: 无。
+        参数: 无。返回: None/auto/reference/numpy。异常: 无。
         """
         return self._backend
 
@@ -59,7 +60,8 @@ class AnalysisRunner:
         """保留原声明身份，只为明确覆盖创建内部执行视图。
 
         参数: plan为已构建AnalysisPlan；process_count为正整数覆盖，None沿用配置。返回: 原plan或仅执行选项不同的新view。
-        异常: TypeError为非计划/执行声明；不重新解析配置或复制原输入行。
+        异常: TypeError为非计划/执行声明；ValueError为与计划不同的扩展注册或非法process_count覆盖。
+            注册对象按身份比较，两个内容相同的注册对象也不能互换；不重新解析配置或复制原输入行。
         """
         if not isinstance(plan, AnalysisPlan) or not isinstance(plan.execution, ExecutionPlan):
             raise TypeError('AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划')
@@ -79,7 +81,8 @@ class AnalysisRunner:
         """报告声明是否合法及执行路径是否已接入，不提前读取数据。
 
         参数: plan为已构建AnalysisPlan；process_count为仅关键字的正整数覆盖，None沿用配置。返回: 同一共享ValidationReport，保留实际字段/范围未验警告。
-        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖；正常计划的静态问题写入报告errors，
+        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖，或Runner与计划未共享同一扩展注册。
+            这些调用错误在返回报告前抛出；正常计划的静态问题写入报告errors，
             不以校验成功证明输入文件内容有效。副作用: 无来源I/O或目录创建。
         """
         # 使用相同有效视图和纯静态报告，避免校验后偷偷换另一套后端能力。
@@ -89,7 +92,8 @@ class AnalysisRunner:
         """列出真实依赖、各节点后端、历史需求及声明预算，不启动分析。
 
         参数: plan为已构建AnalysisPlan；process_count为仅关键字的正整数覆盖，None沿用配置。返回: ExplainReport，plan_identity保原声明身份。
-        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖；调用者绕过解析器手工破坏typed
+        异常: TypeError为非AnalysisPlan或非法执行模型；ValueError为非法process_count覆盖，或Runner与计划未共享同一扩展注册。
+            这些调用错误在返回报告前抛出；调用者绕过解析器手工破坏typed
             引用时可能产生AttributeError/KeyError，应重新从完整配置构造计划。
         副作用: 不读取CSV/DBC，也不测量实耗。
         """

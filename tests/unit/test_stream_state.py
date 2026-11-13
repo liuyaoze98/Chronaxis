@@ -1,12 +1,12 @@
 """验证完整同刻组原子提交、声明冲突政策和最新记录的有限预算。
 
-合成内存来源经真实reference/numpy、历史暂存及完整组后交给状态，四切分有手算真值。
+合成内存来源经真实reference/numpy归一化和完整同刻分组后交给状态，四切分有手算真值。
 直接小型规范记录用于隔离坏绑定、枚举域、NaN、取消式构造故障与预算不足。
-测试只在work/m2-run-tests/stream-state唯一目录写新历史，device_label为work；不写旧快照。
+测试只在新项目工作目录创建夹具；不写旧快照。
 本节点没有TTL/EOF查询或表达式数值核，不将控制协议测试当完整AnalysisRunner验收。
 """
 
-# 合成输入、实际来源/历史与局部故障替换，不复制或修改旧链。
+# 合成输入、实际来源和局部故障替换，不复制或修改旧链。
 from dataclasses import replace
 from pathlib import Path
 from uuid import uuid4
@@ -17,7 +17,7 @@ from chronaxis.core.models import MemoryRow, SourceRef, SourceSpec, TimebaseSpec
 from chronaxis.core.numeric import ScalarValue, normalize_reference
 from chronaxis.core.types import SignalDType as D, TimeType, QualityFlag as Q
 from chronaxis.execution.groups import DecodedTimeGroup
-from chronaxis.execution.history import DecodedHistoryStore
+from chronaxis.execution.batch_signal_groups import BatchSignalGroups
 from chronaxis.execution.history_records import HistorySample
 from chronaxis.execution.memory_reader import BudgetedMemorySourceAdapter
 from chronaxis.execution.state import LatestSignalState, CommittedUpdates
@@ -66,7 +66,7 @@ class StreamStateTests(unittest.TestCase):
         self.addCleanup(state.close)
         return state
 
-    def test_both_backend_history_splits_hand_values(self):
+    def test_both_backend_batch_splits_hand_values(self):
         """两后端四切分完整组只提交一次，单位/1ns/大整数/BOOL/ENUM与无效覆盖手算成立。
 
         参数: 无。返回: None。异常: 分批重置/顺序选错/转换重复或质量丢失断言失败。
@@ -89,24 +89,25 @@ class StreamStateTests(unittest.TestCase):
                 adapter = BudgetedMemorySourceAdapter(budget, source, 'session', definitions, backend=backend)
                 self.addCleanup(adapter.close)
                 request = ReadRequest('session', tuple(item.name for item in definitions), start, start+3, size)
-                history = DecodedHistoryStore(budget, self.work / f'{backend}-{size}', (adapter.describe(),), {'table':request})
-                self.addCleanup(history.close)
-                for batch in adapter.iter_batches(request):
-                    history.append(batch)
-                adapter.close()
-                history.seal()
                 state = self.state(definitions, budget)
                 results = []
-                for group in history.iter_groups():
+                def consume(group):
+                    """原子提交真实完整组。参数: group。返回: None。异常: 状态原错误。"""
                     committed = state.apply(group)
                     results.append((committed.time_ns, committed.conflict_count, state.get('a').value.value, state.get('a').value.valid))
+                grouping = BatchSignalGroups(budget, definitions, 'session', consume)
+                self.addCleanup(grouping.close)
+                for batch in adapter.iter_batches(request):
+                    grouping.consume(batch)
+                grouping.finish()
+                adapter.close()
                 self.assertEqual(results, [(start,1,2.,True),(start+1,0,None,False),(start+2,0,3.,True)])
                 self.assertEqual(state.get('identifier').value.value, 2**64-1)
                 self.assertFalse(state.get('enabled').value.value)
                 self.assertEqual(state.get('mode').value.value, 'off')
                 self.assertEqual(state.conflict_count, 1)
                 state.close()
-                history.close()
+                grouping.close()
                 self.assertEqual(budget.ram_bytes, 0)
 
     def test_conflict_is_atomic_and_same_fact_chooses_sequence(self):
@@ -201,12 +202,12 @@ class StreamStateTests(unittest.TestCase):
         baseline = state.budget.ram_bytes
         blocker = state.budget.memory_budget_bytes-baseline-1
         state.budget.reserve_ram(blocker)
-        with patch('chronaxis.execution.state.CommittedUpdates') as constructed:
+        with patch('chronaxis.execution.state._committed_from_validated_fields') as constructed:
             with self.assertRaises(BudgetExceededError):
                 state.apply(group)
         constructed.assert_not_called()
         state.budget.release_ram(blocker)
-        with patch('chronaxis.execution.state.CommittedUpdates',side_effect=MemoryError('injected result')):
+        with patch('chronaxis.execution.state._committed_from_validated_fields',side_effect=MemoryError('injected result')):
             with self.assertRaises(MemoryError):
                 state.apply(group)
         self.assertIs(state.get('a'),original)

@@ -5,7 +5,7 @@
 路径按模板目录解释；输入目录按批量配置目录解释。复用已有自然序和4096文件限制，
 来源有多个候选时要求source，绝不把连续会话自动拆开。本入口由用户显式选择。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -46,4 +46,4 @@ template_jobs(raw, base)
 |`raw`|dict|是|无|位置或关键字。当前批量模板声明，含template、inputs及可选source。|
 |`base`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。批量配置所在目录；用于解释模板与输入集合的相对路径。|
 
-源码：[`src/chronaxis/batch/templates.py:15`](../../../src/chronaxis/batch/templates.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/templates.py:15`](../../../src/chronaxis/batch/templates.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

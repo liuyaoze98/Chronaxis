@@ -6,7 +6,7 @@
 相邻数组比较，不调用参考核。时间在整数域裁剪后才建立数组，避免下限回绕。
 数值保留int64/uint64/float64，不将大整数转换成浮点。无文件和状态副作用。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -53,4 +53,4 @@ WindowDeltaResult。
 
 输入错误；数值失败记录质量。
 
-源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

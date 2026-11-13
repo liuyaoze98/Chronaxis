@@ -369,7 +369,7 @@ None. Repeated calls are allowed; retry any cleanup left incomplete after a fail
 
 #### Raises
 
-Attempts to close every acquired resource. If file-handle closure, staging cleanup, or budget release fails, raises the first error with later errors as additional diagnostics. Release any obstruction and retry close. Do not merely catch the exception and discard the result object.
+First attempts to close all active result cursors. If any cursor close fails, retain the remaining resources for a later close retry. Once all cursors are closed, close owned writers and staging in order. A failure exposes the same result through `analysis_result_cleanup_owner`; retain the result, resolve the resource fault, and retry close. Recovery does not rerun analysis or delete published outputs.
 
 Return type: None。
 
@@ -422,23 +422,23 @@ False; exceptions continue to propagate to the caller.
 
 #### Raises
 
-On a normal with exit, close failures propagate. If the block already raised an exception, that original exception is preserved and close failures are attached as diagnostics so the primary cause is not hidden.
+On a normal with exit, close failures propagate. If the block already raised an exception, preserve that exception and append cleanup information to `__notes__`. If cleanup remains incomplete, `analysis_result_cleanup_owner` on the original exception retains this result for a close retry; the attribute is not present on every error.
 
 ## Source locations
 
-- [`src/chronaxis/results/result.py:194`](../../../../src/chronaxis/results/result.py#L194) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:204`](../../../../src/chronaxis/results/result.py#L204) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:326`](../../../../src/chronaxis/results/result.py#L326) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:351`](../../../../src/chronaxis/results/result.py#L351) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:384`](../../../../src/chronaxis/results/result.py#L384) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:396`](../../../../src/chronaxis/results/result.py#L396) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:400`](../../../../src/chronaxis/results/result.py#L400) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:405`](../../../../src/chronaxis/results/result.py#L405) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:415`](../../../../src/chronaxis/results/result.py#L415) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:531`](../../../../src/chronaxis/results/result.py#L531) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:693`](../../../../src/chronaxis/results/result.py#L693) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:744`](../../../../src/chronaxis/results/result.py#L744) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/results/result.py:752`](../../../../src/chronaxis/results/result.py#L752) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/results/result.py:202`](../../../../src/chronaxis/results/result.py#L202) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:212`](../../../../src/chronaxis/results/result.py#L212) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:334`](../../../../src/chronaxis/results/result.py#L334) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:383`](../../../../src/chronaxis/results/result.py#L383) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:392`](../../../../src/chronaxis/results/result.py#L392) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:404`](../../../../src/chronaxis/results/result.py#L404) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:408`](../../../../src/chronaxis/results/result.py#L408) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:413`](../../../../src/chronaxis/results/result.py#L413) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:423`](../../../../src/chronaxis/results/result.py#L423) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:546`](../../../../src/chronaxis/results/result.py#L546) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:706`](../../../../src/chronaxis/results/result.py#L706) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:757`](../../../../src/chronaxis/results/result.py#L757) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/result.py:765`](../../../../src/chronaxis/results/result.py#L765) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

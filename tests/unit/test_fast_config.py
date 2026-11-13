@@ -1,7 +1,7 @@
 """核对 fast 的静态能力、信号单位转换、原始位置及配置边界。"""
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 
 from chronaxis.configuration import load_configuration

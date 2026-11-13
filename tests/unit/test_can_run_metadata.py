@@ -4,7 +4,8 @@
 DBC或暂存文件；输出为JSON兼容结构及类型/归属/预算基线断言。构造校验不能证明
 来源已读取，None/空DBC单位仍保declared，不借模型制造真实CAN/DBC哈希证明。
 详细模型需显式开启；嵌套文本仍进入保守大小估算，不作为公开Runner默认来源事实。
-全部测试无I/O和进程副作用，不复用其他TestCase夹具，也不运行reader/旧库。
+全部测试不读取业务来源或创建进程；默认软件版本可读取本包版本资料。
+不复用其他TestCase夹具，也不运行报文reader。
 """
 
 from configuration_fixtures import current_fixture
@@ -95,7 +96,8 @@ class CANRunMetadataTests(unittest.TestCase):
         with patch('builtins.open', side_effect=AssertionError('元数据打开文件')) as opened, \
                 patch.object(Path, 'stat', side_effect=AssertionError('元数据stat')) as stat, \
                 patch.object(Path, 'resolve', side_effect=AssertionError('元数据resolve')) as resolve:
-            run = self.metadata()
+            # 本例只验证已给元数据的纯结构操作；默认版本读取由独立版本测试覆盖。
+            run = self.metadata(software_version='0.0.1')
             document = json.loads(json.dumps(current_fixture(run.to_dict()), ensure_ascii=False, allow_nan=False))
         source = document['can_sources'][0]
         self.assertIs(type(source), dict)

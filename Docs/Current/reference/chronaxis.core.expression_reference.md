@@ -15,11 +15,11 @@ UNKNOWN可确定为FALSE，TRUE or UNKNOWN可确定为TRUE；被遮蔽的异常
 只依赖标准库和参考数值、对齐模块，不执行任意Python代码，也不读取
 旧日志或额外解码。当前求值缓存不跨时间点保留，不调用NumPy数值内核。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[D](chronaxis.core.types.md#api-SignalDType)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)
+[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[D](chronaxis.core.types.md#api-SignalDType)、[DecodedBindings](chronaxis.core.decoded_binding.md#api-DecodedBindings)、[MessageBindings](chronaxis.core.message_binding.md#api-MessageBindings)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SignalBindings](chronaxis.core.binding.md#api-SignalBindings)
 
 ## 对象导航
 
@@ -74,10 +74,10 @@ class Evaluation
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|实际逻辑输出。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|实际逻辑输出。|
 |`dependency_quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|原依赖/本次计算的全部诊断并集。|
 
-源码：[`src/chronaxis/core/expression_reference.py:48`](../../../src/chronaxis/core/expression_reference.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:48`](../../../src/chronaxis/core/expression_reference.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_context"></a>
 ## `require_context`
@@ -115,7 +115,7 @@ TypeError: 计划、映射或绑定模型类型不合法。
 
 只校验结构，不读来源、不求值；各个值的类型由后续执行入口检查。
 
-源码：[`src/chronaxis/core/expression_reference.py:61`](../../../src/chronaxis/core/expression_reference.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:61`](../../../src/chronaxis/core/expression_reference.py#L61)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_logic"></a>
 ## `_logic`
@@ -131,7 +131,7 @@ _logic(operator, values)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`operator`|str|是|无|位置或关键字。选择布尔运算：`and`要求全部成立；`or`要求至少一项成立；`not`反转一个已知真假值。未知值按三值逻辑处理，不能直接当成False。|
-|`values`|tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...]|是|无|位置或关键字。op固定逻辑名，values为BOOL ScalarValue tuple。|
+|`values`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...]|是|无|位置或关键字。op固定逻辑名，values为BOOL ScalarValue tuple。|
 
 ### 返回说明
 
@@ -141,7 +141,7 @@ ScalarValue；正常决断quality NONE，未知保留原因并集。
 
 调用侧静态类型保证，不接数值truthiness。
 
-源码：[`src/chronaxis/core/expression_reference.py:94`](../../../src/chronaxis/core/expression_reference.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:94`](../../../src/chronaxis/core/expression_reference.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_evaluate"></a>
 ## `_evaluate`
@@ -157,7 +157,7 @@ _evaluate(node, context, cache)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`node`|ExprNode|是|无|位置或关键字。当前待求值的表达式节点；递归计算该时刻各子节点的标量结果。|
-|`context`|Mapping[str, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。信号别名到当前时刻数值的映射，包含值类型、有效性和质量原因。|
+|`context`|Mapping[str, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。信号别名到当前时刻数值的映射，包含值类型、有效性和质量原因。|
 |`cache`|dict|是|无|位置或关键字。本次计算使用的局部缓存。表达式求值按节点保存已算结果，编译入口按表达式保存编译结果；不能跨绑定或跨次运行复用。|
 
 ### 返回说明
@@ -168,7 +168,7 @@ Evaluation，完整诊断与逻辑有效性分开。
 
 静态模型/类型错误直接传播，不eval或吞配置异常。
 
-源码：[`src/chronaxis/core/expression_reference.py:125`](../../../src/chronaxis/core/expression_reference.py#L125)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:125`](../../../src/chronaxis/core/expression_reference.py#L125)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-evaluate_reference"></a>
 ## `evaluate_reference`
@@ -207,7 +207,7 @@ TypeError、ValueError: 依赖键、模型、类型、枚举域或绑定身份�
 
 返回类型：[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation)。
 
-源码：[`src/chronaxis/core/expression_reference.py:229`](../../../src/chronaxis/core/expression_reference.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:229`](../../../src/chronaxis/core/expression_reference.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-evaluate_memory_reference"></a>
 ## `evaluate_memory_reference`
@@ -247,4 +247,4 @@ TypeError: 非memory绑定，包括DecodedBindings；其他时间/来源/配置�
 
 返回类型：tuple[[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation), ...]。
 
-源码：[`src/chronaxis/core/expression_reference.py:263`](../../../src/chronaxis/core/expression_reference.py#L263)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_reference.py:263`](../../../src/chronaxis/core/expression_reference.py#L263)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

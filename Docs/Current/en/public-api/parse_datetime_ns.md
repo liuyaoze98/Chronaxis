@@ -24,4 +24,4 @@ No side effects: it does not consult the system timezone, load IANA timezone nam
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:236`](../../../../src/chronaxis/timebase/conversion.py#L236) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/timebase/conversion.py:242`](../../../../src/chronaxis/timebase/conversion.py#L242) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

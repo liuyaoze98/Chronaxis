@@ -5,7 +5,7 @@
 每个BatchJob调用同一公共AnalysisRunner，输出单独发布，BatchReport只汇总状态和身份。
 调用者可设置process_count工作进程数、fail_fast和取消Event；在途任务完成关闭后才返回。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 

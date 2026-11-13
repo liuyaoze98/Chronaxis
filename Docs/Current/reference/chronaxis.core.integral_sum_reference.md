@@ -2,7 +2,7 @@
 
 逐项累加积分面积，并保存浮点误差，供NumPy实现对照。例如很大的正负数抵消后，仍需尽量保留夹在其中的小数。误差项最多保存partial_limit个，超过时抛错。finish返回当前结果，不删除累计状态；中途溢出会持续标记为错误。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -45,7 +45,7 @@ ReferenceIntegralSum(partial_limit: int=4096)
 ```
 
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:18`](../../../src/chronaxis/core/integral_sum_reference.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:18`](../../../src/chronaxis/core/integral_sum_reference.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-__init__"></a>
 ### `ReferenceIntegralSum.__init__`
@@ -70,7 +70,7 @@ ReferenceIntegralSum.__init__(partial_limit: int=4096)
 
 非法容量。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:25`](../../../src/chronaxis/core/integral_sum_reference.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:25`](../../../src/chronaxis/core/integral_sum_reference.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-valid_term_count"></a>
 ### `ReferenceIntegralSum.valid_term_count`
@@ -100,7 +100,7 @@ int。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:35`](../../../src/chronaxis/core/integral_sum_reference.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:35`](../../../src/chronaxis/core/integral_sum_reference.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-calculation_failed"></a>
 ### `ReferenceIntegralSum.calculation_failed`
@@ -130,7 +130,7 @@ True表示累计过程中出现数值错误；False表示尚未出现数值错�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:40`](../../../src/chronaxis/core/integral_sum_reference.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:40`](../../../src/chronaxis/core/integral_sum_reference.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-partial_count"></a>
 ### `ReferenceIntegralSum.partial_count`
@@ -160,7 +160,7 @@ int。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:45`](../../../src/chronaxis/core/integral_sum_reference.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:45`](../../../src/chronaxis/core/integral_sum_reference.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-push"></a>
 ### `ReferenceIntegralSum.push`
@@ -191,7 +191,7 @@ TypeError 为后端不符；IntegralStateLimitError/MemoryError 为状态容量�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:49`](../../../src/chronaxis/core/integral_sum_reference.py#L49)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:49`](../../../src/chronaxis/core/integral_sum_reference.py#L49)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-push_values"></a>
 ### `ReferenceIntegralSum.push_values`
@@ -229,7 +229,7 @@ TypeError/ValueError 为列结构；容量、分配或取消原样传播。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:65`](../../../src/chronaxis/core/integral_sum_reference.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:65`](../../../src/chronaxis/core/integral_sum_reference.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralSum-finish"></a>
 ### `ReferenceIntegralSum.finish`
@@ -257,4 +257,4 @@ ReferenceIntegralSum.finish(unit: str, factor: float=1.0) -> IntegralSumResult
 
 返回类型：[IntegralSumResult](chronaxis.core.integral_sum.md#api-IntegralSumResult)。
 
-源码：[`src/chronaxis/core/integral_sum_reference.py:121`](../../../src/chronaxis/core/integral_sum_reference.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_sum_reference.py:121`](../../../src/chronaxis/core/integral_sum_reference.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

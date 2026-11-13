@@ -1,7 +1,7 @@
 {
   "edition": "Current",
-  "baseline": "afc8d5eb1dc95c26176b20ebedaeda6a0a643540",
-  "updated_at": "2026-11-07T17:54:31+08:00",
+  "baseline": "8904c2f744951857659abd40aaa3535d57faf53c",
+  "updated_at": "2026-11-14T02:16:30+08:00",
   "device_label": "home",
-  "task": "DOC-REVIEW-08"
+  "task": "RELEASE-DEV4-01"
 }

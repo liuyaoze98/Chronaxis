@@ -22,11 +22,26 @@ except PlanValidationError as error:
 |---|---|---|
 | 加载或构造 | PlanValidationError，含unknown_field等机器code | 根据path/message修正配置；有source/location时一同定位 |
 | 静态检查 | ValidationReport.errors或execution_ready=False | 处理报告；validate不代表输入文件已读取 |
-| 运行 | AnalysisError，cause中可能为SourceReadError、BudgetExceededError、ValueError等 | 保留异常链，按读取/资源/表达式原因修正；不要吞成无事件 |
+| 运行 | AnalysisError；`exc.__cause__`可能为SourceReadError、BudgetExceededError、ValueError等，也可能为None | 保留异常链，按读取/资源/表达式原因修正；不要吞成无事件 |
 | 流式读结果 | ResultClosedError、ContributionsUnavailableError或暂存读取错误 | 在结果仍打开时读；缺贡献需要重新请求full运行 |
-| 发布 | AnalysisError及其cause，例如路径不是目录或文件写入失败 | 检查结果目录写入权限并修正环境；结果未关闭时可重新发布，无需重读输入 |
+| 发布 | AnalysisError及其`exc.__cause__`，例如路径不是目录或文件写入失败；原因链可能为None | 检查结果目录写入权限并修正环境；结果未关闭时可重新发布，无需重读输入 |
 | 批量 | 正常返回也可能有failed任务；基础设施异常可能带batch_report | 查jobs中的error_type/error_message/error_chain；保留已完成结果，对cleanup_pending调用close |
 | 关闭 | 实际文件/资源关闭错误 | 保留结果或异常提供的清理对象，解除占用后重试close |
+
+下面的片段接前面的`plan`加载代码。捕获运行或发布异常后，通过`exc.__cause__`读取被包装的原始异常；直接抛出的错误可能没有包装原因，此时为`None`。`AnalysisError`没有承诺名为`cause`或`diagnostics`的统一属性，详见[AnalysisRunner异常说明](public-api/AnalysisRunner.md#api-AnalysisRunner-run)。
+
+```python
+from chronaxis import AnalysisRunner, AnalysisError
+
+try:
+    with AnalysisRunner().run(plan) as result:
+        result.write("results")
+except AnalysisError as exc:
+    print(type(exc).__name__, str(exc))
+    if exc.__cause__ is not None:
+        print(type(exc.__cause__).__name__, str(exc.__cause__))
+    raise  # 保留异常链，不把失败当作空结果
+```
 
 KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链上的runner_cleanup_owner或analysis_result_cleanup_owner只在失败清理未完成时出现；检查属性存在后才调用其close，不假定每个错误都有这些属性。
 
@@ -77,8 +92,8 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 | BudgetExceededError | 按异常资源项区分内存、结果缓冲或暂存磁盘；可减小batch_rows/result_buffer_rows，或在确认资源足够后调整对应配额。状态本身需要的内存未必随批次减小。 |
 | 输出路径不可用 | 已有目录可以复用；若该路径是文件、不可写或位于受保护位置，选择可写目录。程序用时间后缀避免覆盖旧文件。 |
 | 发布目录位于自有工作目录内 | 默认close会清理该工作目录；把正式输出放在工作目录外。 |
-| 非Windows发布失败 | 当前安全发布路径尚未在该平台验收；按[支持范围](status.md)选择环境。 |
-| 独立信号/CAN导出标签失败 | 当前实现限制metadata.device_label为home/work，见[输出限制](exports.md)；普通分析可不请求这些导出。 |
+| 平台能力不足导致运行或发布失败 | 查看原异常链。Linux 实际启动受管工作进程需要 pidfd 进程组信号；结果发布需要 `renameat2`、目标文件系统支持 `RENAME_NOREPLACE`，且移动在同一文件系统。普通/fast静态校验只对实际需要受管工作进程的路径检查当前能力，并把无法确认或不可用的原因放入warnings；独立批量在派发前发出Python告警。这些提示不改变配置有效性。发布的EINVAL也可能来自无效的源/目标组合或参数，不能仅凭此错误认定文件系统不支持。按[安装说明](installation.md)核对失败阶段和已验证环境；实际启动及发布仍会检查。 |
+| metadata.device_label校验失败 | 省略该字段即可使用pending；需要记录设备时填写非空文本，如lab-pc或试验台一号。空值、全空白及非字符串无效，见[导出说明](exports.md)。 |
 | 暂存格式损坏或读取OSError | 停止使用该结果，保留异常及必要现场，检查文件访问和磁盘；不要吞掉异常当作空表。 |
 | 批量返回报告但部分任务失败 | 查看CLI返回report路径中的每个任务的状态、错误与输出路径；修正失败项后独立重跑，同目录重跑会生成另一批时间文件名。 |
 

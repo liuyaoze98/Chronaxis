@@ -2,7 +2,7 @@
 
 按当前报文中的方向信号，把一次计算的贡献值分到正向或负向组。它保存原方向值和来源位置，便于核对分组原因；分组本身不对贡献值取绝对值或改变公式符号。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -47,7 +47,7 @@ class LegacyDisjunction
 |`bucket`|str|是|无|`"positive"`选择方向原值大于0的报文；`"negative"`选择小于0的报文。方向为0不进入任何一组，公式结果保留原符号。|
 |`value_policy`|str|否|'raw_decoded-v1'|填`"raw_decoded-v1"`：根据当前报文刚解码出的原始方向值分组，不先应用scale、offset或方向转换，也不使用前一次报文的值。|
 
-源码：[`src/chronaxis/legacy/disjunction.py:23`](../../../src/chronaxis/legacy/disjunction.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/disjunction.py:23`](../../../src/chronaxis/legacy/disjunction.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyDisjunction-__post_init__"></a>
 ### `LegacyDisjunction.__post_init__`
@@ -81,7 +81,7 @@ TypeError为非原生文本；ValueError为别名、桶或策略不支持。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/disjunction.py:34`](../../../src/chronaxis/legacy/disjunction.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/disjunction.py:34`](../../../src/chronaxis/legacy/disjunction.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyDisjunctionTrace"></a>
 ## `LegacyDisjunctionTrace`
@@ -104,7 +104,7 @@ class LegacyDisjunctionTrace
 |`raw_value`|int &#124; float &#124; bool &#124; None|是|无|未归一化方向值；None为缺失。|
 |`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|同条原消息的真实来源引用。|
 
-源码：[`src/chronaxis/legacy/disjunction.py:51`](../../../src/chronaxis/legacy/disjunction.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/disjunction.py:51`](../../../src/chronaxis/legacy/disjunction.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyDisjunctionTrace-__post_init__"></a>
 ### `LegacyDisjunctionTrace.__post_init__`
@@ -139,4 +139,4 @@ TypeError为非模型/原生数值；ValueError为原字段与引用不一致。
 
 返回类型：None。
 
-源码：[`src/chronaxis/legacy/disjunction.py:63`](../../../src/chronaxis/legacy/disjunction.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/disjunction.py:63`](../../../src/chronaxis/legacy/disjunction.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

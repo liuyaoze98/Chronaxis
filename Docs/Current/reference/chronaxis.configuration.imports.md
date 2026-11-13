@@ -7,7 +7,7 @@
 仅打开配置文件，数据/DBC路径按各自声明文件转为按声明目录形成的绝对路径（不解析链接真实目标）；不读取业务输入。
 位置随本次加载保留，成功计划不持有原文或第二份配置，不执行环境替换或模板。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -62,7 +62,7 @@ _reject(document, path, message, code='invalid_import', hint=None)
 
 PlanValidationError。
 
-源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/imports.py:19`](../../../src/chronaxis/configuration/imports.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_source_paths"></a>
 ## `_source_paths`
@@ -92,7 +92,7 @@ None。
 
 只改本次副本，metadata内任意path不解释为文件；不调用stat或resolve。
 
-源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/imports.py:25`](../../../src/chronaxis/configuration/imports.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_append_definitions"></a>
 ## `_append_definitions`
@@ -126,7 +126,7 @@ None。
 
 names保存首个同名声明的位置；所有修改仅发生在本次展开容器，无全局状态。
 
-源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/imports.py:46`](../../../src/chronaxis/configuration/imports.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-expand_document_imports"></a>
 ## `expand_document_imports`
@@ -154,4 +154,4 @@ expand_document_imports(document)
 未声明imports时原样返回，不增加复制或文件读取。批量文件通过每个子计划
 自行使用imports；纯字典API不调用此函数。版本错误由原入口拒绝，不读其导入。
 
-源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/imports.py:98`](../../../src/chronaxis/configuration/imports.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

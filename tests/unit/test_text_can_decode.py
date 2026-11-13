@@ -250,7 +250,7 @@ class TextCANDecodeTests(unittest.TestCase):
         """
         self.budget = ResourceBudget(memory_budget_bytes=512*1024)
         reader = self.reader((ASCSpec(self.root/'absent.asc'),))
-        with patch('cantools.database.load_file',side_effect=AssertionError('不应加载')):
+        with patch('cantools.database.load',side_effect=AssertionError('不应加载')):
             with self.assertRaises(BudgetExceededError):
                 next(reader)
         self.assertEqual(self.budget.ram_bytes,0)

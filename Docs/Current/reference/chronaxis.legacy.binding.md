@@ -5,7 +5,7 @@
 本模块只使用调用方已加载的数据库，不打开 DBC 或日志。候选表仅覆盖当前
 请求字段；每次运行保存有限的已见身份，避免省略帧型时混合两种同 ID 报文。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -44,7 +44,7 @@ bool；这里只判断身份，不解码。
 
 属性访问错误表示调用方未传约定模型。
 
-源码：[`src/chronaxis/legacy/binding.py:8`](../../../src/chronaxis/legacy/binding.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:8`](../../../src/chronaxis/legacy/binding.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-dbc_candidates"></a>
 ## `dbc_candidates`
@@ -73,7 +73,7 @@ cantools Message元组，保留不同实际类型的候选。
 
 ValueError：ID不存在、所需信号不唯一/缺失、指定类型无匹配，或同ID同类型仍有重复定义。
 
-源码：[`src/chronaxis/legacy/binding.py:17`](../../../src/chronaxis/legacy/binding.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:17`](../../../src/chronaxis/legacy/binding.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-select_message"></a>
 ## `select_message`
@@ -99,7 +99,7 @@ select_message(candidates, frame)
 
 ValueError：实际类型也不能排除多个定义。
 
-源码：[`src/chronaxis/legacy/binding.py:47`](../../../src/chronaxis/legacy/binding.py#L47)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:47`](../../../src/chronaxis/legacy/binding.py#L47)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameBindingResolver"></a>
 ## `FrameBindingResolver`
@@ -111,7 +111,7 @@ FrameBindingResolver(db, fields)
 ```
 
 
-源码：[`src/chronaxis/legacy/binding.py:65`](../../../src/chronaxis/legacy/binding.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:65`](../../../src/chronaxis/legacy/binding.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameBindingResolver-__init__"></a>
 ### `FrameBindingResolver.__init__`
@@ -137,7 +137,7 @@ None。
 
 ValueError：字段、ID或DBC定义不明确。
 
-源码：[`src/chronaxis/legacy/binding.py:69`](../../../src/chronaxis/legacy/binding.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:69`](../../../src/chronaxis/legacy/binding.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameBindingResolver-fields_for"></a>
 ### `FrameBindingResolver.fields_for`
@@ -162,7 +162,7 @@ FrameBindingResolver.fields_for(frame)
 
 ValueError：同一省略型绑定出现多种实际类型，或一个帧的信号指向不同DBC定义。
 
-源码：[`src/chronaxis/legacy/binding.py:83`](../../../src/chronaxis/legacy/binding.py#L83)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:83`](../../../src/chronaxis/legacy/binding.py#L83)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameBindingResolver-message_for"></a>
 ### `FrameBindingResolver.message_for`
@@ -188,7 +188,7 @@ FrameBindingResolver.message_for(frame, fields)
 
 ValueError：同一省略型绑定出现多种实际类型，或一个帧的信号指向不同DBC定义。
 
-源码：[`src/chronaxis/legacy/binding.py:112`](../../../src/chronaxis/legacy/binding.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:112`](../../../src/chronaxis/legacy/binding.py#L112)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameBindingResolver-missing_flags"></a>
 ### `FrameBindingResolver.missing_flags`
@@ -216,4 +216,4 @@ FrameBindingResolver.missing_flags(channel, frame_id, extended, fd)
 
 ValueError：无法唯一补足，提示需要的列映射或绑定选项。
 
-源码：[`src/chronaxis/legacy/binding.py:128`](../../../src/chronaxis/legacy/binding.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/binding.py:128`](../../../src/chronaxis/legacy/binding.py#L128)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

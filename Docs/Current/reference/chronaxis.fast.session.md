@@ -6,11 +6,11 @@ worker只求当前帧贡献；主进程控制统一预算、交付顺序及成�
 concatenate可暂停可选预读；time_order必要暂存完成后稳定归并。临时目录和
 进程均属于本次调用，异常不返回部分结果。内联与batch不经传输协议。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[FileContributions](chronaxis.fast.stream.md#api-FileContributions)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)
+[BudgetExceededError](chronaxis.results.errors.md#api-BudgetExceededError)、[ControlChannel](chronaxis._control_wire.md#api-ControlChannel)、[FileContributions](chronaxis.fast.stream.md#api-FileContributions)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[_Accumulator](chronaxis.fast.compute.md#api-_Accumulator)
 
 ## 对象导航
 
@@ -19,15 +19,16 @@ concatenate可暂停可选预读；time_order必要暂存完成后稳定归并�
 |[`effective_spec`](#api-effective_spec)|取得不修改原声明的执行视图。|
 |[`_worker_process_limit`](#api-_worker_process_limit)|从已验证的进程上限和文件数取得文件工作进程数，不包含主进程。|
 |[`file_specs`](#api-file_specs)|展开有限文件声明。|
+|[`_checked_file_specs`](#api-_checked_file_specs)|取得实际文件声明，并复用本会话已经检查过的同一组公式。|
 |[`SessionAccumulator`](#api-SessionAccumulator)|只有主会话持有的标量累计器。计数、目标缺失和帧身份按计算项分别核验。|
-|[`SessionAccumulator.__init__`](#api-SessionAccumulator-__init__)|准备累计器。|
+|[`SessionAccumulator.__init__`](#api-SessionAccumulator-__init__)|准备纯累计状态。|
 |[`SessionAccumulator.consume`](#api-SessionAccumulator-consume)|按输入顺序逐项相加。|
 |[`SessionAccumulator.finish_file`](#api-SessionAccumulator-finish_file)|合并已关闭文件的事实。|
 |[`SessionAccumulator.result`](#api-SessionAccumulator-result)|核完整消费后生成业务行。|
 |[`FilePool`](#api-FilePool)|管理有限工作槽及每文件连续块前缀；不在内存保存所有暂存块描述。|
 |[`FilePool.__init__`](#api-FilePool-__init__)|初始化但不启动。|
 |[`FilePool.check_cancel`](#api-FilePool-check_cancel)|传递外部取消。|
-|[`FilePool.start`](#api-FilePool-start)|预付全部工作槽后启动spawn。|
+|[`FilePool.start`](#api-FilePool-start)|预付真实工作槽后启动；任何部分构造失败仍由本池关闭已登记资源。|
 |[`FilePool.assign`](#api-FilePool-assign)|按文件声明顺序派发下一文件。|
 |[`FilePool.grant`](#api-FilePool-grant)|授权一个完整块的唯一交付路径。|
 |[`FilePool.pump`](#api-FilePool-pump)|推进有限控制和数据消息，优先响应所有worker错误。|
@@ -37,22 +38,29 @@ concatenate可暂停可选预读；time_order必要暂存完成后稳定归并�
 |[`FilePool.concatenate`](#api-FilePool-concatenate)|消费当前文件，后续文件同时预读。|
 |[`FilePool.file_records`](#api-FilePool-file_records)|逐块读取一个已完整暂存文件。|
 |[`FilePool.time_order`](#api-FilePool-time_order)|完成必要暂存后k路稳定归并。|
-|[`FilePool.close`](#api-FilePool-close)|关闭自有工作树。|
+|[`FilePool.close`](#api-FilePool-close)|先结束实际写入者，再关闭句柄和自有费用；失败槽保留到后续重试。|
+|[`_SessionResources`](#api-_SessionResources)|仅管理一个fast会话的固定费用、读取器、工作池和自有目录。|
+|[`_SessionResources.__init__`](#api-_SessionResources-__init__)|建立空责任槽。|
+|[`_SessionResources.open_reader`](#api-_SessionResources-open_reader)|创建并登记本会话读取器，收编构造中未能关闭的真实子所有者。|
+|[`_SessionResources.close_reader`](#api-_SessionResources-close_reader)|关闭实际读取器；仅在真实关闭完成后清槽。|
+|[`_SessionResources.create_directory`](#api-_SessionResources-create_directory)|独占创建并登记目录，避免自动终结器在写入者未结束时删除目录。|
+|[`_SessionResources.close`](#api-_SessionResources-close)|依次停止工作池、读取器、删除自有目录并退款，任一步失败保留重试责任。|
 |[`run_session`](#api-run_session)|运行一个连续fast任务。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
 from hashlib import sha256
-from contextlib import ExitStack
 from multiprocessing.connection import wait
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from time import perf_counter
-from ..results.budget import ResourceBudget
+from ..results.budget import ResourceBudget, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..results.errors import BudgetExceededError
+from ..dbc_loading import load_dbc_file
+from .._control_wire import ControlChannel
 from .blocks import RAM, LIMIT, encode, decode, batches
-from .compute import prepare_metric
+from .compute import _Accumulator, _check_program_spec
 from .stream import FileContributions
 ```
 
@@ -82,7 +90,7 @@ effective_spec(spec, process_count=None)
 
 非正原生整数；不接受bool、字符串或浮点数。
 
-源码：[`src/chronaxis/fast/session.py:25`](../../../src/chronaxis/fast/session.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:26`](../../../src/chronaxis/fast/session.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_worker_process_limit"></a>
 ## `_worker_process_limit`
@@ -105,7 +113,7 @@ _worker_process_limit(process_count: int, file_count: int) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/fast/session.py:35`](../../../src/chronaxis/fast/session.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:36`](../../../src/chronaxis/fast/session.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-file_specs"></a>
 ## `file_specs`
@@ -130,7 +138,33 @@ file_specs(spec)
 
 无输入IO。
 
-源码：[`src/chronaxis/fast/session.py:45`](../../../src/chronaxis/fast/session.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:46`](../../../src/chronaxis/fast/session.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_checked_file_specs"></a>
+## `_checked_file_specs`
+
+取得实际文件声明，并复用本会话已经检查过的同一组公式。
+
+```python
+_checked_file_specs(spec, programs_checked)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`spec`|dict[str, object]|是|无|位置或关键字。本次独立会话的可修改声明视图；准备其 metrics 后展开每文件声明。|
+|`programs_checked`|bool|是|无|位置或关键字。公共编译器是否已经检查顶层公式；文件覆盖的不同公式仍须单独核对。|
+
+### 返回说明
+
+文件声明列表；低层inputs覆盖的公式仍检查原文本和指令。
+
+### 异常说明
+
+非法公式或声明错误；不因顶层已编译就放行另一组覆盖值。
+
+源码：[`src/chronaxis/fast/session.py:54`](../../../src/chronaxis/fast/session.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SessionAccumulator"></a>
 ## `SessionAccumulator`
@@ -142,12 +176,12 @@ SessionAccumulator(spec)
 ```
 
 
-源码：[`src/chronaxis/fast/session.py:53`](../../../src/chronaxis/fast/session.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:77`](../../../src/chronaxis/fast/session.py#L77)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SessionAccumulator-__init__"></a>
 ### `SessionAccumulator.__init__`
 
-准备累计器。
+准备纯累计状态。
 
 ```python
 SessionAccumulator.__init__(spec)
@@ -165,9 +199,9 @@ SessionAccumulator.__init__(spec)
 
 #### 异常说明
 
-公式声明错误。
+名称或单位字段缺失。
 
-源码：[`src/chronaxis/fast/session.py:56`](../../../src/chronaxis/fast/session.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:80`](../../../src/chronaxis/fast/session.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SessionAccumulator-consume"></a>
 ### `SessionAccumulator.consume`
@@ -192,7 +226,7 @@ None。
 
 累计溢出。
 
-源码：[`src/chronaxis/fast/session.py:68`](../../../src/chronaxis/fast/session.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:92`](../../../src/chronaxis/fast/session.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SessionAccumulator-finish_file"></a>
 ### `SessionAccumulator.finish_file`
@@ -217,7 +251,7 @@ None。
 
 计数或身份非法。
 
-源码：[`src/chronaxis/fast/session.py:76`](../../../src/chronaxis/fast/session.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:100`](../../../src/chronaxis/fast/session.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SessionAccumulator-result"></a>
 ### `SessionAccumulator.result`
@@ -243,7 +277,7 @@ SessionAccumulator.result()
 
 贡献计数不符。
 
-源码：[`src/chronaxis/fast/session.py:96`](../../../src/chronaxis/fast/session.py#L96)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:120`](../../../src/chronaxis/fast/session.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool"></a>
 ## `FilePool`
@@ -251,11 +285,11 @@ SessionAccumulator.result()
 管理有限工作槽及每文件连续块前缀；不在内存保存所有暂存块描述。
 
 ```python
-FilePool(specs, budget, directory, cancel, statistics)
+FilePool(specs, budget, directory, cancel, statistics, *, _programs_checked=False)
 ```
 
 
-源码：[`src/chronaxis/fast/session.py:111`](../../../src/chronaxis/fast/session.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:135`](../../../src/chronaxis/fast/session.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-__init__"></a>
 ### `FilePool.__init__`
@@ -263,7 +297,7 @@ FilePool(specs, budget, directory, cancel, statistics)
 初始化但不启动。
 
 ```python
-FilePool.__init__(specs, budget, directory, cancel, statistics)
+FilePool.__init__(specs, budget, directory, cancel, statistics, *, _programs_checked=False)
 ```
 
 #### 参数
@@ -275,6 +309,7 @@ FilePool.__init__(specs, budget, directory, cancel, statistics)
 |`directory`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本次会话私有暂存目录；所有贡献块均写到该目录，清理不涉及输入或旧结果。|
 |`cancel`|Event &#124; None|是|无|位置或关键字。调用方取消事件；is_set为真时停止继续读取或调度，None表示没有外部取消信号。|
 |`statistics`|dict|是|无|位置或关键字。接收本次执行统计的字典；记录实际工作进程、暂存量和关闭后的预算，None使用内部字典。|
+|`_programs_checked`|bool|否|False|仅关键字。仅由内部调用传入的公式已检查标志；默认 False，普通入口仍核对原始公式和指令，不读取配置中的同名值。|
 
 #### 返回说明
 
@@ -283,8 +318,9 @@ FilePool.__init__(specs, budget, directory, cancel, statistics)
 #### 异常说明
 
 无；start安装进程资源的关闭责任。
+_programs_checked只来自父会话的实际准备结果，不读取配置中的标志。
 
-源码：[`src/chronaxis/fast/session.py:114`](../../../src/chronaxis/fast/session.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:138`](../../../src/chronaxis/fast/session.py#L138)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-check_cancel"></a>
 ### `FilePool.check_cancel`
@@ -310,12 +346,12 @@ None。
 
 InterruptedError。
 
-源码：[`src/chronaxis/fast/session.py:133`](../../../src/chronaxis/fast/session.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:161`](../../../src/chronaxis/fast/session.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-start"></a>
 ### `FilePool.start`
 
-预付全部工作槽后启动spawn。
+预付真实工作槽后启动；任何部分构造失败仍由本池关闭已登记资源。
 
 ```python
 FilePool.start(count)
@@ -333,9 +369,10 @@ None。
 
 #### 异常说明
 
-预算/启动/归属失败。
+原预算/启动/归属错误；
+持续清理失败在原异常的fast_pool_cleanup_owner保留内部恢复入口。
 
-源码：[`src/chronaxis/fast/session.py:139`](../../../src/chronaxis/fast/session.py#L139)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:169`](../../../src/chronaxis/fast/session.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-assign"></a>
 ### `FilePool.assign`
@@ -360,7 +397,7 @@ None。
 
 断管。
 
-源码：[`src/chronaxis/fast/session.py:164`](../../../src/chronaxis/fast/session.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:225`](../../../src/chronaxis/fast/session.py#L225)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-grant"></a>
 ### `FilePool.grant`
@@ -385,7 +422,7 @@ None。
 
 必要暂存超额。
 
-源码：[`src/chronaxis/fast/session.py:173`](../../../src/chronaxis/fast/session.py#L173)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:235`](../../../src/chronaxis/fast/session.py#L235)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-pump"></a>
 ### `FilePool.pump`
@@ -410,7 +447,7 @@ None。
 
 协议、worker退出、取消或IO错误。
 
-源码：[`src/chronaxis/fast/session.py:194`](../../../src/chronaxis/fast/session.py#L194)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:256`](../../../src/chronaxis/fast/session.py#L256)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-message"></a>
 ### `FilePool.message`
@@ -436,7 +473,7 @@ None。
 
 错误或协议不符。
 
-源码：[`src/chronaxis/fast/session.py:226`](../../../src/chronaxis/fast/session.py#L226)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:299`](../../../src/chronaxis/fast/session.py#L299)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-packet_records"></a>
 ### `FilePool.packet_records`
@@ -463,7 +500,7 @@ FilePool.packet_records(index, number, packet)
 
 顺序或协议错误。
 
-源码：[`src/chronaxis/fast/session.py:265`](../../../src/chronaxis/fast/session.py#L265)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:338`](../../../src/chronaxis/fast/session.py#L338)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-read_spool"></a>
 ### `FilePool.read_spool`
@@ -490,7 +527,7 @@ bytes。
 缺失、超长、IO。
 删除仅减少当前占用，不返还累计预约额度。
 
-源码：[`src/chronaxis/fast/session.py:282`](../../../src/chronaxis/fast/session.py#L282)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:355`](../../../src/chronaxis/fast/session.py#L355)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-concatenate"></a>
 ### `FilePool.concatenate`
@@ -515,7 +552,7 @@ None。
 
 运行或累计错误。
 
-源码：[`src/chronaxis/fast/session.py:297`](../../../src/chronaxis/fast/session.py#L297)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:370`](../../../src/chronaxis/fast/session.py#L370)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-file_records"></a>
 ### `FilePool.file_records`
@@ -540,7 +577,7 @@ FilePool.file_records(index)
 
 缺块/完整性错。
 
-源码：[`src/chronaxis/fast/session.py:327`](../../../src/chronaxis/fast/session.py#L327)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:400`](../../../src/chronaxis/fast/session.py#L400)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-time_order"></a>
 ### `FilePool.time_order`
@@ -565,12 +602,12 @@ None。
 
 输入/资源/计算错误。
 
-源码：[`src/chronaxis/fast/session.py:337`](../../../src/chronaxis/fast/session.py#L337)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:410`](../../../src/chronaxis/fast/session.py#L410)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FilePool-close"></a>
 ### `FilePool.close`
 
-关闭自有工作树。
+先结束实际写入者，再关闭句柄和自有费用；失败槽保留到后续重试。
 
 ```python
 FilePool.close(success=False)
@@ -588,10 +625,152 @@ None。
 
 #### 异常说明
 
-关闭/异常退出错误。
-失败时先取消再终止；不等待仍被背压阻塞的worker自行退出。
+原取消或汇总关闭错误；
+不删除任何暂存目录，未关闭资源仍由本池持有。
 
-源码：[`src/chronaxis/fast/session.py:361`](../../../src/chronaxis/fast/session.py#L361)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:435`](../../../src/chronaxis/fast/session.py#L435)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources"></a>
+## `_SessionResources`
+
+仅管理一个fast会话的固定费用、读取器、工作池和自有目录。
+
+```python
+_SessionResources(budget)
+```
+
+
+源码：[`src/chronaxis/fast/session.py:523`](../../../src/chronaxis/fast/session.py#L523)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources-__init__"></a>
+### `_SessionResources.__init__`
+
+建立空责任槽。
+
+```python
+_SessionResources.__init__(budget)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`budget`|[chronaxis.results.budget.ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)|是|无|位置或关键字。当前 fast 会话的共享预算，固定费用由该资源对象记录和释放。|
+
+#### 返回说明
+
+新对象。
+
+#### 异常说明
+
+无资源创建。
+
+源码：[`src/chronaxis/fast/session.py:526`](../../../src/chronaxis/fast/session.py#L526)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources-open_reader"></a>
+### `_SessionResources.open_reader`
+
+创建并登记本会话读取器，收编构造中未能关闭的真实子所有者。
+
+```python
+_SessionResources.open_reader(spec, database, cancel)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`spec`|dict[str, object]|是|无|位置或关键字。已经完成公式准备的单文件内部声明，供本会话创建 FileContributions。|
+|`database`|cantools.database.can.Database|是|无|位置或关键字。当前任务已加载的 DBC 数据库，供本文件解码使用。|
+|`cancel`|object &#124; None|是|无|位置或关键字。提供 is_set() 的取消对象，或 None；读取器沿用其信号，不在这里创建另一套取消状态。|
+
+#### 返回说明
+
+FileContributions。
+
+#### 异常说明
+
+原构造错误。
+ASC/BLF构造失败均收编实际未关闭的来源owner，直到成功关闭才清槽。
+
+源码：[`src/chronaxis/fast/session.py:532`](../../../src/chronaxis/fast/session.py#L532)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources-close_reader"></a>
+### `_SessionResources.close_reader`
+
+关闭实际读取器；仅在真实关闭完成后清槽。
+
+```python
+_SessionResources.close_reader()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+原关闭错误。
+
+源码：[`src/chronaxis/fast/session.py:553`](../../../src/chronaxis/fast/session.py#L553)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources-create_directory"></a>
+### `_SessionResources.create_directory`
+
+独占创建并登记目录，避免自动终结器在写入者未结束时删除目录。
+
+```python
+_SessionResources.create_directory(work_dir)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`work_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|是|无|位置或关键字。新会话暂存目录的父路径；None 使用系统临时目录。本方法只登记自己独占创建的子目录。|
+
+#### 返回说明
+
+Path。
+
+#### 异常说明
+
+创建或身份登记错误，已有目录不删除。
+
+源码：[`src/chronaxis/fast/session.py:566`](../../../src/chronaxis/fast/session.py#L566)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_SessionResources-close"></a>
+### `_SessionResources.close`
+
+依次停止工作池、读取器、删除自有目录并退款，任一步失败保留重试责任。
+
+```python
+_SessionResources.close()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+原清理错误；未确认停止写入者时不删除目录。
+
+源码：[`src/chronaxis/fast/session.py:578`](../../../src/chronaxis/fast/session.py#L578)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-run_session"></a>
 ## `run_session`
@@ -599,7 +778,7 @@ None。
 运行一个连续fast任务。
 
 ```python
-run_session(spec, database=None, *, work_dir=None, cancel_event=None, statistics=None)
+run_session(spec, database=None, *, work_dir=None, cancel_event=None, statistics=None, _programs_checked=False)
 ```
 
 ### 参数
@@ -611,6 +790,7 @@ run_session(spec, database=None, *, work_dir=None, cancel_event=None, statistics
 |`work_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|仅关键字。本次暂存目录的父路径；None使用系统临时目录，每次调用创建独立子目录。|
 |`cancel_event`|Event &#124; None|否|None|仅关键字。外部取消事件，支持is_set()；设置后停止本次会话并清理，不返回成功结果。|
 |`statistics`|dict &#124; None|否|None|仅关键字。接收本次执行统计的字典；记录实际工作进程、暂存量和关闭后的预算，None使用内部字典。|
+|`_programs_checked`|bool|否|False|仅关键字。仅由内部调用传入的公式已检查标志；默认 False，普通入口仍核对原始公式和指令，不读取配置中的同名值。|
 
 ### 返回说明
 
@@ -619,5 +799,6 @@ run_session(spec, database=None, *, work_dir=None, cancel_event=None, statistics
 ### 异常说明
 
 配置/读取/公式/资源/协议/取消；不返回部分结果。
+_programs_checked由公共编译后的内部入口传入；直接调用默认仍检查文本和指令。
 
-源码：[`src/chronaxis/fast/session.py:400`](../../../src/chronaxis/fast/session.py#L400)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session.py:606`](../../../src/chronaxis/fast/session.py#L606)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

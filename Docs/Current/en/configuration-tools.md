@@ -40,7 +40,7 @@ The scene must come from the catalog. `--output` must name a directory that does
 
 Existing directories are never overwritten, even if empty. On failure, the command removes content it created; any path it cannot clean up remains in the original exception details.
 
-The `can-export` and `signal-export` templates initially set `metadata.device_label` to `home`, identifying where the bundled synthetic example was made. The program does not detect your current computer. When using your own data, replace it with the label for that output's device; standalone exports currently accept only `home` or `work`. See [Outputs](exports.md). The catalog's own `device_label` and `data_kind` describe bundled resources and are not copied automatically into a run manifest.
+The `can-export` and `signal-export` templates omit `metadata.device_label`, so runs use `pending`. To record the device associated with an output, add this optional field with any nonblank label. The program does not detect your current computer; see [Outputs](exports.md). The catalog's own `device_label` and `data_kind` describe bundled resources and are not copied automatically into a run manifest.
 
 Edit the existing blocks in `demo/plan.yaml`. Do not paste commands or dotted reference paths as YAML keys. See [Configuration syntax](configuration-language.md) for indentation, lists, and block replacement.
 

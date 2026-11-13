@@ -2,15 +2,16 @@
 
 输入是经过来源校验、归一化和同刻政策处理的LatestSignalState，以及静态
 表达式声明；每个驱动更新最多返回一个(time, value, valid_until)计算点。
-按实际更新时间判断valid_for，复用既有独立参考/NumPy算术内核；固定周期
+按实际更新时间判断valid_for，参考及生产逐点数值核独立；真正批量数组入口不变。固定周期
 不进入此组件。最新值归state持有，临时求值空间在共享预算中预付。
 这是新按需执行的内部接点，不生成CompiledExpression或伪造EOF/绑定证据，
 不改变公开表达式入口拒绝StaticExpression的契约。来源读取/同刻归组由调用方负责。
 """
 
 from dataclasses import replace
-from ..core import expression_reference, expression_numpy
+from ..core import expression_reference
 from ..core.expression import StaticExpression, validate_expression
+from ..core.expression_point import PointProgram
 from ..core.lookup import pack_requested_lookups
 from ..core.where_updates import contains_where
 from ..core.enum_codes import expire_value
@@ -21,9 +22,9 @@ from ..results.budget import _reserve_owned_ram, _release_owned_ram, _cleanup_ow
 from ..results.errors import ResultClosedError
 from ..timebase.conversion import require_int64_ns
 from .history import _metadata_bytes
-from .calculation_values import scalar_from_column
+from .static_metadata import static_metadata_bytes
 from .state import LatestSignalState
-from .where_state import before_context, scalar_columns, group_updates, group_active
+from .where_state import before_context, group_updates, group_active
 
 
 class DriverExpression:
@@ -48,7 +49,7 @@ class DriverExpression:
         self._budget, self._state = state.budget, state
         self._held_cost = self._fixed_cost = self._work_cost = 0
         self._closed = self._closing = self._failed = False
-        self._static = self._definitions = None
+        self._static = self._definitions = self._point_program = None
         self._last_revision = 0
         self._last_group_time = None
         self._invalidated_at = None
@@ -56,7 +57,10 @@ class DriverExpression:
         self._driver, self._backend = driver, backend
         self._observation_ends = observation_ends
         try:
-            _reserve_owned_ram(self, 65536 + 32 * _metadata_bytes((static, derived)), '_fixed_cost')
+            # 新校验树、派生展开、点求值索引仍预付；bindings借用state/原计划，
+            # 不再为每个指标复制计入整份信号声明。32倍只覆盖本次真实构造的树和临时结构。
+            _reserve_owned_ram(self, 65536 + 32 * static_metadata_bytes(
+                (static.root, static.text, static.normalized_ast, static.dependencies, derived)), '_fixed_cost')
             checked = validate_expression(static.text, static.bindings, derived=derived, unit=static.root.unit)
             if checked != static:
                 raise ValueError('驱动表达式与原声明不一致')
@@ -74,6 +78,9 @@ class DriverExpression:
             static.bindings.require_synchronized(tuple(sorted(names)))
             # 固定申请已覆盖完整点对及每点16字节的只读列，参考后端直接二分原点对。
             self._static = pack_requested_lookups(checked) if backend == 'numpy' else checked
+            # 内建单点直接计算；NumPy宿主只在自己的列接口边界装箱。
+            # 原固定预算已预付节点/常量/查表引用，准备结果随当前owner关闭。
+            self._point_program = PointProgram(self._static.root) if backend == 'numpy' else None
             self._has_where = contains_where(checked.root)
             self._definitions = tuple((name, state.definitions[name]) for name in static.dependencies)
             # 费用随表达式复杂度和依赖数增长，不随输入记录数增长。
@@ -125,24 +132,27 @@ class DriverExpression:
         return context, deadlines
 
     def _evaluate_values(self, context, unobserved=None):
-        """复用所选后端。参数: typed值映射、可选规则缺项集合。返回: ScalarValue。异常: 原计算/分配错误。"""
-        result = columns = value = None
+        """使用独立逐点实现。参数: typed值及可选规则缺项集合。返回: ScalarValue。异常: 原计算/分配错误。"""
+        value = names = None
         cache = {}
         try:
             if self._backend == 'reference':
                 value = expression_reference._evaluate(self._static.root, context, cache).value
+                names = (node.name for node in cache if node.operator == 'name')
             else:
-                columns = scalar_columns(context)
-                result = expression_numpy._evaluate(self._static.root, columns, 1, cache)
-                value = scalar_from_column(result.value, 0)
-            if unobserved is not None:
-                # 两后端在单点均只访问当前活动分支；规则只记别名，不存逐时刻轨迹。
-                unobserved.update(n.name for n in cache if n.operator == 'name' and self._state.get(n.name) is None)
-            if value.valid and not value.partial and any(n.operator=='name' and context[n.name].partial for n in cache):
+                value = self._point_program.evaluate(context, cache).value
+                names = self._point_program.used_names(cache)
+            # 缺项和部分质量只来自实际访问的分支，不能扫描静态依赖全集。
+            partial = value.partial
+            for name in names:
+                if unobserved is not None and self._state.get(name) is None:
+                    unobserved.add(name)
+                partial |= context[name].partial
+            if value.valid and not value.partial and partial:
                 value = replace(value,partial=True)
             return value
         finally:
-            context = result = columns = value = cache = None
+            context = value = cache = names = None
 
     def actual_update_at(self, time_ns):
         """检查真实数值更新。参数: 完整组纳秒。返回: bool。异常: 状态/预算/后端错误。"""
@@ -178,19 +188,21 @@ class DriverExpression:
             current, _ = self._context_at(time_ns)
             if source_end:
                 return group_active(self._static.root, current,
-                    {name: ends.get(d.source) == time_ns for name, d in self._definitions}, self._backend)
+                    {name: ends.get(d.source) == time_ns for name, d in self._definitions}, self._backend,
+                    point_program=self._point_program)
             flags = {name: (sample := self._state.get(name)) is not None and sample.time_ns == time_ns for name in names}
             if kind == 'invalid':
                 # 判定实际中断使用“同一 t 排除真实更新”而非左侧保持；否则 TTL 到期
                 # 与旁列真实有效更新恰好同刻，会被误判为样本导致的中断。
                 invalid = {n: real and not self._state.get(n).value.valid for n, real in flags.items()}
-                if group_active(self._static.root, current, invalid, self._backend):
+                if group_active(self._static.root, current, invalid, self._backend, point_program=self._point_program):
                     return True
                 prior = before_context(self._state, names, time_ns, ends=self._observation_ends)
                 old = self._evaluate_values(prior)
                 return old.valid or bool(point.quality & ~old.quality)
             previous = before_context(self._state, names, time_ns, ends=self._observation_ends, left_limit=True)
-            return group_updates(self._static.root, current, previous, flags, self._backend)
+            return group_updates(self._static.root, current, previous, flags, self._backend,
+                                 point_program=self._point_program)
         except BaseException as error:
             primary, self._failed = error, True
             raise
@@ -269,7 +281,8 @@ class DriverExpression:
                 for cutoff in sorted(cutoffs):
                     point = before_context(self._state, self._static.dependencies, cutoff, ends=ends)
                     if not group_active(self._static.root, point,
-                            {n: ends.get(d.source) == cutoff for n, d in self._definitions}, self._backend):
+                            {n: ends.get(d.source) == cutoff for n, d in self._definitions}, self._backend,
+                            point_program=self._point_program):
                         continue
                     prior = before_context(self._state, self._static.dependencies, cutoff, ends=ends, continuous=True)
                     if not self._evaluate_values(prior).valid:
@@ -360,7 +373,7 @@ class DriverExpression:
         if self._closed:
             return
         self._closing = True
-        self._static = self._definitions = self._state = self._last_value = self._observation_ends = None
+        self._static = self._definitions = self._state = self._last_value = self._observation_ends = self._point_program = None
         _release_owned_ram(self, self._work_cost, '_work_cost')
         _release_owned_ram(self, self._fixed_cost, '_fixed_cost')
         self._closed = True

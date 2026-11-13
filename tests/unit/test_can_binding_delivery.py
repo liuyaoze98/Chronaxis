@@ -69,7 +69,7 @@ class CANBindingDeliveryTests(unittest.TestCase):
             context=FrameDBCContext(path,(FrameRebuildRule(0,'0x100',('V',)),),budget,integrity=False)
             try:
                 frame=raw(0,0,identifier=256,data=bytes(8),is_extended_id=True).frame
-                with patch('cantools.database.load_file',side_effect=AssertionError('不得重复加载DBC')):
+                with patch('cantools.database.load',side_effect=AssertionError('不得重复加载DBC')):
                     context.observe(frame)
                     pairs=context.pairs()
                     self.assertEqual(len(pairs),1)

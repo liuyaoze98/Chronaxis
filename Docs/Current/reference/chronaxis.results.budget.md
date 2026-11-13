@@ -2,7 +2,7 @@
 
 记录新分析部分已申请多少内存额度，以及还允许申请多少。超过配置上限时抛BudgetExceededError。这里的预算是字节数，不是金额，也不是操作系统对整个Python进程施加的硬限制。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -62,7 +62,7 @@ _reserve_owned_ram(owner, amount: int, slot: str) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:14`](../../../src/chronaxis/results/budget.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:14`](../../../src/chronaxis/results/budget.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_release_owned_ram"></a>
 ## `_release_owned_ram`
@@ -91,7 +91,7 @@ _release_owned_ram(owner, amount: int, slot: str) -> None
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:31`](../../../src/chronaxis/results/budget.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:31`](../../../src/chronaxis/results/budget.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_cleanup_owner"></a>
 ## `_cleanup_owner`
@@ -121,7 +121,7 @@ None，不覆盖原异常。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:49`](../../../src/chronaxis/results/budget.py#L49)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:49`](../../../src/chronaxis/results/budget.py#L49)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget"></a>
 ## `ResourceBudget`
@@ -133,7 +133,7 @@ ResourceBudget(memory_budget_bytes: int=268435456, spool_quota_bytes: int | None
 ```
 
 
-源码：[`src/chronaxis/results/budget.py:67`](../../../src/chronaxis/results/budget.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:67`](../../../src/chronaxis/results/budget.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-__init__"></a>
 ### `ResourceBudget.__init__`
@@ -164,7 +164,7 @@ ValueError为bool、非正数或非原生int。
 - `ValueError`：RAM限额不能省略。
 - `ValueError`：资源限额需要正原生int。
 
-源码：[`src/chronaxis/results/budget.py:70`](../../../src/chronaxis/results/budget.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:70`](../../../src/chronaxis/results/budget.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-reserve_ram"></a>
 ### `ResourceBudget.reserve_ram`
@@ -191,7 +191,7 @@ ValueError为金额错误；BudgetExceededError为超限。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:86`](../../../src/chronaxis/results/budget.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:86`](../../../src/chronaxis/results/budget.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-release_ram"></a>
 ### `ResourceBudget.release_ram`
@@ -222,7 +222,7 @@ ValueError为金额错误或超出当前申请。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:99`](../../../src/chronaxis/results/budget.py#L99)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:99`](../../../src/chronaxis/results/budget.py#L99)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-reserve_spool"></a>
 ### `ResourceBudget.reserve_spool`
@@ -253,7 +253,7 @@ ValueError为金额错误；BudgetExceededError为累计超配额。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:110`](../../../src/chronaxis/results/budget.py#L110)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:110`](../../../src/chronaxis/results/budget.py#L110)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-_amount"></a>
 ### `ResourceBudget._amount`
@@ -286,7 +286,7 @@ ValueError为非法金额。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/budget.py:122`](../../../src/chronaxis/results/budget.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:122`](../../../src/chronaxis/results/budget.py#L122)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResourceBudget-snapshot"></a>
 ### `ResourceBudget.snapshot`
@@ -314,4 +314,4 @@ ResourceBudget.snapshot() -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/budget.py:130`](../../../src/chronaxis/results/budget.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/budget.py:130`](../../../src/chronaxis/results/budget.py#L130)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

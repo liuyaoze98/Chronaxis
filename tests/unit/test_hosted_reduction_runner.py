@@ -1,7 +1,7 @@
 """通过公开配置核验宿主归约真实输入选择、状态范围、后端、取消和不加载插件的结果读取。"""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from chronaxis import AnalysisPlan,AnalysisRunner,PlanValidationError
 from chronaxis.extensions import ExtensionRegistry,ReductionSpec,ValueSpec

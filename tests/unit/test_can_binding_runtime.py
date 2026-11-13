@@ -5,6 +5,7 @@
 """
 
 import unittest
+from unittest.mock import patch
 from types import SimpleNamespace
 
 from chronaxis.legacy.binding import FrameBindingResolver, dbc_candidates, select_message
@@ -123,7 +124,7 @@ class CANBindingRuntimeTests(unittest.TestCase):
         """实际cantools同ID表发生覆盖时，仍按标准帧定义解码。参数: 无。返回: None。异常: 断言失败。
         """
         import cantools
-        from chronaxis.legacy.batch_worker import _parse_selected
+        from chronaxis.legacy.decode_policy import decode_serial_frame
         dbc = ('VERSION ""\nNS_ :\nBS_:\nBU_: Node\n'
                'BO_ 256 Standard: 1 Node\n SG_ Voltage : 0|8@1+ (2,0) [0|510] "V" Node\n'
                'BO_ 2147483904 Extended: 1 Node\n SG_ Voltage : 0|8@1+ (4,0) [0|1020] "V" Node\n')
@@ -134,8 +135,9 @@ class CANBindingRuntimeTests(unittest.TestCase):
         resolver = FrameBindingResolver(database, (selector,))
         fields = resolver.fields_for(actual)
         message = resolver.message_for(actual, fields)
-        processor = SimpleNamespace(parse_frame=lambda *args: self.fail('重复ID不得走旧ID查表'))
-        self.assertEqual(_parse_selected(processor, database, actual, message, {256}), {'Voltage': 20})
+        # 同ID表已被扩展帧覆盖；实际标准帧必须走所选定义，不能退回ID字典。
+        with patch.object(database, 'decode_message', side_effect=AssertionError('重复ID不得走ID查表')):
+            self.assertEqual(decode_serial_frame(database, actual, message, {256}), {'Voltage': 20})
 
 
 class CANBindingRunnerTests(unittest.TestCase):

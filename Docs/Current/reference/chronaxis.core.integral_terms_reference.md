@@ -2,11 +2,11 @@
 
 逐段计算当前区间时沿用的最近值保持积分面积，供NumPy实现对照。每段先确定落在请求范围内的实际时长，再乘以左端有效值。未知数据不会补成零；无法精确转成浮点数、面积溢出或下溢时记录原因。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralTerms](chronaxis.core.integral_terms.md#api-ReferenceIntegralTerms)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceIntegralTerms](chronaxis.core.integral_terms.md#api-ReferenceIntegralTerms)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -55,4 +55,4 @@ ReferenceIntegralTerms，areas/valid长度N-1；面积单位为input_unit乘秒�
 
 输入/单位/时间/分配错误传播；数值精度/溢出/下溢写入质量并使面积无效。
 
-源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms_reference.py:20`](../../../src/chronaxis/core/integral_terms_reference.py#L20)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

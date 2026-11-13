@@ -1,8 +1,8 @@
 # 高性能积分器（同帧逐报文累计）
 
-本积分器把每条匹配报文的表达式结果相加。用功率计算能量时，应在表达式中乘以该报文代表的持续时间，例如 `power * period`。如果每条报文已经提供能量贡献，则直接累计：两条贡献为 400 J、600 J 的报文合计 1000 J，无需再乘时间。
+本积分器把每条匹配报文的表达式结果相加。用功率计算能量时，应在表达式中乘以该报文代表的持续时间，例如 `power * frame_duration`。如果每条报文已经提供能量贡献，则直接累计：两条贡献为 400 J、600 J 的报文合计 1000 J，无需再乘时间。
 
-`period` 是示例自行定义的参数名，不是必填参数。运行器不会自动乘以相邻报文的实际时间间隔；需要由实际经过的时间确定积分量时，使用[时间积分](calculations.md#integrators)。
+`frame_duration` 是示例自行定义的参数名，不是必填参数。运行器不会自动乘以相邻报文的实际时间间隔；需要由实际经过的时间确定积分量时，使用[时间积分](calculations.md#integrators)。
 
 如果设备每记录一条功率报文就代表 0.1 秒，可以用 fast 把每条的「功率 × 0.1 秒」相加。同一次记录的多个分卷使用下面的单会话配置；多个独立试验使用fast batch。需要跨帧保持、事件或实际时间积分时使用通用分析入口。基础配置显式填写 `execution.process_count: 4`，最多使用4个文件工作进程读取、解码并计算单条报文贡献，再由主进程按规定顺序累计。进程数是上限：两个文件最多用两个，只有一个文件时在当前进程执行。省略该字段仍默认1。
 
@@ -10,11 +10,11 @@
 
 ## 安装与运行
 
-使用 Chronaxis 0.1.0.dev3 的本地 wheel，填写下方文件的实际路径。首次安装需要可取得项目依赖；同版源码安装方法见[安装说明](installation.md)。激活后切换到上面下载的分析配置所在目录，保持 data 子目录结构。
+使用 Chronaxis 0.1.0.dev4 的本地 wheel，填写下方文件的实际路径。首次安装需要可取得项目依赖；同版源码安装方法见[安装说明](installation.md)。激活后切换到上面下载的分析配置所在目录，保持 data 子目录结构。
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
+.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
 .\.venv\Scripts\Activate.ps1
 python -m chronaxis fast --help
 ```
@@ -30,34 +30,33 @@ python -m chronaxis fast batch batch.yaml --output result-batch --total
 ## 一份配置与实际数值
 
 ```yaml
-config_version: 4          # 声明分析配置结构版本；当前只接受整数4
-dataset:                   # 命名本次分析并可选限定分析时间范围
-  name: energy_demo        # 命名本次分析数据集；名称写入结果身份字段
-sources:                   # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - paths: data/run2.asc   # 指定本任务的输入；这里演示一个ASC文件，路径相对本配置
-    dbc_by_channel:        # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
-      '1': data/power.dbc  # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
-signals:                   # 定义公式使用的信号
-  - name: power            # 公式中的信号名称
-    field:                 # 输入中的原始字段
-      frame_id: 0x100      # 信号所属报文 ID
-      signal: Power        # DBC 中的信号名
-    period: 100ms          # 声明本信号正常更新周期；从设备/采集规范取得，省略valid_for时按其3倍确定有效期
-message_calculations:      # 每条目标报文计算一次并累计
-  - name: energy           # 结果表中的累计名称
-    update_message:        # 触发公式的报文
-      frame_id: 0x100      # 每来一条此 ID 的报文就计算
-    parameters:            # 每条报文使用的固定参数
-      period:              # 每条目标报文计入的时间
-        value: 0.1         # 每条报文按 0.1 秒累计
-        unit: s            # 该时间参数以秒计
-    expr: power * period   # 定义单条目标消息的贡献；使用该报文信号和parameters常量
-    unit: J                # 声明累计结果的单位；须与表达式量纲相符
-execution:                 # 设置本次分析的文件工作进程上限
-  process_count: 4         # 最多4个；本例仅一个文件，在当前进程执行
+config_version: 4                 # 声明分析配置结构版本；当前只接受整数4
+dataset:                          # 命名本次分析并可选限定分析时间范围
+  name: energy_demo               # 命名本次分析数据集；名称写入结果身份字段
+sources:                          # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - paths: data/run2.asc          # 指定本任务的输入；这里演示一个ASC文件，路径相对本配置
+    dbc_by_channel:               # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
+      '1': data/power.dbc         # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
+signals:                          # 定义公式使用的信号
+  - name: power                   # 公式中的信号名称
+    field:                        # 输入中的原始字段
+      frame_id: 0x100             # 信号所属报文 ID
+      signal: Power               # DBC 中的信号名
+message_calculations:             # 每条目标报文计算一次并累计
+  - name: energy                  # 结果表中的累计名称
+    update_message:               # 触发公式的报文
+      frame_id: 0x100             # 每来一条此 ID 的报文就计算
+    parameters:                   # 每条报文使用的固定参数
+      frame_duration:             # 每条目标报文计入的时间
+        value: 0.1                # 每条报文按 0.1 秒累计
+        unit: s                   # 该时间参数以秒计
+    expr: power * frame_duration  # 定义单条目标消息的贡献；使用该报文信号和parameters常量
+    unit: J                       # 声明累计结果的单位；须与表达式量纲相符
+execution:                        # 设置本次分析的文件工作进程上限
+  process_count: 4                # 最多4个；本例仅一个文件，在当前进程执行
 ```
 
-YAML 通过缩进表示父子关系。`frame_id` 指向报文 0x100，`Power` 是 DBC 信号名，`power` 是用于公式的名字。DBC 将这条信号解成 W。通道 1 在配置中写为 DBC 映射的字符串键。这里信号周期填 100 ms，用于信号声明；公式中的 0.1 s 是每条报文计入能量的时间，只乘一次。放到自己的设备上前要核实这个工程口径。若需要按前后两条报文的实际间隔积分，使用通用 `chronaxis run` 的积分配置。
+YAML 通过缩进表示父子关系。`frame_id` 指向报文 0x100，`Power` 是 DBC 信号名，`power` 是用于公式的名字。DBC 将这条信号解成 W。通道 1 在配置中写为 DBC 映射的字符串键。公式参数 `frame_duration` 的 0.1 s 是每条报文计入能量的时间，只乘一次；它来自采集或业务定义。本例只用当条报文，不沿用前值，因此信号无需填写 `period` 或 `valid_for`。若需要按前后两条报文的实际间隔积分，使用通用 `chronaxis run` 的积分配置。
 
 run2.asc 中 0 秒出现两条 4000 W 的目标报文，每条贡献 400 J，输出的 energy 为 **800 J**。这两条报文即使同刻也都参与计算。BLF 示例包含同样的两次有效读数，结果也是 800 J。终端返回本轮 manifest_path。打开该 JSON 的 outputs 所列 CSV，可见一行「计算项 energy，结果 800.0，单位 J，状态 完整」。重复运行时从本轮返回的路径读取结果。
 
@@ -104,7 +103,7 @@ python -m chronaxis fast run session.yaml --output result-session --process-coun
 python -m chronaxis fast run session-time-order.yaml --output result-time-order
 ```
 
-`explain` 的 `worker_process_limit` 是静态上限，不是实际启动数；单进程内联时为0。完成清单的 `inputs` 列出全部文件，`execution.worker_pids` 给出实际工作进程，`calculation_counts` 按计算项列出目标、范围内有效和方向入选数。检查结果表中的 `value/status/reason`；“完整”表示所选记录处理完成，不证明物理采集从未漏帧。
+`explain` 的 `worker_process_limit` 是静态上限，不是实际启动数；单进程内联时为0。完成清单的 `inputs` 列出全部文件，`execution.worker_pids` 给出实际工作进程，`execution.calculation_counts` 按计算项列出目标、范围内有效和方向入选数，Python 可读 `manifest["execution"]["calculation_counts"]`。默认 CSV 按「计算项、结果、单位、状态、说明」读取；只有显式选择 `outputs.tables: csv` 或 `jsonl` 交换格式时，才使用 `name/value/unit/status/reason` 字段。“完整”表示所选记录处理完成，不证明物理采集从未漏帧。
 
 |某项计算在整个会话中的情况|结果含义|
 |---|---|
@@ -180,10 +179,12 @@ if __name__ == "__main__":
 | `output` | 输出目录路径，可以已存在；带时间后缀的文件保留先前结果。 |
 | `process_count` | 可选正整数，不接受布尔值；run省略沿用execution.process_count，run_batch省略沿用批量根级process_count；均默认1。实际数量不超过文件数/任务数。 |
 | `cancel_event` | 可选 `threading.Event`。调用其 `set()` 请求取消：停止派发新任务，通知正在执行的 fast 工作进程停止并回收。run取消抛InterruptedError，不发布成功；run_batch各任务最终状态以批量报告为准。 |
-| `work_dir` | 仅run支持：可选暂存父目录，省略用系统临时目录；成功、失败和取消后清理本次创建的暂存。 |
+| `work_dir` | 仅run支持：可选暂存父目录，省略用系统临时目录；本次调用管理自己的暂存，清理失败按下文重试。 |
 | `total` | 布尔值，默认 `False`。`True` 只适用于同一模板展开的不同独立文件，要求计算定义和 DBC 绑定一致；不接受任意独立 jobs，也不会仅按列名相同就相加。 |
 
 配置不合法时，在分析开始前抛出异常。单会话任一文件读取、解码、公式或发布失败时抛出异常，不发布正常成功总量。批量文件失败记录在对应任务中；除非配置 `fail_fast`，其他任务继续。执行环境故障可能抛出异常，已保存报告时异常可以带 `batch_report` 属性，但并非所有错误都有报告。键盘中断会清理后继续抛出中断。请求取消可以正常返回含取消任务的报告，因此拿到路径不等于全部成功。某计算项所需成员失败、取消或没有数值时，该项完整总量不可用。
+
+`run` 的读取、计算或取消异常保留原类型。若会话清理没有完成，可从所捕异常读取 `getattr(exc, "fast_session_cleanup_owner", None)`，排除资源故障后调用该对象的 `close()`；不需要分别关闭它管理的各个子对象。恢复不会重新计算，也不会发布部分成功总量。该属性不保证存在，存在也可能指向后来已关闭的对象。批量恢复及工作进程构造期间的取消处理见[批量任务](batch.md)。
 
 完整定义：[run](public-api/fast.run.md)、[run_batch](public-api/fast.batch.run_batch.md)。
 

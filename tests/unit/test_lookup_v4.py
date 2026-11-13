@@ -6,7 +6,7 @@
 
 from dataclasses import replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 import numpy as np
@@ -166,36 +166,3 @@ class LookupTests(unittest.TestCase):
             with AnalysisRunner().run(plan, work_dir=work/'lookup') as result:
                 row, = result.iter_calculations()
                 self.assertEqual((row.value, row.unit), (400., 'J'))
-
-    def test_decoded_runtime_recompiles_exact_declared_table(self):
-        """封存历史重绑后仍按原表、精度及单位查询。参数: 无。返回: 无。异常: 历史读取或身份失败。"""
-        from chronaxis.core.binding import SignalDefinition
-        from chronaxis.core.expression import compile_expression
-        from chronaxis.execution.bindings import bind_decoded_history
-        from chronaxis.execution.expressions import ExpressionQueries
-        from chronaxis.core.models import MemoryRow
-        from test_window_replay import WindowReplayTests
-
-        for backend in ('reference', 'numpy'):
-            factory = WindowReplayTests('runTest')
-            self.addCleanup(lambda f=factory: self.assertTrue(f.doCleanups()))
-            signal = SignalDefinition('a', 'table', 'raw.a', D.INT64, 'mV', 5, config_version=4)
-            f = factory.fixture(definitions=(signal,), domain=(0,4), backend=backend,
-                rows_by_source={'table':(MemoryRow(0,{'raw.a':1500},0), MemoryRow(4,{'raw.a':2000},1))})
-            declarations = replace(f.declarations, lookups=(self.table(),))
-            lease = bind_decoded_history(declarations, f.history)
-            self.addCleanup(lease.close)
-            expression = compile_expression("lookup(a,'curve')", lease.bindings)
-            query = ExpressionQueries(f.holds, lease.bindings, (expression,))
-            self.addCleanup(query.close)
-            f.state.apply(f.groups[0])
-            if backend == 'reference':
-                output = query.query_reference(expression, (0,1))
-                self.addCleanup(output.close)
-                observed = [row.value.value for row in output.rows]
-            else:
-                output = query.query_numpy(expression, np.array([0,1],dtype='int64'))
-                self.addCleanup(output.close)
-                observed = output.arrays.value.values.tolist()
-            self.assertEqual(observed, [25.,25.])
-            self.assertEqual(list(output.actual_update), [True,False])

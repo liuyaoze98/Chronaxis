@@ -2,11 +2,11 @@
 
 整理事件检测器需要的条件结果。对同一个时刻，分别保存更新前、更新后以及该时刻本身的真假状态，并标明是否收到真实更新、是否结束读取。这样可以区分“条件变假”“数据失效”和“文件读完”。输出是ConditionTick序列；本模块不重新计算表达式。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)、[ConditionTick](chronaxis.core.temporal.md#api-ConditionTick)、[D](chronaxis.core.types.md#api-SignalDType)、[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[Truth](chronaxis.core.types.md#api-Truth)
+[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)、[ConditionTick](chronaxis.core.temporal.md#api-ConditionTick)、[D](chronaxis.core.types.md#api-SignalDType)、[Evaluation](chronaxis.core.expression_reference.md#api-Evaluation)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[Truth](chronaxis.core.types.md#api-Truth)
 
 ## 对象导航
 
@@ -51,7 +51,7 @@ Truth.TRUE、Truth.FALSE或Truth.UNKNOWN。
 
 无主动异常；调用者必须先完成带有明确类型的结果校验。
 
-源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-condition_ticks_reference"></a>
 ## `condition_ticks_reference`
@@ -88,7 +88,7 @@ TypeError为容器、原生元素、模型或非BOOL；ValueError为长度、回
 
 只创建当前有限输入的输出模型，不修改任何输入；申请预算由调用者负责。
 
-源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-condition_ticks_numpy"></a>
 ## `condition_ticks_numpy`
@@ -126,4 +126,4 @@ TypeError为数组布局、模型或非BOOL；ValueError为shape、非递增时�
 
 临时状态/quality/因果/诊断列均为(N,)，不修改借用的输入；预算须由调用者先申请。
 
-源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

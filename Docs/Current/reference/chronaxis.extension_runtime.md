@@ -6,11 +6,11 @@
 会话结束。共享ResourceBudget只为请求的实现付费，回调可在分配额外内存前
 预约并归还自己的金额。宿主代码必须遵守该协议，这不是Python代码沙箱。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[FunctionSpec](chronaxis.extensions.md#api-FunctionSpec)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[ReductionSpec](chronaxis.extensions.md#api-ReductionSpec)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[TransformSpec](chronaxis.extensions.md#api-TransformSpec)
+[FunctionSpec](chronaxis.extensions.md#api-FunctionSpec)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[ReductionSpec](chronaxis.extensions.md#api-ReductionSpec)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[TransformSpec](chronaxis.extensions.md#api-TransformSpec)
 
 ## 对象导航
 
@@ -59,7 +59,7 @@ ExtensionResources(budget, fixed=0)
 ```
 
 
-源码：[`src/chronaxis/extension_runtime.py:14`](../../../src/chronaxis/extension_runtime.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:14`](../../../src/chronaxis/extension_runtime.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionResources-__init__"></a>
 ### `ExtensionResources.__init__`
@@ -85,7 +85,7 @@ ExtensionResources.__init__(budget, fixed=0)
 
 预约失败可清理。
 
-源码：[`src/chronaxis/extension_runtime.py:17`](../../../src/chronaxis/extension_runtime.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:17`](../../../src/chronaxis/extension_runtime.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionResources-reserve"></a>
 ### `ExtensionResources.reserve`
@@ -110,7 +110,7 @@ None。
 
 预算超额、取消或已关闭。
 
-源码：[`src/chronaxis/extension_runtime.py:31`](../../../src/chronaxis/extension_runtime.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:31`](../../../src/chronaxis/extension_runtime.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionResources-release"></a>
 ### `ExtensionResources.release`
@@ -135,7 +135,7 @@ None。
 
 不允许退其他所有者或固定额度。
 
-源码：[`src/chronaxis/extension_runtime.py:37`](../../../src/chronaxis/extension_runtime.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:37`](../../../src/chronaxis/extension_runtime.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExtensionResources-close"></a>
 ### `ExtensionResources.close`
@@ -160,7 +160,7 @@ None。
 
 账本异常后可重试。
 
-源码：[`src/chronaxis/extension_runtime.py:45`](../../../src/chronaxis/extension_runtime.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:45`](../../../src/chronaxis/extension_runtime.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_check_scalar"></a>
 ## `_check_scalar`
@@ -175,7 +175,7 @@ _check_scalar(value, port)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。宿主交回或送入单个参考端口的带有明确类型的标量及有效性。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。宿主交回或送入单个参考端口的带有明确类型的标量及有效性。|
 |`port`|ValueSpec|是|无|位置或关键字。需要匹配的固定端口约定，特别是该数值的逻辑dtype。|
 
 ### 返回说明
@@ -186,7 +186,7 @@ _check_scalar(value, port)
 
 类型错误。
 
-源码：[`src/chronaxis/extension_runtime.py:57`](../../../src/chronaxis/extension_runtime.py#L57)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:57`](../../../src/chronaxis/extension_runtime.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_check_values"></a>
 ## `_check_values`
@@ -201,7 +201,7 @@ _check_values(values, port, backend)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`values`|tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
+|`values`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
 |`port`|ValueSpec|是|无|位置或关键字。宿主已声明的输入端口，所有值必须匹配其dtype。|
 |`backend`|str|是|无|位置或关键字。实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。|
 
@@ -213,7 +213,7 @@ _check_values(values, port, backend)
 
 布局或质量异常。
 
-源码：[`src/chronaxis/extension_runtime.py:64`](../../../src/chronaxis/extension_runtime.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:64`](../../../src/chronaxis/extension_runtime.py#L64)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-point_call"></a>
 ## `point_call`
@@ -230,7 +230,7 @@ point_call(spec, backend, args)
 |---|---|---|---|---|
 |`spec`|[FunctionSpec](chronaxis.extensions.md#api-FunctionSpec)|是|无|位置或关键字。本次表达式已经绑定的宿主逐点函数描述。|
 |`backend`|str|是|无|位置或关键字。实际使用的reference或numpy后端；只能调用该实现，不能静默改用另一后端。|
-|`args`|tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...] &#124; tuple[[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray), ...]|是|无|位置或关键字。按固定参数顺序排列的标量或同长数组，任一必需输入未知时传播原因。|
+|`args`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...] &#124; tuple[[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray), ...]|是|无|位置或关键字。按固定参数顺序排列的标量或同长数组，任一必需输入未知时传播原因。|
 
 ### 返回说明
 
@@ -240,7 +240,7 @@ ScalarValue或NumericArray。
 
 能力、结构、回调、取消或额度错误原样传播。
 
-源码：[`src/chronaxis/extension_runtime.py:76`](../../../src/chronaxis/extension_runtime.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:76`](../../../src/chronaxis/extension_runtime.py#L76)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_HostedState"></a>
 ## `_HostedState`
@@ -252,7 +252,7 @@ _HostedState(spec, backend, budget, methods)
 ```
 
 
-源码：[`src/chronaxis/extension_runtime.py:124`](../../../src/chronaxis/extension_runtime.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:124`](../../../src/chronaxis/extension_runtime.py#L124)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_HostedState-__init__"></a>
 ### `_HostedState.__init__`
@@ -280,7 +280,7 @@ owner。
 
 工厂或协议错误。
 
-源码：[`src/chronaxis/extension_runtime.py:127`](../../../src/chronaxis/extension_runtime.py#L127)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:127`](../../../src/chronaxis/extension_runtime.py#L127)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_HostedState-_require_open"></a>
 ### `_HostedState._require_open`
@@ -306,7 +306,7 @@ None。
 
 拒绝使用已失败或已关闭状态。
 
-源码：[`src/chronaxis/extension_runtime.py:146`](../../../src/chronaxis/extension_runtime.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:146`](../../../src/chronaxis/extension_runtime.py#L146)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_HostedState-close"></a>
 ### `_HostedState.close`
@@ -331,7 +331,7 @@ None。
 
 原清理错误可重试。
 
-源码：[`src/chronaxis/extension_runtime.py:151`](../../../src/chronaxis/extension_runtime.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:151`](../../../src/chronaxis/extension_runtime.py#L151)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedReduction"></a>
 ## `HostedReduction`
@@ -345,7 +345,7 @@ HostedReduction(spec, backend, budget)
 继承关系：[_HostedState](chronaxis.extension_runtime.md#api-_HostedState)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/extension_runtime.py:168`](../../../src/chronaxis/extension_runtime.py#L168)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:168`](../../../src/chronaxis/extension_runtime.py#L168)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedReduction-__init__"></a>
 ### `HostedReduction.__init__`
@@ -372,7 +372,7 @@ owner。
 
 工厂、预算或能力错。
 
-源码：[`src/chronaxis/extension_runtime.py:171`](../../../src/chronaxis/extension_runtime.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:171`](../../../src/chronaxis/extension_runtime.py#L171)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedReduction-consume"></a>
 ### `HostedReduction.consume`
@@ -387,7 +387,7 @@ HostedReduction.consume(values)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`values`|tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
+|`values`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
 
 #### 返回说明
 
@@ -397,7 +397,7 @@ None。
 
 错类型、已结束或回调/预算失败。
 
-源码：[`src/chronaxis/extension_runtime.py:178`](../../../src/chronaxis/extension_runtime.py#L178)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:178`](../../../src/chronaxis/extension_runtime.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedReduction-merge"></a>
 ### `HostedReduction.merge`
@@ -422,7 +422,7 @@ None。
 
 不可合并或回调失败。
 
-源码：[`src/chronaxis/extension_runtime.py:190`](../../../src/chronaxis/extension_runtime.py#L190)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:190`](../../../src/chronaxis/extension_runtime.py#L190)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedReduction-finalize"></a>
 ### `HostedReduction.finalize`
@@ -448,7 +448,7 @@ HostedReduction.finalize()
 
 错误输出或回调失败。
 
-源码：[`src/chronaxis/extension_runtime.py:205`](../../../src/chronaxis/extension_runtime.py#L205)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:205`](../../../src/chronaxis/extension_runtime.py#L205)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedTransform"></a>
 ## `HostedTransform`
@@ -462,7 +462,7 @@ HostedTransform(spec, backend, budget)
 继承关系：[_HostedState](chronaxis.extension_runtime.md#api-_HostedState)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/extension_runtime.py:217`](../../../src/chronaxis/extension_runtime.py#L217)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:217`](../../../src/chronaxis/extension_runtime.py#L217)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedTransform-__init__"></a>
 ### `HostedTransform.__init__`
@@ -489,7 +489,7 @@ owner。
 
 工厂、预算或能力错。
 
-源码：[`src/chronaxis/extension_runtime.py:220`](../../../src/chronaxis/extension_runtime.py#L220)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:220`](../../../src/chronaxis/extension_runtime.py#L220)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedTransform-advance"></a>
 ### `HostedTransform.advance`
@@ -506,7 +506,7 @@ HostedTransform.advance(time_ns, window_ns, values, weights_ns)
 |---|---|---|---|---|
 |`time_ns`|int|是|无|位置或关键字。正在推进的实际网格时间戳，单位纳秒，必须比已交付的上一格晚。|
 |`window_ns`|int|是|无|位置或关键字。本次网格请求的正窗口宽度，不能超过宿主声明的最大历史宽度。|
-|`values`|tuple[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
+|`values`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...] &#124; [NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|位置或关键字。按本次后端打包的已选有效值，标量元组或一维同型数值列。|
 |`weights_ns`|tuple[int &#124; Fraction, ...] &#124; numpy.ndarray|是|无|位置或关键字。与每段有效数值对应的正纳秒权重；实际间隔用整数，折算周期可包含分数。|
 
 #### 返回说明
@@ -517,7 +517,7 @@ ScalarValue。
 
 协议或回调失败。
 
-源码：[`src/chronaxis/extension_runtime.py:227`](../../../src/chronaxis/extension_runtime.py#L227)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:227`](../../../src/chronaxis/extension_runtime.py#L227)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-advance_grid"></a>
 ## `advance_grid`
@@ -547,4 +547,4 @@ ScalarValue，保留宿主自身失败质量或部分状态。
 
 权重/回调或协议异常。
 
-源码：[`src/chronaxis/extension_runtime.py:254`](../../../src/chronaxis/extension_runtime.py#L254)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/extension_runtime.py:254`](../../../src/chronaxis/extension_runtime.py#L254)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

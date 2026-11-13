@@ -6,7 +6,7 @@
 首尾使用点值，窗内使用实际观测及连续片段；缺口不插值、不延长有效期。
 本模块不依赖NumPy，不读文件，不保存跨调用状态或触发锁存。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,4 +54,4 @@ WindowDeltaResult；阈值比较包含等于，UNKNOWN不伪装False。
 
 输入结构错误；定宽数值溢出以质量结果返回。
 
-源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/window_delta_reference.py:13`](../../../src/chronaxis/core/window_delta_reference.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -1,4 +1,4 @@
-"""冻结单BLF原公开函数链的报文、解码值、定位和有界IPC协议。
+"""保留单BLF协议的报文、解码值、定位和有界IPC字段。
 
 输入为同次can.Message的公开写出字段、原parse_frame返回值与用户定位声明；
 输出是冻结dataclass及最大65536字节的JSON包。data以hex无损表达，非有限
@@ -16,7 +16,7 @@ from pathlib import Path
 from re import fullmatch
 from types import MappingProxyType
 
-# profile和wire限额是本协议固定事实，不是旧CAN解析参数。
+# profile标记既有解码语义，当前读取与写出已共用实现；wire限额仍是协议固定事实。
 PROFILE_ID = 'sclicer-functions-v1'
 MAX_WIRE_BYTES = 65536
 _RAW_FIELDS = ('timestamp', 'arbitration_id', 'is_extended_id', 'is_remote_frame', 'is_error_frame',
@@ -284,7 +284,7 @@ class LegacyCANRequest:
     """声明单BLF、单DBC和有限原定位；构造只校验模型，不访问文件。"""
 
     input_path: Path  # 原BLF路径，不在模型中resolve或新增扫描。
-    dbc_path: Path  # 只供worker一次原load_file。
+    dbc_path: Path  # 只供worker加载一次DBC。
     fields: tuple[LegacyCANField, ...]  # 空tuple可原样读取全部帧，不省decode。
 
     def __post_init__(self):

@@ -84,7 +84,7 @@ Full fields are listed in [Summary row models](../reference/chronaxis.results.su
 
 The output directory can be reused. Every publication uses one local-time suffix, such as `20261103_091500_123456`, for its tables, manifest and requested export directory. A numeric suffix resolves same-time or concurrent collisions. This naming time does not change message times, interval boundaries or energy values. Existing files are never overwritten, and unrequested outputs are not created.
 
-Files are written and closed in temporary storage, then published individually; the completion manifest is published last. Treat a set as complete only when its manifest exists and reports `completed`. Normal failure cleanup touches only files owned by this publication. An abrupt process termination or power loss may leave files without a completion manifest; they are not completed outputs and subsequent runs do not scan or delete them. The result-publication procedure on this page has been verified on Windows; equivalent verification on other platforms is still pending.
+Files are written and closed in temporary storage, then published individually; the completion manifest is published last. Treat a set as complete only when its manifest exists and reports `completed`. Normal failure cleanup touches only files owned by this publication. An abrupt process termination or power loss may leave files without a completion manifest; they are not completed outputs and subsequent runs do not scan or delete them. The result-publication procedure on this page has been verified on Windows and in the Linux environment listed in [Installation](installation.md). Linux publication requires `renameat2`, target-filesystem support for `RENAME_NOREPLACE`, and a same-filesystem move. See that page for the scope of other systems and filesystems.
 
 Use `manifest` in the CLI summary or `OutputManifest.manifest_path` from Python, then read the manifest's `outputs` list. Do not construct a fixed `run_manifest.json` path or pick an arbitrary/latest CSV from a shared directory. An open `AnalysisResult` can be published again to the same or another directory without rereading input. An explicit `work_dir` must still be new.
 
@@ -187,6 +187,8 @@ Ordinary time calculations use these reasons; not every empty value means missin
 
 A rule named `hot` may produce many events. `rule_id=hot` identifies the definition, not one occurrence. Join `event_id` and `segment_id` within the same run directory. Do not join by row order or by `sequence` alone.
 
+A result row’s sequence is its append sequence for this run, not a stable business identifier across runs or an original CAN message sequence. Compare runs with different batch or worker settings by rule, window, calculation name, actual time and the corresponding parent event. Preserve duplicate counts and compare value, unit, status and quality; per-message details must also retain message order. Changes in run ID, generation time or append sequence do not establish a numerical difference.
+
 The following comes from an actual run of [activity.yaml](../examples/activity.yaml). E1 and S1 are display abbreviations here; actual fields contain the full strings. Read IDs from your own output rather than hard-coding these:
 
 - E1 (`event_id`): `3d7375484e46c0da41755d73629db92c3f87b98da58891b2c238c5a6517b848f`
@@ -229,7 +231,7 @@ Signal CSV and CAN frame exports are explicitly requested through `outputs`, wit
 <a id="运行清单的摘要与详细字段"></a>
 ## Summary and detailed run metadata
 
-`RunMetadata` stores run information; `to_dict()` selects what is serialized. Default `detailed_diagnostics=False` writes `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `worker_config`, `retain_work`, and `detailed_diagnostics`. Input identities, session boundaries, limitations, and other conditional fields appear when their conditions apply. Trace/integrity add their corresponding diagnostics.
+`RunMetadata` stores run information; `to_dict()` selects what is serialized. When software_version is omitted, each new RunMetadata reads the version of this source checkout or installed package. Existing objects and explicitly supplied historical versions are unchanged. This does not imply automatic reloading of already imported Python code. Default `detailed_diagnostics=False` writes `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `worker_config`, `retain_work`, and `detailed_diagnostics`. Input identities, session boundaries, limitations, and other conditional fields appear when their conditions apply. Trace/integrity add their corresponding diagnostics.
 
 | Model content | Default summary serialization | `detailed_diagnostics=True` |
 |---|---|---|

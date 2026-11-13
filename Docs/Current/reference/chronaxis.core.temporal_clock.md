@@ -5,7 +5,7 @@
 实际模式不传增量；固定/DBC模式由上游仅在所选驱动更新时传入一个周期，
 其余有效期、EOF等边界传0。增量仅供检测器当前候选计时，不进入事件输出。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -39,4 +39,4 @@ None。
 
 TypeError/ValueError，不推进任何状态；首点不能虚构前序周期。
 
-源码：[`src/chronaxis/core/temporal_clock.py:8`](../../../src/chronaxis/core/temporal_clock.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_clock.py:8`](../../../src/chronaxis/core/temporal_clock.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

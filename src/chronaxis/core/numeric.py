@@ -12,8 +12,6 @@ memory_series_reference从已有内存行生成信号历史，保留来源和纳
 数组实现可共享静态类型规则和模型检查，数值计算仍由各自实现承担。
 """
 
-# 数据类只保存不可变逻辑结果，math检查有限与精度，不恢复源浮点已丢信息。
-from dataclasses import dataclass, field
 # 有限性/配置端点辅助只使用标准库，不替代数组数值内核。
 from math import isfinite
 # 静态内建比较仅用于参考白名单，不接自由函数。
@@ -29,108 +27,20 @@ from .models import SignalSample
 from .state import SignalSeries
 # 只读静态映射或显式质量/type枚举用于结构协议。
 from .types import QualityFlag, SignalDType
-# 共享原生/文本结构校验，不共享数值参考。
-from .validation import require_scalar, require_text
+# 共享原生结构校验，不共享数值参考。
+from .validation import require_scalar
 # 时间offset使用已有精确整数加法协议。
 from ..timebase.conversion import checked_add_ns
 
-# 定宽端点由协议明确给出，不依赖NumPy自动提升类型或整数回绕。
-INTEGER_BOUNDS = MappingProxyType({SignalDType.INT64: (-(2 ** 63), 2 ** 63 - 1), SignalDType.UINT64: (0, 2 ** 64 - 1)})
+# 重导出共用标量类，保持公开导入和进程序列化路径不变。
+from .scalar import INTEGER_BOUNDS, ScalarValue
+
 # 首版算术和比较白名单，DSL语法检查由EXPR承担。
 ARITHMETIC = frozenset({"add", "sub", "mul", "div"})
 # 精确比较白名单与算术分开，不放行任意函数。
 COMPARISONS = frozenset({"eq", "ne", "lt", "le", "gt", "ge"})
 # 静态内建比较映射不接受用户函数，也无需创建无说明内部函数。
 COMPARE_FUNCTIONS = MappingProxyType({"eq": eq, "ne": ne, "lt": lt, "le": le, "gt": gt, "ge": ge})
-
-
-@dataclass(frozen=True)
-class ScalarValue:
-    """保存一个值的声明类型、有效性和质量原因。
-
-    valid只能是bool，且当且仅当quality为NONE时为True。有质量问题的value
-    可保留原始诊断，例如None或NaN，但不能作为正常数值参加后续计算。
-    有效整数必须落在dtype对应的定宽范围内，有效float64必须有限。
-    枚举使用labels中的文本值；labels是不可变的固定标签域，比较时必须同域。
-    实例不可重新赋值，不持有跨时间或跨分析任务的状态。
-    """
-
-    value: int | float | bool | str | None  # 正常值或无效原诊断。
-    dtype: SignalDType  # 输出声明类型，不靠值推断。
-    valid: bool = True  # 无效不代表正常0。
-    quality: QualityFlag = QualityFlag.NONE  # 输入原因和计算失败原因。
-    labels: tuple[str, ...] = ()  # 仅enum有固定公开逻辑域。
-    code: 'ScalarValue | None' = None  # 仅 enum_code 需要的原整数，可与标签有不同有效性。
-    partial: bool = field(default=False,kw_only=True,repr=False)  # 有限变换窗口仅有部分输入时仍可估算的数值。
-
-    def __post_init__(self) -> None:
-        """检查值与声明类型是否一致，并核对有效性和质量原因。
-
-        参数:
-            无显式参数；读取value、dtype、valid、quality和labels。
-        返回:
-            None。保留输入声明，不自动转换类型、补零或清除质量原因。
-        异常:
-            TypeError: 字段类型或枚举标签域结构不合法。
-            ValueError: 有效性与质量矛盾，浮点值非有限或枚举值不在声明域内。
-            OverflowError: 有效整数超出声明类型的定宽范围。
-        """
-        # 原诊断也需不可变原生标量。
-        require_scalar(self.value)
-        if type(self.partial) is not bool or self.partial and not self.valid:
-            raise ValueError('部分结果标志仅用于实际可用的数值')
-        # dtype和质量都必须是真实已定义枚举。
-        if not isinstance(self.dtype, SignalDType) or not isinstance(self.quality, QualityFlag) or type(self.valid) is not bool:
-            # 不接受字符串类型名，也不把任意数值按Python真假规则当作valid。
-            raise TypeError("ScalarValue需要typed dtype/quality及bool valid")
-        # 逻辑域只能由明确冻结标签构成。
-        if self.code is not None and (self.dtype is not SignalDType.ENUM or not isinstance(self.code, ScalarValue)
-                                      or self.code.dtype not in INTEGER_BOUNDS):
-            raise TypeError('只有枚举可附带整数原码')
-        if not isinstance(self.labels, tuple) or (self.dtype is not SignalDType.ENUM and self.labels):
-            # 数值不携带隐式业务枚举含义。
-            raise TypeError("labels仅支持enum tuple域")
-        # enum即使invalid也需有合法声明域。
-        if self.dtype is SignalDType.ENUM:
-            # 空域或重复标签不能证明逻辑值身份。
-            if not self.labels or len(set(self.labels)) != len(self.labels):
-                # 不自动猜枚举域。
-                raise ValueError("enum需要非空唯一labels")
-            # 标签保留完整大小写业务文本。
-            for label in self.labels:
-                # 不将标签当作表达式名称。
-                require_text(label, "enum.label")
-        # 有效性不能与禁止质量矛盾。
-        if self.valid != (self.quality == QualityFlag.NONE):
-            # 无效结果必须携带原因，不能悄悄恢复正常。
-            raise ValueError("valid与基础质量策略矛盾")
-        # invalid诊断无需满足正常输出类型，不参加正常计算。
-        if not self.valid:
-            # 保留原NaN/None/错误编码及原因。
-            return
-        # 严格原生类型，bool不视作整数。
-        expected = {SignalDType.INT64: int, SignalDType.UINT64: int, SignalDType.FLOAT64: float,
-                    SignalDType.BOOL: bool, SignalDType.ENUM: str}[self.dtype]
-        # 不隐式promotion或解析字符串数值。
-        if type(self.value) is not expected:
-            # 类型冲突是结构错误，归一化层须明确转换。
-            raise TypeError("ScalarValue有效值与dtype不一致")
-        # 有效定宽整数不能沿用Python无界结果。
-        if self.dtype in INTEGER_BOUNDS:
-            # signed/unsigned端点分别校验。
-            lower, upper = INTEGER_BOUNDS[self.dtype]
-            # 边界值本身合法，只有超界拒绝。
-            if not lower <= self.value <= upper:
-                # 运算内核应先转OVERFLOW无效，不能直接构造正常越界值。
-                raise OverflowError("ScalarValue有效整数超界")
-        # 浮点正常值单独检查有限，不能借整数范围掩盖Inf。
-        elif self.dtype is SignalDType.FLOAT64 and not isfinite(self.value):
-            # float正常路径不接受NaN/Inf。
-            raise ValueError("ScalarValue有效float必须有限")
-        # 枚举正常标签必须确属当前声明域。
-        elif self.dtype is SignalDType.ENUM and self.value not in self.labels:
-            # 未声明字符串不是正常枚举。
-            raise ValueError("ScalarValue枚举标签不在域内")
 
 
 def result_dtype(operator: str, left: SignalDType, right: SignalDType, allow_float_literal: bool = False) -> SignalDType:

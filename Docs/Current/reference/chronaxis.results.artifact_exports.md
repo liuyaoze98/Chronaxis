@@ -2,7 +2,7 @@
 
 管理本次生成的导出文件及其索引。结果发布时复制并核对这些文件，不再重新计算导出数据。关闭对象会释放读取资源，文件是否发布由单独状态记录。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -30,6 +30,7 @@
 
 ```python
 from pathlib import Path
+from ..core.validation import require_text
 from hashlib import sha256
 from .frame_sort import FrameSort
 from .budget import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
@@ -49,7 +50,7 @@ ArtifactExportStore(budget, path, session_id, device_label, *, integrity=True)
 ```
 
 
-源码：[`src/chronaxis/results/artifact_exports.py:18`](../../../src/chronaxis/results/artifact_exports.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:19`](../../../src/chronaxis/results/artifact_exports.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-__init__"></a>
 ### `ArtifactExportStore.__init__`
@@ -67,7 +68,7 @@ ArtifactExportStore.__init__(budget, path, session_id, device_label, *, integrit
 |`budget`|ResourceBudget|是|无|位置或关键字。本次运行共用的ResourceBudget对象，用于检查内存和临时磁盘用量。当前对象在分配前申请额度，用完后归还；同一次运行的组件应使用同一个对象。|
 |`path`|[pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。保存本次导出文件登记信息的新目录，记录会话与文件摘要。|
 |`session_id`|str|是|无|位置或关键字。本次会话的名字，用来防止把不同试验的数据混在一起。|
-|`device_label`|str|是|无|位置或关键字。记录本次导出的设备来源标签；当前这个导出入口只接受home或work，pending会被拒绝。标签应来自已确认的执行设备映射，不从输入路径推断。|
+|`device_label`|str|是|无|位置或关键字。本次产出的设备标签，接受任意非空文本，如lab-pc或试验台一号；pending表示未指定。标签不参与计算，不从路径推断；此Python参数是否可省略以签名为准，分析配置省略metadata.device_label时使用pending。|
 |`integrity`|bool|否|True|仅关键字。是否执行本对象的额外内容摘要或认证核验；False仍保留结构、类型、预算及必要文件变化检查。|
 
 #### 返回说明
@@ -80,9 +81,10 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 
 本函数直接报告的具体错误：
 
-- `ValueError`：新导出需要实际设备标签及新工作目录。
+- `TypeError`：device_label必须为字符串。
+- `ValueError`：device_label不能为空或全空白；帧导出取消回调必须可调用。
 
-源码：[`src/chronaxis/results/artifact_exports.py:21`](../../../src/chronaxis/results/artifact_exports.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:22`](../../../src/chronaxis/results/artifact_exports.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-closed"></a>
 ### `ArtifactExportStore.closed`
@@ -110,7 +112,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/results/artifact_exports.py:42`](../../../src/chronaxis/results/artifact_exports.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:42`](../../../src/chronaxis/results/artifact_exports.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-owned_ram"></a>
 ### `ArtifactExportStore.owned_ram`
@@ -138,7 +140,7 @@ bytes。
 
 无。
 
-源码：[`src/chronaxis/results/artifact_exports.py:48`](../../../src/chronaxis/results/artifact_exports.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:48`](../../../src/chronaxis/results/artifact_exports.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-next_path"></a>
 ### `ArtifactExportStore.next_path`
@@ -168,7 +170,7 @@ Path。
 
 - `ResultClosedError`：导出索引不能新增。
 
-源码：[`src/chronaxis/results/artifact_exports.py:53`](../../../src/chronaxis/results/artifact_exports.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:53`](../../../src/chronaxis/results/artifact_exports.py#L53)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-_close_slot"></a>
 ### `ArtifactExportStore._close_slot`
@@ -193,7 +195,7 @@ ArtifactExportStore._close_slot(slot)
 
 原close错，保槽重试。
 
-源码：[`src/chronaxis/results/artifact_exports.py:60`](../../../src/chronaxis/results/artifact_exports.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:60`](../../../src/chronaxis/results/artifact_exports.py#L60)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-_identity"></a>
 ### `ArtifactExportStore._identity`
@@ -220,7 +222,7 @@ ArtifactExportStore._identity(path)
 
 链接/非普通文件/IO。
 
-源码：[`src/chronaxis/results/artifact_exports.py:68`](../../../src/chronaxis/results/artifact_exports.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:68`](../../../src/chronaxis/results/artifact_exports.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-_file"></a>
 ### `ArtifactExportStore._file`
@@ -254,7 +256,7 @@ IO/内容变化。
 - `ResultFormatError`：导出文件内容与登记身份不同。
 - `ResultFormatError`：导出文件超过登记大小。
 
-源码：[`src/chronaxis/results/artifact_exports.py:75`](../../../src/chronaxis/results/artifact_exports.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:75`](../../../src/chronaxis/results/artifact_exports.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-append"></a>
 ### `ArtifactExportStore.append`
@@ -289,7 +291,7 @@ ArtifactExportStore.append(export_type, scope, interval, *, segment_id=None, com
 - `ValueError`：导出缺完成清单。
 - `ValueError`：导出目录仅接受至多16个普通文件。
 
-源码：[`src/chronaxis/results/artifact_exports.py:111`](../../../src/chronaxis/results/artifact_exports.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:116`](../../../src/chronaxis/results/artifact_exports.py#L116)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-seal"></a>
 ### `ArtifactExportStore.seal`
@@ -315,7 +317,7 @@ ArtifactExportStore.seal()
 
 状态/排序IO错。
 
-源码：[`src/chronaxis/results/artifact_exports.py:146`](../../../src/chronaxis/results/artifact_exports.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:151`](../../../src/chronaxis/results/artifact_exports.py#L151)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-copy_to"></a>
 ### `ArtifactExportStore.copy_to`
@@ -348,7 +350,7 @@ IO/完整性错。
 - `ResultFormatError`：导出索引目录错误。
 - `ResultFormatError`：导出索引包含不安全文件名。
 
-源码：[`src/chronaxis/results/artifact_exports.py:151`](../../../src/chronaxis/results/artifact_exports.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:156`](../../../src/chronaxis/results/artifact_exports.py#L156)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-recover_copy"></a>
 ### `ArtifactExportStore.recover_copy`
@@ -374,7 +376,7 @@ ArtifactExportStore.recover_copy()
 
 实际close错可重试。
 
-源码：[`src/chronaxis/results/artifact_exports.py:196`](../../../src/chronaxis/results/artifact_exports.py#L196)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:201`](../../../src/chronaxis/results/artifact_exports.py#L201)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArtifactExportStore-close"></a>
 ### `ArtifactExportStore.close`
@@ -400,13 +402,13 @@ ArtifactExportStore.close()
 
 原close错。
 
-源码：[`src/chronaxis/results/artifact_exports.py:206`](../../../src/chronaxis/results/artifact_exports.py#L206)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/artifact_exports.py:211`](../../../src/chronaxis/results/artifact_exports.py#L211)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 ## 内部匿名回调
 
 
-<a id="lambda-141"></a>
-### 第141行匿名函数
+<a id="lambda-146"></a>
+### 第146行匿名函数
 
 ```python
 lambda f: f['name']
@@ -414,4 +416,4 @@ lambda f: f['name']
 
 |参数|含义|返回/异常|
 |---|---|---|
-|`f`|包含name字段的导出文件说明映射。|返回文件名，使清单顺序确定；缺少name传播KeyError。|
+|`f`|参数按上方签名传入；具体调用语义尚待补充。|返回值由上方表达式决定；具体用途和异常尚待核对，不据模板推断。|

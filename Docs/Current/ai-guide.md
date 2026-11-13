@@ -19,4 +19,6 @@ python -m chronaxis guide --language en
 
 阅读指南无需安装Chronaxis；查询脚本只使用Python标准库。实际运行分析示例时，使用已安装项目依赖的环境。先按任务索引选取匹配示例，核对输入、时间单位与预期结果，再换成自己的数据；会影响结果的信息缺失时先补齐。
 
-生成配置时同时说明文件关系和进程数：一个ASC/BLF来源的连续分卷采用 `execution.process_count: 4`，独立试验采用批量根级 `process_count: 4`，子任务保持1。CSV、内存或多来源计划按当前支持范围使用1。基础示例与完整规则见[执行配置](execution.md)。
+生成配置时同时说明文件关系和进程数：一个ASC/BLF来源的连续分卷采用 `execution.process_count: 4`，独立试验采用批量根级 `process_count: 4`，子任务的 `execution.process_count` 保持1。
+
+CSV、内存或多来源计划须设置 `execution.process_count: 1`；多来源计划中的CAN来源保持默认 `file_merge: concatenate`，这些有效配置在当前进程读取。1是配置上限，不表示实际创建一个工作进程。单个ASC/BLF来源使用 `time_order` 时，上限为1仍使用一个文件读取子进程；当前多来源计划不支持 `time_order`。基础示例与完整规则见[执行配置](execution.md)。

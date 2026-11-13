@@ -1,0 +1,130 @@
+name: Verify Chronaxis
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  CHRONAXIS_DEVICE_LABEL: ci
+  CHRONAXIS_DOC_SOURCE_TREE: "1"
+
+jobs:
+  unit:
+    name: Windows Python 3.12 - ${{ matrix.group }}
+    runs-on: windows-2022
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [core, input]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12.4"
+      - name: Install runtime and test dependencies
+        run: python -m pip install -e ".[test]"
+      - name: Run all public tests assigned to this group
+        run: python -X utf8 -B tools/run_ci_tests.py --group ${{ matrix.group }} --report work/ci/${{ matrix.group }}.json
+      - name: Save test inventory and result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-${{ matrix.group }}
+          path: work/ci/*.json
+          if-no-files-found: warn
+
+  docs:
+    name: Windows Python 3.12 - docs
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12.4"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24.22.1"
+          package-manager-cache: false
+      - name: Install Python and explicit documentation dependencies
+        run: |
+          python -m pip install -e ".[test]"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm install --prefix Docs/Current/_build/tooling --no-save --no-package-lock marked@17.0.5 highlight.js@11.11.1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "CHRONAXIS_MARKED_PATH=$env:GITHUB_WORKSPACE/Docs/Current/_build/tooling/node_modules/marked/lib/marked.esm.js" >> $env:GITHUB_ENV
+          "CHRONAXIS_HIGHLIGHT_PATH=$env:GITHUB_WORKSPACE/Docs/Current/_build/tooling/node_modules/highlight.js/es/index.js" >> $env:GITHUB_ENV
+      - name: Run documentation and generated-reference tests
+        run: python -X utf8 -B tools/run_ci_tests.py --group docs --report work/ci/docs.json
+      - name: Build locked AI guide and HTML manual
+        run: |
+          python -X utf8 -B tools/build_ai_guide.py work/ci/Chronaxis-AI.zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 -B tools/build_m2_docs.py --edition Current
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/render_current_docs.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 -B tools/check_current_html.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --test tools/test_manual_markdown.mjs tools/test_manual_search.mjs
+      - name: Save documentation test result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-docs
+          path: work/ci/*.json
+          if-no-files-found: warn
+
+  install:
+    name: Windows Python 3.12 - install
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12.4"
+      - name: Install build and test dependencies
+        run: python -m pip install -e ".[test]" build==1.6.1 setuptools==84.2.1 wheel==0.48.0
+      - name: Run installed-version and dependency diagnostics tests
+        run: python -X utf8 -B tools/run_ci_tests.py --group install --report work/ci/install-unit.json
+      - name: Build source distribution and wheel
+        run: |
+          python -X utf8 -B -m build --sdist --outdir work/ci/dist
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $sourceDist = @(Get-ChildItem -LiteralPath work/ci/dist -Filter *.tar.gz)
+          if ($sourceDist.Count -ne 1) { throw "Expected exactly one source distribution" }
+          python -m pip wheel --no-deps --no-build-isolation --wheel-dir work/ci/dist ($sourceDist[0].FullName)
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 -B tools/build_ai_guide.py work/ci/Chronaxis-AI.zip
+      - name: Verify wheel and examples outside the checkout
+        run: |
+          $wheel = @(Get-ChildItem -LiteralPath work/ci/dist -Filter *.whl)
+          if ($wheel.Count -ne 1) { throw "Expected exactly one wheel" }
+          $dependencies = python -c "import sysconfig; print(sysconfig.get_path('purelib'))"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 -B tools/check_ai_install.py ($wheel[0].FullName) work/ci/Chronaxis-AI.zip $dependencies work/ci/install-distribution.json --device-label ci
+      - name: Save installation verification result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-install
+          path: work/ci/*.json
+          if-no-files-found: warn

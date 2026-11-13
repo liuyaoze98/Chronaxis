@@ -70,7 +70,14 @@ def expand_source_files(raw, base, where):
         else:
             selected = []
             try:
-                candidates = (Path(item) for item in iglob(str(target), recursive='**' in text)) if wildcard else target.iterdir()
+                pattern = str(target)
+                suffix = target.suffix
+                if wildcard and suffix.lower() in FILE_SUFFIXES:
+                    # 只统一明确扩展名的大小写；主体、隐藏文件和**仍遵循原glob规则。
+                    extension = ''.join('[' + char.lower() + char.upper() + ']'
+                                        if char.isalpha() else char for char in suffix)
+                    pattern = pattern[:-len(suffix)] + extension
+                candidates = (Path(item) for item in iglob(pattern, recursive='**' in text)) if wildcard else target.iterdir()
                 for candidate in candidates:
                     if candidate.suffix.lower() in allowed and candidate.is_file():
                         selected.append(candidate)

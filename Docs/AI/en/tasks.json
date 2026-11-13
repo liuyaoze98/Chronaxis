@@ -3,11 +3,50 @@
   "revision": 1,
   "tasks": [
     {
+      "id": "GENERAL_TIME_INTEGRAL",
+      "intent": "General time integrator: integrate valid signal values over elapsed time",
+      "example": "../../Current/examples/calculation-minimal.yaml",
+      "requires": "Signal definition, unit, validity and the intended actual/fixed/DBC interval rule. The minimal example uses actual elapsed time.",
+      "applicable": "Use calculations[].operation: integral for time integration, including unequal timestamps and held values. The selected interval rule determines the time weight.",
+      "not_applicable": "Do not substitute FAST_MESSAGE_ENERGY just because the result is energy. Fast requires all formula inputs in the current message and a defined contribution for each matching message.",
+      "check": "After run, locate the session CSV in the completion manifest outputs: energy（J） is 30 and energy：状态 is 完整. This single ASC with concatenate is read in the current process although the configured upper limit is 4.",
+      "fields": [
+        "sources",
+        "signals",
+        "calculations",
+        "execution"
+      ],
+      "templates": [
+        "can-asc",
+        "can-blf"
+      ],
+      "api": [
+        "load_analysis_plan",
+        "AnalysisRunner"
+      ],
+      "verify": "python -m chronaxis validate ../../Current/examples/calculation-minimal.yaml --format json\npython -m chronaxis run ../../Current/examples/calculation-minimal.yaml --output result-general-time-integral",
+      "aliases": [
+        "积分器",
+        "通用积分器",
+        "通用时间积分器",
+        "integrator",
+        "general time integrator",
+        "time integral",
+        "integral"
+      ],
+      "references": [
+        {
+          "path": "../../Schema/analysis.schema.json#/properties/calculations",
+          "description": "Calculation fields and branch requirements."
+        }
+      ]
+    },
+    {
       "id": "CONTINUOUS_FILES",
       "intent": "Read and decode several files from one continuous charge in parallel",
       "example": "../../Current/examples/continuous-parallel.yaml",
       "requires": "Complete file list, DBC and signal bindings, established time coordinates and an explicit merge choice; positive worker limit.",
-      "check": "The cross-file integral is 38 J. Configuration allows four workers, capped at two for the two files. The time-order extension has one event from 0 to 6 s, confirmed at 1 s.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The first session row has energy（J）=38 and energy：状态=完整 (complete). The configured limit is 4, there are two files, and the planned reader limit is 2.",
       "fields": [
         "sources",
         "signals",
@@ -21,7 +60,7 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/continuous-parallel.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/continuous-parallel.yaml --format json\npython -m chronaxis run ../../Current/examples/continuous-parallel.yaml --output result-continuous-files",
       "aliases": [
         "连续分卷",
         "同一次充电",
@@ -41,7 +80,7 @@
       "intent": "Rolling current or rate on CAN frames with irregular timestamps",
       "example": "../../Current/examples/temporal/analysis.yaml",
       "requires": "Current field and unit, valid_for, actual/fixed/DBC clock, driver, window and output step.",
-      "check": "At 0.20 s the mean is 130/9 A with a 100 ms DBC period; actual time gives 18 A. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. In the selection table, average_rows at 时间（s）=0.2 has 值=130/9 A (about 14.444444); check 数值状态 and 选择状态. This plan uses the 100 ms DBC period. The 18 A actual-time result requires a separately changed interval configuration.",
       "fields": [
         "sources",
         "signals",
@@ -56,7 +95,7 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/temporal/analysis.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/temporal/analysis.yaml --format json\npython -m chronaxis run ../../Current/examples/temporal/analysis.yaml --output result-temporal-current",
       "aliases": [
         "时序变换",
         "滚动统计",
@@ -70,7 +109,7 @@
       "intent": "Register a trusted custom point function, sample reduction or stateful grid operation in Python",
       "example": "../../Current/examples/temporal/host-analysis.yaml",
       "requires": "The accompanying host program, ASC and DBC; a version, typed ports, supported backends and a budget contract.",
-      "check": "The host reports 80 A peak and 10, 20, 30, 30 A for the valid grid outputs. Use the host script to supply the registry. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "Load and run with the same registry. The host prints an 80 A peak and four valid grid values 10/20/30/30 A. --work-dir must name a new directory for this invocation.",
       "fields": [
         "signals",
         "transforms",
@@ -111,7 +150,7 @@
       "intent": "Integrate power from BLF / ASC messages",
       "example": "../../Current/examples/analysis.yaml",
       "requires": "Logs, channel, matching DBC, power unit, and clock.",
-      "check": "Check joules (J) and the actual observed range. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The same session row contains energy（J）=38, sample_average（W）=6 and time_average（W）=38/6; each status is 完整 (complete).",
       "fields": [
         "sources",
         "signals",
@@ -126,7 +165,7 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/analysis.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/analysis.yaml --format json\npython -m chronaxis run ../../Current/examples/analysis.yaml --output result-can"
     },
     {
       "id": "CONDITION_ENERGY",
@@ -136,7 +175,7 @@
       "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, default onset, and actual elapsed time.",
       "not_applicable": "For per-message contributions query MESSAGE_ENERGY; choose FAST_MESSAGE_ENERGY only when its current-message restrictions fit. Independent tasks use BATCH; fast template totals use FAST_TEMPLATE_TOTAL.",
       "alternative": "charge_session applies only to its strict current > comparison, duration >= comparison, Wh/Ah outputs, and direction/measurement-point requirements. Do not choose it merely because a task mentions charging.",
-      "check": "Exactly 60 seconds produces no event. The cross-file 61-second interval is [61,122), giving 4000W*61s/3600000=0.06777777777777777kWh. Link parent_id to event_id and check status/reason. Do not replace strict comparison with 60.1 seconds. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table has one qualifying interval: the same row has 开始时间（s）=61, 结束时间（s）=122, energy_kwh（kWh）=0.06777777777777777, energy_kwh：状态=完整 (complete), and an empty energy_kwh：说明. Exactly 60 seconds produces no event; do not replace strict comparison with 60.1 seconds. No ID join is needed for the default readable CSV.",
       "fields": [
         "sources",
         "signals",
@@ -149,14 +188,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/conditional-energy.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/conditional-energy.yaml --format json\npython -m chronaxis run ../../Current/examples/conditional-energy.yaml --output result-condition-energy"
     },
     {
       "id": "CSV",
       "intent": "Power table integrated using actual elapsed time",
       "example": "../../Current/examples/input-csv-minimal.yaml",
       "requires": "Time column, units, power column, and validity period.",
-      "check": "Compare with the hand-calculated 38 J.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The first session row has energy（J）=38 and energy：状态=完整 (complete). This CSV source is read in the current process.",
       "fields": [
         "sources",
         "signals",
@@ -169,14 +208,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json\npython -m chronaxis run ../../Current/examples/input-csv-minimal.yaml --output result-csv"
     },
     {
       "id": "CHARGE",
       "intent": "Charging activities, electric charge, and charging energy",
       "example": "../../Current/examples/preset-charge-energy.yaml",
       "requires": "Mode codes, positive current direction, terminal measurement point, voltage, thresholds, and duration. The teaching example uses ASC; for BLF replace the logs, DBC, and bindings with your own.",
-      "check": "Check each activity boundary and Wh/Ah result. Current exactly equal to current_min is excluded; duration exactly equal to minimum_duration qualifies. The default start is onset. Check applicability rather than matching only the word charging. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event row starts at 1 s and ends at 3 s, with demo_preset_energy（Wh）=2.2222222222222223 and demo_preset_charge（Ah）=0.005555555555555556, both complete. Check applicability first: current equals current_min is excluded, duration equals minimum_duration qualifies, and onset is the default integration start.",
       "fields": [
         "presets",
         "signals",
@@ -190,7 +229,7 @@
         "resolve_preset_roles",
         "build_preset"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/preset-charge-energy.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/preset-charge-energy.yaml --format json\npython -m chronaxis run ../../Current/examples/preset-charge-energy.yaml --output result-charge",
       "applicable": "Mode equals the specified integer code and current is strictly greater than current_min. After reaching minimum_duration, calculate from condition onset. Outputs are Wh for energy and Ah for electric charge. Positive current means charging, and the measurement point is the battery-pack terminal.",
       "not_applicable": "Do not directly apply charge_session when the task needs current >= threshold, a strict duration threshold, direct kWh output, another state combination, or unconfirmed preset direction/measurement-point requirements.",
       "alternative": "Use CONDITION_ENERGY and ../../Current/examples/conditional-energy.yaml with an ordinary condition_duration rule and event-scope integral. Preserve the comparisons, duration comparison, and output unit. Ordinary U*I integration needs no extra direction/measurement-point metadata or 95% coverage threshold."
@@ -200,7 +239,7 @@
       "intent": "Sustained activities, exit grouping, and event relationships",
       "example": "../../Current/examples/window-merged.yaml",
       "requires": "Condition, time units, window, and allowed gap.",
-      "check": "Preserve event boundaries; a segment may contain multiple parent_event_ids. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table retains three point events. The context window has 开始时间（s）=1, 结束时间（s）=9 and 父事件区间=1、2、3. The default readable table uses interval numbers, not a parent_event_ids column.",
       "fields": [
         "rules",
         "windows",
@@ -211,14 +250,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/window-merged.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/window-merged.yaml --format json\npython -m chronaxis run ../../Current/examples/window-merged.yaml --output result-event"
     },
     {
       "id": "ALARM",
       "intent": "Alarm context and rising edges",
       "example": "../../Current/examples/preset-fault-context.yaml",
       "requires": "An explicitly defined Boolean alarm and before/after durations.",
-      "check": "Check point events separately from surrounding segments. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table has demo_preset_alarm at 1 s; the demo_preset_context window covers 0 to 3 s and refers to parent interval 1.",
       "fields": [
         "presets",
         "windows",
@@ -231,14 +270,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/preset-fault-context.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/preset-fault-context.yaml --format json\npython -m chronaxis run ../../Current/examples/preset-fault-context.yaml --output result-alarm"
     },
     {
       "id": "PAIR",
       "intent": "Request/response pairs, timeout, and insufficient observation",
       "example": "../../Current/examples/sequence-outcomes.yaml",
       "requires": "Comparable request and response clocks, with explicit minimum and maximum delays.",
-      "check": "Unknown observations must not become a definite no-response outcome. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The pairing table statuses are 已响应 (matched), 时限内未响应 (timed out), and 无法确定 (indeterminate). The first 延迟（s） is 1; the third explains 数值超出允许范围. Unknown observation is not a confirmed timeout.",
       "fields": [
         "sequences",
         "rules",
@@ -251,14 +290,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/sequence-outcomes.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/sequence-outcomes.yaml --format json\npython -m chronaxis run ../../Current/examples/sequence-outcomes.yaml --output result-pair"
     },
     {
       "id": "ENCODING",
       "intent": "Boolean and enumeration codes, and expression aliases",
       "example": "../../Current/examples/signal-enum-minimal.yaml",
       "requires": "Equipment code definitions; undefined codes must not use nonzero=true.",
-      "check": "Expressions reference bound names. Semantic IDs are not attribute paths. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table contains activated at 0.1 s. Expressions use bound signal names and declared enum values; semantic_id is not an attribute-access path.",
       "fields": [
         "signals",
         "derived",
@@ -269,14 +308,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/signal-enum-minimal.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/signal-enum-minimal.yaml --format json\npython -m chronaxis run ../../Current/examples/signal-enum-minimal.yaml --output result-encoding"
     },
     {
       "id": "UNITS",
       "intent": "Conversions, units, and scales",
       "example": "../../Current/examples/signal-number-conversion.yaml",
       "requires": "Input/target units and existing DBC conversion; establish direction only when the task needs that interpretation.",
-      "check": "Infer conversion from declared input and target units when scale and offset are both omitted; 2000 mA becomes 2 A. DBC coefficients apply only once. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. This example's four DBC-decoded current values are 5000, 7000, 5000, and 5000 mA, converted automatically to 5, 7, 5, and 5 A. The session row has maximum_current（A）=7, maximum_current：状态=完整 (complete), and an empty maximum_current：说明. Omitting scale and offset selects automatic conversion, without applying the DBC coefficient twice.",
       "fields": [
         "signals",
         "execution"
@@ -286,14 +325,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/signal-number-conversion.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/signal-number-conversion.yaml --format json\npython -m chronaxis run ../../Current/examples/signal-number-conversion.yaml --output result-units"
     },
     {
       "id": "QUALITY",
       "intent": "Expired data, zero values, and partial results",
       "example": "../../Current/examples/quality.yaml",
       "requires": "Period or validity, required observation range, and missing-data policy.",
-      "check": "Read status/reason/quality together with the value. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The session result has energy（J）=20 and energy：状态=部分有效 (partial). energy：说明 identifies valid-part-only calculation, expired data and an out-of-range value. Read the status with the value.",
       "fields": [
         "signals",
         "execution",
@@ -304,7 +343,7 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/quality.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/quality.yaml --format json\npython -m chronaxis run ../../Current/examples/quality.yaml --output result-quality"
     },
     {
       "id": "BATCH",
@@ -331,7 +370,7 @@
       "intent": "Shared definitions, field origins, and relative paths",
       "example": "../../Current/examples/analysis-imports.yaml",
       "requires": "Both the main configuration and referenced shared-definition files.",
-      "check": "Use config origins --fields to inspect declaration origins. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "Inspect referenced-definition paths in config origins --fields; this command does not read message data. The subsequent run gives energy（J）=38 and double_energy（J）=76, both complete.",
       "fields": [
         "imports",
         "execution"
@@ -340,14 +379,14 @@
       "api": [
         "load_analysis_plan"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/analysis-imports.yaml --format json"
+      "verify": "python -m chronaxis config origins ../../Current/examples/analysis-imports.yaml --fields\npython -m chronaxis validate ../../Current/examples/analysis-imports.yaml --format json\npython -m chronaxis run ../../Current/examples/analysis-imports.yaml --output result-import"
     },
     {
       "id": "EXPORT",
-      "intent": "Export raw messages around events",
+      "intent": "Export original messages; extend the scope with event windows when needed",
       "example": "../../Current/examples/export-can-minimal.yaml",
-      "requires": "A supported CAN source, explicit window, and writable output directory; existing results may remain there.",
-      "check": "Check actual windows, output format, and manifest. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "requires": "Supported CAN source, intended export range and a writable output directory; existing result directories are allowed.",
+      "check": "After run succeeds, open the main completion manifest named by the CLI JSON manifest field. Use outputs to find the session row: voltage_area（V*s）=13, voltage_area：状态=完整 (complete), and an empty voltage_area：说明. This minimal example exports the observed range as ASC without an event window. Open the JSONL index named by exports.index_file. Starting at the main manifest directory, follow exports.directory and then the index entry's directory; open manifest.json there. In this export manifest, check status=completed, format=asc, and frames=3; follow files to confirm frames.asc exists. Event-scoped export requires a window configuration.",
       "fields": [
         "outputs",
         "windows",
@@ -360,14 +399,14 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/export-can-minimal.yaml --format json"
+      "verify": "python -m chronaxis validate ../../Current/examples/export-can-minimal.yaml --format json\npython -m chronaxis run ../../Current/examples/export-can-minimal.yaml --output result-export"
     },
     {
       "id": "PYTHON",
       "intent": "Load, publish, and close results in Python",
       "example": "../../Current/examples/input-csv-minimal.yaml",
       "requires": "The matching installed version, complete plan, and writable result directory; use the actual manifest path returned by write.",
-      "check": "Run ../run_analysis.py. Validate before execution, read rows, and close resources.",
+      "check": "Open the completion manifest path printed last by the script, then use outputs to locate the session table. run_analysis.py validates then executes, prints energy 38.0 J complete and the completion manifest path. The session table has energy（J）=38 and energy：状态=完整. The program closes the result after consuming its cursor.",
       "fields": [
         "outputs"
       ],
@@ -379,7 +418,7 @@
         "AnalysisRunner",
         "AnalysisResult"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/input-csv-minimal.yaml --format json"
+      "verify": "python ../run_analysis.py ../../Current/examples/input-csv-minimal.yaml result-python"
     },
     {
       "id": "FIX",
@@ -405,7 +444,7 @@
       "intent": "Map ASC/DBC voltage through a calibration curve and calculate mean power",
       "example": "../../Current/examples/lookup-power.yaml",
       "requires": "Input unit, calibration points and output unit.",
-      "check": "3, 7 and 3 V give 10, 30 and 10 W; the mean is about 16.67 W. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The session result rated_power（W） is about 16.6666666667 and complete. Lookup maps 3, 7, 3 V to 10, 30, 10 W; the sample mean is 50/3 W.",
       "fields": [
         "signals",
         "lookups",
@@ -419,7 +458,7 @@
         "load_analysis_plan",
         "AnalysisRunner"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/lookup-power.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/lookup-power.yaml --format json\npython -m chronaxis run ../../Current/examples/lookup-power.yaml --output result-calibration",
       "aliases": [
         "一维查表",
         "标定查表",
@@ -432,7 +471,7 @@
       "intent": "Calculate sample and time-weighted power statistics, and aggregate scalar calculation rows, sequence delays, event counts or final segment counts",
       "example": "../../Current/examples/power-statistics.yaml",
       "requires": "Define the result population, named source, operation and grouping. Confirm whether partial values may participate and how an incomplete population is reported. The example uses P95 of per-event means; references cover calculation, sequence, rule and window sources.",
-      "check": "Five readings, two starts, two loaded activities and one merged segment. P95 of readings is 18 W. P95 across load means is 19.5 W with two candidates and two included. Time RMS is about 11.05542 W. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The session table has readings（1）=5, starts（1）=2, loads（1）=2, cycles（1）=1, reading_p95（W）=18 and held_rms（W） about 11.05542. In the aggregation table, load_mean_p95 is 19.5 W with 候选数=参与数=2 and complete status.",
       "fields": [
         "rules",
         "windows",
@@ -449,7 +488,7 @@
         "AnalysisRunner",
         "AnalysisResult"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/power-statistics.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/power-statistics.yaml --format json\npython -m chronaxis run ../../Current/examples/power-statistics.yaml --output result-power-statistics",
       "aliases": [
         "统计",
         "统计分析",
@@ -477,7 +516,7 @@
       "intent": "Accumulate each target CAN message contribution using the general analysis runner",
       "example": "../../Current/examples/message-minimal.yaml",
       "requires": "Confirm the target channel/frame, DBC, units and the contribution computed by expr. Confirm a time factor when converting power to energy; it is unnecessary for contributions already expressed as energy. Read references for all fields and restrictions.",
-      "check": "Two simultaneous 4000 W messages each contribute 400 J at 0.1 s, totaling 800 J; the record at 1 s is outside [0,1). The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The session table has energy（J）=800 and energy：状态=完整. Each of two simultaneous 4000 W messages contributes 400 J using 0.1 s; the record at 1 s is outside [0,1).",
       "fields": [
         "sources",
         "signals",
@@ -493,7 +532,7 @@
         "AnalysisRunner",
         "AnalysisResult"
       ],
-      "verify": "python -m chronaxis validate ../../Current/examples/message-minimal.yaml --format json",
+      "verify": "python -m chronaxis validate ../../Current/examples/message-minimal.yaml --format json\npython -m chronaxis run ../../Current/examples/message-minimal.yaml --output result-message-energy",
       "applicable": "Use general run for CAN per-message accumulation, including continuous source files or requested contribution details. Values come from the current target message.",
       "not_applicable": "Not elapsed-time integration or cross-message cached values. For one ASC/BLF source with all inputs in the target frame, compare FAST_MESSAGE_ENERGY and its restrictions.",
       "aliases": [
@@ -519,8 +558,8 @@
       "id": "FAST_MESSAGE_ENERGY",
       "intent": "Accumulate energy per matched CAN message in one ASC or BLF",
       "example": "../../Current/examples/fast/analysis.yaml",
-      "requires": "Confirm the unit, contribution time, frame ID, DBC, channel and sign bucket.",
-      "check": "Open the manifest at this run manifest_path, then its CSV. Two simultaneous 400 J contributions give 800 J. No target frames gives null; valid target frames with an empty direction bucket give zero. Read status/reason with the value. The example sets execution.process_count to 4; the number of input files caps actual workers, so a single file uses at most one.",
+      "requires": "Confirm units, frame_id, DBC, channel and any direction bucket. When converting power to energy, define the duration represented by each message; an existing energy contribution needs no extra time factor.",
+      "check": "Open this run manifest_path, then locate the CSV through outputs: 计算项=energy, 结果=800, 单位=J, 状态=完整, and empty 说明. Counts are in execution.calculation_counts. No target frames gives an empty result; valid targets with no selected direction give zero.",
       "fields": [
         "sources",
         "signals",
@@ -532,7 +571,7 @@
       "api": [
         "fast.run"
       ],
-      "verify": "python -m chronaxis fast validate ../../Current/examples/fast/analysis.yaml",
+      "verify": "python -m chronaxis fast validate ../../Current/examples/fast/analysis.yaml\npython -m chronaxis fast run ../../Current/examples/fast/analysis.yaml --output result-fast-message-energy",
       "applicable": "One ASC/BLF source with all formula inputs in the current frame; see FAST_CONTINUOUS_SESSION for multiple volumes.",
       "not_applicable": "No cross-message holding, events/windows, elapsed-time integration, raw CSV or multiplex/container frames.",
       "aliases": [
@@ -570,7 +609,7 @@
       "intent": "Compute one recording across ASC/BLF volumes with multiple workers and one session summary",
       "example": "../../Current/examples/fast/session.yaml",
       "requires": "Confirm one source and current-message contributions; choose file_merge deliberately and set the worker count.",
-      "check": "Three 400 J contributions total 1200 J. Configuration allows four workers; the two input files use two. Check statuses and counts rather than applying independent-batch missing-value rules.",
+      "check": "Use manifest_path and its outputs to locate the CSV: energy has 结果=1200, 单位=J and 状态=完整. execution.calculation_counts contains target/valid/selected counts; execution.worker_pids records actual workers, independently of the configured limit.",
       "fields": [
         "sources",
         "signals",

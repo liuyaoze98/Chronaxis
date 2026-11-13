@@ -271,7 +271,7 @@ class DemandCheckPlanningTests(unittest.TestCase):
     def test_unbounded_ordinary_plan_matches_actual_explicit_domain(self):
         """两后端真实运行三条记录：3/1/3W两秒4J，省略域与显式实际域结果完全一致。"""
         from pathlib import Path
-        from tempfile import TemporaryDirectory
+        from workspace_fixtures import TemporaryDirectory
         from uuid import uuid4
         config=dict(config_version=4,dataset=dict(name='observed'),
             sources=[dict(name='meter',source_type='memory',rows=[

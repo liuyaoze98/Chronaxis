@@ -10,7 +10,7 @@ from dataclasses import replace
 import csv
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from publication_fixtures import published_path
 from unittest.mock import patch

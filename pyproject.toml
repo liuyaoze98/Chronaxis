@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chronaxis"
-version = "0.1.0.dev3"
+version = "0.1.0.dev4"
 description = "Declarative analysis of multi-source time series"
 dynamic = ["readme"]
 authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]
@@ -14,18 +14,21 @@ license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
-requires-python = ">=3.12,<3.13"
-# 当前运行依赖锁定为实测版本；实际矩阵目前仅Windows/Python3.12.4。
+requires-python = ">=3.12,<3.14"
+# 运行依赖允许范围与复现约束分开；平台能力要求见安装说明。
 dependencies = [
-    "numpy==1.26.3",
+    "numpy>=1.26.3,<2.6; python_version < '3.13'",
+    "numpy>=2.1,<2.6; python_version >= '3.13'",
     "ruamel.yaml==0.19.1",
     "python-can==4.6.1",
-    "cantools==39.4.3",
+    "cantools>=39.4.3,<46",
     "natsort==8.4.0",
-    "jsonschema==4.25.1",
+    "jsonschema>=4.25.1,<4.27",
 ]
 
 [project.urls]
@@ -38,9 +41,9 @@ Changelog = "https://github.com/liuyaoze98/Chronaxis/releases"
 [project.scripts]
 chronaxis = "chronaxis.cli:main"
 
-# 配置汇总诊断与开发验收共用标准schema验证器。
+# schema验证器已是运行依赖；保留test安装入口，不另行缩紧运行版本。
 [project.optional-dependencies]
-test = ["jsonschema==4.25.1"]
+test = []
 
 [tool.setuptools.packages.find]
 where = ["src"]

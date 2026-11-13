@@ -1,20 +1,15 @@
-"""用独立手算和真实消息仓检验带单位参数的静态及双后端表达式契约。
+"""用手算和显式合成消息绑定检验单位参数及独立两后端表达式。
 
-输入是明确原字段、数值类型和单位的有限消息，不读取CAN或构造普通history。
-执行身份来自真实DecodedMessageStore封口后由bind_message_store完整回读；本例不
-把仓内显式profile/read标签称作旧CAN认证，也不据消息sequence声称复现旧求值点。
-reference逐条解释，NumPy只负责被测数组路径；4000W乘0.1s的400J和两次800J另有
-手算断言。参数不是裸literal，不能继承对方单位或作为isclose容差偷偷重标。
-
-所有输入、返回列及小型断言集合由测试调用方持有；资源用真实账本和公开close。
-工件写work下唯一目录并保留；无TTL、缓存、真实dt积分、CAN捕获或AnalysisRunner接线。
+本测试只验证编译、有限参数、类型、质量和表达式身份；合成MessageSourceEvidence
+是模型夹具，不是来源读取证明。真实单次读取/同刻消息的公共行为另由Runner测试核对。
 """
 
 from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 import unittest
 from unittest.mock import patch
-from uuid import uuid4
+from hashlib import sha256
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -25,14 +20,12 @@ from chronaxis.core.expression import (DerivedDefinition, StaticExpression, comp
 from chronaxis.core.expression_numpy import evaluate_numpy
 from chronaxis.core.expression_reference import evaluate_reference
 from chronaxis.core.message_binding import (ExpressionParameter, MessageBindings,
-    MessageDeclarations)
+    MessageDeclarations, MessageSourceEvidence)
 from chronaxis.core.models import (Interval, MemoryRow, SessionSpec, SourceRef, SourceSpec,
     TimebaseSpec)
 from chronaxis.core.numeric import ScalarValue
 from chronaxis.core.numeric_numpy import DTYPES, NumericArray
 from chronaxis.core.types import QualityFlag as Q, SignalDType as D, TimeType
-from chronaxis.execution.message_bindings import bind_message_store
-from chronaxis.legacy.message_store import DecodedMessageStore
 from chronaxis.legacy.records import LegacyDecodedFrame, LegacyRawFrame
 from chronaxis.legacy.sum import LegacySumAccumulator, LegacySumContribution
 from chronaxis.legacy.updates import LegacyDecodedUpdate
@@ -68,8 +61,6 @@ class ExpressionParameterTests(unittest.TestCase):
     def setUp(self):
         """建立明确声明及真实共享预算。参数: 无。返回: None。异常: 原模型或目录错误。
         """
-        self.root = Path(__file__).resolve().parents[2] / 'work/m2-legacy-tests/parameters' / uuid4().hex
-        self.root.mkdir(parents=True)
         self.budget = ResourceBudget(128 * 1024**2)
         self.budget.reserve_ram(111)
         self.owners = []
@@ -95,25 +86,22 @@ class ExpressionParameterTests(unittest.TestCase):
         self.assertEqual(self.budget.ram_bytes, 0)
 
     def message(self, *, parameters=None, derived_names=(), rows=None):
-        """由真实封口文件及工厂产生本次消息执行身份，不手造evidence当IO证明。
+        """为纯表达式测试创建确定的合成绑定；不声称已经读取或核验文件。
 
         参数: parameters/derived_names为消息局部声明；rows为(time_ns,原字典)有限tuple。
-        返回: (MessageDeclarations,MessageBindings,真实store)。异常: 原仓/工厂错误传播。
+        返回: (MessageDeclarations,MessageBindings,合成记录tuple)。异常: 模型校验错误。
         """
         if parameters is None:
             parameters = (ExpressionParameter('period', 0.1, 's'),)
         declarations = MessageDeclarations(self.base, 'bus', parameters, derived_names)
-        store = DecodedMessageStore(self.budget, self.root / ('store-' + str(len(self.owners))),
-            'bus', 'session', decoder_profile='explicit-current-message', read_identity=uuid4().hex)
-        self.owners.append(store)
         if rows is None:
             rows = ((0, {'Raw.Power': 4000.0}), (0, {'Raw.Power': 4000.0}))
-        for index, (time_ns, values) in enumerate(rows):
-            store.append(raw_record(index, values), time_ns, time_quantized=False)
-        store.seal()
-        lease = bind_message_store(declarations, store)
-        self.owners.append(lease)
-        return declarations, lease.bindings, store
+        records = tuple(SimpleNamespace(time_ns=time, decoded=raw_record(index, values))
+                        for index, (time, values) in enumerate(rows))
+        digest = sha256(repr(rows).encode('utf8')).hexdigest()
+        evidence = MessageSourceEvidence('bus', 'session', 'synthetic-expression-test',
+            digest, digest, len(records), rows[0][0] if rows else None, rows[-1][0] if rows else None)
+        return declarations, MessageBindings(declarations, evidence), records
 
     def compare(self, compiled, bindings, contexts):
         """同一原值分别交标量及数组核，独立核完整valid/quality/dtype和值。
@@ -141,13 +129,10 @@ class ExpressionParameterTests(unittest.TestCase):
         参数: 无。返回: None。异常: 数值/次数/单位/预算断言失败。
         新evaluation_index只标识本例显式贡献，不冒称来自旧ChrgInfo调用现场。
         """
-        _, bindings, store = self.message()
+        _, bindings, records = self.message()
         compiled = compile_expression('power * period', bindings)
         self.assertEqual((compiled.root.unit, compiled.dependencies), ('J', ('power',)))
         self.assertEqual(compiled.root.unit_status, 'verified')
-        reader = store.iter_records()
-        records = tuple(reader)
-        self.assertTrue(reader.verified_eof and reader.closed)
         self.assertEqual(tuple(item.time_ns for item in records), (0, 0))
         for backend in ('reference', 'numpy'):
             for size in (1, 2, 7):
@@ -305,8 +290,7 @@ class ExpressionParameterTests(unittest.TestCase):
         参数: 无。返回: None。异常: 静态触碰输入、混淆模型或越过门槛时失败。
         """
         declarations = MessageDeclarations(self.base, 'bus', (ExpressionParameter('period', 0.1, 's'),))
-        with patch.object(Path, 'open', side_effect=AssertionError('static must not open')), \
-                patch.object(DecodedMessageStore, 'iter_records', side_effect=AssertionError('static must not replay')):
+        with patch.object(Path, 'open', side_effect=AssertionError('static must not open')):
             static = validate_expression('power * period', declarations)
         self.assertIs(type(static), StaticExpression)
         self.assertEqual((static.root.unit, static.dependencies), ('J', ('power',)))
@@ -317,8 +301,8 @@ class ExpressionParameterTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             evaluate_numpy(static, {}, declarations, size=1)
 
-    def test_parameter_and_actual_store_identity_isolate_compiled_context(self):
-        """参数值/单位及真实仓输入改变身份，旧compiled不得借同名新消息执行。
+    def test_parameter_and_synthetic_input_identity_isolate_compiled_context(self):
+        """参数值/单位及合成消息输入改变身份，旧compiled不得借同名新消息执行。
 
         参数: 无。返回: None。异常: 仅名称或声明SHA被当作执行身份时失败。
         """
@@ -379,10 +363,9 @@ class ExpressionParameterTests(unittest.TestCase):
 
         参数: 无。返回: None。异常: 缺值补零/前值或按时间改变当前显式值时失败。
         """
-        _, bindings, store = self.message(rows=((0, {'Raw.Power': 4000.0}),
+        _, bindings, records = self.message(rows=((0, {'Raw.Power': 4000.0}),
             (2_000_000_000, {}), (3_000_000_000, {'Raw.Power': 4000.0})))
         compiled = compile_expression('power * period', bindings)
-        records = tuple(store.iter_records())
         contexts = tuple({'power': ScalarValue(item.decoded.values['Raw.Power'], D.FLOAT64)
             if 'Raw.Power' in item.decoded.values else ScalarValue(None, D.FLOAT64, False, Q.MISSING)}
             for item in records)

@@ -4,7 +4,7 @@ import json
 from copy import deepcopy
 from pathlib import Path
 import shutil
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from threading import Event
 import unittest
 from unittest.mock import Mock, patch
@@ -44,6 +44,8 @@ class FastBatchTests(unittest.TestCase):
         (data/'file10.asc').write_text(original.replace('0.000000 1 100 Rx d 2 A0 0F','',1),encoding='utf8')
         shutil.copyfile(examples/'data/power.dbc',data/'power.dbc')
         self.raw = load_configuration(examples/'message-minimal.yaml').data
+        # 并行由批量任务调度；单任务教学模板中的文件并行上限不应嵌套使用。
+        self.raw.setdefault('execution', {})['process_count'] = 1
         self.raw['outputs']={'tables':'jsonl'}
         self.raw['sources'][0]['paths']='data/file2.asc'
         self.path = self.save('analysis.json',self.raw)
@@ -115,7 +117,7 @@ class FastBatchTests(unittest.TestCase):
         import cantools
         batch=self.save('batch.json',dict(batch_version=1,template=self.path.name,
                                            inputs=['data/file2.asc','data/file10.asc']))
-        with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load',wraps=cantools.database.load) as load:
             _,specs,_=prepare_batch(batch)
             self.assertEqual(len(specs),2)
             self.assertEqual(load.call_count,1)

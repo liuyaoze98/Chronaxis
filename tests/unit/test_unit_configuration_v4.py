@@ -203,7 +203,7 @@ class UnitConfigurationV4Tests(unittest.TestCase):
                 sources=[dict(path=str(Path(folder) / 'input.asc'), dbc_by_channel={'1': str(dbc)})],
                 signals=[dict(name=name, field=dict(frame_id=256, signal='Voltage'),
                     dtype='int64', unit='V', valid_for='1s') for name in ('voltage', 'voltage_copy')])
-            with patch('cantools.database.load_file', wraps=cantools.database.load_file) as load:
+            with patch('cantools.database.load', wraps=cantools.database.load) as load:
                 plan = AnalysisPlan.from_dict(raw)
             self.assertEqual(load.call_count, 1)
             signal = plan.signals[0].definition

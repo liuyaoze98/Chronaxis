@@ -1,4 +1,4 @@
-"""将既有python-can BLFReader接入有序混合来源；不重新实现BLF格式解析。
+"""为普通分析与高性能积分器共用既有python-can BLFReader；不重新实现BLF格式解析。
 
 只保留当前报文，DBC由混合来源共用一次。账本计入本层对象；第三方解压器内部
 分配与原BLF路径一样不代表硬RSS上限。不扫描文件、不补日期、不改原帧字段。
@@ -30,12 +30,23 @@ class BLFRead:
 
     def __init__(self, spec, budget, *, check_cancel=None, retain_original=False,
                  retain_source_time=False, selected_ids=None, emit_frame_ids=None,
-                 channel=None, projection_only=False, time_check_all=False, time_scope='source'):
-        """参数为单文件声明、共享账本及按需选择；返回reader；失败附恢复owner。"""
+                 channel=None, projection_only=False, time_check_all=False, time_scope='source', frame_only=False, binary_time=False, previous_order_ns=None):
+        """接管真实文件并打开BLF库读取器，构造失败附恢复owner。
+
+        参数: spec为BLFSpec，budget为共享账本；选择/时间选项来自已有消费者。
+        frame_only只供fast借用同次原消息，其时间和长度仍由fast检查；不构造样本。
+        binary_time使纯BLF串行保原二进制float秒换算，previous_order_ns延续前文件顺序。
+        返回: 未读首帧的owner。异常: 配置、文件头、预算或取消原错；失败不泄漏自有文件。
+        """
         if type(spec) is not BLFSpec:
             raise TypeError('BLFRead需要BLFSpec')
         self.spec, self._budget, self._check_cancel = spec, budget, check_cancel
         self._retain_source_time = retain_source_time
+        if type(frame_only) is not bool or type(binary_time) is not bool:
+            raise TypeError('BLF内部帧投影与时间转换选项需要bool')
+        # fast借同次原消息，保留自己的选择、时间及长度检查顺序。
+        self._frame_only = frame_only
+        self._binary_time = binary_time
         self._selected_ids = selected_ids
         self._emit_frame_ids = None if emit_frame_ids is None else frozenset(emit_frame_ids)
         self._channel=channel
@@ -44,8 +55,9 @@ class BLFRead:
         self._time_scope=time_scope
         if time_scope not in ('source','selected','none') or time_scope!='source' and not self._projection_only:
             raise ValueError('按需BLF时间范围必须配合明确的目标帧投影')
-        self.first_ns=self.last_ns=self.first_order_ns=self.last_order_ns=None
-        if self._projection_only:
+        self.first_ns=self.last_ns=self.first_order_ns=None
+        self.last_order_ns=previous_order_ns
+        if self._projection_only or binary_time:
             # 复用已有批读取的精确二进制秒转换，避免对无关帧建立完整模型。
             from ..execution.can_batch_reader import _float_seconds_ns
             self._convert_float=_float_seconds_ns
@@ -53,11 +65,13 @@ class BLFRead:
         self._fixed_cost = self._held_cost = 0
         self._closed = False
         self.count = 0
+        self.full_check_count = 0
         try:
             _reserve_owned_ram(self,65536,'_fixed_cost')
             if check_cancel is not None: check_cancel()
             from ..can_dependencies import import_can_dependency
             can = import_can_dependency('can')
+            self._native_message_type=can.Message
             # 文件先安装到owner；BLF头解析失败时也能关闭，不依赖析构回收。
             self._file = spec.path.open('rb')
             self._reader = can.BLFReader(self._file)
@@ -84,8 +98,18 @@ class BLFRead:
                 message = next(self._iterator)
                 sequence = self.count
                 self.count += 1
+                if self._frame_only:
+                    return message
+                serial_id=message.arbitration_id if self._binary_time else None
+                fallback_frame=None
+                if self._binary_time and type(message) is not self._native_message_type:
+                    # 非原生替身保持旧完整字段检查，不能用投影绕过属性或结构错误。
+                    fallback_frame=_frame(message)
+                    from ..legacy.batch_validation import _item_base_size
+                    _item_base_size(fallback_frame,sequence)
+                    self.full_check_count += 1
                 if self._projection_only:
-                    selected=message.channel==self._channel and message.arbitration_id in self._emit_frame_ids
+                    selected=(self._channel is None or message.channel==self._channel) and (serial_id if self._binary_time else message.arbitration_id) in self._emit_frame_ids
                     # 纯消息公式不读取时间；保留原消息供同次DBC解码，不制造零秒或原帧导出能力。
                     if self._time_scope=='none':
                         if not selected:
@@ -107,12 +131,17 @@ class BLFRead:
                         continue
                 if self._selected_ids is not None and message.arbitration_id not in self._selected_ids:
                     continue
-                frame = _frame(message)
+                frame = fallback_frame if fallback_frame is not None else _frame(message)
                 if not self._projection_only:
-                    timestamp = convert_time(frame.timestamp,'s')
-                    raw_ns,quantized=timestamp.time_ns,timestamp.quantized
+                    if self._binary_time:
+                        raw_ns,quantized=self._convert_float(frame.timestamp)
+                    else:
+                        timestamp = convert_time(frame.timestamp,'s')
+                        raw_ns,quantized=timestamp.time_ns,timestamp.quantized
                     mapped=checked_add_ns(raw_ns,self.spec.offset_ns)
-                return RawCANRecord(frame,mapped,self.spec.path,None,sequence,None,'blf-v1',None,
+                # BLF远程帧已由读取库给出请求长度；保留明确的0，不能当作ASC省略DLC。
+                remote_dlc = frame.dlc if frame.is_remote_frame else None
+                return RawCANRecord(frame,mapped,self.spec.path,None,sequence,None,'blf-v1',remote_dlc,
                     quantized,raw_ns if self._retain_source_time else None)
         except StopIteration:
             self.close()

@@ -40,7 +40,7 @@ execution:          # 设置本次分析的运行方式
 ```yaml
 execution:                        # 设置计算实现、资源上限和数据不全时的处理方式
   process_count: 1                # 设置本任务读取/解码工作进程上限；不包含主进程，默认1
-  backend: numpy                  # 选择计算实现；numpy使用数组，reference使用独立参考计算
+  backend: auto                   # 按整个计划选择计算实现；可省略，显式reference/numpy固定使用对应实现
   batch_rows: 65536               # 限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期
   memory_budget_bytes: 268435456  # 限制新分析层管理的内存字节数；按可用内存留出其他进程开销
   result_buffer_rows: 4096        # 限制结果写入前在内存积累的行数；按结果大小和内存选择
@@ -53,12 +53,12 @@ execution:                        # 设置计算实现、资源上限和数据�
 
 本页主字段表相对于`execution`，例如`execution.backend`。子对象另行注明，表中的字段不能直接放到配置根级。
 
-execution本身可以省略。填写时使用根级映射，例如`execution: {batch_rows: 1000}`。以下八个字段均为可选项；数字不加引号，字符串按[YAML语法](configuration-language.md)填写。各项的具体影响在后文解释。除spool_quota_bytes允许null外，其余字段不要用null代替省略；预算/行数必须是正整数，0和布尔true/false均不是合法额度。
+execution本身可以省略。填写时使用根级映射，例如`execution: {batch_rows: 1000}`。下列字段均可省略；数字不加引号，字符串按[YAML语法](configuration-language.md)填写。各项的具体影响在后文解释。除spool_quota_bytes允许null外，其余字段不要用null代替省略；预算/行数必须是正整数，0和布尔true/false均不是合法额度。
 
 |字段|数据类型|必填|默认值|可填写的值及含义|
 |---|---|---|---|---|
 |process_count|整数|否|1|控制本任务共用的文件读取/解码进程上限。填写正整数，按可用CPU和内存设置；不包含主进程，不超过可处理文件数。默认1；不能填null或布尔值。当前支持范围见[连续多进程](continuous-files.md)。|
-|backend|字符串|否|`"numpy"`|选择执行数值计算的实现；通常用numpy，需要独立复算时用reference。`"numpy"`使用数组计算；`"reference"`使用独立实现作对照。|
+|backend|字符串|否|`"auto"`|选择数值计算实现。`auto`按整份计划选择已验证的实现；`numpy`、`reference`固定使用对应实现。下表说明适用范围。|
 |batch_rows|整数|否|65536|控制一次交付的信号样本数量，按内存与批次切换开销选择。大于0；每批交付的信号样本数上限。|
 |memory_budget_bytes|整数|否|268435456|限制引擎可分配的受管理内存，按机器可用资源以字节设置。大于0，单位字节；分析状态及文件工作进程受管理缓冲共用的内存额度。|
 |result_buffer_rows|整数|否|4096|限制暂存前积累的结果行数，按结果数量和缓冲开销选择。大于0；结果写入暂存前积累的行数上限。|
@@ -72,18 +72,31 @@ execution本身可以省略。填写时使用根级映射，例如`execution: {b
 
 |值|程序做什么|什么时候用|
 |---|---|---|
-|`numpy`（默认）|使用NumPy数组完成支持的数值运算；读文件和事件状态管理仍由Python代码处理|日常分析先用这个选项|
+|`auto`（默认）|在读取日志前按计划类别选择reference或numpy，不试跑比较速度|日常分析可省略backend，由程序选择|
+|`numpy`|内建流式表达式直接逐点计算；适合整批处理的计算仍用NumPy数组，扩展调用所登记的numpy实现|需要固定使用NumPy实现作对照时使用|
 |`reference`|使用另一套独立的数值实现计算，便于与NumPy结果对照|怀疑计算结果有问题时，用相同输入和配置换它复算|
 
-两种实现遵守相同的单位、有效期和缺失数据规则。更换backend不应把4000J变成另一种业务含义；但不能因此承诺所有任务的速度相同，或者numpy一定更快。
+`auto`目前为两类计划选择reference：单个独立信号CSV的一路信号实际时间积分，以及同一CAN来源、同一报文定位、最多两路信号的简单实际时间积分。整份计划只能包含会话范围的ZOH积分和内建简单算术，且每个积分都未设置`condition`；包含事件、窗口、时序变换、其他统计、查表或宿主扩展时使用numpy。选择只看配置，不预读数据；运行错误直接报告，不换实现重跑。
 
-YAML写法见上例的`execution.backend`。Python中`AnalysisRunner(backend="reference")`和CLI的`--backend reference`可覆盖该次运行的选择，运行清单记录实际选择。两种方式都使用本项目既有依赖，不表示reference版可以忽略安装要求。
+例如[最小积分配置](examples/calculation-minimal.yaml)的`explain.selected_backend`为`reference`。复制该文件，只在原`calculations`的energy列表项中增加`condition: power > 0`，再次运行`python -m chronaxis explain 配置路径 --format json`，`selected_backend`变为`numpy`；无需先声明事件或窗口。两个计划都合法。这里选择的是普通运行器的数值后端，不会自动改用独立fast入口。
+
+选择auto的同帧CAN积分会在绑定明确、且未请求信号导出、原帧导出、追溯或完整性诊断时使用直接积分路径；ASC、BLF、原始报文CSV及连续分卷共用这个规则。绑定不能明确证明适用时，读取首帧前改用通用流程；运行失败仍直接报错。显式reference/numpy使用各自通用流程。
+
+这仍是实际时间积分。例如0秒4000W，0.12秒更新为4800W，采集在0.30秒结束且信号一直有效，结果为4000×0.12＋4800×0.18＝1344J。它不会自动改用DBC周期，也不改变[高性能积分器](fast-energy.md)直接累计逐条表达式贡献的含义。
+
+两种实际计算实现遵守相同的单位、有效期和缺失数据规则。更换backend不应把4000J变成另一种业务含义；但不能因此承诺所有任务的速度相同，或者numpy一定更快。
+
+YAML写法见上例的`execution.backend`。Python中`AnalysisRunner(backend="reference")`和CLI的`--backend reference`可覆盖该次运行的选择，`explain`的`requested_backend`、`selected_backend`和`backend_reason`分别说明请求、静态选择和原因。运行清单的`backend`记录实际使用的reference或numpy；auto本身不是第三套数值算法。批量配置指定auto时，每个子任务独立选择。两种方式都使用本项目既有依赖，不表示reference版可以忽略安装要求。
 
 ## batch_rows：输入批次大小
 
 批次就是“分批处理”。例如有十万条样本，可以先处理第一批，再处理第二批，而不是同时把所有记录放入内存。
 
 `execution.batch_rows`默认65536，控制来源交给分析器的一批样本数量上限。它不是时间长度，也不是最多读取65536条后就停止；按全部信号列的样本数相加计数，不按CSV宽表行数计数。例如一行CSV同时更新功率和状态，这一行就产生两条信号样本。
+
+独立信号CSV（`signal_csv`）会按实际读入的内容和当前剩余预算组批，不为65536条样本预先分配整批空间。接近容量时先交付已读到的样本，再继续读取；每批可能少于这个上限。同一行的多个信号也可以分到相邻批次，更新顺序、数值、有效期和事件状态保持不变。这是信号CSV读取器的处理方式，不代表所有来源都会按预算自动缩小批次。
+
+如果连一条所需记录及必要的解析、交接状态都放不下，仍会报告`BudgetExceededError`，不会截断或丢弃数据。正常CSV任务可先使用默认批次设置；出现错误时按报错资源定位，再决定是否调整配置。受管理预算是引擎的资源估算，不保证整个进程的实际内存（RSS）低于该值。
 
 假设设备从1秒一直工作到4秒，某批数据恰好在2秒结束，下一批从3秒接着读。程序会保留“设备还在工作”的状态，最终仍应得到1—4秒的一次活动，不会在每个批次交界处人为切断。
 
@@ -173,7 +186,7 @@ diagnostics:   # 选择是否额外记录定位信息、校验摘要以及保留
   trace: true  # 控制是否记录详细定位信息；true增加追溯记录，false使用默认简要信息
 ```
 
-逐消息贡献另由`outputs.contributions: full`开启。运行环境备注放在根级`metadata`映射中；metadata默认{}，不会替代execution或diagnostics。独立信号/CAN导出另有[当前设备标签限制](exports.md)。
+逐消息贡献另由`outputs.contributions: full`开启。运行环境备注放在根级`metadata`映射中；metadata默认{}，不会替代execution或diagnostics。分析和导出使用相同的[可选设备标签](exports.md)。
 
 ## 计算项的覆盖门槛
 
@@ -182,6 +195,14 @@ diagnostics:   # 选择是否额外记录定位信息、校验摘要以及保留
 ## 一份可直接运行的对照
 
 [readability_examples.py](examples/readability_examples.py)使用同一份5行输入，比较两个backend、不同batch_rows及report/strict，并断言事件数和能量。该脚本还运行表达式说明中的每项例子，失败时直接报错。
+
+在离线手册解压根目录运行（该目录直接包含`examples`）：
+
+```powershell
+python -B examples/readability_examples.py
+```
+
+如使用源码仓库，则在含`pyproject.toml`的仓库根目录运行：
 
 ```powershell
 python -B Docs/Current/examples/readability_examples.py
@@ -196,12 +217,12 @@ metadata保存运行附加信息，缺省为空对象。其中metadata.device_la
 |入口|填写位置、默认及限制|
 |---|---|
 |普通分析|根级metadata.device_label；非空文本，如lab_pc；省略为pending，空白文本无效。CLI普通run不以CHRONAXIS_DEVICE_LABEL自动覆盖它。|
-|含独立信号或CAN文件导出的分析|同一字段必须为home或work，表示已经确认的产出设备；不能使用pending或自定义文本。|
+|含信号或CAN文件导出的分析|同一字段可省略，默认pending；填写时接受任意非空文本，如lab-pc或试验台一号。|
 |批量总报告|CLI从CHRONAXIS_DEVICE_LABEL取得；Python使用run_batch的device_label参数，缺省pending。不会覆盖每个子分析的metadata.device_label。|
 
 普通分析可在根级填写：
 
 ```yaml
 metadata:               # 保存说明性信息；字段不会自动校准数据或更改计算公式
-  device_label: lab_pc  # 记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明
+  device_label: lab_pc  # 可选设备标签；任意非空文本，省略为pending，不影响计算或导出
 ```

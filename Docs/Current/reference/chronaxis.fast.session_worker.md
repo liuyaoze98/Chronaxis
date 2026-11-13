@@ -5,11 +5,11 @@
 控制和数据独立，任一时刻只有一个尚未交付块。worker不累计总量、不创建
 子进程；EOF包含最终块数与已成功关闭的文件事实。父进程拥有取消和回收责任。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)
+[ControlChannel](chronaxis._control_wire.md#api-ControlChannel)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)
 
 ## 对象导航
 
@@ -23,7 +23,9 @@
 from hashlib import sha256
 from pathlib import Path
 from time import perf_counter
+from .._control_wire import ControlChannel
 from .blocks import batches, encode, LIMIT
+from ..dbc_loading import load_dbc_file
 ```
 
 </details>
@@ -53,4 +55,4 @@ None。
 
 原错误通过控制通道报告；断管退出，finally释放读取器。
 
-源码：[`src/chronaxis/fast/session_worker.py:15`](../../../src/chronaxis/fast/session_worker.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/fast/session_worker.py:17`](../../../src/chronaxis/fast/session_worker.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

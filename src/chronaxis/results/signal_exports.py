@@ -13,7 +13,7 @@ from io import StringIO
 import json
 
 from ..core.models import Interval
-from ..core.validation import require_identifier
+from ..core.validation import require_identifier, require_text
 from ..execution.record_sample import RecordSample
 from ..execution.history_records import HistorySample, HistoryProgress, estimate_record_bytes
 from ..execution.history import _metadata_bytes
@@ -108,9 +108,10 @@ class SignalCSVWriter(ExportFiles):
             raise TypeError('compact必须为bool')
         if type(spec) is not SignalCSVExportSpec or type(interval) is not Interval:
             raise TypeError('信号导出需要选择及明确Interval')
-        if (device_label not in ('home','work') or backend not in ('reference','numpy')
+        require_text(device_label, 'device_label')
+        if (backend not in ('reference','numpy')
                 or check_cancel is not None and not callable(check_cancel)):
-            raise ValueError('导出需要实际设备标签及可选取消回调')
+            raise ValueError('导出需要有效后端及可选取消回调')
         super().__init__(destination,budget,integrity=integrity,timestamped=timestamped)
         self.spec,self.interval,self.definitions=spec,interval,definitions
         self.device_label,self.backend,self.compact=device_label,backend,compact

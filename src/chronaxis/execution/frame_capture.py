@@ -9,6 +9,8 @@ DBC加载和解码不改变；为新增编码另加载同一哈希的定义属�
 from hashlib import file_digest
 from pathlib import Path
 
+from ..dbc_loading import load_dbc_file
+
 from ..legacy.records import LegacyCANField
 from ..legacy.binding import dbc_candidates, select_message
 from ..results.budget import _reserve_owned_ram,_release_owned_ram,_cleanup_owner
@@ -39,7 +41,7 @@ class FrameDBCContext:
             before=self._hash() if integrity else None
             from ..can_dependencies import import_can_dependency
             cantools = import_can_dependency('cantools')
-            self.database=cantools.database.load_file(str(self.path))
+            self.database=load_dbc_file(str(self.path), cantools)
             # 导出的未知报文策略需要判断DBC是否认识该帧；一次建索引，不逐帧扫描DBC。
             for message in self.database.messages:
                 self._by_frame_id.setdefault(message.frame_id,[]).append(message)

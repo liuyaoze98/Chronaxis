@@ -7,6 +7,8 @@
 依赖标准库unittest和已实现的chronaxis，不需要schema验证器。
 """
 
+from workspace_fixtures import TemporaryDirectory as workspace_temporary_directory
+
 # 文件加载与错误用例只写项目专用临时目录，保留异常原链。
 import json
 import tempfile
@@ -111,10 +113,10 @@ class AnalysisPlanTests(unittest.TestCase):
         self.assertEqual(plan.derived_expressions[0].dependencies, ('current', 'voltage'))
         self.assertEqual(plan.calculations[0].unit, 'Wh')
         self.assertEqual(plan.rules[0].minimum_duration_ns, 1_000_000_000)
-        # 默认值是设计20.6的声明，尚无执行预算落实。
+        # 省略后端由auto按计划选择；其余默认预算保持已发布的数值。
         self.assertEqual((plan.execution.backend, plan.execution.batch_rows, plan.execution.memory_budget_bytes,
                           plan.execution.result_buffer_rows, plan.execution.spool_quota_bytes),
-                         ('numpy', 65536, 268435456, 4096, None))
+                         ('auto', 65536, 268435456, 4096, None))
         self.assertEqual((plan.outputs.tables, plan.outputs.manifest), ('readable_csv', 'json'))
 
     def test_deep_freeze_and_input_isolation(self):
@@ -411,7 +413,7 @@ class AnalysisPlanTests(unittest.TestCase):
         """
         # 所有临时输出限制在新项目work目录，退出自动清理本用例目录。
         WORK.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=WORK) as directory:
+        with workspace_temporary_directory(dir=WORK) as directory:
             target = Path(directory) / 'analysis.json'
             target.write_text(json.dumps(csv_fixture()), encoding='utf-8-sig')
             original = target.read_bytes()
@@ -452,7 +454,7 @@ class AnalysisPlanTests(unittest.TestCase):
                  (b'{"x":NaN}', 'nonfinite_number'), (b'{"x":Infinity}', 'nonfinite_number'),
                  (b'{', 'invalid_json'), (b'\xff', 'load_error')]
         WORK.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=WORK) as directory:
+        with workspace_temporary_directory(dir=WORK) as directory:
             target = Path(directory) / 'bad.json'
             for content, code in cases:
                 target.write_bytes(content)

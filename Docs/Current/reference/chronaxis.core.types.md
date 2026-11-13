@@ -8,7 +8,7 @@ Python布尔值。SignalDType声明值类型，TimeType区分相对坐标与UTC�
 本模块只依赖标准库，不读取数据或文件，不持有会话状态；SourceType当前
 只描述内存输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -52,7 +52,7 @@ class Truth(Enum)
 |`FALSE`|枚举成员|类成员，不作为构造参数填写|'false'|已知且条件不成立。|
 |`UNKNOWN`|枚举成员|类成员，不作为构造参数填写|'unknown'|缺失、过期或无法有效求值。|
 
-源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Truth-__bool__"></a>
 ### `Truth.__bool__`
@@ -84,7 +84,7 @@ TypeError；三值逻辑尚未由普通Python bool表达。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-QualityFlag"></a>
 ## `QualityFlag`
@@ -116,7 +116,7 @@ class QualityFlag(IntFlag)
 |`PRECISION_LOSS`|枚举成员|类成员，不作为构造参数填写|128|不能精确表示的数值转换。|
 |`DOMAIN_ERROR`|枚举成员|类成员，不作为构造参数填写|256|除零等值域错误。|
 
-源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-QualityFlag-_missing_"></a>
 ### `QualityFlag._missing_`
@@ -147,7 +147,7 @@ ValueError: 候选值为负数、包含未知位或不能构造为合法质量�
 
 - `ValueError`：quality mask必须非负。
 
-源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalDType"></a>
 ## `SignalDType`
@@ -173,7 +173,7 @@ class SignalDType(Enum)
 |`BOOL`|枚举成员|类成员，不作为构造参数填写|'bool'|明确布尔值，不按任意数值的Python真值判断。|
 |`ENUM`|枚举成员|类成员，不作为构造参数填写|'enum'|显式枚举标签，不参与一般数值运算。|
 
-源码：[`src/chronaxis/core/types.py:78`](../../../src/chronaxis/core/types.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:82`](../../../src/chronaxis/core/types.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TimeType"></a>
 ## `TimeType`
@@ -195,7 +195,7 @@ class TimeType(Enum)
 |`RELATIVE`|枚举成员|类成员，不作为构造参数填写|'relative'|需要来源声明origin。|
 |`ABSOLUTE`|枚举成员|类成员，不作为构造参数填写|'absolute'|已规范化UTC epoch纳秒。|
 
-源码：[`src/chronaxis/core/types.py:92`](../../../src/chronaxis/core/types.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:96`](../../../src/chronaxis/core/types.py#L96)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SourceType"></a>
 ## `SourceType`
@@ -217,4 +217,4 @@ class SourceType(Enum)
 |---|---|---|---|---|
 |`MEMORY`|枚举成员|类成员，不作为构造参数填写|'memory'|已声明纳秒的内存行，不执行旧读写或解码。|
 
-源码：[`src/chronaxis/core/types.py:102`](../../../src/chronaxis/core/types.py#L102)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/types.py:106`](../../../src/chronaxis/core/types.py#L106)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

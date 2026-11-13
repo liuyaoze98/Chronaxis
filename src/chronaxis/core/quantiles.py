@@ -65,6 +65,20 @@ class ExactQuantileBuffer:
             error.add_note('精确样本分位数的样本存储或排序空间超过可用RAM')
             raise
 
+    def _append_memory_bytes(self, count):
+        """给分块调用者计算下一批保留样本的新增费用，不提前占用预算。
+
+        参数: count为内部已确定的非负样本数，也可为本批可能选中数量的上界。
+        返回: 新增字节数；空批和只保留极值的q端点为0。
+        异常: 无；实际追加仍通过_reserve检查预算及取消。
+        """
+        # 与append使用同一个费用来源，避免分块预估与真正付款不一致。
+        if not count or self._q in (0, 1):
+            return 0
+        if self._backend == 'reference':
+            return (0 if self._size else 256) + count * 64
+        return 256 + count * 8
+
     def append(self, values, mask=None):
         """累加一批真正选中的有效样本；空批直接返回。
 
@@ -101,10 +115,10 @@ class ExactQuantileBuffer:
             else:
                 # 预付块头/索引槽、标量对象保留费或数组nbytes，然后取得独占副本。
                 if self._backend == 'reference':
-                    self._reserve((0 if self._size else 256) + count * 64, '_buffer_cost')
+                    self._reserve(self._append_memory_bytes(count), '_buffer_cost')
                     self._chunks[0].extend(values)
                 else:
-                    self._reserve(256 + count * 8, '_buffer_cost')
+                    self._reserve(self._append_memory_bytes(count), '_buffer_cost')
                     self._chunks.append(values[mask])
             self._size += count
         except BaseException:
@@ -127,6 +141,7 @@ class ExactQuantileBuffer:
         if self._size == 1:
             value = self._chunks[0][0]
             return (value if self._backend == 'reference' else value.item()), Q.NONE
+        failure = None
         try:
             # Python排序预付指针列表及排序缓冲。NumPy单一连续副本原地堆排序；
             # 固定项还覆盖列表/数组头与两个端点精确插值所需的临时数值。
@@ -140,15 +155,22 @@ class ExactQuantileBuffer:
                 return ordered_reference(self._chunks,index,remainder,rank.denominator)
             from .quantile_numpy import ordered_numpy
             return ordered_numpy(self._chunks,index,remainder,rank.denominator)
-        except BaseException:
+        except BaseException as error:
+            failure = error
             self._failed = True
             raise
         finally:
             try:
                 _release_owned_ram(self,self._sort_cost,'_sort_cost')
-            except BaseException:
+            except BaseException as cleanup:
+                # 退款失败不能遮住先发生的排序/申请错误；实际费用槽由预算助手更新。
                 self._failed = True
-                raise
+                original = cleanup if failure is None else failure
+                if self._held_cost:
+                    original.quantile_cleanup_owner = self
+                if failure is None:
+                    raise
+                failure.add_note('分位数排序空间释放失败: ' + type(cleanup).__name__)
 
     def close(self):
         """放弃样本并退回本实例的全部收费，释放被取消时可再次调用。

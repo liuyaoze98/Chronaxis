@@ -10,16 +10,41 @@ from hashlib import sha256
 import multiprocessing
 import os
 from pathlib import Path
-import pickle
 import struct
 from time import perf_counter
 from uuid import uuid4
 
+from .._control_wire import ControlChannel
+from .can_block_codec import decode_block, decode_metadata
 from ..results.budget import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..sources.models import freeze_metadata
 from ..sources.protocol import SourceReadError
 from .history import _metadata_bytes
 from .parallel_can_worker import BLOCK_RAM, WIRE_LIMIT, worker_main
+
+
+def _with_position(record, input_index, sequence):
+    """给本入口刚从固定块核验完成的记录重编号，不再解析其不可变字段键。
+
+    参数: record只能来自本次decode_block；input_index和sequence是待写入的新非负编号。
+    返回: 新冻结记录；原始帧、字段值、状态和重建事实继续共享已核不可变内容。
+    异常: 新编号、类型、状态或字段对结构非法时沿用内部工厂检查。
+    仅供本模块已核记录使用；外部记录构造和新块解码仍完整解析规范字段。
+    临时键集合至多4096项，按512+192*4096字节小于1MiB；它在已有8MiB
+    接收/归并空间中、6MiB模型上界以外的2MiB余量内，用完即释放，不跨记录缓存。
+    """
+    from ..sources.text_can_decode import DecodedCANRecord
+    if type(record) is not DecodedCANRecord:
+        raise TypeError('CAN重编号需要本次已核解码记录')
+    keys = None
+    try:
+        keys = {pair[0] for pair in record.values}
+        return DecodedCANRecord._from_bound_values(record.source, input_index, sequence,
+            record.raw, record.values, record.status, record.frame_values, record.frame_layout, keys)
+    finally:
+        if keys is not None:
+            keys.clear()
+        keys = None
 
 
 class ParallelCANDecodeRead:
@@ -40,19 +65,27 @@ class ParallelCANDecodeRead:
         context=self._options.pop('database_context',None)
         self._frame_context=None if context is None else (context.rules,context._cycle_periods,context._integrity if hasattr(context,'_integrity') else options.get('integrity',True))
         self._held_cost=self._fixed_cost=self._workers_cost=self._merge_cost=0
+        self._metadata_extra_cost=0
+        self._metadata_credit=self._metadata_model_cost=self._ready_model_cost=0
         self._slots=[];self._file_slots={};self._facts={}
         self._next_file=self._index=self._offset=self._sequence=0
         self._records=();self._position=0;self._pending_eof=False
         self._last_time=self._last_order=None
         self._metadata=None;self._root=None;self._paths=[];self._handles=[];self._heap=[]
+        self._disk_blocks=[];self._disk_eof=[]
         self._closed=self._exhausted=self._started=self._spooled=False
         self.count=self.decode_calls=self.retained_count=0
         self.first_ns=self.last_ns=None
         self.timings=dict(worker_read_seconds=0.,worker_serialize_seconds=0.,worker_wait_seconds=0.,
                           worker_send_seconds=0.,main_wait_seconds=0.,received_bytes=0,worker_pids=[],files={})
         try:
-            _reserve_owned_ram(self,1048576+32*_metadata_bytes((
-                tuple(str(item.path) for item in spec.inputs),signals,self._options)), '_fixed_cost')
+            declarations = _metadata_bytes((tuple(str(item.path) for item in spec.inputs),signals,self._options))
+            # 原32D预约不变。其中8D只用于持久READY及其暂存，不再算作其它阶段余量。
+            # 余24D+1MiB覆盖原声明D、两份固定控制容器至多2D，以及最坏JSON转义下
+            # 当前文本/ASCII片/累计编码三份至多18D；小头、64KiB片和其它槽用固定余量。
+            # send返回即释放编码树，READY不与本槽控制编码或前一数据块重叠。
+            self._metadata_credit=8*declarations
+            _reserve_owned_ram(self,1048576+32*declarations, '_fixed_cost')
         except BaseException as error:
             _cleanup_owner(self,error,'text_can_cleanup_owner','并行CAN构造')
             raise
@@ -126,14 +159,58 @@ class ParallelCANDecodeRead:
         reply=self._receive(slot)
         if reply[0]!='ready' or reply[1]!=slot['process'].pid:
             raise SourceReadError('CAN工作进程初始化身份不符')
-        metadata=freeze_metadata(pickle.loads(self._bytes(slot,reply[2])))
-        if self._metadata is None:
-            self._metadata=metadata
-        elif metadata!=self._metadata:
-            raise SourceReadError('并行文件使用的DBC元数据不一致')
+        self._accept_metadata(self._bytes(slot,reply[2]))
         self._file_slots[index]=slot
         # 每槽只许可一个块；许可之前已在父账本支付远端及接收空间。
         slot['control'].send(('next',))
+
+    def _accept_metadata(self,packet):
+        """在原费用份额内接收READY，仅为实际超出的固定图预付差额。
+
+        参数: packet为已按512KiB上限接收的当前包。
+        返回: None，首份冻结事实保留到close，后续只比较后释放。
+        异常: 包错误、事实不同、预算或取消；退款失败附注保原错及可重试拥有者。
+        """
+        decoded=metadata=None
+        self._ready_model_cost=0
+        size=len(packet)
+        def reserve_model(amount):
+            """先给新图及冻结副本付费。参数: amount单图上界。返回: None。异常: 原预算错误。"""
+            self._ready_model_cost=amount
+            # 首份已保留的图先占8D；超过8D的持久差额另有真实_metadata_extra_cost。
+            # 当前槽8MiB只在没有数据块时使用。未知DBC单位由包内文本费用覆盖。
+            free_credit=max(0,self._metadata_credit-self._metadata_model_cost)
+            persistent=max(0,self._metadata_model_cost-self._metadata_credit)
+            required=persistent+max(0,2*amount+size-BLOCK_RAM-free_credit)
+            if required>self._metadata_extra_cost:
+                _reserve_owned_ram(self,required-self._metadata_extra_cost,'_metadata_extra_cost')
+        try:
+            decoded=decode_metadata(packet,on_expand=reserve_model)
+            metadata=freeze_metadata(decoded)
+            if self._metadata is None:
+                extra=max(0,self._ready_model_cost-self._metadata_credit)
+                if extra>self._metadata_extra_cost:
+                    # 同一费用槽从暂存转为持久事实，只补差额，不把同一冻结图付两次。
+                    # 数据槽仍持有当前图时完成预约，worker退出后仍有真实登记。
+                    _reserve_owned_ram(self,extra-self._metadata_extra_cost,'_metadata_extra_cost')
+                self._metadata=metadata
+                self._metadata_model_cost=self._ready_model_cost
+            elif metadata!=self._metadata:
+                raise SourceReadError('并行文件使用的DBC元数据不一致')
+        except BaseException as error:
+            decoded=metadata=packet=None
+            try:
+                persistent=max(0,self._metadata_model_cost-self._metadata_credit)
+                _release_owned_ram(self,self._metadata_extra_cost-persistent,'_metadata_extra_cost')
+            except BaseException as cleanup:
+                error.add_note('READY暂存退款失败: '+type(cleanup).__name__)
+            raise
+        else:
+            decoded=metadata=packet=None
+            persistent=max(0,self._metadata_model_cost-self._metadata_credit)
+            _release_owned_ram(self,self._metadata_extra_cost-persistent,'_metadata_extra_cost')
+        finally:
+            self._ready_model_cost=0
 
     def prepare_metadata(self):
         """启动有限工作槽，只初始化DBC再授予首块。参数: 无。返回: 元数据。异常: 启动/预算/元数据错。
@@ -148,22 +225,38 @@ class ParallelCANDecodeRead:
             _reserve_owned_ram(self,self._process_count*(self._worker_limit+BLOCK_RAM),'_workers_cost')
             context=multiprocessing.get_context('spawn')
             for _ in range(self._process_count):
-                slot=dict(process=None,control=None,data=None,tree=None,file=self._next_file,started=False)
+                slot=dict(process=None,control=None,data=None,child_control=None,child_data=None,
+                          tree=None,startup=None,file=self._next_file,started=False)
                 self._slots.append(slot)
-                child_control=child_data=None
+                slot['control'],slot['child_control']=context.Pipe()
+                slot['control']=ControlChannel(slot['control'],'can',parent=True,max_bytes=self._worker_limit)
+                slot['child_control']=ControlChannel(slot['child_control'],'can',parent=False,max_bytes=self._worker_limit)
+                slot['data'],slot['child_data']=context.Pipe(duplex=False)
+                from .._process_start import spawn_entry
                 try:
-                    parent_control,child_control=context.Pipe();slot['control']=parent_control
-                    parent_data,child_data=context.Pipe(duplex=False);slot['data']=parent_data
-                    process=context.Process(target=worker_main,args=(child_control,child_data));slot['process']=process
-                    process.start();slot['started']=True
-                    if os.name=='nt':
-                        from ..batch.process_tree import ProcessTree
-                        slot['tree']=ProcessTree(process.pid)
-                finally:
-                    if child_control is not None:
-                        child_control.close()
-                    if child_data is not None:
-                        child_data.close()
+                    target,args,slot['startup']=spawn_entry(context,worker_main,(slot['child_control'],slot['child_data']))
+                except BaseException as error:
+                    slot['startup']=getattr(error,'process_start_cleanup_owner',None)
+                    raise
+                process=context.Process(target=target,args=args)
+                slot['process']=process
+                process.start();slot['started']=True
+                from ..batch.process_tree import ProcessTree
+                try:
+                    slot['tree']=(ProcessTree(process.pid) if slot['startup'] is None else
+                        ProcessTree(process.pid,registration=slot['startup'],process=process))
+                except BaseException as error:
+                    slot['tree']=getattr(error,'process_tree_cleanup_owner',None)
+                    raise
+                if slot['startup'] is not None:
+                    slot['startup'].close();slot['startup']=None
+                for key in ('child_control','child_data'):
+                    connection=slot[key]
+                    try:
+                        connection.close()
+                    finally:
+                        if connection.closed:
+                            slot[key]=None
                 self.timings['worker_pids'].append(process.pid)
                 self._assign(slot,self._next_file)
                 self._next_file+=1
@@ -184,9 +277,10 @@ class ParallelCANDecodeRead:
         sent=self._receive(slot)
         if sent[0]!='sent':
             raise SourceReadError('CAN数据块缺少发送完成确认')
-        number,records,eof,facts=pickle.loads(packet)
+        number,records,eof,facts=decode_block(packet)
         if number!=slot['block'] or type(records) is not list or len(records)>64:
             raise SourceReadError('CAN文件数据块序号或长度不符')
+        self._record_identity(index,records)
         slot['block']+=1
         self.timings['worker_read_seconds']+=reply[2]
         self.timings['worker_serialize_seconds']+=reply[3]
@@ -206,6 +300,18 @@ class ParallelCANDecodeRead:
         self.last_ns=max(ends) if ends else None
         return records,eof,facts,packet
 
+    def _record_identity(self,index,records):
+        """核当前包的来源和文件身份，不将包内路径用作新文件打开目标。
+
+        参数: index为当前输入位置，records为本包已恢复记录。
+        返回: None。
+        异常: 来源、原文件或序号不同步时SourceReadError。
+        """
+        expected=self.spec.inputs[index].path
+        if any(record.source!=self.spec.name or record.input_index!=0
+                or record.raw.path!=expected or record.sequence!=record.raw.sequence for record in records):
+            raise SourceReadError('CAN数据块来源或原文件身份不符')
+
     def _next_task(self,index):
         """完成文件后复用同一工作槽；没有下一文件时保留槽待统一关闭。参数: 文件位置。返回: None。异常: 初始化错。
         """
@@ -220,8 +326,8 @@ class ParallelCANDecodeRead:
         failure=None
         while self._slots:
             slot=self._slots[-1];process=slot['process']
-            # 已完成时温和退出；未完成/背压/崩溃统一结束本次树，不触及其他进程。
-            if slot['started'] and process is not None:
+            # 按实际PID识别start已经生效后取消，不能只依赖尚未来得及写入的started标志。
+            if process is not None and not getattr(process,'_closed',False) and process.pid is not None:
                 if process.is_alive():
                     try:
                         slot['control'].send(('close',))
@@ -232,17 +338,26 @@ class ParallelCANDecodeRead:
                     process.terminate();process.join(2)
                     if completed:
                         failure=SourceReadError('CAN工作进程未正常结束')
-                if slot['tree'] is not None:
+                if process.is_alive() and slot['tree'] is not None:
                     slot['tree'].close();slot['tree']=None
                 if process.is_alive():
                     raise SourceReadError('CAN工作进程尚未退出')
                 if completed and process.exitcode!=0:
                     failure=SourceReadError(f'CAN工作进程退出码不是0：{process.exitcode}')
-                process.close()
+            if slot['tree'] is not None:
+                slot['tree'].close();slot['tree']=None
+            if process is not None:
+                if not getattr(process,'_closed',False):
+                    process.close()
                 slot['process']=None
-            for key in ('control','data'):
-                if slot[key] is not None:
-                    slot[key].close();slot[key]=None
+            for key in ('control','data','child_control','child_data','startup'):
+                connection=slot.get(key)
+                if connection is not None:
+                    try:
+                        connection.close()
+                    finally:
+                        if connection.closed:
+                            slot[key]=None
             self._slots.pop()
         self._file_slots.clear()
         _release_owned_ram(self,self._workers_cost,'_workers_cost')
@@ -269,11 +384,12 @@ class ParallelCANDecodeRead:
                     if index not in writers:
                         path=self._root/(str(index)+'.blocks')
                         handle=path.open('xb');self._paths.append(path);writers[index]=handle
-                    self._budget.reserve_spool(4+len(packet)+(32 if self._integrity else 0))
-                    writers[index].write(struct.pack('!I',len(packet)))
+                    # CND1本身的8字节头提供落盘分帧，不再重复保存一份包长。
+                    self._budget.reserve_spool(len(packet)+(32 if self._integrity else 0))
+                    writers[index].write(packet[:8])
                     if self._integrity:
                         writers[index].write(sha256(packet).digest())
-                    writers[index].write(packet)
+                    writers[index].write(memoryview(packet)[8:])
                     # 释放接收对象后再许可下一块，禁止两块同时占用同一额度。
                     records=packet=None
                     if eof:
@@ -289,6 +405,8 @@ class ParallelCANDecodeRead:
         for index in range(len(self.spec.inputs)):
             handle=(self._root/(str(index)+'.blocks')).open('rb');self._handles.append(handle)
         self._stream_records=[((),0) for _ in self._handles]
+        self._disk_blocks=[0 for _ in self._handles]
+        self._disk_eof=[False for _ in self._handles]
         for index in range(len(self._handles)):
             self._push(index)
         self._spooled=True
@@ -298,22 +416,34 @@ class ParallelCANDecodeRead:
         """
         records,position=self._stream_records[index]
         while position==len(records):
-            header=self._handles[index].read(4)
+            header=self._handles[index].read(8)
             if not header:
+                if not self._disk_eof[index]:
+                    raise SourceReadError('CAN归并暂存缺少文件EOF')
                 self._stream_records[index]=((),0)
                 return
-            if len(header)!=4:
+            if self._disk_eof[index]:
+                raise SourceReadError('CAN归并暂存在EOF后仍有数据')
+            if len(header)!=8:
                 raise SourceReadError('CAN归并暂存长度头截断')
-            size=struct.unpack('!I',header)[0]
-            if not 0<size<=WIRE_LIMIT:
-                raise SourceReadError('CAN归并暂存数据块长度非法')
+            magic,size=struct.unpack('!4sI',header)
+            if magic!=b'CND1' or not 0<size<=WIRE_LIMIT-8:
+                raise SourceReadError('CAN归并暂存数据块版本或长度非法')
             expected=self._handles[index].read(32) if self._integrity else None
-            packet=self._handles[index].read(size)
-            if len(packet)!=size:
+            body=self._handles[index].read(size)
+            if len(body)!=size:
                 raise SourceReadError('CAN归并暂存数据块截断')
+            packet=header+body
+            body=None
             if expected is not None and sha256(packet).digest()!=expected:
                 raise SourceReadError('CAN归并暂存完整性校验失败')
-            _,records,_,_=pickle.loads(packet);position=0
+            number,records,eof,_=decode_block(packet)
+            if number!=self._disk_blocks[index]:
+                raise SourceReadError('CAN归并暂存块序号不符')
+            self._record_identity(index,records)
+            self._disk_blocks[index]+=1
+            self._disk_eof[index]=eof
+            position=0
         record=records[position]
         self._stream_records[index]=(records,position+1)
         heapq.heappush(self._heap,(record.raw.time_ns,index,record.raw.sequence,record))
@@ -336,7 +466,7 @@ class ParallelCANDecodeRead:
                     self._exhausted=True
                     raise StopIteration
                 _,index,_,record=heapq.heappop(self._heap)
-                result=replace(record,input_index=index,sequence=self._sequence)
+                result=_with_position(record,index,self._sequence)
                 self._sequence+=1
                 self._push(index)
             else:
@@ -361,7 +491,7 @@ class ParallelCANDecodeRead:
                     if not eof:
                         self._file_slots[self._index]['control'].send(('next',))
                 record=self._records[self._position];self._position+=1
-                result=replace(record,input_index=self._index,sequence=self._offset+record.raw.sequence)
+                result=_with_position(record,self._index,self._offset+record.raw.sequence)
             if result.raw.time_ns is not None and self._last_time is not None and result.raw.time_ns<self._last_time:
                 raise SourceReadError('CAN归并输出时间回退')
             self._last_time=result.raw.time_ns;self.retained_count+=1
@@ -387,7 +517,8 @@ class ParallelCANDecodeRead:
             self._paths[-1].unlink(missing_ok=True);self._paths.pop()
         if self._root is not None:
             self._root.rmdir();self._root=None
-        self._metadata=None
+        self._metadata=None;self._metadata_model_cost=0
+        _release_owned_ram(self,self._metadata_extra_cost,'_metadata_extra_cost')
         _release_owned_ram(self,self._merge_cost,'_merge_cost')
         _release_owned_ram(self,self._fixed_cost,'_fixed_cost')
         self._closed=True

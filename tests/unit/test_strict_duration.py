@@ -6,7 +6,7 @@
 from dataclasses import replace
 from itertools import product
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 
 from chronaxis import AnalysisPlan, AnalysisRunner

@@ -2,7 +2,7 @@
 
 定义分析、暂存、资源限额和结果发布过程中使用的异常类型。调用方可据此区分“超过内存限额”“结果已经关闭”“文件格式损坏”等失败原因；异常出现不代表此前生成的文件已经回滚。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -26,7 +26,7 @@ class AnalysisError(RuntimeError)
 继承关系：RuntimeError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:8`](../../../src/chronaxis/results/errors.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:8`](../../../src/chronaxis/results/errors.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BudgetExceededError"></a>
 ## `BudgetExceededError`
@@ -40,7 +40,7 @@ class BudgetExceededError(AnalysisError)
 继承关系：[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:12`](../../../src/chronaxis/results/errors.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:12`](../../../src/chronaxis/results/errors.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResultClosedError"></a>
 ## `ResultClosedError`
@@ -54,7 +54,7 @@ class ResultClosedError(AnalysisError)
 继承关系：[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:16`](../../../src/chronaxis/results/errors.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:16`](../../../src/chronaxis/results/errors.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ResultFormatError"></a>
 ## `ResultFormatError`
@@ -68,7 +68,7 @@ class ResultFormatError(AnalysisError)
 继承关系：[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:20`](../../../src/chronaxis/results/errors.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:20`](../../../src/chronaxis/results/errors.py#L20)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ContributionsUnavailableError"></a>
 ## `ContributionsUnavailableError`
@@ -82,4 +82,4 @@ class ContributionsUnavailableError(AnalysisError)
 继承关系：[AnalysisError](chronaxis.results.errors.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:24`](../../../src/chronaxis/results/errors.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:24`](../../../src/chronaxis/results/errors.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

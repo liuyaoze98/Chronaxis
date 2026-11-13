@@ -27,7 +27,7 @@ python -m chronaxis config resolve Docs/Current/examples/analysis-imports.yaml -
 python -m chronaxis run work/independent.yaml --output work/imports-result
 ~~~
 
-两次分析的结果目录可以复用，自动增加时间文件名；后面的config resolve导出配置仍需使用新文件路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（数组实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；执行命令为python Docs/Current/examples/imports_example.py。
+两次分析的结果目录可以复用，自动增加时间文件名；后面的config resolve导出配置仍需使用新文件路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（NumPy数值实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；执行命令为python Docs/Current/examples/imports_example.py。
 
 ## 主配置怎样引用
 

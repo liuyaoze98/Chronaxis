@@ -1,19 +1,19 @@
 # `chronaxis.legacy.batch_worker`
 
-在隔离子进程按有限批次调用原CAN函数，默认仍解码全部报文。
+在隔离子进程按有限批次读取BLF，并按显式串行政策解码。
 
-INIT仍仅加载原DBC和公开字段元数据；每次pull_batch明确许可原帧条数与字节上限。
-默认每条执行原next/parse一次。显式decode_frame_ids限制允许解码的ID，只有其中
-实际请求了字段的ID才调用parse；纯常量触发帧不调用parse。全部原帧仍
-顺序读取并保留原时间、字段校验；所选帧仍一次调用原parse，参数不变。按需模式在
-原parse返回后立即只取INIT所需字段，缺失键保持缺失；v3 READY确认这一投影策略。
+INIT仅加载DBC和公开字段元数据；每次pull_batch明确许可原帧条数与字节上限。
+共用BLFRead按原序读取；默认all范围逐帧解码，strict/partial政策跳过非数据帧。
+显式decode_frame_ids限制允许解码的ID，只有其中实际请求了字段的ID才调用
+decode_serial_frame；纯常量触发帧不解码。按需模式在解码后立即只取INIT所需
+字段，缺失键保持缺失；v3 READY确认这一投影策略。
 原帧保留集合与解码集合独立，导出原始帧可保留全部帧而不解码无需求ID。
 auto模式在原生消息ID不匹配时先跳过；仅source需要读其时间。selected/none目标
 只保存必要身份与所需值；非原生消息沿完整原帧检查并计入新包的回退数量。
 字节不足容纳下一条最大记录时先结束当前批，不提前读取再丢弃。真正StopIteration
 可与最后批数据一起报告，子实际退出及资源回收仍由父确认。没有后台预读或pickle。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -23,7 +23,6 @@ auto模式在原生消息ID不匹配时先跳过；仅source需要读其时间�
 
 |对象|用途|
 |---|---|
-|[`_parse_selected`](#api-_parse_selected)|普通ID复用原解码入口，同ID多定义时直接调用选中的同库解码实现。|
 |[`_requested_fields`](#api-_requested_fields)|按固定报文ID整理所需信号名，不读取输入或遍历解码结果。|
 |[`_project_values`](#api-_project_values)|只读取本报文所需的原值，让后续完整模型只检查这些值。|
 |[`_encode_fresh_packet`](#api-_encode_fresh_packet)|编码本worker刚完成完整检查的记录，省去同一JSON树的再次遍历。|
@@ -37,43 +36,16 @@ from collections.abc import Mapping
 from collections import Counter
 from importlib import metadata
 from math import isfinite
+from ..dbc_loading import load_dbc_file
 from . import worker
 from .records import PROFILE_ID, MAX_WIRE_BYTES, LegacyDecodedFrame, decoded_to_dict, _decoded_values_size
 from .batch_wire import HEADER, DEMAND_HEADER, LENGTH, MIN_BATCH_BYTES, MAX_BATCH_BYTES, MAX_BATCH_ROWS, FILE_HEADER, FILE_MAGIC, encode_batch
 from .batch_validation import validate_discarded, _item_base_size
 from .required_records import RequiredCANFrame, RequiredDecodedFrame, required_to_dict
+from .decode_policy import decode_serial_frame as _parse_selected
 ```
 
 </details>
-
-<a id="api-_parse_selected"></a>
-## `_parse_selected`
-
-普通ID复用原解码入口，同ID多定义时直接调用选中的同库解码实现。
-
-```python
-_parse_selected(processor, db, frame, message, duplicate_ids)
-```
-
-### 参数
-
-|名称|数据类型|必填|省略时的值|用途、取值和效果|
-|---|---|---|---|---|
-|`processor`|ModuleType|是|无|位置或关键字。已加载的旧解码模块，提供parse_frame(frame, db)；普通唯一ID继续调用该入口。|
-|`db`|cantools.database.can.Database|是|无|位置或关键字。与当前读取会话共用的DBC数据库，传给旧解码入口，不重新加载文件。|
-|`frame`|can.Message|是|无|位置或关键字。本次实际报文，提供ID、帧型和载荷；函数不读取下一条报文。|
-|`message`|cantools.database.can.Message &#124; None|是|无|位置或关键字。按实际帧选择的DBC定义；同ID存在多个定义时调用它的decode，None沿旧入口处理。|
-|`duplicate_ids`|set[int]|是|无|位置或关键字。初始化时统计的重复DBC报文ID集合，用于判断是否必须避开旧入口仅按ID查表的歧义。|
-
-### 返回说明
-
-原物理值dict；DBC解码失败为空dict。
-
-### 异常说明
-
-非DBC结构错误由外层传播。
-
-源码：[`src/chronaxis/legacy/batch_worker.py:36`](../../../src/chronaxis/legacy/batch_worker.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
 
 <a id="api-_requested_fields"></a>
 ## `_requested_fields`
@@ -100,7 +72,7 @@ ID到去重信号名字典的有限映射，名字次序保持请求顺序。
 ValueError表示字段所在报文不在解码范围；原分配/取消错误直接传播。
 父策略费用为每个字段另付1024B，覆盖此表及构建临时槽；名称借自原请求。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:52`](../../../src/chronaxis/legacy/batch_worker.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_worker.py:40`](../../../src/chronaxis/legacy/batch_worker.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_project_values"></a>
 ## `_project_values`
@@ -127,7 +99,7 @@ _project_values(values, names)
 有字段需求时非Mapping报TypeError；所需键访问和取消错误原样传播。
 无字段的常量触发报文直接返回空dict，不遍历或校验没有用途的原values。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:73`](../../../src/chronaxis/legacy/batch_worker.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_worker.py:61`](../../../src/chronaxis/legacy/batch_worker.py#L61)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_encode_fresh_packet"></a>
 ## `_encode_fresh_packet`
@@ -154,7 +126,7 @@ _encode_fresh_packet(packet)
 完整模型已检查全部帧字段、含ITEM外壳的长度及收到的Mapping两遍，再复制冻结数值；
 原转换只生成固定字段与非有限数值标签。沿用原批许可费用，不保留跨记录状态。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:100`](../../../src/chronaxis/legacy/batch_worker.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_worker.py:88`](../../../src/chronaxis/legacy/batch_worker.py#L88)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_limits"></a>
 ## `_limits`
@@ -186,7 +158,7 @@ TypeError/ValueError。
 - `ValueError`：批次许可条数或字节上限非法。
 - `ValueError`：解码后保留ID必须是无重复29位整数列表或None。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:123`](../../../src/chronaxis/legacy/batch_worker.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_worker.py:111`](../../../src/chronaxis/legacy/batch_worker.py#L111)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-batch_worker_main"></a>
 ## `batch_worker_main`
@@ -228,9 +200,10 @@ batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', time
 
 ### 副作用说明
 
-子进程内一次load_file，每个声明文件一次iter_frames；每原帧顺序next，默认全部parse，
-    显式按需只对固定集合内有字段需求的帧调用parse，并立即投影所需字段。未解码帧不产生或检查
+子进程内加载一次DBC，每个声明文件建立一个共用BLFRead，按原序取帧；
+    默认all解码全部帧，strict/partial跳过非数据帧；按需只解码固定集合中有字段需求的帧，
+    并立即投影所需字段。未解码帧不产生或检查
     解码值，仍检查原帧；原始帧保留范围不扩大解码范围。
-    只关闭自己连接和原生成器；不声称原reader已有可靠公开close实现。
+    只关闭自己连接及同次共用读取器；第三方内部RSS仍不作硬上限保证。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:143`](../../../src/chronaxis/legacy/batch_worker.py#L143)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_worker.py:131`](../../../src/chronaxis/legacy/batch_worker.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

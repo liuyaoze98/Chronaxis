@@ -10,11 +10,11 @@ The supplied ASC logs and DBC are synthetic examples. They do not establish the 
 
 Use [conditional-energy.yaml](../examples/conditional-energy.yaml), [part-1.asc](../examples/data/can/conditional-energy/part-1.asc), [part-2.asc](../examples/data/can/conditional-energy/part-2.asc), and [signals.dbc](../examples/data/can/conditional-energy/signals.dbc). The first log covers 0–89 seconds and the second continues at 90–123 seconds. The teaching DBC defines state, current, and voltage in message `0x100`, with a 1000 ms period.
 
-This example covers Chronaxis 0.1.0.dev3. On Windows, start in the directory containing `examples` and substitute the actual wheel path below. Installation includes the dependencies declared for this version; do not independently install an arbitrary newer `cantools` version. See [Installation](installation.md) for matching source installation and offline dependency preparation.
+This example covers Chronaxis 0.1.0.dev4. On Windows, start in the directory containing `examples` and substitute the actual wheel path below. Installation includes the dependencies declared for this version; do not independently install an arbitrary newer `cantools` version. See [Installation](installation.md) for matching source installation and offline dependency preparation.
 
 ```powershell
 py -3.12 -m venv .venv
-.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
+.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
 .venv\Scripts\python.exe -m chronaxis validate examples/conditional-energy.yaml --format json
 .venv\Scripts\python.exe -m chronaxis explain examples/conditional-energy.yaml --format json
 .venv\Scripts\python.exe -m chronaxis run examples/conditional-energy.yaml --output result-conditional-energy

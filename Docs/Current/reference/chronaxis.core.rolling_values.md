@@ -6,11 +6,11 @@
 有理数累计，数组路径对当次窗口执行 NumPy 掩码和缩放加权归约。历史维护、
 覆盖门槛、网格原点和事件均由调用者处理；本模块不保存上一个窗口。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -57,4 +57,4 @@ ScalarValue。
 
 配置错误。
 
-源码：[`src/chronaxis/core/rolling_values.py:13`](../../../src/chronaxis/core/rolling_values.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/rolling_values.py:13`](../../../src/chronaxis/core/rolling_values.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

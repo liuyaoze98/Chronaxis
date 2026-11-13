@@ -200,7 +200,7 @@ def parse_sources(value, base: Path) -> tuple[SourcePlan, ...]:
                     # SignalCSVSpec检查空paths/编码/分隔符/重复标记，无输入I/O。
                     config = model_at(SignalCSVSpec, path, name=name, paths=paths, timebase=timebase,
                                       time_column=text_at(raw['time_column'], path + '.time_column'), unit=unit, offset_ns=offset,
-                                      timezone=tz, encoding=raw.get('encoding', 'utf-8'), delimiter=raw.get('delimiter', ','), missing_values=tuple(missing))
+                                      timezone=tz, encoding=raw.get('encoding', 'utf-8-sig'), delimiter=raw.get('delimiter', ','), missing_values=tuple(missing))
                 # 实际定位身份使用已解析绝对路径，仍保留数组原序。
                 identity_input['paths'] = [str(item) for item in paths]
                 # 两种等价路径输入形式不保留冗余path键。

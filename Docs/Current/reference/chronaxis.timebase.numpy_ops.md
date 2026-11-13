@@ -9,7 +9,7 @@ MaskedArray。先通过比较和布尔掩码证明加减安全，再执行NumPy�
 临时掩码占用O(N)空间；没有文件操作、CAN访问或全局状态。这里只实现时间
 运算，不能据此认定全部分析均已有数组实现。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -62,7 +62,7 @@ TypeError: 非ndarray、MaskedArray或dtype不为原生int64。
 
 返回类型：None。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:18`](../../../src/chronaxis/timebase/numpy_ops.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:18`](../../../src/chronaxis/timebase/numpy_ops.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-shift_times_numpy"></a>
 ## `shift_times_numpy`
@@ -95,7 +95,7 @@ TypeError或ValueError: 输入类型、数据类型或形状不符合要求。
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:39`](../../../src/chronaxis/timebase/numpy_ops.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:39`](../../../src/chronaxis/timebase/numpy_ops.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-time_deltas_numpy"></a>
 ## `time_deltas_numpy`
@@ -132,4 +132,4 @@ TypeError或ValueError: 输入类型、数据类型或形状错误，或者时�
 
 返回类型：np.ndarray。
 
-源码：[`src/chronaxis/timebase/numpy_ops.py:69`](../../../src/chronaxis/timebase/numpy_ops.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/timebase/numpy_ops.py:69`](../../../src/chronaxis/timebase/numpy_ops.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -5,11 +5,11 @@
 积分和时间统计沿用同一同一时刻/递增/条件门槛，具体owner负责预付缓冲费用并实现_flush。
 该内部基类不能独立构造使用；没有独立预算或第二份输入缓冲。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -41,7 +41,7 @@ class RecordPointBuffer
 ```
 
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordPointBuffer-_require_open"></a>
 ### `RecordPointBuffer._require_open`
@@ -67,7 +67,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordPointBuffer-consume"></a>
 ### `RecordPointBuffer.consume`
@@ -83,7 +83,7 @@ RecordPointBuffer.consume(rows, *, conditions=None, condition_valid_until_ns=Non
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`rows`|Sequence[tuple]|是|无|位置或关键字。有限计算点序列：实际时刻、ScalarValue、数值实际截止、条件ScalarValue及其实际截止；样本统计另附真实更新标志。|
-|`conditions`|Sequence[tuple[int, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), int &#124; None]] &#124; None|否|None|仅关键字。与值点对应的条件记录，分别含实际时间、布尔值及实际截止；None表示无外部条件。|
+|`conditions`|Sequence[tuple[int, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), int &#124; None]] &#124; None|否|None|仅关键字。与值点对应的条件记录，分别含实际时间、布尔值及实际截止；None表示无外部条件。|
 |`condition_valid_until_ns`|Sequence[int &#124; None] &#124; None|否|None|仅关键字。各筛选条件的真实有效截止，单位纳秒；条件未知不能当作False或补零。|
 |`actual_value_updates`|tuple[bool, ...] &#124; None|否|None|仅关键字。逐点真实值更新标志；用于样本统计排除条件变化和有效期边界。None不额外附加样本标志。|
 
@@ -99,7 +99,7 @@ None。
 
 上游处理同一时刻、条件及TTL；无效值必须传入，不能跳过后连接有效值。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordPointBuffer-expire_at"></a>
 ### `RecordPointBuffer.expire_at`
@@ -125,4 +125,4 @@ None。
 
 非法/回退时间或对象关闭失败；调用方必须在下一驱动点进入前通知。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

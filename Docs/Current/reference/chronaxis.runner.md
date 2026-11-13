@@ -2,7 +2,7 @@
 
 这是大多数应用只需要调用的执行入口。先用load_analysis_plan读取配置，再用AnalysisRunner.validate检查声明、AnalysisRunner.explain查看将用哪些信号，最后AnalysisRunner.run实际读取数据并计算。run返回的AnalysisResult可逐行读取，也可write到可复用的结果目录；用with语句保证文件和游标及时关闭。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -43,7 +43,7 @@ AnalysisRunner(backend=None, *, extensions=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -58,7 +58,7 @@ AnalysisRunner.__init__(backend=None, *, extensions=None)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`backend`|str &#124; None|否|None|位置或关键字。`"reference"`使用独立参考计算；`"numpy"`使用NumPy数组计算。None沿用计划中的选择。|
+|`backend`|str &#124; None|否|None|位置或关键字。`auto`按整份计划选择reference或numpy，不预读或试跑；`reference`和`numpy`固定使用对应数值实现。None沿用计划设置。详见[运行参数](../execution.md)。|
 |`extensions`|[ExtensionRegistry](chronaxis.extensions.md#api-ExtensionRegistry) &#124; None|否|None|仅关键字。实际执行或检查计划时传入的宿主注册，必须与创建计划时使用的对象相同。|
 
 #### 返回说明
@@ -67,14 +67,15 @@ None；初始化实例状态。
 
 #### 异常说明
 
-TypeError为非文本覆盖；ValueError为未知后端。
+TypeError：backend非文本且不是None，或extensions不是ExtensionRegistry且不是None。ValueError：backend文本不在auto、reference、numpy中。构造器还未接收计划；注册对象是否与计划相同，在validate/explain/run调用时检查。
 
 本函数直接报告的具体错误：
 
-- `TypeError`：AnalysisRunner backend需要reference、numpy或None。
-- `ValueError`：AnalysisRunner仅支持reference与numpy后端。
+- `TypeError`：`AnalysisRunner backend需要auto、reference、numpy或None`。
+- `ValueError`：`AnalysisRunner仅支持auto、reference与numpy后端`。
+- `TypeError`：`extensions需要宿主建立的ExtensionRegistry`。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -96,13 +97,13 @@ AnalysisRunner.backend
 
 #### 返回说明
 
-None/reference/numpy。
+None/auto/reference/numpy。
 
 #### 异常说明
 
 无。
 
-源码：[`src/chronaxis/runner.py:51`](../../../src/chronaxis/runner.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-_effective_plan"></a>
 ### `AnalysisRunner._effective_plan`
@@ -132,7 +133,7 @@ TypeError为非计划/执行声明；不重新解析配置或复制原输入行�
 
 - `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。
 
-源码：[`src/chronaxis/runner.py:58`](../../../src/chronaxis/runner.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:59`](../../../src/chronaxis/runner.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -158,13 +159,33 @@ AnalysisRunner.validate(plan, *, process_count=None)
 
 TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正常计划的静态问题通过ValidationReport.errors返回，执行能力看execution_ready；不读取输入，不能把空errors当作实际日志已验证。
 
-ValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
+ValueError：process_count显式覆盖不是正原生int（含bool），或Runner与计划没有共享同一个ExtensionRegistry实例。注册对象按身份比较，即使声明内容相同也不能换成另一个对象；这些错误在返回报告之前直接抛出。本方法不接收extensions参数，需在创建Runner时传入计划所用的注册对象。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
 
 #### 副作用说明
 
 无来源I/O或目录创建。
 
-源码：[`src/chronaxis/runner.py:78`](../../../src/chronaxis/runner.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+#### 调用示例
+
+```python
+"""共享注册实例的最小示例；仅校验并解释，不运行分析。"""
+# 从手册根目录（包含 examples 子目录）运行。
+# 此教学配置只使用内置算子；空注册对象用于演示同一实例的传递。
+from chronaxis import AnalysisRunner, load_analysis_plan
+from chronaxis.extensions import ExtensionRegistry
+
+registry = ExtensionRegistry()
+plan = load_analysis_plan("examples/calculation-minimal.yaml", extensions=registry)
+runner = AnalysisRunner(extensions=registry)
+validation = runner.validate(plan)
+explanation = runner.explain(plan)
+print(validation.valid, validation.execution_ready)
+print(type(explanation).__name__)
+# 预期输出：True True，随后为 ExplainReport。
+
+```
+
+源码：[`src/chronaxis/runner.py:80`](../../../src/chronaxis/runner.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -190,13 +211,13 @@ ExplainReport，plan_identity保原声明身份。
 
 TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏带有明确类型的引用可能引发AttributeError/KeyError；重新使用from_dict/load_analysis_plan构造合法计划。函数不打开CSV/DBC，不测量实际耗时或内存。
 
-ValueError：process_count显式覆盖不是正原生int。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
+ValueError：process_count显式覆盖不是正原生int（含bool），或Runner与计划没有共享同一个ExtensionRegistry实例。注册对象按身份比较，即使声明内容相同也不能换成另一个对象；这些错误在返回报告之前直接抛出。本方法不接收extensions参数，需在创建Runner时传入计划所用的注册对象。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。
 
 #### 副作用说明
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:88`](../../../src/chronaxis/runner.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:91`](../../../src/chronaxis/runner.py#L91)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -268,4 +289,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:99`](../../../src/chronaxis/runner.py#L99)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/runner.py:103`](../../../src/chronaxis/runner.py#L103)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

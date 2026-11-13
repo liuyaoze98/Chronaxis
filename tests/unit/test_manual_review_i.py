@@ -62,7 +62,8 @@ class ParsedCard(HTMLParser):
 def render_cards(texts):
     """使用手册构建采用的marked渲染器；缺依赖或解析失败即报错，不跳过验收。"""
     node = shutil.which("node")
-    parser = ROOT / "Docs/Current/_build/tooling/node_modules/marked/lib/marked.esm.js"
+    parser = Path(os.environ.get("CHRONAXIS_MARKED_PATH",
+        str(ROOT / "Docs/Current/_build/tooling/node_modules/marked/lib/marked.esm.js")))
     if node is None or not parser.is_file():
         raise RuntimeError("需要手册构建环境中的Node和marked，不能用正则代替结构验收")
     script = """
@@ -95,7 +96,8 @@ class ManualReviewITests(unittest.TestCase):
             body = body[body.index('<a id="api-'):]
             # 源码位置章节不属于安装用户资料；成员说明和所有示例都必须保留。
             body = re.sub(r"(?ms)^## Source locations\s*\n.*?(?=^## |\Z)", "", body)
-            texts.extend((body, public_card(page)))
+            language = 'en/' if path.parent.parent.name == 'en' else ''
+            texts.extend((body, public_card(page, language=language)))
         parsed = render_cards(texts)
         cls.cards = {path.relative_to(ROOT / "Docs/Current").as_posix():
                      (parsed[2 * index], parsed[2 * index + 1])
@@ -125,6 +127,19 @@ class ManualReviewITests(unittest.TestCase):
                              .replace("从仓库根目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
                              .replace("Run from the repository root", "Run from the AI guide root (the directory containing examples)"))
                             for language, code in source.codes]
+                # 共享注册例按各语言README目录执行；只登记这项已确认的派生差异。
+                if name == "public-api/AnalysisRunner.md":
+                    expected = [(language, code.replace(
+                        '# 从手册根目录（包含 examples 子目录）运行。',
+                        '# 从中文 AI README 所在目录运行（该目录包含 examples 子目录）。'))
+                        for language, code in expected]
+                elif name == "en/public-api/AnalysisRunner.md":
+                    expected = [(language, code.replace(
+                        '# Run from the manual root (the directory containing examples).',
+                        '# Run from the English AI README directory (en).').replace(
+                        'load_analysis_plan("examples/calculation-minimal.yaml", extensions=registry)',
+                        'load_analysis_plan("../examples/calculation-minimal.yaml", extensions=registry)'))
+                        for language, code in expected]
                 self.assertEqual(card.codes, expected)
         print(f"Markdown结构已核对：{len(chinese)}份中文 + {len(english)}份英文公开卡片")
 

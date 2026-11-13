@@ -17,11 +17,11 @@ compute_numpy接收CalculationSeries和CalculationDefinition，打包成同长�
 所有计算使用新数组，不修改输入，不读写文件；完整内存布局不代表已满足
 生产流式内存预算，性能提升也需要另行测量。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[Interval](chronaxis.core.models.md#api-Interval)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[Truth](chronaxis.core.types.md#api-Truth)
+[Interval](chronaxis.core.models.md#api-Interval)、[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[Truth](chronaxis.core.types.md#api-Truth)
 
 ## 对象导航
 
@@ -79,7 +79,7 @@ _sum_finite_numpy(values)
     容量取本次项数M：每项最多增加一个partial，因此不会引入固定4096阈值。
     完整内存入口仍为O(M)，不宣称有限批预算；不调用参考核或math.fsum。
 
-源码：[`src/chronaxis/core/calculations_numpy.py:42`](../../../src/chronaxis/core/calculations_numpy.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_numpy.py:42`](../../../src/chronaxis/core/calculations_numpy.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-select_numpy"></a>
 ## `select_numpy`
@@ -110,7 +110,7 @@ SelectionRow迭代器，TRUE与UNKNOWN保留，FALSE排除。
 建立(N,)时间、actual、known和TRUE列，批量选取输出索引。
     输出循环只恢复带有明确类型的行，不承担筛选计算。索引占O(N)内存，输出不攒列表。
 
-源码：[`src/chronaxis/core/calculations_numpy.py:70`](../../../src/chronaxis/core/calculations_numpy.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_numpy.py:70`](../../../src/chronaxis/core/calculations_numpy.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_numpy"></a>
 ## `compute_numpy`
@@ -146,4 +146,4 @@ CalculationResult，保存数值、覆盖、未知范围、来源与质量原因
     各覆盖时长独立归约，最后恢复未知区间并应用一次输出单位转换。
     不逐样本调用参考计算，不广播错位输入，也不修改原列。
 
-源码：[`src/chronaxis/core/calculations_numpy.py:115`](../../../src/chronaxis/core/calculations_numpy.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_numpy.py:115`](../../../src/chronaxis/core/calculations_numpy.py#L115)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

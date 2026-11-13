@@ -400,10 +400,17 @@ class SignalCSVSourceAdapter:
                     header = next(records, None)
                     # 最新物理行用于错误定位与引用。
                     line = reader.line_num
-                    # 表头列名须非空且唯一，必须包含时间列和全部已声明字段，即使其中部分未请求。
+                    # 导出表末尾多余分隔符形成的匿名列可忽略；保留原宽度，逐行确认这些列确实没有数据。
+                    header_width = 0 if header is None else len(header)
+                    named_width = header_width
+                    while header is not None and named_width and header[named_width - 1] == '':
+                        named_width -= 1
+                    header = None if header is None else header[:named_width]
+                    # 中间空名、仅空白的名字和重名仍拒绝；已声明但未请求的字段也必须能够定位。
                     if header is None or any(not name.strip() for name in header) or len(set(header)) != len(header) or self.spec.time_column not in header or any(item.field not in header for item in self.signals):
                         # 不凭字段下标猜含义或把缺列当全UNKNOWN。
-                        raise ValueError('CSV表头缺失/重名/声明字段无法定位')
+                        hint = '；文件含BOM时请将reader.encoding设为utf-8-sig' if header and header[0].startswith('\ufeff') else ''
+                        raise ValueError('CSV表头缺失/重名/声明字段无法定位' + hint)
                     # 静态列索引只作用已解码表，不是DBC绑定缓存。
                     indexes = {name: position for position, name in enumerate(header)}
                     # 每文件实际逐行读取，没有第二次输入扫描。
@@ -414,10 +421,12 @@ class SignalCSVSourceAdapter:
                         if not cells:
                             # 不reset前一状态或whole-source进度。
                             continue
-                        # 错列数和短行不能隐式用None/额外键补齐。
-                        if len(cells) != len(header):
+                        # 允许省去表尾匿名空单元格；有名列不能缺失，也不能多出表头未声明的列。
+                        if not named_width <= len(cells) <= header_width:
                             # 原cell错误明确报当前文件/行。
                             raise ValueError('CSV行列数与表头不同')
+                        if any(value != '' for value in cells[named_width:]):
+                            raise ValueError('CSV尾部匿名列包含非空数据，需要填写列名')
                         # 关闭可中止当前源，不继续读取后续数据。
                         self._ensure_open()
                         # 时间先精确转换，Date必须明确offset或source_timezone。
@@ -442,8 +451,10 @@ class SignalCSVSourceAdapter:
                             watermark = previous
                         # 每请求列在该行是实际观测，缺失标记也传MISSING更新。
                         for definition in selected:
-                            # 先发布已满有限缓冲，不让同时间超大组绕限额。
-                            if count == request.batch_rows:
+                            # 原文本只定位一次；预算层可在数组峰值达到容量前提前交批。
+                            text = '' if definition.name in self._clock_only else cells[indexes[definition.field]]
+                            if count == request.batch_rows or (resources is not None and
+                                    resources.should_flush(time_text, text, definition, validator)):
                                 # 数组/字符串定宽提升和协议集合副本必须在分配之前预留。
                                 if resources is not None:
                                     resources.before_pack(pending, validator)
@@ -461,11 +472,9 @@ class SignalCSVSourceAdapter:
                                 # yield恢复后才释放原缓冲；交接时当前数组仍由检查器持有。
                                 if resources is not None:
                                     resources.clear_pending()
-                            # 解析只作用于明确投影，不额外解码CAN信号。
-                            text = '' if definition.name in self._clock_only else cells[indexes[definition.field]]
                             # CSV引用会保留原文本，在解析、构造引用和append之前申请。
                             if resources is not None:
-                                resources.before_sample(time_text, text, path)
+                                resources.before_sample(time_text, text, path, definition)
                             # 原生标量随后只应用一次当前额外转换。
                             value = None if definition.name in self._clock_only else self._parse_value(text, definition)
                             # 每样本保留物理行/原字段和原文本/时间量化。

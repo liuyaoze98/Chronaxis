@@ -11,7 +11,7 @@ Python逐行操作负责类型分组和身份还原，不执行逐样本数值�
 本模块依赖NumPy和核心模型，不读取文件或旧来源，不修改调用方原列；
 完整内存历史会分配与行数成比例的存储，不保证生产执行预算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -68,7 +68,7 @@ _affine_integer(raw, selected, dtype, scale, offset)
 
 调用侧校验类型，分配错误传播；不逐样本用Python算数。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:34`](../../../src/chronaxis/core/normalize_numpy.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:34`](../../../src/chronaxis/core/normalize_numpy.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_float_limit"></a>
 ## `_float_limit`
@@ -94,7 +94,7 @@ float端点，大到不可表示的整数按方向得到Inf/最大有限值。
 
 配置类型已校验；数值转换溢出仅表示不可达端点。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:146`](../../../src/chronaxis/core/normalize_numpy.py#L146)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:146`](../../../src/chronaxis/core/normalize_numpy.py#L146)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-normalize_numpy"></a>
 ## `normalize_numpy`
@@ -130,7 +130,7 @@ TypeError或ValueError: 输入布局、质量位或声明结构不合法。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:168`](../../../src/chronaxis/core/normalize_numpy.py#L168)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:168`](../../../src/chronaxis/core/normalize_numpy.py#L168)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-memory_series_numpy"></a>
 ## `memory_series_numpy`
@@ -166,4 +166,4 @@ TypeError、ValueError或OverflowError: 定义、布局、同时间冲突、原�
 
 返回类型：[SignalSeries](chronaxis.core.state.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/core/normalize_numpy.py:331`](../../../src/chronaxis/core/normalize_numpy.py#L331)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/normalize_numpy.py:331`](../../../src/chronaxis/core/normalize_numpy.py#L331)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

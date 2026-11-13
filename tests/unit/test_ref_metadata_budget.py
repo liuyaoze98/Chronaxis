@@ -27,9 +27,6 @@ from chronaxis.core.calculations import CalculationDefinition
 from chronaxis.core.integral_terms import IntegralFacts
 from chronaxis.core.conditional_integral_terms import ConditionalIntegralFacts
 from chronaxis.core.types import QualityFlag as Q
-from chronaxis.execution import integral_facts as plain
-from chronaxis.execution import conditional_integral_facts as selected
-from chronaxis.execution.retained_metadata import retained_metadata_bytes
 from chronaxis.execution.csv_reader import BudgetedSignalCSVSourceAdapter
 from chronaxis.results import AnalysisResult, ResultFormatError, ResourceBudget
 from chronaxis.results.codec import encode_row
@@ -73,25 +70,7 @@ class RefMetadataBudgetTests(unittest.TestCase):
         return tuple(CSVSourceRef('session', 'table', 'raw.a', path, index + 2,
             str(index), '2', False) for index in range(count))
 
-    def owner(self, *, condition=False, refs=(), budget=None):
-        """创建两套真实事实owner。参数: 条件分支/初始定位/借预算。返回: owner。异常: 原构造错误。"""
-        budget = self.budget() if budget is None else budget
-        spec = CalculationDefinition('area', 'integral', Interval(0, 2), output_unit='J')
-        cls = selected.ConditionalIntegralFactsAccumulator if condition else plain.IntegralFactsAccumulator
-        owner = cls(budget, spec, spec.window, 'W', 'explicit-facts', refs)
-        self.addCleanup(owner.close)
-        return owner
 
-    def block(self, owner, *, condition=False, refs=(), start=0):
-        """明确一纳秒全有效事实。参数: 原owner/分支/定位/起点。返回: typed事实。异常: 原模型检查。"""
-        common = dict(spec=owner._spec, actual_window=Interval(start, start + 1),
-            value_valid_duration_ns=1, valid_sample_count=1, value_unknown_ranges=(),
-            quality=Q.NONE, input_unit='W', binding_identity='explicit-facts', source_refs=refs)
-        if condition:
-            return ConditionalIntegralFacts(**common, condition_known_duration_ns=1,
-                selected_duration_ns=1, selected_value_unknown_duration_ns=0,
-                false_duration_ns=0, condition_unknown_ranges=())
-        return IntegralFacts(**common)
 
     def spool(self, *, contributions=False, current=False):
         """建立真实小缓冲。参数: contributions启用当前贡献表，current只请求事件。返回: spool。异常: 预算/IO原错。"""
@@ -107,140 +86,10 @@ class RefMetadataBudgetTests(unittest.TestCase):
         self.addCleanup(result.close)
         return result
 
-    def test_entity_estimate_covers_instance_dictionary_container_and_long_unicode(self):
-        """实体费覆盖实际对象/字典/字段，长Unicode按真实字符存储增长。
 
-        参数: 无。返回: None。异常: 实体漏计或长文本被固定常数替代时断言失败。
-        """
-        short, long = self.refs(1)[0], self.refs(1, long=True)[0]
-        for ref in (short, long):
-            # 直接核这一个真实实例的实体尺寸，不用被测递归算法生成真值。
-            actual = getsizeof(ref) + getsizeof(vars(ref)) + sum(getsizeof(item) for item in vars(ref).values())
-            self.assertGreaterEqual(retained_metadata_bytes(ref), actual)
-            self.assertGreaterEqual(retained_metadata_bytes((ref, ref)), getsizeof((ref, ref)) + 2 * actual)
-        self.assertGreaterEqual(retained_metadata_bytes(long) - retained_metadata_bytes(short),
-                                getsizeof(long.path) - getsizeof(short.path))
 
-    def test_candidate_keeps_original_refs_and_prepays_pointer_not_old_payload_copy(self):
-        """旧长定位继续原对象持有，新候选预约不再重付整个旧payload。
 
-        参数: 无。返回: None。异常: refs截断/深复制或候选未预付断言失败。
-        """
-        for condition in (False, True):
-            with self.subTest(condition=condition):
-                old_refs, incoming = self.refs(12, long=True), self.refs(1)
-                owner = self.owner(condition=condition, refs=old_refs)
-                reserve, charges = owner._budget.reserve_ram, []
 
-                def observe(amount):
-                    """透传真实预付。参数: bytes。返回: 原结果。异常: 原预算错误。"""
-                    charges.append(amount)
-                    return reserve(amount)
-
-                with patch.object(owner._budget, 'reserve_ram', observe):
-                    owner.push(self.block(owner, condition=condition, refs=incoming))
-                module = selected if condition else plain
-                self.assertEqual(len(charges), 1)
-                self.assertLess(charges[0], module._refs_cost(old_refs))
-                self.assertEqual(owner._state.source_refs, (*old_refs, *incoming))
-                self.assertTrue(all(one is two for one, two in zip(owner._state.source_refs, (*old_refs, *incoming))))
-                owner.close()
-
-    def test_push_reserve_before_after_cancel_exposes_same_owner_and_preserves_borrowed(self):
-        """候选预付前/后取消都保原错及最高真实事实owner。
-
-        参数: 无。返回: None。异常: 漏登记、原错被改或误抵借款断言失败。
-        """
-        for condition in (False, True):
-            for after in (False, True):
-                with self.subTest(condition=condition, after=after):
-                    owner = self.owner(condition=condition)
-                    actual, calls = owner._budget.reserve_ram, []
-                    marker = KeyboardInterrupt('actual-candidate-reserve')
-
-                    def cancel(amount):
-                        """命中实际唯一申请。参数: bytes。返回: 不返回。异常: 同一取消。"""
-                        calls.append(amount)
-                        if after:
-                            actual(amount)
-                        raise marker
-
-                    with patch.object(owner._budget, 'reserve_ram', cancel):
-                        with self.assertRaises(KeyboardInterrupt) as caught:
-                            owner.push(self.block(owner, condition=condition, refs=self.refs(1)))
-                    self.assertIs(caught.exception, marker)
-                    self.assertEqual(len(calls), 1)
-                    attribute = 'conditional_integral_facts_cleanup_owner' if condition else 'integral_facts_cleanup_owner'
-                    self.assertIs(getattr(marker, attribute), owner)
-                    owner.close()
-                    self.assertEqual(owner._budget.ram_bytes, 4096)
-
-    def test_release_before_after_cancel_preserved_tb_does_not_pin_old_snapshot(self):
-        """候选缩账前后取消保原TB，旧本层前缀在close后真正失去引用。
-
-        参数: 无。返回: None。异常: 已抵费用仍钉住旧候选、或借款不保断言失败。
-        """
-        for condition in (False, True):
-            for after in (False, True):
-                owner = self.owner(condition=condition, refs=self.refs(2))
-                old = weakref.ref(owner._state)
-                actual, hits = owner._budget.release_ram, []
-                marker, saved = KeyboardInterrupt('actual-candidate-shrink'), None
-
-                def cancel(amount):
-                    """命中真实缩账。参数: bytes。返回: 不返回。异常: 同一取消。"""
-                    hits.append(amount)
-                    if after:
-                        actual(amount)
-                    raise marker
-
-                try:
-                    with patch.object(owner._budget, 'release_ram', cancel):
-                        owner.push(self.block(owner, condition=condition, refs=self.refs(1)))
-                except KeyboardInterrupt as error:
-                    saved = error
-                self.assertIs(saved, marker)
-                self.assertIsNotNone(saved.__traceback__)
-                self.assertEqual(len(hits), 1)
-                owner.close()
-                self.assertIsNone(old())
-                self.assertEqual(owner._budget.ram_bytes, 4096)
-
-    def test_unreturned_constructor_persistent_cleanup_recovers_actual_owned_fee(self):
-        """构造预约后取消且三次持续释放失败，最高未返回owner不丢实际费用。
-
-        参数: 无。返回: None。异常: 未返回责任丢失、原错变更或抵借款断言失败。
-        """
-        for condition in (False, True):
-            budget, marker = self.budget(), KeyboardInterrupt('constructor-owned-reserve')
-            reserve, releases = budget.reserve_ram, []
-
-            def cancel_reserve(amount):
-                """真实入账后取消。参数: bytes。返回: 不返回。异常: 同一主错。"""
-                reserve(amount)
-                raise marker
-
-            def cancel_release(amount):
-                """持续阻止真实释放。参数: bytes。返回: 不返回。异常: 同一主错。"""
-                releases.append(amount)
-                raise marker
-
-            cls = selected.ConditionalIntegralFactsAccumulator if condition else plain.IntegralFactsAccumulator
-            spec = CalculationDefinition('area', 'integral', Interval(0, 2))
-            with patch.object(budget, 'reserve_ram', cancel_reserve), patch.object(budget, 'release_ram', cancel_release):
-                with self.assertRaises(KeyboardInterrupt) as caught:
-                    cls(budget, spec, spec.window, 'W', 'explicit-facts', self.refs(1))
-                self.assertIs(caught.exception, marker)
-                name = 'conditional_integral_facts_cleanup_owner' if condition else 'integral_facts_cleanup_owner'
-                owner = getattr(marker, name)
-                self.addCleanup(owner.close)
-                with self.assertRaises(KeyboardInterrupt):
-                    owner.close()
-            self.assertGreaterEqual(len(releases), 3)
-            self.assertFalse(owner.closed)
-            owner.close()
-            owner.close()
-            self.assertEqual(budget.ram_bytes, 4096)
 
     def test_dynamic_max_uses_actual_bytes_and_empty_table_keeps_one_file_space(self):
         """普通表实长与真实文件逐字一致；空贡献表预付一份文件缓冲及固定状态。

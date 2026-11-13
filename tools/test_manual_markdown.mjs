@@ -1,5 +1,8 @@
 /** 回归附件链接改写及独立Markdown导航解析；只验证内存文本，不改变手册文件。 */
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
 import {references,rewriteLinks} from './manual_markdown.mjs';
 
 const sample='# 配置说明\n\n<a id="config-detail"></a>\n[字段`dataset.domain`](../Current/fast-energy.md#usage)\n[版本][version]\n\n[version]: versioning.md\n\n`[不改](code.md)`\n```yaml\ntext: "[不是导航](missing.md)"\n```\n';
@@ -27,4 +30,31 @@ const cases=[
 ];
 for(const [input,expected] of cases)assert.equal(rewriteLinks(input,move),expected);
 assert.equal(rewriteLinks('[版本](<part name.md>)',move),'[版本](<moved/part name.md>)');
-console.log(JSON.stringify({checks:8+cases.length+1,status:'passed'}));
+// 执行实际渲染器的纯定位函数，不启动整个HTML构建；防止约束链接漏装或过度放行。
+const renderer=readFileSync(new URL('./render_current_docs.mjs',import.meta.url),'utf8').replaceAll('\r\n','\n');
+const destinationStart=renderer.indexOf('function destination(target){');
+const destinationEnd=renderer.indexOf('\n}\n',destinationStart)+2;
+assert(destinationStart>=0&&destinationEnd>destinationStart);
+const attachmentRoot=path.resolve('manual-attachment-boundary');
+const attachmentDocs=path.join(attachmentRoot,'Docs/Current');
+const attachmentOutput=path.join(attachmentDocs,'_build/html');
+const collected=new Map();
+const resolveDestination=vm.runInNewContext('('+renderer.slice(destinationStart,destinationEnd)+')',{
+  root:attachmentRoot,docs:attachmentDocs,output:attachmentOutput,path,
+  sourceMap:new Map(),attachments:collected,
+  slash:value=>value.replaceAll('\\','/'),htmlName:value=>value.replace(/\.md$/,'.html'),
+});
+const publishedRequirements=['README.md','constraints-windows-py312-min.txt','constraints-windows-py312-max.txt',
+  'constraints-windows-py313-min.txt','constraints-windows-py313-max.txt'];
+for(const name of publishedRequirements){
+  const source=path.join(attachmentRoot,'requirements',name);
+  const expected=path.join(attachmentOutput,'attachments/requirements',name);
+  assert.equal(resolveDestination(source),expected);
+  assert.equal(collected.get(source),expected);
+}
+const rejectedRequirements=['requirements/private.txt','requirements/requirements.txt','requirements/nested/README.md',
+  'requirements/../private.txt','requirements-backup/README.md'];
+for(const name of rejectedRequirements)assert.throws(()=>resolveDestination(path.resolve(attachmentRoot,name)),/文档附件超出公开范围/);
+assert.equal(resolveDestination(path.join(attachmentRoot,'Docs/Release/release-notes-0.1.0.dev4.md')),
+  path.join(attachmentOutput,'attachments/Docs/Release/release-notes-0.1.0.dev4.md'));
+console.log(JSON.stringify({checks:8+cases.length+1+publishedRequirements.length*2+rejectedRequirements.length+1,status:'passed'}));

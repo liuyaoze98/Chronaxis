@@ -2,7 +2,7 @@
 
 为已付费的样本数组作原dtype全局排序，然后仅恢复两个标量端点。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -48,4 +48,4 @@ ordered_numpy(chunks, index, remainder, denominator)
 
 预算由外层预付，数组分配或索引错误直接传播。
 
-源码：[`src/chronaxis/core/quantile_numpy.py:7`](../../../src/chronaxis/core/quantile_numpy.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/quantile_numpy.py:7`](../../../src/chronaxis/core/quantile_numpy.py#L7)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

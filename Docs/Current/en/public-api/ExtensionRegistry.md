@@ -13,9 +13,9 @@ ExtensionRegistry(functions=(), reductions=(), transforms=())
 
 | Name | Type | Required | Default | Purpose |
 |---|---|---|---|---|
-|`functions`|See purpose|No|()|Tuple of FunctionSpec declarations; empty means no custom pointwise functions.|
-|`reductions`|See purpose|No|()|Tuple of ReductionSpec declarations; empty means no custom sample reductions.|
-|`transforms`|See purpose|No|()|Tuple of TransformSpec declarations; empty means no custom temporal transforms.|
+|`functions`|tuple[FunctionSpec, ...]|No|()|Tuple of FunctionSpec declarations; empty means no custom pointwise functions.|
+|`reductions`|tuple[ReductionSpec, ...]|No|()|Tuple of ReductionSpec declarations; empty means no custom sample reductions.|
+|`transforms`|tuple[TransformSpec, ...]|No|()|Tuple of TransformSpec declarations; empty means no custom temporal transforms.|
 
 ### Returns
 
@@ -31,6 +31,6 @@ Registers declarations without executing callbacks or creating runtime state. Do
 
 [Worked host example](../host-extensions.md)
 
-Source: [`src/chronaxis/extensions.py:147`](../../../../src/chronaxis/extensions.py#L147) (line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`).
+Source: [`src/chronaxis/extensions.py:147`](../../../../src/chronaxis/extensions.py#L147) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).
 
-Source: [`src/chronaxis/extensions.py:154`](../../../../src/chronaxis/extensions.py#L154) (line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`).
+Source: [`src/chronaxis/extensions.py:154`](../../../../src/chronaxis/extensions.py#L154) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).

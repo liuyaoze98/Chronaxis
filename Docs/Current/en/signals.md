@@ -40,7 +40,7 @@ calculations:                         # Requested statistics or selected rows
     expr: current                     # Formula using the declared signal or derived names
     unit: mA                          # Output unit; display the maximum current in milliamperes
 execution:                            # Execution settings for this analysis
-  process_count: 4                    # At most four workers; this one-file example uses one
+  process_count: 4                    # Up to four file workers; this ASC with concatenate runs in the current process
 ```
 
 From the examples directory, run `chronaxis run signal-number-minimal.yaml --output out-number`. `maximum_current` should be 7000 mA. For BLF, change the log path without changing the signal structure. An ordinary maximum needs no `conversion`, `scope`, or `session` declaration.
@@ -100,13 +100,29 @@ Omitted optional fields use their defaults. Except for metadata explicitly allow
 | `valid_range` | Optional two-number list | Inclusive bounds after conversion, such as `[-100,100]` A; lower must not exceed upper. 101 A becomes `OUT_OF_RANGE`, not 100 or zero. Omission adds no physical-range restriction; type and missing-value checks still apply. `[]`/null are invalid. Not applicable to bool/enum. |
 | `invalid_values` | Scalar list; default `[]` | Invalid sentinels matched by type and value before extra conversion. Check the parsed/decoded value: integer 65535 uses `[65535]`, not a converted 65.535. Omission/`[]` adds no sentinels; null is invalid. |
 | `sample_policy` | String; default `backward_hold` | Only `backward_hold` is supported: retain the latest update within validity, without linear interpolation. Usually omit it. |
-| `same_time_policy` | String; default `error` | `error` rejects conflicting same-time values, types, validity, or quality; identical updates may merge. `last_by_sequence` selects the largest stable source sequence. Choose from duplicate-record requirements, not magnitude or filename. |
+| `same_time_policy` | String; default `error` | `error` rejects conflicting same-time values, types, validity, quality, or raw enum codes. Identical facts merge using the largest source sequence; `last_by_sequence` selects that sequence even when facts conflict. Choose from duplicate-record requirements, not magnitude or filename. |
 | `semantic_id` | Nonempty string or null; default null | Business meaning for preset role lookup or requested tracing. Ordinary calculations can omit it. For auto lookup, use the [role table](presets.md#preset-role-requirements), such as `battery.current`, not a guessed name. Expressions use `name`, not the dotted ID. |
-| `semantic_contract_version` | Nonempty string or null; default null | Version of the `semantic_id` meaning. Auto role lookup needs string `"1"` plus `semantic_id`, with matching units and role requirements. Ordinary signals can record other nonempty versions, which do not satisfy auto lookup. This is an independent business-role contract version. Automatic role lookup uses string `"1"`; it does not follow the integer analysis `config_version`. |
+| `semantic_contract_version` | Nonempty string or null; default null | Version of the business meaning named by `semantic_id`. Any nonempty version requires `semantic_id`, for every signal. Ordinary calculations can omit both fields. Project-defined meanings may use other nonempty version strings; preset auto lookup requires string `"1"` and the role table's meaning and units. This independent business version does not follow the integer analysis `config_version`. |
 | `mapping_version` | Nonempty string or null; default null | Optional version of the input-to-signal mapping, such as `"meter-map-2026-01"`, assigned by the project maintainer. Update according to project practice when columns/DBC mappings change. Omission neither affects ordinary calculation nor generates a version. |
 | `sign_convention` | Nonempty string or null; default null | Physical direction of positive/negative values, established from equipment and data. Charging-preset current requires `positive_is_charge`. Ordinary signals may omit it or use agreed text. It does not negate or calibrate input; incompatible direction requires explicit input handling. |
 | `measurement_location` | Nonempty string or null; default null | Actual measurement point from wiring/sensor documentation. `pack_terminal` means the battery-pack terminal. Charging current/voltage roles require it, including explicit bindings. Ordinary signals may omit it or record agreed text. Names do not infer or alter the measurement point. |
 | `metadata` | Mapping; default `{}` | Custom notes such as `{sensor_serial: S001}` under the project's own conventions. Omission/`{}` adds nothing. Metadata does not enable conversion or quality features. |
+
+For example, two updates of 10 A at one second merge when their types and quality agree. Updates of 10 A and 20 A fail under error; last_by_sequence selects the larger source sequence, not the worker arrival order. Reusing the same source sequence for one alias is still invalid. This rule concerns ordinary signal updates; per-message accumulation keeps each message contribution even when values are equal.
+
+Add either excerpt to one existing `signals` item; neither is a complete signal definition. The first records a project-defined meaning. The second enables preset role lookup only when the remaining units, direction and measurement location satisfy the [role table](presets.md#preset-role-requirements).
+
+```yaml
+semantic_id: example.power       # Project-defined meaning of the power signal
+semantic_contract_version: "2"  # Project's version of that business definition
+```
+
+```yaml
+semantic_id: battery.current     # Current meaning specified by the preset role table
+semantic_contract_version: "1"  # Business version required for current preset auto lookup
+```
+
+A nonempty version such as `"2"` without `semantic_id` fails configuration loading. `semantic_id` alone may record a business meaning but does not establish eligibility for preset auto lookup.
 
 <a id="signal-field-decisions"></a>
 <a id="can信号的默认值与报文集中绑定"></a>
@@ -275,7 +291,7 @@ Processing order is: parse/decode → check missing/non-finite values, input qua
 <a id="valid_for最近值可以沿用多久"></a>
 ## valid_for: how long the latest value can be held
 
-Omitted `valid_for` uses three times the current signal's period: first explicit `period`, otherwise its DBC message period. Decoded CSV and memory signals can declare `period`. If a needed period is unavailable, provide `period` or `valid_for`; the program does not infer it from adjacent records. Although per-message calculations do not hold previous values, the public execution entry point still completes default validity for used signals, so a usable period, validity, or DBC period is needed there too. Formula `parameters.period` does not populate signal `period`.
+Omitted `valid_for` uses three times the current signal's period: first explicit `period`, otherwise its DBC message period. Decoded CSV and memory signals can declare `period`. If a needed period is unavailable, provide `period` or `valid_for`; the program does not infer it from adjacent records. The ordinary `chronaxis run` and `AnalysisRunner.run` entry points complete validity for used signals at startup, including plans that only perform per-message calculations; they therefore require a usable signal `period`, `valid_for`, or DBC message period. The [high-performance integrator](fast-energy.md) entry `fast run` uses only the current message and holds no previous value, so no signal period or validity is needed for that purpose. A custom formula time parameter, such as `parameters.frame_duration`, does not populate signal `period`.
 
 A 100 ms voltage period gives 300 ms default validity; a 10 ms current period gives 30 ms. Each signal is independent: the driving signal's period does not become every signal's period. Explicit `valid_for: 500ms` overrides the default. Expiry always uses actual message time. Voltage updated at 1 second with 300 ms validity expires at 1.3 seconds, even if fixed-period accumulation advances more slowly.
 

@@ -15,7 +15,7 @@ explain_analysis_plan(plan: AnalysisPlan) -> ExplainReport
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. A checked plan from `load_analysis_plan("analysis.yaml")` or `AnalysisPlan.from_dict(config)`, not a YAML filename string.|
 
-Returns [ExplainReport](../../reference/chronaxis.planning.reports.md#api-ExplainReport) (Chinese implementation reference), including the same validation limits, dependency nodes, `history_ns`, and a read-only budget mapping. Existing numeric kernels and unsupported nodes are identified separately; the whole plan should not be assumed to execute as one array operation.
+Returns [ExplainReport](../../reference/chronaxis.planning.reports.md#api-ExplainReport) (Chinese implementation reference), including the same validation limits, dependency nodes, `history_ns`, a read-only budget mapping, and `requested_backend` / `selected_backend` / `backend_reason`. These last fields describe the request, static selection and reason; they are not measured timing. Existing numeric kernels and unsupported nodes are identified separately; the whole plan should not be assumed to execute as one array operation.
 
 Raises `TypeError` if input is not an AnalysisPlan.
 
@@ -31,4 +31,4 @@ print(explain_analysis_plan(plan))
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:432`](../../../../src/chronaxis/planning/reports.py#L432) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/planning/reports.py:443`](../../../../src/chronaxis/planning/reports.py#L443) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

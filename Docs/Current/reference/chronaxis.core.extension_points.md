@@ -5,7 +5,7 @@
 固定参数及其声明尺度由FunctionSpec提供。此层只检查类型、解释裸常量并
 编译必要的单位转换；静态编译从不实例化宿主状态或执行用户的逐点回调。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,4 +54,4 @@ compile_host_function(compiler, call, spec)
 
 ValueError为位置数量、类型、单位或整数字面量非法；不加载配置路径。
 
-源码：[`src/chronaxis/core/extension_points.py:13`](../../../src/chronaxis/core/extension_points.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/extension_points.py:13`](../../../src/chronaxis/core/extension_points.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

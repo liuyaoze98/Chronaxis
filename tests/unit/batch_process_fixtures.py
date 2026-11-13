@@ -38,7 +38,7 @@ def cancelled_worker(connection):
 
 
 def crash_worker(connection):
-    """启动真实后代后异常退出，用于验证Windows作业回收。参数: 管道。返回: 不返回。"""
+    """启动真实后代后异常退出，用于验证平台进程树回收。参数: 管道。返回: 不返回。"""
     import subprocess
     import sys
     command = connection.recv()

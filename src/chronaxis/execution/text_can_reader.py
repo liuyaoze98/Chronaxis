@@ -1,4 +1,4 @@
-"""把新ASC/原始CSV的同次解码接到公共信号批次和真实观测协议。
+"""把ASC、BLF、原始CSV的同次解码接到公共信号批次和真实观测协议。
 
 适配器声明字段和时基，不读文件；每个TextCANObservationRead拥有独立解析器、
 有限原帧块和预算。每次交付同时段各别名批，总样本数不超过batch_rows；同刻别名未全部
@@ -7,6 +7,7 @@
 """
 
 from pathlib import Path
+from sys import getsizeof
 from uuid import uuid4
 
 from ..core.validation import require_identifier
@@ -22,16 +23,38 @@ from .frame_capture import TextFrameStore
 from .history import _metadata_bytes,_pending_bytes
 
 
+def _record_metadata_bytes(record):
+    """按已检查记录的固定结构计算与通用估算器相同的费用。
+
+    参数: record为当前解码器交付的冻结DecodedCANRecord，键和值均已检查。
+    返回: values、重建值/布局、路径及原时间文本的基础字节费用，尚未乘32。
+    异常: 传播内存分配错误；不接受任意外部对象树。
+    每个引用位置仍计费，仅省去通用元数据的递归类型分流；不降低预算金额。
+    """
+    # 外层五元组逐项收32字节；每个键值对的两个引用同样各收32字节。
+    total = getsizeof((None,) * 5) + 5 * 32
+    for pairs in (record.values, record.frame_values, record.frame_layout):
+        total += getsizeof(pairs)
+        for pair in pairs:
+            total += 32 + getsizeof(pair) + 2 * 32
+            total += getsizeof(pair[0]) + 64 + getsizeof(pair[1]) + 64
+    total += getsizeof(str(record.raw.path)) + 64
+    total += getsizeof(record.raw.raw_time) + 64
+    return total
+
+
 class BudgetedTextCANSourceAdapter:
     """拥有静态描述和活read集合，借用导出DBC上下文；关闭不会释放借用上下文。"""
 
-    def __init__(self,budget,spec,session_id,signals,*,backend='numpy',work_dir=None,retain_raw_frames=False,database_context=None,message_consumer=None,cycle_fields=(), metadata_fields=(),message_keys=(),integrity=True,trace=True,selected_ids=None,time_frame_ids=None,process_count=1,emit_frame_ids=None,blf_time_scope='source',legacy_blf_decode=False):
+    def __init__(self,budget,spec,session_id,signals,*,backend='numpy',work_dir=None,retain_raw_frames=False,database_context=None,message_consumer=None,cycle_fields=(), metadata_fields=(),message_keys=(),integrity=True,trace=True,selected_ids=None,time_frame_ids=None,process_count=1,emit_frame_ids=None,blf_time_scope='source',legacy_blf_decode=False,serial_blf_policy=None,post_decode_frame_ids=None):
         """构造声明，不读取输入。参数: 预算/spec/会话/定义、后端、可选暂存目录及DBC上下文；message_keys为无值公式的完整触发定位；message_consumer同步接收必要消息，保留需自付预算；cycle_fields显式请求初始化DBC周期；metadata_fields仅确认驱动候选，两者不增加值解码。返回: adapter。异常: 配置/预算错。
 
         time_frame_ids将所需通道/ID的单调性检查与全来源范围统计分开，不改变原帧时间。
         selected_ids是纯消息计算需要的有限ID集合；仅在不要求全来源时间或原帧导出时
         下推给原始CSV读取器。此时观测范围是保留记录的范围，不能冒称全部来源范围。
-        legacy_blf_decode仅由纯can_blf并行转接设置，保留原legacy长度及解码失败政策；不是用户配置字段。
+        legacy_blf_decode仅由纯can_blf转接设置；serial_blf_policy仅串行使用，保原异常及all/requested范围。
+        post_decode_frame_ids为串行all完成解码后交付的ID集合，None全部交付；不下推并行。
+        这些是内部转接参数，不增加用户配置项。
         """
         if type(spec) is not CANTextSpec or backend not in ('reference','numpy') or type(retain_raw_frames) is not bool:
             raise ValueError('文本CAN来源配置或后端非法')
@@ -52,6 +75,8 @@ class BudgetedTextCANSourceAdapter:
         self._emit_frame_ids = emit_frame_ids
         self._blf_time_scope=blf_time_scope
         self._legacy_blf_decode=legacy_blf_decode
+        self._serial_blf_policy=serial_blf_policy
+        self._post_decode_frame_ids=post_decode_frame_ids
         self._metadata_fields = metadata_fields
         self._selected_ids = selected_ids
         self._time_frame_ids = time_frame_ids
@@ -59,11 +84,20 @@ class BudgetedTextCANSourceAdapter:
         self._integrity=integrity
         self._trace=trace
         require_identifier(session_id,'text_can.session_id')
-        self.budget=self._budget=budget; self.spec=spec; self.session_id=session_id
-        self.signals=signals; self.backend=backend; self.work_dir=None if work_dir is None else Path(work_dir)
-        self._retain_raw_frames=retain_raw_frames; self.database_context=database_context
-        self._update_consumer=message_consumer; self._update_projection=None
-        self._held_cost=self._fixed_cost=0; self._closed=False; self._requests=set(); self._pending=None
+        self.budget=self._budget=budget
+        self.spec=spec
+        self.session_id=session_id
+        self.signals=signals
+        self.backend=backend
+        self.work_dir=None if work_dir is None else Path(work_dir)
+        self._retain_raw_frames=retain_raw_frames
+        self.database_context=database_context
+        self._update_consumer=message_consumer
+        self._update_projection=None
+        self._held_cost=self._fixed_cost=0
+        self._closed=False
+        self._requests=set()
+        self._pending=None
         try:
             cost=131072+_metadata_bytes((signals,selected_ids,time_frame_ids))*32+sum(1024+len(str(i.path).encode('utf-8'))*32 for i in spec.inputs)
             if message_keys:
@@ -102,7 +136,8 @@ class BudgetedTextCANSourceAdapter:
     def describe(self):
         """返回静态字段及时间声明。参数: 无。返回: SourceDescription。异常: 已关闭。
         """
-        self._ensure_open(); return self._description
+        self._ensure_open()
+        return self._description
 
     def iter_batches_with_observation(self,request):
         """创建具有同次观测的独立read。参数: request。返回: read。异常: 合同/预算错及可恢复owner。
@@ -112,7 +147,9 @@ class BudgetedTextCANSourceAdapter:
             raise ResultClosedError('文本CAN仍有未返回read待清理')
         try:
             self._pending=TextCANObservationRead(self,request)
-            read=self._pending; self._requests.add(read); self._pending=None
+            read=self._pending
+            self._requests.add(read)
+            self._pending=None
             return read
         except BaseException as error:
             self._pending=self._pending or getattr(error,'text_can_observation_cleanup_owner',None)
@@ -134,12 +171,14 @@ class BudgetedTextCANSourceAdapter:
         if self._closed:
             return
         if self._pending is not None:
-            self._pending.close(); self._pending=None
+            self._pending.close()
+            self._pending=None
         while self._requests:
             next(iter(self._requests)).close()
         self._description=None
         self._update_projection=self._update_consumer=None
-        _release_owned_ram(self,self._fixed_cost,'_fixed_cost'); self._closed=True
+        _release_owned_ram(self,self._fixed_cost,'_fixed_cost')
+        self._closed=True
 
 
 class TextCANObservationRead:
@@ -154,19 +193,24 @@ class TextCANObservationRead:
         definitions={s.name:s for s in owner.signals}
         if not set(request.signal_names)<=set(definitions):
             raise ValueError('文本CAN请求包含未声明信号')
-        self._owner=owner; self._request=request; self._budget=owner.budget
-        self.identity=uuid4().hex; self._definitions=tuple(definitions[n] for n in request.signal_names)
+        self._owner=owner
+        self._request=request
+        self._budget=owner.budget
+        self.identity=uuid4().hex
+        self._definitions=tuple(definitions[n] for n in request.signal_names)
         self._held_cost=self._fixed_cost=self._records_cost=self._batch_cost=self._pending_cost=self._validation_cost=self._runtime_cost=self._update_cost=0
         self._decoder=self._raw_store=self._current=self._validator=self._runtime_metadata=self._observation=None
         self._binding_projection=None
-        self._records=[]; self._column=0; self._raw_eof=self._eof_sent=False
+        self._records=[]
+        self._column=0
+        self._raw_eof=self._eof_sent=False
         self._closed=self._exhausted=self._failed=False
         try:
             _reserve_owned_ram(self,131072+_metadata_bytes((request,owner.signals))*32,'_fixed_cost')
             self._validator=BatchValidator(owner.describe(),request)
             try:
                 factory = CANTextDecodeRead
-                parallel_options = {}
+                parallel_options = dict(emit_frame_ids=owner._emit_frame_ids,blf_time_scope=owner._blf_time_scope,serial_blf_policy=owner._serial_blf_policy,post_decode_frame_ids=owner._post_decode_frame_ids)
                 if owner._process_count > 1 or owner.spec.file_merge == 'time_order':
                     from .parallel_can_decode import ParallelCANDecodeRead
                     factory = ParallelCANDecodeRead
@@ -183,13 +227,15 @@ class TextCANObservationRead:
                     **({'selected_ids':owner._selected_ids} if owner._selected_ids is not None else {}),
                     **({'time_frame_ids':owner._time_frame_ids} if owner._time_frame_ids is not None else {}))
             except BaseException as error:
-                self._decoder=getattr(error,'text_can_cleanup_owner',None); raise
+                self._decoder=getattr(error,'text_can_cleanup_owner',None)
+                raise
             if owner.retain_raw_frames:
                 try:
                     self._raw_store=TextFrameStore(owner.work_dir/('frames-'+self.identity),self._budget,
                         owner.spec.name,owner.session_id,self.identity,database_context=owner.database_context,channel=owner.spec.channel,integrity=owner._integrity,trace=owner._trace)
                 except BaseException as error:
-                    self._raw_store=getattr(error,'text_frame_store_cleanup_owner',None); raise
+                    self._raw_store=getattr(error,'text_frame_store_cleanup_owner',None)
+                    raise
         except BaseException as error:
             _cleanup_owner(self,error,'text_can_observation_cleanup_owner','文本CAN观测构造')
             raise
@@ -268,14 +314,17 @@ class TextCANObservationRead:
         self._validator.accept(batch)
         retained=_pending_bytes(self._validator)
         _release_owned_ram(self,self._pending_cost,'_pending_cost')
-        self._validation_cost-=retained; self._pending_cost+=retained
+        self._validation_cost-=retained
+        self._pending_cost+=retained
         _release_owned_ram(self,self._validation_cost,'_validation_cost')
-        self._current=batch; return batch
+        self._current=batch
+        return batch
 
     def _fill(self):
         """按全部别名的样本容量取有限原记录，所有值只解码一次。参数: 无。返回: None。异常: 原读/预算/暂存错。
         """
-        self._records.clear(); self._column=0
+        self._records.clear()
+        self._column=0
         if self._binding_projection is None:
             self.prepare_metadata()
         _release_owned_ram(self,self._records_cost,'_records_cost')
@@ -284,10 +333,11 @@ class TextCANObservationRead:
             try:
                 record=next(self._decoder)
             except StopIteration:
-                self._raw_eof=True; break
-            cost=16384+_metadata_bytes((record.values,record.frame_values,record.frame_layout,
-                str(record.raw.path),record.raw.raw_time))*32
-            _reserve_owned_ram(self,cost,'_records_cost'); self._records.append(record)
+                self._raw_eof=True
+                break
+            cost=16384+_record_metadata_bytes(record)*32
+            _reserve_owned_ram(self,cost,'_records_cost')
+            self._records.append(record)
             if self._raw_store is not None:
                 self._raw_store.append(record)
             if self._owner._update_consumer is not None:
@@ -304,9 +354,11 @@ class TextCANObservationRead:
             raise ResultClosedError('失败的文本CAN读取只能清理')
         try:
             self._owner._ensure_open()
-            self._current=None; _release_owned_ram(self,self._batch_cost,'_batch_cost')
+            self._current=None
+            _release_owned_ram(self,self._batch_cost,'_batch_cost')
             if self._eof_sent:
-                self._finish(); raise StopIteration
+                self._finish()
+                raise StopIteration
             if not self._records or self._column>=max(1,len(self._definitions)):
                 self._fill()
             if not self._records and self._raw_eof:
@@ -341,14 +393,16 @@ class TextCANObservationRead:
             raw.first_ns,raw.last_ns,raw.count,True,
             self._owner._blf_time_scope if self._owner._blf_time_scope!='source' else
             'selected' if self._owner._selected_ids is not None and self._owner.spec.source_type=='raw_can_csv' else 'source',
-            raw.retained_count)
-        metadata=dict(raw.metadata,decode_calls=raw.decode_calls,record_count=raw.count,source_kind=self._owner.spec.source_type)
+            raw.retained_count,getattr(raw,'full_check_count',0))
+        metadata=dict(raw.metadata,decode_calls=raw.decode_calls,record_count=raw.count,source_kind='can_blf' if self._owner._serial_blf_policy is not None else self._owner.spec.source_type)
         _reserve_owned_ram(self,65536+_metadata_bytes(metadata)*32,'_runtime_cost')
         self._runtime_metadata=freeze_metadata(metadata)
         if self._raw_store is not None:
             self._raw_store.seal()
-        self._decoder.close(); self._decoder=None
-        self._observation=fact; self._exhausted=True
+        self._decoder.close()
+        self._decoder=None
+        self._observation=fact
+        self._exhausted=True
 
     def take_raw_store(self,receiver,slot):
         """移交本read的同次封口原帧仓。参数: receiver空槽及slot名。返回: None。异常: 未完成/已有责任。
@@ -356,19 +410,25 @@ class TextCANObservationRead:
         self.observation
         if self._raw_store is None or self._raw_store.state!='sealed' or getattr(receiver,slot,None) is not None:
             raise ValueError('文本原帧仓不能移交')
-        setattr(receiver,slot,self._raw_store); self._raw_store=None
+        setattr(receiver,slot,self._raw_store)
+        self._raw_store=None
 
     def close(self):
         """关闭实际解析器/原帧仓并释放自身费用，不释放共享DBC。参数: 无。返回: None。异常: 原清理错可恢复。
         """
         if self._closed:
             return
-        self._current=None; self._records.clear(); self._validator=None
+        self._current=None
+        self._records.clear()
+        self._validator=None
         if self._decoder is not None:
-            self._decoder.close(); self._decoder=None
+            self._decoder.close()
+            self._decoder=None
         if self._raw_store is not None:
-            self._raw_store.close(); self._raw_store=None
+            self._raw_store.close()
+            self._raw_store=None
         self._runtime_metadata=self._observation=self._binding_projection=None
         for slot in ('_update_cost','_batch_cost','_records_cost','_pending_cost','_validation_cost','_runtime_cost','_fixed_cost'):
             _release_owned_ram(self,getattr(self,slot),slot)
-        self._owner._requests.discard(self); self._closed=True
+        self._owner._requests.discard(self)
+        self._closed=True

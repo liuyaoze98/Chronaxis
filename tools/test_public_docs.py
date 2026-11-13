@@ -37,6 +37,24 @@ class PublicDocsTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertIn(phrase, reading_text((ROOT/name).read_text(encoding='utf8')))
 
+    def test_unheaded_project_history_is_rejected(self):
+        """缺少履历标题会泄露维护日志，必须让生成失败而不是悄悄删行。"""
+        with self.assertRaisesRegex(ValueError, '正文第3行'):
+            reading_text('# Exports\n\n- 2026-11-14T00:13:07+08:00 | DOC-REVIEW-10/J23 | [home] Changed docs.\n')
+
+    def test_business_dates_and_fenced_examples_are_preserved(self):
+        """业务采集日期和示例中的日志不是源文档履历。"""
+        text = ('# 时间\n\n2026-11-14T00:13:07+08:00 为采集时刻。\n'
+                '```text\n- 2026-11-14T00:13:07+08:00 | DOC-REVIEW-10/J23 | [home] Example\n```\n')
+        self.assertEqual(reading_text(text), text)
+
+    def test_exports_body_excludes_developer_records(self):
+        """英文导出页保留输出说明，维护记录仅留在源文件履历中。"""
+        text = reading_text((ROOT/'Docs/Current/en/exports.md').read_text(encoding='utf8'))
+        self.assertIn('exports.index_file', text)
+        self.assertNotIn('AUDIT-FIX-02/B2', text)
+        self.assertNotIn('DOC-REVIEW-10/J23', text)
+
 
 if __name__ == '__main__':
     unittest.main()

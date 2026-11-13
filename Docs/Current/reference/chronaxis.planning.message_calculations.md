@@ -13,7 +13,7 @@ require_message_calculation只检查已有带有明确类型的计划与当前�
 validate/explain共用；它不重新解析AST或raw_config。所有操作只处理有限配置，
 不open/stat/resolve，不加载DBC、旧reader或执行流，不读取任何分析输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -90,7 +90,7 @@ TypeError为指标/绑定模型错误；ValueError为来源能力、声明或定
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/message_calculations.py:29`](../../../src/chronaxis/planning/message_calculations.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/message_calculations.py:29`](../../../src/chronaxis/planning/message_calculations.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_message_calculations"></a>
 ## `parse_message_calculations`
@@ -124,4 +124,4 @@ PlanValidationError保具体JSON路径；cache_policy报旧完整缓存能力尚
 
 返回类型：tuple[[MessageCalculationPlan](chronaxis.planning.models.md#api-MessageCalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/message_calculations.py:99`](../../../src/chronaxis/planning/message_calculations.py#L99)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/message_calculations.py:99`](../../../src/chronaxis/planning/message_calculations.py#L99)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

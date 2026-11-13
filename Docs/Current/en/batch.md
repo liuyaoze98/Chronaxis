@@ -41,7 +41,7 @@ Omit job names, `fail_fast`, and backend settings unless you need to change thei
 | `jobs[].plan` | string | Yes | — | Complete analysis YAML/JSON file, relative to the batch file or absolute. |
 | `process_count` | integer | No | `1` | Positive worker limit. `1` runs jobs sequentially in one worker; `2` or `4` permits that many workers. Choose using available CPU, memory and disk. No automatic all-CPU setting; zero, negatives, floats, Booleans, strings and null are invalid. |
 | `fail_fast` | Boolean | No | `false` | `false` continues launching after failures; `true` stops launching new jobs after a failure, while dispatched jobs finish and close. |
-| `backend` | string or null | No | `null` | `null` preserves each plan's choice; `reference` or `numpy` overrides all jobs. See [execution settings](execution.md). |
+| `backend` | string or null | No | `null` | `null` preserves each plan's choice; `reference` or `numpy` fixes the implementation for all jobs; `auto` selects independently for each job. See [execution settings](execution.md). |
 
 Names start with an ASCII letter or underscore, followed by letters, digits or underscores. Python keywords (`for`, `class`) and expression function names (`abs`, `isclose`) are prohibited. `trial_a` is valid; `trial-a` and `a/b` are not. Names must also be valid directory names on the platform, excluding Windows device names such as CON and NUL.
 
@@ -102,9 +102,9 @@ With `jobs`, `load_batch_plan` reads the batch file; each child's plan and input
 
 `run_batch` writes a timestamped batch report; its actual path is `report.report_path`. Lower-level `BatchRunner.run()` returns an object; call `write_batch_report()` explicitly when using that entry. Detailed signatures: [batch API](../reference/chronaxis.batch.api.md), [BatchRunner](../reference/chronaxis.batch.runner.md), [models](../reference/chronaxis.batch.models.md) (Chinese implementation reference).
 
-Windows starts workers with `spawn`, which imports the script again. Keep startup inside `if __name__ == "__main__":` and run a saved `.py` file so workers do not dispatch the batch again. The process mode has been validated on Windows / Python 3.12.
+Windows starts workers with `spawn`, which imports the script again. Keep startup inside `if __name__ == "__main__":` and run a saved `.py` file so workers do not dispatch the batch again. On Linux, process cleanup also depends on the capabilities described in [Installation](installation.md); a Python version alone does not establish support.
 
-Actual workers are at most `min(process_count, number of jobs)`. Empty or pre-cancelled batches launch none; a limit of four with two jobs launches two workers. The scheduler and CAN reader subprocesses are additional processes. Workers are reused, but signal and event state are not carried between jobs.
+Actual workers are at most `min(process_count, number of jobs)`. Empty or pre-cancelled batches launch none; a limit of four with two jobs launches two workers. The scheduler is additional. ASC/BLF concatenation runs inside each analysis worker without an extra pure-BLF reader subprocess. Requested BLF exports can still create additional workers, so the operating-system process total need not equal the task-worker count. Workers are reused, but signal and event state are not carried between jobs.
 
 The report stores the effective limit as `process_count`, actual count as `worker_process_count`, and each job's process ID as `jobs[].worker_pid` (`null` for unstarted jobs). Several jobs may share a reused PID. Reports retain declaration order, not completion order.
 
@@ -130,6 +130,8 @@ Python does not automatically read this variable: pass `run_batch(plan, "batch-o
 Suppose A and B are running and C is waiting. If A fails, B continues; C starts when `fail_fast=false`, but does not start when `true`. API `cancel_event` or Ctrl+C similarly stops new launches and retains completed outputs. Cancellation waits for dispatched jobs to finish writing and closing rather than killing them immediately.
 
 Ordinary task failures follow `fail_fast`. Unexpected worker exit is a scheduling failure: stop dispatch, preserve completed output, and clean up that worker's CAN reader processes. Python infrastructure exceptions carry `batch_report`, whose `close()` can be retried.
+
+If Ctrl+C occurs while a worker is being created and that worker cannot finish cleanup, the original `KeyboardInterrupt` is re-raised and may carry both `batch_report` and `batch_worker_cleanup_owner`. Use the report to inspect completed jobs and retry the cleanup it manages. A worker whose constructor did not finish may not appear in the report's job entries; call `close()` on an available `batch_worker_cleanup_owner` as well. Ctrl+C with cleanup already completed still follows the normal cancellation-report path.
 
 If cleanup continues failing, that worker stops accepting jobs and the report marks `cleanup_pending=true`. Resources remain owned by that process. Correct the file-use/environment problem and call `report.close()` to retry remotely. If every worker is waiting for cleanup, unstarted jobs become `cancelled`, not completed. Published JSON records the state when written; the live report's `to_dict()` reflects later cleanup retries.
 

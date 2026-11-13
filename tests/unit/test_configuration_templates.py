@@ -1,4 +1,6 @@
 """真实执行随包场景，以手算常数验收；两个版本共用同一输入但不共用计算预期。"""
+
+from workspace_fixtures import test_directory
 from dataclasses import asdict, replace
 import csv
 import json
@@ -18,7 +20,7 @@ class ConfigurationTemplateTests(unittest.TestCase):
 
     def setUp(self):
         """建立独立测试目录。参数: 无。返回: None。异常: IO错误。"""
-        self.root=Path(tempfile.mkdtemp(prefix='configuration-templates-',dir='work')).resolve()
+        self.root=Path(test_directory(self,prefix='configuration-templates-',dir='work')).resolve()
 
     def materialize(self, template, style):
         """按真实包清单写测试副本。参数: 描述及风格。返回: 入口路径。异常: IO错误。"""
@@ -94,9 +96,7 @@ class ConfigurationTemplateTests(unittest.TestCase):
                 self.assertNotIn('source',signal,template.name)
                 if isinstance(signal['field'],dict):
                     self.assertFalse({'dtype','unit','valid_for','period'} & set(signal),template.name)
-            if template.name in ('can-export','signal-export'):
-                self.assertEqual(plan.get('metadata'),{'device_label':'home'})
-            else:self.assertNotIn('metadata',plan,template.name)
+            self.assertNotIn('metadata',plan,template.name)
 
     def test_catalog_styles_and_schema_are_consistent(self):
         """十二场景两种风格内容相同，分析/批量均通过独立标准规范。参数: 无。返回: None。异常: 断言。"""

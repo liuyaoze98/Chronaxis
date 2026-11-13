@@ -5,7 +5,7 @@
 成功退出0、任一任务失败退出1、取消退出130；配置错误沿外层CLI退出2。
 输出失败保已完成任务，原异常恢复报告在传播前尝试关闭，不清除诊断文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -59,4 +59,4 @@ run_batch_cli(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

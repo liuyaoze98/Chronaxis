@@ -4,7 +4,7 @@
 
 覆盖值按主文件定位，随后仍由普通计划校验器检查；来源表同时指回真正的覆盖位置。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -44,4 +44,4 @@ apply_overrides(target, document, prefix, locations, origins)
 |`locations`|dict|是|无|位置或关键字。最终字段到原位置的可修改索引，删除已被整体替换的旧字段。|
 |`origins`|dict|是|无|位置或关键字。最终字段到声明文件/字段位置的可修改索引。|
 
-源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/overrides.py:15`](../../../src/chronaxis/configuration/overrides.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

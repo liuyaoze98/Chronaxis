@@ -43,7 +43,7 @@ class ConfigurationMixedCANTests(unittest.TestCase):
             self.assertEqual(plan.sources[0].source_type,'asc_or_blf')
             self.assertTrue(validate_analysis_plan(plan).execution_ready)
             self.assertEqual([i.path.name for i in plan.sources[0].config.inputs],['part1.asc','part2.blf','part10.asc'])
-            with patch('cantools.database.load_file',wraps=cantools.database.load_file) as load:
+            with patch('cantools.database.load',wraps=cantools.database.load) as load:
                 with AnalysisRunner(backend).run(plan,work_dir=self.root/backend) as result:
                     self.assertEqual([r.value for r in result.iter_calculations()],[4.0])
                 self.assertEqual(load.call_count,1)

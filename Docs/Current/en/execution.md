@@ -39,7 +39,7 @@ Run `chronaxis run FILE.yaml --output OUTPUT_DIRECTORY`. Choose the process limi
 ```yaml
 execution:                        # Runtime and resource settings
   process_count: 1                # Reading/decoding worker limit for this analysis, excluding the main process
-  backend: numpy                  # Reference or NumPy numerical implementation
+  backend: auto                   # Select from the whole plan; omit for the default, or fix reference/numpy
   batch_rows: 65536               # Maximum calculation rows processed in a batch
   memory_budget_bytes: 268435456  # Shared analysis memory budget in bytes
   result_buffer_rows: 4096        # Rows buffered before writing intermediate results
@@ -51,12 +51,12 @@ execution:                        # Runtime and resource settings
 <a id="全部运行字段"></a>
 ## All execution fields
 
-The paths below are relative to `execution`, for example `execution.backend`. The object and all eight fields are optional. Use an object when supplying it, such as `execution: {batch_rows: 1000}`. Only `spool_quota_bytes` accepts `null`; the other fields must not use `null` as a substitute for omission. Limits and row counts must be positive integers, excluding zero and Boolean values. See [configuration syntax](configuration-language.md).
+The paths below are relative to `execution`, for example `execution.backend`. The object and the fields below are optional. Use an object when supplying it, such as `execution: {batch_rows: 1000}`. Only `spool_quota_bytes` accepts `null`; the other fields must not use `null` as a substitute for omission. Limits and row counts must be positive integers, excluding zero and Boolean values. See [configuration syntax](configuration-language.md).
 
 | Field | Type | Required | Default | Meaning and choices |
 |---|---|---|---|---|
 | process_count | integer | No | 1 | Positive reading/decoding worker limit for this analysis, excluding the main process and capped by file count. Choose for available CPU and memory; null and Boolean values are invalid. See [supported configurations](continuous-files.md). |
-| backend | string | No | `numpy` | `numpy` uses array calculations; `reference` uses an independent implementation for comparison. |
+| backend | string | No | `auto` | `auto` selects an implementation from the whole plan; `numpy` and `reference` fix the implementation. See the choices below. |
 | batch_rows | integer | No | 65536 | Maximum signal samples delivered in one batch; choose according to available memory and batch overhead. |
 | memory_budget_bytes | integer | No | 268435456 | Positive shared managed-memory limit, in bytes, for analysis state and file-worker buffers. |
 | result_buffer_rows | integer | No | 4096 | Maximum result rows accumulated in memory before writing them to temporary storage. |
@@ -72,16 +72,29 @@ A backend is a calculation implementation, not a server or separate service.
 
 | Value | Behavior | When to use it |
 |---|---|---|
-| `numpy` | Uses NumPy arrays for supported numeric operations; Python still handles input and event state. | Normal analysis. |
+| `auto` (default) | Selects reference or numpy from the plan before reading logs, without trial runs. | Omit backend for ordinary use. |
+| `numpy` | Evaluates built-in streaming expressions directly at each update; suitable batch calculations still use NumPy arrays, and extensions use their registered numpy implementation. | Fix NumPy for a comparison. |
 | `reference` | Uses an independent numeric implementation. | Recalculate the same input and configuration to investigate a result. |
 
-Both implementations use the same units, validity and missing-data rules. They need not take the same time, and NumPy is not guaranteed to be faster for every task. `AnalysisRunner(backend="reference")` or the single-run CLI option `--backend reference` overrides the plan for that run. The manifest records the effective choice. Both use the project's installed dependencies.
+`auto` currently selects reference for actual-time session ZOH integrals of one signal from one signal CSV, or at most two signals sharing one CAN source and message selector. Every calculation must belong to this simple built-in arithmetic category and omit `condition`. Events, windows, temporal transforms, other statistics, lookups and host extensions use numpy. Selection inspects the plan, not the data; runtime errors are reported without retrying another implementation.
+
+For the [minimal integral configuration](../examples/calculation-minimal.yaml), `explain.selected_backend` is `reference`. Copy the file and add only `condition: power > 0` to its existing energy calculation item. Run `python -m chronaxis explain CONFIG --format json` again: `selected_backend` becomes `numpy`, without declaring events or windows. Both plans are valid. This selects the ordinary runner's numerical backend; it does not switch to the independent fast entry point.
+
+Both numerical implementations use the same units, validity and missing-data rules. They need not take the same time, and NumPy is not guaranteed to be faster for every task. `AnalysisRunner(backend="reference")` or the single-run CLI option `--backend reference` overrides the plan for that run. The explain fields `requested_backend`, `selected_backend` and `backend_reason` show the request, static selection and reason. The manifest records the actual reference/numpy backend; auto is a selection policy, not a third numerical algorithm. A batch override of auto selects independently for each job. Both use the project's installed dependencies.
+
+With auto, a same-frame CAN integral uses the direct path when its binding is unambiguous and signal export, raw-frame export, tracing and integrity diagnostics are not requested. The rule applies to ASC, BLF, raw CAN CSV and continuous volumes. If the binding cannot establish eligibility, the general flow is selected before reading the first frame. Runtime failures still fail the task. Explicit reference/numpy uses the corresponding general flow.
+
+This remains actual-time integration: 4000W at 0s, 4800W at 0.12s, and observed end at 0.30s give 4000×0.12 + 4800×0.18 = 1344J while both values remain valid. It does not substitute a DBC period or change the [high-performance integrator](fast-energy.md), which sums each expression contribution.
 
 <a id="batch_rows输入批次大小"></a>
 <a id="batch_rows-输入批次大小"></a>
 ## batch_rows: input batch size
 
 `execution.batch_rows` defaults to 65536 and limits the signal samples delivered in each batch. It is not a duration or a limit on the entire recording. Samples from all signal columns are counted: one CSV row updating both power and state creates two signal samples.
+
+The independent signal CSV reader (`signal_csv`) builds batches from the data actually read and the remaining shared budget; it does not allocate space for 65536 samples up front. Near capacity, it delivers the samples already read before continuing, so a batch can be smaller than the limit. Signals from one row may span adjacent batches while preserving update order, values, validity, and event state. This behavior belongs to the signal CSV reader and does not imply that every source automatically reduces its batches according to the budget.
+
+If even one required record and its necessary parsing and handoff state cannot fit, execution still raises `BudgetExceededError`; it does not truncate or discard data. Start ordinary CSV tasks with the default batch setting, then inspect the named resource if an error occurs before changing configuration. Managed resource estimates do not guarantee that total process memory (RSS) remains below the configured budget.
 
 If an activity runs from 1 to 4 seconds and one batch ends at 2 seconds, the next batch continues its state. The result remains one activity from 1 to 4 seconds rather than separate events at batch boundaries.
 
@@ -161,7 +174,7 @@ diagnostics:   # Optional diagnostic material
   trace: true  # Whether to retain binding and calculation trace records
 ```
 
-Enable message contributions separately with `outputs.contributions: full`. Put descriptive notes in the root `metadata` object (default `{}`); it does not replace `execution` or `diagnostics`. Independent signal/CAN exports have the [device-label requirements](exports.md) described there.
+Enable message contributions separately with `outputs.contributions: full`. Put descriptive notes in the root `metadata` object (default `{}`); it does not replace `execution` or `diagnostics`. Analysis and exports share the same [optional device label](exports.md).
 
 <a id="计算项的覆盖门槛"></a>
 ## Calculation coverage thresholds
@@ -172,6 +185,14 @@ Enable message contributions separately with `outputs.contributions: full`. Put 
 ## Runnable comparison
 
 [readability_examples.py](../examples/readability_examples.py) compares both backends, different `batch_rows`, and `report`/`strict` on the same five-row input, asserting event counts and energy. It also runs the expression examples and raises an error if a check fails.
+
+From the offline manual extraction root, which directly contains `examples`, run:
+
+```powershell
+python -B examples/readability_examples.py
+```
+
+With a source checkout, run the following from its root containing `pyproject.toml`:
 
 ```powershell
 python -B Docs/Current/examples/readability_examples.py
@@ -187,12 +208,12 @@ It creates a new directory under the system temporary directory by default. `--o
 | Entry | Location, default, and restrictions |
 |---|---|
 | Ordinary analysis | Root `metadata.device_label`: nonblank text, such as `lab_pc`; defaults to `pending`. Ordinary CLI `run` does not override it from `CHRONAXIS_DEVICE_LABEL`. |
-| Analysis with independent signal/CAN export | The same field must be `home` or `work`, identifying a confirmed device; `pending` and custom labels are rejected. |
+| Analysis with signal/CAN export | The same field is optional and defaults to `pending`; any nonblank string, such as `lab-pc` or `试验台一号`, is accepted. |
 | Batch summary | CLI reads `CHRONAXIS_DEVICE_LABEL`; Python uses `run_batch(..., device_label=...)`, default `pending`. Neither overrides child-analysis metadata. |
 
 For an ordinary analysis:
 
 ```yaml
 metadata:               # Optional descriptive metadata
-  device_label: lab_pc  # Device label recorded in this example
+  device_label: lab_pc  # Optional nonblank device label; defaults to pending without affecting calculations or exports
 ```

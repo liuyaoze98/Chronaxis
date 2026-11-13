@@ -17,14 +17,14 @@
     {
       "source": "Docs/Current/ai-guide.md",
       "target": "Docs/Current/en/ai-guide.md",
-      "source_sha256": "24f36789bbd275c3d308b58e068648152f49dc17bdff22f2f4893b7a5eea75d0",
-      "target_sha256": "3d92323a0a9a8a751412b04ed26247a43f3a25de225887a131056387798b1837"
+      "source_sha256": "975854861cb5c77dfa758c5ee9fbd2ced9ff8b8e7d98a3c59ee12e7f6e2ce97c",
+      "target_sha256": "d453f5527eade71140c15a4e65e8ef3685455a855b0fa7567babf9911a887219"
     },
     {
       "source": "Docs/Current/api-usage.md",
       "target": "Docs/Current/en/api-usage.md",
-      "source_sha256": "87dc940679cb5dd7aeeb200ec46464a232e2fe4a4e1497b9cf01f73b446de0db",
-      "target_sha256": "4320be313e2b56833d29b0db3d31cc04600789dbb4702706f36a9eebfa1605e6"
+      "source_sha256": "f6398aa9e7b553749b9572e8ba4384ddd64eec5ec25cb20027c10433d8c3fd59",
+      "target_sha256": "cce32105a00976b68118f4d1a6ec3007a774b224d30abfc5f9b49149970b5b93"
     },
     {
       "source": "Docs/Current/api.md",
@@ -35,32 +35,32 @@
     {
       "source": "Docs/Current/architecture.md",
       "target": "Docs/Current/en/architecture.md",
-      "source_sha256": "757506905f398dcecd270bff4aa0d63f04dbe7775a7423eecd9dd247a2eccc48",
-      "target_sha256": "0f771f55f2958c0eace983fe72705daa8cc9f6c2eb4935da80ce05554a35ef43"
+      "source_sha256": "a3402232e39d59c667881eab1eb783a14d3f53ab3920dc46ac28fd1f354a38e6",
+      "target_sha256": "5fa6f23542009723abdeeb8e2f4ce8f376b39d09b6de1db0136835d1258e2735"
     },
     {
       "source": "Docs/Current/batch.md",
       "target": "Docs/Current/en/batch.md",
-      "source_sha256": "866548ee06179f1eb2024919d0e442a4e5832e9b01ddfcecc7d06759c406929a",
-      "target_sha256": "2441d577ac6ca3358d2206b253179ecd08dbe244b9c266464320d53606775185"
+      "source_sha256": "bd710db67a55d99ae2b38c55af58fef9c498f4d1680ca8991d56e62cc8395c66",
+      "target_sha256": "b8cfabcd3cea9301e5ce6ec4245b577e3fb94e2fd01d38c753c03e7179f4459d"
     },
     {
       "source": "Docs/Current/calculations.md",
       "target": "Docs/Current/en/calculations.md",
-      "source_sha256": "d4c02788b8f6e883e2663820f9cd642e3bdfd3f54f3683d6c8706e2f04fe4b9f",
-      "target_sha256": "be5219baaf254aaed89c94d136e08fc6e3856a25637fa553571c8590f5638139"
+      "source_sha256": "0ade897a580482552dbe97f7c4b3ab6bceda9025579d57a71f27d63b0f73729f",
+      "target_sha256": "a5be558228b8023b56338fa1f30f3a03cc231ad27bfe7c8e4c600cccd9efc78e"
     },
     {
       "source": "Docs/Current/can-exports.md",
       "target": "Docs/Current/en/can-exports.md",
       "source_sha256": "93ea7bd287094ff05b1eac35dcebf17205041a43d9928ff3f84350f892989126",
-      "target_sha256": "b01990825b716b3e5d6c5b18e54d8a775206ad53aac7e72ec83198c640b4e60f"
+      "target_sha256": "4d58777b70099a76b8d5b6edce629d53ac17f0ee4d48f774ab8e943510dbd058"
     },
     {
       "source": "Docs/Current/cli.md",
       "target": "Docs/Current/en/cli.md",
-      "source_sha256": "812f4a3e1c07ac305a0971e020685ec9e28cb591718543aa5333af1dfb6f5c94",
-      "target_sha256": "6e7225acc0317359446cef75bfd2626aa9c0b0bb1635e849f7c84515106e250b"
+      "source_sha256": "4ee69930d2c86eeb0c1bfc7ecb349e3576c60cbd7d2524b8fbed08dce3e19f7b",
+      "target_sha256": "4087f6185112803729c76112f94380f19b2c39fa0714d97e19d7659217b08a75"
     },
     {
       "source": "Docs/Current/concepts.md",
@@ -71,8 +71,8 @@
     {
       "source": "Docs/Current/conditional-energy.md",
       "target": "Docs/Current/en/conditional-energy.md",
-      "source_sha256": "42f2d2a5c8163d2b7e60112b02ef0ac96eb33cedadcd688158cce195ead91a61",
-      "target_sha256": "b592c73f4c7dda1f48294781d518fc45acb4730e69ec0fc2383bf351023256a2"
+      "source_sha256": "8a9e713bb886dd42ef8a73566f7027097b2c2f48db344d0e52a3f47e30b4da49",
+      "target_sha256": "92f86955fdfbaa366fdb383a5c37f95a9e0550ee3ec8c41ac538e642ce6f46e1"
     },
     {
       "source": "Docs/Current/configuration-language.md",
@@ -89,20 +89,20 @@
     {
       "source": "Docs/Current/configuration-tools.md",
       "target": "Docs/Current/en/configuration-tools.md",
-      "source_sha256": "aa43903a493dbcd260d29583866dac843fe531aef112380488a1aaa72b3b1f78",
-      "target_sha256": "d8b2ac11e93ab1def8f58c38fc1057c757254fcf7743bbe9f53691da2b94f943"
+      "source_sha256": "4715e668eb5112f05f33ddd6364b16293717c1504cf98c01846ee6f78b18e73f",
+      "target_sha256": "58cd306fadb3c99393ac174ea72956ec80135f3581a4f73094b5c6fb410dd696"
     },
     {
       "source": "Docs/Current/configuration.md",
       "target": "Docs/Current/en/configuration.md",
-      "source_sha256": "8a7295f0ce19d706f77b9aae72ba4519bfde25840972d513b40789b543cbb1da",
-      "target_sha256": "956d7733cdabaa396bf49e9033020cce8d0b0dc7b27b844d635dfb2a6a9faf46"
+      "source_sha256": "29721eb397f793049a17a5b8158db8613ef021cdbd2f6054ba02343c7b0b2748",
+      "target_sha256": "588a233faf224c47c270c2aeef47658efacd708bad936a860501711f98f9224d"
     },
     {
       "source": "Docs/Current/continuous-files.md",
       "target": "Docs/Current/en/continuous-files.md",
-      "source_sha256": "338cb3180610788cf8f49e3fad393431027aad2f36dfb01d8cc3c229e034a4e5",
-      "target_sha256": "21b9f3f5dba90a86c7c681cdc9f50dbb2e2e0ce7e20dfdf4b2f6700b0869a414"
+      "source_sha256": "0e62dd98fa41d9c9b45cb7d2469358b4963941feac252707862906b7fdaf2926",
+      "target_sha256": "18291677a8bd31adcd88a6366e7b3aacd9277d930dae4cde20c1688c8b2f4cf2"
     },
     {
       "source": "Docs/Current/dataset.md",
@@ -113,38 +113,38 @@
     {
       "source": "Docs/Current/example-results.md",
       "target": "Docs/Current/en/example-results.md",
-      "source_sha256": "8b241907c9a06b4bcfdbf41219efff5b0c372918730f9d9b0a479283b21e13db",
-      "target_sha256": "6f7db3381b9d440e3a448184cdb1ea7dbe4ede49bdc9c78bd53a5e4e5f5ab0b7"
+      "source_sha256": "e15b98b0329b6268f3d63f2d6fb0b0a04aa9b23c0f71bd0eead11668c41bdc40",
+      "target_sha256": "213322cfcfb5a246eca1fb4f4ddcd9b9a75360b89ae713ad4c8ab18757c2e5e4"
     },
     {
       "source": "Docs/Current/examples.md",
       "target": "Docs/Current/en/examples.md",
-      "source_sha256": "c2828d9b520383cde359f82ee62504fb2088c632056f2529136a8b6559fd5726",
-      "target_sha256": "b5599c887e8b3aa5cb761b78a146378907e51269beabc61f3419781e5b00bf72"
+      "source_sha256": "9f10a6d53a0a5dbb7a66e66c67aa16e00c41290349d2bfc4a66d0ae3b63cbbf4",
+      "target_sha256": "ee327c038007bf072a70a6f3dd82d7c50a2e37bfc6eec9b5a6312b005119017e"
     },
     {
       "source": "Docs/Current/execution.md",
       "target": "Docs/Current/en/execution.md",
-      "source_sha256": "e70a445d1e0938457ef9a154b986146c1fc9ed5256b46ac89518275747dd4294",
-      "target_sha256": "39f5cb973149a1a5f7b2e122c68518d18f9390003c5b8014c1dabb6fc11cdb48"
+      "source_sha256": "a22e721b483a10810f4c2b7ee5e7ebddfe58e4a4c4abcefd2f20cbf9061c1070",
+      "target_sha256": "253bf11987e7a8a09e5cd256fa7b0a2b40f3217b29492598366c04106f491861"
     },
     {
       "source": "Docs/Current/exports.md",
       "target": "Docs/Current/en/exports.md",
-      "source_sha256": "259e10c13fa87c0e205e301b8d2a4c09c85295d9c581b0e432f5051d40b901ae",
-      "target_sha256": "f0353b95a9a787ab886ace1cc5311bd8c54830e724489e10f1450b99225bad88"
+      "source_sha256": "7c9a45a1403912dd3b9bcbbf2dfbc52ac429b11907f69bb92f5ad3a447410190",
+      "target_sha256": "81f18f0d3b505e149f77b124952ecf171a3d62ec38e051869a353fe29011e36f"
     },
     {
       "source": "Docs/Current/expressions.md",
       "target": "Docs/Current/en/expressions.md",
-      "source_sha256": "cdd5f8ec20aba2132c31c85e925cfbef2629672cdb82b233c6f3a54b9b48af3f",
-      "target_sha256": "236f17560b3b1beb0342a8d96a903f3605d4b222aa689b360a19b93dde57f151"
+      "source_sha256": "1ec4f6c55a354a956ec4c4333aaf151ac977728120447c7e1e957906b642a179",
+      "target_sha256": "87a2e497ee7d2eaf8f345df77610c8df50d19e402cbeb861df83984fdcc17988"
     },
     {
       "source": "Docs/Current/fast-energy.md",
       "target": "Docs/Current/en/fast-energy.md",
-      "source_sha256": "2daf5a02e78bdbc1795c4ede779c354a4a73684f8ae3cb1181322d58e6db88d0",
-      "target_sha256": "925b967d43c3092de7ffde3649031ae6c4335a09575f202ac0c47dab38ddf2ca"
+      "source_sha256": "ec46d7c647c7774efaeca1021e2502fcf2d7e61679204281b63816e788299476",
+      "target_sha256": "fe9ff2eba310ef5909b9e586da86eb89fdc52503397135542f12e1aaf3c58ced"
     },
     {
       "source": "Docs/Current/host-extensions.md",
@@ -155,7 +155,7 @@
     {
       "source": "Docs/Current/imports.md",
       "target": "Docs/Current/en/imports.md",
-      "source_sha256": "5d5f3bc3293b6d6dbcedc0f2f8f2c3937a2b6b44322e3c1c462b2c7e7f10bb23",
+      "source_sha256": "26809241ceab9549ab5f77270460f0697d38c12e06c9a7082d1bf7fd0fed3f5f",
       "target_sha256": "782727b716a267d08f32dfd99eb25f1dca6c024d6dc58adc90ad3198b6ae9ae2"
     },
     {
@@ -167,14 +167,14 @@
     {
       "source": "Docs/Current/inputs.md",
       "target": "Docs/Current/en/inputs.md",
-      "source_sha256": "138678c412d4ecf669576e9be7ba0ab6dbbf82070222d69f1db0156f5e9f1ec9",
-      "target_sha256": "d168aa7d6bfa180bcd023cc17415bb7deafdde5fda4f1a09d4dd9b9ec7594561"
+      "source_sha256": "8d3de7b3ac2b6f0c8f631c6f4c9363dd9dde26f0abf71531c06d0bde26eebbaf",
+      "target_sha256": "f939b9ceac52175176d5dbdff6fad3539e7facb915ec7c97a1f364844d45b3bb"
     },
     {
       "source": "Docs/Current/installation.md",
       "target": "Docs/Current/en/installation.md",
-      "source_sha256": "ac05a746a991955bbada60d19f7cbae28184d7b421740ecdc9c1d1260d58720e",
-      "target_sha256": "07b1402704c8f84d1a4ce2982aa7355450f29e6116b7a7d940d37ca25d26f1a0"
+      "source_sha256": "94e6f9c0067e45854b6c7c59b2667ed4d3762ae5f4a34a418e0f9317355e806e",
+      "target_sha256": "f007a7d6c2e5293dd889245c4804ed490a803858f6b117da2a2ce18bcdd13879"
     },
     {
       "source": "Docs/Current/intervals.md",
@@ -185,8 +185,8 @@
     {
       "source": "Docs/Current/maintenance.md",
       "target": "Docs/Current/en/maintenance.md",
-      "source_sha256": "f6798539823bd445e92be9304e77984916a9e554942aab6d5252a58067364d1e",
-      "target_sha256": "ebf58ab5380319533da8bb43927d8874af63c4805d2ca7ce8a045ec495383f4d"
+      "source_sha256": "49bf5d8ef9e3daa66a4384fbd2b652b5a54b561e021d445a4eae843a6c7f1eda",
+      "target_sha256": "8073686f79a37975da6b3f4470d5179f91b8337d927517b7e484b22572f91281"
     },
     {
       "source": "Docs/Current/message-calculations.md",
@@ -203,8 +203,8 @@
     {
       "source": "Docs/Current/quickstart.md",
       "target": "Docs/Current/en/quickstart.md",
-      "source_sha256": "5beb8cc9e27777b1988a78a38bfb582b0304075c02c9c835529ec66d2e70ebbb",
-      "target_sha256": "efb1cca07c40d8821b8825d006f900346ec79532a578c7b1fa53913a92b14279"
+      "source_sha256": "02008df34027ee120f8f296edc468f6722620684626735d6109cffa58f7c66af",
+      "target_sha256": "57a465fb346abe8ab1f2299ac8c304df42509283356f4ac2dde463de5c82d17e"
     },
     {
       "source": "Docs/Current/results-v2.md",
@@ -215,8 +215,8 @@
     {
       "source": "Docs/Current/results.md",
       "target": "Docs/Current/en/results.md",
-      "source_sha256": "b6ee0c0312b1f4e938d4cad04a41a674e224e1d92f3766e91d7d6d38ee1811a6",
-      "target_sha256": "1b881fad95d5138033445ff1232e2161da0d3f7eb09e35211aef3f0fe8bab08e"
+      "source_sha256": "724f2ee95346587621f928fc13d2796b705ba593dcefb5c48006f05eed1acb92",
+      "target_sha256": "04d3ad3dca57c2ba7eb1f01c0224d2039beebabfcb53025db2f18bb9f1b29bf9"
     },
     {
       "source": "Docs/Current/rules.md",
@@ -239,20 +239,20 @@
     {
       "source": "Docs/Current/signal-exports.md",
       "target": "Docs/Current/en/signal-exports.md",
-      "source_sha256": "a43606902cc87c48a5599f4d837ebe8a27818354916be337670e715f7ec9e813",
-      "target_sha256": "f9eae19b40f0c72ec994fdf4b5ca3cb54d071261f92c870084e493e5b60669b6"
+      "source_sha256": "37e9ad61e559b32f13a6781bf7e6c2d494deea500f9f98a38d0d191992191057",
+      "target_sha256": "0f1886ffcc88c3ef1549f8dd57a0cd90fc801fdced8d2f6c348c803517ec414b"
     },
     {
       "source": "Docs/Current/signals.md",
       "target": "Docs/Current/en/signals.md",
-      "source_sha256": "eb6a9ee341c622158aaa2740ebb486dc95eac5fc723de0e669972aaa147d2641",
-      "target_sha256": "52887cfc4712f04f10a72e60e8735ef19e8e750a694795229de16e16afacc0b5"
+      "source_sha256": "b8dbcb10a0015eb04fd37771829c5c611f48fe96ba19ed07189f8bb5fea0b91c",
+      "target_sha256": "9968410ba6791b84be5fbdf1b9732e62341eca70f6b12e124a66c13e8aa3aa72"
     },
     {
       "source": "Docs/Current/status.md",
       "target": "Docs/Current/en/status.md",
-      "source_sha256": "c0185028bf5c29a195e400abb4bd031930bcadef788d1506d3fb5ec0e73615ed",
-      "target_sha256": "e0797a864b4bfc5937dbf2b4d8080b5f62b1ac5648143d8d608a1da5ec34b764"
+      "source_sha256": "9899caa8dbe8f51e3a38017a622142efa0acbfbbe907e10551130fed403c6cba",
+      "target_sha256": "7ea0fd749eecccdac9ea039d21a3d019528d922654d0015ca18cb278c6b38d4e"
     },
     {
       "source": "Docs/Current/temporal-transforms.md",
@@ -263,20 +263,20 @@
     {
       "source": "Docs/Current/terms.md",
       "target": "Docs/Current/en/terms.md",
-      "source_sha256": "04698d10736ac04c5eeb20b7cdd1f281bf3fbd9b1708925b5e8b667083e13586",
-      "target_sha256": "e32cbafe278242a4410994c918be9714a45cd94e9d422a69f0d697996499f622"
+      "source_sha256": "82086a83ba8521504433af7ef35d410ff0fdfdad4c01c765eddc166ec5322ec1",
+      "target_sha256": "58bd45abb1c0e0ede000fea8daeda93961ef725ef1d11ededb3dad5baa1aabe7"
     },
     {
       "source": "Docs/Current/text-inputs.md",
       "target": "Docs/Current/en/text-inputs.md",
-      "source_sha256": "d9ae999f4dd2d55ad3e36897a6ca21348978cc1f4c814c9d2a50faa3d418b705",
-      "target_sha256": "c03c6a1e8118350b6e353b23d4bba1bd9985f52f41c3f83127cea847e8dc8d38"
+      "source_sha256": "ebad04d7c7d98045f87cf536de8a9b882e495ce73ad539914b6c6c4eaef47735",
+      "target_sha256": "758cd0cee5cdef0c800e9844abd9b0a5a8157dea719c72837ae6a2c2baddd440"
     },
     {
       "source": "Docs/Current/troubleshooting.md",
       "target": "Docs/Current/en/troubleshooting.md",
-      "source_sha256": "ecfbabaea86750bb5baee7bca68ae4a38f94b6d712f7119e23705db82596bff1",
-      "target_sha256": "74827c9a6a7c2a0126e4bc4cb91ca269dc6f5fb648030a36ffc63a8dbea04355"
+      "source_sha256": "4a2b395cb09090d2e531c2468a03af6a805fe5478494c1874c0e3c71cf46d150",
+      "target_sha256": "e6bf981dab59e27862bc9f9f2d0ff6639cdb9c6fe1956f79bcf6a39ca680bf57"
     },
     {
       "source": "Docs/Current/windows.md",
@@ -287,258 +287,258 @@
     {
       "source": "Docs/Current/public-api/AnalysisError.md",
       "target": "Docs/Current/en/public-api/AnalysisError.md",
-      "source_sha256": "6455553c9fa88dddf53533b014c0fbafd2078036078060f386e0db060867b500",
-      "target_sha256": "13cdf21ae1f00c3769e8ad9a3bf493d0a0c11651fe2e8e3a0faf2e6ed9d43049"
+      "source_sha256": "233b1c9b9def312e3c4fe65cd813f271ac7842134e07a41f6ac8c11a7ca71e48",
+      "target_sha256": "b1de7e25430fc3887412ccdf22dcf65ae8cfc9f4c49737a511fa0b617c61fe0c"
     },
     {
       "source": "Docs/Current/public-api/AnalysisPlan.md",
       "target": "Docs/Current/en/public-api/AnalysisPlan.md",
-      "source_sha256": "299722b0f421d9547e115e3696338ccef5865ef5c23d66c952fa1e69569921a8",
-      "target_sha256": "d3c47b55e4001c916fb504699c0dab1d3d42516ff01f75182db2dbe42b66d2e8"
+      "source_sha256": "f443ac8d3faf1813aebec2a23c9e1887097f0947470c8717880ba49f788db988",
+      "target_sha256": "1a5fdc3be62a5a39ab2e81f4ff150278ab94364d16a00c15872ab67213b40771"
     },
     {
       "source": "Docs/Current/public-api/AnalysisResult.md",
       "target": "Docs/Current/en/public-api/AnalysisResult.md",
-      "source_sha256": "70e26fba44710c2a800b55aba0569c052295647f7d844e96dce6a6d939ca84d1",
-      "target_sha256": "a8c092d4c2aa2e85dc0dc53ad10597c8832a3254e395c11a7da89f9af3754ae6"
+      "source_sha256": "fbbcea92c23fc8835ab3d94efed50dc4621f7831d73fce2b17b53453a925220d",
+      "target_sha256": "b7b75ae19e850b5ee6fa385d6787d236258fc39058814e342f1a46ac3ded7ea8"
     },
     {
       "source": "Docs/Current/public-api/AnalysisRunner.md",
       "target": "Docs/Current/en/public-api/AnalysisRunner.md",
-      "source_sha256": "97cc108658899fd4d190d06fc7377ccedebba4a5768eab1a04f181171545f85d",
-      "target_sha256": "d228ee55b8d9ff43d0934215bf0055842eda7de513aec8128f8c3286d8bc79fb"
+      "source_sha256": "5298045c75c4134ce91afd6c604f4cd5a4297165af142aadd59653dcea317277",
+      "target_sha256": "8b000b9f15c8278826338324a338f9e4b05599f0e39a0fdd74053beff7dcef78"
     },
     {
       "source": "Docs/Current/public-api/BatchJob.md",
       "target": "Docs/Current/en/public-api/BatchJob.md",
-      "source_sha256": "2ffba5a781371b73921f4e0334c51634de52392a15ab5faf4d90b6f84c6dced7",
-      "target_sha256": "e5fe64d5c25dceb2e9f67490198599f26e550e37535090e3cbe765aaca8303c0"
+      "source_sha256": "97482f2a15d0cfbce5e9c6382a280165e5d43d45d3690680bcee4760d44503b7",
+      "target_sha256": "fc004f9c7ea56fa377f7fb54ee6bb96d352c518d8f584930b22834462c1a3dd6"
     },
     {
       "source": "Docs/Current/public-api/BatchJobResult.md",
       "target": "Docs/Current/en/public-api/BatchJobResult.md",
-      "source_sha256": "7d388e88d5c62a0810c18d375f1966f6acb61e1651806facee2268e66c38be62",
-      "target_sha256": "fd68af39395ebced6e1b7058f14701caed8b691917c40aaa9e03498b59ae35e4"
+      "source_sha256": "073cb9a82c510891f513d210f12092733f1a8650409819ae2caf6daec93224b8",
+      "target_sha256": "320798c940b938c8e5d2bb8a42a5611b46c56fb014438c0fc88a306195894ebe"
     },
     {
       "source": "Docs/Current/public-api/BatchPlan.md",
       "target": "Docs/Current/en/public-api/BatchPlan.md",
-      "source_sha256": "e3ae7befd639b223e0f63abae221b1c6fa7ec0f352714b17ea6f0797d238b428",
-      "target_sha256": "88109b8d57093d204add25423d6318e0e9a5ff8af5e2dfe2c32fa1580a9d6a32"
+      "source_sha256": "13a3a9974299ff785199321ccaf6c1f55370fcf077505a319f57816b2761b435",
+      "target_sha256": "860bd9c83f445afc6c9b9c2d93d68acb4b86f42b04ba5ea55149fbe2bdc6933d"
     },
     {
       "source": "Docs/Current/public-api/BatchReport.md",
       "target": "Docs/Current/en/public-api/BatchReport.md",
-      "source_sha256": "5708ab1585bfc87aee7fd9692ab8f3f78b190f8f6cc6df1f559d9febcde70b76",
-      "target_sha256": "88c0b348c124a2826c52efe64744bf2f76762e4f96e1a911c12a669660a67621"
+      "source_sha256": "87c8a6efe106dcfd2a78ba31f3026e81f31b5162072d9a7ae519447c813c86e6",
+      "target_sha256": "d710d12c9b7c144be368727c7466776f43cd0dd54c6e6b993c9927d4dedd2d3c"
     },
     {
       "source": "Docs/Current/public-api/BatchRunner.md",
       "target": "Docs/Current/en/public-api/BatchRunner.md",
-      "source_sha256": "7f79a5d8748326a60bfcd0c3de727ded50bfb7234ac9416b00202a43fd63e99e",
-      "target_sha256": "b9e58b83d654491f2b62414e033c84e9b2f8173db4b61693ea422a2dbe04cc23"
+      "source_sha256": "dcc1b2bc9ec22231b628f4fc03d04d770feaa73975f3ce715181ccd359a49b4b",
+      "target_sha256": "d3d9c21f85933ef90eeecb8464e1d00782a9a1dac21cb35c5f55fa8e6de21c1c"
     },
     {
       "source": "Docs/Current/public-api/build_preset.md",
       "target": "Docs/Current/en/public-api/build_preset.md",
-      "source_sha256": "9708efbf90ca2872b321b288af5bc0b3affa5e644885ca1c50b52336a2415bb0",
-      "target_sha256": "d18b38c481365b66ead5c331e8bb3b9fe40162c06651c87cbf1bf1cbd568e782"
+      "source_sha256": "733d3629972dd897c57e4d54ba540b77f3fb0ab8ca585d5227611b66593fefc8",
+      "target_sha256": "8186f5035803478828faa7b09d4b28241f4153451195062da46f1e7903eb8d97"
     },
     {
       "source": "Docs/Current/public-api/checked_add_ns.md",
       "target": "Docs/Current/en/public-api/checked_add_ns.md",
-      "source_sha256": "4340c483fc88d28ff99db7070d95e6e5e5a33ee429e58df5e05774a41a652d75",
-      "target_sha256": "d2f17bbc4d19324d04213e7d0f0f1bcd9970b192de941bda4642470966118b43"
+      "source_sha256": "ea32b9dcef0d74764e24a0f0176979f935e84c0f2e345a98941a3f7115efca2f",
+      "target_sha256": "be3810aab526b82081ba03afe46f960400e401dc6f65af5630ba8355d17abc5b"
     },
     {
       "source": "Docs/Current/public-api/convert_time.md",
       "target": "Docs/Current/en/public-api/convert_time.md",
-      "source_sha256": "1973ee01514c13906e846466dc630840ec4cb1b4769fc0b615936f0d008d30e9",
-      "target_sha256": "518bb88485c57933fd5428ebe131e7a6ca202facbb75d79b79e284ec8a97b911"
+      "source_sha256": "141bd7ab6048be799e060c4f7adddf1f178ae8bfb1170c4da91ff9cee072b89f",
+      "target_sha256": "2b519f96fbcca45a9d1e1b4b0bbb78ab95c7f735387edd69c763a96ac232f0e3"
     },
     {
       "source": "Docs/Current/public-api/explain_analysis_plan.md",
       "target": "Docs/Current/en/public-api/explain_analysis_plan.md",
-      "source_sha256": "1f1c41ab2834ff28ce38d545f4827f47c24a98532c15293bb24def677752a6a3",
-      "target_sha256": "c09d48666e617c8b10032ec246155b6d25bc3c074c87be1f8f45356132fc24ac"
+      "source_sha256": "5b63c16d8c5ad9a4e1f21ba1548a4155afd02c9ebd9b23d1979e69cef0b604c2",
+      "target_sha256": "cef5ec5af2ff4ab7229ae10679abb2ab2f8c0dada5c6a10663da6970aea47578"
     },
     {
       "source": "Docs/Current/public-api/ExportManifest.md",
       "target": "Docs/Current/en/public-api/ExportManifest.md",
-      "source_sha256": "abbcca5c68fc9719a6ff494295151aa9b250355ad8be1941efb54a3f35ded79d",
-      "target_sha256": "bd664de8894af21175a439ba983d1b8ecfa0821b23e05f3bb7a7ca601f5a91a6"
+      "source_sha256": "7d1f8702a0095a5093224c8ac074cdb555de6c4e6d069275c394d9192982571e",
+      "target_sha256": "d46bc4692ff44688da9120f2566724c4429018d24db99879f786ae6493b4f012"
     },
     {
       "source": "Docs/Current/public-api/ExtensionRegistry.md",
       "target": "Docs/Current/en/public-api/ExtensionRegistry.md",
-      "source_sha256": "57d1c328f34ae4399235d5b35a3035dae5bf95ff8635f7fd3bd3a30ff91a2ecc",
-      "target_sha256": "67c0ce7243717bb81a59ded3fb39a5a590e4ebf8a4347e89a49c61d27de8a1bb"
+      "source_sha256": "408087c6670640d3a944239348e8b164e9e0fee34f4e9f4501040ef9f03fdfbe",
+      "target_sha256": "fd4a99e6a8d995995f3e3f2a98b85c153ec5d9b02d4cc45c41ec3e31db1246e1"
     },
     {
       "source": "Docs/Current/public-api/fast.batch.run_batch.md",
       "target": "Docs/Current/en/public-api/fast.batch.run_batch.md",
-      "source_sha256": "e2f0fcb5d5b34507a29084e47e10ba099e7e7080e5ff2f9e08248594b1203db6",
-      "target_sha256": "d929a99a299ad1dee89fec0b40e4736511e25037fdd7b5594764b9a6b300f155"
+      "source_sha256": "adf0f8f6f95b731dd58d92fd96a5f3aced94ee0670dc816b80d49f662e8c9183",
+      "target_sha256": "792340745fd86ad553d3f872c63971679d707d48e6c1d6db6e8a5066e13dd8d0"
     },
     {
       "source": "Docs/Current/public-api/fast.run.md",
       "target": "Docs/Current/en/public-api/fast.run.md",
-      "source_sha256": "0ca0196c28a034d82dad6d0eb8e57ec881873eefba4bf48c89de2f260e982de1",
-      "target_sha256": "43f53fb1b940c118af4a7ecee3a99eb2d8736f50af3be1d3d473e3c61225d991"
+      "source_sha256": "26a2f3257a7e338031aebfdb38cf6a118133cf2c3ce41afff9986a3fa587f116",
+      "target_sha256": "45bf97e06229ad1346239b4b35244a862df68157383b8dda0222674af802cac2"
     },
     {
       "source": "Docs/Current/public-api/FunctionSpec.md",
       "target": "Docs/Current/en/public-api/FunctionSpec.md",
-      "source_sha256": "a371cf1d7876c3d475c3072c28055cb35155692713bec93972da6b5e38786f7a",
-      "target_sha256": "b3351ee322079c39d719c41634d067ff81a2642b66d2d03c8981034ec8f32e7e"
+      "source_sha256": "acebe021d83acc8caf4bb60bc577f2a1c2977e5ca1d93e1a37f8ef8402f51399",
+      "target_sha256": "e48a625b7813461358dfadea3eb63614a9ec39f2e6eac6fff393943e1b6efd36"
     },
     {
       "source": "Docs/Current/public-api/load_analysis_plan.md",
       "target": "Docs/Current/en/public-api/load_analysis_plan.md",
-      "source_sha256": "4e92a6ec04a87bcb9ab91935ca9c300b72fce8b1bf6eb1bb09a082ef08c75116",
-      "target_sha256": "7ddd5a27588c4f644ae2045f09f9b880c5bce202d723fff9967a16d987760c18"
+      "source_sha256": "c5c2a432cae464c4560a57c3151829292633d2b03317d3796ab0ebb11ab72dd6",
+      "target_sha256": "edeb5179e4888e34d71861b4bda923026d6a42e843a9f1e8752fae6366294195"
     },
     {
       "source": "Docs/Current/public-api/load_batch_plan.md",
       "target": "Docs/Current/en/public-api/load_batch_plan.md",
-      "source_sha256": "5690ab045e4db05bb079a8d592d00ed6a35dfb014cfa219bba9139534babd17a",
-      "target_sha256": "e8df4a720369a67782fc24593154d0b7dbe37017d28b67db2af0a5a663e8d1e9"
+      "source_sha256": "e6ea064033d9978f69132b43461a0c5e3f1e4fa29ca25c320b7fd7383f1a284e",
+      "target_sha256": "9ace7f2b75e6ce04b5bb9ac09e56ec8b1c0dcab5b21670daf3957bb603840e55"
     },
     {
       "source": "Docs/Current/public-api/OutputManifest.md",
       "target": "Docs/Current/en/public-api/OutputManifest.md",
-      "source_sha256": "2ce09e017c517c7761ecdae3dc4f1bf10786e1888a0f79e79830412cd9fd142f",
-      "target_sha256": "17a97002efd5fe30cf4c6566cfdc521d1963ad4692e9f3354fbbb58538fd0db8"
+      "source_sha256": "dfc6a88e4433062cf9f86e4855c25190dd630fe3e9a48629e4171661b92e5b17",
+      "target_sha256": "b0f1219e8e07048f54023902d0db88ae399cb46d37cc002613cf14a2db92b5dc"
     },
     {
       "source": "Docs/Current/public-api/parse_datetime_ns.md",
       "target": "Docs/Current/en/public-api/parse_datetime_ns.md",
-      "source_sha256": "7b0465492c4139ead43e7c1b3a7abeaf7271b68403dab1ad96a235aa1d073d1c",
-      "target_sha256": "5140475d2e54728e9f28dec3ae80d068152b2b600ec45fcd5088fc868776fef2"
+      "source_sha256": "48ae8ae668265296ed075669aa934f3cf2c206d4ae916d8fee30f68bead995cd",
+      "target_sha256": "b8e648f0ce9d88ad95c8fdb7cd09052451b7d99029630b12652e43247f4b2d39"
     },
     {
       "source": "Docs/Current/public-api/parse_duration.md",
       "target": "Docs/Current/en/public-api/parse_duration.md",
-      "source_sha256": "a989fba55f00e54cf06ac91cbd5f7642a20136641a3d2e525d441aa6eb0077f2",
-      "target_sha256": "b6788048c869f9b0de670f78a6afabfb2479c741843842d12c75451633810619"
+      "source_sha256": "c0dee4170d94520c3d574db7964191775bacbeab31724ba09a25b8057d2e4b08",
+      "target_sha256": "8fa2d4467e37770bee92170f289f96843a51aa478b0569bbb2aced4e55c81baa"
     },
     {
       "source": "Docs/Current/public-api/PlanFragment.md",
       "target": "Docs/Current/en/public-api/PlanFragment.md",
-      "source_sha256": "663656c0533aa0da194190b0ead8f8b2927225fc598068afe4fb64fe25433daa",
-      "target_sha256": "933c8632772cc188af7a03432d613209997c48308976e53cd1e163a0cc9f87db"
+      "source_sha256": "a3843f4bd42f1e60acdc7c049b0174a6ffce8a23205a1e7048fdcefc5b978aac",
+      "target_sha256": "5d7da12d332c054a4c0f1dcc42e5696c124de9d86affb653de394d50472634bc"
     },
     {
       "source": "Docs/Current/public-api/PlanValidationError.md",
       "target": "Docs/Current/en/public-api/PlanValidationError.md",
-      "source_sha256": "063deec115e12ee8345e5c7d8362a0a7722dc3300684fbfce59487fbf5a38a7a",
-      "target_sha256": "a90644a46d4f279ea63ecc32d90eab808c8cabccf86793fad0b2daf46459bbf5"
+      "source_sha256": "935be829bd0b33beffef042b668702a74503252312ac26ef7fcf7c05be9e9437",
+      "target_sha256": "acc0893c6d9c2ad132380ac39e51d125783b28e6b1f779c33467bfc62676dd9d"
     },
     {
       "source": "Docs/Current/public-api/PresetSpec.md",
       "target": "Docs/Current/en/public-api/PresetSpec.md",
-      "source_sha256": "10088d4de1a218ae7a1bf88db5110ba959b112cfb31cdf3d0a054e62bab28ba9",
-      "target_sha256": "69eb6353b75f05bbd7ff0c532401a3c3156173d308846ea07ea64acfc13919e7"
+      "source_sha256": "54fa6a95c569f49d3e01d55303b50ca731310595693ce9e026b3ee977c8a9138",
+      "target_sha256": "f1321eedb8d1a9a9f22a632eceefb11937204fc531fc66f2382022a4df4f628e"
     },
     {
       "source": "Docs/Current/public-api/ReductionSpec.md",
       "target": "Docs/Current/en/public-api/ReductionSpec.md",
-      "source_sha256": "b98c21ebe652914926f3db40156433579650fc3b7b76293a6d8393de282318df",
-      "target_sha256": "5ac87eb5cd3982fc6e81c9fda6a4dbd415aeeea295eee615a7bc77a0753a8b53"
+      "source_sha256": "647f4c067dd4cdf947b5841b1b5eaa20e570ae87b03d6725c7c161f35b4d1196",
+      "target_sha256": "56b9b9c1bf67598299b8f7ffc27381bdf4a8c96679b85ce9ab809438cfed1699"
     },
     {
       "source": "Docs/Current/public-api/resolve_preset_roles.md",
       "target": "Docs/Current/en/public-api/resolve_preset_roles.md",
-      "source_sha256": "3144e812797d0c659daad5b3721e1802650e299ae23c67cf6e74d2fbc14811df",
-      "target_sha256": "e42319168e4473ea77263017840671f1bad75f9193e11e2ce1c124cbe6a5f89a"
+      "source_sha256": "79b09e940d267985b64b62266da757e67bb3ab61c6d6c7f87d87c4c00d24dce2",
+      "target_sha256": "0c2ff3ffbe8be3a8b7ff8f97772fc0ef302bf52290f0ad5d3b1a265f5953e206"
     },
     {
       "source": "Docs/Current/public-api/ResultClosedError.md",
       "target": "Docs/Current/en/public-api/ResultClosedError.md",
-      "source_sha256": "60c69f3f37aed84dbb525c6c3534dc5e4de911e3355d6beb2ca5a8c09e6110ab",
-      "target_sha256": "3dbd2369c9843495d9e7919042ffde837ff4e4caa6abf259d358506a76c2188b"
+      "source_sha256": "a37906861af537f1e1cf192951ca8b97f47980b905ab9bb46625d9a3014a19c3",
+      "target_sha256": "a89fff86091aa4b9270f858f2da77bcda0352f8666912bea9495354ed1ce7264"
     },
     {
       "source": "Docs/Current/public-api/run_batch.md",
       "target": "Docs/Current/en/public-api/run_batch.md",
-      "source_sha256": "248c7399a332bd985b9abe0e353efb3a7af42dd49eb85e826475315c90fe413e",
-      "target_sha256": "f9ddcb78ef590357dd6131bd59a0482f0342db4110ad714230aed021548c604d"
+      "source_sha256": "41d2991b4088eccb23a9e31d71c7bbe9a1490eb5366c9176eca19a31a7c3fefb",
+      "target_sha256": "441b4cd850717e524109ec226779f3c7dadb7323939fedca10462e8d4bf3d054"
     },
     {
       "source": "Docs/Current/public-api/RunMetadata.md",
       "target": "Docs/Current/en/public-api/RunMetadata.md",
-      "source_sha256": "94659edeb3dc3181a8b73735672607e69d73dd058f3be28cd8194f45b415cdc4",
-      "target_sha256": "41ee18ac82c55448d5b838aa99588419189a29008868e2456ee95011e06b07f3"
+      "source_sha256": "a9a99f0425a86cdd20148e70a5dbb5a73fba6cd670ecceaa38c593ff21f34369",
+      "target_sha256": "77816aa57dd043d7406a46265f180bdd0518978141fde62ecbd96e59c3eee95f"
     },
     {
       "source": "Docs/Current/public-api/shift_times_reference.md",
       "target": "Docs/Current/en/public-api/shift_times_reference.md",
-      "source_sha256": "be08675dd6797516edede6e59c7b602329236671266f13ff3f8c253f37d44438",
-      "target_sha256": "9e83e41d378a14119284d830695caf3a7cdeb396afc091a3ef1de5bb141b1e2c"
+      "source_sha256": "95769991afa8c27036451ef702bdea385a6ae356da18c1743a23c24e6780cce5",
+      "target_sha256": "d465a40b5e81d14129e0ceb35c1e8469cf84566cb8c0bed476e4f1711c91b2c6"
     },
     {
       "source": "Docs/Current/public-api/time_deltas_reference.md",
       "target": "Docs/Current/en/public-api/time_deltas_reference.md",
-      "source_sha256": "a4e19222cc18617b8db1892bed7ba03b73326b85bd947c529cc542d3dabd87bb",
-      "target_sha256": "78ca586f033433c5ed1aa578c0b68679ef3086757ff85b48a43c46f60296e758"
+      "source_sha256": "23d47b3d83e21ab0d421ff6a96edf0b94dd5fcd4e1f0e6e199bf5110d5f770b8",
+      "target_sha256": "7c630fd6b6a733b0b4f7b011ef31a1e40725a31c52a578e923052ba1244ca8db"
     },
     {
       "source": "Docs/Current/public-api/TimeConversion.md",
       "target": "Docs/Current/en/public-api/TimeConversion.md",
-      "source_sha256": "79affd82bd495ec02371646afad749a408ed357714a897bb798a1e292ac40c0c",
-      "target_sha256": "7bae9c822391ea744f97c49b999b66083a4e6ba43e421aa6ef01b404a80b25ff"
+      "source_sha256": "a0eb6af69b44c2240d3e0a3b551835e9ff7862342a278ab837f168e1cf320837",
+      "target_sha256": "712113f1cac4f46f37b8741b17ecf865453f87a6746243b0918e37acb52156e3"
     },
     {
       "source": "Docs/Current/public-api/TimeOverflowError.md",
       "target": "Docs/Current/en/public-api/TimeOverflowError.md",
-      "source_sha256": "075acc36210307d2d6b794edbb17318c312bc82055eb112e3badb93732b0f492",
-      "target_sha256": "6c95b997a336d2ff75c99331e9e616668c2cd481b58d6c9755ab3bd18671e90e"
+      "source_sha256": "c4ff61c628f5903310190296c919181c82398061b887417a731c95a51571ccdf",
+      "target_sha256": "9dcc86bcb8ac06b336fcce4f53e7cab185d89aa0954f1c8e35289fca8ec5d2e1"
     },
     {
       "source": "Docs/Current/public-api/TransformSpec.md",
       "target": "Docs/Current/en/public-api/TransformSpec.md",
-      "source_sha256": "1ae708ece64a3df3f2382c89661b6d4ab60e2d8920a5a8133f210989f5d431d4",
-      "target_sha256": "45a4d332bed8319e33b6b7ea3a34ba3583b6717251919e6b82a079c65dce5e22"
+      "source_sha256": "d1fe7f3855986b8b02b5bc5253f1c8859b949ec67104ee6595dc89247df46618",
+      "target_sha256": "996c2373234640854ae7953a713b01e19d4bddebea2c2c992923b45a72f9485d"
     },
     {
       "source": "Docs/Current/public-api/validate_analysis_plan.md",
       "target": "Docs/Current/en/public-api/validate_analysis_plan.md",
-      "source_sha256": "75dfb1ac6f914d05d07cc97683a9d02737da1825963f76de730138321a7b9694",
-      "target_sha256": "3f15af9257cff4ea582319b6d12c0c2cae75a1673bd8ae1b8b8309f82800d97f"
+      "source_sha256": "d127815abb2ab940feb59830aa023ccf6c174ef2c416f08e968cd4e466350a99",
+      "target_sha256": "cad984fbe25c3ff5a3e11e0b7dba9ca77ac20d1b00336a55a547e4d713d664d1"
     },
     {
       "source": "Docs/AI/README.md",
       "target": "Docs/AI/en/README.md",
-      "source_sha256": "a0dd4609b19180f98328a68f8736dd0eb2df60c185e5081963868f04bf73fc9b",
-      "target_sha256": "7b8b4e88543183399ea418755b1612c9885d678f8d0e98e5c5ef6be5896f6d19"
+      "source_sha256": "9d5fdaf5c16cc89fd90722854e5ec8341703f81ec9a099e028d24d69e7377448",
+      "target_sha256": "d797f81778d5e7ba29b025d03742350b0188ea58aa2095eff074decf55e70c75"
     },
     {
       "source": "Docs/AI/workflow.md",
       "target": "Docs/AI/en/workflow.md",
-      "source_sha256": "d51d4991de2d465953a121d7e1b13f3ea8a6d162b36aacbad8f784f2ab1a1287",
-      "target_sha256": "a416c13520bfc2cf3421c6f92bcd37dbc3beeb2afb1dca938f37cf4023e69faf"
+      "source_sha256": "b838ef1839a82b26fe2dc2fce5f1a4ad94514cfd17e5ec27a59372e00aa715a1",
+      "target_sha256": "e15f08fd7a16700077c42e593a61aa06585a23aa3b8d27e2193c1a7ef42df641"
     },
     {
       "source": "Docs/AI/semantics.md",
       "target": "Docs/AI/en/semantics.md",
-      "source_sha256": "50594167a728f692edee2b97489424f0b224e9803841ea35c4e85df004c01e50",
-      "target_sha256": "fad22a782fb4c14f77a7ff1c2d0152fc3821873abe5af1083bb8771ca6051ca0"
+      "source_sha256": "6609f5161cacf053fdc64951f355c7859dd0b801e1bfbb12e6229e1bf4e3234d",
+      "target_sha256": "8b19fb71e50a3d3ffec6df9d1bff01805358a2afae7f9195e475210be213382f"
     },
     {
       "source": "Docs/AI/tasks.json",
       "target": "Docs/AI/en/tasks.json",
-      "source_sha256": "937d40d199a53992165927a09837e9aa4ff4decd40fd17252349cefb9517af3b",
-      "target_sha256": "15c2d2f65ff1dbc4159cc74cac221a997da8d97a058e16c2a8529323f08c4610"
+      "source_sha256": "a78de6e509f948c0109ec572e4997b7a1935e1b845d9e6b9ae1f4596f006b565",
+      "target_sha256": "3ae0306e907810163100304e9ac12f0f7cc07797e15635edfddb67c8c0f22712"
     }
   ],
   "schemas": {
-    "analysis.schema.json": "0a4dbaaf87590a4f9788606da289255945f0cb44c6a7e4b4d4418e046bb5eb2f",
-    "batch-v1.schema.json": "0e1296b07641ab94eb62ce051f5bd2e9903f901cbff86f1089e0714776d2d742",
-    "definitions.schema.json": "06b8e4aabe340104a42a8d1864a15ab5c3681f4e817ca1e56c7641706f3bdc0b"
+    "analysis.schema.json": "eae3cf3a51de627bbbca18fcb0945b62c3522f3b8b5acb162fec8188acf2e91a",
+    "batch-v1.schema.json": "d79012eef0cb530a7d6024fa47e1a7904c5b9a0a626c320c9145a8f400c53b92",
+    "definitions.schema.json": "4f18a23b816764cf0a62c10e59813ab57009a27ff0dad4d25bba5bc01b79b55b"
   },
   "navigation": {
     "source": "596545f3e7b83b4c2d163acfd38b0ab06ee8b97c50bb371416043721eee10164",
     "english": "090ee084527a01ab9e96b2de8b8433829d4fd77a9aa240ab762189a6a0ed78d2"
   },
-  "schema_description_sha256": "e7cfeb871e26a1bbbc14c46c11217e2a21d8c138dc6d960421110ee4e663dcd1"
+  "schema_description_sha256": "243238f4daa5454b678e0a64c40a6dfac4e0d253944436b4a80b8c8c80c0a00f"
 }

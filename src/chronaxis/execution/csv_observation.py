@@ -454,6 +454,8 @@ class _ObservationCSVResources(_CSVResources):
         state_cost = sum(512 + len(state[1]) * 256 for state in validator.pending.values())
         self._release('array')
         self._release('protocol')
+        # 共享原值与来源引用的已有费用随批次转交，不重复计费。
+        self._move('pending', 'array', self._pending_cost)
         self._move('work', 'array', self.array_cost)
         self._move('work', 'protocol', state_cost)
         self._release('work')
@@ -482,12 +484,13 @@ class _ObservationPhysicalLines(_PhysicalLines):
 
         参数: 无。返回: 原含换行文本，真实EOF停止。异常: 原I/O、预算或取消错误。
         """
-        # 64/字符和8192固定余量与原物理行入口完全相同，不缩小批次或截断后继续解释。
+        # 字符与字段费用沿基础读取器计算，不把截断行交给 CSV 解释器。
         budget = self.resources.budget
-        capacity = (budget.memory_budget_bytes - budget.ram_bytes - 8192) // 64 - 1
+        capacity = (budget.memory_budget_bytes - budget.ram_bytes - 8192) // 16 - 1
         if capacity <= 0:
             raise BudgetExceededError('CSV物理行/引用记录累积超出剩余RAM估算')
-        amount = 8192 + (capacity + 1) * 64
+        amount = 8192 + (capacity + 1) * 16
+        first_line = not self.resources._reading_cost
         self.resources._add('reading', amount)
         try:
             text = self.handle.readline(capacity + 1)
@@ -498,8 +501,11 @@ class _ObservationPhysicalLines(_PhysicalLines):
                 exc.add_note(f'CSV观测物理行清理附加失败: {type(cleanup).__name__}')
             raise
         # 原文本已受全容量预算覆盖，释放多余部分失败也不会丢失已保留的读取费用。
-        retained = 0 if not text else 8192 + len(text) * 64
-        self.resources._release_amount('reading', amount - retained)
+        retained = self._retained_line_bytes(text, first_line)
+        if retained > amount:
+            self.resources._add('reading', retained - amount)
+        else:
+            self.resources._release_amount('reading', amount - retained)
         if len(text) > capacity:
             raise BudgetExceededError('CSV物理行超过剩余RAM允许长度，未解析截断行')
         if not text:

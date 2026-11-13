@@ -6,11 +6,11 @@
 父进程预付全部工作空间后授予一次next许可；控制错误独立于数据块发送。
 文件EOF保留观测事实，等待下一文件任务；来源EOF由父进程统一判定。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CANTextDecodeRead](chronaxis.sources.text_can_decode.md#api-CANTextDecodeRead)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)
+[CANTextDecodeRead](chronaxis.sources.text_can_decode.md#api-CANTextDecodeRead)、[ControlChannel](chronaxis._control_wire.md#api-ControlChannel)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)
 
 ## 对象导航
 
@@ -27,6 +27,8 @@
 from collections.abc import Mapping
 from dataclasses import replace
 from time import perf_counter
+from .._control_wire import ControlChannel
+from .can_block_codec import encode_block, encode_metadata
 from ..results.budget import ResourceBudget
 from ..sources.text_can_decode import CANTextDecodeRead
 ```
@@ -56,7 +58,7 @@ plain(value)
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:25`](../../../src/chronaxis/execution/parallel_can_worker.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:26`](../../../src/chronaxis/execution/parallel_can_worker.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-facts"></a>
 ## `facts`
@@ -81,7 +83,7 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:35`](../../../src/chronaxis/execution/parallel_can_worker.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:36`](../../../src/chronaxis/execution/parallel_can_worker.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-read_block"></a>
 ## `read_block`
@@ -106,7 +108,7 @@ read_block(reader)
 
 单条记录超过原4MiB估算上限或读取失败；不丢弃、回读或重排记录。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:43`](../../../src/chronaxis/execution/parallel_can_worker.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:44`](../../../src/chronaxis/execution/parallel_can_worker.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -135,4 +137,4 @@ None。
 生命周期由父拥有；正常文件结束关闭解析器，异常先发错误控制消息再关闭。
 任意时刻取消可由父终止工作进程；不等待满数据管道才能报告错误。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:71`](../../../src/chronaxis/execution/parallel_can_worker.py#L71)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:72`](../../../src/chronaxis/execution/parallel_can_worker.py#L72)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

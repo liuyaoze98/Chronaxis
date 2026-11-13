@@ -5,6 +5,7 @@ from pathlib import Path
 from time import perf_counter
 from .run import run_prepared
 from .._batch_worker import _diagnostics
+from ..dbc_loading import load_dbc_file
 
 def _run_file(packet, directory, cancel):
     """在已持有该文件的工作进程直接分析并发布。返回任务状态及可选的小型汇总行。"""
@@ -20,12 +21,13 @@ def _run_file(packet, directory, cancel):
             import cantools
             dbc = Path(spec['dbc'])
             before = _dbc_digest(dbc)
-            database = cantools.database.load_file(dbc)
+            database = load_dbc_file(dbc, cantools)
             if before != spec['_dbc_digest'] or _dbc_digest(dbc) != before:
                 raise ValueError('求总量期间模板的 DBC 内容发生改变')
         directory.mkdir(exist_ok=False)
         value = run_prepared(spec,directory/'output',engine='base_hpc_v1',
-                             _return_rows=packet['total'], cancel_event=cancel,database=database)
+                             _return_rows=packet['total'], cancel_event=cancel,database=database,
+                             _programs_checked=True)
         manifest, rows = value if packet['total'] else (value, None)
         return dict(**facts,status='completed',output_dir=manifest.parent,manifest_path=manifest,
                               run_id=directory.name,elapsed_seconds=perf_counter()-start), rows

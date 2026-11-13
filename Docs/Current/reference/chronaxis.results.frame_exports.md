@@ -7,7 +7,7 @@ ASC时间用整数纳秒文本；BLF沿现有writer及float秒接口，其精度
 在清单记录，精确源时间和全部原字段保存在frames.jsonl。筛选使用分析坐标，
 写出仍保原坐标，只有显式output_offset_ns才移动输出时间。关闭后独占发布目录。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta, timezone
 from fractions import Fraction
 from math import isfinite
 from ..core.models import Interval
-from ..core.validation import require_identifier
+from ..core.validation import require_identifier, require_text
 from ..execution.history import _metadata_bytes
 from ..legacy.records import LegacyRawFrame, StoredRawFrame, frame_to_dict
 from ..legacy.export_write import LegacyCANProcessWrite
@@ -68,7 +68,7 @@ class FrameExportSpec
 |`capture_date`|str &#124; None|否|None|relative输出BLF时的实际采集日期；不能用电脑今天日期猜测。 None表示未提供；relative时间导出BLF时需要显式补齐该日期。|
 |`timezone_offset_minutes`|int &#124; None|否|None|采集日期的UTC偏移，整数分钟；例如北京时间480。 None表示未提供；需要用采集日期构造BLF绝对时间时必须补齐。|
 
-源码：[`src/chronaxis/results/frame_exports.py:28`](../../../src/chronaxis/results/frame_exports.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:28`](../../../src/chronaxis/results/frame_exports.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameExportSpec-__post_init__"></a>
 ### `FrameExportSpec.__post_init__`
@@ -103,7 +103,7 @@ FrameExportSpec.__post_init__()
 - `ValueError`：需要YYYY-MM-DD实际采集日期及合法整数时区分钟。
 - `ValueError`：已有绝对时间不能重复叠加采集日期。
 
-源码：[`src/chronaxis/results/frame_exports.py:37`](../../../src/chronaxis/results/frame_exports.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:37`](../../../src/chronaxis/results/frame_exports.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameExportSpec-date_origin_ns"></a>
 ### `FrameExportSpec.date_origin_ns`
@@ -129,7 +129,7 @@ FrameExportSpec.date_origin_ns()
 
 int64溢出。
 
-源码：[`src/chronaxis/results/frame_exports.py:59`](../../../src/chronaxis/results/frame_exports.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:59`](../../../src/chronaxis/results/frame_exports.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportCANFrame"></a>
 ## `ExportCANFrame`
@@ -150,8 +150,9 @@ class ExportCANFrame
 |`frame`|[LegacyRawFrame](chronaxis.legacy.records.md#api-LegacyRawFrame)|是|无|实际LegacyRawFrame，包含ID、通道、标志和原始字节。|
 |`provenance`|tuple[tuple[str, str &#124; int &#124; float &#124; bool &#124; None], ...]|是|无|不可变来源信息键值对元组，指向输入文件、行号或原消息。|
 |`frame_origin`|str|否|'passthrough'|passthrough表示原帧透传，generated表示生成帧；默认passthrough。|
+|`remote_dlc_known`|bool|否|True|远程帧的长度是否由原记录明确给出；未知不能写成零。|
 
-源码：[`src/chronaxis/results/frame_exports.py:74`](../../../src/chronaxis/results/frame_exports.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:74`](../../../src/chronaxis/results/frame_exports.py#L74)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportCANFrame-__post_init__"></a>
 ### `ExportCANFrame.__post_init__`
@@ -184,7 +185,7 @@ ExportCANFrame.__post_init__()
 - `TypeError`：帧定位需要有限键值tuple。
 - `ValueError`：帧定位重复或非有限。
 
-源码：[`src/chronaxis/results/frame_exports.py:84`](../../../src/chronaxis/results/frame_exports.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:85`](../../../src/chronaxis/results/frame_exports.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SkippedCANFrame"></a>
 ## `SkippedCANFrame`
@@ -203,7 +204,7 @@ class SkippedCANFrame
 |`reason`|str|是|无|未生成原因，例如缺少端点或两端间隔过大。|
 |`details`|str|是|无|补充定位信息的不可变键值对元组；不放伪造报文字节。|
 
-源码：[`src/chronaxis/results/frame_exports.py:103`](../../../src/chronaxis/results/frame_exports.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:106`](../../../src/chronaxis/results/frame_exports.py#L106)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SkippedCANFrame-__post_init__"></a>
 ### `SkippedCANFrame.__post_init__`
@@ -233,7 +234,7 @@ SkippedCANFrame.__post_init__()
 
 - `ValueError`：未生成帧需要有限原因及JSON说明文本。
 
-源码：[`src/chronaxis/results/frame_exports.py:110`](../../../src/chronaxis/results/frame_exports.py#L110)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:113`](../../../src/chronaxis/results/frame_exports.py#L113)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-as_export_frame"></a>
 ## `as_export_frame`
@@ -263,7 +264,7 @@ ExportCANFrame。
 
 - `TypeError`：帧导出需要同次原始/解码暂存记录。
 
-源码：[`src/chronaxis/results/frame_exports.py:118`](../../../src/chronaxis/results/frame_exports.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:121`](../../../src/chronaxis/results/frame_exports.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_asc_line"></a>
 ## `_asc_line`
@@ -297,7 +298,7 @@ _asc_line(record, output_ns)
 - `ValueError`：ASC FD长度或DLC不一致。
 - `ValueError`：ASC经典帧长度不一致。
 
-源码：[`src/chronaxis/results/frame_exports.py:141`](../../../src/chronaxis/results/frame_exports.py#L141)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:145`](../../../src/chronaxis/results/frame_exports.py#L145)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-export_can_frames"></a>
 ## `export_can_frames`
@@ -318,7 +319,7 @@ export_can_frames(records, spec, interval, destination, budget, *, source, devic
 |`destination`|str &#124; [pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。可重复使用的导出目录；公开直接调用生成带统一时间后缀的文件，内部file_consumer交接仍使用独占目录。|
 |`budget`|ResourceBudget|是|无|位置或关键字。本次运行共用的ResourceBudget对象，用于检查内存和临时磁盘用量。当前对象在分配前申请额度，用完后归还；同一次运行的组件应使用同一个对象。|
 |`source`|str|是|无|仅关键字。source来源名|
-|`device_label`|str|是|无|仅关键字。记录本次导出的设备来源标签；当前这个导出入口只接受home或work，pending会被拒绝。标签应来自已确认的执行设备映射，不从输入路径推断。|
+|`device_label`|str|是|无|仅关键字。本次产出的设备标签，接受任意非空文本，如lab-pc或试验台一号；pending表示未指定。标签不参与计算，不从路径推断；此Python参数是否可省略以签名为准，分析配置省略metadata.device_label时使用pending。|
 |`check_cancel`|Callable[[], None] &#124; None|否|None|仅关键字。可选的无参取消检查函数。需要终止时由它抛出异常；None表示不额外调用取消检查。|
 |`compact`|bool|否|False|仅关键字。控制CAN导出的附加诊断：True仅保目标报文与必要清单；False额外保存逐帧副本、时间及误差信息。默认False；公共Runner使用其明确选择的摘要模式。|
 |`integrity`|bool|否|True|仅关键字。是否执行本对象的额外内容摘要或认证核验；False仍保留结构、类型、预算及必要文件变化检查。|
@@ -341,4 +342,4 @@ export_can_frames(records, spec, interval, destination, budget, *, source, devic
 - `ValueError`：现有BLF写库不支持1990年以前的日期，不能改写为固定参考日期。
 - `ValueError`：BLF需要0至65534的明确整数通道，避免写库隐式改通道。
 
-源码：[`src/chronaxis/results/frame_exports.py:183`](../../../src/chronaxis/results/frame_exports.py#L183)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_exports.py:189`](../../../src/chronaxis/results/frame_exports.py#L189)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

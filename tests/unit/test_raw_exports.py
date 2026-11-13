@@ -190,8 +190,8 @@ class RawExportTests(unittest.TestCase):
             boundary = replace(record, requested=Interval(end - 1, end), actual=Interval(end - 1, end))
             self.assertEqual(boundary.actual.end_ns, end)
 
-    def test_empty_store_next_path_is_noncreating_and_rejects_existing_or_ref_root(self):
-        """计算路径不创建BLF，空仓可封口/复制，已有目录或Ref路径保持原状。
+    def test_empty_store_next_path_is_noncreating_and_customer_named_root_is_allowed(self):
+        """计算路径不创建BLF，空仓可封口/复制；已有目录拒绝，客户同名目录可用。
 
         参数: 无。返回: None。异常: 错误创建文件、覆盖既有路径或误计BLF费用则失败。
         """
@@ -211,10 +211,14 @@ class RawExportTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             RawExportStore(self.budget, owner.path, 'bus', 'session', 'home')
         self.assertEqual(self.budget.ram_bytes, before)
-        forbidden = self.root / 'RefProjects' / 'new-raw'
-        with self.assertRaises(ValueError):
-            RawExportStore(self.budget, forbidden, 'bus', 'session', 'home')
-        self.assertFalse(forbidden.exists())
+        allowed = self.root / 'RefProjects' / 'new-raw'
+        allowed.parent.mkdir()
+        marker=allowed.parent/'user.txt'
+        marker.write_bytes(b'keep')
+        other=RawExportStore(self.budget, allowed, 'bus', 'session', 'home')
+        self.stores.append(other)
+        other.close()
+        self.assertEqual(marker.read_bytes(),b'keep')
         self.assertEqual(self.budget.ram_bytes, before)
 
     def test_index_spool_is_additive_without_double_counting_original_files(self):
@@ -352,10 +356,10 @@ class RawExportTests(unittest.TestCase):
         self.assertEqual(owner.inventory_path.read_bytes(), source_index)
         self.assertEqual(tuple(owner.iter_records()), (record,))
 
-    def test_copy_preflight_refuses_existing_artifacts_and_ref_directory(self):
-        """已有原始索引或目录不得覆盖，Ref发布路径在创建前拒绝且不毒化已封口仓。
+    def test_copy_refuses_existing_artifacts_and_allows_customer_named_directory(self):
+        """已有原始索引或目录不得覆盖，客户同名发布目录保留原文件且可正常回读。
 
-        参数: 无。返回: None。异常: 覆盖/创建受保护路径或拒绝后不能正常回读则失败。
+        参数: 无。返回: None。异常: 覆盖已有文件或导出后不能正常回读则失败。
         """
         owner, record = self.sealed()
         for name in ('raw_segments', 'raw_segments.jsonl'):
@@ -370,10 +374,14 @@ class RawExportTests(unittest.TestCase):
                 owner.copy_to(destination)
             if artifact.is_file():
                 self.assertEqual(artifact.read_bytes(), b'user-data')
-        forbidden = self.root / 'RefProjects' / 'publication'
-        with self.assertRaises(ValueError):
-            owner.copy_to(forbidden)
-        self.assertFalse(forbidden.exists())
+        allowed = self.root / 'RefProjects' / 'publication'
+        allowed.mkdir(parents=True)
+        marker=allowed/'user.txt'
+        marker.write_bytes(b'keep')
+        index=owner.copy_to(allowed)
+        self.assertEqual(index.read_bytes(),owner.inventory_path.read_bytes())
+        self.assertEqual((allowed/record.file_name).read_bytes(),(owner.path/record.file_name).read_bytes())
+        self.assertEqual(marker.read_bytes(),b'keep')
         self.assertEqual(tuple(owner.iter_records()), (record,))
 
     def test_constructor_and_unreturned_reader_reserve_after_cancel_keep_real_owner(self):

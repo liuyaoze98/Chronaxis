@@ -8,9 +8,9 @@ DBC沿用decode_choices=False/allow_truncated=True参数，但新入口先严格
 已定义报文解码失败直接定位，不冒充未知ID。pack_text_records输出既有SignalSeries。
 完整读取核对全部原帧时间；按需ASC仅核所需通道/ID的连续顺序，并同次统计来源范围。
 文件不重读；DBC加载和临时对象先付预算。
-解析文件逐个关闭，失败/取消保原错误及必要恢复owner，不改旧reader或vendor。
+解析文件逐个关闭，失败/取消保原错误及必要恢复owner；纯BLF串行复用显式解码政策。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -22,6 +22,8 @@ DBC沿用decode_choices=False/allow_truncated=True参数，但新入口先严格
 |---|---|
 |[`DecodedCANRecord`](#api-DecodedCANRecord)|保留一条原帧及本次所需原信号值；非decoded记录的values必须为空。|
 |[`DecodedCANRecord.__post_init__`](#api-DecodedCANRecord-__post_init__)|核记录冻结结构。|
+|[`DecodedCANRecord._from_bound_values`](#api-DecodedCANRecord-_from_bound_values)|用本次绑定已经解析的字段名建立内部记录，其余检查与公开构造相同。|
+|[`DecodedCANRecord._validate`](#api-DecodedCANRecord-_validate)|检查固定记录，内部已绑定键只核成员关系。|
 |[`CANTextDecodeRead`](#api-CANTextDecodeRead)|拥有单次DBC和逐文件解析器；EOF后保有限元数据到显式close。|
 |[`CANTextDecodeRead.__init__`](#api-CANTextDecodeRead-__init__)|只核声明并预约固定费用。|
 |[`CANTextDecodeRead.closed`](#api-CANTextDecodeRead-closed)|查看本对象负责的资源是否已经全部关闭。|
@@ -46,10 +48,12 @@ from dataclasses import dataclass
 from decimal import Decimal
 from hashlib import file_digest
 from pathlib import Path
+from ..dbc_loading import load_dbc_file
 from ..core.binding import SignalDefinition
 from ..core.validation import require_identifier
 from ..execution.history import _metadata_bytes
 from ..legacy.records import field_to_dict
+from ..legacy.decode_policy import check_decode_length, decode_serial_frame
 from ..legacy.worker import _field_metadata
 from ..results.budget import ResourceBudget, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..results.errors import ResultClosedError
@@ -88,7 +92,7 @@ class DecodedCANRecord
 |`frame_values`|tuple[tuple[str, int &#124; float &#124; bool &#124; None], ...]|否|()|显式重建所需原物理字段。|
 |`frame_layout`|tuple[tuple[str, int], ...]|否|()|当次复用选择器的原始码值。|
 
-源码：[`src/chronaxis/sources/text_can_decode.py:36`](../../../src/chronaxis/sources/text_can_decode.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:39`](../../../src/chronaxis/sources/text_can_decode.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-DecodedCANRecord-__post_init__"></a>
 ### `DecodedCANRecord.__post_init__`
@@ -123,7 +127,68 @@ DecodedCANRecord.__post_init__()
 - `ValueError`：解码CAN字段重复。
 - `ValueError`：重建物理值或布局结构非法。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:48`](../../../src/chronaxis/sources/text_can_decode.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:51`](../../../src/chronaxis/sources/text_can_decode.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-DecodedCANRecord-_from_bound_values"></a>
+### `DecodedCANRecord._from_bound_values`
+
+用本次绑定已经解析的字段名建立内部记录，其余检查与公开构造相同。
+
+```python
+DecodedCANRecord._from_bound_values(source, input_index, sequence, raw, values, status, frame_values, frame_layout, known_fields)
+```
+
+装饰器：`classmethod`。
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`source`|str|是|无|位置或关键字。当前记录所属的来源名称。|
+|`input_index`|int|是|无|位置或关键字。原始输入文件的非负序号。|
+|`sequence`|int|是|无|位置或关键字。当前来源跨文件的原始记录非负序号，用于保持记录顺序。|
+|`raw`|[RawCANRecord](chronaxis.sources.raw_can.md#api-RawCANRecord) &#124; [_UntimedBLFRecord](chronaxis.sources.blf.md#api-_UntimedBLFRecord)|是|无|位置或关键字。已读取的原始记录；无需时间的BLF逐消息任务可以传入内部无时间记录。|
+|`values`|tuple[tuple[str, int &#124; float &#124; bool &#124; None], ...]|是|无|位置或关键字。本次所需信号的规范字段键与解码值；键必须属于known_fields且不重复，未解码状态必须为空。|
+|`status`|str|是|无|位置或关键字。当前记录的处理状态：decoded、unknown、unselected或non_data；非decoded状态不得携带解码值。|
+|`frame_values`|tuple[tuple[str, int &#124; float &#124; bool &#124; None], ...]|是|无|位置或关键字。仅在请求重建报文时保留的信号名称与物理值；不需要重建时为空。|
+|`frame_layout`|tuple[tuple[str, int], ...]|是|无|位置或关键字。仅在请求重建报文时保留的多路复用信号名称与原始整数编码；不需要重建时为空。|
+|`known_fields`|frozenset[str] &#124; set[str]|是|无|位置或关键字。当前绑定或有界批次已解析过的规范字段键集合；这里只复用键解析，仍检查成员、重复键、类型及记录结构。|
+
+#### 返回说明
+
+新的冻结DecodedCANRecord，不持有额外的绑定副本。
+
+#### 异常说明
+
+字段不在当前绑定中、值类型或记录结构不合法时拒绝。
+外部构造仍调用完整字段解析；此入口只供同次解码结果复用绑定检查。
+
+源码：[`src/chronaxis/sources/text_can_decode.py:57`](../../../src/chronaxis/sources/text_can_decode.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-DecodedCANRecord-_validate"></a>
+### `DecodedCANRecord._validate`
+
+检查固定记录，内部已绑定键只核成员关系。
+
+```python
+DecodedCANRecord._validate(known_fields)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`known_fields`|frozenset[str] &#124; set[str] &#124; None|是|无|位置或关键字。内部读取或有界块中已解析的规范字段键；非None时复用键解析并核成员及重复键，None使公开构造完整解析每个键。|
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+非法结构、未知字段、重复键或无值状态携带数据。
+
+源码：[`src/chronaxis/sources/text_can_decode.py:76`](../../../src/chronaxis/sources/text_can_decode.py#L76)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead"></a>
 ## `CANTextDecodeRead`
@@ -131,11 +196,11 @@ DecodedCANRecord.__post_init__()
 拥有单次DBC和逐文件解析器；EOF后保有限元数据到显式close。
 
 ```python
-CANTextDecodeRead(spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source', legacy_blf_decode=False)
+CANTextDecodeRead(spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source', legacy_blf_decode=False, serial_blf_policy=None, post_decode_frame_ids=None)
 ```
 
 
-源码：[`src/chronaxis/sources/text_can_decode.py:75`](../../../src/chronaxis/sources/text_can_decode.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:109`](../../../src/chronaxis/sources/text_can_decode.py#L109)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-__init__"></a>
 ### `CANTextDecodeRead.__init__`
@@ -143,7 +208,7 @@ CANTextDecodeRead(spec, budget, signals, *, check_cancel=None, database_context=
 只核声明并预约固定费用。
 
 ```python
-CANTextDecodeRead.__init__(spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source', legacy_blf_decode=False)
+CANTextDecodeRead.__init__(spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source', legacy_blf_decode=False, serial_blf_policy=None, post_decode_frame_ids=None)
 ```
 
 #### 参数
@@ -165,7 +230,9 @@ CANTextDecodeRead.__init__(spec, budget, signals, *, check_cancel=None, database
 |`time_frame_ids`|tuple[int, ...] &#124; None|否|None|仅关键字。本次需要检查时间顺序的CAN报文ID；同时限定来源的内部通道。None检查完整序列；空元组不交付帧但仍同次统计来源范围。完整检查或原帧导出不得传选择集合。|
 |`emit_frame_ids`|tuple[int, ...] &#124; None|否|None|仅关键字。限定实际交付的报文ID集合。None交付全部已解析帧；筛选不自动缩小任务要求的时间检查和观测范围。|
 |`blf_time_scope`|str|否|'source'|仅关键字。纯BLF按需时间范围：source检查并观测全部记录；selected只采目标时间；none明确不采时间，仅用于无需时间的逐消息累计。时间归并不能使用none。|
-|`legacy_blf_decode`|bool|否|False|仅关键字。None保留全部行。count保原始行计数，retained_count只数实际交付的记录。 legacy_blf_decode默认False|
+|`legacy_blf_decode`|bool|否|False|仅关键字。默认False；规范化纯can_blf的legacy转接设True，串行与并行均保留其长度政策和DecodeError缺值行为；其他异常按各入口政策处理。|
+|`serial_blf_policy`|str &#124; None|否|None|仅关键字。仅纯BLF串行使用requested或all，保留该入口的解码范围和异常政策；None采用文本/并行共用规则，不传给并行读取器。|
+|`post_decode_frame_ids`|tuple[int, ...] &#124; None|否|None|仅关键字。仅串行all在每帧解码和完整值检查后筛选交付ID；None全部交付，不减少解码调用，也不下推并行。|
 
 #### 返回说明
 
@@ -182,7 +249,7 @@ CANTextDecodeRead.__init__(spec, budget, signals, *, check_cancel=None, database
 - `ValueError`：文本CAN字段通道与来源声明不一致。
 - `ValueError`：共用DBC上下文必须匹配当前文件和共享预算。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:78`](../../../src/chronaxis/sources/text_can_decode.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:112`](../../../src/chronaxis/sources/text_can_decode.py#L112)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-closed"></a>
 ### `CANTextDecodeRead.closed`
@@ -210,7 +277,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:159`](../../../src/chronaxis/sources/text_can_decode.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:206`](../../../src/chronaxis/sources/text_can_decode.py#L206)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-exhausted"></a>
 ### `CANTextDecodeRead.exhausted`
@@ -238,7 +305,7 @@ True表示输入或结果已正常读完；False表示尚未正常读完。发�
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:165`](../../../src/chronaxis/sources/text_can_decode.py#L165)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:212`](../../../src/chronaxis/sources/text_can_decode.py#L212)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-metadata"></a>
 ### `CANTextDecodeRead.metadata`
@@ -270,7 +337,7 @@ CANTextDecodeRead.metadata
 
 - `ResultClosedError`：文本CAN尚无可用的同次DBC元数据。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:171`](../../../src/chronaxis/sources/text_can_decode.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:218`](../../../src/chronaxis/sources/text_can_decode.py#L218)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-prepare_metadata"></a>
 ### `CANTextDecodeRead.prepare_metadata`
@@ -297,7 +364,7 @@ CANTextDecodeRead.prepare_metadata()
 失败/关闭拒绝，启动错误交实际owner清理。
 不打开原始文件，不改变EOF状态。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:178`](../../../src/chronaxis/sources/text_can_decode.py#L178)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:225`](../../../src/chronaxis/sources/text_can_decode.py#L225)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-_start"></a>
 ### `CANTextDecodeRead._start`
@@ -327,7 +394,7 @@ CANTextDecodeRead._start()
 
 - `ValueError`：加载期间DBC内容发生变化。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:195`](../../../src/chronaxis/sources/text_can_decode.py#L195)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:242`](../../../src/chronaxis/sources/text_can_decode.py#L242)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-_decode"></a>
 ### `CANTextDecodeRead._decode`
@@ -353,7 +420,7 @@ CANTextDecodeRead._decode(raw)
 所选政策的长度检查或非DBC解码错误。文本legacy遇DecodeError停止；
 strict/partial及明确的纯BLF legacy转接将其记为本条无值，缺失信号不沿用前值。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:248`](../../../src/chronaxis/sources/text_can_decode.py#L248)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:301`](../../../src/chronaxis/sources/text_can_decode.py#L301)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-__iter__"></a>
 ### `CANTextDecodeRead.__iter__`
@@ -379,7 +446,7 @@ CANTextDecodeRead.__iter__()
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:293`](../../../src/chronaxis/sources/text_can_decode.py#L293)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:354`](../../../src/chronaxis/sources/text_can_decode.py#L354)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-_time_selected"></a>
 ### `CANTextDecodeRead._time_selected`
@@ -403,9 +470,9 @@ bool；None选择全部帧。
 #### 异常说明
 
 无。
-同ID的帧类型仍交既有绑定解析器核对，不能用筛选隐藏歧义。
+纯BLF串行按ID沿用旧时间范围，其他来源同时匹配通道；同ID帧型交绑定解析器核对。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:298`](../../../src/chronaxis/sources/text_can_decode.py#L298)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:359`](../../../src/chronaxis/sources/text_can_decode.py#L359)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-__next__"></a>
 ### `CANTextDecodeRead.__next__`
@@ -431,7 +498,7 @@ DecodedCANRecord。
 
 EOF/定位数据错/原I/O、预算、取消。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:307`](../../../src/chronaxis/sources/text_can_decode.py#L307)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:368`](../../../src/chronaxis/sources/text_can_decode.py#L368)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-_blf_observation"></a>
 ### `CANTextDecodeRead._blf_observation`
@@ -459,7 +526,7 @@ None。
 
 文件尾部只有无关帧时也更新来源结束；这些事实不能当成已消费水位。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:395`](../../../src/chronaxis/sources/text_can_decode.py#L395)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:466`](../../../src/chronaxis/sources/text_can_decode.py#L466)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-close"></a>
 ### `CANTextDecodeRead.close`
@@ -485,7 +552,7 @@ CANTextDecodeRead.close()
 
 原关闭/预算错误。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:411`](../../../src/chronaxis/sources/text_can_decode.py#L411)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:482`](../../../src/chronaxis/sources/text_can_decode.py#L482)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-__enter__"></a>
 ### `CANTextDecodeRead.__enter__`
@@ -511,7 +578,7 @@ CANTextDecodeRead.__enter__()
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:429`](../../../src/chronaxis/sources/text_can_decode.py#L429)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:501`](../../../src/chronaxis/sources/text_can_decode.py#L501)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextDecodeRead-__exit__"></a>
 ### `CANTextDecodeRead.__exit__`
@@ -538,7 +605,7 @@ False。
 
 正常退出时的关闭错误。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:434`](../../../src/chronaxis/sources/text_can_decode.py#L434)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:506`](../../../src/chronaxis/sources/text_can_decode.py#L506)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-pack_text_records"></a>
 ## `pack_text_records`
@@ -571,4 +638,4 @@ SignalSeries，保精确纳秒、同一时刻原序号和CANTextSourceRef；调�
 - `TypeError`：文本CAN归一化需要定义及有限解码记录tuple。
 - `ValueError`：文本CAN记录与信号来源不一致。
 
-源码：[`src/chronaxis/sources/text_can_decode.py:444`](../../../src/chronaxis/sources/text_can_decode.py#L444)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_decode.py:516`](../../../src/chronaxis/sources/text_can_decode.py#L516)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

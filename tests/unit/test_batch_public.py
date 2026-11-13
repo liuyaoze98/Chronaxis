@@ -176,16 +176,20 @@ class BatchPublicTests(unittest.TestCase):
             self.assertIn('missing.json', report['jobs'][0]['error_message'])
 
     def test_cli_errors_reject_before_creating_output(self):
-        """非法workers、已有/只读目录和坏批量配置拒绝，不先打开分析输入。参数: 无。返回: None。异常: 断言。"""
+        """非法进程数/配置先拒；已有目录和客户同名目录可复用，不覆盖原文件。"""
         plan = self.manifest()
         for workers in ('0', '-2'):
             output = self.work/('bad_workers_'+workers)
             result = self.command('batch', 'run', plan, '--output', output, '--process-count', workers)
             self.assertEqual(result.returncode, 2, result.stderr)
             self.assertFalse(output.exists())
-        for target, code in ((self.work, 0), (self.work/'RefProjects'/'new', 2)):
+        for target in (self.work, self.work/'RefProjects'/'new'):
+            target.mkdir(parents=True,exist_ok=True)
+            sentinel=target/'user.txt'
+            sentinel.write_bytes(b'keep')
             result = self.command('batch', 'run', plan, '--output', target)
-            self.assertEqual(result.returncode, code, result.stderr)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(sentinel.read_bytes(), b'keep')
         plan.write_text('{"batch_version":2,"jobs":[]}', encoding='utf-8')
         result = self.command('batch', 'run', plan, '--output', self.work/'bad_version')
         self.assertEqual(result.returncode, 2)
@@ -250,16 +254,21 @@ print('STANDARD_LIBRARY_ONLY_OK')
         self.assertIn('--process-count', result.stdout)
         self.assertIn('STANDARD_LIBRARY_ONLY_OK', result.stdout)
 
-    def test_standalone_report_rejects_ref_path_before_file_open(self):
-        """独立报告写出也须保护只读目录，不依赖调用者一定先跑调度器。参数: 无。返回: None。异常: 断言。"""
+    def test_standalone_report_accepts_customer_ref_path_without_overwrite(self):
+        """独立报告支持客户同名目录，重复发布保留原文件；仅使用测试目录。"""
         report = BatchRunner().run((), self.work/'empty-report')
-        target = self.work/'RefProjects'/'uncreated'
-        redirected = replace(report, output_dir=target)
-        # 禁止实际打开文件；用故障边界证明拒绝发生在I/O之前，不创建历史目录。
-        with patch.object(Path, 'open', side_effect=AssertionError('不得尝试打开Ref目标')):
-            with self.assertRaises(ValueError):
-                write_batch_report(redirected)
-        self.assertFalse((self.work/'RefProjects').exists())
+        self.addCleanup(report.close)
+        target = self.work/'RefProjects'/'reports'
+        target.mkdir(parents=True)
+        sentinel=target/'user.txt'
+        sentinel.write_bytes(b'keep')
+        redirected = replace(report, output_dir=target, _publication=None)
+        first=write_batch_report(redirected)
+        original=first.read_bytes()
+        second=write_batch_report(redirected)
+        self.assertNotEqual(first,second)
+        self.assertEqual(first.read_bytes(),original)
+        self.assertEqual(sentinel.read_bytes(),b'keep')
 
     def test_real_can_tasks_match_sequential_with_original_reader_processes(self):
         """两个真实合成BLF在外层工作进程中各启动原读取子进程，结果与顺序手算一致。参数: 无。返回: None。异常: 断言/原运行错误。"""

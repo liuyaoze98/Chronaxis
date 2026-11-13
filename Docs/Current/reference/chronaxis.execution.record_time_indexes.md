@@ -4,7 +4,7 @@
 
 每条只写一个实际整数时间；偏移只在单次查询中按记录索引计算，不保存改写时间轴。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -48,7 +48,7 @@ RecordTimeIndexes(budget, path, drivers)
 ```
 
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:12`](../../../src/chronaxis/execution/record_time_indexes.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:12`](../../../src/chronaxis/execution/record_time_indexes.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-__init__"></a>
 ### `RecordTimeIndexes.__init__`
@@ -75,7 +75,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:15`](../../../src/chronaxis/execution/record_time_indexes.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:15`](../../../src/chronaxis/execution/record_time_indexes.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-observe_group"></a>
 ### `RecordTimeIndexes.observe_group`
@@ -100,7 +100,7 @@ None。
 
 顺序/IO/预算错误。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:32`](../../../src/chronaxis/execution/record_time_indexes.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:32`](../../../src/chronaxis/execution/record_time_indexes.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-count"></a>
 ### `RecordTimeIndexes.count`
@@ -125,7 +125,7 @@ int。
 
 未声明驱动。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:52`](../../../src/chronaxis/execution/record_time_indexes.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:52`](../../../src/chronaxis/execution/record_time_indexes.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-last"></a>
 ### `RecordTimeIndexes.last`
@@ -150,7 +150,7 @@ int或None。
 
 未声明驱动。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:56`](../../../src/chronaxis/execution/record_time_indexes.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:56`](../../../src/chronaxis/execution/record_time_indexes.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-at"></a>
 ### `RecordTimeIndexes.at`
@@ -176,7 +176,7 @@ int。
 
 越界/短读。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:60`](../../../src/chronaxis/execution/record_time_indexes.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:60`](../../../src/chronaxis/execution/record_time_indexes.py#L60)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-lower"></a>
 ### `RecordTimeIndexes.lower`
@@ -202,7 +202,7 @@ RecordTimeIndexes.lower(driver, time_ns)
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:73`](../../../src/chronaxis/execution/record_time_indexes.py#L73)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:73`](../../../src/chronaxis/execution/record_time_indexes.py#L73)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-position"></a>
 ### `RecordTimeIndexes.position`
@@ -228,7 +228,7 @@ RecordTimeIndexes.position(driver, time_ns)
 
 空索引或读取错。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:84`](../../../src/chronaxis/execution/record_time_indexes.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:84`](../../../src/chronaxis/execution/record_time_indexes.py#L84)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-shift"></a>
 ### `RecordTimeIndexes.shift`
@@ -257,7 +257,7 @@ RecordTimeIndexes.shift(driver, time_ns, offset_ns, step_ns)
 
 空索引/非法周期/实际读取错。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:108`](../../../src/chronaxis/execution/record_time_indexes.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:108`](../../../src/chronaxis/execution/record_time_indexes.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-closed"></a>
 ### `RecordTimeIndexes.closed`
@@ -285,7 +285,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:131`](../../../src/chronaxis/execution/record_time_indexes.py#L131)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:131`](../../../src/chronaxis/execution/record_time_indexes.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordTimeIndexes-close"></a>
 ### `RecordTimeIndexes.close`
@@ -311,4 +311,4 @@ None。
 
 原关闭错。
 
-源码：[`src/chronaxis/execution/record_time_indexes.py:135`](../../../src/chronaxis/execution/record_time_indexes.py#L135)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_time_indexes.py:135`](../../../src/chronaxis/execution/record_time_indexes.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -16,6 +16,8 @@ from types import MappingProxyType
 
 # 时间协议已独立验证；共享输入校验不等于复用NumPy数值内核。
 from ..timebase.conversion import INT64_MAX, INT64_MIN, checked_add_ns, require_int64_ns
+# 低层标量对象不反向依赖模型，使运行时注解也能直接解析。
+from .scalar import ScalarValue
 from .types import QualityFlag, SignalDType, SourceType, TimeType
 from .validation import require_identifier, require_scalar, require_sequence, require_text
 

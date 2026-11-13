@@ -290,6 +290,8 @@ For a custom unknown unit combination, you may explicitly label the derived resu
 
 Canonical units are the common calculation scales. Output units can be selected separately; isclose.atol follows this table.
 
+Compound names prefer registered W and J, such as W/s for a power rate, 1/W for reciprocal power and 1/J for reciprocal energy. These names can be parsed again as units. A shorter name does not replace numeric conversion: mA×V retains its factor of one thousandth, N*m remains torque rather than J, and absolute temperatures remain distinct from temperature differences.
+
 | Input | Canonical unit |
 |---|---|
 |%, 1|1|

@@ -1,7 +1,7 @@
 """验证时间统计owner的有限内存、必要均值暂存及失败清理，不替代公共AnalysisRunner验收。"""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 

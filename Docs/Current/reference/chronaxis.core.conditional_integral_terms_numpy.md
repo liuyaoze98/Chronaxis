@@ -2,7 +2,7 @@
 
 用NumPy同时计算一组时间段的条件积分面积。先按请求范围裁剪时间段，再对条件为真且数值有效的位置计算“值×持续秒数”。返回面积数组、有效标记和覆盖时长；面积尚未相加，也没有换算最终单位。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -46,7 +46,7 @@ class NumpyConditionalIntegralTerms
 |`valid`|np.ndarray|是|无|bool形状(N-1,)，仅TRUE且正常面积可归约。|
 |`facts`|[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)|是|无|当前块双覆盖、样本与来源，不是全窗结果。|
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:21`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:21`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyConditionalIntegralTerms-__post_init__"></a>
 ### `NumpyConditionalIntegralTerms.__post_init__`
@@ -77,7 +77,7 @@ TypeError/ValueError为类型、形状、可写或占位错误。
 - `TypeError`：数组条件积分项需要同长一维float64/bool及ConditionalIntegralFacts。
 - `ValueError`：数组条件积分项必须只读且有限，无效位置只能0存储。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:28`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:28`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_conditional_integral_terms_numpy"></a>
 ## `compute_conditional_integral_terms_numpy`
@@ -107,4 +107,4 @@ NumpyConditionalIntegralTerms；只读面积/掩码形状N-1，临时列形状N�
 
 输入、单位、时间和分配错误传播；浮点故障写质量并使对应值/面积失效。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:44`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_numpy.py:44`](../../../src/chronaxis/core/conditional_integral_terms_numpy.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

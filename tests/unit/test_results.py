@@ -512,27 +512,28 @@ class ResultLifecycleTests(unittest.TestCase):
                 self.assertFalse((Path(root) / 'output').exists())
 
     def test_target_created_during_install_is_never_overwritten(self):
-        """在rename调用时创建竞争目录，Windows安装必须拒绝覆盖。
+        """在真实不覆盖移动前创建竞争目录，两平台均须保留竞争目标。
 
         参数: 无。返回: None。异常: 缺少发布失败表示竞争保护遗漏。
         """
         with tempfile.TemporaryDirectory() as root:
             with result_fixture(Path(root) / 'spool') as result:
                 target = Path(root) / 'output'
-                original_rename = __import__('os').rename
+                from chronaxis.results.platform_files import move_no_replace
 
-                def competing_rename(source, destination):
+                def competing_move(source, destination):
                     """模拟目标在最后存在检查之后被另一调用者创建。
 
-                    参数: source/destination为安装路径。返回: 原rename结果。
-                    异常: 原rename对已存在目标的拒绝。
+                    参数: source/destination为安装路径。返回: 原不覆盖移动结果。
+                    异常: 真实平台操作对已存在目标的拒绝。
                     """
                     Path(destination).mkdir()
-                    return original_rename(source, destination)
+                    return move_no_replace(source, destination)
 
-                with patch('chronaxis.results.result.os.rename', competing_rename):
+                with patch('chronaxis.results.platform_files.move_no_replace', side_effect=competing_move) as observed:
                     with self.assertRaises(AnalysisError):
                         result.write(target)
+                self.assertEqual(observed.call_count, 1)
                 self.assertTrue(target.is_dir())
                 self.assertFalse((target / 'run_manifest.json').exists())
 

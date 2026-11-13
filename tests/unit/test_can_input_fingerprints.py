@@ -147,6 +147,20 @@ class CANInputFingerprintTests(unittest.TestCase):
         self.owners.append(read)
         return read, observer
 
+    def advance_to_eof(self, read):
+        """接收空进度批直到唯一 EOF，期间输入指纹始终不可提前读取。
+
+        参数: read 为真实纯消息读取器。返回: EOF 批；不代替最终耗尽和清理。
+        异常: 原读取错误或协议/提前开放指纹断言失败。
+        """
+        while True:
+            batch = next(read)
+            self.assertEqual(batch.sample_count, 0)
+            with self.assertRaises(ResultClosedError):
+                _ = read.input_fingerprints
+            if batch.source_eof:
+                return batch
+
     def test_fingerprints_match_actual_bytes_and_ignore_transport_batch_boundaries(self):
         """两种真实传输分批获得相同输入指纹，原帧首末/缺值/同刻均保留。
 
@@ -167,8 +181,7 @@ class CANInputFingerprintTests(unittest.TestCase):
                 with self.assertRaises(ResultClosedError):
                     _ = read.input_fingerprints
                 with patch.object(batch_read.LegacyCANBatchRead, '__init__', initialize):
-                    first = next(read)
-                    self.assertTrue(first.source_eof)
+                    self.advance_to_eof(read)
                     with self.assertRaises(ResultClosedError):
                         _ = read.input_fingerprints
                     with self.assertRaises(StopIteration):
@@ -248,7 +261,7 @@ class CANInputFingerprintTests(unittest.TestCase):
             self.assertEqual(active._fixed_cost, base_cost)
             self.assertIsNone(active._input_timestamp_sha)
             self.assertIsNone(active._input_records_sha)
-            self.assertTrue(next(active).source_eof)
+            self.advance_to_eof(active)
             self.assertIsNone(active._process._validated_packet_consumer)
             with self.assertRaises(StopIteration):
                 next(active)
@@ -333,7 +346,7 @@ class CANInputFingerprintTests(unittest.TestCase):
         参数: 无。返回: None。异常: 计数错配被误当成功或关闭责任残留时断言失败。
         """
         read, _ = self.read(self.adapter())
-        self.assertTrue(next(read).source_eof)
+        self.advance_to_eof(read)
         read._input_frame_count -= 1
         with self.assertRaises(SourceReadError):
             next(read)

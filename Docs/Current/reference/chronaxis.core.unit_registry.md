@@ -7,7 +7,7 @@
 解析器仅接受登记原子及有限乘除幂语法，不使用eval、不读写文件。
 本模块是当前配置唯一的单位目录；未知标签不会隐式使用其他单位表。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -34,7 +34,7 @@
 |[`square`](#api-square)|求单位平方，同时平方其倍率。|
 |[`square_root`](#api-square_root)|对偶数量种指数和可精确开方倍率求平方根。|
 |[`conversion`](#api-conversion)|计算source数值到target的乘法系数和加法偏移。|
-|[`_kind_symbol`](#api-_kind_symbol)|为未命名量种构造固定基顺序的可解析乘除文本。|
+|[`_kind_symbol`](#api-_kind_symbol)|把量种指数写成可重解析的复合单位，优先显示电功率W和电能J。|
 |[`canonical_unit`](#api-canonical_unit)|取得该量种倍率1、偏移0的稳定计算/显示基准。|
 |[`output_label`](#api-output_label)|为所选尺度返回可重新解析的输出单位名称。|
 |[`_build_atoms`](#api-_build_atoms)|建立有限原子表，不自动扩张SI前缀或读取外部定义。|
@@ -85,7 +85,7 @@ TypeError为结构或类型错误，ValueError为指数超限。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:29`](../../../src/chronaxis/core/unit_registry.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:29`](../../../src/chronaxis/core/unit_registry.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_dimensions"></a>
 ## `_dimensions`
@@ -112,7 +112,7 @@ _dimensions(kind: tuple[int, ...]) -> tuple[int, ...]
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/core/unit_registry.py:43`](../../../src/chronaxis/core/unit_registry.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:43`](../../../src/chronaxis/core/unit_registry.py#L43)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale"></a>
 ## `Scale`
@@ -133,7 +133,7 @@ class Scale
 |`factor`|Fraction|是|无|正有理倍率，保持十进制换算精确。|
 |`pi_power`|int|否|0|π指数，用于角度与角速度转换。|
 
-源码：[`src/chronaxis/core/unit_registry.py:55`](../../../src/chronaxis/core/unit_registry.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:55`](../../../src/chronaxis/core/unit_registry.py#L55)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-__post_init__"></a>
 ### `Scale.__post_init__`
@@ -161,7 +161,7 @@ TypeError为类型错误，ValueError为非正倍率、指数或有理数位数�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:65`](../../../src/chronaxis/core/unit_registry.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:65`](../../../src/chronaxis/core/unit_registry.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-to_float"></a>
 ### `Scale.to_float`
@@ -189,7 +189,7 @@ ValueError为上溢、下溢到零或非有限结果。
 
 返回类型：float。
 
-源码：[`src/chronaxis/core/unit_registry.py:81`](../../../src/chronaxis/core/unit_registry.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:81`](../../../src/chronaxis/core/unit_registry.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-multiply"></a>
 ### `Scale.multiply`
@@ -216,7 +216,7 @@ TypeError为输入类型错误，ValueError为指数超限。
 
 返回类型：'[Scale](chronaxis.core.unit_registry.md#api-Scale)'。
 
-源码：[`src/chronaxis/core/unit_registry.py:97`](../../../src/chronaxis/core/unit_registry.py#L97)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:97`](../../../src/chronaxis/core/unit_registry.py#L97)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-divide"></a>
 ### `Scale.divide`
@@ -243,7 +243,7 @@ TypeError为输入类型错误，ValueError为指数超限。
 
 返回类型：'[Scale](chronaxis.core.unit_registry.md#api-Scale)'。
 
-源码：[`src/chronaxis/core/unit_registry.py:109`](../../../src/chronaxis/core/unit_registry.py#L109)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:109`](../../../src/chronaxis/core/unit_registry.py#L109)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-power"></a>
 ### `Scale.power`
@@ -270,7 +270,7 @@ TypeError为非整数，ValueError为幂或结果指数超限。
 
 返回类型：'[Scale](chronaxis.core.unit_registry.md#api-Scale)'。
 
-源码：[`src/chronaxis/core/unit_registry.py:121`](../../../src/chronaxis/core/unit_registry.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:121`](../../../src/chronaxis/core/unit_registry.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Scale-square_root"></a>
 ### `Scale.square_root`
@@ -298,7 +298,7 @@ ValueError为有理系数非完全平方或π指数为奇数。
 
 返回类型：'[Scale](chronaxis.core.unit_registry.md#api-Scale)'。
 
-源码：[`src/chronaxis/core/unit_registry.py:135`](../../../src/chronaxis/core/unit_registry.py#L135)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:135`](../../../src/chronaxis/core/unit_registry.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Unit"></a>
 ## `Unit`
@@ -324,7 +324,7 @@ class Unit
 |`offset`|Fraction|否|Fraction(0)|基准单位中的偏移，如273.15K。|
 |`temperature_role`|str &#124; None|否|None|absolute、delta或非单一温度。|
 
-源码：[`src/chronaxis/core/unit_registry.py:151`](../../../src/chronaxis/core/unit_registry.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:151`](../../../src/chronaxis/core/unit_registry.py#L151)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-Unit-__post_init__"></a>
 ### `Unit.__post_init__`
@@ -352,7 +352,7 @@ TypeError为结构错误，ValueError为量纲/量种/角色不一致。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:166`](../../../src/chronaxis/core/unit_registry.py#L166)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:166`](../../../src/chronaxis/core/unit_registry.py#L166)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_temperature_role"></a>
 ## `_temperature_role`
@@ -379,7 +379,7 @@ absolute、delta或None。
 
 返回类型：str &#124; None。
 
-源码：[`src/chronaxis/core/unit_registry.py:187`](../../../src/chronaxis/core/unit_registry.py#L187)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:187`](../../../src/chronaxis/core/unit_registry.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_make"></a>
 ## `_make`
@@ -409,7 +409,7 @@ Unit验证错误直接传播。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:202`](../../../src/chronaxis/core/unit_registry.py#L202)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:202`](../../../src/chronaxis/core/unit_registry.py#L202)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_require_unit"></a>
 ## `_require_unit`
@@ -436,7 +436,7 @@ TypeError为非Unit对象。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:214`](../../../src/chronaxis/core/unit_registry.py#L214)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:214`](../../../src/chronaxis/core/unit_registry.py#L214)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_require_multiplicative"></a>
 ## `_require_multiplicative`
@@ -463,7 +463,7 @@ TypeError为非Unit；ValueError为带偏移单位。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:226`](../../../src/chronaxis/core/unit_registry.py#L226)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:226`](../../../src/chronaxis/core/unit_registry.py#L226)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-multiply"></a>
 ## `multiply`
@@ -491,7 +491,7 @@ TypeError为类型错误；ValueError为偏移单位或指数超限。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:239`](../../../src/chronaxis/core/unit_registry.py#L239)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:239`](../../../src/chronaxis/core/unit_registry.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-divide"></a>
 ## `divide`
@@ -519,7 +519,7 @@ TypeError为类型错误；ValueError为偏移单位或指数超限。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:253`](../../../src/chronaxis/core/unit_registry.py#L253)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:253`](../../../src/chronaxis/core/unit_registry.py#L253)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_power"></a>
 ## `_power`
@@ -547,7 +547,7 @@ TypeError为类型错误；ValueError为偏移温度、幂或组合超限。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:267`](../../../src/chronaxis/core/unit_registry.py#L267)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:267`](../../../src/chronaxis/core/unit_registry.py#L267)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-square"></a>
 ## `square`
@@ -574,7 +574,7 @@ TypeError或ValueError沿单位幂检查传播。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:280`](../../../src/chronaxis/core/unit_registry.py#L280)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:280`](../../../src/chronaxis/core/unit_registry.py#L280)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-square_root"></a>
 ## `square_root`
@@ -607,7 +607,7 @@ TypeError为类型错误；ValueError为偏移、奇数指数或非精确倍率�
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:291`](../../../src/chronaxis/core/unit_registry.py#L291)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:291`](../../../src/chronaxis/core/unit_registry.py#L291)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-conversion"></a>
 ## `conversion`
@@ -635,12 +635,12 @@ TypeError为非Unit；ValueError为量种、温度角色或偏移不兼容。
 
 返回类型：tuple[[Scale](chronaxis.core.unit_registry.md#api-Scale), Fraction]。
 
-源码：[`src/chronaxis/core/unit_registry.py:317`](../../../src/chronaxis/core/unit_registry.py#L317)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:317`](../../../src/chronaxis/core/unit_registry.py#L317)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_kind_symbol"></a>
 ## `_kind_symbol`
 
-为未命名量种构造固定基顺序的可解析乘除文本。
+把量种指数写成可重解析的复合单位，优先显示电功率W和电能J。
 
 ```python
 _kind_symbol(kind: tuple[int, ...]) -> str
@@ -650,19 +650,19 @@ _kind_symbol(kind: tuple[int, ...]) -> str
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`kind`|tuple[int, ...]|是|无|位置或关键字。kind为八维整数指数。|
+|`kind`|tuple[int, ...]|是|无|位置或关键字。kind为已验证的八维整数指数。|
 
 ### 返回说明
 
-只含规范原子和乘除幂的文本。
+由规范单位和整数乘除幂组成的文本；不修改尺度或温度偏移。
 
 ### 异常说明
 
-无，模型已限制指数。
+无，模型已限制指数。力矩等不同量种不按物理维度折成电能。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/unit_registry.py:335`](../../../src/chronaxis/core/unit_registry.py#L335)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:335`](../../../src/chronaxis/core/unit_registry.py#L335)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-canonical_unit"></a>
 ## `canonical_unit`
@@ -689,7 +689,7 @@ TypeError为非Unit，ValueError为模型不一致。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit)。
 
-源码：[`src/chronaxis/core/unit_registry.py:358`](../../../src/chronaxis/core/unit_registry.py#L358)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:373`](../../../src/chronaxis/core/unit_registry.py#L373)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-output_label"></a>
 ## `output_label`
@@ -717,7 +717,7 @@ output_label(unit: Unit, spelling: str) -> str
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/unit_registry.py:372`](../../../src/chronaxis/core/unit_registry.py#L372)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:387`](../../../src/chronaxis/core/unit_registry.py#L387)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_build_atoms"></a>
 ## `_build_atoms`
@@ -745,7 +745,7 @@ _build_atoms() -> dict[str, Unit]
 
 返回类型：dict[str, [Unit](chronaxis.core.unit_registry.md#api-Unit)]。
 
-源码：[`src/chronaxis/core/unit_registry.py:386`](../../../src/chronaxis/core/unit_registry.py#L386)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:401`](../../../src/chronaxis/core/unit_registry.py#L401)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_build_preferred"></a>
 ## `_build_preferred`
@@ -773,7 +773,7 @@ _build_preferred() -> dict[tuple[int, ...], Unit]
 
 返回类型：dict[tuple[int, ...], [Unit](chronaxis.core.unit_registry.md#api-Unit)]。
 
-源码：[`src/chronaxis/core/unit_registry.py:433`](../../../src/chronaxis/core/unit_registry.py#L433)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:448`](../../../src/chronaxis/core/unit_registry.py#L448)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_Parser"></a>
 ## `_Parser`
@@ -787,7 +787,7 @@ _Parser(text: str) -> None
 ```
 
 
-源码：[`src/chronaxis/core/unit_registry.py:454`](../../../src/chronaxis/core/unit_registry.py#L454)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:469`](../../../src/chronaxis/core/unit_registry.py#L469)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_Parser-__init__"></a>
 ### `_Parser.__init__`
@@ -814,7 +814,7 @@ ValueError为词元数量超限。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/unit_registry.py:460`](../../../src/chronaxis/core/unit_registry.py#L460)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:475`](../../../src/chronaxis/core/unit_registry.py#L475)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_Parser-peek"></a>
 ### `_Parser.peek`
@@ -842,7 +842,7 @@ _Parser.peek() -> str | None
 
 返回类型：str &#124; None。
 
-源码：[`src/chronaxis/core/unit_registry.py:474`](../../../src/chronaxis/core/unit_registry.py#L474)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:489`](../../../src/chronaxis/core/unit_registry.py#L489)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_Parser-factor"></a>
 ### `_Parser.factor`
@@ -870,7 +870,7 @@ ValueError为语法、幂或已知单位运算错误。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit) &#124; None。
 
-源码：[`src/chronaxis/core/unit_registry.py:484`](../../../src/chronaxis/core/unit_registry.py#L484)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:499`](../../../src/chronaxis/core/unit_registry.py#L499)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_Parser-expression"></a>
 ### `_Parser.expression`
@@ -898,7 +898,7 @@ ValueError为语法或单位组合错误。
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit) &#124; None。
 
-源码：[`src/chronaxis/core/unit_registry.py:521`](../../../src/chronaxis/core/unit_registry.py#L521)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:536`](../../../src/chronaxis/core/unit_registry.py#L536)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-resolve_unit"></a>
 ## `resolve_unit`
@@ -925,4 +925,4 @@ TypeError为非文本；ValueError为空、语法、资源或非法单位组合�
 
 返回类型：[Unit](chronaxis.core.unit_registry.md#api-Unit) &#124; None。
 
-源码：[`src/chronaxis/core/unit_registry.py:545`](../../../src/chronaxis/core/unit_registry.py#L545)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/unit_registry.py:560`](../../../src/chronaxis/core/unit_registry.py#L560)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

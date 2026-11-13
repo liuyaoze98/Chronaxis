@@ -2,7 +2,7 @@
 
 标准库协议例使用真正spawn的明确受控worker，核严格READY/ACK/FINISH与异常，
 不冒充旧BLF正确性。真实库例把同组原始帧交给生产LegacyCANProcessWrite，并在
-另一真实spawn中直接调用原build_writer作独立逻辑对照；以公开BLFReader核字段、
+另一真实spawn中直接调用直接BLFWriter作独立逻辑对照；以公开BLFReader核字段、
 同刻顺序及严格小量时间容差，不以文件字节相同作承诺。另用原消息构造/写/stop
 透传记录证明每PUT仅一次原调用，没有FINISH隐含帧或父重新读取原输入。
 
@@ -12,9 +12,10 @@
 依赖时仅真实库例跳过；生产导入不启动子进程，本文件只在根统一正式轮执行。
 """
 
+from chronaxis.can_dependencies import runtime_dependency_versions
 from configuration_fixtures import current_fixture
 
-# spawn目标必须位于模块顶层；纯协议例不加载可选CAN库或原vendor。
+# spawn目标必须位于模块顶层；纯协议例不加载CAN库或写出器。
 from dataclasses import replace
 from functools import partial
 import importlib.util
@@ -54,14 +55,13 @@ def controlled_write_worker(connection, *, mode):
             raise AssertionError('受控writer缺少唯一INIT')
         Path(initial['path']).write_bytes(b'controlled writer protocol fixture\n')
         ready = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID, 'worker_pid': os.getpid(),
-            'dependency_versions': {'python': platform.python_version(), **module.WRITE_DEPENDENCIES},
-            'vendor_sha256': dict(module.VENDOR_SHA256)}
+            'dependency_versions': runtime_dependency_versions()}
         if mode == 'ready_pid':
             ready['worker_pid'] += 1
         elif mode == 'ready_bool_version':
             ready['version'] = True
         elif mode == 'ready_hash':
-            ready['vendor_sha256']['can_processor.py'] = '0' * 64
+            ready['unexpected_vendor'] = 'unsupported'
         elif mode == 'ready_dependency':
             ready['dependency_versions']['python-can'] = '0.0.0'
         connection.send_bytes(encode_packet(ready))
@@ -104,19 +104,18 @@ def controlled_write_worker(connection, *, mode):
 
 
 def direct_old_writer(path, frames):
-    """在独立child直接执行原build_writer/on_message_received/stop作逻辑基线。
+    """在独立child直接执行直接BLFWriter/on_message_received/stop作逻辑基线。
 
     参数: path为测试新BLF文本路径；frames为有限LegacyRawFrame tuple。
-    返回: None。异常: 原vendor/Message/写出/stop错误，进程非零退出。
+    返回: None。异常: 库Message/写出/stop错误，进程非零退出。
     副作用: 不经过生产writer协议，也不调用新_message helper；只在新工作根写基线。
     """
-    from chronaxis.legacy.worker import _load_vendor
-    _, processor, _ = _load_vendor()
-    writer, _ = processor.build_writer(path, 'blf')
+    import can
+    writer=can.BLFWriter(path)
     try:
         for frame in frames:
             # 独立逐字段构造，能发现新worker漏传/改传原公开字段，不镜像其封装函数。
-            message = processor.can.Message(timestamp=frame.timestamp, arbitration_id=frame.arbitration_id,
+            message = can.Message(timestamp=frame.timestamp, arbitration_id=frame.arbitration_id,
                 is_extended_id=frame.is_extended_id, is_remote_frame=frame.is_remote_frame,
                 is_error_frame=frame.is_error_frame, channel=frame.channel, dlc=frame.dlc,
                 data=frame.data, is_fd=frame.is_fd, is_rx=frame.is_rx,
@@ -132,57 +131,39 @@ def traced_old_writer(connection, *, fail_write_at=None, fail_stop=False):
     参数: connection为真正spawn端点；fail_write_at可选从1起实际写入后故障位置；
         fail_stop为实际stop后故障开关。返回: 原export_worker.worker_main返回值。
     异常: 原worker错误或明确注入；trace失败也明确非零，不作为成功基线。
-    副作用: 新根写小量trace，不改原vendor磁盘文件、原函数参数或次数。
+    副作用: 新根写小量trace，不改产品磁盘文件、实际写入参数或次数。
     """
     from chronaxis.legacy import export_worker
     initial = connection.recv_bytes(MAX_WIRE_BYTES)
     packet = decode_packet(initial)
     trace_path = Path(packet['path']).with_suffix('.trace.jsonl')
-    original_load = export_worker._load_vendor
+    import can
+    original_build=can.BLFWriter
 
-    def trace(event, **facts):
-        """保存一个真实原动作。参数: event/facts。返回: None。异常: 原trace文件错误。"""
-        with trace_path.open('a', encoding='utf-8') as handle:
-            handle.write(json.dumps(current_fixture({'rule': event, **facts}), allow_nan=False) + '\n')
+    def trace(event,**facts):
+        """记录第三方实际动作，不替代生产writer的所有权。"""
+        with trace_path.open('a',encoding='utf8') as handle:
+            handle.write(json.dumps(current_fixture({'rule':event,**facts}),allow_nan=False)+'\n')
 
-    def load():
-        """取实际原模块后仅透传build_writer。参数: 无。返回: 原三元组。异常: 原加载错误。"""
-        files, processor, hashes = original_load()
-        original_build = processor.build_writer
+    class WriterTrace:
+        """代理同一个真实python-can writer，保留每次写入及关闭行为。"""
+        def __init__(self,actual):self.actual,self.count=actual,0
+        def on_message_received(self,message):
+            trace('on_message_received',timestamp=message.timestamp,
+                arbitration_id=message.arbitration_id,data_hex=bytes(message.data).hex())
+            result=self.actual.on_message_received(message);self.count+=1
+            if fail_write_at is not None and self.count==fail_write_at:
+                raise OSError('actual old writer failed after frame')
+            return result
+        def stop(self):
+            trace('stop');result=self.actual.stop()
+            if fail_stop:raise RuntimeError('actual old writer failed after stop')
+            return result
 
-        class WriterTrace:
-            """拥有同一真实旧writer，仅记录每次原公开动作而不替换写入行为。"""
-
-            def __init__(self, actual):
-                """保实际writer。参数: actual。返回: 新代理。异常: 无。"""
-                self.actual, self.count = actual, 0
-
-            def on_message_received(self, message):
-                """记录原帧后一次透传。参数: message。返回: 原返回值。异常: 原写入或trace错误。"""
-                trace('on_message_received', timestamp=message.timestamp,
-                    arbitration_id=message.arbitration_id, data_hex=bytes(message.data).hex())
-                result = self.actual.on_message_received(message)
-                self.count += 1
-                if fail_write_at is not None and self.count == fail_write_at:
-                    raise OSError('actual old writer failed after frame')
-                return result
-
-            def stop(self):
-                """记录并执行原stop。参数: 无。返回: 原返回值。异常: 原stop或trace错误。"""
-                trace('stop')
-                result = self.actual.stop()
-                if fail_stop:
-                    raise RuntimeError('actual old writer failed after stop')
-                return result
-
-        def build(path, fmt):
-            """只透传原创建参数。参数: path/fmt。返回: 真writer代理及原路径。异常: 原创建错误。"""
-            trace('build_writer', path=path, format=fmt)
-            writer, actual_path = original_build(path, fmt)
-            return WriterTrace(writer), actual_path
-
-        processor.build_writer = build
-        return files, processor, hashes
+    def build(file,*args,**kwargs):
+        """观察同一独占文件句柄，真实BLF编码及最终头仍由库执行。"""
+        trace('build_writer',path=str(file.name),format='blf')
+        return WriterTrace(original_build(file,*args,**kwargs))
 
     class InitialReplay:
         """仅回放已取INIT一次，其余能力全部转给同一实际端点。"""
@@ -202,7 +183,7 @@ def traced_old_writer(connection, *, fail_write_at=None, fail_stop=False):
             """透传真实连接能力。参数: name。返回: 原属性。异常: 原属性错误。"""
             return getattr(connection, name)
 
-    with patch.object(export_worker, '_load_vendor', new=load):
+    with patch.object(can,'BLFWriter',new=build):
         return export_worker.worker_main(InitialReplay())
 
 
@@ -269,7 +250,7 @@ class WriteStaticTests(WriteFixture):
     """静态路径、构造及预留交易不依赖可选CAN库。"""
 
     def test_constructor_is_static_and_only_new_paths(self):
-        """构造不spawn/不创建产物，已有及Ref目标拒绝且原字节保持。
+        """构造不spawn/不创建产物，已有目标拒绝；客户同名目录可用且原字节保持。
         参数: 无。返回: None。异常: 原接口或路径/副作用断言失败。
         """
         with patch.object(module.multiprocessing, 'get_context', side_effect=AssertionError('constructor spawned')):
@@ -282,10 +263,16 @@ class WriteStaticTests(WriteFixture):
         existing.write_bytes(b'caller content')
         with self.assertRaises(FileExistsError):
             module.LegacyCANProcessWrite(self.budget, existing)
-        with self.assertRaises(ValueError):
-            module.LegacyCANProcessWrite(self.budget, self.root / 'RefProjects' / 'forbidden.blf')
+        customer=self.root/'RefProjects'
+        customer.mkdir()
+        sentinel=customer/'user.txt'
+        sentinel.write_bytes(b'keep')
+        allowed=module.LegacyCANProcessWrite(self.budget, customer/'new.blf')
+        self.writers.append(allowed)
+        self.assertFalse(allowed.output_path.exists())
+        allowed.close()
         self.assertEqual(existing.read_bytes(), b'caller content')
-        self.assertFalse((self.root / 'RefProjects').exists())
+        self.assertEqual(sentinel.read_bytes(),b'keep')
         self.assertEqual(self.budget.ram_bytes, self.borrowed)
 
     def test_constructor_after_reserve_cancel_has_highest_actual_owner(self):
@@ -394,7 +381,7 @@ class WriteProtocolTests(WriteFixture):
             writer.write(FRAME)
 
     def test_bad_ready_strict_types_pid_dependencies_and_hash(self):
-        """真子进程的坏PID/bool版本/依赖/vendor均拒，不能凭READY字样声称初始化。
+        """真子进程的坏PID/bool版本/依赖/额外字段均拒，不能凭READY字样声称初始化。
         参数: 无。返回: None。异常: 原进程或严格身份/关闭断言失败。
         """
         for mode in ('ready_pid', 'ready_bool_version', 'ready_hash', 'ready_dependency'):
@@ -603,7 +590,7 @@ class WriteRealLibraryTests(WriteFixture):
             reader.stop()
 
     def test_real_original_logic_fields_same_time_and_old_baseline(self):
-        """经典/扩展/FD原公开字段与独立旧基线一致，同刻未知ID原序保留且时间误差严格受限。
+        """经典/扩展/FD原公开字段与独立python-can参考一致，同刻未知ID原序保留且时间误差严格受限。
         参数: 无。返回: None。异常: 原库/进程或手算字段/时间/原对照断言失败。
         """
         frames = (FRAME, replace(FRAME, timestamp=BASE + .125, arbitration_id=0x1ABCDE,
@@ -614,11 +601,11 @@ class WriteRealLibraryTests(WriteFixture):
         writer = self.make_writer('production.blf').start()
         ready = writer.metadata
         self.assertEqual(ready['worker_pid'], writer.worker_pid)
-        self.assertEqual(dict(ready['vendor_sha256']), module.VENDOR_SHA256)
+        self.assertNotIn('vendor_sha256', ready)
         for frame in frames:
             writer.write(frame)
         writer.finish()
-        # 直接旧链位于另一个真实进程，避免父sys.modules污染或调用被测worker作参考。
+        # 独立python-can参考写入位于另一个真实进程，避免父sys.modules污染或调用被测worker作参考。
         reference = self.root / 'direct-old.blf'
         process = multiprocessing.get_context('spawn').Process(target=direct_old_writer,
             args=(str(reference), frames))
@@ -650,7 +637,7 @@ class WriteRealLibraryTests(WriteFixture):
         self.assertEqual(self.budget.ram_bytes, self.borrowed)
 
     def test_real_empty_blf_and_no_frame_permission(self):
-        """零PUT仍经原build_writer/stop生成可读空BLF，完成计数为0而非假缺文件。
+        """零PUT仍经BLFWriter/stop生成可读空BLF，完成计数为0而非假缺文件。
         参数: 无。返回: None。异常: 原库或空产物/预留/完成断言失败。
         """
         writer = self.make_writer('empty.blf')

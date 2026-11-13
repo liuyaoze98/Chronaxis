@@ -92,6 +92,8 @@ def _frame_packet(record):
         packet['output_time_ns']=record.output_time_ns
     if record.provenance:
         packet['provenance']=record.provenance
+    if not record.remote_dlc_known:
+        packet['remote_dlc_known']=False
     return packet
 
 
@@ -103,7 +105,8 @@ def _restore_frame(packet):
     if 'timestamp' not in frame:
         frame=dict(frame,timestamp=output/10**9)
     return ExportCANFrame(packet['sequence'],packet['time_ns'],output,
-        frame_from_dict(frame),tuple(tuple(p) for p in packet.get('provenance',())),packet['frame_origin'])
+        frame_from_dict(frame),tuple(tuple(p) for p in packet.get('provenance',())),packet['frame_origin'],
+        remote_dlc_known=packet.get('remote_dlc_known',True))
 
 
 def _sample_packet(sample):
@@ -162,8 +165,6 @@ class FrameRebuildRead:
             elif periods is not None:
                 raise ValueError('固定网格不能再附DBC周期')
             root=Path(work_dir)
-            if any(p.casefold()=='refprojects' for p in (*root.parts,*root.resolve().parts)):
-                raise ValueError('报文重建不能写RefProjects')
             root.mkdir(parents=True,exist_ok=False)
             self.input_sort=FrameSort(root/'groups',budget,check_cancel=check_cancel,integrity=integrity)
             self.output_sort=FrameSort(root/'timeline',budget,check_cancel=check_cancel,integrity=integrity)

@@ -6,11 +6,11 @@
 严格内部点做浮点运算，无效输入、越界和非有限中间运算保留各自原因。
 独立参考实现不导入 NumPy，不保存时序状态。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -42,7 +42,7 @@ lookup_reference(table, value)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`table`|PreparedLookup|是|无|位置或关键字。静态校验并绑定了轴、输出类型、插值模式和越界政策的不可变表。|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。已换算到标定轴单位的输入数值及质量，在有效输入上应用表内或越界规则。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。已换算到标定轴单位的输入数值及质量，在有效输入上应用表内或越界规则。|
 
 ### 返回说明
 
@@ -52,4 +52,4 @@ lookup_reference(table, value)
 
 非法声明类型。
 
-源码：[`src/chronaxis/core/lookup_reference.py:13`](../../../src/chronaxis/core/lookup_reference.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup_reference.py:13`](../../../src/chronaxis/core/lookup_reference.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

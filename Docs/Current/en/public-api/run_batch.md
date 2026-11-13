@@ -38,6 +38,8 @@ if __name__ == "__main__":
     main()
 ```
 
+If worker construction is interrupted and cleanup remains incomplete, the original `KeyboardInterrupt` can carry both `batch_report` and `batch_worker_cleanup_owner`. The unfinished worker may not appear in report jobs; retain it and retry its `close()` as well as report cleanup. A normal cancelled report is still returned when Ctrl+C cleanup completed.
+
 ## Source locations
 
-- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

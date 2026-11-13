@@ -10,6 +10,7 @@ from pathlib import Path
 from .checks import PlanValidationError
 from ..legacy.binding import dbc_candidates
 from ..can_dependencies import CANDependencyError, import_can_dependency
+from ..dbc_loading import load_dbc_file
 
 
 _PREPARED_DBC = ContextVar('chronaxis_prepared_dbc', default=None)
@@ -33,10 +34,10 @@ def load_dbc(path):
     cache = _PREPARED_DBC.get()
     cantools = import_can_dependency('cantools')
     if cache is None:
-        return cantools.database.load_file(path)
+        return load_dbc_file(path, cantools)
     key = Path(path).resolve()
     if key not in cache:
-        cache[key] = cantools.database.load_file(path)
+        cache[key] = load_dbc_file(path, cantools)
     return cache[key]
 
 

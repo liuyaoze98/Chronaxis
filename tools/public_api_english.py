@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 
 from public_api_notes import NOTES, render_note
+from public_docs import reading_text
 
 PARAMETER_NOTES = {
     ('api-AnalysisRunner-run', '`process_count`'): 'Positive reading/decoding worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. See continuous-file multiprocessing.',
@@ -33,9 +34,40 @@ def english_links(text):
     return text.replace('](../reference/', '](../../reference/').replace('](../../../src/', '](../../../../src/')
 
 
+def check_runner_contract(key, source, translated):
+    """阻止后端参数已更新、精确错误或属性返回仍停在旧版本的英文页。
+
+    参数: key为公开成员锚点，source为该成员中文正文，translated为英文正文。
+    返回: None。异常: 精确诊断或已列后端值缺失时抛ValueError，要求审阅译文而不自动猜译。
+    """
+    if key == 'api-AnalysisRunner-__init__':
+        # 只核对机器实际返回的诊断文字；解释性译文仍由维护者审阅。
+        messages = re.findall(r'(?m)^- `(?:TypeError|ValueError)`[：:]\s*`([^`]+)`', source)
+        for message in messages:
+            if f'`{message}`' not in translated:
+                raise ValueError('English AnalysisRunner exact diagnostic is stale: '+message)
+    elif key == 'api-AnalysisRunner-backend':
+        # 属性返回值要与同基线中文契约逐项一致，不能只在构造参数表出现auto。
+        original = re.search(r'(?ms)^#{3,4} 返回(?:说明)?\s*\n(.*?)(?=^#{3,4} |\Z)', source)
+        target = re.search(r'(?ms)^#{3,4} Returns\s*\n(.*?)(?=^#{3,4} |\Z)', translated)
+        if original is None or target is None:
+            raise ValueError('AnalysisRunner.backend return contract is missing')
+        values = set(re.findall(r'\b(?:None|auto|reference|numpy)\b', original[1]))
+        translated_values = set(re.findall(r'\b(?:None|auto|reference|numpy)\b', target[1]))
+        if values != translated_values:
+            raise ValueError('English AnalysisRunner.backend return choices are stale')
+
+
 def synchronize_page(source, translated, baseline):
-    """以中文生成页修复英文事实列，缺译成员/参数时拒绝完成。"""
+    """以中文生成页修复英文事实列，并将原履历保留在末尾。
+
+    参数: source为同基线中文页，translated为已有英文页，baseline为源码提交。
+    返回: 更新事实列和源码定位的英文页。异常: 缺译成员/参数或履历后混入正文。
+    """
     translated = re.sub(r'(?ms)^## Source locations\s*\n.*?(?=^## |\Z)', '', translated)
+    history_match = re.search(r'(?m)^## (?:变更履历|版本记录|Change history|Revision history)\s*$', translated)
+    history = translated[history_match.start():] if history_match else ''
+    translated = reading_text(translated)
     intro, targets = sections(translated)
     # 成员名是Python标识符，必须作为代码显示，避免双下划线被Markdown当成强调。
     intro = re.sub(r'(?m)^- \[([^`\]\n]+)\]\((#api-[^)]+)\)', r'- [`\1`](\2)', intro)
@@ -102,7 +134,9 @@ def synchronize_page(source, translated, baseline):
             lines.append(line)
         if seen != set(rows):
             raise ValueError('English parameter explanation missing: '+key+' '+str(sorted(set(rows)-seen)))
-        result.append('\n'.join(lines).rstrip()+'\n\n')
+        member = '\n'.join(lines).rstrip()+'\n\n'
+        check_runner_contract(key, original, member)
+        result.append(member)
     locations = []
     for match in re.finditer(r'^源码：(.*)$', source, re.M):
         link = re.search(r'\[[^\n]+?\]\([^\n]+?\)', match[1])
@@ -110,6 +144,8 @@ def synchronize_page(source, translated, baseline):
             locations.append('- '+english_links(link[0])+f' — line at `{baseline}`.\n')
     if locations:
         result.extend(['## Source locations\n\n', *dict.fromkeys(locations)])
+    if history:
+        result.extend(['\n', history])
     return ''.join(result).rstrip()+'\n'
 
 

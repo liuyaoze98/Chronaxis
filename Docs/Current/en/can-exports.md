@@ -2,7 +2,7 @@
 
 <a id="can报文导出与重采样"></a>
 
-`outputs.can_frames` exports original frames from one CAN source, or reconstructs frames at requested times using explicitly selected continuous fields. See [Outputs](exports.md) for common scopes, publication, and the current environment restriction.
+`outputs.can_frames` exports original frames from one CAN source, or reconstructs frames at requested times using explicitly selected continuous fields. See [Outputs](exports.md) for common scopes, publication, and optional device labels.
 
 <a id="完整最小例与网格扩展"></a>
 ## Complete minimal and grid examples

@@ -3,6 +3,8 @@
 全部使用合成配置，文件放新项目work；不读真实日志，不改用户输入。
 期望来自独立坏字段、明确缺失引用及原型的错误位置，不以错误总数代替语义检查。
 """
+
+from workspace_fixtures import TemporaryDirectory as workspace_temporary_directory
 from contextlib import redirect_stdout
 from copy import deepcopy
 import io
@@ -72,7 +74,7 @@ class MultiDiagnosticTests(unittest.TestCase):
     def test_cli_json_and_source_locations(self):
         """CLI只输出errors数组，逐项带不同真实行列，有错时不启动计算。参数: 无。返回: None。异常: 断言失败。"""
         WORK.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=WORK) as folder:
+        with workspace_temporary_directory(dir=WORK) as folder:
             path = Path(folder) / 'bad.yaml'
             from ruamel.yaml import YAML
             value = config(); value['execution'] = {'backend':'gpu','batch_rows':0}
@@ -92,7 +94,7 @@ class MultiDiagnosticTests(unittest.TestCase):
     def test_syntax_failure_is_one_diagnostic(self):
         """无法解析的YAML保留语法位置，不补猜配置。参数: 无。返回: None。异常: 断言失败。"""
         WORK.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=WORK) as folder:
+        with workspace_temporary_directory(dir=WORK) as folder:
             path=Path(folder)/'syntax.yaml';path.write_text('dataset: "unterminated',encoding='utf-8')
             with self.assertRaises(PlanValidationError) as caught:
                 load_analysis_plan(path)
@@ -111,7 +113,7 @@ class MultiDiagnosticTests(unittest.TestCase):
         """错误后的合法构建不继承旧诊断或失败名称，值与默认值保持。参数: 无。返回: None。异常: 断言失败。"""
         bad=config();bad['execution']={'backend':'gpu'};self.error(bad)
         plan=AnalysisPlan.from_dict(config())
-        self.assertEqual(plan.execution.backend,'numpy')
+        self.assertEqual(plan.execution.backend,'auto')
         self.assertEqual(len(plan.signals),3)
         self.assertEqual(plan.derived_expressions[0].root.unit,'W')
 
@@ -121,7 +123,7 @@ class MultiDiagnosticTests(unittest.TestCase):
         example=ROOT/'Docs/Current/examples/conditional-energy.yaml'
         value=YAML(typ='safe',pure=True).load(example.read_text(encoding='utf-8'))
         value['outputs']={'tables':'xlsx'}
-        with patch('cantools.database.load_file',side_effect=FileNotFoundError('missing.dbc')) as loader:
+        with patch('cantools.database.load',side_effect=FileNotFoundError('missing.dbc')) as loader:
             with self.assertRaises(PlanValidationError) as caught:
                 AnalysisPlan.from_dict(value,base_dir=example.parent)
         self.assertEqual(loader.call_count,1)
@@ -133,7 +135,7 @@ class MultiDiagnosticTests(unittest.TestCase):
         """主文件和导入信号文件的独立错误各指向自己的文件，未改写配置。参数: 无。返回: None。异常: 断言失败。"""
         from ruamel.yaml import YAML
         WORK.mkdir(parents=True,exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=WORK) as folder:
+        with workspace_temporary_directory(dir=WORK) as folder:
             root=Path(folder);shared=root/'signals.yaml';path=root/'plan.yaml'
             value=config();definitions={'signals':value.pop('signals')}
             definitions['signals'][0]['valid_for']='-1s'

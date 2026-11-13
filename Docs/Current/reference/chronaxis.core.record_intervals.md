@@ -7,7 +7,7 @@
 本模块不依赖CAN、DBC、文件边界或信号值，不保存消息历史、累计总数或输出证明。
 DBC周期由接入层初始化核实后作为step_ns传入，不能在这里猜默认周期。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -57,7 +57,7 @@ None。
 
 非法周期或非真实更新报错；不读取或保存记录。
 
-源码：[`src/chronaxis/core/record_intervals.py:13`](../../../src/chronaxis/core/record_intervals.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:13`](../../../src/chronaxis/core/record_intervals.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-clipped_record_seconds"></a>
 ## `clipped_record_seconds`
@@ -89,7 +89,7 @@ float秒数。固定模式使用step_ns×实际交集/实际跨度，最后才�
 
 返回类型：float。
 
-源码：[`src/chronaxis/core/record_intervals.py:27`](../../../src/chronaxis/core/record_intervals.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:27`](../../../src/chronaxis/core/record_intervals.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntervals"></a>
 ## `RecordIntervals`
@@ -109,7 +109,7 @@ RecordIntervals(step_ns: int | None=None)
 |---|---|---|---|---|
 |`__slots__`|tuple[str, ...]|类成员，不作为构造参数填写|('_step_ns', '_previous_ns')|限定实例内部可保存的属性名；这些名称是实现布局，调用者不把它们作为配置填写。|
 
-源码：[`src/chronaxis/core/record_intervals.py:58`](../../../src/chronaxis/core/record_intervals.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:58`](../../../src/chronaxis/core/record_intervals.py#L58)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntervals-__init__"></a>
 ### `RecordIntervals.__init__`
@@ -134,7 +134,7 @@ RecordIntervals.__init__(step_ns: int | None=None)
 
 TypeError、ValueError或TimeOverflowError为非法周期。
 
-源码：[`src/chronaxis/core/record_intervals.py:67`](../../../src/chronaxis/core/record_intervals.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:67`](../../../src/chronaxis/core/record_intervals.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntervals-advance"></a>
 ### `RecordIntervals.advance`
@@ -165,7 +165,7 @@ RecordIntervals.advance(time_ns: int) -> int | None
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/core/record_intervals.py:80`](../../../src/chronaxis/core/record_intervals.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:80`](../../../src/chronaxis/core/record_intervals.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntervals-advance_seconds"></a>
 ### `RecordIntervals.advance_seconds`
@@ -193,4 +193,4 @@ RecordIntervals.advance_seconds(time_ns: int, window: Interval) -> float | None
 
 返回类型：float &#124; None。
 
-源码：[`src/chronaxis/core/record_intervals.py:101`](../../../src/chronaxis/core/record_intervals.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/record_intervals.py:101`](../../../src/chronaxis/core/record_intervals.py#L101)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

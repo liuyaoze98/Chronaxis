@@ -1,7 +1,7 @@
 """从真实公开计划核对枚举原码与标签视图，并保护旧版和按需投影。"""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 
 from chronaxis import AnalysisPlan, AnalysisRunner, PlanValidationError
@@ -119,12 +119,11 @@ class EnumCodeV4Tests(unittest.TestCase):
             with self.assertRaisesRegex(PlanValidationError,'enum_code'):
                 AnalysisPlan.from_dict(raw)
 
-    def test_real_history_and_independent_memory_backends(self):
-        """在真实封存历史与两个独立内存归约器中验证相同选择、原码及过期边界。
+    def test_public_runner_and_independent_memory_backends(self):
+        """在公共Runner与两个独立内存归约器中验证相同选择、原码及过期边界。
 
-        参数: 无。返回: None。异常: 历史解码、保持、类型或预算与期望不符。
+        参数: 无。返回: None。异常: 原码、保持、类型或预算与期望不符。
         """
-        import test_historical_selection_rows as fixture_module
         definitions = (SignalDefinition('a','table','raw.a',D.ENUM,'1',3,choices=((7,'On'),(9,'On')),
                                         code_dtype=D.INT64,config_version=4),
                        SignalDefinition('b','other','raw.b',D.INT64,'1',6,config_version=4))
@@ -139,10 +138,18 @@ class EnumCodeV4Tests(unittest.TestCase):
         expected = [(7,Q.NONE),(9,Q.NONE),(44,Q.NONE),(None,Q.MISSING)]
         for kernel in (select_memory_reference,select_memory_numpy):
             self.assertEqual([(r.value.value,r.quality) for r in kernel(compiled,spec)],expected)
-        factory = fixture_module.HistoricalSelectionRowsTests('runTest')
-        self.addCleanup(factory.doCleanups)
+        from chronaxis import AnalysisPlan, AnalysisRunner
+        from workspace_fixtures import TemporaryDirectory
+        from pathlib import Path
+        raw = dict(config_version=4, dataset=dict(name='codes', domain=dict(start='0ns', end='4ns')),
+            sources=[dict(name='table', source_type='memory', rows=[dict(time=f'{i}ns', values={'raw':v})
+                for i,v in enumerate((7,9,44,None,7))])],
+            signals=[dict(name='a',source='table',field='raw',dtype='enum',unit='1',valid_for='3ns',
+                choices=[[7,'On'],[9,'On']],code_dtype='int64')],
+            calculations=[dict(name='codes',operation='select',expr='enum_code(a)')])
         for backend in ('reference','numpy'):
-            fixture,owner,baseline = factory.prepare(backend=backend,definitions=definitions,rows_by_source=rows,
-                texts=('enum_code(a)','b > 0'),domain=(0,4),spec=spec)
-            self.assertEqual([(r.value.value,r.quality) for r in owner],expected)
-            factory.close_and_check(fixture,owner,baseline)
+            with TemporaryDirectory(dir='work') as folder:
+                with AnalysisRunner(backend).run(AnalysisPlan.from_dict(raw),Path(folder)/'run') as result:
+                    self.assertEqual([(r.value,r.quality) for r in result.iter_selections()], expected)
+                    budget = result.spool.budget
+                self.assertEqual(budget.ram_bytes, 0)

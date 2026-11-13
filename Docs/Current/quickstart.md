@@ -82,11 +82,11 @@ chronaxis run analysis.yaml --output new-result
 chronaxis run input-can-directory.yaml --output directory-result
 ```
 
-如果还想试同一数据的BLF及ASC/BLF混合目录，在examples目录运行以下脚本；目标目录须不存在。它生成三组相同数值的数据、对应配置，并自动核对三组结果一致。生成文件放到你指定的工作目录，不改手册原输入。
+如果还想试同一数据的BLF及ASC/BLF混合目录，在examples目录运行以下脚本；目标目录须不存在。它生成三组相同数值的数据和带注释的 `asc.yaml`、`blf.yaml`、`mixed.yaml`，再读取生成的 YAML 执行并核对结果一致。生成文件放到你指定的工作目录，不改手册原输入。
 
 ```powershell
 python prepare_can_examples.py --output can-demo
-chronaxis run can-demo/blf.json --output blf-result
+chronaxis run can-demo/blf.yaml --output blf-result
 ```
 
 文件生成与实际读取验证见[prepare_can_examples.py](examples/prepare_can_examples.py)。用户自己的BLF不需要先运行此生成脚本，直接在配置中选择已有日志即可。

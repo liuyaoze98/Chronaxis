@@ -5,7 +5,7 @@
 声明只保存配置点对和内容身份。被表达式引用时才将两列写为固定小端字节，
 支持标量随机读取或 NumPy 零复制视图。无文件、全局缓存或第三方依赖。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -64,7 +64,7 @@ float。
 
 非有限、整数超界或精度损失。
 
-源码：[`src/chronaxis/core/lookup.py:22`](../../../src/chronaxis/core/lookup.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:22`](../../../src/chronaxis/core/lookup.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LookupTablePlan"></a>
 ## `LookupTablePlan`
@@ -86,7 +86,7 @@ class LookupTablePlan
 |`dtype`|[D](chronaxis.core.types.md#api-SignalDType)|不填写|构造时计算|此表在当前插值方式下返回的数值类型。|
 |`identity`|str|不填写|构造时计算|由单位、类型和点对确定的标定表标识，区分同名但内容不同的表。|
 
-源码：[`src/chronaxis/core/lookup.py:35`](../../../src/chronaxis/core/lookup.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:35`](../../../src/chronaxis/core/lookup.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LookupTablePlan-__post_init__"></a>
 ### `LookupTablePlan.__post_init__`
@@ -112,7 +112,7 @@ LookupTablePlan.__post_init__()
 
 类型、单位、次序、大小或精度错误。
 
-源码：[`src/chronaxis/core/lookup.py:45`](../../../src/chronaxis/core/lookup.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:45`](../../../src/chronaxis/core/lookup.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LookupTablePlan-prepare"></a>
 ### `LookupTablePlan.prepare`
@@ -138,7 +138,7 @@ PreparedLookup。
 
 模式或精度错误。
 
-源码：[`src/chronaxis/core/lookup.py:85`](../../../src/chronaxis/core/lookup.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:85`](../../../src/chronaxis/core/lookup.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PreparedLookup"></a>
 ## `PreparedLookup`
@@ -161,7 +161,7 @@ class PreparedLookup
 |`axis`|bytes &#124; None|否|None|按输入单位升序排列的横坐标；紧凑表示只为实际引用的表创建。|
 |`values`|bytes &#124; None|否|None|各标定横坐标对应的输出值；阶梯读取保留原整数精度。|
 
-源码：[`src/chronaxis/core/lookup.py:97`](../../../src/chronaxis/core/lookup.py#L97)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:97`](../../../src/chronaxis/core/lookup.py#L97)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PreparedLookup-packed"></a>
 ### `PreparedLookup.packed`
@@ -187,7 +187,7 @@ PreparedLookup.packed()
 
 分配错误。
 
-源码：[`src/chronaxis/core/lookup.py:108`](../../../src/chronaxis/core/lookup.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:108`](../../../src/chronaxis/core/lookup.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PreparedLookup-axis_at"></a>
 ### `PreparedLookup.axis_at`
@@ -212,7 +212,7 @@ float。
 
 非法索引。
 
-源码：[`src/chronaxis/core/lookup.py:118`](../../../src/chronaxis/core/lookup.py#L118)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:118`](../../../src/chronaxis/core/lookup.py#L118)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PreparedLookup-value_at"></a>
 ### `PreparedLookup.value_at`
@@ -237,7 +237,7 @@ PreparedLookup.value_at(index)
 
 非法索引。
 
-源码：[`src/chronaxis/core/lookup.py:122`](../../../src/chronaxis/core/lookup.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:122`](../../../src/chronaxis/core/lookup.py#L122)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-pack_requested_lookups"></a>
 ## `pack_requested_lookups`
@@ -264,7 +264,7 @@ pack_requested_lookups(expression)
 
 共用同一配置及模式的调用只打包一次。未消费的派生定义不会进入此根，原声明保持不可变。
 
-源码：[`src/chronaxis/core/lookup.py:128`](../../../src/chronaxis/core/lookup.py#L128)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:128`](../../../src/chronaxis/core/lookup.py#L128)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-pack_requested_lookups-visit"></a>
 ### `pack_requested_lookups.visit`
@@ -289,7 +289,7 @@ pack_requested_lookups.visit(node)
 
 分配错误。
 
-源码：[`src/chronaxis/core/lookup.py:137`](../../../src/chronaxis/core/lookup.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:137`](../../../src/chronaxis/core/lookup.py#L137)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-validate_lookups"></a>
 ## `validate_lookups`
@@ -315,4 +315,4 @@ validate_lookups(tables, version)
 
 非v4、重复名或表过多。
 
-源码：[`src/chronaxis/core/lookup.py:156`](../../../src/chronaxis/core/lookup.py#L156)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup.py:156`](../../../src/chronaxis/core/lookup.py#L156)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

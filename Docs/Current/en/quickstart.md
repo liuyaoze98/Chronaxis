@@ -91,10 +91,10 @@ From the examples directory, generate an equivalent BLF example and mixed-format
 
 ```powershell
 python prepare_can_examples.py --output can-demo
-chronaxis run can-demo/blf.json --output blf-result
+chronaxis run can-demo/blf.yaml --output blf-result
 ```
 
-[prepare_can_examples.py](../examples/prepare_can_examples.py) creates three equivalent datasets and their configurations, checks that their results agree, and writes only to the selected working directory. For your own BLF logs, use their paths directly; you do not need this teaching-data generator.
+[prepare_can_examples.py](../examples/prepare_can_examples.py) creates three equivalent datasets and commented `asc.yaml`, `blf.yaml`, and `mixed.yaml` plans, checks the generated YAML by running each plan, and writes only to the selected working directory. For your own BLF logs, use their paths directly; you do not need this teaching-data generator.
 
 <a id="换成自己的blfasc或日志目录"></a>
 ## 5. Use your own BLF, ASC, or log directory

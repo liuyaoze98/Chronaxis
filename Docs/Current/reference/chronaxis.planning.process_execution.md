@@ -5,7 +5,7 @@
 进程数与文件归并分别检查，明确拒绝未接入的来源及嵌套并行。
 只声明执行上限，不能凭校验成功证明文件内部有序或实际使用了多个进程。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -37,7 +37,7 @@ process_execution_errors(plan)
 
 无输入IO。
 
-源码：[`src/chronaxis/planning/process_execution.py:11`](../../../src/chronaxis/planning/process_execution.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/process_execution.py:11`](../../../src/chronaxis/planning/process_execution.py#L11)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-source_execution_facts"></a>
 ## `source_execution_facts`
@@ -62,4 +62,4 @@ source_execution_facts(plan)
 
 无；不读输入。
 
-源码：[`src/chronaxis/planning/process_execution.py:34`](../../../src/chronaxis/planning/process_execution.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/process_execution.py:34`](../../../src/chronaxis/planning/process_execution.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

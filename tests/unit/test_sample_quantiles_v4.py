@@ -6,7 +6,7 @@
 
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
@@ -119,36 +119,27 @@ class SampleQuantileTests(unittest.TestCase):
                 self.assertTrue(budgets)
                 self.assertTrue(all(b.ram_bytes == 0 for b in budgets))
 
-    def test_historical_joint_blocks_keep_q_on_values_only(self):
-        """独立回读的BOOL块只负责选择，分位概率仅属于数值块的原请求。
+    def test_public_condition_keeps_q_on_values_only(self):
+        """条件只选择三个数值样本，q=0.25得到15V，不进入布尔条件的参数。
 
-        参数: 无。返回: None。异常: q泄漏到duration、跨块重复或外部借用账本被释放时失败。
+        参数: 无。返回: None。异常: 样本/概率/预算或手算值不一致时失败。
         """
-        from chronaxis.core import MemoryRow, SignalDefinition, SignalDType as D
-        from chronaxis.core.calculations import CalculationDefinition
-        from chronaxis.execution.historical_sample_calculation import HistoricalSampleCalculation
-        from test_window_replay import WindowReplayTests
-        for backend in ('reference','numpy'):
-            factory = WindowReplayTests()
-            self.addCleanup(lambda f=factory:self.assertTrue(f.doCleanups()))
-            fixture = factory.fixture(domain=(0,4),backend=backend,
-                definitions=(SignalDefinition('a','table','raw.a',D.INT64,'V',10,config_version=4),
-                             SignalDefinition('gate','table','gate',D.BOOL,'1',10,config_version=4)),
-                rows_by_source={'table':tuple(MemoryRow(i,{'raw.a':v,'gate':g},i) for i,(v,g)
-                                             in enumerate(((0,False),(10,True),(20,True),(30,True),(99,True))))},
-                texts=('a','gate'))
-            base = fixture.history.budget.ram_bytes
-            spec = CalculationDefinition('rank','sample_quantile',fixture.domain,config_version=4,q=.25)
-            owner = HistoricalSampleCalculation(fixture.history,fixture.holds._context,fixture.lease.bindings,
-                fixture.compiled[0],spec,fixture.compiled[1],backend=backend,batch_intervals=1)
-            try:
-                while owner.step():
-                    pass
-                self.assertEqual((owner.result.value,owner.result.valid_sample_count),(15.,3))
-            finally:
-                owner.close()
-            self.assertEqual(fixture.history.budget.ram_bytes,base)
-
+        for backend in ('reference', 'numpy'):
+            for size in (1, 3):
+                with self.subTest(backend=backend, size=size), TemporaryDirectory(dir='work') as folder:
+                    raw = quantile_config(size)
+                    raw['rules'] = []
+                    raw['windows'] = []
+                    raw['calculations'] = [dict(name='rank', operation='sample_quantile',
+                        expr='v', condition='v > 0', q=.25),
+                        dict(name='count', operation='sample_count', expr='v', condition='v > 0')]
+                    with AnalysisRunner(backend).run(AnalysisPlan.from_dict(raw), Path(folder)/'run') as result:
+                        rows = tuple(result.iter_calculations())
+                        budget = result.spool.budget
+                    self.assertEqual(len(rows), 2)
+                    values = {r.calculation_id:r.value for r in rows}
+                    self.assertEqual(values, {'rank':15., 'count':3})
+                    self.assertEqual(budget.ram_bytes, 0)
     def test_direct_series_precision_and_budget_cleanup(self):
         """直接内存指标也保留有效样本数，区分插值精度故障与空间不足。
 

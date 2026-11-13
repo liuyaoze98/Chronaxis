@@ -8,7 +8,7 @@
 输出循环只打包模型/元数据，不逐事件执行参考数值；不调用参考窗口算法。
 输入和数组完整物化，不读旧链、不写文件、不承诺整个AnalysisRunner的预算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -66,4 +66,4 @@ Segment或compact的CompactSegment tuple；bounds为已解析的实际边界。�
 扩展前校验int64上下界，批量建立连接掩码/组索引、归约、裁剪及覆盖。
     恢复Interval时校验请求跨度，再做安全整数差；不改变原事件。
 
-源码：[`src/chronaxis/core/windows_numpy.py:18`](../../../src/chronaxis/core/windows_numpy.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/windows_numpy.py:18`](../../../src/chronaxis/core/windows_numpy.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

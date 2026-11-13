@@ -3,7 +3,7 @@
 import csv
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 
 import can
@@ -50,6 +50,25 @@ class FastFileTests(unittest.TestCase):
         path.write_text((EXAMPLES/'data/message-clean.asc').read_text().replace(' 100 Rx',' 000 Rx'))
         rows,_ = run_one(dict(self.spec,path=str(path),domain_ns=[0,10**9]))
         self.assertEqual(rows[0]['value'],800.)
+
+    def test_public_baseline_module_remains_executable_without_vendor(self):
+        """实际模块CLI处理两条400J报文，基准入口不依赖已退出的旧源码副本。"""
+        import os
+        import subprocess
+        import sys
+        config=self.root/'baseline.json'
+        spec=self.blf('baseline.blf',[{},{}]);spec['table_format']='jsonl'
+        config.write_text(json.dumps(spec),encoding='utf8')
+        env=dict(os.environ,PYTHONPATH=str(ROOT/'src'),PYTHONUTF8='1',PYTHONDONTWRITEBYTECODE='1')
+        completed=subprocess.run([sys.executable,'-X','utf8','-B','-m','chronaxis.fast.baseline',
+            '--config',str(config),'--output',str(self.root/'baseline-output')],
+            cwd=self.root,env=env,text=True,encoding='utf8',capture_output=True,timeout=30)
+        self.assertEqual(completed.returncode,0,completed.stderr)
+        manifest=Path(json.loads(completed.stdout)['manifest_path'])
+        record=json.loads(manifest.read_text(encoding='utf8'))
+        result=manifest.parent/record['outputs'][0]['name']
+        self.assertEqual(json.loads(result.read_text(encoding='utf8'))['value'],800.)
+        self.assertEqual(record['status'],'completed')
 
     def test_failure_does_not_publish_partial_result(self):
         root = self.root/'out'

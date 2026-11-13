@@ -9,11 +9,11 @@
 读取文件或证明来源EOF。实际间隔使用必要更新间的真实差，固定/DBC使用
 所选驱动记录对；有效期都按实际截止裁剪，没有完整记录对时不虚构尾段。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[NumpyIntegralSum](chronaxis.core.integral_sum_numpy.md#api-NumpyIntegralSum)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)、[ReferenceIntegralSum](chronaxis.core.integral_sum_reference.md#api-ReferenceIntegralSum)、[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -72,7 +72,7 @@ class RecordIntegralResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|输入和数值计算质量，不包含逐条副本。|
 |`coverage_status`|str &#124; None|否|None|对明确配置的覆盖门槛给出的结论；独立于数值本身的complete/partial/indeterminate状态。|
 
-源码：[`src/chronaxis/execution/record_integral.py:33`](../../../src/chronaxis/execution/record_integral.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:33`](../../../src/chronaxis/execution/record_integral.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral"></a>
 ## `RecordIntegral`
@@ -89,7 +89,7 @@ RecordIntegral(budget, spec, input_unit, dtype, step_ns, *, backend='numpy', bat
 继承关系：[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/record_integral.py:44`](../../../src/chronaxis/execution/record_integral.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:44`](../../../src/chronaxis/execution/record_integral.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral-__init__"></a>
 ### `RecordIntegral.__init__`
@@ -123,7 +123,7 @@ RecordIntegral.__init__(budget, spec, input_unit, dtype, step_ns, *, backend='nu
 配置/预算/取消错误；构造清理失败通过异常的
     record_integral_cleanup_owner提供重试入口。
 
-源码：[`src/chronaxis/execution/record_integral.py:51`](../../../src/chronaxis/execution/record_integral.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:51`](../../../src/chronaxis/execution/record_integral.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral-_flush"></a>
 ### `RecordIntegral._flush`
@@ -150,7 +150,7 @@ None。
 数值结构/预算/取消；
     清理异常不覆盖原错误，临时申请保留在owner供close重试。
 
-源码：[`src/chronaxis/execution/record_integral.py:100`](../../../src/chronaxis/execution/record_integral.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:100`](../../../src/chronaxis/execution/record_integral.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral-finish"></a>
 ### `RecordIntegral.finish`
@@ -177,7 +177,7 @@ RecordIntegralResult，
 
 预算/数值结构/取消错误，不发布前缀。
 
-源码：[`src/chronaxis/execution/record_integral.py:159`](../../../src/chronaxis/execution/record_integral.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:159`](../../../src/chronaxis/execution/record_integral.py#L159)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral-closed"></a>
 ### `RecordIntegral.closed`
@@ -205,7 +205,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_integral.py:188`](../../../src/chronaxis/execution/record_integral.py#L188)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:188`](../../../src/chronaxis/execution/record_integral.py#L188)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordIntegral-close"></a>
 ### `RecordIntegral.close`
@@ -231,4 +231,4 @@ None；重复关闭安全。
 
 预算释放失败可重试，不假报已关闭。
 
-源码：[`src/chronaxis/execution/record_integral.py:192`](../../../src/chronaxis/execution/record_integral.py#L192)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_integral.py:192`](../../../src/chronaxis/execution/record_integral.py#L192)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

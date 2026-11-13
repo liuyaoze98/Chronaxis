@@ -29,9 +29,9 @@ The root sections below are siblings. For example, `signals` is not nested insid
 | `message_calculations` | Calculations performed for individual matching messages. They have different interval semantics from ordinary time integration. |
 | `intervals` | Shared calculation-interval choice; defaults to actual intervals. A local `interval` overrides the shared choice. |
 | `outputs` | Defaults to readable Chinese CSV tables and a manifest. CSV/JSONL can be selected explicitly. Contribution details, signal exports, and raw CAN exports are off unless requested. |
-| `execution` | File-reading worker count, calculation implementation, resource limits, and handling of incomplete data. Single-source ASC/BLF examples explicitly select `process_count: 4`; omission still defaults to one and the default backend is NumPy. See [Execution settings](execution.md). |
+| `execution` | File-reading worker count, calculation implementation, resource limits, and handling of incomplete data. Single-source ASC/BLF examples explicitly select `process_count: 4`; omission still defaults to one and the default backend setting is auto, selecting reference or numpy from the whole plan. See [Execution settings](execution.md). |
 | `diagnostics` | Optional diagnostics; all switches default to false. |
-| `metadata` | Optional notes, default `{}`. `device_label` defaults to `pending` and follows its documented value restrictions; other notes do not affect computation. |
+| `metadata` | Optional notes, default `{}`. `device_label` accepts any nonblank string and defaults to `pending` for both analysis and exports; other notes do not affect computation. |
 
 Field names are case-sensitive. Unknown fields are errors. A diagnostic may suggest a spelling correction, but the program does not silently accept it. Duplicate YAML keys and conflicting object names are also rejected. Preserve DBC names exactly; use a signal's user-facing `name` as your convenient alias.
 

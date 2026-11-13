@@ -172,9 +172,11 @@ class CANPlanningTests(unittest.TestCase):
         self.assertEqual(report.capability_status['interval_execution'], 'implemented')
         for key in ('legacy_sum',):
             self.assertEqual(report.capability_status[key], 'unavailable')
-        for text in ('metadata_status=declared', '运行单位核对deferred', '空字典无法区分',
-                     'None/MISSING', '不猜DECODE_ERROR', '不保证关闭所有内部文件句柄', '进程RSS', '实际RAM峰值'):
+        for text in ('metadata_status=declared', '实际输入及DBC字段、单位将在读取时核对',
+                     '匹配报文缺少所需信号时记为无效', '其他报文不更新该信号',
+                     '解码策略按本来源配置执行', 'RSS上限', '实际RAM峰值'):
             self.assertTrue(any(text in warning for warning in report.warnings), text)
+        self.assertFalse(any('由进程退出回收FD' in warning for warning in report.warnings))
         self.assertEqual(explanation.plan_identity, plan.identity)
         self.assertEqual(explanation.source_names, ('bus',))
         self.assertEqual(tuple(node.dependencies for node in explanation.nodes),

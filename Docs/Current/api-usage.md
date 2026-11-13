@@ -36,7 +36,7 @@ if __name__ == "__main__":
     main()
 ```
 
-配置中的进程上限为4，但本例只有一个ASC文件，实际最多使用1个读取工作进程。若要运行两卷的同一组数据，把加载路径换成`Docs/Current/examples/input-can-directory.yaml`；此时最多使用2个读取工作进程，计算结果相同。该合成示例的终端输出如下，每行依次为计算名称、数值、单位和状态。
+配置中的进程上限为4，但本例只有一个ASC文件且采用默认接续方式，在当前进程读取；`explain`中的`read_process_limit`为0。若要运行两卷的同一组数据，把加载路径换成`Docs/Current/examples/input-can-directory.yaml`；此时`read_process_limit`为2，计算结果相同；这是计划上限，不是已观测到的PID数量。该合成示例的终端输出如下，每行依次为计算名称、数值、单位和状态。
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -47,9 +47,9 @@ time_average 6.333333333333333 W complete
 
 load_analysis_plan读取主配置及明确的一层公共定义，相对路径按各自声明文件的父目录解释。AnalysisPlan.from_dict(config, base_dir=...)接收Python字典，不读取主配置文件；base_dir省略时采用当前工作目录。两个入口构建计划时，都可能枚举输入目录，并在需要推导CAN类型、单位或枚举表时读取DBC；此时不扫描业务报文或CSV记录。from_dict拒绝未展开的imports，应先用文件加载入口或chronaxis config resolve。两者都会检查未知字段、名称冲突、表达式和业务引用。
 
-validate_analysis_plan返回静态ValidationReport；valid表示声明检查是否通过，execution_ready表示当前执行路径是否支持。explain_analysis_plan返回依赖和后端等ExplainReport。对已加载计划的静态检查不会读取业务数据；加载计划时，缺省CAN元数据可能需要读取DBC，仍不能证明真实数据有效。
+validate_analysis_plan返回静态ValidationReport；valid表示声明检查是否通过，execution_ready表示当前执行路径是否支持。explain_analysis_plan返回依赖和后端等ExplainReport。对已加载计划的静态检查不会读取业务数据；加载计划时，缺省CAN元数据可能需要读取DBC，仍不能证明真实数据有效。valid和execution_ready都不是全文件数据验收；坏行、实际时间回退、运行时权限或资源不足可能在run时才被发现。
 
-AnalysisRunner(backend=None, *, extensions=None)沿用计划的后端；reference采用独立参考实现，numpy采用数组计算。显式传入其中一个名称会覆盖本次执行设置。`run(plan, work_dir=None, *, process_count=None)`执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
+AnalysisRunner(backend=None, *, extensions=None)沿用计划设置；配置省略backend时使用auto，按整个计划选择reference或numpy。reference使用独立参考数值实现；numpy按计算路径采用逐点或数组计算。显式传入auto、reference或numpy会覆盖本次执行设置；选择范围见[执行设置](execution.md)。`run(plan, work_dir=None, *, process_count=None)`执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
 
 extensions 默认省略。只有 Python 宿主程序自行注册函数或滚动算子时，才在加载计划和创建 AnalysisRunner 时传入同一扩展注册对象，完整例子见[宿主扩展](host-extensions.md)。签名中的 * 表示其后的参数必须按名字填写。
 
@@ -94,13 +94,15 @@ print(explain_analysis_plan(plan))
 | 阶段 | 常见异常/结果 | 调用方处理 |
 |---|---|---|
 | 加载配置 | PlanValidationError | 查看path、source及可用的行列；修正后重新加载。此时未读业务日志。 |
-| 执行 | AnalysisError，保留原cause | 检查输入路径、时间、解码或预算原因；不要把失败作为空结果。 |
+| 执行 | AnalysisError；新包装的运行错误以__cause__保留原异常 | 检查输入路径、时间、解码或预算原因；不要把失败作为空结果。 |
 | 创建或读取结果游标 | ResultClosedError、BudgetExceededError、ResultFormatError、OSError | 关闭游标，保留异常；检查生命周期、预算或暂存文件。具体类别见方法参考。 |
 | 查询未请求的明细 | ContributionsUnavailableError；输入追溯未开启时AnalysisError | 按需开启outputs.contributions或diagnostics.trace后重新运行。 |
 | 发布 | AnalysisError或ResultClosedError | 检查路径、写入权限、平台及原异常链；结果仍可用时可向同一或其他目录重试write。 |
 | 批量任务 | 报告内failed/cancelled | 检查每个任务的状态；run_batch正常返回不保证所有任务成功。 |
 
 `AnalysisError`、`ResultClosedError`可从chronaxis导入；其他结果异常定义在[chronaxis.results.errors](reference/chronaxis.results.errors.md)。结果对象和游标分别占用资源，with管理结果、finally关闭游标。关闭结果后，其run_manifest仍可用于查看小型诊断快照，但不能再读取数据或发布。
+
+发生清理错误时，保留原异常和实际结果对象。普通运行失败可从所捕异常读取 `getattr(exc, "runner_cleanup_owner", None)`；结果发布或关闭失败可读取 `analysis_result_cleanup_owner`。排除文件占用等原因后，对存在的恢复对象调用 `close()`，也可直接重试仍持有的结果对象。恢复只释放本次资源，不重新计算或撤销已发布结果；属性可能仍指向已经关闭的对象，不能只凭属性存在判断资源是否仍被占用。
 
 ## 时间与预设入口
 

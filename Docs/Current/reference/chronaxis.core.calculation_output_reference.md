@@ -5,11 +5,11 @@
 输入为标量归约结果、原类型和编译期转换；输出数值及质量标志。
 复用参考仿射核，在归约结束后只换算一次，不重算样本，不读写文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -52,4 +52,4 @@ convert_result_reference(value, input_dtype, conversion)
 
 非法模型或系数错误传播，数值范围错误由质量表示。
 
-源码：[`src/chronaxis/core/calculation_output_reference.py:12`](../../../src/chronaxis/core/calculation_output_reference.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculation_output_reference.py:12`](../../../src/chronaxis/core/calculation_output_reference.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

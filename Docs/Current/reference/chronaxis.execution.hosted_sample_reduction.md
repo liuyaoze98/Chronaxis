@@ -2,7 +2,7 @@
 
 把有限真实样本块交给明确注册的宿主归约，复用原半开选择、覆盖与独立数值后端。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -44,7 +44,7 @@ HostedSampleReduction(spec, input_unit, dtype, descriptor, conversion, backend, 
 ```
 
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:14`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:14`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedSampleReduction-__init__"></a>
 ### `HostedSampleReduction.__init__`
@@ -76,7 +76,7 @@ HostedSampleReduction.__init__(spec, input_unit, dtype, descriptor, conversion, 
 
 宿主工厂或预算失败转交可重试清理句柄。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:17`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:17`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedSampleReduction-push"></a>
 ### `HostedSampleReduction.push`
@@ -101,7 +101,7 @@ HostedSampleReduction.push(series)
 
 回调或输入错误。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:36`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:36`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedSampleReduction-finish"></a>
 ### `HostedSampleReduction.finish`
@@ -127,7 +127,7 @@ SampleReductionResult。
 
 回调或转换错误。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:40`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:40`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HostedSampleReduction-close"></a>
 ### `HostedSampleReduction.close`
@@ -153,4 +153,4 @@ None。
 
 清理失败可重试。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:54`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:54`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

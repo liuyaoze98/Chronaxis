@@ -2,7 +2,7 @@
 
 把同一报文的集中声明展开为既有信号绑定，不增加运行时分组或重复读取。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -50,7 +50,7 @@ signal_entries(value)
 集中项仅接受声明一套报文定位；子项可覆盖周期、有效期和同一时刻策略，
 不能把另一个报文塞进本组。没有额外组名、引用或运行时对象。
 
-源码：[`src/chronaxis/planning/signal_groups.py:10`](../../../src/chronaxis/planning/signal_groups.py#L10)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/signal_groups.py:10`](../../../src/chronaxis/planning/signal_groups.py#L10)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-declared_signals"></a>
 ## `declared_signals`
@@ -75,4 +75,4 @@ declared_signals(value)
 
 无。
 
-源码：[`src/chronaxis/planning/signal_groups.py:62`](../../../src/chronaxis/planning/signal_groups.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/signal_groups.py:62`](../../../src/chronaxis/planning/signal_groups.py#L62)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -37,7 +37,7 @@ class RawCANRecord:
     sequence: int  # 同次读取从0开始，允许同时间不同载荷。
     raw_time: str | None  # 仅原文诊断请求保留；普通计算为None。
     parser_version: str  # 固定格式版本，不在半途自动切换。
-    dlc_code: int | None  # 真正DLC编码，错误帧没有该值。
+    dlc_code: int | None  # 真正DLC编码；错误帧及未声明长度的远程帧没有该值。
     time_quantized: bool = False  # 文本比纳秒更细时的实际舍入事实。
     source_time_ns: int | None = None  # 显式平移前的精确时间；手工旧构造省略时与time_ns相同。
 

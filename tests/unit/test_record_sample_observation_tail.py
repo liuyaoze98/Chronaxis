@@ -1,7 +1,7 @@
 """[home] BUG-CFG-035：末条所需信号之后的真实观测边界不能漏掉样本。"""
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from uuid import uuid4
 import unittest
 from unittest.mock import patch
@@ -50,8 +50,7 @@ BA_ "GenMsgCycleTime" BO_ 256 1000;
         def scan(owner,*args,**kwargs):
             """计实际读取器调用数，仍执行真实读取。"""
             scans.append(owner);return original(owner,*args,**kwargs)
-        with patch.object(BudgetedTextCANSourceAdapter,'iter_batches',scan),patch(
-                'chronaxis.execution.history.DecodedHistoryStore',side_effect=AssertionError('extra history')):
+        with patch.object(BudgetedTextCANSourceAdapter,'iter_batches',scan):
             with AnalysisRunner(backend).run(plan,self.root/uuid4().hex) as result:
                 rows={row.calculation_id:row for row in result.iter_calculations()}
                 selected=tuple((row.time_ns/1e9,row.value) for row in result.iter_selections())

@@ -2,7 +2,7 @@
 
 用有限大小的缓冲写出一组导出文件。所有文件关闭成功后才把临时目录改成正式目录；已有目标不会被覆盖。关闭失败时保存对应文件对象，以便重试清理。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -48,7 +48,7 @@ ExportFiles(destination, budget, *, integrity=True, timestamped=False)
 ```
 
 
-源码：[`src/chronaxis/results/export_files.py:19`](../../../src/chronaxis/results/export_files.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:18`](../../../src/chronaxis/results/export_files.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-__init__"></a>
 ### `ExportFiles.__init__`
@@ -63,10 +63,10 @@ ExportFiles.__init__(destination, budget, *, integrity=True, timestamped=False)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`destination`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。destination新目录、budget共用的资源用量记录。|
+|`destination`|str &#124; [pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本次导出的输出目录；timestamped=False 要求目录不存在，内部时间命名模式可复用已有的普通目录，但不接受符号链接或非目录目标。|
 |`budget`|[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)|是|无|位置或关键字。本次运行共用的ResourceBudget对象，用于检查内存和临时磁盘用量。当前对象在分配前申请额度，用完后归还；同一次运行的组件应使用同一个对象。|
 |`integrity`|bool|否|True|仅关键字。是否执行本对象的额外内容摘要或认证核验；False仍保留结构、类型、预算及必要文件变化检查。|
-|`timestamped`|bool|否|False|仅关键字。destination输出根、budget共用的资源用量记录，integrity控制摘要，timestamped为内部选择的公开时间命名模式。|
+|`timestamped`|bool|否|False|仅关键字。内部选择的时间命名模式；默认 False 使用新目录，True 为本次文件分配独占时间后缀，仍不覆盖既有文件。|
 
 #### 返回说明
 
@@ -74,15 +74,9 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 
 #### 异常说明
 
-路径/平台/预算/I/O错；清理失败附export_cleanup_owner。
+参数类型、平台能力、已有目标、资源预算或 I/O 错误向外传播。Windows 使用不覆盖移动；Linux 需要 renameat2，文件系统支持在实际安装时确认。构造失败后尚未释放的资源通过 export_cleanup_owner 保留。
 
-本函数直接报告的具体错误：
-
-- `TypeError`：导出需要目录路径和ResourceBudget。
-- `ValueError`：导出不能位于RefProjects。
-- `NotImplementedError`：导出原子安装目前只验证Windows。
-
-源码：[`src/chronaxis/results/export_files.py:22`](../../../src/chronaxis/results/export_files.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:21`](../../../src/chronaxis/results/export_files.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-closed"></a>
 ### `ExportFiles.closed`
@@ -110,7 +104,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/results/export_files.py:69`](../../../src/chronaxis/results/export_files.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:66`](../../../src/chronaxis/results/export_files.py#L66)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-open_file"></a>
 ### `ExportFiles.open_file`
@@ -141,7 +135,7 @@ ExportFiles.open_file(name)
 - `ValueError`：导出文件名或数量非法。
 - `ValueError`：导出文件重复。
 
-源码：[`src/chronaxis/results/export_files.py:74`](../../../src/chronaxis/results/export_files.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:71`](../../../src/chronaxis/results/export_files.py#L71)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-select_file"></a>
 ### `ExportFiles.select_file`
@@ -170,7 +164,7 @@ ExportFiles.select_file(name)
 
 - `ResultClosedError`：导出已关闭。
 
-源码：[`src/chronaxis/results/export_files.py:89`](../../../src/chronaxis/results/export_files.py#L89)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:86`](../../../src/chronaxis/results/export_files.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-append"></a>
 ### `ExportFiles.append`
@@ -201,7 +195,7 @@ ExportFiles.append(payload)
 - `ResultFormatError`：导出块需要至多64KiB bytes。
 - `OSError`：导出写入没有合法进展。
 
-源码：[`src/chronaxis/results/export_files.py:105`](../../../src/chronaxis/results/export_files.py#L105)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:102`](../../../src/chronaxis/results/export_files.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-close_file"></a>
 ### `ExportFiles.close_file`
@@ -227,7 +221,7 @@ ExportFiles.close_file()
 
 关闭失败保留句柄供重试。
 
-源码：[`src/chronaxis/results/export_files.py:123`](../../../src/chronaxis/results/export_files.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:120`](../../../src/chronaxis/results/export_files.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-close_reader"></a>
 ### `ExportFiles.close_reader`
@@ -253,7 +247,7 @@ ExportFiles.close_reader()
 
 原关闭错误，保留游标供重试。
 
-源码：[`src/chronaxis/results/export_files.py:134`](../../../src/chronaxis/results/export_files.py#L134)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:131`](../../../src/chronaxis/results/export_files.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-close_files"></a>
 ### `ExportFiles.close_files`
@@ -279,7 +273,7 @@ ExportFiles.close_files()
 
 原关闭错误，未关的仍在owner中。
 
-源码：[`src/chronaxis/results/export_files.py:143`](../../../src/chronaxis/results/export_files.py#L143)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:140`](../../../src/chronaxis/results/export_files.py#L140)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-register_external"></a>
 ### `ExportFiles.register_external`
@@ -310,7 +304,7 @@ ExportFiles.register_external(name)
 
 - `ValueError`：外部导出文件名称或状态非法。
 
-源码：[`src/chronaxis/results/export_files.py:152`](../../../src/chronaxis/results/export_files.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:149`](../../../src/chronaxis/results/export_files.py#L149)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-finish"></a>
 ### `ExportFiles.finish`
@@ -335,7 +329,7 @@ ExportFiles.finish(metadata)
 
 序列化/配额/关闭/竞态目标错误；失败保.incomplete目录，不冒报发布成功。
 
-源码：[`src/chronaxis/results/export_files.py:177`](../../../src/chronaxis/results/export_files.py#L177)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:174`](../../../src/chronaxis/results/export_files.py#L174)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-close"></a>
 ### `ExportFiles.close`
@@ -361,7 +355,7 @@ ExportFiles.close()
 
 原关闭/释放错，允许重试。
 
-源码：[`src/chronaxis/results/export_files.py:234`](../../../src/chronaxis/results/export_files.py#L234)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:232`](../../../src/chronaxis/results/export_files.py#L232)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ExportFiles-_cleanup_failed_output"></a>
 ### `ExportFiles._cleanup_failed_output`
@@ -387,4 +381,4 @@ None。
 
 身份或IO错误，可重试close。
 
-源码：[`src/chronaxis/results/export_files.py:257`](../../../src/chronaxis/results/export_files.py#L257)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/export_files.py:255`](../../../src/chronaxis/results/export_files.py#L255)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -38,4 +38,4 @@ TypeError/TimeOverflowError: 参数类型或任一坐标/结果超界。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/timebase/conversion.py:319`](../../../src/chronaxis/timebase/conversion.py#L319)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/timebase/conversion.py:325`](../../../src/chronaxis/timebase/conversion.py#L325)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

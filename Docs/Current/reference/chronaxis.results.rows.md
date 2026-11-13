@@ -5,7 +5,7 @@
 输入为已计算的冻结行；输出为固定表名和纯标量tuple，不读取来源或复制数值历史。
 每个表按会话、业务对象和真实顺序排序，父ID明确关联事件或片段。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -56,7 +56,7 @@ TypeError为未注册类型。
 
 返回类型：str。
 
-源码：[`src/chronaxis/results/rows.py:13`](../../../src/chronaxis/results/rows.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/rows.py:13`](../../../src/chronaxis/results/rows.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-row_sort_key"></a>
 ## `row_sort_key`
@@ -83,4 +83,4 @@ TypeError为非法行；不在这里排序或重复原数据读取。
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/results/rows.py:29`](../../../src/chronaxis/results/rows.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/rows.py:29`](../../../src/chronaxis/results/rows.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -2,7 +2,7 @@
 
 每个输入保留A/B已校验的解析配置，文件严格按声明顺序接续，不排序或猜测换日。
 时间在各解析器中已变为纳秒；本层不再施加偏移。通用时基由调用方显式提供。
-混合BLF复用python-can格式读取；既有纯BLF的LegacyCANSpec调用路径保持原样。
+混合及纯BLF复用python-can格式读取；纯BLF声明由公共游标转换并显式保留原解码政策。
 """
 
 from dataclasses import dataclass

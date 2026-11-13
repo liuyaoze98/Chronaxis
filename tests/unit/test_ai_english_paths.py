@@ -3,7 +3,7 @@ import ast
 from contextlib import chdir, redirect_stdout
 from io import StringIO
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import sys
 import unittest
 

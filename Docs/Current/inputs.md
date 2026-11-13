@@ -45,7 +45,7 @@ chronaxis run analysis.yaml --output can-result
 |time|对象|否；CSV仍需声明时间单位|relative；CAN/内存单位s|组织时间类型、单位、共享起点和偏移。缺省来源起点相互独立，不自动宣称多个来源同步。|
 |metadata|对象|否|`{}`|记录本来源的说明信息。项目可自行填写键和值，例如采集仪型号；空对象或省略不增加说明。这里的键不会作为额外读取选项执行。|
 |path|路径文本或路径列表|文件来源须与paths二选一|无|可填文件、目录或通配符；与paths使用相同选择规则。通常统一使用paths；memory不填写。|
-|paths|路径文本或路径列表|文件来源须与path二选一|无|可填单文件、目录、通配符或显式列表。自动发现的文件自然排序，显式列表保持原顺序；默认ASC/BLF、显式can_asc和raw_can_csv的每项也可用{path: 文件, offset: 2s}；signal_csv与显式can_blf不接受逐文件offset。默认按声明顺序接续；重叠文件可明确选择file_merge: time_order，见file_merge项。|
+|paths|路径文本或路径列表|文件来源须与path二选一|无|可填单文件、目录、通配符或显式列表。每个目录或通配符条目内发现的文件自然排序，显式列表条目保持原顺序，不再将全部条目混排；默认ASC/BLF、显式can_asc和raw_can_csv的每项也可用{path: 文件, offset: 2s}；signal_csv与显式can_blf不接受逐文件offset。默认按声明顺序接续；重叠文件可明确选择file_merge: time_order，见file_merge项。|
 
 用load_analysis_plan加载时，相对路径以配置文件所在目录为起点；用AnalysisPlan.from_dict构建时，以传入的base_dir为起点，未传则用当前工作目录。
 
@@ -63,6 +63,8 @@ execution:              # 与sources并列，控制本次分析的执行方式
 ```
 
 目录内 `part1.asc、part2.blf、part10.asc`最多由3个工作进程读取，主进程仍按1、2、10接续处理，保留跨文件信号和事件状态。只取ASC可写`paths: data/can/*.asc`；需要子目录时明确写`data/can/**/*.asc`。空目录或无匹配文件报错，不静默跳过。显式列表`[part10.asc, part2.asc]`保持原顺序。
+
+通配符末尾明确写成 `.asc`、`.blf`、`.csv` 或 `.txt` 时，扩展名匹配忽略字母大小写。例如 `data/can/*.asc` 也能找到 `part10.ASC`，`*.bLf` 也能找到 `.BLF` 文件；仍按来源类型筛选格式。文件名主体、目录名和其他通配符继续按操作系统的匹配规则处理，不能据此把整个路径视为大小写无关。需要递归查找时仍须显式写 `**`。
 
 文件之间有已知时间偏移时，把它与文件写在一起，例如`paths: [{path: part1.asc, offset: 0s}, {path: part2.asc, offset: 100s}]`；偏移叠加来源的time.offset。逐文件偏移适用于默认ASC/BLF、显式can_asc和raw_can_csv；signal_csv与显式can_blf只支持来源统一的time.offset。适用来源也可写offsets数组，但不能与文件对象中的offset同时声明。独立试验要分别运行，见[批量任务](batch.md)。
 
@@ -121,8 +123,8 @@ signals:                   # 把输入字段定义为有名称、类型、单位
 
 |字段（相对于sources[]）|数据类型|必填|默认值|可填写的值与含义|
 |---|---|---|---|---|
-|legacy_profile|字符串|否|sclicer-functions-v1|选择BLF读取实现，当前只接受sclicer-functions-v1，通常省略。|
-|reader.decode_scope|字符串|否|`"requested"`|控制解码哪些报文。requested只解码任务需要的报文；all请求全量解码检查。一般分析沿用默认，需要额外核查日志时再选all；能否用于本任务组合由计划检查决定。|
+|legacy_profile|字符串|否|sclicer-functions-v1|标识保留的BLF行为政策，当前只接受sclicer-functions-v1；默认自动采用，通常省略。|
+|reader.decode_scope|字符串|否|`"requested"`|控制尝试解码的报文范围。requested只处理任务需要的报文；all还尝试其他普通数据帧，但不保证每帧都有DBC定义或解码成功。一般分析沿用默认；all的实际检查与失败处理见下表，不能据此认证整份日志。|
 
 <a id="decode-policy"></a>
 ### reader.decode_policy：CAN解码策略
@@ -136,9 +138,9 @@ reader:                  # 设置来源的读取选项；本片段放在对应so
 
 |decode_policy|用途与行为|
 |---|---|
-|strict（新版默认）|要求报文长度和结构符合DBC；结构正确而所需值不能解码时记为无效，继续分析。|
+|strict（默认）|要求已选数据帧的长度和结构符合DBC；结构正确而所需值不能解码时记为无效，继续分析。|
 |partial|显式允许短载荷的部分解码；能取得的值正常交付，取得不到的所需值无效。仍不接受损坏的报文结构。|
-|legacy|保留下方路径表所列行为；文本CAN长度严格且DecodeError失败，旧BLF路径不新增长度检查，解码失败可产生无效值。|
+|legacy|保留下方路径表所列行为；文本CAN长度严格且DecodeError失败，纯BLF政策不新增长度检查，解码失败可产生无效值。|
 
 默认asc_or_blf允许ASC/BLF混合；显式can_asc/can_blf限定对应格式。显式文件列表保持顺序，目录与通配符自然排序。ASC/CSV的文字和列结构首先由reader检查，decode_policy不能让无法解析的文本成为有效帧。经典CAN与DBC FD标记的支持范围见[信号定位](#can-field)。
 
@@ -150,13 +152,24 @@ reader.decode_policy决定已选数据帧的长度检查与解码失败处理。
 |---|---|---|---|
 |文本CAN路径：载荷长度不等于DBC长度|失败|允许短于DBC；超长或DLC与实际字节不一致失败|按strict检查，长度不符失败|
 |文本CAN路径：长度检查后cantools抛DecodeError|本条解码值无效，不沿用前值|本条解码值无效，不沿用前值|任务失败|
-|can_blf旧路径：载荷长度不等于DBC长度|失败|允许短于DBC；超长或DLC与实际字节不一致失败|不新增长度检查，交原解码器处理|
-|can_blf旧路径：原解码器解码失败|返回空解码结果，所需值无效|返回空解码结果，所需值无效|返回空解码结果，所需值无效|
-|未选报文|按所需观测/导出范围读取，不因未选择的信号执行这项DBC解码|同左|同左|
+|can_blf政策：载荷长度不等于DBC长度|失败|允许短于DBC；超长或DLC与实际字节不一致失败|不新增长度检查，交DBC解码器处理|
+|can_blf政策：长度检查后cantools抛DecodeError|返回空解码结果，所需值无效|返回空解码结果，所需值无效|返回空解码结果，所需值无效|
+|未选报文（requested）|按所需观测/导出范围读取，不执行未选报文的DBC解码|同左|同左|
 
-文本结构损坏、输入时间错误以及未列出的I/O或程序异常仍可能使任务失败；不能把partial理解成忽略所有错误。没有完整字段的短帧不补零。
+上表的解码失败专指cantools的DecodeError。纯BLF串行读取且DBC中该ID只有一个定义时，解码函数的其他普通Exception也会使本条值无效；同ID存在多个定义或采用文件并行时，只将DecodeError按表处理，其他异常继续抛出。长度检查、文本结构、输入时间及I/O错误不因此被忽略。不能把partial理解成忽略所有错误；缺少的短帧字段不补零。
 
-路径由规范化后的source_type决定：can_asc、raw_can_csv和保留为asc_or_blf的混合路径使用文本CAN适配层；can_blf沿用表中的纯BLF解码政策，单进程和文件并行采用相同的长度检查与DBC解码失败处理。省略source_type或填写asc_or_blf时，纯ASC归一为can_asc，包括设置了逐文件offsets的情况；纯BLF且未填offsets时归一为can_blf；混合ASC/BLF，或纯BLF且设置offsets时保留asc_or_blf。不能只看某一个文件后缀判断legacy行为。
+`reader.decode_scope: all`扩大尝试解码的范围，不表示全部报文都通过DBC检查。此选项用于纯BLF串行入口；文件并行与`time_order`要求`requested`。下表说明选择`all`时各类帧的处理：
+
+|帧的情况|是否尝试普通信号解码|何时检查DBC载荷长度|解码失败怎样体现|
+|---|---|---|---|
+|与已绑定信号实际匹配的普通数据帧|尝试所选定义|strict要求长度一致；partial允许短于DBC；legacy不增加该检查|DecodeError产生空解码结果，所需信号无效，不沿用前值；其他异常按上文串行政策处理|
+|未绑定，但DBC中有该ID的普通数据帧|尝试按ID调用数据库解码|没有通过已绑定信号选定定义，不承诺执行相同的DBC长度检查|该调用的普通Exception可转为空结果；没有对应分析信号时，不生成额外的逐帧失败报告|
+|DBC中没有该ID的普通数据帧|仍会尝试按ID调用数据库解码|没有可用的已选DBC定义|找不到定义可得到空结果；任务成功不能证明该帧已解码|
+|远程帧或错误帧|strict/partial不执行普通信号解码；legacy可尝试按ID解码|不按已绑定普通数据帧执行上述长度检查|没有普通信号更新；不能视为已通过DBC检查|
+
+表中只描述解码范围。输入结构、实际需要的时间及I/O错误仍按各自规则处理；`input_check: full`检查完整来源的时间顺序，不补充一份全帧DBC认证。
+
+路径由规范化后的source_type决定：can_asc、raw_can_csv和保留为asc_or_blf的混合路径使用文本CAN适配层；can_blf采用表中的纯BLF长度与DecodeError政策，其他异常的串行/并行区别见上文。省略source_type或填写asc_or_blf时，纯ASC归一为can_asc，包括设置了逐文件offsets的情况；纯BLF且未填offsets时归一为can_blf；混合ASC/BLF，或纯BLF且设置offsets时保留asc_or_blf。不能只看某一个文件后缀判断legacy行为。
 
 
 <a id="can-field"></a>
@@ -184,7 +197,7 @@ DBC标为FD但日志实际为经典CAN的已支持兼容继续保留，并记录
 
 以下两个选项回答不同的问题，完整路径分别为`sources[].reader.decode_scope`和`sources[].reader.input_check`：
 
-- `decode_scope`只用于BLF旧读取入口，决定解码哪些报文。默认 `"requested"` 处理当前任务需要的报文；`"all"` 用于全量解码检查。
+- `decode_scope`只用于纯BLF入口，决定尝试解码哪些报文。默认 `"requested"` 处理当前任务需要的报文；`"all"` 扩大尝试范围，具体跳过和失败情况见上表，不证明全部报文已通过DBC检查。
 - `input_check`用于所有CAN来源，决定时间检查范围。默认 `"auto"` 根据任务决定；`"full"` 检查完整来源的时间顺序，不是开启所有信号解码或所有诊断输出。
 
 例如只按固定周期累计整份文件的消息能量，可能不需要报文时间；但找活动或筛选某段时间，就需要检查时间。运行explain后，可在 `input_requirements` 查看本次需要的信号和时间检查范围。未检查的记录不能据此认定为正确。
@@ -194,6 +207,8 @@ DBC标为FD但日志实际为经典CAN的已支持兼容继续保留，并记录
 普通规则、窗口、计算和导出也可以省略`dataset.domain`，程序采用输入实际观测范围；多来源取观测范围的并集，没有观测数据不生成事件，会话统计返回空值。仅整文件逐消息累计且不需要时间时，可以不额外建立时间范围；存在时间筛选、事件或其他时间相关功能时仍检查所需时间。省略domain不会关闭时间相关功能所需的检查。详见[分析范围](dataset.md)和[当前消息累计](message-calculations.md)。
 
 ## CSV：每行是一次明确更新
+
+信号CSV按实际内容和剩余预算分批交付，`execution.batch_rows`是上限；通常可使用默认设置。所需最小记录和交接状态也放不下时才因这项容量不足而失败，具体处理与内存边界见[执行批次说明](execution.md)。
 
 下面是`sources`列表中的一项，文件`part1.csv`和`part2.csv`须包含时间列`time_ms`及所引用的信号列。
 
@@ -215,13 +230,15 @@ sources:                           # 列出输入来源；每项规定数据位�
 |signal_csv专用字段|数据类型|必填|默认值|含义与例子|
 |---|---|---|---|---|
 |time_column|字符串|是|无|选择哪一列提供记录时间。复制CSV实际表头，例如time_ms；大小写须一致，填错会在读取表头时失败。|
-|reader.encoding|字符串|否|`"utf-8"`|选择把文件字节读成文本的编码。根据导出设置填写utf-8、utf-8-sig、gbk等实际编码；省略按utf-8读取，不自动猜测。|
+|reader.encoding|字符串|否|`"utf-8-sig"`|选择把文件字节读成文本的编码。默认读取普通UTF-8及文件开头带BOM的UTF-8，Excel“CSV UTF-8”通常不必额外配置；其他编码按导出设置填写，例如gbk。显式值优先，不自动猜测。|
 |reader.delimiter|字符串|否|`","`|选择分隔各列的字符。根据原文件填写一个字符；逗号CSV填逗号，制表符文件填双引号字符串"\t"。不能把多个字符当一个分隔符。|
 |reader.missing_values|字符串数组|否|`[""]`|规定哪些CSV单元格文字表示无效更新。按设备导出约定填写，例如["", "NA"]；精确匹配且不自动去空格。空列表表示不额外声明缺失文本，null不是列表；出现NA后不会继续保持上一条有效值。|
 
 `path`和`paths`二选一。显式列表按给定顺序读取；目录和通配符自然排序。比如part1结束于第10秒，part2却从第0秒重新计时，直接连接读取会因时间回退而报错。
 
 上例把空单元格和NA都声明为无效值。如果上一行电流为5A，下一行写NA，程序就从下一行时刻起认为电流未知，不再沿用5A。需要查输入位置时显式开启diagnostics.trace并读取input_trace；默认摘要结果不保存逐单元格原始位置。
+
+默认编码只去掉文件开头的BOM，不删除列名或单元格中间的`U+FEFF`字符。表头末尾多出的空列名可以省略，例如`time,power,`可读取数据行`0,100,`或`0,100`；对应匿名尾列只允许空单元格，空格和其他非空内容都会报错，需要为其补列名。中间空列名、重复列名、有名列缺失及超出表头宽度的行仍然报错。引号、引号内换行及错误的物理行号按CSV规则处理。
 
 例如原列`Current_mA`转成别名`current`：
 
@@ -243,27 +260,43 @@ signals:               # 把输入字段定义为有名称、类型、单位和�
 
 ## 内存：把记录直接写进配置
 
-下面是`sources`列表中的一项。`rows`保存原始时间和值，适合构造可手工复算的例子。
-
-应用位置：以自己新建的分析文件为基础，在文件根级加入或替换`sources`，代码已包含父键。存在同名列表时按本例替换该列表，不把父键再嵌入列表项。 本段直接提供内存记录，不需要外部文件；信号和计算需在完整计划中另行定义。
+下面是可独立运行的[内存最小配置](examples/input-memory-minimal.yaml)。它只定义功率，不需要外部文件；字段的类型、单位和有效期均在同一个例子中给出。0至1秒为2W，1至2秒为4W，因此积分为`2×1+4×1=6J`。
 
 ```yaml
-sources:                 # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - source_type: memory  # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    rows:                # 提供内存来源的记录列表；每条记录含时间及该时刻的字段值
-      - time: 0s         # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 1      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
-      - time: 1s         # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 0      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
-      - time: 8s         # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          power: 4000    # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
-          active: 0      # 本时刻原字段active的合成输入值；其类型和单位由下方信号定义说明
+# 合成教学配置；请连同配套输入使用，数值仅用于复现本例。
+config_version: 4          # 声明分析文件采用的字段结构版本；当前填写整数4
+dataset:                   # 设置本次分析名称及可选的对象、会话和时间范围
+  domain:                  # 限定本次分析请求的起止时间；应与来源采用相同时间基准
+    end: 2s                # 设置分析终点；连续时长不包含该端点，按希望分析的范围填写
+    start: 0s              # 设置分析起点，包含该时刻；按希望分析的范围填写
+  name: memory_power       # 命名本次分析数据集；名称写入结果身份字段
+sources:                   # 列出输入来源；每项规定数据位置、格式和时间解释方式
+  - rows:                  # 提供内存来源的记录列表；每条记录含时间及该时刻的字段值
+      - time: 0s           # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 2         # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+      - time: 1s           # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 4         # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+      - time: 2s           # 填写本条合成记录的发生时间，按本来源的time声明解释
+        values:            # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
+          power: 4         # 本时刻原字段power的合成输入值；其类型和单位由下方信号定义说明
+    source_type: memory    # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
+signals:                   # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - dtype: float64         # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+    field: power           # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+    name: power            # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    unit: W                # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；按已登记的兼容单位换算数值
+    valid_for: 3s          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+calculations:              # 列出希望获得的统计或积分结果，每项独立选择范围和算法
+  - name: energy           # 为这项计算结果取唯一名称；结果表用它区分计算项
+    operation: integral    # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
+    expr: power            # 指定参与计算的数值或信号表达式；引用前面已定义的信号
+execution:                 # 设置本次分析的并行处理方式
+  process_count: 1         # 本例为CSV、内存或多来源会话，当前仅支持单进程
 ```
+
+在保存配置的目录运行`python -m chronaxis run input-memory-minimal.yaml --output memory-result`。从完成摘要中的清单定位会话结果表，检查`energy（J）`列为6、`energy：状态`为“完整”。若以后加入真假信号，原值可直接写true/false；使用整数0/1时须在该信号声明`dtype: bool`及`choices: [[0, false], [1, true]]`，再在条件中引用它。
 
 下表位于`sources[]`；记录时间的完整路径为`sources[].rows[].time`。
 

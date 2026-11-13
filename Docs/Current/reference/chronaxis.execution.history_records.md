@@ -7,11 +7,11 @@
 编码复用结果层固定白名单标签，不注册动态类或允许任意对象反序列化。
 格式只用于新执行层历史，不修改分析计划schema或旧读写格式。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CANSourceRef](chronaxis.sources.can_spec.md#api-CANSourceRef)、[CANTextSourceRef](chronaxis.sources.text_can_ref.md#api-CANTextSourceRef)、[CSVSourceRef](chronaxis.sources.csv_spec.md#api-CSVSourceRef)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SignalSample](chronaxis.core.models.md#api-SignalSample)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
+[CANSourceRef](chronaxis.sources.can_spec.md#api-CANSourceRef)、[CANTextSourceRef](chronaxis.sources.text_can_ref.md#api-CANTextSourceRef)、[CSVSourceRef](chronaxis.sources.csv_spec.md#api-CSVSourceRef)、[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SignalSample](chronaxis.core.models.md#api-SignalSample)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
 
 ## 对象导航
 
@@ -31,6 +31,7 @@
 ```python
 from dataclasses import dataclass
 from math import isfinite
+from sys import getsizeof
 from ..core.models import SourceRef, SignalSample, require_identifier, require_scalar
 from ..sources.csv_spec import CSVSourceRef
 from ..sources.can_spec import CANSourceRef
@@ -38,7 +39,7 @@ from ..sources.text_can_ref import CANTextSourceRef
 from ..core.numeric import ScalarValue
 from .record_sample import RecordSample
 from ..timebase.conversion import require_int64_ns
-from ..core.types import SignalDType
+from ..core.types import SignalDType, QualityFlag
 from ..results.codec import _pack, _unpack, _unique_object, _reject_constant, _estimate
 from ..results.errors import ResultFormatError
 ```
@@ -67,13 +68,13 @@ class HistorySample
 |`time_ns`|int|是|无|当前事实对应的整数纳秒时间，不经过浮点二次取整。|
 |`sequence`|int|是|无|稳定序号，非负原生整数；不是用时间推导的序号。|
 |`array_value`|int &#124; float &#124; bool|是|无|保存数组使用的物理标量；数值和布尔直接保存，enum保存状态名称在labels中的整数索引。有效性以value.valid为准，不能用占位数值推断。|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|保存ScalarValue逻辑样本，包含值、类型、有效性和质量；enum的正常逻辑值是状态名称文本。与array_value必须表示同一个有效样本。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|保存ScalarValue逻辑样本，包含值、类型、有效性和质量；enum的正常逻辑值是状态名称文本。与array_value必须表示同一个有效样本。|
 |`unit`|str|是|无|该值或指标采用的单位字符串；不凭名称推测单位。|
 |`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|该值的实际来源定位，供追溯到原会话/字段/消息。|
 |`original_present`|bool|是|无|True表示原始诊断值列存在；False表示没有该列。这样能区分未提供诊断列与列中真实保存了None。|
 |`original_value`|int &#124; float &#124; bool &#124; str &#124; None|是|无|归一化之前的原值；配合original_present区分真实None与没有保留原值。|
 
-源码：[`src/chronaxis/execution/history_records.py:26`](../../../src/chronaxis/execution/history_records.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:27`](../../../src/chronaxis/execution/history_records.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HistorySample-__post_init__"></a>
 ### `HistorySample.__post_init__`
@@ -110,7 +111,7 @@ TypeError/ValueError/OverflowError为记录矛盾或非法标量。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history_records.py:45`](../../../src/chronaxis/execution/history_records.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:46`](../../../src/chronaxis/execution/history_records.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HistoryProgress"></a>
 ## `HistoryProgress`
@@ -133,7 +134,7 @@ class HistoryProgress
 |`source_eof`|bool|是|无|来源读取是否到达真实EOF的布尔值。|
 |`observed_end_ns`|int &#124; None|是|无|实际观测终点纳秒；未知时保留None，不能填请求终点。|
 
-源码：[`src/chronaxis/execution/history_records.py:79`](../../../src/chronaxis/execution/history_records.py#L79)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:80`](../../../src/chronaxis/execution/history_records.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-HistoryProgress-__post_init__"></a>
 ### `HistoryProgress.__post_init__`
@@ -166,7 +167,7 @@ TypeError/ValueError/OverflowError为记录结构或时间错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/history_records.py:90`](../../../src/chronaxis/execution/history_records.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:91`](../../../src/chronaxis/execution/history_records.py#L91)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-record_values"></a>
 ## `record_values`
@@ -197,7 +198,7 @@ TypeError为未支持记录。
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/execution/history_records.py:112`](../../../src/chronaxis/execution/history_records.py#L112)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:113`](../../../src/chronaxis/execution/history_records.py#L113)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-estimate_record_bytes"></a>
 ## `estimate_record_bytes`
@@ -224,7 +225,7 @@ bytes估算，非全进程RSS。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history_records.py:147`](../../../src/chronaxis/execution/history_records.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:155`](../../../src/chronaxis/execution/history_records.py#L155)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-encode_record"></a>
 ## `encode_record`
@@ -256,7 +257,7 @@ ResultFormatError为超长/不支持结构。
 
 返回类型：bytes。
 
-源码：[`src/chronaxis/execution/history_records.py:159`](../../../src/chronaxis/execution/history_records.py#L159)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:188`](../../../src/chronaxis/execution/history_records.py#L188)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-decode_record"></a>
 ## `decode_record`
@@ -295,4 +296,4 @@ ResultFormatError并保留原格式/模型异常链。
 
 返回类型：HistoryRecord。
 
-源码：[`src/chronaxis/execution/history_records.py:177`](../../../src/chronaxis/execution/history_records.py#L177)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/history_records.py:206`](../../../src/chronaxis/execution/history_records.py#L206)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

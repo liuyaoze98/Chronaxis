@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Chronaxis公共定义文件",
-  "description": "只共享来源、信号与派生表达式。没有版本包装，不允许嵌套imports；当前结构随引用它的配置3解释。",
+  "description": "只共享来源、信号与派生表达式。没有版本包装，不允许嵌套imports；其结构由引用它的当前分析配置（config_version: 4）解释。",
   "$comment": "公共定义文件结构；由分析配置通过单层imports引用。",
   "type": "object",
   "minProperties": 1,

@@ -1,10 +1,10 @@
 """验证默认 requested 的真实需求证据、显式 all 诊断兼容和来源关闭责任。
 
-合成 BLF/DBC 由既有真实夹具在独占 work 目录创建；两后端通过原生产 worker
-读取，不替换旧 reader/decoder。旧解码轨迹专项显式input_check=full保全部原帧
+合成 BLF/DBC 由既有真实夹具在独占 work 目录创建；两后端通过公共Runner共用BLF读取链
+读取，不替换实际 reader/decoder。旧解码轨迹专项显式input_check=full保全部原帧
 时间；默认专项真实运行auto/selected并核所需记录和新范围证据。父端观察同次
-READY和实际记录类型，不给未保存载荷或时间补值。静态例独立按旧字段列表估费。
-错误例覆盖非法 typed 范围在目录/输入前拒绝、真实 READY 二次核对和入账后取消。
+元数据和实际记录类型，不给未保存载荷或时间补值。静态例独立按旧字段列表估费。
+错误例覆盖非法 typed 范围在目录/输入前拒绝、真实DBC元数据二次核对和入账后取消。
 不运行私人日志、性能测量或历史项目入口；所有本例记录来源为 home。
 """
 
@@ -26,7 +26,6 @@ from chronaxis import AnalysisPlan, AnalysisRunner, explain_analysis_plan
 from chronaxis.execution import can_reader
 from chronaxis.execution.can_batch_reader import CANBatchObservationRead
 from chronaxis.execution.run_session import RunSession
-from chronaxis.execution.scanned_signal_proof import _source_contract
 from chronaxis.legacy.batch_read import LegacyCANBatchRead
 from chronaxis.legacy.records import PROFILE_ID, decoded_to_dict, encode_packet
 from chronaxis.legacy.required_records import RequiredDecodedFrame, required_to_dict
@@ -60,19 +59,18 @@ def unknown_native_type_worker(connection, *, ids, input_check, time_scope):
         六条真实帧均经过worker._frame，不手填READY、批次或完成计数。
     """
     from chronaxis.legacy import batch_worker, worker
-    original_load = worker._load_vendor
+    original_load = worker._load_can_runtime
 
     def load_without_native_type():
-        """保真实旧函数和模块哈希，只不声明可识别的原生消息类型。
+        """保真实读取和解码模块，只不声明可识别的原生消息类型。
 
-        参数: 无。返回: 有iter_frames的有限门面、原处理器和哈希。
+        参数: 无。返回: 不暴露原生Message类的CAN门面及真实cantools模块。
         异常: 原加载错误传播；不改写旧模块或CAN库对象。
         """
-        files, processor, vendor = original_load()
-        return SimpleNamespace(iter_frames=files.iter_frames,
-            can=SimpleNamespace(Message=object)), processor, vendor
+        can,cantools=original_load()
+        return SimpleNamespace(Message=object),cantools
 
-    with patch.object(worker, '_load_vendor', load_without_native_type):
+    with patch.object(worker, '_load_can_runtime', load_without_native_type):
         return batch_worker.batch_worker_main(connection, decode_frame_ids=ids,
             input_check=input_check, time_scope=time_scope)
 
@@ -125,76 +123,75 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
         return root,config,AnalysisPlan.from_dict(current_fixture(config),base_dir=root)
 
     def execute(self,plan,path,*,trace=False,ordinary=False):
-        """记录实际READY/保留行并完整消费汇总，最后关闭结果。
-
-        参数: 真计划、新工作目录；trace透传记录真实child旧调用，ordinary消费普通表。
-        返回: 汇总、公开元数据和有限观察字典；按需行的载荷位置明确为None。
-        异常: 原执行/关闭错误；记录仅来自实际已成功处理的生产对象。
-        """
-        observed=dict(ready=[],records=[],adapters=[],processes=[],completed=[])
-        original_start=can_reader.CANObservationRead._start
-        original_close=can_reader.CANObservationRead.close
-        original_advance=CANBatchObservationRead._advance_record
-        original_init=LegacyCANBatchRead.__init__
-        trace_path=plan.sources[0].config.path.with_name('process-trace.jsonl')
-        before=len(trace_path.read_text(encoding='utf-8').splitlines()) if trace and trace_path.exists() else 0
-
-        def observed_init(read,request,budget,**kwargs):
-            """仅替测试child入口以记录原调用。参数: 原构造参数。返回: None。异常: 原初始化错误。"""
-            kwargs['_worker_target']=partial(observed_requested_worker,ids=kwargs.get('decode_frame_ids'))
-            original_init(read,request,budget,**kwargs)
-
-        def start(read):
-            """原启动完成后观察真实 READY。参数: 原read。返回: 原返回。异常: 原启动错误。"""
-            result=original_start(read)
-            observed['ready'].append(dict(read.runtime_metadata))
-            observed['adapters'].append((read._owner.decode_scope,read._owner.decode_frame_ids))
-            observed['processes'].append(read._process)
-            return result
-
+        """观察公共Runner实际共用读取链，保留原手算结果、需求范围和关闭断言。"""
+        import can
+        from chronaxis.execution import text_can_reader
+        from chronaxis.sources.text_can_decode import CANTextDecodeRead
+        from chronaxis.sources.can_spec import can_field_from_key
+        observed=dict(ready=[],records=[],adapters=[],processes=[],completed=[],calls=[],delivered_ids=[])
+        read_type=text_can_reader.TextCANObservationRead
+        original_init=read_type.__init__;original_prepare=read_type.prepare_metadata;original_close=read_type.close
+        original_next=CANTextDecodeRead.__next__;original_decode=CANTextDecodeRead._decode
+        original_frames=can.BLFReader.__iter__
+        prepared=set()
+        def initialize(read,owner,request):
+            """记录实际适配器需求。参数: read、owner、request。返回: None。异常: 原构造错误。"""
+            original_init(read,owner,request)
+            ids={can_field_from_key(item.field).frame_id for item in owner.signals}
+            ids.update(key[1] for key in owner._update_projection._groups) if owner._update_projection is not None else None
+            observed['adapters'].append((owner._serial_blf_policy,tuple(sorted(ids))))
+            observed['processes'].append(read)
+        def prepare(read):
+            """每个读取器只摘取一次元数据。参数: read。返回: 原事实。异常: 原初始化错误。"""
+            facts=original_prepare(read)
+            if id(read) not in prepared:
+                prepared.add(id(read));observed['ready'].append(dict(facts))
+            return facts
         def advance(read):
-            """原处理成功后保存实际类型记录，不给按需记录补载荷。
-
-            参数: 实际read。返回: 原bool。异常: 原错误或记录类型编码错误。
-            """
-            available=original_advance(read)
-            if available:
-                record=read._record
-                # 新记录明确没有原载荷；完整记录仍核原data及旧JSON字节。
-                required = type(record) is RequiredDecodedFrame
-                payload = required_to_dict(record) if required else decoded_to_dict(record)
-                observed['records'].append((record.sequence,record.frame.timestamp,
-                    record.frame.arbitration_id,None if required else record.frame.data.hex(),
-                    encode_packet(payload)))
-            return available
-
+            """记录真实交付顺序与载荷。参数: read。返回: 原记录。异常: EOF或原读取错误。"""
+            record=original_next(read)
+            observed['delivered_ids'].append(record.raw.frame.arbitration_id)
+            if record.raw.frame.arbitration_id in {256}:
+                observed['records'].append((record.sequence,record.raw.frame.timestamp,
+                    record.raw.frame.arbitration_id,record.raw.frame.data.hex(),record.values))
+            return record
+        def decode(read,raw):
+            """按真实计数增量记录调用。参数: read及raw。返回: 原解码结果。异常: 原解码错误。"""
+            before=read.decode_calls;result=original_decode(read,raw)
+            observed['calls'].extend(dict(rule='parse') for _ in range(read.decode_calls-before))
+            return result
+        def frames(reader):
+            """透传真实BLF迭代并记录EOF调用。参数: reader。返回: 帧生成器。异常: 原读取/关闭错误。"""
+            iterator=original_frames(reader)
+            try:
+                while True:
+                    observed['calls'].append(dict(rule='next'))
+                    try:value=next(iterator)
+                    except StopIteration:return
+                    yield value
+            finally:iterator.close()
         def close(read):
-            """只在实际完整EOF后借读观测，不额外读取输入。参数: 原read。返回: 原close。异常: 原错。"""
-            if read.finished and not read.closed and not read._closing:
+            """关闭前保留已完成观测。参数: read。返回: 原关闭结果。异常: 原关闭错误。"""
+            if read.exhausted and not read.closed and read._observation is not None:
                 observed['completed'].append(read.observation)
             return original_close(read)
-
         with ExitStack() as stack:
-            stack.enter_context(patch.object(can_reader.CANObservationRead,'_start',start))
-            stack.enter_context(patch.object(CANBatchObservationRead,'_advance_record',advance))
-            stack.enter_context(patch.object(can_reader.CANObservationRead,'close',close))
-            if trace:
-                stack.enter_context(patch.object(LegacyCANBatchRead,'__init__',observed_init))
+            stack.enter_context(patch.object(read_type,'__init__',initialize))
+            stack.enter_context(patch.object(read_type,'prepare_metadata',prepare))
+            stack.enter_context(patch.object(read_type,'close',close))
+            stack.enter_context(patch.object(CANTextDecodeRead,'__next__',advance))
+            stack.enter_context(patch.object(CANTextDecodeRead,'_decode',decode))
+            if trace:stack.enter_context(patch.object(can.BLFReader,'__iter__',frames))
             result=AnalysisRunner().run(plan,work_dir=path)
         budget=result.spool.budget
         try:
             rows=tuple(row for row in drain(result.iter_calculations()) if row.operation=='legacy_sum')
             metadata=result.metadata
-            if ordinary:
-                observed['ordinary']=tuple(drain(getattr(result,name)())
-                    for name in ('iter_events','iter_segments','iter_selections'))
-        finally:
-            result.close()
+            if ordinary:observed['ordinary']=tuple(drain(getattr(result,name)())
+                for name in ('iter_events','iter_segments','iter_selections'))
+        finally:result.close()
         self.assertEqual(budget.ram_bytes,0)
-        self.assertTrue(all(process.closed and process.finished for process in observed['processes']))
-        if trace:
-            observed['calls']=tuple(json.loads(line)
-                for line in trace_path.read_text(encoding='utf-8').splitlines()[before:])
+        self.assertTrue(all(read.closed for read in observed['processes']))
         return rows,metadata,observed
 
     def test_current_manifest_omits_unrequested_full_can_model(self):
@@ -246,7 +243,6 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
         expected=(source.name,source.source_type,source.input_identity,source.time_unit,source.timezone_text,
             spec.name,str(spec.path),str(spec.dbc_path),spec.channel,spec.legacy_profile,
             spec.timebase,spec.unit,spec.offset_ns)
-        self.assertEqual(_source_contract(source),expected)
         definitions=tuple(item.definition for item in plan.signals)
         descriptions=[];costs=[]
         for index,selected_spec in enumerate((spec,replace(spec,decode_scope='all'))):
@@ -280,14 +276,11 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
         self.assertNotIn('input_check',plan.raw_config['sources'][0])
         self.assertEqual(plan.sources[0].config.decode_scope,'requested')
         self.assertEqual(plan.sources[0].config.input_check,'auto')
-        self.assertEqual(_source_contract(plan.sources[0])[-2:],
-            (('decode-scope-v1','requested'),('input-check-v1','auto')))
         rows,metadata,facts=self.execute(plan,root/'default')
         self.assertEqual(tuple(row.value for row in rows),(700.,-200.))
         self.assertEqual(facts['adapters'],[('requested',(256,))])
-        self.assertEqual((facts['ready'][0]['version'],facts['ready'][0]['input_check'],
-            facts['ready'][0]['time_scope']),(4,'auto','selected'))
-        self.assertEqual(facts['ready'][0]['decoded_values_policy'],'requested_fields-v1')
+        self.assertEqual(facts['ready'][0]['decode_scope'],'requested')
+        self.assertEqual(facts['ready'][0]['time_order_check_scope'],'selected_ids')
         self.assertEqual(metadata.input_diagnostics[0].aliases,('power',))
         self.assertEqual(metadata.input_diagnostics[0].time_scope,'selected')
         observed=facts['completed'][0]
@@ -317,11 +310,12 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
                 self.assertEqual(sum(item['rule']=='next' for item in facts['calls']),7)
                 self.assertEqual(sum(item['rule']=='parse' for item in facts['calls']),6 if scope=='all' else 5)
                 self.assertEqual(tuple(record[2] for record in facts['records']),(256,)*5)
+                self.assertEqual(tuple(facts['delivered_ids']),(256,)*5)
             self.assertEqual(summary_values(results[0]),summary_values(results[1]))
             self.assertEqual(observations[1]['adapters'],[('requested',(256,))])
             ready=observations[1]['ready'][0]
-            self.assertEqual((ready['version'],ready['decode_frame_ids']),(3,(256,)))
-            self.assertEqual(observations[0]['ready'][0]['version'],1)
+            self.assertEqual(ready['decode_scope'],'requested')
+            self.assertEqual(observations[0]['ready'][0]['decode_scope'],'all')
             # 未用声明仍静态保存，错误单位不应强制读取该值或冒称已核实。
             selected['signals'][1]['unit']='A'
             selected['signals'][1]['conversion']={'input_unit':'A'}
@@ -346,6 +340,7 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
             self.assertEqual(sum(item['rule']=='next' for item in facts['calls']),7)
             self.assertEqual(sum(item['rule']=='parse' for item in facts['calls']),6 if scope=='all' else 0)
             self.assertEqual(tuple(record[2] for record in facts['records']),(256,)*5)
+            self.assertEqual(tuple(facts['delivered_ids']),(256,)*5)
             self.assertEqual(metadata.input_diagnostics[0].aliases,())
             self.assertTrue(metadata.input_diagnostics[0].source_eof)
             self.assertIsNone(metadata.input_identity)
@@ -384,19 +379,13 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
         异常: 旧函数、实际握手/数值、透传计数或关闭责任错误使测试失败。
         """
         root,_,plan=self.fixture(mixed=True)
-        original_init=LegacyCANBatchRead.__init__
-
-        def observed_init(read,request,budget,**kwargs):
-            """固定真实child回退入口，保持原策略与生命周期。
-
-            参数: 原批读取构造参数。返回: None。异常: 原构造或启动错误。
-            """
-            kwargs['_worker_target']=partial(unknown_native_type_worker,
-                ids=kwargs['decode_frame_ids'], input_check=kwargs['input_check'],
-                time_scope=kwargs['time_scope'])
-            original_init(read,request,budget,**kwargs)
-
-        with patch.object(LegacyCANBatchRead,'__init__',observed_init):
+        from chronaxis.sources.blf import BLFRead
+        original_init=BLFRead.__init__
+        def force_fallback(read,*args,**kwargs):
+            """强制完整字段回退。参数: read及原参数。返回: None。异常: 原初始化错误。"""
+            original_init(read,*args,**kwargs)
+            read._native_message_type=object
+        with patch.object(BLFRead,'__init__',force_fallback):
             rows,metadata,facts=self.execute(plan,root/'mixed-fallback',ordinary=True)
         self.assertEqual(tuple(row.value for row in rows),(700.,-200.))
         self.assertTrue(all(facts['ordinary']))
@@ -512,43 +501,33 @@ class RequestedDecodeRuntimeTests(unittest.TestCase):
             self.assertIsNone(owner._path)
             self.assertEqual(owner._budget.ram_bytes,0)
 
-    def test_actual_ready_mismatch_and_metadata_charge_cancellation_are_owned(self):
-        """真实child成功READY后父二次核对拒绝错ID，元数据入账后取消仍保同一最高owner。
-
-        参数: 无。返回: None。异常: 错策略接受、原KI被替换或真实费用未关闭时断言失败。
-        """
+    def test_actual_dbc_metadata_failure_and_charge_cancellation_are_owned(self):
+        """实际DBC绑定失败和元数据入账后取消，都保原错及同一最高资源owner。"""
+        from chronaxis.sources import text_can_decode
         root,config,_=self.fixture()
-        config['sources'][0]['decode_scope']='requested'
         plan=AnalysisPlan.from_dict(current_fixture(config),base_dir=root)
-        original_metadata=LegacyCANBatchRead.metadata.fget
-        processes=[]
-
-        def wrong_metadata(process):
-            """仅在真实READY完成后制造明确测试矛盾。参数: 实际processread。返回: 冻结坏映射。异常: 原错误。"""
-            ready=original_metadata(process);processes.append(process)
-            return MappingProxyType(dict(ready,decode_frame_ids=(257,)))
-
-        session=RunSession(plan,root/'bad-ready');self.addCleanup(session.close)
-        with patch.object(LegacyCANBatchRead,'metadata',property(wrong_metadata)):
-            with self.assertRaises(SourceReadError) as caught:session.execute()
+        original=text_can_decode.load_dbc_file
+        opened=[]
+        def wrong_unit(*args,**kwargs):
+            """真实载入后制造DBC单位矛盾。参数: 原加载参数。返回: 数据库。异常: 原加载错误。"""
+            database=original(*args,**kwargs)
+            database.messages[0].signals[0].unit='A'
+            return database
+        session=RunSession(plan,root/'bad-dbc');self.addCleanup(session.close)
+        with patch.object(text_can_decode,'load_dbc_file',wrong_unit):
+            with self.assertRaisesRegex(ValueError,'单位') as caught:session.execute()
         self.assertIs(caught.exception.runner_cleanup_owner,session)
         session.close();self.assertEqual(session._budget.ram_bytes,0)
-        self.assertTrue(processes and all(process.closed for process in processes))
         session=RunSession(plan,root/'cancel');self.addCleanup(session.close)
-        original_reserve=can_reader._reserve_owned_ram
+        original_reserve=text_can_decode._reserve_owned_ram
         cancellation=KeyboardInterrupt('requested运行元数据入账后取消')
-        process_at_cancel=[]
-
         def reserve(owner,amount,slot):
-            """只在目标read实际元数据入账后取消。参数: 原owner/费用/槽。返回: None。异常: 同一KI。"""
+            """实际入账后取消。参数: owner、amount、slot。返回: None。异常: 原费用错误或同一取消。"""
             original_reserve(owner,amount,slot)
-            if slot=='_metadata_cost' and type(owner) is CANBatchObservationRead:
-                process_at_cancel.append(owner._process)
-                raise cancellation
-
-        with patch.object(can_reader,'_reserve_owned_ram',reserve):
+            if slot=='_metadata_cost':opened.append(owner);raise cancellation
+        with patch.object(text_can_decode,'_reserve_owned_ram',reserve):
             with self.assertRaises(KeyboardInterrupt) as caught:session.execute()
         self.assertIs(caught.exception,cancellation)
         self.assertIs(cancellation.runner_cleanup_owner,session)
         session.close();self.assertEqual(session._budget.ram_bytes,0)
-        self.assertTrue(process_at_cancel and all(process.closed for process in process_at_cancel))
+        self.assertTrue(opened and all(read.closed for read in opened))

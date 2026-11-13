@@ -5,11 +5,11 @@
 输入是白名单操作及本时刻的ScalarValue，输出保留必要输入及数值错误原因。
 使用标准库标量计算；定宽平方在编译时展开为现有的精确乘法。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -41,7 +41,7 @@ math_reference(name, args)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`name`|str|是|无|位置或关键字。编译器交给此核的逐点数值操作名，选择最小、最大、限幅或平方根。|
-|`args`|Sequence[[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)]|是|无|位置或关键字。各个已求值的数值实参，按原始调用位置顺序提交。|
+|`args`|Sequence[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)]|是|无|位置或关键字。各个已求值的数值实参，按原始调用位置顺序提交。|
 
 ### 返回说明
 
@@ -51,7 +51,7 @@ ScalarValue；有效极值/限幅保持dtype，开方输出FLOAT64。
 
 ValueError为内部未注册名称。缺失、倒置或开方不可计算表示为质量。
 
-源码：[`src/chronaxis/core/expression_math_reference.py:12`](../../../src/chronaxis/core/expression_math_reference.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_reference.py:12`](../../../src/chronaxis/core/expression_math_reference.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 ## 内部匿名回调
 

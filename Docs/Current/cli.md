@@ -14,7 +14,7 @@ python -m chronaxis run continuous-parallel.yaml --output result-continuous
 
 `validate`检查配置，`explain`解释执行设置，`run`才读取日志并计算。示例有两个输入文件，解释结果的 `source_execution[].file_count` 和 `read_process_limit` 均为2；配置中的4只是上限。运行后从完成摘要的 `manifest` 找本次清单和实际结果文件，积分为38J，详见[结果示例](example-results.md#continuous-parallel-yaml)。
 
-普通 `explain` 的 `read_process_limit` 是按配置和来源推导的读取子进程上限，不是运行时已启动的数量。例如单个 ASC 按默认 `concatenate` 直接读取时可以不创建子进程，即使这个静态上限为1。fast 的 `worker_process_limit` 另按实际调度方式说明：在当前进程内执行时为0。
+普通 `explain` 的 `read_process_limit` 是按配置和来源推导的读取子进程上限，不是运行时已启动的数量。例如配置上限4、单个ASC、默认`concatenate`时，在当前进程读取，`read_process_limit`为0；两个文件同样配置时为2。普通`time_order`即使上限1也使用一个文件子进程。fast的`worker_process_limit`也按其调度规则推导，在当前进程执行时为0。所有这些都是计划值，实际启动的PID只能在运行时核实。
 
 临时改变进程数可在命令后加 `--process-count 2`，不会改写配置文件。单个CSV、内存或多来源计划使用1；独立任务使用批量根级进程数，详见[执行配置](execution.md)。
 
@@ -23,7 +23,7 @@ python -m chronaxis run continuous-parallel.yaml --output result-continuous
 |命令|参数|作用|
 |---|---|---|
 |`python -m chronaxis config init/convert/resolve/origins`|详见[配置工具](configuration-tools.md)和[公共定义](imports.md)|生成模板、转换格式、展开配置、按请求查看来源|
-|`python -m chronaxis validate PLAN`|可选`--backend reference/numpy`、`--process-count 正整数`及`--format text/json`|仅检查计划，默认易读文字；--format json供程序读取|
+|`python -m chronaxis validate PLAN`|可选`--backend auto/reference/numpy`、`--process-count 正整数`及`--format text/json`|仅检查计划，默认易读文字；--format json供程序读取|
 |`python -m chronaxis explain PLAN`|同上|列出将使用的信号、资源上限、输入检查范围和计算实现|
 |`python -m chronaxis run PLAN`|必填`--output`；可选`--work-dir`、`--backend`和`--process-count`|分析、发布、关闭后打印完成摘要|
 |`python -m chronaxis batch run BATCH`|必填`--output`；可选`--process-count`|运行多个独立计划并写逐任务报告；见[批量](batch.md)|
@@ -46,7 +46,7 @@ fast run的进程数来自分析配置execution.process_count；fast batch来自
 |--format|字符串|否，validate/explain|text|text为终端文字，json为检查报告对象；不改变分析结果表格式。|
 |--format|字符串|否，config resolve|终端默认yaml；文件按后缀|选择展开配置的yaml/json表示；显式值须与输出文件后缀一致。|
 |--format|字符串|否，config origins|text|text为可读来源列表，json为字段来源报告；不是分析结果。|
-|--backend|字符串|否|使用计划中的backend|`reference`使用参考计算；`numpy`使用数组计算。适用于validate、explain、run。|
+|--backend|字符串|否|使用计划中的backend|`auto`按整个计划选择；`reference`、`numpy`固定数值实现。适用于validate、explain、run，并覆盖配置中的选择。|
 |--output|目录路径|run、batch run、fast run/batch|必填|可重复使用的结果目录；每次运行创建带时间后缀的不同文件。|
 |--work-dir|目录路径|否，仅普通run支持|自动创建本次专用工作目录|存中间数据和暂存结果；自行指定时也必须是尚不存在的路径。|
 |--process-count|整数|否，run/validate/explain/batch run及fast对应命令|普通分析沿用execution.process_count；批量沿用根级process_count，默认均1|正整数。普通分析限制读取/解码，fast单会话还在工作进程求单帧贡献；均不含主进程；独立批量限制分析任务进程数，不含各任务的旧CAN子进程。|

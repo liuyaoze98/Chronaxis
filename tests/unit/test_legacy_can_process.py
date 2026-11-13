@@ -9,6 +9,7 @@ payload必须保留原序号。STATUS是无读取许可的控制屏障，不能�
 BLF/DBC或启动子进程；只有真实库类在可选CAN依赖确实缺失时跳过，其余协议测试照常。
 """
 
+from chronaxis.can_dependencies import runtime_dependency_versions
 from configuration_fixtures import current_fixture
 
 # 测试worker必须定义在模块顶层，供Windows spawn按名称导入；不执行历史入口。
@@ -32,11 +33,7 @@ from chronaxis.sources.protocol import SourceReadError
 
 WORK = Path(__file__).resolve().parents[2] / 'work' / 'm2-can-tests'
 HAS_CAN = all(importlib.util.find_spec(name) is not None for name in ('can', 'cantools', 'natsort'))
-VENDOR_SHA256 = {
-    'utils.py': 'cf3737ad5ab0a399dc7576585102339e0312b9babe690a1ba8decf543a71c2fd',
-    'file_processor.py': '5f37bd996ccd31eedd95bec5ed39289cd7f2fe3049110ebbe195db0cbefb1db6',
-    'can_processor.py': '3c96e67a1ec47ac181657b5bf5a9cabf7e35a1d5e2709577718c22d1293878e2',
-}
+
 SYNTHETIC_DBC = '''VERSION ""
 NS_ :
 BS_:
@@ -63,12 +60,11 @@ def controlled_worker(connection, *, mode):
         ready = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
             'worker_pid': os.getpid(), 'fields': [{'locator': locator, 'unit': 'V'}
                 for locator in initial['fields']],
-            'dependency_versions': {'python': platform.python_version(), 'python-can': '4.6.1',
-                'cantools': '39.4.3', 'natsort': '8.4.0'}, 'vendor_sha256': dict(VENDOR_SHA256)}
+            'dependency_versions': runtime_dependency_versions()}
         if mode == 'ready_missing':
             del ready['dependency_versions']
         elif mode == 'ready_hash':
-            ready['vendor_sha256']['can_processor.py'] = '0' * 64
+            ready['unexpected_vendor'] = 'unsupported'
         elif mode == 'ready_version':
             ready['dependency_versions']['python-can'] = '0.0.0'
         elif mode == 'ready_unit':
@@ -129,7 +125,7 @@ def controlled_worker(connection, *, mode):
 
 
 def observed_real_worker(connection):
-    """只在隔离测试child透传计数真实vendor公开函数，不改任何源码字节。
+    """只在隔离测试child观察真实共用读取、DBC加载与解码调用，不改源码字节。
 
     参数: connection为真实spawn端点。返回: 原worker返回值。
     异常: 原worker错误传播；trace写失败也直接失败，不能假报没有后继调用。
@@ -140,47 +136,40 @@ def observed_real_worker(connection):
     initial = connection.recv_bytes(MAX_WIRE_BYTES)
     request = decode_packet(initial)
     trace_path = Path(request['path']).with_name('process-trace.jsonl')
-    original_loader = worker._load_vendor
+    from chronaxis.legacy import decode_policy, batch_worker
+    original_database=worker.load_dbc_file
+    original_frames=worker._iter_blf
+    original_parse=decode_policy.decode_serial_frame
 
-    def trace(event, **facts):
-        """立即保存一条真实入口事实。参数: event/facts。返回: None。异常: 原IO错误。"""
-        with trace_path.open('a', encoding='utf-8', newline='\n') as handle:
-            handle.write(json.dumps(current_fixture({'rule': event, **facts}), allow_nan=False) + '\n')
+    def trace(event,**facts):
+        """记录同次实际入口调用，不修改输入或结果。"""
+        with trace_path.open('a',encoding='utf8',newline='\n') as handle:
+            handle.write(json.dumps(current_fixture({'rule':event,**facts}),allow_nan=False)+'\n')
 
-    def load():
-        """取得原模块后只透传其公开函数。参数: 无。返回: 原loader三元组。异常: 原错误。"""
-        files, processor, hashes = original_loader()
-        original_frames, original_parse = files.iter_frames, processor.parse_frame
-        original_database = processor.cantools.database.load_file
+    def database(path,module):
+        """观察同一次共用DBC加载。参数: 原路径/模块。返回: 真实数据库。异常: 原加载错误。
 
-        def frames(path):
-            """逐次请求原generator，不提前取下一项。参数: 原path。返回: 原msg流。异常: 原错误。"""
-            iterator = original_frames(path)
-            try:
-                while True:
-                    trace('next')
-                    try:
-                        message = next(iterator)
-                    except StopIteration:
-                        return
-                    yield message
-            finally:
-                iterator.close()
+        trace中load_file是既有DBC加载事件名；实际入口为load_dbc_file，不替换第三方函数。
+        """
+        trace('load_file',args=[str(path)],kwargs={})
+        return original_database(path,module)
 
-        def parse(message, database):
-            """每个真实parse只转发一次。参数: 原msg/db。返回: 原dict。异常: 原函数政策。"""
-            trace('parse', timestamp=message.timestamp, arbitration_id=message.arbitration_id,
-                data_hex=bytes(message.data).hex())
-            return original_parse(message, database)
+    def frames(path):
+        """每个next仍由真实生成器完成，关闭原owner。"""
+        iterator=original_frames(path)
+        try:
+            while True:
+                trace('next')
+                try:message=next(iterator)
+                except StopIteration:return
+                yield message
+        finally:iterator.close()
 
-        def database(*args, **kwargs):
-            """记录并执行唯一原load_file。参数: 原args/kwargs。返回: 原db。异常: 原加载错误。"""
-            trace('load_file', args=list(args), kwargs=kwargs)
-            return original_database(*args, **kwargs)
-
-        files.iter_frames, processor.parse_frame = frames, parse
-        processor.cantools.database.load_file = database
-        return files, processor, hashes
+    def parse(database,message,selected,duplicates):
+        """实际兼容解码一次，只记录当前帧公开身份。"""
+        trace('parse',timestamp=message.timestamp,arbitration_id=message.arbitration_id,
+            data_hex=bytes(message.data).hex())
+        return original_parse(database,message,selected,duplicates)
 
     class InitialReplay:
         """仅原样回放已取得INIT，其后所有管道能力都转交同一真实端点。"""
@@ -200,7 +189,11 @@ def observed_real_worker(connection):
             """透传真实管道状态/动作。参数: name。返回: 原属性。异常: 原错误。"""
             return getattr(connection, name)
 
-    with patch.object(worker, '_load_vendor', new=load):
+    with patch.object(worker,'load_dbc_file',new=database), \
+            patch.object(batch_worker,'load_dbc_file',new=database), \
+            patch.object(worker,'_iter_blf',new=frames), \
+            patch.object(decode_policy,'decode_serial_frame',new=parse), \
+            patch.object(batch_worker,'_parse_selected',new=parse):
         return worker.worker_main(InitialReplay())
 
 
@@ -339,7 +332,7 @@ class RealLegacyCANProcessTests(ProcessFixture):
             writer.stop()
 
     def real_read(self, *, observed=False, input_path=None):
-        """建立真旧链read，不读取。
+        """建立真实兼容协议read，不读取。
 
         参数: observed是否隔离透传trace，input_path为本例可选夹具。返回: 已登记read。
         异常: 原请求或构造错误传播，不伪造metadata。
@@ -369,7 +362,7 @@ class RealLegacyCANProcessTests(ProcessFixture):
         self.assertEqual(read.worker_pid, pid, '重复start不得重载DBC或换进程')
         metadata = read.metadata
         self.assertEqual(metadata['profile'], PROFILE_ID)
-        self.assertEqual(metadata['vendor_sha256'], VENDOR_SHA256)
+        self.assertNotIn('vendor_sha256', metadata)
         self.assertEqual(metadata['fields'][0]['unit'], 'V')
         self.assertEqual(dict(metadata['fields'][0]['locator']), {
             'channel': 0,  'signal': 'Sample', 'frame_id': 256,

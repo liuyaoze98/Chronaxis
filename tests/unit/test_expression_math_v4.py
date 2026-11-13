@@ -6,7 +6,7 @@
 
 import math
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 import numpy as np
 from chronaxis import AnalysisPlan, AnalysisRunner

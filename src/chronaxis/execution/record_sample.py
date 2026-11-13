@@ -44,3 +44,22 @@ class RecordSample:
     def original_value(self):
         """本样本无额外原值。参数: 无。返回: None。异常: 无。"""
         return None
+
+
+def _record_from_validated_fields(name, time_ns, sequence, value, unit, source_ref, enum_code=None):
+    """把已校验列或解码归一化结果包装为当前运行记录，不再创建校验样本。
+
+    参数: 已核别名/单位/来源、原生时间及序号、ScalarValue和已核枚举码。
+    返回: 冻结RecordSample。异常: 分配错误；本函数不接外部未校验输入。
+    调用方必须完成列布局/时间/枚举域验证，公开RecordSample构造保持原检查。
+    """
+    result = object.__new__(RecordSample)
+    # 只安装原模型字段；不存在用户可启用的跳过校验选项。
+    object.__setattr__(result, 'name', name)
+    object.__setattr__(result, 'time_ns', time_ns)
+    object.__setattr__(result, 'sequence', sequence)
+    object.__setattr__(result, 'value', value)
+    object.__setattr__(result, 'unit', unit)
+    object.__setattr__(result, 'source_ref', source_ref)
+    object.__setattr__(result, 'enum_code', enum_code)
+    return result

@@ -8,7 +8,7 @@
 # 测试隔离目录只持有本次结果，原日志与旧项目保持只读。
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from chronaxis import AnalysisPlan, AnalysisRunner
 from published_paths import published_file

@@ -2,11 +2,11 @@
 
 给同次输出分配时间文件名，并在已有结果目录中不覆盖地发布。
 
-只检查本次候选路径，不扫描旧结果。Windows rename保护竞争期间出现的文件；
+只检查本次候选路径，不扫描旧结果。平台不覆盖移动保护竞争期间出现的文件；
 临时锁仅协调使用相同时间后缀的发布者，完成清单最后移动。失败回滚本次移动，
 身份发生变化的路径保留给调用者处理，不删除其他运行或外部替换的文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -28,6 +28,9 @@
 ```python
 from datetime import datetime
 from pathlib import Path
+from secrets import randbits
+from .platform_files import move_no_replace, require_publication_platform
+from .owned_directory import directory_identity
 ```
 
 </details>
@@ -55,7 +58,7 @@ output_root(value)
 
 路径/平台错误。
 
-源码：[`src/chronaxis/results/publication.py:13`](../../../src/chronaxis/results/publication.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:16`](../../../src/chronaxis/results/publication.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_identity"></a>
 ## `_identity`
@@ -80,7 +83,7 @@ _identity(path)
 
 原stat错误。
 
-源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PublicationNames"></a>
 ## `PublicationNames`
@@ -92,7 +95,7 @@ PublicationNames(root, names)
 ```
 
 
-源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PublicationNames-__init__"></a>
 ### `PublicationNames.__init__`
@@ -118,7 +121,7 @@ PublicationNames.__init__(root, names)
 
 IO错。
 
-源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PublicationNames-publish"></a>
 ### `PublicationNames.publish`
@@ -146,7 +149,7 @@ None。
 
 IO/取消。
 
-源码：[`src/chronaxis/results/publication.py:76`](../../../src/chronaxis/results/publication.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:87`](../../../src/chronaxis/results/publication.py#L87)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PublicationNames-close"></a>
 ### `PublicationNames.close`
@@ -172,4 +175,4 @@ None。
 
 IO错，不删除其他身份的文件。
 
-源码：[`src/chronaxis/results/publication.py:123`](../../../src/chronaxis/results/publication.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/publication.py:158`](../../../src/chronaxis/results/publication.py#L158)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -2,7 +2,7 @@
 
 保存组级值、明确总体和互斥的纳入/排除计数，版本15不改变旧结果行。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -65,7 +65,7 @@ class SummaryAggregationRow
 |`discovery_complete`|bool|是|无|是否具备发现请求范围内全部候选对象的证据，独立于已发现行的参与质量。|
 |`quality`|QualityFlag|是|无|本组来源证据和数值计算累积的质量位，用于解释何种数据或精度限制影响结果。|
 
-源码：[`src/chronaxis/results/aggregation_row.py:10`](../../../src/chronaxis/results/aggregation_row.py#L10)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/aggregation_row.py:10`](../../../src/chronaxis/results/aggregation_row.py#L10)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SummaryAggregationRow-__post_init__"></a>
 ### `SummaryAggregationRow.__post_init__`
@@ -91,4 +91,4 @@ None。
 
 无效协议直接拒绝。
 
-源码：[`src/chronaxis/results/aggregation_row.py:39`](../../../src/chronaxis/results/aggregation_row.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/aggregation_row.py:39`](../../../src/chronaxis/results/aggregation_row.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

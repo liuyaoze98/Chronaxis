@@ -11,7 +11,7 @@ import cantools
 from ..legacy.binding import dbc_candidates, select_message
 from ..legacy.decode_policy import check_decode_length
 from ..timebase.conversion import convert_time, checked_add_ns
-from .compute import prepare_metric
+from .compute import prepare_metric, _prepare_program_metric
 
 
 @dataclass
@@ -25,8 +25,12 @@ class _Group:
 _UNSUPPORTED_FD = object()
 
 
-def _prepare(spec, db):
-    """按选择器预建 ID 索引并为每项新建累计器。缺字段或歧义在开日志之前报告。"""
+def _prepare(spec, db, *, _programs_checked=False):
+    """预建 ID 索引及每文件状态；内部已编译路径仅绑定指令，低层默认检查文本。
+
+    参数为声明、DBC及内部准备状态。返回组索引和累计器；字段、歧义或公式错误
+    在开日志前抛出。准备状态由调用链传入，不从用户配置或 spec 标志中读取。
+    """
     groups = {}
     metrics = {}
     for item in spec['metrics']:
@@ -43,7 +47,8 @@ def _prepare(spec, db):
         if any(flag is not None and type(flag) is not bool for flag in (ide,fd)):
             raise ValueError(f'{name} 的帧型选择需要布尔值')
         choices = dbc_candidates(db,identifier,required,ide,fd)
-        metric = metrics[name] = prepare_metric(item)
+        factory = _prepare_program_metric if _programs_checked else prepare_metric
+        metric = metrics[name] = factory(item)
         # 未指定帧型时，只允许实际数据出现一种匹配身份。
         observed = set() if None in (ide,fd) else None
         by_kind = groups.setdefault(identifier,{})

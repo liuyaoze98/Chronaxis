@@ -5,7 +5,7 @@
 执行层在原有规则推进、指标写出时累计少量状态；本模块只冻结并校验这些事实，
 供清单和CLI共用。事件存在与指标是否完整分别表示，不能以completed代替业务有效性。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -46,7 +46,7 @@ class RuleOutcome
 |`has_unknown`|bool|是|无|是否出现无法确定的规则状态，可与events_found并存；不自动否定已输出的合格事件。|
 |`unobserved_signals`|tuple[str, ...]|否|()|本规则需要但本次未观测到的信号别名元组；不包含未被该规则使用的信号。|
 
-源码：[`src/chronaxis/results/analysis_outcome.py:12`](../../../src/chronaxis/results/analysis_outcome.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:12`](../../../src/chronaxis/results/analysis_outcome.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RuleOutcome-__post_init__"></a>
 ### `RuleOutcome.__post_init__`
@@ -72,7 +72,7 @@ None。
 
 TypeError/ValueError，状态或计数不合法。
 
-源码：[`src/chronaxis/results/analysis_outcome.py:21`](../../../src/chronaxis/results/analysis_outcome.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:21`](../../../src/chronaxis/results/analysis_outcome.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RuleOutcome-to_dict"></a>
 ### `RuleOutcome.to_dict`
@@ -98,7 +98,7 @@ RuleOutcome.to_dict()
 
 无；不读取结果或输入。
 
-源码：[`src/chronaxis/results/analysis_outcome.py:36`](../../../src/chronaxis/results/analysis_outcome.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:36`](../../../src/chronaxis/results/analysis_outcome.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisOutcome"></a>
 ## `AnalysisOutcome`
@@ -119,7 +119,7 @@ class AnalysisOutcome
 |`indeterminate`|int|否|0|计算结果中status为indeterminate的行数；不能把空值当作0。|
 |`no_observation`|int|否|0|计算结果中reason为no_observation的行数，是上述状态计数的子集，不能再与它们相加。|
 
-源码：[`src/chronaxis/results/analysis_outcome.py:42`](../../../src/chronaxis/results/analysis_outcome.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:42`](../../../src/chronaxis/results/analysis_outcome.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisOutcome-__post_init__"></a>
 ### `AnalysisOutcome.__post_init__`
@@ -145,7 +145,7 @@ None。
 
 TypeError/ValueError，重复规则或错误计数。
 
-源码：[`src/chronaxis/results/analysis_outcome.py:51`](../../../src/chronaxis/results/analysis_outcome.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:51`](../../../src/chronaxis/results/analysis_outcome.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisOutcome-to_dict"></a>
 ### `AnalysisOutcome.to_dict`
@@ -171,4 +171,4 @@ AnalysisOutcome.to_dict()
 
 无。
 
-源码：[`src/chronaxis/results/analysis_outcome.py:63`](../../../src/chronaxis/results/analysis_outcome.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/analysis_outcome.py:63`](../../../src/chronaxis/results/analysis_outcome.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

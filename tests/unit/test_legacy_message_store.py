@@ -562,7 +562,7 @@ class LegacyMessageStoreTests(unittest.TestCase):
                     self.assert_shared(data)
 
     def test_constructor_budget_cancel_and_real_directory_protection(self):
-        """构造首笔预约前后取消交真实owner；已有目标哨兵和Ref命名子树保持不写入。
+        """构造首笔预约前后取消交真实owner；拒绝已有目标，客户同名目录可用。
 
         参数: 无。返回: None。异常: 假owner、预算漏账或已有/受保护目录被改写时失败。
         """
@@ -596,10 +596,14 @@ class LegacyMessageStoreTests(unittest.TestCase):
             DecodedMessageStore(budget, existing, 'bus', 'session', decoder_profile='profile', read_identity='read')
         self.assertEqual(sentinel.read_bytes(), b'original')
         self.assertEqual(tuple(existing.iterdir()), (sentinel,))
-        forbidden = self.root / 'RefProjects' / 'new'
-        with self.assertRaises(ValueError):
-            DecodedMessageStore(budget, forbidden, 'bus', 'session', decoder_profile='profile', read_identity='read')
-        self.assertFalse(forbidden.parent.exists())
+        allowed = self.root / 'RefProjects' / 'new'
+        allowed.parent.mkdir()
+        marker=allowed.parent/'user.txt'
+        marker.write_bytes(b'keep')
+        owner=DecodedMessageStore(budget, allowed, 'bus', 'session', decoder_profile='profile', read_identity='read')
+        self.assertTrue(owner.file_path.is_file())
+        owner.close()
+        self.assertEqual(marker.read_bytes(),b'keep')
         self.assertEqual(budget.ram_bytes, 4096)
         # writer尚未返回时，构造原错加持续RAM收尾副错也必须保同一真实未返回父。
         data = self.shared()

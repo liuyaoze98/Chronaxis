@@ -1,19 +1,12 @@
 # `chronaxis.legacy.export_worker`
 
-在独立spawn子进程按单次PUT许可调用冻结的原BLF写出链。
+在独立spawn进程按PUT许可将原报文写入新的BLF文件。
 
-输入为有界INIT/PUT/FINISH JSON bytes，输出同次READY、逐帧ACK和完成候选。
-INIT才核三份vendor及锁定依赖，独占取得新输出文件，再原样调用一次
-build_writer(str(path),'blf')。每PUT完整恢复同一LegacyRawFrame公开字段并
-构造can.Message，原writer.on_message_received只调用一次，不读源CAN或DBC。
-FINISH仅在原stop成功后发送完成候选；父仍须核真实子退出、句柄及费用收尾。
+有效INIT后核现有依赖版本，BLFWrite独占取得文件并把同一句柄交给python-can。
+每PUT恢复原公开字段并写一次，不读取来源或DBC；FINISH仅在最终写入成功后确认。
+关闭失败保留原错误与实际文件owner，第三方stop不重复执行，父侧仍核实际子退出。
 
-本模块复用CAN读取协议的有界JSON、错误摘要和vendor加载函数，不修改或继承其read
-生命周期。失败保有限远端事实并非零退出，finally只对尚未尝试stop的writer调用
-一次原stop；失败的stop不被静默重试或改写。实际子退出回收未公开旧FD，不能
-据父RAM账本声称旧库、压缩缓存或整进程RSS受限。产物保留，不自动删除失败文件。
-
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -25,15 +18,15 @@ FINISH仅在原stop成功后发送完成候选；父仍须核真实子退出、�
 |---|---|
 |[`_output`](#api-_output)|检查唯一INIT及新输出路径，不猜格式或覆盖已有文件。|
 |[`_message`](#api-_message)|把全部原公开写出字段交给原can.Message构造，不添加check或归一化参数。|
-|[`worker_main`](#api-worker_main)|作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一原writer。|
+|[`worker_main`](#api-worker_main)|作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一BLF writer。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from importlib import metadata
 from pathlib import Path
 from .records import PROFILE_ID, frame_from_dict
-from .worker import VENDOR_SHA256, _exact, _load_vendor, _receive, _report_error, _send
+from .worker import _exact, _load_can_runtime, _receive, _report_error, _send
+from ..can_dependencies import runtime_dependency_versions
 ```
 
 </details>
@@ -66,7 +59,7 @@ TypeError/ValueError为字段、版本、profile、后缀或受保护路径；
 
 仅检查文件系统；真正独占创建仍在writer建立之前执行。
 
-源码：[`src/chronaxis/legacy/export_worker.py:27`](../../../src/chronaxis/legacy/export_worker.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_worker.py:17`](../../../src/chronaxis/legacy/export_worker.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_message"></a>
 ## `_message`
@@ -92,12 +85,12 @@ _message(can, frame)
 
 原can.Message构造错误；不以新层猜测修正旧格式限制。
 
-源码：[`src/chronaxis/legacy/export_worker.py:51`](../../../src/chronaxis/legacy/export_worker.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_worker.py:41`](../../../src/chronaxis/legacy/export_worker.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
 
-作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一原writer。
+作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一BLF writer。
 
 ```python
 worker_main(connection)
@@ -126,7 +119,7 @@ worker_main(connection)
 
 ### 副作用说明
 
-独占创建一个新BLF、一次build_writer、每许可一次on_message_received，
+独占创建一个新BLF、一次BLFWrite、每许可一次on_message_received，
     至多一次stop；不读取输入CAN/DBC，不调parse或为ACK额外写帧。
 
-源码：[`src/chronaxis/legacy/export_worker.py:67`](../../../src/chronaxis/legacy/export_worker.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/export_worker.py:57`](../../../src/chronaxis/legacy/export_worker.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

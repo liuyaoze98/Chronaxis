@@ -23,6 +23,38 @@ from test_readable_results import make_result, sample_event, sample_calculation
 class PublicationTests(unittest.TestCase):
     """按本次实际清单取文件，确保新名字不会使用户结果或导出引用失效。"""
 
+    @unittest.skipUnless(os.name=="nt","Windows删除中的命名锁专项")
+    def test_delete_pending_lock_uses_independent_candidate(self):
+        """锁删除竞争只影响候选名称，不损失结果。参数: 无。返回: None。异常: 断言。"""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = Path.open
+            attempts = []
+            def open_lock(path, *args, **kwargs):
+                """模拟首次锁仍待删除。参数: 路径及打开参数。返回: 文件。异常: PermissionError。"""
+                if path.name.startswith('.publishing-'):
+                    attempts.append(path)
+                    if len(attempts) == 1:
+                        raise PermissionError(13, 'delete pending', str(path))
+                return original(path, *args, **kwargs)
+            with patch.object(Path, 'open', open_lock):
+                names = PublicationNames(root, ('manifest.json',))
+            self.assertEqual(len(attempts), 2)
+            self.assertNotEqual(attempts[0], attempts[1])
+            names.close()
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_real_permission_error_is_not_retried_forever(self):
+        """新候选仍无权限时报告原IO错误。参数: 无。返回: None。异常: 断言。"""
+        with tempfile.TemporaryDirectory() as directory:
+            failure = PermissionError(13, 'directory access denied', directory)
+            with patch.object(Path, 'open', side_effect=failure) as opened:
+                with self.assertRaises(PermissionError) as captured:
+                    PublicationNames(directory, ('manifest.json',))
+            self.assertIs(captured.exception, failure)
+            self.assertEqual(opened.call_count, 2 if os.name=="nt" else 1)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+
     def test_result_repeated_existing_directory(self):
         """同一结果反复发布保留旧内容和每次清单。参数: 无。返回: None。异常: 断言。"""
         with tempfile.TemporaryDirectory() as directory:
@@ -244,7 +276,8 @@ class PublicationTests(unittest.TestCase):
         for rollback_error in (OSError, FileNotFoundError):
             with tempfile.TemporaryDirectory() as directory:
                 root=Path(directory); result=make_result(root,[sample_event(),sample_calculation()])
-                close=PublicationNames.close; rename=os.rename; calls=0
+                from chronaxis.results.publication import move_no_replace
+                close=PublicationNames.close; rename=move_no_replace; calls=0
                 def fail_close(owner):
                     """首次释放锁失败，后续可恢复。参数: owner。返回: None。异常: OSError。"""
                     nonlocal calls
@@ -255,7 +288,7 @@ class PublicationTests(unittest.TestCase):
                     """只阻止已发布清单撤回。参数: 路径。返回: None。异常: OSError。"""
                     if Path(target).name=='run_manifest.json': raise rollback_error('manifest locked')
                     rename(source,target)
-                with patch.object(PublicationNames,'close',fail_close),patch('os.rename',fail_rollback):
+                with patch.object(PublicationNames,'close',fail_close),patch('chronaxis.results.publication.move_no_replace',fail_rollback):
                     with self.assertRaises(AnalysisError) as error: result.write(root/'output')
                 manifest=error.exception.completed_manifest
                 document=json.loads(manifest.manifest_path.read_text(encoding='utf-8'))

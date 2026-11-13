@@ -20,7 +20,7 @@ BatchRunner(process_count=1, *, fail_fast=False, backend=None)
 ```
 
 
-源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/runner.py:108`](../../../src/chronaxis/batch/runner.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchRunner-__init__"></a>
 ### `BatchRunner.__init__`
@@ -37,7 +37,7 @@ BatchRunner.__init__(process_count=1, *, fail_fast=False, backend=None)
 |---|---|---|---|---|
 |`process_count`|int|否|1|位置或关键字。控制最多启动几个分析工作进程。填正整数，例如4；默认1。任务少于该值时按任务数启动，空批次不启动。此数量不包含调度主进程和CAN读取子进程。|
 |`fail_fast`|bool|否|False|仅关键字。False时某任务失败仍继续尝试后续任务；True时发现失败后停止启动新任务，但等待已启动任务收尾。|
-|`backend`|str &#124; None|否|None|仅关键字。`"reference"`使用独立参考计算；`"numpy"`使用NumPy数组计算。None沿用计划中的选择。|
+|`backend`|str &#124; None|否|None|仅关键字。`auto`按整份计划选择reference或numpy，不预读或试跑；`reference`和`numpy`固定使用对应数值实现。None沿用计划设置。详见[运行参数](../execution.md)。|
 
 #### 返回说明
 
@@ -52,7 +52,7 @@ None。初始化调度选项；调用BatchRunner(...)才创建并取得实例。
 - `ValueError`：process_count需要正原生int。
 - `TypeError`：fail_fast需要bool。
 
-源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/runner.py:111`](../../../src/chronaxis/batch/runner.py#L111)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchRunner-run"></a>
 ### `BatchRunner.run`
@@ -70,7 +70,7 @@ BatchRunner.run(jobs, output_dir, *, cancel_event=None, device_label='pending') 
 |`jobs`|tuple|是|无|位置或关键字。提供BatchJob元组，例如load_batch_plan("batch.yaml").jobs；每项含独立分析的ID与计划，顺序决定报告排列。|
 |`output_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。|
 |`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|否|None|仅关键字。可选取消标记；None表示没有。其他线程调用set()后停止派发新任务，正在执行的任务继续收尾。|
-|`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，例如已核实的"home"或"work"；未确定时用"pending"。这是来源说明，不参与数值计算，也不根据文件路径猜测。|
+|`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，接受任意非空文本，如lab-pc或试验台一号；省略时使用pending。标签不参与计算，也不根据文件路径猜测。|
 
 #### 返回说明
 
@@ -78,7 +78,7 @@ BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写�
 
 #### 异常说明
 
-声明/路径错误在创建工作进程前拒绝；工作进程调度器等基础设施错误收尾后传播。
+声明/路径错误在创建工作进程前拒绝；工作进程调度器等基础设施错误收尾后传播，产生报告时附batch_report。若Ctrl+C发生于worker构造且清理仍未完成，原KeyboardInterrupt附batch_worker_cleanup_owner传播；这个未构造完的worker可能不在报告任务中，需要保留恢复对象并重试close。已清理Ctrl+C仍按正常取消流程返回报告。
 
 本函数直接报告的具体错误：
 
@@ -93,4 +93,4 @@ BatchReport；jobs各项的manifest_path为实际完成清单。本方法不写�
 
 返回类型：[BatchReport](BatchReport.md#api-BatchReport)。
 
-源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/runner.py:124`](../../../src/chronaxis/batch/runner.py#L124)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

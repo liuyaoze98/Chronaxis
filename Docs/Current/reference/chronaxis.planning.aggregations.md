@@ -2,7 +2,7 @@
 
 校验 v4 结果表聚合的来源、字段、分组、总体政策与输出单位。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -56,7 +56,7 @@ class AggregationPlan
 |`q`|int &#124; float &#124; None|是|无|quantile 用于计算精确顺序统计位置的概率，其他操作省略。|
 |`ddof`|int|是|无|variance 的自由度修正，可为 0 或 1；当参与数不大于此值时方差不可定。|
 
-源码：[`src/chronaxis/planning/aggregations.py:13`](../../../src/chronaxis/planning/aggregations.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/aggregations.py:13`](../../../src/chronaxis/planning/aggregations.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-aggregation_unit"></a>
 ## `aggregation_unit`
@@ -83,7 +83,7 @@ aggregation_unit(operation, source_unit, target)
 
 单位不可比或未知变换。
 
-源码：[`src/chronaxis/planning/aggregations.py:30`](../../../src/chronaxis/planning/aggregations.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/aggregations.py:30`](../../../src/chronaxis/planning/aggregations.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_aggregations"></a>
 ## `parse_aggregations`
@@ -115,4 +115,4 @@ AggregationPlan 元组，顺序与配置一致。
 
 PlanValidationError 定位错误条目。
 
-源码：[`src/chronaxis/planning/aggregations.py:58`](../../../src/chronaxis/planning/aggregations.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/aggregations.py:58`](../../../src/chronaxis/planning/aggregations.py#L58)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

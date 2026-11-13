@@ -147,8 +147,10 @@ class NeededCANHistoryTests(unittest.TestCase):
         self.budget = ResourceBudget(32 * 1024 ** 2)
         read = self.read(aliases=0, size=4096)
         batches = list(read)
-        self.assertEqual(len(batches), 1)
-        self.assertTrue(batches[0].source_eof)
+        # 逐消息消费者可接收非最终空进度批，只有最后一批才承诺完整 EOF。
+        self.assertTrue(all(batch.sample_count == 0 for batch in batches))
+        self.assertEqual(sum(batch.source_eof for batch in batches), 1)
+        self.assertTrue(batches[-1].source_eof)
         self.assertEqual(read.observation.row_count, 6)
         self.assertEqual([row.decoded.sequence for row in read._message_store.iter_records()], [1, 2, 4])
 

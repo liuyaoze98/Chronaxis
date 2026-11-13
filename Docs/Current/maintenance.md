@@ -12,6 +12,24 @@ npm install --prefix Docs/Current/_build/tooling marked@17.0.5 highlight.js@11.1
 
 安装可能访问软件源；渲染和阅读本身不访问网络。已有依赖可通过CHRONAXIS_MARKED_PATH、CHRONAXIS_HIGHLIGHT_PATH指定模块文件。高亮样式从本版工具目录读取，因此仍须保存对应highlight.js样式文件。
 
+## 复现依赖组合
+
+源码 `requirements/` 保存Python3.12与3.13上下端共四份Windows完整 `pip freeze --all` 快照。用对应约束安装后，分别记录解释器、依赖版本与实际执行的测试组结果；环境快照不能代替测试通过报告。运行版本范围在 `pyproject.toml` 统一声明，`.[test]`不再另行收紧jsonschema。下方现有CI环境与额外兼容性测试分开统计。
+
+## 持续测试与发布前检查
+
+`.github/workflows/verify.yml`在push、pull_request或手动触发时，用Windows 2022与Python 3.12.4执行四组检查：core覆盖核心和配置，input覆盖输入、执行与导出，docs检查双语资料并实际构建HTML，install从sdist构建wheel后在检出目录外运行随包任务。工作流只有读取权限，不上传PyPI或部署网站；两个发布工作流仍手动运行。
+
+公开测试由`tools/run_ci_tests.py`自动发现，每个模块只归一组，新增未分类模块进入core。原有9个依赖内部资料的测试仍不随公开源码分发；JSON报告列出排除清单、失败及跳过原因，跳过不能当作已验证。文档组显式安装Node.js 24.22.1、marked 17.0.5和highlight.js 11.11.1；缺少工具或资料锁不一致都会失败，不自动重锁。
+
+在已安装`.[test]`及文档依赖、资料与锁已同步的干净公开源码中，可用下面的命令复核单组，将core换成input、docs或install可选择其他组：
+
+```powershell
+python -X utf8 -B tools/run_ci_tests.py --group core --report work/ci/core.json
+```
+
+分组测试之外，docs和install还须完成工作流列明的HTML、AI ZIP、sdist/wheel和独立安装检查。发布前核对同一候选源码的四组结果及安装产物；失败先修复，未执行或因环境跳过的部分如实记录。本地通过不能写成云端CI已经通过，工作流也不会凭已有测试报告自动授予发布权限。
+
 ## 从公开源码重建
 
 公开导出不携带内部开发Git历史。使用已有发行锁定清单，在运行以下构建命令前显式设置：
@@ -42,7 +60,7 @@ node tools/test_manual_search.mjs
 
 从干净检出构建wheel；运行 `tests/ai_release/check_bundle.py` 检验独立资料，`tools/verify_ai_distribution.py` 验证sdist到wheel、直接阅读和可选导出，`tools/check_ai_install.py` 在无源码检出的新环境复验随包案例。独立模型评测和程序检验分别保存结果。
 
-修改源码docstring或人工注解后重新生成，不能只编辑生成页。公开构造签名清单应与对应基线的实际Python接口核对；所有类成员、参数、返回和异常仍需阅读校核。HTML隐藏变更履历，源码Markdown保留历史来源。内部参考、冻结vendor与公开入口分别组织。
+修改源码docstring或人工注解后重新生成，不能只编辑生成页。公开构造签名清单应与对应基线的实际Python接口核对；所有类成员、参数、返回和异常仍需阅读校核。HTML隐藏变更履历，源码Markdown保留历史来源。内部实现参考与公开入口分别组织；原始项目资料保留在只读RefProjects中，当前发行代码不包含Sclicer的vendor副本。
 
 静态覆盖、链接检查和查询测试只能证明对应结构与算法；不能替代浏览器的视觉、键盘、剪贴板操作，也不能替代完整示例执行和用户试读。_build为可再生交付目录，不提交Git；新检出仓库需重建。
 

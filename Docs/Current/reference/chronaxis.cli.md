@@ -6,7 +6,7 @@
 检查按需读取配置和DBC元数据，运行命令才扫描业务输入并发布结果。
 结果目录可复用；完成清单最后写入，失败不报告正常完成。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -53,7 +53,7 @@ ArgumentParser，不读取任何配置或来源。
 
 返回类型：argparse.ArgumentParser。
 
-源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-main"></a>
 ## `main`
@@ -85,4 +85,4 @@ argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程�
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:85`](../../../src/chronaxis/cli.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/cli.py:85`](../../../src/chronaxis/cli.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

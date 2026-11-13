@@ -1,9 +1,9 @@
-"""验证内存来源预分配预算、原适配器行为和共享历史接线。
+"""验证内存来源预分配预算、原适配器行为和同刻分组。
 
 输入是手算合成SourceSpec及明确转换/类型，输出为unittest断言；
 两后端四切分完整事实与原入口一致，超限必须在pack/数组创建之前失败。
 Unicode定宽提升按最长原字符串×N核算，错误/关闭释放预留且原输入保持。
-历史接线仅写测试专用目录，不读写旧快照；不将内存输入当流式CSV或RSS证明。
+相关验证仅写测试专用目录，不读写旧快照；不将内存输入当流式CSV或RSS证明。
 """
 
 # 标准库测试/替换/注入只控制局部明确失败，不改数值核。
@@ -16,7 +16,7 @@ from chronaxis.core.binding import SignalDefinition
 from chronaxis.core.models import MemoryRow, SourceSpec, TimebaseSpec
 from chronaxis.core.types import SignalDType as D, TimeType
 from chronaxis.execution.memory_reader import BudgetedMemorySourceAdapter
-from chronaxis.execution.history import DecodedHistoryStore
+from chronaxis.execution.batch_signal_groups import BatchSignalGroups
 from chronaxis.results.budget import ResourceBudget
 from chronaxis.results import BudgetExceededError
 from chronaxis.sources import MemorySourceAdapter, ReadRequest, SourceAdapter, SourceClosedError, SourceReadError
@@ -210,27 +210,30 @@ class BudgetedMemoryTests(unittest.TestCase):
         self.assertEqual(max(int(time) for batch in batches for column in batch.series.values() for time in column.time_ns), self.start + 3)
         self.assertEqual(batches[-1].observed_end_ns, self.start + 4)
 
-    def test_shared_budget_source_history_groups_and_closed_inputs(self) -> None:
-        """同一账本实际接通内存批次/磁盘历史/完整组，封存前输入已关闭。
+    def test_shared_budget_source_groups_and_closed_inputs(self) -> None:
+        """同一账本实际接通内存批次和完整同刻组，消费后输入已关闭。
 
         参数: 无。返回: None。异常: 接线/数量/质量/释放或文件事实改变断言失败。
         """
         with tempfile.TemporaryDirectory(prefix='chronaxis-budget-memory-') as temporary:
             budget = ResourceBudget(16 * 1024 ** 2)
             adapter, request = self.build(budget=budget)
-            store = DecodedHistoryStore(budget, Path(temporary) / 'history', (adapter.describe(),), {'table': request})
-            self.addCleanup(store.close)
+            groups = []
+            grouping = BatchSignalGroups(budget, self.definitions, 'session', groups.append)
+            self.addCleanup(grouping.close)
+            last = None
             for batch in adapter.iter_batches(request):
-                store.append(batch)
+                grouping.consume(batch)
+                last = batch
+            grouping.finish()
             adapter.close()
             self.assertTrue(adapter.closed)
-            store.seal()
-            groups = list(store.iter_groups())
             self.assertEqual([len(group.samples) for group in groups], [4, 2, 2])
             self.assertEqual(groups[0].samples[0].time_ns, self.start)
             self.assertTrue(any(not sample.value.valid for group in groups for sample in group.samples))
-            self.assertEqual(store.source_completions['table'].observed_end_ns, self.start + 4)
-            store.close()
+            self.assertTrue(last.source_eof)
+            self.assertEqual(last.observed_end_ns, self.start + 4)
+            grouping.close()
             self.assertEqual(budget.ram_bytes, 0)
             self.assertLessEqual(budget.peak_ram_bytes, budget.memory_budget_bytes)
 

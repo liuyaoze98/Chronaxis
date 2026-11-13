@@ -64,8 +64,6 @@ class RawFrameStore:
             cost = 65536 + 32 * (len(str(requested)) + len(source_name))
             _reserve_owned_ram(self, cost, '_fixed_cost')
             resolved = requested.resolve()
-            if any(part.casefold() == 'refprojects' for part in resolved.parts):
-                raise ValueError('原始帧暂存禁止写入RefProjects')
             if resolved.exists():
                 raise FileExistsError(resolved)
             self.path = self.work_dir = resolved

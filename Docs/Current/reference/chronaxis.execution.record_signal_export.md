@@ -5,7 +5,7 @@
 最后组在真实EOF范围确定后才写，保半开范围而不保存整段信号历史。
 线性网格仍使用原SignalGrid；未请求的别名不进入本owner。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -52,7 +52,7 @@ RecordSignalExport(plan, budget, cursors, exports, path)
 ```
 
 
-源码：[`src/chronaxis/execution/record_signal_export.py:16`](../../../src/chronaxis/execution/record_signal_export.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:16`](../../../src/chronaxis/execution/record_signal_export.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-__init__"></a>
 ### `RecordSignalExport.__init__`
@@ -81,7 +81,7 @@ owner。
 
 构造原错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:18`](../../../src/chronaxis/execution/record_signal_export.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:18`](../../../src/chronaxis/execution/record_signal_export.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-update_observation"></a>
 ### `RecordSignalExport.update_observation`
@@ -106,7 +106,7 @@ None。
 
 无。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:46`](../../../src/chronaxis/execution/record_signal_export.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:46`](../../../src/chronaxis/execution/record_signal_export.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-_bounds"></a>
 ### `RecordSignalExport._bounds`
@@ -132,7 +132,7 @@ RecordSignalExport._bounds()
 
 无。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:54`](../../../src/chronaxis/execution/record_signal_export.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:54`](../../../src/chronaxis/execution/record_signal_export.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-_begin"></a>
 ### `RecordSignalExport._begin`
@@ -157,7 +157,7 @@ None。
 
 构造原错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:63`](../../../src/chronaxis/execution/record_signal_export.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:63`](../../../src/chronaxis/execution/record_signal_export.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-_flush"></a>
 ### `RecordSignalExport._flush`
@@ -183,7 +183,7 @@ None。
 
 原写入/清理错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:76`](../../../src/chronaxis/execution/record_signal_export.py#L76)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:76`](../../../src/chronaxis/execution/record_signal_export.py#L76)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-observe"></a>
 ### `RecordSignalExport.observe`
@@ -208,7 +208,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:82`](../../../src/chronaxis/execution/record_signal_export.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:82`](../../../src/chronaxis/execution/record_signal_export.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-finish"></a>
 ### `RecordSignalExport.finish`
@@ -234,7 +234,7 @@ None。
 
 原发布错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:94`](../../../src/chronaxis/execution/record_signal_export.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:94`](../../../src/chronaxis/execution/record_signal_export.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-segment"></a>
 ### `RecordSignalExport.segment`
@@ -259,7 +259,7 @@ None。
 
 原导出错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:106`](../../../src/chronaxis/execution/record_signal_export.py#L106)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:106`](../../../src/chronaxis/execution/record_signal_export.py#L106)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-closed"></a>
 ### `RecordSignalExport.closed`
@@ -287,7 +287,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:122`](../../../src/chronaxis/execution/record_signal_export.py#L122)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:122`](../../../src/chronaxis/execution/record_signal_export.py#L122)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSignalExport-close"></a>
 ### `RecordSignalExport.close`
@@ -313,4 +313,4 @@ None。
 
 原关闭错。
 
-源码：[`src/chronaxis/execution/record_signal_export.py:126`](../../../src/chronaxis/execution/record_signal_export.py#L126)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_signal_export.py:126`](../../../src/chronaxis/execution/record_signal_export.py#L126)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

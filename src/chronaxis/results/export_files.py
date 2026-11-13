@@ -2,8 +2,7 @@
 
 供信号CSV及新报文导出共用：输入是已编码的有限bytes，输出为按模式返回的目录或实际路径清单。
 临时文件保留供排查；失败不覆盖用户目录、不删除已有数据。累计spool先预约，
-RAM按自有槽释放；关闭失败保真实句柄供重试。沿用项目已验证的Windows rename
-语义，其他平台预先拒绝。此层不读取原始日志、不解码，也不计算插值。
+RAM按自有槽释放；关闭失败保真实句柄供重试。文件和目录均使用平台不覆盖移动；不支持的环境明确拒绝。此层不读取原始日志、不解码，也不计算插值。
 """
 
 from hashlib import sha256
@@ -33,11 +32,9 @@ class ExportFiles:
         self._failed = False
         self._temporary_identity = None
         self.destination = Path(destination).absolute()
-        # 检查词法及解析路径，防止通过链接写回历史项目；已有目标不复用。
-        if any(p.casefold()=='refprojects' for p in (*self.destination.parts,*self.destination.resolve().parts)):
-            raise ValueError('导出不能位于RefProjects')
-        if platform.system()!='Windows':
-            raise NotImplementedError('导出原子安装目前只验证Windows')
+        # 只复用符合规则的结果根；已有文件仍通过独占命名保护。
+        from .platform_files import require_publication_platform
+        require_publication_platform()
         try:
             self.destination.lstat()
         except FileNotFoundError:
@@ -213,7 +210,8 @@ class ExportFiles:
                 _release_owned_ram(self,self._row_cost,'_row_cost')
             self.close()
             if publication is None:
-                self.temporary.rename(self.destination)
+                from .platform_files import move_no_replace
+                move_no_replace(self.temporary,self.destination)
                 return self.destination
             from .manifest import ExportManifest
             result = ExportManifest(self.destination, self.destination/publication.names['manifest.json'],

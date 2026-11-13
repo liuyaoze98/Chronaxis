@@ -19,7 +19,7 @@ python -m chronaxis run continuous-parallel.yaml --output result-continuous
 
 `validate` checks configuration, `explain` describes execution, and `run` reads and analyzes the logs. With two files, `source_execution[].file_count` and `read_process_limit` are both 2; four is only the limit. Use `manifest` in the completion summary to locate this run's actual output files. The integral is 38 J; see the [worked result](example-results.md#continuous-parallel-yaml).
 
-Ordinary `explain` reports `read_process_limit` as a bound derived from configuration and source type, not the number of workers already started. For example, a single ASC using the default `concatenate` mode may be read directly without a child process even when this static limit is 1. Fast `worker_process_limit` follows its scheduling decision instead: execution within the current process is reported as 0.
+Ordinary `explain` reports `read_process_limit` as a bound derived from configuration and source type, not the number of workers already started. For one ASC, configured limit 4 and default `concatenate`, reading takes place in the current process and `read_process_limit` is 0; two files with that limit yield 2. Ordinary `time_order` uses one file child even at a configured limit of 1. Fast `worker_process_limit` follows its own scheduling rules and is 0 for inline execution. These are plan facts; actual PIDs can only be established during execution.
 
 Append `--process-count 2` for a temporary override without editing the configuration. A single CSV, memory or multi-source plan uses `process_count: 1`. Independent tasks use the batch-root count; see [execution settings](execution.md).
 
@@ -29,7 +29,7 @@ Append `--process-count 2` for a temporary override without editing the configur
 | Command | Arguments and options | Purpose |
 |---|---|---|
 | `python -m chronaxis config init/convert/resolve/origins` | See [Configuration tools](configuration-tools.md) and [Shared definitions](imports.md). | Generate templates, convert formats, expand configurations, or inspect declared origins. |
-| `python -m chronaxis validate PLAN` | Optional `--backend reference/numpy`, `--process-count INTEGER`, `--format text/json`. | Check the plan; readable text is the default, JSON is available for tools. |
+| `python -m chronaxis validate PLAN` | Optional `--backend auto/reference/numpy`, `--process-count INTEGER`, `--format text/json`. | Check the plan; readable text is the default, JSON is available for tools. |
 | `python -m chronaxis explain PLAN` | Same options as `validate`. | List required signals, resource limits, input-check scope, and calculation implementation. |
 | `python -m chronaxis run PLAN` | Required `--output`; optional `--work-dir`, `--backend`, `--process-count`. | Analyze, publish, close, then print a completion summary. |
 | `python -m chronaxis batch run BATCH` | Required `--output`; optional `--process-count`. | Run independent plans and write a per-job report; see [Batch execution](batch.md). |
@@ -52,7 +52,7 @@ For fast run, execution.process_count controls session workers; fast batch uses 
 | `--format` | String | Optional for `validate`/`explain` | `text` | `text` prints readable diagnostics; `json` returns a report object. It does not change result table formats. |
 | `--format` | String | Optional for `config resolve` | Terminal: `yaml`; file: suffix | Expanded configuration as `yaml`/`json`; an explicit value must match the output suffix. |
 | `--format` | String | Optional for `config origins` | `text` | `text` lists origins; `json` gives a field-origin report, not analysis results. |
-| `--backend` | String | Optional | Plan's `backend` | `reference` selects reference calculations; `numpy` selects array calculations. Applies to `validate`, `explain`, and `run`. |
+| `--backend` | String | Optional | Plan's `backend` | `auto` selects from the whole plan; `reference` and `numpy` fix the numerical implementation. This option overrides the plan. Applies to `validate`, `explain`, and `run`. |
 |--output|Directory path|run, batch run, fast run/batch|Required|Reusable result directory; each run creates distinct timestamped files.|
 | `--work-dir` | Directory path | Optional; ordinary `run` only | Create a dedicated work directory | Holds intermediate data and staged results. An explicit path must not already exist. |
 | `--process-count` | Integer | Optional; run/validate/explain/batch run and fast equivalents | Ordinary analysis: execution.process_count; batch: root process_count; both default 1 | Positive integer. Ordinary analysis limits read/decode workers; fast session workers also evaluate contributions. Both exclude the main process. Batch limits independent analysis workers, excluding their existing CAN subprocesses. |

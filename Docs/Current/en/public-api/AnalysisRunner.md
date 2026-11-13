@@ -35,7 +35,7 @@ AnalysisRunner.__init__(backend=None, *, extensions=None)
 
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
-|`backend`|str &#124; None|No|None|Positional or keyword. "reference" selects independent reference calculations; "numpy" selects NumPy array calculations. None uses the plan setting.|
+|`backend`|str &#124; None|No|None|Positional or keyword. "auto" selects reference or numpy from each whole plan without trial runs; "reference" and "numpy" fix the numerical implementation. None inherits the plan. See [execution settings](../execution.md).|
 |`extensions`|[ExtensionRegistry](ExtensionRegistry.md#api-ExtensionRegistry) &#124; None|No|None|Keyword-only host registry. Supply the same instance used for the plan. Each requested extension must implement the selected backend.|
 
 #### Returns
@@ -44,12 +44,13 @@ None; initializes the instance.
 
 #### Raises
 
-TypeError for a non-string override; ValueError for an unknown backend.
+`TypeError` for a non-string, non-None backend or for extensions other than ExtensionRegistry or None. `ValueError` for an unknown backend string. The constructor has no plan yet; validate, explain, and run check registry identity when they receive a plan.
 
 Exact diagnostics reported directly by this function (Chinese text is retained):
 
-- `TypeError`: `AnalysisRunner backend需要reference、numpy或None。` — backend must be reference, numpy, or None.
-- `ValueError`: `AnalysisRunner仅支持reference与numpy后端。` — only reference and numpy are supported.
+- `TypeError`: `AnalysisRunner backend需要auto、reference、numpy或None` — backend must be auto, reference, numpy, or None.
+- `ValueError`: `AnalysisRunner仅支持auto、reference与numpy后端` — backend must be auto, reference, or numpy.
+- `TypeError`: `extensions需要宿主建立的ExtensionRegistry` — extensions must be an ExtensionRegistry instance or None.
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -71,7 +72,7 @@ None.
 
 #### Returns
 
-None/reference/numpy.
+None/auto/reference/numpy.
 
 #### Raises
 
@@ -99,13 +100,34 @@ The shared ValidationReport, retaining warnings about actual fields/ranges that 
 
 #### Raises
 
-`ValueError` if an explicit `process_count` is not a positive native integer; Boolean values are invalid. Unsupported execution configurations appear in static validation reports; `run` rejects them with `AnalysisError`.
+`ValueError` if an explicit `process_count` is not a positive native integer (including bool), or the runner and plan do not share the same ExtensionRegistry instance. Equal declarations in a different registry object are insufficient. These errors are raised before a report is returned. This method has no extensions argument; pass the plan's registry when constructing the runner. Unsupported execution configurations appear in static validation reports; `run` rejects them with `AnalysisError`.
 
 TypeError if plan is not AnalysisPlan or its execution model is invalid. Ordinary static problems appear in ValidationReport.errors; execution_ready reports execution capability. Inputs are not read, so an empty errors list does not verify real logs.
 
 #### Side effects
 
 No source I/O or directory creation.
+
+#### Example: share one registry instance
+
+This minimal example checks and explains the bundled plan without running an analysis. It uses built-in operations; the empty registry demonstrates how to pass the same object. For actual custom operations, use the [worked host example](../host-extensions.md).
+
+```python
+"""Share one registry instance for loading, validation, and explanation."""
+# Run from the manual root (the directory containing examples).
+# This built-in teaching plan uses an empty registry only to show object sharing.
+from chronaxis import AnalysisRunner, load_analysis_plan
+from chronaxis.extensions import ExtensionRegistry
+
+registry = ExtensionRegistry()
+plan = load_analysis_plan("examples/calculation-minimal.yaml", extensions=registry)
+runner = AnalysisRunner(extensions=registry)
+validation = runner.validate(plan)
+explanation = runner.explain(plan)
+print(validation.valid, validation.execution_ready)
+print(type(explanation).__name__)
+# Expected output: True True, followed by ExplainReport.
+```
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -129,7 +151,7 @@ ExplainReport; plan_identity retains the original declaration identity.
 
 #### Raises
 
-`ValueError` if an explicit `process_count` is not a positive native integer; Boolean values are invalid. Unsupported execution configurations appear in static validation reports; `run` rejects them with `AnalysisError`.
+`ValueError` if an explicit `process_count` is not a positive native integer (including bool), or the runner and plan do not share the same ExtensionRegistry instance. Equal declarations in a different registry object are insufficient. These errors are raised before a report is returned. This method has no extensions argument; pass the plan's registry when constructing the runner. Unsupported execution configurations appear in static validation reports; `run` rejects them with `AnalysisError`.
 
 TypeError for an invalid plan or execution type. Manually corrupted typed references can cause AttributeError/KeyError; rebuild a valid plan through from_dict/load_analysis_plan. This method does not open CSV/DBC or measure runtime/memory.
 
@@ -213,9 +235,9 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/runner.py:51`](../../../../src/chronaxis/runner.py#L51) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/runner.py:78`](../../../../src/chronaxis/runner.py#L78) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/runner.py:88`](../../../../src/chronaxis/runner.py#L88) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/runner.py:99`](../../../../src/chronaxis/runner.py#L99) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:52`](../../../../src/chronaxis/runner.py#L52) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:80`](../../../../src/chronaxis/runner.py#L80) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:91`](../../../../src/chronaxis/runner.py#L91) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:103`](../../../../src/chronaxis/runner.py#L103) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

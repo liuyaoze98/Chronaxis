@@ -137,7 +137,7 @@ class SignalValidityRunnerTests(unittest.TestCase):
         plan = self.plan('can_asc', paths['can_asc'], 'actual', explicit)
         import cantools
         # 同次来源仍只加载一个DBC；有效期不要求额外周期属性或二次读库。
-        with patch('cantools.database.load_file', wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load', wraps=cantools.database.load) as load:
             with AnalysisRunner().run(plan, work_dir=self.root / uuid4().hex) as result:
                 energy = next(row.value for row in result.iter_calculations() if row.calculation_id == 'energy')
                 self.assertAlmostEqual(energy, 1344.0, places=3)

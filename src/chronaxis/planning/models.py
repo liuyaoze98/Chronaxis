@@ -338,14 +338,14 @@ class MessageCalculationPlan:
 class ExecutionPlan:
     """保存后端和资源限额，实际执行器负责落实这些声明。
 
-    backend选择'numpy'或'reference'，batch_rows限制来源批次总样本数。
+    backend选择'numpy'、'reference'或按静态类别选择的'auto'，batch_rows限制来源批次总样本数。
     memory_budget_bytes声明新分析层内存预算，result_buffer_rows限制结果缓冲，
     spool_quota_bytes声明磁盘暂存配额，None表示没有显式配额。
     partial_policy是全局默认结果政策；on_budget_exceeded当前只允许'error'。
     构造计划不测量内存或磁盘，也不启动运行、暂存或发布。
     """
 
-    backend: str  # numpy或reference。
+    backend: str  # numpy、reference或auto；运行前解析为具体后端。
     batch_rows: int  # 来源批次样本上限。
     memory_budget_bytes: int  # 新分析层RAM预算。
     result_buffer_rows: int  # 结果流缓冲上限。

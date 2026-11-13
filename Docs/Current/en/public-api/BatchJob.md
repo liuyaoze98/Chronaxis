@@ -18,4 +18,4 @@ BatchJob(job_id: str, plan: chronaxis.planning.plan.AnalysisPlan | pathlib.Path)
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:44`](../../../../src/chronaxis/batch/models.py#L44) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/models.py:44`](../../../../src/chronaxis/batch/models.py#L44) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

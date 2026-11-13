@@ -25,7 +25,7 @@ pathlib.Path to the completion manifest. inputs lists every file and outputs nam
 
 ### Raises
 
-PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result.
+PlanValidationError for configuration errors; ValueError for invalid overrides or numeric/protocol errors; RuntimeError for resource or worker failures; InterruptedError for cancellation; OSError for file/publication failures. Any required-file failure prevents a successful session result. Session errors keep their original type. If cleanup remains incomplete, the original exception may expose fast_session_cleanup_owner; resolve the resource fault and call that object's close(), without separately closing its children. The attribute is optional and may refer to an object closed by a later retry.
 
 ### Execution and resources
 
@@ -33,4 +33,4 @@ Read configuration, DBC and volumes. Workers evaluate individual contributions; 
 
 [High-performance integrator tutorial](../fast-energy.md)
 
-Source: [`src/chronaxis/fast/run.py:63`](../../../../src/chronaxis/fast/run.py#L63) (line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`).
+Source: [`src/chronaxis/fast/run.py:65`](../../../../src/chronaxis/fast/run.py#L65) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).

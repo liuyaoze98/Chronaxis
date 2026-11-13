@@ -22,9 +22,9 @@
 | message_calculations | 否，缺省为空 | 按原消息累计一次表达式贡献，与普通时间积分分开 |
 | intervals | 否，默认actual | intervals.default提供统一间隔；节点自己的interval就地覆盖，不另写overrides名称表 |
 | outputs | 否 | 默认中文可读CSV与JSON运行清单；需要原交换字段时显式tables: csv或jsonl；贡献明细、信号导出和CAN导出默认关闭 |
-| execution | 否 | 控制文件读取进程数、计算实现、资源使用及数据不全时的处理。单一ASC/BLF来源示例显式选择process_count: 4；省略时进程数仍为1，计算实现默认numpy。见[执行设置](execution.md) |
+| execution | 否 | 控制文件读取进程数、计算实现、资源使用及数据不全时的处理。单一ASC/BLF来源示例显式选择process_count: 4；省略时进程数仍为1，计算实现默认auto，按整个计划选择reference或numpy。见[执行设置](execution.md) |
 | diagnostics | 否，全为false | 选择是否额外记录逐项定位信息、完整性校验以及保留临时文件；按排错需求启用，详见[诊断](execution.md#diagnostics) |
-| metadata | 否，空对象 | 保存附加信息；device_label控制运行清单来源标签，普通分析缺省pending。具体入口限制见[运行说明](execution.md)，其他备注不改变计算 |
+| metadata | 否，空对象 | 保存附加信息；device_label控制运行清单设备标签，分析和导出均缺省pending，填写时须为非空文本。见[运行说明](execution.md)，其他备注不改变计算 |
 
 字段名称区分大小写，未知字段会报错并可能给拼写提示，但不会自动接受建议值。同一配置不能重复一个键；同名来源、信号或冲突节点也会拒绝。原日志列名和DBC信号名保持原文，用signals中的name给它们取简单可读的表达式名称。
 

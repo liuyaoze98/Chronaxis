@@ -6,7 +6,7 @@
 序列化与路径解析保留公共编号，避免往返时反复减1。CSV文件列的channel_origin
 描述原始文件格式，不经过此转换。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -51,4 +51,4 @@ int，用户配置的通道1转换为内部编号0。
 
 PlanValidationError，值的类型或取值不符合上述规则，或文本整数超过解析能力。
 
-源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/channels.py:12`](../../../src/chronaxis/planning/channels.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -8,7 +8,7 @@ import csv
 import json
 from dataclasses import replace
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 

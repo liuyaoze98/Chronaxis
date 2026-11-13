@@ -1,20 +1,20 @@
 # `chronaxis.legacy.process_read`
 
-在独立进程中逐次请求旧CAN函数，确认退出后才交付完整EOF。
+在独立进程中逐次读取并解码BLF，确认退出后才交付完整EOF。
 
-输入是冻结的单BLF请求和借用ResourceBudget，输出原函数已经返回的
-LegacyDecodedFrame。构造不启动进程；start只初始化旧DBC和公开元数据；
-每次next只授权一个PULL，不预取下一帧，也不改变原读取或解码参数。
-原reader没有公开的可靠关闭接口，因此本层关闭自己的管道并等待或终止
-自己启动的进程。只有确认退出才释放进程责任；这没有修复旧reader。
+输入是冻结的单BLF请求和借用ResourceBudget，输出LegacyDecodedFrame。
+构造不启动进程；start加载DBC和公开元数据。每次next只授权一个PULL，
+不预取下一帧；子进程通过共用BLFRead读取，并按显式串行政策解码。
+子进程在EOF、STOP或失败时关闭自己持有的读取器；父层关闭管道，等待
+或终止自己启动的进程，确认退出后才释放对应进程责任。
 
 固定状态、IPC最大包、元数据和当前记录分别计入新层保守RAM费用。
-旧DBC、旧reader和解释器的整进程RSS未测，不能由本账本上限代替。
+DBC、第三方读取器与解释器的整进程RSS未由本账本限制。
 本层不写源文件、不导出BLF、不关闭共用的资源用量记录或其他read。失败时保留原父
 异常；清理仍失败时以can_process_read_cleanup_owner暴露同一真实owner。
 跨进程只能保留远端异常事实，不能承诺远端异常对象与父对象相同。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -39,7 +39,7 @@ LegacyDecodedFrame。构造不启动进程；start只初始化旧DBC和公开元
 |[`LegacyCANProcessRead._fail`](#api-LegacyCANProcessRead-_fail)|以原父错误为主关闭实际owner，必要时包装来源位置。|
 |[`LegacyCANProcessRead.start`](#api-LegacyCANProcessRead-start)|实际启动隔离进程并取得READY，不授权任何消息读取。|
 |[`LegacyCANProcessRead._check_ready`](#api-LegacyCANProcessRead-_check_ready)|核INIT回应来自同一真实PID和同一字段请求，不猜元数据。|
-|[`LegacyCANProcessRead._check_ready_metadata`](#api-LegacyCANProcessRead-_check_ready_metadata)|核两种READY共有的字段定位、单位、依赖与原vendor，不改协议头。|
+|[`LegacyCANProcessRead._check_ready_metadata`](#api-LegacyCANProcessRead-_check_ready_metadata)|核两种READY共有的字段定位、单位、依赖，不改协议头。|
 |[`LegacyCANProcessRead._exchange`](#api-LegacyCANProcessRead-_exchange)|完成一个有界请求/回应；STATUS/ACK也不隐含PULL许可。|
 |[`LegacyCANProcessRead._send_request`](#api-LegacyCANProcessRead-_send_request)|发送唯一在途许可；发送中断时仍保留实际连接和未确认责任。|
 |[`LegacyCANProcessRead._receive_response`](#api-LegacyCANProcessRead-_receive_response)|接收先前发送的许可，并严格核对远端错误事实与请求身份。|
@@ -55,10 +55,11 @@ LegacyDecodedFrame。构造不启动进程；start只初始化旧DBC和公开元
 
 ```python
 from collections.abc import Mapping
+from ..can_dependencies import runtime_dependency_versions
 from sys import getsizeof
 from types import MappingProxyType
 from .records import MAX_WIRE_BYTES, LegacyCANRequest, decode_packet, decoded_from_dict, encode_packet, field_from_dict, field_to_dict
-from .worker import VENDOR_SHA256, worker_main
+from .worker import worker_main
 from ..results.budget import ResourceBudget
 from ..results.errors import AnalysisError, ResultClosedError
 from ..results.spool import _cleanup_owner, _release_owned_ram, _reserve_owned_ram
@@ -94,7 +95,7 @@ TypeError为内部未校验类型；不借用只接受冻结tuple的历史元数
 
 - `TypeError`：旧CAN元数据只接受已校验JSON树。
 
-源码：[`src/chronaxis/legacy/process_read.py:33`](../../../src/chronaxis/legacy/process_read.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:33`](../../../src/chronaxis/legacy/process_read.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_freeze"></a>
 ## `_freeze`
@@ -119,7 +120,7 @@ _freeze(value)
 
 原分配错误传播；本函数不读取文件或保留进程对象。
 
-源码：[`src/chronaxis/legacy/process_read.py:50`](../../../src/chronaxis/legacy/process_read.py#L50)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:50`](../../../src/chronaxis/legacy/process_read.py#L50)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RemoteLegacyError"></a>
 ## `RemoteLegacyError`
@@ -133,7 +134,7 @@ RemoteLegacyError(facts, phase, request_id)
 继承关系：RuntimeError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/legacy/process_read.py:64`](../../../src/chronaxis/legacy/process_read.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:64`](../../../src/chronaxis/legacy/process_read.py#L64)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RemoteLegacyError-__init__"></a>
 ### `RemoteLegacyError.__init__`
@@ -160,7 +161,7 @@ RemoteLegacyError.__init__(facts, phase, request_id)
 
 原分配/格式错误，不执行清理。
 
-源码：[`src/chronaxis/legacy/process_read.py:67`](../../../src/chronaxis/legacy/process_read.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:67`](../../../src/chronaxis/legacy/process_read.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead"></a>
 ## `LegacyCANProcessRead`
@@ -176,7 +177,7 @@ LegacyCANProcessRead(request, budget, *, _worker_target=None)
 ```
 
 
-源码：[`src/chronaxis/legacy/process_read.py:82`](../../../src/chronaxis/legacy/process_read.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:82`](../../../src/chronaxis/legacy/process_read.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-__init__"></a>
 ### `LegacyCANProcessRead.__init__`
@@ -209,7 +210,7 @@ LegacyCANProcessRead.__init__(request, budget, *, _worker_target=None)
 - `TypeError`：旧CAN读取需要LegacyCANRequest和ResourceBudget。
 - `ValueError`：当前单CAN来源最多声明256个字段，且初始化包不能超过64KiB。
 
-源码：[`src/chronaxis/legacy/process_read.py:90`](../../../src/chronaxis/legacy/process_read.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:90`](../../../src/chronaxis/legacy/process_read.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-closed"></a>
 ### `LegacyCANProcessRead.closed`
@@ -237,7 +238,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无，不触碰已关闭Process属性。
 
-源码：[`src/chronaxis/legacy/process_read.py:124`](../../../src/chronaxis/legacy/process_read.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:124`](../../../src/chronaxis/legacy/process_read.py#L124)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-finished"></a>
 ### `LegacyCANProcessRead.finished`
@@ -265,7 +266,7 @@ bool；提前close或失败永远不伪装EOF。
 
 无。
 
-源码：[`src/chronaxis/legacy/process_read.py:132`](../../../src/chronaxis/legacy/process_read.py#L132)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:132`](../../../src/chronaxis/legacy/process_read.py#L132)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-worker_pid"></a>
 ### `LegacyCANProcessRead.worker_pid`
@@ -293,7 +294,7 @@ int或None。
 
 无，不重新启动进程。
 
-源码：[`src/chronaxis/legacy/process_read.py:140`](../../../src/chronaxis/legacy/process_read.py#L140)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:140`](../../../src/chronaxis/legacy/process_read.py#L140)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-counters"></a>
 ### `LegacyCANProcessRead.counters`
@@ -322,7 +323,7 @@ LegacyCANProcessRead.counters
 
 原小字典分配错误。
 
-源码：[`src/chronaxis/legacy/process_read.py:148`](../../../src/chronaxis/legacy/process_read.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:148`](../../../src/chronaxis/legacy/process_read.py#L148)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-metadata"></a>
 ### `LegacyCANProcessRead.metadata`
@@ -354,7 +355,7 @@ ResultClosedError为关闭中/已关闭，RuntimeError为尚未READY。
 
 - `RuntimeError`：start完成前没有旧CAN运行元数据。
 
-源码：[`src/chronaxis/legacy/process_read.py:158`](../../../src/chronaxis/legacy/process_read.py#L158)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:158`](../../../src/chronaxis/legacy/process_read.py#L158)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_require_open"></a>
 ### `LegacyCANProcessRead._require_open`
@@ -386,7 +387,7 @@ ResultClosedError为已关/正在关；
 - `ResultClosedError`：旧CAN进程read已关闭或正在关闭。
 - `SourceReadError`：失败的旧CAN进程read仅接受关闭。
 
-源码：[`src/chronaxis/legacy/process_read.py:169`](../../../src/chronaxis/legacy/process_read.py#L169)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:169`](../../../src/chronaxis/legacy/process_read.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_fail"></a>
 ### `LegacyCANProcessRead._fail`
@@ -413,7 +414,7 @@ LegacyCANProcessRead._fail(exc, stage)
 父KI/SystemExit、预算及来源错误原对象传播；其他错误作为
     SourceReadError的cause，清理副错只附note/真实恢复owner。
 
-源码：[`src/chronaxis/legacy/process_read.py:180`](../../../src/chronaxis/legacy/process_read.py#L180)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:180`](../../../src/chronaxis/legacy/process_read.py#L180)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-start"></a>
 ### `LegacyCANProcessRead.start`
@@ -439,7 +440,7 @@ self，重复成功调用不重启/重载DBC。
 
 启动、协议、远端或预算错误；父取消保原对象和关闭责任。
 
-源码：[`src/chronaxis/legacy/process_read.py:199`](../../../src/chronaxis/legacy/process_read.py#L199)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:199`](../../../src/chronaxis/legacy/process_read.py#L199)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_check_ready"></a>
 ### `LegacyCANProcessRead._check_ready`
@@ -468,12 +469,12 @@ SourceReadError为profile/版本/PID/字段位置不符。
 
 - `SourceReadError`：旧CAN READY身份、版本或实际PID不符。
 
-源码：[`src/chronaxis/legacy/process_read.py:237`](../../../src/chronaxis/legacy/process_read.py#L237)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:237`](../../../src/chronaxis/legacy/process_read.py#L237)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_check_ready_metadata"></a>
 ### `LegacyCANProcessRead._check_ready_metadata`
 
-核两种READY共有的字段定位、单位、依赖与原vendor，不改协议头。
+核两种READY共有的字段定位、单位、依赖，不改协议头。
 
 ```python
 LegacyCANProcessRead._check_ready_metadata(packet, *, cycle_fields=(), metadata_fields=())
@@ -505,7 +506,7 @@ LegacyCANProcessRead._check_ready_metadata(packet, *, cycle_fields=(), metadata_
 - `SourceReadError`：旧CAN READY字段定位类型非法。
 - `SourceReadError`：旧CAN READY帧型兼容提示非法或与原定位不同。
 
-源码：[`src/chronaxis/legacy/process_read.py:252`](../../../src/chronaxis/legacy/process_read.py#L252)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:252`](../../../src/chronaxis/legacy/process_read.py#L252)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_exchange"></a>
 ### `LegacyCANProcessRead._exchange`
@@ -534,7 +535,7 @@ LegacyCANProcessRead._exchange(packet)
 
 最多一项在途，父每50ms回到Python检查取消；本方法发送后立即等待。
 
-源码：[`src/chronaxis/legacy/process_read.py:310`](../../../src/chronaxis/legacy/process_read.py#L310)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:307`](../../../src/chronaxis/legacy/process_read.py#L307)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_send_request"></a>
 ### `LegacyCANProcessRead._send_request`
@@ -567,7 +568,7 @@ LegacyCANProcessRead._send_request(packet)
 
 原逐条入口立即接收；批次入口可在消费当前批时保留这一项在途请求。
 
-源码：[`src/chronaxis/legacy/process_read.py:323`](../../../src/chronaxis/legacy/process_read.py#L323)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:320`](../../../src/chronaxis/legacy/process_read.py#L320)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_receive_response"></a>
 ### `LegacyCANProcessRead._receive_response`
@@ -602,7 +603,7 @@ LegacyCANProcessRead._receive_response(packet)
 
 必须已有一个在途请求；没有真实协议EOF的退出仍是错误。
 
-源码：[`src/chronaxis/legacy/process_read.py:340`](../../../src/chronaxis/legacy/process_read.py#L340)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:337`](../../../src/chronaxis/legacy/process_read.py#L337)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_receive_reply"></a>
 ### `LegacyCANProcessRead._receive_reply`
@@ -632,7 +633,7 @@ LegacyCANProcessRead._receive_reply()
 
 原逐条入口仍只接收64KiB；子类不能绕过共享接收流程的在途及远端错误检查。
 
-源码：[`src/chronaxis/legacy/process_read.py:377`](../../../src/chronaxis/legacy/process_read.py#L377)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:374`](../../../src/chronaxis/legacy/process_read.py#L374)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-__iter__"></a>
 ### `LegacyCANProcessRead.__iter__`
@@ -658,7 +659,7 @@ LegacyCANProcessRead.__iter__()
 
 原错误只在实际next/start时报告。
 
-源码：[`src/chronaxis/legacy/process_read.py:387`](../../../src/chronaxis/legacy/process_read.py#L387)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:384`](../../../src/chronaxis/legacy/process_read.py#L384)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-__next__"></a>
 ### `LegacyCANProcessRead.__next__`
@@ -693,7 +694,7 @@ StopIteration为已确认EOF；源/预算/协议错误或父原取消。
 - `SourceReadError`：旧CAN ITEM字段缺失或多余。
 - `SourceReadError`：旧CAN原yield序号不连续，禁止重排或补号。
 
-源码：[`src/chronaxis/legacy/process_read.py:394`](../../../src/chronaxis/legacy/process_read.py#L394)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:391`](../../../src/chronaxis/legacy/process_read.py#L391)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_close_connection"></a>
 ### `LegacyCANProcessRead._close_connection`
@@ -718,7 +719,7 @@ LegacyCANProcessRead._close_connection(slot)
 
 原close错误；未关闭对象仍在同槽，费用稍后单独归还。
 
-源码：[`src/chronaxis/legacy/process_read.py:443`](../../../src/chronaxis/legacy/process_read.py#L443)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:440`](../../../src/chronaxis/legacy/process_read.py#L440)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_close_process"></a>
 ### `LegacyCANProcessRead._close_process`
@@ -749,7 +750,7 @@ join/terminate/kill/close错误保原process和停止确认状态以便重试。
 三次显式join最多约6秒；Windows kill仍是TerminateProcess，
     必须实际取得exitcode，不能把终止请求成功当作进程已经退出。
 
-源码：[`src/chronaxis/legacy/process_read.py:458`](../../../src/chronaxis/legacy/process_read.py#L458)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:455`](../../../src/chronaxis/legacy/process_read.py#L455)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-_release_closed_state"></a>
 ### `LegacyCANProcessRead._release_closed_state`
@@ -775,7 +776,7 @@ LegacyCANProcessRead._release_closed_state()
 
 原预算回调错误；费用槽保留实际入账事实，同一close可继续恢复。
 
-源码：[`src/chronaxis/legacy/process_read.py:492`](../../../src/chronaxis/legacy/process_read.py#L492)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:489`](../../../src/chronaxis/legacy/process_read.py#L489)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyCANProcessRead-close"></a>
 ### `LegacyCANProcessRead.close`
@@ -806,4 +807,4 @@ None，完成后重复调用幂等。
 关管道令等待命令的child退出；在途旧IO不响应时有限等待后终止，
     不为关闭继续next，也不把强制退出当正常分析完成。
 
-源码：[`src/chronaxis/legacy/process_read.py:504`](../../../src/chronaxis/legacy/process_read.py#L504)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/process_read.py:501`](../../../src/chronaxis/legacy/process_read.py#L501)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

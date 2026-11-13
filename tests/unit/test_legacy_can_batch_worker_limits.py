@@ -1,6 +1,6 @@
 """直接驱动生产批次worker，验证字节/条数封口之前不会多调用旧链。
 
-连接和旧vendor都是明确的内存测试替身：连接按脚本交付真实协议bytes，旧链记录
+连接和读取/解码都是明确的内存测试替身：连接按脚本交付真实协议bytes，消息链记录
 next/parse次数及原序。测试实际执行batch_worker_main、原记录校验和真实批次编码，
 不声称这些替身证明真实BLF/DBC兼容性；真实spawn覆盖由既有专项负责。
 不读取DBC或日志，不创建文件或进程，不修改旧模块。临时patch只在单例内生效。
@@ -23,7 +23,7 @@ from test_legacy_checked_decode import ChangingMapping
 
 
 class ControlledOriginalChain:
-    """明确替代原vendor的有限消息链，累计调用事实，绝不打开真实来源。"""
+    """明确替代读取迭代器的有限消息链，累计调用事实，绝不打开真实来源。"""
 
     def __init__(self, count, values):
         """保存合成输入和计数。参数: count/values为条数与原值。返回: 替身。异常: 无。"""
@@ -121,12 +121,15 @@ class LegacyBatchWorkerLimitTests(unittest.TestCase):
         connection = ScriptedBytesConnection(chain, commands)
         request = LegacyCANRequest(Path('synthetic.blf'), Path('synthetic.dbc'), ())
         processor = SimpleNamespace(parse_frame=chain.parse_frame,
-            cantools=SimpleNamespace(database=SimpleNamespace(load_file=chain.load_file)))
+            cantools=SimpleNamespace(database=SimpleNamespace()))
         versions = {'python-can': 'controlled-test', 'cantools': 'controlled-test',
                     'natsort': 'controlled-test'}
         # 只替换需要磁盘/旧库的入口；消息循环、字段/值校验及编码均执行生产实现。
         with patch.object(worker, '_request', return_value=request), \
-                patch.object(worker, '_load_vendor', return_value=(chain, processor, {})), \
+                patch.object(batch_worker, 'load_dbc_file', side_effect=lambda path,module: chain.load_file(path)), \
+                patch.object(worker, '_load_can_runtime', return_value=(getattr(chain,'can',None),processor.cantools)), \
+                patch.object(worker, '_iter_blf', side_effect=chain.iter_frames), \
+                patch.object(batch_worker, '_parse_selected', side_effect=lambda db,frame,message,duplicates: processor.parse_frame(frame,db)), \
                 patch.object(batch_worker.metadata, 'version', side_effect=versions.__getitem__):
             if error:
                 with self.assertRaises(SystemExit) as caught:

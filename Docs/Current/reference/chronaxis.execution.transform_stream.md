@@ -6,11 +6,11 @@
 交付的有界原组。待同一时刻的原更新与变换值均齐全，再原子交给下层。
 无全会话网格、输入重扫或对照时间列；预算、取消和真实EOF沿主执行器。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[DriverExpression](chronaxis.execution.driver_expression.md#api-DriverExpression)、[LatestSignalState](chronaxis.execution.state.md#api-LatestSignalState)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[TransformSpan](chronaxis.execution.transform_window.md#api-TransformSpan)、[TransformWindow](chronaxis.execution.transform_window.md#api-TransformWindow)
+[D](chronaxis.core.types.md#api-SignalDType)、[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[DriverExpression](chronaxis.execution.driver_expression.md#api-DriverExpression)、[LatestSignalState](chronaxis.execution.state.md#api-LatestSignalState)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[TransformSpan](chronaxis.execution.transform_window.md#api-TransformSpan)、[TransformWindow](chronaxis.execution.transform_window.md#api-TransformWindow)
 
 ## 对象导航
 
@@ -18,6 +18,7 @@
 |---|---|
 |[`TransformStage`](#api-TransformStage)|拥有一层的状态与前瞻，向唯一后继按实际时间递增地交付组。|
 |[`TransformStage.__init__`](#api-TransformStage-__init__)||
+|[`TransformStage._ensure_active`](#api-TransformStage-_ensure_active)|拒绝关闭或失败后的继续推进，避免重发未完成网格。|
 |[`TransformStage.bounds`](#api-TransformStage-bounds)|取得实际可观测起点和已知终点。|
 |[`TransformStage._invalid`](#api-TransformStage-_invalid)|构造明确未知的输出。|
 |[`TransformStage._sample`](#api-TransformStage-_sample)|构造离散输出。|
@@ -63,7 +64,7 @@ TransformStage(plan, item, defs, choice, period, ends, cursors, budget, emit)
 ```
 
 
-源码：[`src/chronaxis/execution/transform_stream.py:22`](../../../src/chronaxis/execution/transform_stream.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:22`](../../../src/chronaxis/execution/transform_stream.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-__init__"></a>
 ### `TransformStage.__init__`
@@ -96,7 +97,33 @@ owner。
 
 预算/绑定错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:25`](../../../src/chronaxis/execution/transform_stream.py#L25)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:25`](../../../src/chronaxis/execution/transform_stream.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-TransformStage-_ensure_active"></a>
+### `TransformStage._ensure_active`
+
+拒绝关闭或失败后的继续推进，避免重发未完成网格。
+
+```python
+TransformStage._ensure_active()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+生命周期错误。
+
+源码：[`src/chronaxis/execution/transform_stream.py:69`](../../../src/chronaxis/execution/transform_stream.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-bounds"></a>
 ### `TransformStage.bounds`
@@ -122,7 +149,7 @@ TransformStage.bounds()
 
 游标错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:69`](../../../src/chronaxis/execution/transform_stream.py#L69)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:75`](../../../src/chronaxis/execution/transform_stream.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_invalid"></a>
 ### `TransformStage._invalid`
@@ -147,7 +174,7 @@ ScalarValue。
 
 非法质量位。
 
-源码：[`src/chronaxis/execution/transform_stream.py:84`](../../../src/chronaxis/execution/transform_stream.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:90`](../../../src/chronaxis/execution/transform_stream.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_sample"></a>
 ### `TransformStage._sample`
@@ -163,7 +190,7 @@ TransformStage._sample(t, value)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`t`|int|是|无|位置或关键字。当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。当前网格或实测右侧计算得到的变换值，带输出dtype和有效性。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。当前网格或实测右侧计算得到的变换值，带输出dtype和有效性。|
 
 #### 返回说明
 
@@ -173,7 +200,7 @@ RecordSample。
 
 模型错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:88`](../../../src/chronaxis/execution/transform_stream.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:94`](../../../src/chronaxis/execution/transform_stream.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_at_grid"></a>
 ### `TransformStage._at_grid`
@@ -189,7 +216,7 @@ TransformStage._at_grid(t, point, update)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`t`|int|是|无|位置或关键字。当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue) &#124; None|是|无|位置或关键字。同一时刻可用的输入点查询结果；没有真实同一时刻点时可为空。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None|是|无|位置或关键字。同一时刻可用的输入点查询结果；没有真实同一时刻点时可为空。|
 |`update`|bool|是|无|位置或关键字。该点是否确有活动数值依赖更新，用来区分真实样本与保持/裁剪边界。|
 
 #### 返回说明
@@ -200,7 +227,7 @@ ScalarValue。
 
 预算/数值错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:94`](../../../src/chronaxis/execution/transform_stream.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:100`](../../../src/chronaxis/execution/transform_stream.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_convert_rate"></a>
 ### `TransformStage._convert_rate`
@@ -215,7 +242,7 @@ TransformStage._convert_rate(value)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。使用输入自然尺度每秒表示的差分或拟合值，之后换为声明的速率单位。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。使用输入自然尺度每秒表示的差分或拟合值，之后换为声明的速率单位。|
 
 #### 返回说明
 
@@ -225,7 +252,7 @@ TransformStage._convert_rate(value)
 
 转换错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:154`](../../../src/chronaxis/execution/transform_stream.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:166`](../../../src/chronaxis/execution/transform_stream.py#L166)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_deliver"></a>
 ### `TransformStage._deliver`
@@ -242,7 +269,7 @@ TransformStage._deliver(group, t, value=None)
 |---|---|---|---|---|
 |`group`|[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup) &#124; None|是|无|位置或关键字。与输出同一时刻的原始组；纯定时网格输出可能没有上游组。|
 |`t`|int|是|无|位置或关键字。当前实际时间的整数纳秒，用于定位新样本、网格或区间终点。|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue) &#124; None|否|None|位置或关键字。此次需要附加到组中的离散变换值，若无产出则只转发原组。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None|否|None|位置或关键字。此次需要附加到组中的离散变换值，若无产出则只转发原组。|
 
 #### 返回说明
 
@@ -252,7 +279,7 @@ TransformStage._deliver(group, t, value=None)
 
 下游错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:166`](../../../src/chronaxis/execution/transform_stream.py#L166)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:178`](../../../src/chronaxis/execution/transform_stream.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_drain"></a>
 ### `TransformStage._drain`
@@ -268,7 +295,7 @@ TransformStage._drain(group, point=None, update=False, *, through=None, unresolv
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`group`|[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup) &#124; None|是|无|位置或关键字。等待与已定网格结果归并的上游组，EOF补齐时可为空。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue) &#124; None|否|None|位置或关键字。同一时刻可用的输入点查询结果；没有真实同一时刻点时可为空。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None|否|None|位置或关键字。同一时刻可用的输入点查询结果；没有真实同一时刻点时可为空。|
 |`update`|bool|否|False|位置或关键字。该点是否确有活动数值依赖更新，用来区分真实样本与保持/裁剪边界。|
 |`through`|int &#124; None|否|None|仅关键字。无原组时允许补网格到的实际截止纳秒，不能超出已知观测。|
 |`unresolved`|bool|否|False|仅关键字。为真表示固定/DBC驱动缺少后继帧，不能推断不完整周期的宽度。|
@@ -281,7 +308,7 @@ TransformStage._drain(group, point=None, update=False, *, through=None, unresolv
 
 下游/预算错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:175`](../../../src/chronaxis/execution/transform_stream.py#L175)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:187`](../../../src/chronaxis/execution/transform_stream.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_append_span"></a>
 ### `TransformStage._append_span`
@@ -307,7 +334,7 @@ TransformStage._append_span(t, pair_width=None)
 
 预算/顺序错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:201`](../../../src/chronaxis/execution/transform_stream.py#L201)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:229`](../../../src/chronaxis/execution/transform_stream.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-push"></a>
 ### `TransformStage.push`
@@ -332,7 +359,7 @@ TransformStage.push(group)
 
 原输入/预算/求值错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:207`](../../../src/chronaxis/execution/transform_stream.py#L207)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:235`](../../../src/chronaxis/execution/transform_stream.py#L235)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_flush_waiting"></a>
 ### `TransformStage._flush_waiting`
@@ -357,7 +384,7 @@ TransformStage._flush_waiting(width)
 
 交付/退款错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:233`](../../../src/chronaxis/execution/transform_stream.py#L233)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:262`](../../../src/chronaxis/execution/transform_stream.py#L262)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_process"></a>
 ### `TransformStage._process`
@@ -384,7 +411,7 @@ TransformStage._process(group, width, *, unresolved=False)
 
 原错。
 
-源码：[`src/chronaxis/execution/transform_stream.py:241`](../../../src/chronaxis/execution/transform_stream.py#L241)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:270`](../../../src/chronaxis/execution/transform_stream.py#L270)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-finish"></a>
 ### `TransformStage.finish`
@@ -410,7 +437,7 @@ None。
 
 最后网格失败仍通知取消。
 
-源码：[`src/chronaxis/execution/transform_stream.py:287`](../../../src/chronaxis/execution/transform_stream.py#L287)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:316`](../../../src/chronaxis/execution/transform_stream.py#L316)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-_finish_grid"></a>
 ### `TransformStage._finish_grid`
@@ -436,7 +463,7 @@ TransformStage._finish_grid()
 
 交付错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:292`](../../../src/chronaxis/execution/transform_stream.py#L292)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:322`](../../../src/chronaxis/execution/transform_stream.py#L322)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformStage-close"></a>
 ### `TransformStage.close`
@@ -462,4 +489,4 @@ TransformStage.close()
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/transform_stream.py:307`](../../../src/chronaxis/execution/transform_stream.py#L307)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_stream.py:337`](../../../src/chronaxis/execution/transform_stream.py#L337)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

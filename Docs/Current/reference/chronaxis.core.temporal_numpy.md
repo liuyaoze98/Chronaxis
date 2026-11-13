@@ -10,7 +10,7 @@ Python循环负责输入装箱及按活动或匹配点生成Event，不逐点调
 本模块依赖NumPy和核心模型，与参考检测共享协议检查及事件身份，检测算法
 独立；不读取来源、不修改输入、不持有全局规则状态。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -57,7 +57,7 @@ NumpyTemporalDetector(rule, start_ns, end_ns, source_refs=(), *, record_clock=Fa
 ```
 
 
-源码：[`src/chronaxis/core/temporal_numpy.py:22`](../../../src/chronaxis/core/temporal_numpy.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:22`](../../../src/chronaxis/core/temporal_numpy.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-__init__"></a>
 ### `NumpyTemporalDetector.__init__`
@@ -86,7 +86,7 @@ None，没有共享参考实例或全局缓存。
 
 规则/范围/来源结构错误传播。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:33`](../../../src/chronaxis/core/temporal_numpy.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:33`](../../../src/chronaxis/core/temporal_numpy.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-next_deadline_ns"></a>
 ### `NumpyTemporalDetector.next_deadline_ns`
@@ -114,7 +114,7 @@ NumpyTemporalDetector.next_deadline_ns
 
 无主动异常。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:59`](../../../src/chronaxis/core/temporal_numpy.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:59`](../../../src/chronaxis/core/temporal_numpy.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-_duration"></a>
 ### `NumpyTemporalDetector._duration`
@@ -149,7 +149,7 @@ TypeError、ValueError或OverflowError: 事件模型检查失败。
 会话终点不创建新区间；达到门槛的已结束区间输出事件，未结束区间只
     保存状态。输入会话跨度已证明可表示，数组时长及域内确认时间安全。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:75`](../../../src/chronaxis/core/temporal_numpy.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:75`](../../../src/chronaxis/core/temporal_numpy.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-_edges"></a>
 ### `NumpyTemporalDetector._edges`
@@ -184,7 +184,7 @@ TypeError、ValueError或OverflowError: 事件模型检查失败。
 纯计时器及观测结束不产生边沿；UNKNOWN不能当作FALSE。emit_initial
     仅允许首次已知TRUE的实际更新产生初始化点。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:196`](../../../src/chronaxis/core/temporal_numpy.py#L196)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:196`](../../../src/chronaxis/core/temporal_numpy.py#L196)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-push"></a>
 ### `NumpyTemporalDetector.push`
@@ -214,7 +214,7 @@ ValueError为finish后/回退/边界；布局模型错误传播。
 
 - `ValueError`：检测器已finish。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:254`](../../../src/chronaxis/core/temporal_numpy.py#L254)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:254`](../../../src/chronaxis/core/temporal_numpy.py#L254)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-drain_events"></a>
 ### `NumpyTemporalDetector.drain_events`
@@ -244,7 +244,7 @@ MemoryError为tuple构造失败；失败时输出列表保持原内容。
 
 成功只清空events，候选/确认/诊断/前态/抑制及生命周期均不变。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:297`](../../../src/chronaxis/core/temporal_numpy.py#L297)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:297`](../../../src/chronaxis/core/temporal_numpy.py#L297)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyTemporalDetector-finish"></a>
 ### `NumpyTemporalDetector.finish`
@@ -274,7 +274,7 @@ ValueError为缺terminal或重复finish。
 
 - `ValueError`：finish需真正terminal且不能重复。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:310`](../../../src/chronaxis/core/temporal_numpy.py#L310)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:310`](../../../src/chronaxis/core/temporal_numpy.py#L310)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-detect_numpy"></a>
 ## `detect_numpy`
@@ -305,4 +305,4 @@ TypeError/ValueError为配置/批大小/模型，检测错误传播。
 
 - `TypeError`：detect需timeline及正int batch_rows。
 
-源码：[`src/chronaxis/core/temporal_numpy.py:327`](../../../src/chronaxis/core/temporal_numpy.py#L327)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/temporal_numpy.py:327`](../../../src/chronaxis/core/temporal_numpy.py#L327)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -6,11 +6,11 @@
 来源与非有限诊断标记；它们不提供旧结果包装或公开v1—v6读取。
 最大行字节与递归深度显式限制；调用方须先预留编码与解析临时空间。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CANSourceRef](chronaxis.sources.can_spec.md#api-CANSourceRef)、[CANTextSourceRef](chronaxis.sources.text_can_ref.md#api-CANTextSourceRef)、[CSVSourceRef](chronaxis.sources.csv_spec.md#api-CSVSourceRef)、[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)、[Event](chronaxis.core.temporal.md#api-Event)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[Segment](chronaxis.core.windows.md#api-Segment)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[SequenceResult](chronaxis.core.sequence.md#api-SequenceResult)、[SequenceRule](chronaxis.core.sequence.md#api-SequenceRule)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[TemporalRule](chronaxis.core.temporal.md#api-TemporalRule)、[Truth](chronaxis.core.types.md#api-Truth)、[WindowSpec](chronaxis.core.windows.md#api-WindowSpec)
+[CANSourceRef](chronaxis.sources.can_spec.md#api-CANSourceRef)、[CANTextSourceRef](chronaxis.sources.text_can_ref.md#api-CANTextSourceRef)、[CSVSourceRef](chronaxis.sources.csv_spec.md#api-CSVSourceRef)、[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationResult](chronaxis.core.calculations.md#api-CalculationResult)、[Event](chronaxis.core.temporal.md#api-Event)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[ResultFormatError](chronaxis.results.errors.md#api-ResultFormatError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[Segment](chronaxis.core.windows.md#api-Segment)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[SequenceResult](chronaxis.core.sequence.md#api-SequenceResult)、[SequenceRule](chronaxis.core.sequence.md#api-SequenceRule)、[SignalDType](chronaxis.core.types.md#api-SignalDType)、[SourceRef](chronaxis.core.models.md#api-SourceRef)、[SummaryCalculationRow](chronaxis.results.summary.md#api-SummaryCalculationRow)、[TemporalRule](chronaxis.core.temporal.md#api-TemporalRule)、[Truth](chronaxis.core.types.md#api-Truth)、[WindowSpec](chronaxis.core.windows.md#api-WindowSpec)
 
 ## 对象导航
 
@@ -78,7 +78,7 @@ ResultFormatError表示类型或深度不受支持。
 
 - `ResultFormatError`：结果行嵌套超过32层。
 
-源码：[`src/chronaxis/results/codec.py:35`](../../../src/chronaxis/results/codec.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:35`](../../../src/chronaxis/results/codec.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_unpack"></a>
 ## `_unpack`
@@ -113,7 +113,7 @@ ResultFormatError/TypeError/ValueError为结构或模型校验错误。
 - `ResultFormatError`：枚举底层值类型错误。
 - `ResultFormatError`：结果模型字段缺失或出现未知字段。
 
-源码：[`src/chronaxis/results/codec.py:75`](../../../src/chronaxis/results/codec.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:75`](../../../src/chronaxis/results/codec.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_unique_object"></a>
 ## `_unique_object`
@@ -138,7 +138,7 @@ dict。
 
 ResultFormatError为重复字段。
 
-源码：[`src/chronaxis/results/codec.py:124`](../../../src/chronaxis/results/codec.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:124`](../../../src/chronaxis/results/codec.py#L124)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_reject_constant"></a>
 ## `_reject_constant`
@@ -163,7 +163,7 @@ _reject_constant(value)
 
 ResultFormatError始终抛出。
 
-源码：[`src/chronaxis/results/codec.py:151`](../../../src/chronaxis/results/codec.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:151`](../../../src/chronaxis/results/codec.py#L151)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-estimate_row_bytes"></a>
 ## `estimate_row_bytes`
@@ -190,7 +190,7 @@ ResultFormatError为未登记类型或过深结构；不测量全进程RSS。
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/codec.py:160`](../../../src/chronaxis/results/codec.py#L160)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:160`](../../../src/chronaxis/results/codec.py#L160)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_estimate"></a>
 ## `_estimate`
@@ -223,7 +223,7 @@ ResultFormatError为类型/深度不支持。
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/codec.py:173`](../../../src/chronaxis/results/codec.py#L173)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:173`](../../../src/chronaxis/results/codec.py#L173)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-encode_row"></a>
 ## `encode_row`
@@ -256,7 +256,7 @@ ResultFormatError/ValueError为类型、大小或格式错误。
 
 返回类型：bytes。
 
-源码：[`src/chronaxis/results/codec.py:197`](../../../src/chronaxis/results/codec.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:197`](../../../src/chronaxis/results/codec.py#L197)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-decode_row"></a>
 ## `decode_row`
@@ -295,4 +295,4 @@ ResultFormatError为解析/版本/模型错误，ValueError为限额配置错误
 
 返回类型：ResultRow。
 
-源码：[`src/chronaxis/results/codec.py:220`](../../../src/chronaxis/results/codec.py#L220)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/codec.py:220`](../../../src/chronaxis/results/codec.py#L220)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

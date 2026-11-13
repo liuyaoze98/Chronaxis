@@ -5,11 +5,11 @@
 同一表达式/条件/驱动可共享此文件。最后一点留在内存，便于非驱动失效更新
 它的截止；其余记录定长保存，可二分定位而无需全量核验或JSON重建。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[D](chronaxis.core.types.md#api-SignalDType)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -51,7 +51,7 @@ RecordValueHistory(budget, path, dtype, conditioned=False, *, sample_updates=Fal
 ```
 
 
-源码：[`src/chronaxis/execution/record_value_history.py:14`](../../../src/chronaxis/execution/record_value_history.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:14`](../../../src/chronaxis/execution/record_value_history.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-__init__"></a>
 ### `RecordValueHistory.__init__`
@@ -81,7 +81,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:17`](../../../src/chronaxis/execution/record_value_history.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:17`](../../../src/chronaxis/execution/record_value_history.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-count"></a>
 ### `RecordValueHistory.count`
@@ -109,7 +109,7 @@ int。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:42`](../../../src/chronaxis/execution/record_value_history.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:42`](../../../src/chronaxis/execution/record_value_history.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-last_time"></a>
 ### `RecordValueHistory.last_time`
@@ -137,7 +137,7 @@ int或None。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:47`](../../../src/chronaxis/execution/record_value_history.py#L47)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:47`](../../../src/chronaxis/execution/record_value_history.py#L47)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-_open"></a>
 ### `RecordValueHistory._open`
@@ -163,7 +163,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_value_history.py:51`](../../../src/chronaxis/execution/record_value_history.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:51`](../../../src/chronaxis/execution/record_value_history.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-append"></a>
 ### `RecordValueHistory.append`
@@ -178,8 +178,8 @@ RecordValueHistory.append(row, condition=None, *, actual_update=False)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`row`|tuple[int, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), int &#124; None]|是|无|位置或关键字。当前计算点的实际纳秒时刻、值以及实际有效截止；必须按递增时刻提交。|
-|`condition`|tuple[int, [ScalarValue](chronaxis.core.numeric.md#api-ScalarValue), int &#124; None] &#124; None|否|None|位置或关键字。对应条件点的实际时刻、布尔值及有效截止；None表示没有外部条件。|
+|`row`|tuple[int, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), int &#124; None]|是|无|位置或关键字。当前计算点的实际纳秒时刻、值以及实际有效截止；必须按递增时刻提交。|
+|`condition`|tuple[int, [ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), int &#124; None] &#124; None|否|None|位置或关键字。对应条件点的实际时刻、布尔值及有效截止；None表示没有外部条件。|
 |`actual_update`|bool|否|False|仅关键字。该点是否由真实值记录更新产生；False的条件/失效边界不计作新样本。|
 
 #### 返回说明
@@ -190,7 +190,7 @@ None。
 
 顺序/短写/预算错误，失败后只能清理。
 
-源码：[`src/chronaxis/execution/record_value_history.py:56`](../../../src/chronaxis/execution/record_value_history.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:56`](../../../src/chronaxis/execution/record_value_history.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-expire_at"></a>
 ### `RecordValueHistory.expire_at`
@@ -216,7 +216,7 @@ None。
 
 时间回退。
 
-源码：[`src/chronaxis/execution/record_value_history.py:90`](../../../src/chronaxis/execution/record_value_history.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:90`](../../../src/chronaxis/execution/record_value_history.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-at"></a>
 ### `RecordValueHistory.at`
@@ -241,7 +241,7 @@ RecordValueHistory.at(index)
 
 越界/短读。
 
-源码：[`src/chronaxis/execution/record_value_history.py:101`](../../../src/chronaxis/execution/record_value_history.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:101`](../../../src/chronaxis/execution/record_value_history.py#L101)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-lower"></a>
 ### `RecordValueHistory.lower`
@@ -266,7 +266,7 @@ int。
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:124`](../../../src/chronaxis/execution/record_value_history.py#L124)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:124`](../../../src/chronaxis/execution/record_value_history.py#L124)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-rows"></a>
 ### `RecordValueHistory.rows`
@@ -292,7 +292,7 @@ RecordValueHistory.rows(start_ns, end_ns)
 
 原读取错。
 
-源码：[`src/chronaxis/execution/record_value_history.py:135`](../../../src/chronaxis/execution/record_value_history.py#L135)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:135`](../../../src/chronaxis/execution/record_value_history.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-closed"></a>
 ### `RecordValueHistory.closed`
@@ -320,7 +320,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_value_history.py:148`](../../../src/chronaxis/execution/record_value_history.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:148`](../../../src/chronaxis/execution/record_value_history.py#L148)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordValueHistory-close"></a>
 ### `RecordValueHistory.close`
@@ -346,4 +346,4 @@ None。
 
 原关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_value_history.py:152`](../../../src/chronaxis/execution/record_value_history.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_value_history.py:152`](../../../src/chronaxis/execution/record_value_history.py#L152)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

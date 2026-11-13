@@ -48,7 +48,10 @@ class CANUpdateProjection:
         for key in require_message_keys(message_keys):
             groups.setdefault(key, {})
         self._value_fields = frozenset(fields)
-        for field in dict.fromkeys((*fields, *clock_fields)):
+        all_fields = tuple(dict.fromkeys((*fields, *clock_fields)))
+        # 声明固定后规范键不再变化；在既有字段空间内共享，避免逐报文重新编码JSON。
+        self._canonical_keys = MappingProxyType({field: field.key for field in all_fields})
+        for field in all_fields:
             key = (field.channel, field.frame_id, field.is_extended, field.is_fd)
             group = groups.setdefault(key, {})
             if field.signal in group and group[field.signal] != field:
@@ -56,7 +59,7 @@ class CANUpdateProjection:
             group[field.signal] = field
         # 引用只标识必需的来源及代表字段，逐帧序号由已有更新模型保存一次。
         self._groups = MappingProxyType({key: (tuple(group.values()),
-            SourceRef(session_id, source, next(iter(group.values())).key if group else '__raw_message__'))
+            SourceRef(session_id, source, self._canonical_keys[next(iter(group.values()))] if group else '__raw_message__'))
             for key, group in groups.items()})
         self.source = source
         self._seen = {}
@@ -138,6 +141,15 @@ class CANUpdateProjection:
         item = self._matching(frame)
         return () if item is None else item[0]
 
+    def _canonical_key(self, field):
+        """借用当前投影已编码的字段键，不按原帧增加缓存。
+
+        参数: field为当前匹配出的已声明LegacyCANField。
+        返回: 初始化时验证并生成的规范JSON字符串。
+        异常: 非本投影字段时KeyError，不猜测或临时加入新的绑定。
+        """
+        return self._canonical_keys[field]
+
     def build(self, frame, sequence, values, time_ns, *, canonical_keys=False):
         """只拣选计算字段，复用已有有时间/无时间更新及其严格值检查。
 
@@ -152,7 +164,7 @@ class CANUpdateProjection:
         if item is None:
             return None
         fields, reference = item
-        selected = {field.signal: values.get(field.key if canonical_keys else field.signal)
+        selected = {field.signal: values.get(self._canonical_keys[field] if canonical_keys else field.signal)
                     for field in fields if field in self._value_fields}
         update_type = LegacyUntimedUpdate if time_ns is None else LegacyDecodedUpdate
         return update_type(time_ns, self.source, frame.channel, frame.arbitration_id,

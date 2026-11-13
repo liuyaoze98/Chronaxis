@@ -5,7 +5,7 @@
 本目录供宿主查询现行版本的能力，不创建数据、运行回调或扩大AST白名单。
 编译器及对应数值内核负责实际检查；注册时以内置名称集合消除冲突。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -50,7 +50,7 @@ class BuiltinFunctionContract
 |`pure`|bool|否|True|声明相同输入是否有确定输出且不保留上次调用的状态。|
 |`backends`|tuple[str, ...]|否|('reference', 'numpy')|当前内置实现实际提供的后端名称。|
 
-源码：[`src/chronaxis/core/function_contracts.py:11`](../../../src/chronaxis/core/function_contracts.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/function_contracts.py:11`](../../../src/chronaxis/core/function_contracts.py#L11)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_catalog"></a>
 ## `_catalog`
@@ -75,7 +75,7 @@ _catalog(version)
 
 内部描述冲突。
 
-源码：[`src/chronaxis/core/function_contracts.py:26`](../../../src/chronaxis/core/function_contracts.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/function_contracts.py:26`](../../../src/chronaxis/core/function_contracts.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_catalog-add"></a>
 ### `_catalog.add`
@@ -106,7 +106,7 @@ None。
 
 重复名称。
 
-源码：[`src/chronaxis/core/function_contracts.py:30`](../../../src/chronaxis/core/function_contracts.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/function_contracts.py:30`](../../../src/chronaxis/core/function_contracts.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-builtin_function_specs"></a>
 ## `builtin_function_specs`
@@ -131,4 +131,4 @@ builtin_function_specs(config_version=4)
 
 未支持版本。
 
-源码：[`src/chronaxis/core/function_contracts.py:70`](../../../src/chronaxis/core/function_contracts.py#L70)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/function_contracts.py:70`](../../../src/chronaxis/core/function_contracts.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

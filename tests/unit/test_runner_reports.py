@@ -27,7 +27,7 @@ from chronaxis import AnalysisPlan, AnalysisRunner, explain_analysis_plan, valid
 from chronaxis.core.models import SourceSpec
 from chronaxis.execution.csv_reader import BudgetedSignalCSVSourceAdapter
 from chronaxis.execution.memory_reader import BudgetedMemorySourceAdapter
-from chronaxis.execution.observed_ingestion import ObservedSourceScan
+from chronaxis.execution.record_source_cursor import RecordSourceCursor
 
 
 class NoReadRows(tuple):
@@ -111,7 +111,7 @@ class RunnerReportTests(unittest.TestCase):
             stack.enter_context(patch('builtins.open', side_effect=AssertionError('静态报告触发open')))
             stack.enter_context(patch('builtins.__import__', deny_runtime_import))
             # 禁止创建真正来源/scan，以及通过重建计划/SourceSpec访问原始memory数据。
-            for target in (BudgetedMemorySourceAdapter, BudgetedSignalCSVSourceAdapter, ObservedSourceScan):
+            for target in (BudgetedMemorySourceAdapter, BudgetedSignalCSVSourceAdapter, RecordSourceCursor):
                 stack.enter_context(patch.object(target, '__init__', side_effect=AssertionError('静态报告创建来源或扫描')))
             stack.enter_context(patch.object(AnalysisPlan, 'from_dict', side_effect=AssertionError('静态报告重建原配置')))
             stack.enter_context(patch.object(SourceSpec, '__post_init__', side_effect=AssertionError('静态报告重构memory原行')))

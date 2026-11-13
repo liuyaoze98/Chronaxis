@@ -25,9 +25,9 @@ BatchPlan(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int 
 |`jobs`|tuple[[BatchJob](BatchJob.md#api-BatchJob), ...]|是|无|提供BatchJob元组，例如(BatchJob("a", Path("a.yaml")),)；也可通过load_batch_plan读取YAML取得。元组顺序就是最终报告顺序。|
 |`process_count`|int|否|1|控制最多启动几个分析工作进程。填正整数，例如4；默认1。任务少于该值时按任务数启动，空批次不启动。此数量不包含调度主进程和CAN读取子进程。|
 |`fail_fast`|bool|否|False|控制某任务失败后的调度：False继续其他独立任务；True停止提交新任务，已运行任务按批量执行器的取消流程收尾。|
-|`backend`|str &#124; None|否|None|`"reference"`使用独立参考计算，`"numpy"`使用NumPy数组计算。None沿用计划的设置。|
+|`backend`|str &#124; None|否|None|`auto`按整份计划选择reference或numpy，不预读或试跑；`reference`和`numpy`固定使用对应数值实现。None沿用计划设置。详见[运行参数](../execution.md)。|
 
-源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchPlan-from_dict"></a>
 ### `BatchPlan.from_dict`
@@ -55,4 +55,4 @@ BatchPlan.from_dict(config, *, base_dir=None)
 
 PlanValidationError定位非法字段、重名、缺少模板输入或来源歧义。jobs可为空；jobs只保留计划路径，template会读取模板、展开文件集合并按需读取DBC元数据，不扫描业务报文。
 
-源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

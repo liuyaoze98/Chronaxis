@@ -54,23 +54,27 @@ def scalar_columns(context):
     return columns
 
 
-def group_updates(root, context, previous, updates, backend):
-    """计算原子组是否更新输出。参数: 根、当前/左侧值、各别名更新、后端。返回: bool。异常: 求值原错。"""
+def group_updates(root, context, previous, updates, backend, *, point_program=None):
+    """计算原子组是否更新输出。参数: 根、前后值、更新、后端及可选生产逐点程序。返回: bool。异常: 求值原错。"""
     if not any(updates.values()):
         return False
     if backend == 'reference':
         return reference_updates(root, context, previous, updates)
+    if point_program is not None:
+        return point_program.updates(root, context, previous, updates)
     import numpy as np
     return bool(numpy_updates(root, scalar_columns(context), scalar_columns(previous),
                               {name: np.array([flag], dtype=bool) for name, flag in updates.items()}, 1)[0])
 
 
-def group_active(root, context, flags, backend):
-    """检查标记输入是否活动。参数: 根、点值、别名标志、后端。返回: bool。异常: 求值错误。"""
+def group_active(root, context, flags, backend, *, point_program=None):
+    """检查标记输入是否活动。参数: 根、点值、标志、后端及可选生产逐点程序。返回: bool。异常: 求值错误。"""
     if not any(flags.values()):
         return False
     if backend == 'reference':
         return reference_active(root, context, flags)
+    if point_program is not None:
+        return point_program.active(root, context, flags)
     import numpy as np
     return bool(numpy_active(root, scalar_columns(context),
                              {name: np.array([flag], dtype=bool) for name, flag in flags.items()}, 1)[0])

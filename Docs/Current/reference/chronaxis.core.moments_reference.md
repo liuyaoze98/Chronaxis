@@ -6,7 +6,7 @@
 Welford 更新只保存总权重、均值和中心矩。RMS 的有理数平方不会发生浮点中间
 溢出；最后一次才按目标倍率和 float64 可表示性给出结果及质量。不依赖 NumPy。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -41,7 +41,7 @@ ReferenceMoments(operation)
 ```
 
 
-源码：[`src/chronaxis/core/moments_reference.py:13`](../../../src/chronaxis/core/moments_reference.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_reference.py:13`](../../../src/chronaxis/core/moments_reference.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceMoments-__init__"></a>
 ### `ReferenceMoments.__init__`
@@ -66,7 +66,7 @@ ReferenceMoments.__init__(operation)
 
 调用方先做操作检查。
 
-源码：[`src/chronaxis/core/moments_reference.py:16`](../../../src/chronaxis/core/moments_reference.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_reference.py:16`](../../../src/chronaxis/core/moments_reference.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceMoments-push"></a>
 ### `ReferenceMoments.push`
@@ -92,7 +92,7 @@ ReferenceMoments.push(values, weights=None)
 
 无效权重或输入。
 
-源码：[`src/chronaxis/core/moments_reference.py:21`](../../../src/chronaxis/core/moments_reference.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_reference.py:21`](../../../src/chronaxis/core/moments_reference.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceMoments-finish"></a>
 ### `ReferenceMoments.finish`
@@ -118,4 +118,4 @@ ReferenceMoments.finish(ddof, factor)
 
 配置错误。
 
-源码：[`src/chronaxis/core/moments_reference.py:36`](../../../src/chronaxis/core/moments_reference.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_reference.py:36`](../../../src/chronaxis/core/moments_reference.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

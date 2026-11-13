@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 基线afc8d5eb1dc95c26176b20ebedaeda6a0a643540；device_label: home。
+> 基线8904c2f744951857659abd40aaa3535d57faf53c；device_label: home。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 
@@ -2064,8 +2064,8 @@
   "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "输入文本编码。用于真实读取；静态检查不据此判断文件可读。 已解码CSV默认utf-8。",
-  "default": "utf-8"
+  "description": "输入文本编码。用于真实读取；静态检查不据此判断文件可读。 已解码CSV默认utf-8-sig，兼容文件开头带BOM或不带BOM的UTF-8；显式编码优先，不删除文件中间的U+FEFF字符。",
+  "default": "utf-8-sig"
 }
 ```
 
@@ -2601,7 +2601,7 @@
     "requested"
   ],
   "default": "requested",
-  "description": "CAN解码范围。默认requested，仅解码实际需要的消息/信号；all请求完整解码与诊断，并要求显式分析范围。可选值：\"all\"：完整解码并保留完整诊断范围；\"requested\"：只解码实际消费者需要的字段。"
+  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
 }
 ```
 
@@ -3134,7 +3134,7 @@
     "vector-asc-statistics-v1",
     "sclicer-asc-v1"
   ],
-  "description": "当前业务格式版本。它标识此子功能的真实契约，不表示支持旧分析配置。可选值：\"vector-asc-v1\"：标准Vector ASC文本；\"vector-asc-statistics-v1\"：含统计记录的Vector ASC变体；\"sclicer-asc-v1\"：旧Sclicer ASC输出。"
+  "description": "选择ASC行布局。默认vector-asc-v1读取标准Vector ASC及可选的Length/BitCount/ID统计尾，字段顺序、数值和ID仍严格检查。vector-asc-statistics-v1保留显式标准统计入口；sclicer-asc-v1用于Sclicer的不同FD排列，不自动混猜。"
 }
 ```
 
@@ -6472,7 +6472,7 @@
     "vector-asc-statistics-v1",
     "sclicer-asc-v1"
   ],
-  "description": "当前业务格式版本。它标识此子功能的真实契约，不表示支持旧分析配置。可选值：\"vector-asc-v1\"：标准Vector ASC文本；\"vector-asc-statistics-v1\"：含统计记录的Vector ASC变体；\"sclicer-asc-v1\"：旧Sclicer ASC输出。"
+  "description": "选择ASC行布局。默认vector-asc-v1读取标准Vector ASC及可选的Length/BitCount/ID统计尾，字段顺序、数值和ID仍严格检查。vector-asc-statistics-v1保留显式标准统计入口；sclicer-asc-v1用于Sclicer的不同FD排列，不自动混猜。"
 }
 ```
 
@@ -6511,7 +6511,7 @@
     "requested"
   ],
   "default": "requested",
-  "description": "CAN解码范围。默认requested，仅解码实际需要的消息/信号；all请求完整解码与诊断，并要求显式分析范围。可选值：\"all\"：完整解码并保留完整诊断范围；\"requested\"：只解码实际消费者需要的字段。"
+  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
 }
 ```
 
@@ -7036,7 +7036,7 @@
   ],
   "minLength": 1,
   "pattern": "\\S",
-  "description": "该语义契约的版本，与分析配置版本独立；不表示实际输入已核验。 可省略或显式null；非null时必须为非空文本。"
+  "description": "本信号semantic_id所指业务含义的版本，与分析配置版本独立；不表示实际输入已核验。可省略或显式null；任意非null值必须为非空文本，并同时填写本信号的semantic_id。"
 }
 ```
 
@@ -7653,7 +7653,7 @@
   ],
   "minLength": 1,
   "pattern": "\\S",
-  "description": "该语义契约的版本，与分析配置版本独立；不表示实际输入已核验。 可省略或显式null；非null时必须为非空文本。"
+  "description": "本信号semantic_id所指业务含义的版本，与分析配置版本独立；不表示实际输入已核验。可省略或显式null；任意非null值必须为非空文本，并同时填写本信号的semantic_id。"
 }
 ```
 
@@ -12082,10 +12082,11 @@
 {
   "enum": [
     "numpy",
-    "reference"
+    "reference",
+    "auto"
   ],
-  "description": "数值计算实现选择。两后端服从相同业务语义，不表示所有规则都会数组化。可选值：\"numpy\"：采用NumPy数值实现；\"reference\"：采用独立参考实现。",
-  "default": "numpy"
+  "description": "数值计算实现选择。auto按已验证的整个计划类别选择reference或numpy，不预读或试跑；numpy采用NumPy数值实现；reference采用独立参考实现。显式选择保持，不因运行错误切换后端。",
+  "default": "auto"
 }
 ```
 

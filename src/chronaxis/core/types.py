@@ -74,6 +74,10 @@ class QualityFlag(IntFlag, boundary=FlagBoundary.STRICT):
 # 普通信号的基础策略固定拒绝全部九种非零质量位；不通过计划身份元组传递策略。
 BASE_FORBIDDEN_QUALITY = int(QualityFlag(511))
 
+# 仅供已通过模型/输入边界检查的内部位合并使用。固定512项，不随会话增长；
+# 外部整数仍必须调用QualityFlag，不能用tuple索引的负数语义接受非法位。
+_QUALITY_BY_MASK = tuple(QualityFlag(mask) for mask in range(BASE_FORBIDDEN_QUALITY + 1))
+
 
 class SignalDType(Enum):
     """声明信号值的逻辑类型，供模型和数值运算检查使用。

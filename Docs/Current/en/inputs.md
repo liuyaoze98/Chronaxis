@@ -50,7 +50,7 @@ Paths below are relative to `sources[]`. Thus `sources[].paths` means the `paths
 | `time` | Optional object; CSV still needs a time unit | Relative; CAN/memory unit s | Groups time type, unit, shared origin, and offset. Source origins are independent by default, not implicitly synchronized. |
 | `metadata` | Optional object | `{}` | Source notes, such as acquisition-device model. Keys follow your project conventions and do not execute as extra reader options. |
 | `path` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, or wildcard with the same selection rules as `paths`. Prefer consistent `paths`; not used for memory. |
-| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list. Discovered files use natural order; explicit lists preserve order. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Files are concatenated by default; overlapping ASC/BLF files may explicitly select `file_merge: time_order`, described above. |
+| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list. Files discovered within each directory or wildcard entry use natural order; explicit list entries preserve order without a later global reorder. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Files are concatenated by default; overlapping ASC/BLF files may explicitly select `file_merge: time_order`, described above. |
 
 `load_analysis_plan` resolves paths from the declaring configuration file. `AnalysisPlan.from_dict` uses `base_dir`, or the current directory when omitted.
 
@@ -69,6 +69,8 @@ execution:              # Sibling of sources; control how the analysis runs
 ```
 
 Files `part1.asc`, `part2.blf`, and `part10.asc` use at most three reading workers. The main process still consumes them in order 1, 2, 10 and retains signal and event state between files. Use `paths: data/can/*.asc` for ASC only and explicit `data/can/**/*.asc` for subdirectories. Empty directories or unmatched patterns are errors, not silently skipped. Explicit `[part10.asc, part2.asc]` retains that order.
+
+When a wildcard pattern ends in the literal extension `.asc`, `.blf`, `.csv`, or `.txt`, extension letters are matched without regard to case. For example, `data/can/*.asc` also finds `part10.ASC`, and `*.bLf` also finds `.BLF` files; the source type still filters the accepted formats. Filename stems, directory names, and other wildcard patterns retain the operating system's matching rules. This does not make the whole path case-insensitive. Subdirectory recursion still requires explicit `**`.
 
 For known per-file offsets, write `paths: [{path: part1.asc, offset: 0s}, {path: part2.asc, offset: 100s}]`. They add to source `time.offset`. These offsets apply to default ASC/BLF, explicit `can_asc`, and `raw_can_csv`; `signal_csv` and explicit `can_blf` support only source-wide `time.offset`. Applicable sources also accept an `offsets` array, but not together with embedded file offsets. Use [batch tasks](batch.md) for independent experiments.
 
@@ -127,8 +129,8 @@ Only the `can_blf` entry point accepts these options: explicit `source_type: can
 
 | Field relative to `sources[]` | Type and requirement | Default | Meaning |
 |---|---|---|---|
-| `legacy_profile` | Optional string | `sclicer-functions-v1` | The only supported BLF implementation selector; normally omit. |
-| `reader.decode_scope` | Optional string | `"requested"` | `requested` decodes task-required messages; `all` requests full decoding checks. Use all only for needed additional inspection. Plan checks determine whether a task combination supports it. |
+| `legacy_profile` | Optional string | `sclicer-functions-v1` | Retained BLF behavior identifier. The default selects it automatically; normally omit. |
+| `reader.decode_scope` | Optional string | `"requested"` | Controls which messages are attempted for decoding. `requested` handles task-required messages; `all` also attempts other ordinary data frames, without guaranteeing a DBC definition or successful decoding for each frame. Usually retain the default. See the behavior table below; `all` does not certify the whole log. |
 
 <a id="decode-policy"></a>
 <a id="readerdecode_policycan解码策略"></a>
@@ -143,9 +145,9 @@ reader:                  # Input-format parsing options
 
 | Policy | Purpose and behavior |
 |---|---|
-| `strict` (default) | Require DBC-compatible length and structure. If structure is valid but a required value cannot be decoded, mark this update invalid and continue. |
+| `strict` (default) | Require DBC-compatible length and structure for selected data frames. If structure is valid but a required value cannot be decoded, mark this update invalid and continue. |
 | `partial` | Explicitly allow partial decoding of a short payload. Return available values and mark unavailable required values invalid. Corrupt structure is still rejected. |
-| `legacy` | Retain the path-specific behavior below. Text CAN strictly checks length and fails on DecodeError; the historical BLF path adds no new length check and can produce invalid values after decoding failure. |
+| `legacy` | Retain the path-specific behavior below. Text CAN strictly checks length and fails on DecodeError; the pure-BLF policy adds no new length check and can produce invalid values after decoding failure. |
 
 Default `asc_or_blf` allows mixed formats; explicit `can_asc`/`can_blf` restrict them. Lists preserve order, while directories/wildcards use natural order. Text/column parsing happens first: decoding policy cannot turn malformed text into a valid frame. See [CAN fields](#can-field) for the supported classic-CAN/DBC-FD compatibility.
 
@@ -158,13 +160,24 @@ These policies apply to selected data frames. Use strict for full-length records
 |---|---|---|---|
 | Text CAN: payload length differs from DBC | Fail. | Allow shorter payload; reject longer payload or DLC/actual-byte mismatch. | Same length checks as strict. |
 | Text CAN: cantools raises DecodeError after length checks | Current decoded values invalid; do not hold old values. | Current decoded values invalid; do not hold old values. | Fail the task. |
-| Historical can_blf: payload length differs from DBC | Fail. | Allow shorter payload; reject longer payload or DLC/actual-byte mismatch. | No added length check; original decoder handles it. |
-| Historical can_blf: original decoder fails | Empty decoded result; required values invalid. | Same. | Same. |
-| Unselected message | Read only as required by observation/export scope; do not run this DBC decoding for unselected signals. | Same. | Same. |
+| can_blf policy: payload length differs from DBC | Fail. | Allow shorter payload; reject longer payload or DLC/actual-byte mismatch. | No added length check; DBC decoder handles it. |
+| can_blf policy: cantools raises DecodeError after length checks | Empty decoded result; required values invalid. | Same. | Same. |
+| Unselected message (`requested`) | Read only as required by observation/export scope; do not DBC-decode unselected messages. | Same. | Same. |
 
-Malformed structure, invalid input time, and other I/O or programming errors can still fail a task. Partial does not ignore all errors or fill unavailable fields with zero.
+The decoding-failure rows specifically mean cantools DecodeError. In serial pure-BLF decoding with a unique DBC definition for the ID, other ordinary Exceptions from the decoding function also produce invalid values for that message. Duplicate-ID definitions and file-parallel decoding only handle DecodeError this way; other exceptions propagate. Length checks, malformed text, invalid input time, and I/O errors are not bypassed. Partial does not ignore every error or fill missing short-frame fields with zero.
 
-Normalized `source_type` determines the path. `can_asc`, `raw_can_csv`, and retained mixed `asc_or_blf` use the text CAN adapter. `can_blf` retains the pure-BLF decoding policies in the table, with the same length checks and DBC decoding-failure handling in serial and file-parallel execution. Omitted/`asc_or_blf` normalizes pure ASC to `can_asc`, including with offsets; pure BLF without offsets becomes `can_blf`. Mixed formats, or pure BLF with offsets, retain `asc_or_blf`. A single filename extension therefore does not establish legacy behavior.
+`reader.decode_scope: all` broadens attempted decoding; it does not mean every frame passes DBC checks. This option is available in the serial pure-BLF entry point. File multiprocessing and `time_order` require `requested`. Under `all`, frame categories are handled as follows:
+
+| Frame category | Ordinary signal decoding | DBC payload-length check | Decoding failure |
+|---|---|---|---|
+| Ordinary data frame that actually matches a bound signal | Attempt the selected definition | strict requires equal length; partial permits shorter payloads; legacy adds no such check | DecodeError produces empty decoded values and invalid required signals, without holding the previous value. Other exceptions follow the serial policy above. |
+| Unbound ordinary data frame whose ID exists in the DBC | Attempt database decoding by ID | No definition was selected through a bound signal, so the same DBC length check is not guaranteed | An ordinary Exception from that call can become an empty result. With no corresponding analysis signal, no extra per-frame failure report is produced. |
+| Ordinary data frame whose ID is absent from the DBC | Still attempt database decoding by ID | No selected DBC definition is available | A missing definition can produce an empty result; task completion does not prove decoding succeeded. |
+| Remote frame or error frame | strict/partial skip ordinary signal decoding; legacy may attempt decoding by ID | The bound-data-frame length checks above do not apply | No ordinary signal update; this is not evidence that the frame passed DBC checks. |
+
+This table describes decoding scope. Input structure, required timestamps and I/O errors retain their own rules. `input_check: full` checks whole-source time order; it does not add whole-log DBC certification.
+
+Normalized `source_type` determines the path. `can_asc`, `raw_can_csv`, and retained mixed `asc_or_blf` use the text CAN adapter. `can_blf` uses the pure-BLF length and DecodeError policies in the table; other exceptions differ between serial and parallel execution as described above. Omitted/`asc_or_blf` normalizes pure ASC to `can_asc`, including with offsets; pure BLF without offsets becomes `can_blf`. Mixed formats, or pure BLF with offsets, retain `asc_or_blf`. A single filename extension therefore does not establish legacy behavior.
 
 <a id="can-field"></a>
 <a id="signalsfield选择can报文中的信号"></a>
@@ -191,7 +204,7 @@ The supported case where the DBC says FD but the actual log is classic CAN remai
 <a id="解码范围与时间检查范围"></a>
 ### Decoding scope versus timestamp-check scope
 
-`sources[].reader.decode_scope` applies only to the historical BLF entry point: default `requested` decodes required messages; `all` requests all-message decoding checks.
+`sources[].reader.decode_scope` applies only to the pure-BLF entry point: default `requested` decodes required messages; `all` broadens attempted decoding. The table above describes skips and failures; it does not establish that every frame passed DBC checks.
 
 `sources[].reader.input_check` applies to all CAN sources: default `auto` follows task requirements; `full` checks whole-source ordering. It does not enable all signal decoding or diagnostic output.
 
@@ -203,6 +216,8 @@ Rules, windows, calculations, and exports can omit `dataset.domain` and use actu
 
 <a id="csv每行是一次明确更新"></a>
 ## CSV: every row is an explicit update
+
+Signal CSV batches depend on the data actually read and the remaining budget; `execution.batch_rows` is an upper limit, and the default is usually suitable. Insufficient capacity for even the smallest required record and handoff state still causes failure. See [Execution settings](execution.md) for batch behavior and memory limits.
 
 This partial root `sources` section requires actual `part1.csv` and `part2.csv` files containing `time_ms` and the referenced signal columns. Replace the existing root list; do not nest another `sources` key inside an item.
 
@@ -220,13 +235,15 @@ sources:                           # Input sources used by this analysis
 | Field relative to `sources[]` | Type and requirement | Default | Meaning |
 |---|---|---|---|
 | `time_column` | Required string | None | Actual, case-sensitive time header. A mismatch fails when reading the header. |
-| `reader.encoding` | Optional string | `"utf-8"` | Encoding from the exporter, such as utf-8, utf-8-sig, or gbk; no automatic guessing. |
+| `reader.encoding` | Optional string | `"utf-8-sig"` | Reads UTF-8 with or without a file-leading BOM, including Excel's CSV UTF-8 output. Specify another encoding, such as gbk, when required by the exporter. Explicit values take precedence; no encoding is guessed. |
 | `reader.delimiter` | Optional string | `","` | Exactly one column-separator character. For tab-separated text, use double-quoted `"\t"`. |
 | `reader.missing_values` | Optional string array | `[""]` | Exact cell text denoting an invalid update, such as `["", "NA"]`; whitespace is not stripped. `[]` adds no missing markers; null is not a list. `NA` replaces the previous valid value. |
 
 Choose exactly one of `path` and `paths`. Explicit lists retain order; discovered files use natural order. If part 1 ends at 10 seconds and part 2 restarts at zero, joining them directly fails due to backwards time.
 
 With the example missing tokens, current 5 A followed by `NA` becomes unknown at the latter row, not held at 5 A. Enable `diagnostics.trace` and read `input_trace` only when you need input locations; default summaries do not retain per-cell original positions.
+
+The default encoding removes only a file-leading BOM; `U+FEFF` inside a column name or cell is preserved. Empty names at the end of a header are allowed: `time,power,` accepts rows `0,100,` and `0,100`. The corresponding unnamed cells must be empty; whitespace or other content is an error and requires a column name. Empty names in the middle, duplicate names, missing named cells, and rows wider than the original header still fail. CSV quoting, multiline cells, and physical error-line reporting remain in effect.
 
 Bind original `Current_mA` as `current` with this root `signals` excerpt:
 
@@ -247,25 +264,42 @@ This explicitly converts milliamperes to amperes. `valid_for` is illustrative an
 <a id="内存把记录直接写进配置"></a>
 ## Memory: put records directly in configuration
 
-Memory `rows` contains original times and values, useful for hand-checkable examples. The following root `sources` section needs no external files; add signals and calculations in a complete plan.
+This complete [minimal memory configuration](../examples/input-memory-minimal.yaml) defines only power and needs no external files. Its signal type, unit and validity are shown in the same example. Power is 2 W from 0 to 1 s and 4 W from 1 to 2 s, so the integral is `2×1+4×1=6 J`.
 
 ```yaml
-sources:                 # Input sources used by this analysis
-  - source_type: memory  # Input adapter; CSV or memory must be declared explicitly
-    rows:                # Explicit input records for the memory source
-      - time: 0s         # Timestamp of this explicit input record
-        values:          # Signal values in this input record
-          power: 4000    # Power value or named power signal settings in this example
-          active: 1      # Activity state in this input record
-      - time: 1s         # Timestamp of this explicit input record
-        values:          # Signal values in this input record
-          power: 4000    # Power value or named power signal settings in this example
-          active: 0      # Activity state in this input record
-      - time: 8s         # Timestamp of this explicit input record
-        values:          # Signal values in this input record
-          power: 4000    # Power value or named power signal settings in this example
-          active: 0      # Activity state in this input record
+config_version: 4          # Current analysis configuration format
+dataset:                   # Name and requested analysis interval
+  domain:                  # Integrate the half-open interval [0, 2) seconds
+    end: 2s                # Right endpoint is not an extra interval
+    start: 0s              # Include the start
+  name: memory_power       # Name of this synthetic analysis
+sources:                   # Explicit records; no external data files
+  - rows:                  # Each record updates the stated field
+      - time: 0s           # First observation
+        values:            # Fields updated at this timestamp
+          power: 2         # 2 W, interpreted by the signal below
+      - time: 1s           # Replace the previous power value
+        values:            # Fields updated at this timestamp
+          power: 4         # 4 W for the second interval
+      - time: 2s           # Marks the observed endpoint
+        values:            # Fields updated at this timestamp
+          power: 4         # No duration remains inside the requested interval
+    source_type: memory    # Read records from this configuration
+signals:                   # Type, unit and validity of the input field
+  - dtype: float64         # Numeric values used in the calculation
+    field: power           # Original key in rows[].values
+    name: power            # Name used by the expression
+    unit: W                # Watts
+    valid_for: 3s          # Each value remains valid across these one-second intervals
+calculations:              # Requested output
+  - name: energy           # Result name
+    operation: integral    # Value multiplied by its valid duration
+    expr: power            # Integrate the declared power signal
+execution:                 # Memory input reads in the current process
+  process_count: 1         # Memory plans require this limit
 ```
+
+From the configuration directory run `python -m chronaxis run input-memory-minimal.yaml --output memory-result`. Use the completion manifest to find the session results: `energy（J）` is 6 and `energy：状态` is `完整` (complete). To add a Boolean signal later, use native true/false values; integer 0/1 inputs instead require `dtype: bool` and `choices: [[0, false], [1, true]]` on that signal before referring to it in a condition.
 
 | Field relative to `sources[]` | Type and requirement | Meaning |
 |---|---|---|

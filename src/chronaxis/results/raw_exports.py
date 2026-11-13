@@ -224,8 +224,6 @@ class RawExportStore:
             requested = Path(work_dir)
             _reserve_owned_ram(self, 65536 + 32 * (len(str(requested)) + len(source) + len(session_id) + len(device_label)), '_fixed_cost')
             resolved = requested.resolve()
-            if any(part.casefold() == 'refprojects' for part in resolved.parts):
-                raise ValueError('原始导出仓禁止写入RefProjects')
             resolved.mkdir(parents=True, exist_ok=False)
             self.path, self._raw_path = resolved, resolved / 'raw_segments'
             self._raw_path.mkdir(exist_ok=False)
@@ -442,8 +440,6 @@ class RawExportStore:
         if sum(len(part) for part in destination.parts) > MAX_WIRE_BYTES:
             raise ValueError('原始导出发布路径超过有界能力')
         target = destination.resolve()
-        if any(part.casefold() == 'refprojects' for part in target.parts):
-            raise ValueError('原始导出发布禁止RefProjects')
         raw_path, inventory = target / 'raw_segments', target / 'raw_segments.jsonl'
         if raw_path.exists() or inventory.exists():
             raise FileExistsError('原始导出发布目录或索引已存在')

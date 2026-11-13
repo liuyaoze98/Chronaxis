@@ -8,6 +8,7 @@ from time import perf_counter
 import can
 import cantools
 
+from ..results.budget import _cleanup_owner
 from ..legacy.decode_policy import check_decode_length
 from ..timebase.conversion import convert_time, checked_add_ns
 from .can_io import _prepare, _UNSUPPORTED_FD
@@ -16,45 +17,61 @@ from .can_io import _prepare, _UNSUPPORTED_FD
 class FileContributions:
     """持有一个读取器和有限公式组；同帧仅解码一次，计数按计算项隔离。"""
 
-    def __init__(self, spec, database, cancel=None, budget=None):
+    def __init__(self, spec, database, cancel=None, budget=None, *, _programs_checked=False):
         """打开单文件。参数: spec编译声明，database已载DBC，cancel可选事件，budget账本。
-        返回: 迭代器。异常: 配置、文件或DBC错误；构造失败不遗留读取器。
+        返回: 迭代器。异常: 配置、文件或DBC错误；已取得的读取器在后续构造失败时清理。
+        ASC/BLF共用各自文件owner；第三方BLF文件头构造失败也保留实际文件关闭责任。
+        _programs_checked只供已完成公式准备的内部调用；普通调用仍检查原公式。
         """
-        self.spec, self.cancel = spec, cancel
-        self.groups, self.metrics = _prepare(spec, database)
-        self.names = tuple(self.metrics)
-        self.ids = {name: i for i, name in enumerate(self.names)}
-        self.raw_count = 0
-        self.targets = [0] * len(self.names)
-        self.valid = [0] * len(self.names)
-        self.selected = [0] * len(self.names)
-        self.kinds = [0] * len(self.names)
-        self.compatible = set()
-        self.last_time = None
-        self.reader = None
-        self.finished = False
-        self.closed = False
-        self.domain = spec.get('domain_ns')
-        self.profile = spec.get('_profile', False)
-        self.timings = dict(read_seconds=0.0, decode_seconds=0.0, formula_seconds=0.0)
-        self.ordered = spec.get('file_merge', 'concatenate') == 'time_order'
-        self.channel = spec['channel'] - 1
-        self.path = Path(spec['path'])
-        self.text = self.path.suffix.lower() == '.asc'
-        if self.text:
-            from ..sources.asc import ASCRead, ASCSpec
-            from ..results.budget import ResourceBudget
-            self.reader = ASCRead(ASCSpec(self.path, **spec.get('asc_options', {})),
-                budget if budget is not None else ResourceBudget(),
-                retain_original=False, retain_source_time=False,
-                time_selector=self._selected_time)
-        elif self.path.suffix.lower() == '.blf':
-            self.reader = can.BLFReader(self.path)
-        else:
-            raise ValueError('fast仅支持ASC/BLF')
-        self.iterator = iter(self.reader)
-        if self.profile:
-            self.iterator = self._measured(self.iterator)
+        # 在任何配置准备或实际打开前安装最小关闭字段，半构造对象也可恢复。
+        self.reader, self._pending_reader = None, None
+        self.closed, self.text = False, False
+        try:
+            self.spec, self.cancel = spec, cancel
+            self.groups, self.metrics = _prepare(spec, database, _programs_checked=_programs_checked)
+            self.names = tuple(self.metrics)
+            self.ids = {name: i for i, name in enumerate(self.names)}
+            self.raw_count = 0
+            self.targets = [0] * len(self.names)
+            self.valid = [0] * len(self.names)
+            self.selected = [0] * len(self.names)
+            self.kinds = [0] * len(self.names)
+            self.compatible = set()
+            self.last_time = None
+            self.reader = None
+            self.finished = False
+            self.closed = False
+            self.domain = spec.get('domain_ns')
+            self.profile = spec.get('_profile', False)
+            self.timings = dict(read_seconds=0.0, decode_seconds=0.0, formula_seconds=0.0)
+            self.ordered = spec.get('file_merge', 'concatenate') == 'time_order'
+            self.channel = spec['channel'] - 1
+            self.path = Path(spec['path'])
+            self.text = self.path.suffix.lower() == '.asc'
+            if self.text:
+                from ..sources.asc import ASCRead, ASCSpec
+                from ..results.budget import ResourceBudget
+                self.reader = ASCRead(ASCSpec(self.path, **spec.get('asc_options', {})),
+                    budget if budget is not None else ResourceBudget(),
+                    retain_original=False, retain_source_time=False,
+                    time_selector=self._selected_time)
+            elif self.path.suffix.lower() == '.blf':
+                from ..sources.blf import BLFRead, BLFSpec
+                from ..results.budget import ResourceBudget
+                self.reader = BLFRead(BLFSpec(self.path),
+                    budget if budget is not None else ResourceBudget(), frame_only=True)
+            else:
+                raise ValueError('fast仅支持ASC/BLF')
+            self.iterator = iter(self.reader)
+            if self.profile:
+                self.iterator = self._measured(self.iterator)
+        except BaseException as error:
+            # 来源构造器提供实际未关闭对象；不从总账余额猜测应退金额。
+            self._pending_reader = getattr(error, 'asc_read_cleanup_owner', None)
+            if self._pending_reader is None:
+                self._pending_reader = getattr(error, 'blf_read_cleanup_owner', None)
+            _cleanup_owner(self, error, 'fast_reader_cleanup_owner', 'fast贡献读取器')
+            raise
 
     def _measured(self, iterator):
         """仅诊断运行计量解析迭代。参数: 原读取迭代器。返回: 原记录生成器。异常: 原错误。
@@ -156,12 +173,19 @@ class FileContributions:
         return dict(raw=self.raw_count, targets=self.targets, valid=self.valid,
                     selected=self.selected, kinds=self.kinds, compatible=sorted(self.compatible))
 
+
     def close(self):
-        """释放读取器。参数: 无。返回: None。异常: 原关闭错误，不伪造完成。"""
-        if not self.closed:
-            if self.reader is not None:
-                if self.text:
-                    self.reader.close()
-                else:
-                    self.reader.stop()
-            self.closed = True
+        """关闭本读取器及未返回的实际来源子所有者，失败保留原对象供重试。
+
+        参数: 无。返回: None。异常: 原关闭错误；失败继续保留实际owner供重试。
+        """
+        if self.closed:
+            return
+        if self._pending_reader is not None:
+            self._pending_reader.close()
+            if not self._pending_reader.closed:
+                raise RuntimeError('来源构造恢复对象未完成关闭')
+            self._pending_reader = None
+        if self.reader is not None:
+            self.reader.close()
+        self.closed = True

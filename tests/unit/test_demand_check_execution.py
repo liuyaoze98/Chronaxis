@@ -16,7 +16,7 @@ import unittest
 from uuid import uuid4
 
 from chronaxis import AnalysisPlan, AnalysisRunner
-from chronaxis.execution.can_reader import CANObservationRead
+from chronaxis.execution.text_can_reader import TextCANObservationRead
 from chronaxis.results.codec import encode_row, decode_row
 from test_optional_contribution_execution import make_can_fixture, drain, summary_values
 
@@ -34,14 +34,14 @@ class DemandCheckExecutionTests(unittest.TestCase):
     def run_case(self, root, config, name):
         """在实际read关闭前观察EOF，不增加输入扫描。参数: 根/配置/名称。返回: 汇总/元数据。异常: 原错。"""
         plan=AnalysisPlan.from_dict(current_fixture(config),base_dir=root)
-        original=CANObservationRead.close
+        original=TextCANObservationRead.close
         observations=[]
         def close(read):
             """借读实际完成事实后执行原close。参数: 原read。返回: None。异常: 原关闭错。"""
-            if read.finished and not read.closed and not read._closing:
+            if read.exhausted and not read.closed and not read.failed:
                 observations.append(read.observation)
             return original(read)
-        with patch.object(CANObservationRead,'close',new=close):
+        with patch.object(TextCANObservationRead,'close',new=close):
             result=AnalysisRunner().run(plan,work_dir=root/(name+'-run'))
         budget=result.spool.budget
         try:

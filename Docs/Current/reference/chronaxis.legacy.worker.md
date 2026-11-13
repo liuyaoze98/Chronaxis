@@ -1,19 +1,12 @@
 # `chronaxis.legacy.worker`
 
-在独立spawn进程按一条PULL许可推进一次冻结Sclicer公开函数链。
+在独立spawn进程按单条PULL许可调用共用BLF读取与串行解码政策。
 
-静态只导入标准库和records；INIT校验后才核三份原样vendor哈希、导入真实依赖，
-原load_file一次并创建原iter_frames，不提前next。READY的单位来自同次db公开
-messages/signals；每PULL只next一次、对同msg/db原parse_frame一次，返当前ITEM
-后等待下一命令。STATUS/ACK不授予读取许可，STOP不取后继，正常EOF后退出。
+有效INIT后导入依赖并加载一次DBC；惰性读取器在首次PULL才打开输入，READY不取帧。
+每次许可按原序读取和解码一次，STATUS/ACK/STOP不授予读取许可。只使用限长JSON
+bytes协议，异常发送有限事实，实际子退出和父侧预算清理由协议控制器确认。
 
-本进程只发送最大65536字节的严格JSON bytes，不使用Connection.send/recv的pickle。
-记录保原msg全部公开写出字段和全部原返回数值，不窥视generator frame、补decode、
-增加筛选或缩放。finally只关本连接和原生成器，不声称旧reader底层FD已确定关闭；
-父进程须等待本进程确实退出，OS才回收本进程旧FD。外部解释器/DBC/reader的RSS
-不受父共享账目保证。失败发送有限原错误事实并以非零退出，不伪称原异常对象跨进程。
-
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -27,20 +20,21 @@ messages/signals；每PULL只next一次、对同msg/db原parse_frame一次，返
 |[`_receive`](#api-_receive)|只接收一个不超过单包上限的bytes消息。|
 |[`_exact`](#api-_exact)|限制每种控制包的精确字段，不让多余许可或版本字段静默生效。|
 |[`_request`](#api-_request)|解析唯一INIT，只接受单个实际BLF和原DBC路径，不读取其内容摘要。|
-|[`_load_vendor`](#api-_load_vendor)|核原样三模块字节后在独立child安装其原名称，保绝对utils导入。|
+|[`_load_can_runtime`](#api-_load_can_runtime)|在有效INIT后导入真实CAN依赖，模块导入本身只使用标准库。|
+|[`_iter_blf`](#api-_iter_blf)|按许可惰性创建共用BLF读取器，原消息顺序交付且可靠关闭本次文件。|
 |[`_field_metadata`](#api-_field_metadata)|只读同次db公开messages/signals核定位唯一，并返回原单位。|
-|[`_frame`](#api-_frame)|在一次原parse之后保存同次msg公开写出字段，不重建CAN消息。|
+|[`_frame`](#api-_frame)|保存当前消息的公开写出字段，不重建CAN消息或执行解码。|
 |[`_argument_text`](#api-_argument_text)|只摘要原生异常参数，不执行任意对象str或先展开完整巨型消息。|
 |[`_error_packet`](#api-_error_packet)|保存有限原错误事实，不把远端异常对象或任意类传给父进程。|
 |[`_report_error`](#api-_report_error)|尽力发送原错误事实，断管不替代child原错或阻止退出。|
-|[`worker_main`](#api-worker_main)|作为spawn目标按INIT/PULL协议调用冻结旧公开链，等待许可时不预取。|
+|[`worker_main`](#api-worker_main)|作为spawn目标按INIT/PULL协议调用共用BLF读取与串行兼容解码，等待许可时不预取。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
 ```python
-from hashlib import sha256
-from importlib import metadata, util
+from importlib import metadata
 from pathlib import Path
+from ..dbc_loading import load_dbc_file
 from .records import LegacyCANRequest, LegacyDecodedFrame, LegacyRawFrame, MAX_WIRE_BYTES, PROFILE_ID, decode_packet, decoded_to_dict, encode_packet, field_from_dict, field_to_dict
 ```
 
@@ -70,7 +64,7 @@ _send(connection, packet)
 
 原wire类型/限额或管道错误；不重试导致重复ITEM。
 
-源码：[`src/chronaxis/legacy/worker.py:33`](../../../src/chronaxis/legacy/worker.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:16`](../../../src/chronaxis/legacy/worker.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_receive"></a>
 ## `_receive`
@@ -95,7 +89,7 @@ _receive(connection)
 
 EOFError/OSError/协议错误传播，不把断管当正常来源EOF。
 
-源码：[`src/chronaxis/legacy/worker.py:42`](../../../src/chronaxis/legacy/worker.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:25`](../../../src/chronaxis/legacy/worker.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_exact"></a>
 ## `_exact`
@@ -125,7 +119,7 @@ ValueError为字段缺失或多余。
 
 - `ValueError`：旧CAN控制包字段缺失或多余。
 
-源码：[`src/chronaxis/legacy/worker.py:51`](../../../src/chronaxis/legacy/worker.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:34`](../../../src/chronaxis/legacy/worker.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_request"></a>
 ## `_request`
@@ -156,15 +150,15 @@ LegacyCANRequest。
 - `TypeError`：旧CAN INIT需要文本路径与fields数组。
 - `ValueError`：首版旧CAN仅支持单个现有BLF文件。
 
-源码：[`src/chronaxis/legacy/worker.py:61`](../../../src/chronaxis/legacy/worker.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:44`](../../../src/chronaxis/legacy/worker.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
-<a id="api-_load_vendor"></a>
-## `_load_vendor`
+<a id="api-_load_can_runtime"></a>
+## `_load_can_runtime`
 
-核原样三模块字节后在独立child安装其原名称，保绝对utils导入。
+在有效INIT后导入真实CAN依赖，模块导入本身只使用标准库。
 
 ```python
-_load_vendor()
+_load_can_runtime()
 ```
 
 参数：无显式参数。
@@ -176,13 +170,40 @@ _load_vendor()
 
 ### 返回说明
 
-(file_processor模块,can_processor模块,实际哈希dict)。
+python-can与cantools模块。
 
 ### 异常说明
 
-哈希、同名模块污染或原模块依赖导入错误；不猴补函数、reader或计数器。
+保留缺失依赖的可执行提示。
+不读取来源、DBC或原项目文件，不安装同名vendor模块。
 
-源码：[`src/chronaxis/legacy/worker.py:82`](../../../src/chronaxis/legacy/worker.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:65`](../../../src/chronaxis/legacy/worker.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_iter_blf"></a>
+## `_iter_blf`
+
+按许可惰性创建共用BLF读取器，原消息顺序交付且可靠关闭本次文件。
+
+```python
+_iter_blf(path)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的BLF文件路径；按文件原顺序迭代原始报文。|
+
+### 返回说明
+
+can.Message生成器。
+
+### 异常说明
+
+真实读取/关闭错误。
+创建生成器不打开文件；第一次next才调用BLFRead，STOP或EOF关闭同一owner。
+
+源码：[`src/chronaxis/legacy/worker.py:75`](../../../src/chronaxis/legacy/worker.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_field_metadata"></a>
 ## `_field_metadata`
@@ -216,12 +237,12 @@ ValueError为ID/消息/帧型/信号歧义或不符，TypeError为单位不受�
 - `ValueError`：原DBC消息名称或标准/FD帧型与定位不同。
 - `TypeError`：原DBC公开unit需要文本或None。
 
-源码：[`src/chronaxis/legacy/worker.py:115`](../../../src/chronaxis/legacy/worker.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:102`](../../../src/chronaxis/legacy/worker.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_frame"></a>
 ## `_frame`
 
-在一次原parse之后保存同次msg公开写出字段，不重建CAN消息。
+保存当前消息的公开写出字段，不重建CAN消息或执行解码。
 
 ```python
 _frame(msg)
@@ -245,7 +266,7 @@ LegacyRawFrame。
 
 - `ValueError`：原报文data超过64字节，不能先复制再拒绝。
 
-源码：[`src/chronaxis/legacy/worker.py:167`](../../../src/chronaxis/legacy/worker.py#L167)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:154`](../../../src/chronaxis/legacy/worker.py#L154)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_argument_text"></a>
 ## `_argument_text`
@@ -271,7 +292,7 @@ _argument_text(value, limit)
 
 无主动异常；未知对象仅标明类型，不调用其自定义字符串方法。
 
-源码：[`src/chronaxis/legacy/worker.py:182`](../../../src/chronaxis/legacy/worker.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:169`](../../../src/chronaxis/legacy/worker.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_error_packet"></a>
 ## `_error_packet`
@@ -299,7 +320,7 @@ _error_packet(exc, phase, request_id)
 
 标准库字段访问/编码错误传播；调用方仍须确定退出，不伪报正常EOF。
 
-源码：[`src/chronaxis/legacy/worker.py:197`](../../../src/chronaxis/legacy/worker.py#L197)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:184`](../../../src/chronaxis/legacy/worker.py#L184)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_report_error"></a>
 ## `_report_error`
@@ -327,12 +348,12 @@ _report_error(connection, exc, phase, request_id)
 
 不传播附加报告错误；原失败仍由worker最终非零退出表达。
 
-源码：[`src/chronaxis/legacy/worker.py:240`](../../../src/chronaxis/legacy/worker.py#L240)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:227`](../../../src/chronaxis/legacy/worker.py#L227)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
 
-作为spawn目标按INIT/PULL协议调用冻结旧公开链，等待许可时不预取。
+作为spawn目标按INIT/PULL协议调用共用BLF读取与串行兼容解码，等待许可时不预取。
 
 ```python
 worker_main(connection)
@@ -360,6 +381,6 @@ worker_main(connection)
 
 ### 副作用说明
 
-本child内一次load_file、一次iter_frames、每许可一次next/parse；不额外扫描。
+本child内一次DBC加载、一次iter_frames、每许可一次next/parse；不额外扫描。
 
-源码：[`src/chronaxis/legacy/worker.py:252`](../../../src/chronaxis/legacy/worker.py#L252)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/worker.py:239`](../../../src/chronaxis/legacy/worker.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

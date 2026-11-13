@@ -6,7 +6,7 @@ DBC沿用decode_choices=False/allow_truncated=True参数，但新入口先严格
 已定义报文解码失败直接定位，不冒充未知ID。pack_text_records输出既有SignalSeries。
 完整读取核对全部原帧时间；按需ASC仅核所需通道/ID的连续顺序，并同次统计来源范围。
 文件不重读；DBC加载和临时对象先付预算。
-解析文件逐个关闭，失败/取消保原错误及必要恢复owner，不改旧reader或vendor。
+解析文件逐个关闭，失败/取消保原错误及必要恢复owner；纯BLF串行复用显式解码政策。
 """
 
 from dataclasses import dataclass
@@ -14,10 +14,13 @@ from decimal import Decimal
 from hashlib import file_digest
 from pathlib import Path
 
+from ..dbc_loading import load_dbc_file
+
 from ..core.binding import SignalDefinition
 from ..core.validation import require_identifier
 from ..execution.history import _metadata_bytes
 from ..legacy.records import field_to_dict
+from ..legacy.decode_policy import check_decode_length, decode_serial_frame
 from ..legacy.worker import _field_metadata
 from ..results.budget import ResourceBudget, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..results.errors import ResultClosedError
@@ -48,6 +51,34 @@ class DecodedCANRecord:
     def __post_init__(self):
         """核记录冻结结构。参数: 无。返回: None。异常: 来源、位置、状态或值结构非法。
         """
+        self._validate(None)
+
+    @classmethod
+    def _from_bound_values(cls, source, input_index, sequence, raw, values, status,
+                           frame_values, frame_layout, known_fields):
+        """用本次绑定已经解析的字段名建立内部记录，其余检查与公开构造相同。
+
+        参数: 前八项与记录字段相同；known_fields为当前读取器从已验证绑定取得的字段键集合。
+        返回: 新的冻结DecodedCANRecord，不持有额外的绑定副本。
+        异常: 字段不在当前绑定中、值类型或记录结构不合法时拒绝。
+        外部构造仍调用完整字段解析；此入口只供同次解码结果复用绑定检查。
+        """
+        record = object.__new__(cls)
+        # 仅安装当前固定模型的八项字段，不按输入提供的属性名恢复对象。
+        for name, value in zip(('source', 'input_index', 'sequence', 'raw', 'values',
+                                'status', 'frame_values', 'frame_layout'),
+                               (source, input_index, sequence, raw, values, status,
+                                frame_values, frame_layout)):
+            object.__setattr__(record, name, value)
+        record._validate(known_fields)
+        return record
+
+    def _validate(self, known_fields):
+        """检查固定记录，内部已绑定键只核成员关系。
+
+        参数: known_fields为本次已解析字段集合，None表示公开入口需要完整解析。
+        返回: None。异常: 非法结构、未知字段、重复键或无值状态携带数据。
+        """
         # 该模型不开放任意对象值，也不在外部构造时接受重复字段覆盖。
         require_identifier(self.source,'decoded_can.source')
         if (type(self.raw) not in (RawCANRecord,_UntimedBLFRecord) or type(self.input_index) is not int or self.input_index < 0
@@ -58,7 +89,10 @@ class DecodedCANRecord:
         for pair in self.values:
             if type(pair) is not tuple or len(pair) != 2 or type(pair[0]) is not str or type(pair[1]) not in (int,float,bool,type(None)):
                 raise TypeError('解码值需要规范字段键及原生数值/None')
-            can_field_from_key(pair[0])
+            if known_fields is None:
+                can_field_from_key(pair[0])
+            elif pair[0] not in known_fields:
+                raise ValueError('解码CAN字段不属于当前绑定')
             if pair[0] in keys:
                 raise ValueError('解码CAN字段重复')
             keys.add(pair[0])
@@ -75,15 +109,19 @@ class DecodedCANRecord:
 class CANTextDecodeRead:
     """拥有单次DBC和逐文件解析器；EOF后保有限元数据到显式close。"""
 
-    def __init__(self, spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source',legacy_blf_decode=False):
+    def __init__(self, spec, budget, signals, *, check_cancel=None, database_context=None, classify_unselected=True, cycle_fields=(), metadata_fields=(), integrity=True, trace=True, retain_source_time=True, selected_ids=None, time_frame_ids=None, emit_frame_ids=None, blf_time_scope='source',legacy_blf_decode=False,serial_blf_policy=None,post_decode_frame_ids=None):
         """只核声明并预约固定费用。参数: spec来源、budget账本、signals所需定义tuple、check_cancel取消回调；classify_unselected保旧逐帧分类，消息消费者无需区分无关ID是否在DBC中；cycle_fields只请求初始化周期，metadata_fields只请求候选，两者不加入解码投影。
 
         time_frame_ids仅在无需完整顺序/原帧导出时传入：选中通道/ID之间必须有序，
         其他帧仍用于同次来源最早/最晚时间统计，不交付给计算或作为单调性前点。
         selected_ids仅供不需要全来源观测或原帧导出的纯消息计算使用：原始CSV先按ID跳过
         无关行；None保留全部行。count保原始行计数，retained_count只数实际交付的记录。
-        legacy_blf_decode默认False；仅纯can_blf并行转接可设True，保留原legacy长度政策及
-        DBC DecodeError返回空值的行为；其它异常仍导致任务失败，不扩大异常吞掉范围。
+        legacy_blf_decode默认False；纯can_blf转接保留legacy长度政策和DecodeError缺值行为。
+        serial_blf_policy仅纯BLF串行设置requested/all：唯一ID沿原数据库入口的普通异常
+        缺值处理，多定义ID按实际帧型直接解码；all还核完整值。并行和文本政策保持独立。
+        post_decode_frame_ids仅串行all且无原帧导出时传入有限ID集合：每帧完成解码和
+        完整值检查后再跳过无消费者的帧。None交付全部帧；计数只数实际交付。
+        纯BLF串行沿用按ID检查时间和交付，通道由后续绑定筛选；其他来源按通道及ID。
 
         返回: 未开始读取的owner。异常: 声明/预算错误；持续清理失败附text_can_cleanup_owner。
         """
@@ -99,6 +137,13 @@ class CANTextDecodeRead:
                 (spec.decode_policy!='legacy' or any(type(item) is not BLFSpec for item in spec.inputs))):
             raise ValueError('legacy_blf_decode仅用于明确的纯BLF legacy转接')
         self._legacy_blf_decode=legacy_blf_decode
+        if serial_blf_policy not in (None,'requested','all') or (serial_blf_policy is not None and any(type(item) is not BLFSpec for item in spec.inputs)):
+            raise ValueError('纯BLF串行政策需要requested/all及全部BLF输入')
+        self._serial_blf_policy=serial_blf_policy
+        if post_decode_frame_ids is not None and serial_blf_policy!='all':
+            raise ValueError('解码后投影仅用于纯BLF串行all政策')
+        self._post_decode_frame_ids=None if post_decode_frame_ids is None else frozenset(post_decode_frame_ids)
+        self._duplicate_ids=frozenset()
         if len({item.name for item in signals}) != len(signals):
             raise ValueError('文本CAN别名不能重复')
         from ..legacy.dbc_cycles import require_cycle_fields
@@ -133,11 +178,13 @@ class CANTextDecodeRead:
         self._database_context=database_context
         self._extra_fields=() if database_context is None else database_context.extra_fields
         self._frame_values=self._frame_layout=()
+        self._known_field_keys = None
         self._held_cost = self._fixed_cost = self._dbc_cost = self._metadata_cost = 0
         self._db = self._raw = self._metadata = None
         self._input_index = 0
         self._completed_count = 0
         self.count = self.decode_calls = self.retained_count = 0
+        self.full_check_count = 0
         self.first_ns = self.last_ns = None
         self._closed = self._exhausted = self._failed = self._closing = False
         try:
@@ -206,16 +253,22 @@ class CANTextDecodeRead:
             if self._integrity:
                 with self.spec.dbc_path.open('rb') as stream:
                     before = file_digest(stream,'sha256').hexdigest()
-            self._db = cantools.database.load_file(str(self.spec.dbc_path))
+            self._db = load_dbc_file(str(self.spec.dbc_path), cantools)
         else:
             # 新文本读取和新输出共用同一已付费DBC；借用结束不能替父owner释放费用。
             self._database_context.require_open()
-            self._db=self._database_context.database; before=self._database_context.sha256
+            self._db=self._database_context.database
+            before=self._database_context.sha256
         fields = tuple(dict.fromkeys((*[field for _,field in self._fields],*self._extra_fields)))
         # 仅缓存已冻结声明的规范键；范围固定，避免每条消息重建相同JSON字段键。
         self._field_keys={field:field.key for field in fields}
+        # 与字段字典共用已预付的声明空间；只保存引用，不复制每帧字段或扩大声明范围。
+        self._known_field_keys = frozenset(self._field_keys.values())
         from ..legacy.binding import FrameBindingResolver
         self._binding_resolver = FrameBindingResolver(self._db, fields)
+        if self._serial_blf_policy is not None:
+            from collections import Counter
+            self._duplicate_ids=frozenset(key for key,count in Counter(message.frame_id for message in self._db.messages).items() if count>1)
         if self._cycle_fields or self._metadata_fields:
             fields=tuple(dict.fromkeys((*fields,*self._cycle_fields,*self._metadata_fields)))
             facts=_field_metadata(self._db,fields,cycle_fields=self._cycle_fields)
@@ -241,8 +294,8 @@ class CANTextDecodeRead:
         self._metadata = freeze_metadata({'profile':'can-text-v1','dbc_path':str(self.spec.dbc_path),
             'dbc_sha256':before,'fields':facts,'decode_choices':False,'allow_truncated':True,
             'selected_length_check':'legacy' if self._legacy_blf_decode else 'partial' if self.spec.decode_policy=='partial' else 'exact',
-            'decode_scope':'requested','cantools_version':cantools.__version__,
-            'record_check_scope':'selected_ids' if self._selected_ids is not None and self.spec.source_type=='raw_can_csv' else 'source',
+            'decode_scope':self._serial_blf_policy or 'requested','cantools_version':cantools.__version__,
+            'record_check_scope':'selected_ids' if ((self._selected_ids is not None and self.spec.source_type=='raw_can_csv') or (self._serial_blf_policy is not None and self._emit_frame_ids is not None and self.spec.input_check=='auto')) else 'source',
             'time_order_check_scope':'none' if self._blf_time_scope=='none' else 'selected_ids' if self._time_frame_ids is not None else 'source'})
 
     def _decode(self, raw):
@@ -257,31 +310,39 @@ class CANTextDecodeRead:
         if (frame.is_remote_frame or frame.is_error_frame) and not self._legacy_blf_decode:
             return (),'non_data'
         selected = self._binding_resolver.fields_for(frame)
-        # 共同消息消费者不需要判断无关ID是否存在于DBC，完整分类旧入口仍保留。
-        if not selected and not self._classify_unselected:
-            return (),'unselected'
-        if not selected:
+        decode_all = self._serial_blf_policy == 'all'
+        if not selected and not decode_all:
+            if not self._classify_unselected:
+                return (),'unselected'
             return (), 'unselected' if any(message.frame_id == frame.arbitration_id for message in self._db.messages) else 'unknown'
-        message = self._binding_resolver.message_for(frame, selected)
-        # 复用原解码参数前先核新入口的严格长度；失败不改写成未知ID透传。
-        from ..legacy.decode_policy import check_decode_length
-        try:
-            check_decode_length(frame,message.length,
-                'strict' if self.spec.decode_policy == 'legacy' and not self._legacy_blf_decode else self.spec.decode_policy)
-        except ValueError as error:
-            raise CANTextError(raw.path,raw.line_number,str(error)) from error
-        try:
-            from cantools.database.errors import DecodeError
-            self.decode_calls += 1
-            values = message.decode(frame.data, decode_choices=False, allow_truncated=True)
-        except DecodeError as error:
-            if self.spec.decode_policy == 'legacy' and not self._legacy_blf_decode:
+        message = self._binding_resolver.message_for(frame, selected) if selected else None
+        if message is not None:
+            try:
+                check_decode_length(frame,message.length,
+                    'strict' if self.spec.decode_policy == 'legacy' and not self._legacy_blf_decode else self.spec.decode_policy)
+            except ValueError as error:
+                raise CANTextError(raw.path,raw.line_number,str(error)) from error
+        from cantools.database.errors import DecodeError
+        self.decode_calls += 1
+        if self._serial_blf_policy is not None:
+            try:
+                values=decode_serial_frame(self._db,frame,message,self._duplicate_ids)
+            except (ValueError,KeyError) as error:
                 raise CANTextError(raw.path,raw.line_number,'已定义DBC报文解码失败: '+str(error)) from error
-            # 结构已核验；未知复用编号等解码失败是本条失效，不沿用上一条值。
-            values = {}
-        except (ValueError,KeyError) as error:
-            raise CANTextError(raw.path,raw.line_number,'已定义DBC报文解码失败: '+str(error)) from error
-        if self._database_context is not None and any(rule.matches(frame) for rule in self._database_context.rules):
+        else:
+            try:
+                values = message.decode(frame.data, decode_choices=False, allow_truncated=True)
+            except DecodeError as error:
+                if self.spec.decode_policy == 'legacy' and not self._legacy_blf_decode:
+                    raise CANTextError(raw.path,raw.line_number,'已定义DBC报文解码失败: '+str(error)) from error
+                values = {}
+            except (ValueError,KeyError) as error:
+                raise CANTextError(raw.path,raw.line_number,'已定义DBC报文解码失败: '+str(error)) from error
+        if decode_all:
+            # 显式完整诊断保留旧全部值与64KiB限制；正常requested不构造这份副本。
+            from ..legacy.records import LegacyDecodedFrame
+            LegacyDecodedFrame(self._completed_count+raw.sequence,frame,values)
+        if message is not None and self._database_context is not None and any(rule.matches(frame) for rule in self._database_context.rules):
             from ..legacy.binding import field_matches
             names={field.signal for field in self._extra_fields if field_matches(field, frame)}
             self._frame_values=tuple((name,value) for name,value in values.items() if name in names)
@@ -299,10 +360,10 @@ class CANTextDecodeRead:
         """判断此帧是否属于所需通道与ID；不解码、不改时间。
 
         参数: frame为已解析原帧。返回: bool；None选择全部帧。异常: 无。
-        同ID的帧类型仍交既有绑定解析器核对，不能用筛选隐藏歧义。
+        纯BLF串行按ID沿用旧时间范围，其他来源同时匹配通道；同ID帧型交绑定解析器核对。
         """
-        return self._time_frame_ids is None or (frame.channel == self.spec.channel
-            and frame.arbitration_id in self._time_frame_ids)
+        return self._time_frame_ids is None or ((self._serial_blf_policy is not None
+            or frame.channel == self.spec.channel) and frame.arbitration_id in self._time_frame_ids)
 
     def __next__(self):
         """逐条交付原帧和所需解码值。参数: 无。返回: DecodedCANRecord。异常: EOF/定位数据错/原I/O、预算、取消。
@@ -330,10 +391,12 @@ class CANTextDecodeRead:
                                 'selected_ids':self._selected_ids} if factory is CANCSVRead else
                                {'time_selector':self._time_selected if self._time_frame_ids is not None else None,
                                 'previous_exact_time':self._last_selected_time} if factory is ASCRead else
-                               {'emit_frame_ids':self._emit_frame_ids,'channel':self.spec.channel,
+                               {'emit_frame_ids':self._emit_frame_ids,'channel':None if self._serial_blf_policy is not None else self.spec.channel,
+                                'binary_time':self._serial_blf_policy is not None,
+                                'previous_order_ns':int(self._last_selected_time.scaleb(9)) if self._serial_blf_policy is not None and self._last_selected_time is not None else None,
                                 'projection_only':self.spec.input_check=='auto',
                                 'time_scope':self._blf_time_scope,
-                                'time_check_all':self._time_frame_ids is None} if self._emit_frame_ids is not None else {}))
+                                'time_check_all':self._time_frame_ids is None} if self._emit_frame_ids is not None else {'binary_time':True} if factory is BLFRead and self._serial_blf_policy is not None else {}))
                     except BaseException as error:
                         self._raw = (getattr(error,'asc_read_cleanup_owner',None)
                             or getattr(error,'raw_csv_cleanup_owner',None) or getattr(error,'blf_read_cleanup_owner',None))
@@ -344,6 +407,9 @@ class CANTextDecodeRead:
                     # 单文件真实EOF才换下一文件；不重排输入、不从头回退另一个parser。
                     self.count = self._completed_count + self._raw.count
                     self._completed_count = self.count
+                    # full及all是主动全检；这里只累计auto实际发生的非原生回退。
+                    if isinstance(self._raw, BLFRead) and self.spec.input_check == 'auto' and self._serial_blf_policy != 'all':
+                        self.full_check_count += self._raw.full_check_count
                     self._blf_observation()
                     if isinstance(self._raw, ASCRead):
                         # full模式的最后元数据时刻也延续；按需模式只保所需帧，空文件不清零。
@@ -372,11 +438,16 @@ class CANTextDecodeRead:
                 self._last_selected_time = current_time
                 if self.first_order_time is None:
                     self.first_order_time = current_time
-                if self._emit_frame_ids is not None and (raw.frame.channel != self.spec.channel
-                        or raw.frame.arbitration_id not in self._emit_frame_ids):
+                if self._emit_frame_ids is not None and ((self._serial_blf_policy is None
+                        and raw.frame.channel != self.spec.channel) or raw.frame.arbitration_id not in self._emit_frame_ids):
                     continue
                 values,status = self._decode(raw)
-                result = DecodedCANRecord(self.spec.name,self._input_index,self._completed_count+raw.sequence,raw,values,status,self._frame_values,self._frame_layout)
+                if self._post_decode_frame_ids is not None and raw.frame.arbitration_id not in self._post_decode_frame_ids:
+                    continue
+                result = DecodedCANRecord._from_bound_values(
+                    self.spec.name, self._input_index, self._completed_count + raw.sequence,
+                    raw, values, status, self._frame_values, self._frame_layout,
+                    self._known_field_keys)
                 # 来源范围已在筛选前统计；原序号和count包含跳过行，retained_count仅数交付。
                 self.retained_count += 1
                 return result
@@ -419,6 +490,7 @@ class CANTextDecodeRead:
             self._raw.close()
             self._raw = None
         self._db = self._metadata = self._binding_resolver = None
+        self._field_keys = self._known_field_keys = None
         self._time_frame_ids = None
         self._last_selected_time = None
         _release_owned_ram(self,self._dbc_cost,'_dbc_cost')

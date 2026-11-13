@@ -2,7 +2,7 @@
 
 配置加载期的原生数据、字段位置和语法错误，不参与分析执行或来源读取。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -49,7 +49,7 @@ JSON路径。
 
 非内部路径。
 
-源码：[`src/chronaxis/configuration/models.py:7`](../../../src/chronaxis/configuration/models.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:7`](../../../src/chronaxis/configuration/models.py#L7)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationLocation"></a>
 ## `ConfigurationLocation`
@@ -67,7 +67,7 @@ class ConfigurationLocation
 |`line`|int|是|无|原配置中从1开始的行号；报错时用于直接找到出错声明。|
 |`column`|int|是|无|原行中从1开始的Unicode字符列号；不是UTF-8字节列号。|
 
-源码：[`src/chronaxis/configuration/models.py:21`](../../../src/chronaxis/configuration/models.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:21`](../../../src/chronaxis/configuration/models.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationOrigin"></a>
 ## `ConfigurationOrigin`
@@ -86,7 +86,7 @@ class ConfigurationOrigin
 |`field_path`|tuple|是|无|声明文件内部路径，索引尚未被合并重排。|
 |`location`|[ConfigurationLocation](chronaxis.configuration.models.md#api-ConfigurationLocation) &#124; None|是|无|原文一基行列；无法取得时为None。|
 
-源码：[`src/chronaxis/configuration/models.py:28`](../../../src/chronaxis/configuration/models.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:28`](../../../src/chronaxis/configuration/models.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationDocument"></a>
 ## `ConfigurationDocument`
@@ -107,7 +107,7 @@ class ConfigurationDocument
 |`locations`|Mapping[tuple, [ConfigurationLocation](chronaxis.configuration.models.md#api-ConfigurationLocation)]|是|无|以字段路径元组为键的只读位置表；只在配置加载期间保留，不随结果逐样本保存。|
 |`origins`|Mapping|否|{}|仅文件导入展开时填充，计划构造后释放。|
 
-源码：[`src/chronaxis/configuration/models.py:36`](../../../src/chronaxis/configuration/models.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:36`](../../../src/chronaxis/configuration/models.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationDocument-origin_for"></a>
 ### `ConfigurationDocument.origin_for`
@@ -132,7 +132,7 @@ ConfigurationDocument.origin_for(field_path)
 
 无。
 
-源码：[`src/chronaxis/configuration/models.py:44`](../../../src/chronaxis/configuration/models.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:44`](../../../src/chronaxis/configuration/models.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationDocument-location_for"></a>
 ### `ConfigurationDocument.location_for`
@@ -157,7 +157,7 @@ ConfigurationDocument.location_for(field_path)
 
 无。
 
-源码：[`src/chronaxis/configuration/models.py:55`](../../../src/chronaxis/configuration/models.py#L55)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:55`](../../../src/chronaxis/configuration/models.py#L55)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationError"></a>
 ## `ConfigurationError`
@@ -171,7 +171,7 @@ ConfigurationError(source, field_path, location, code, message)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/configuration/models.py:63`](../../../src/chronaxis/configuration/models.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:63`](../../../src/chronaxis/configuration/models.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ConfigurationError-__init__"></a>
 ### `ConfigurationError.__init__`
@@ -200,4 +200,4 @@ None。
 
 无。
 
-源码：[`src/chronaxis/configuration/models.py:66`](../../../src/chronaxis/configuration/models.py#L66)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/models.py:66`](../../../src/chronaxis/configuration/models.py#L66)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

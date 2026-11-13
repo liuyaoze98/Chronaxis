@@ -440,21 +440,22 @@ class CLIRunTests(unittest.TestCase):
                 self.assertFalse((work_dir if position == 'output' else output).exists())
                 self.assertEqual(completed.stdout, '')
 
-    def test_ref_output_work_and_impossible_work_output_nesting_are_preflight_errors(self):
-        """Ref输出/工作路径及work等于或位于output内均先拒，不写原目录也不读取CSV。
-
-        参数: 无。返回: None。异常: 路径拒绝分类、创建顺序或原Ref目录mtime改变即失败。
-        """
+    def test_customer_ref_paths_are_allowed_but_impossible_nesting_is_rejected(self):
+        """客户同名目录允许读写并保留原内容；work等于或位于output内仍在读取前拒绝。"""
         directory, path, _ = self.fixture()
-        # 合成受保护目录，不依赖或改动开发仓库里的历史项目。
+        # 仅使用合成目录，不触碰开发仓库的历史项目。
         ref = directory / 'RefProjects'
         ref.mkdir()
-        protected = ref / ('cli-run-rejected-' + uuid4().hex)
+        sentinel = ref/'user.txt'
+        sentinel.write_bytes(b'keep')
+        for destination, work_dir in ((ref/'output', directory/'work-ref-output'),
+                                      (directory/'output-ref-work', ref/'work')):
+            completed, _ = self.invoke(self.arguments(path, destination, work_dir))
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertTrue(Path(json.loads(completed.stdout)['manifest']).is_file())
+            self.assertEqual(sentinel.read_bytes(), b'keep')
         output = directory / 'output'
-        cases = ((protected / 'output', directory / 'work-ref-output'),
-            (directory / 'output-ref-work', protected / 'work'),
-            (output, output), (directory / 'ancestor', directory / 'ancestor' / 'nested-work'))
-        before = ref.stat().st_mtime_ns
+        cases = ((output, output), (directory / 'ancestor', directory / 'ancestor' / 'nested-work'))
         for destination, work_dir in cases:
             with self.subTest(output=str(destination), work=str(work_dir)):
                 completed, facts = self.invoke(self.arguments(path, destination, work_dir), observe='preflight')
@@ -463,8 +464,7 @@ class CLIRunTests(unittest.TestCase):
                 self.assertFalse(destination.exists())
                 self.assertFalse(work_dir.exists())
                 self.assertEqual(completed.stdout, '')
-        self.assertFalse(protected.exists())
-        self.assertEqual(ref.stat().st_mtime_ns, before)
+        self.assertEqual(sentinel.read_bytes(), b'keep')
 
     def test_real_publish_install_error_retains_cause_closes_result_and_has_no_completed_target(self):
         """实际write已生成表后在原安装前失败；原OSError可见、结果真实关闭且目标未完成。

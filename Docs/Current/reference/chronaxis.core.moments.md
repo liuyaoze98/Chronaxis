@@ -5,7 +5,7 @@
 这里只校验静态契约。归约器使用实际有效更新或选中区间的权重，
 其标量算法与数组算法各自实现，不在本模块累计任何历史。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -39,7 +39,7 @@ moment_ddof(operation, value)
 
 不适用或越界。
 
-源码：[`src/chronaxis/core/moments.py:13`](../../../src/chronaxis/core/moments.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments.py:13`](../../../src/chronaxis/core/moments.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-moment_source_unit"></a>
 ## `moment_source_unit`
@@ -65,7 +65,7 @@ Unit。
 
 未知单位或偏移RMS。
 
-源码：[`src/chronaxis/core/moments.py:26`](../../../src/chronaxis/core/moments.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments.py:26`](../../../src/chronaxis/core/moments.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_moment_series"></a>
 ## `compute_moment_series`
@@ -95,4 +95,4 @@ CalculationResult。
 
 与分块公开执行相同的类型、单位和时间错误。
 
-源码：[`src/chronaxis/core/moments.py:41`](../../../src/chronaxis/core/moments.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments.py:41`](../../../src/chronaxis/core/moments.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

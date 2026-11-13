@@ -27,7 +27,7 @@ identity用于区分配置和来源定位声明，不证明磁盘上的输入内
 本模块依赖核心声明模型和planning中的字段检查、来源解析及节点解析。
 from_dict不读分析数据，按需读取DBC元数据；load_analysis_plan还读取配置及一层公共定义并及时关闭句柄。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -141,7 +141,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisPlan-__post_init__"></a>
 ### `AnalysisPlan.__post_init__`
@@ -155,7 +155,7 @@ AnalysisPlan.__post_init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisPlan-extensions"></a>
 ### `AnalysisPlan.extensions`
@@ -183,7 +183,7 @@ ExtensionRegistry或None。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisPlan-lookups"></a>
 ### `AnalysisPlan.lookups`
@@ -211,7 +211,7 @@ LookupTablePlan 元组。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -249,7 +249,7 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-load_analysis_plan"></a>
 ## `load_analysis_plan`
@@ -290,4 +290,4 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:369`](../../../src/chronaxis/planning/plan.py#L369)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

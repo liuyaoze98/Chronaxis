@@ -10,7 +10,8 @@ import csv
 import hashlib
 import json
 import sqlite3
-from contextlib import closing
+from contextlib import contextmanager
+from itertools import chain
 from math import ceil
 from .budget import _reserve_owned_ram, _release_owned_ram
 from .errors import ResultFormatError
@@ -41,6 +42,8 @@ class ReadableWriter:
         self.owner, self.directory, self.iterator_factory = owner, directory, iterator_factory
         self.path = directory / '.readable-index.sqlite'
         self.connection = None
+        self._pending_reader = None
+        self._pending_output = None
         self._budget = owner.spool.budget
         self._held_cost = self._ram_cost = 0
         self.pages = 0
@@ -66,28 +69,102 @@ class ReadableWriter:
             self.connection.execute(f'PRAGMA max_page_count={needed}')
         return self.connection.execute(sql, values)
 
+    @contextmanager
+    def _reader(self, table, *, indexed=False):
+        """拥有一次结果流或索引游标，关闭失败留给writer重试。
+
+        参数: table为当前表；indexed选择自有SQLite游标，默认结果流。
+        返回: 上下文中的可迭代读者。异常: 读错优先，关闭错附记；恢复owner保留。
+        """
+        if self._pending_reader is not None:
+            raise RuntimeError('可读结果仍有未关闭的游标，请先重试关闭')
+        reader = failure = None
+        try:
+            reader = (self.connection.execute('SELECT n,payload FROM objects WHERE kind=? ORDER BY n', (table,))
+                      if indexed else self.iterator_factory(self.owner, table))
+            self._pending_reader = reader
+            yield reader
+        except GeneratorExit:
+            # 主动结束生成器时，关闭失败必须让调用方看到，不能吞掉资源错误。
+            raise
+        except BaseException as error:
+            failure = error
+            raise
+        finally:
+            try:
+                if reader is not None:
+                    reader.close()
+            except BaseException as cleanup:
+                target = cleanup if failure is None else failure
+                target.readable_cleanup_owner = self
+                if failure is None:
+                    raise
+                failure.add_note('可读结果游标清理附加失败: ' + type(cleanup).__name__)
+            else:
+                self._pending_reader = None
+            finally:
+                # 仍未关闭的资源保存在明确owner；错误帧不再另持一份游标引用。
+                reader = failure = None
+
+    @contextmanager
+    def _output(self, path):
+        """持有唯一输出句柄，写入与关闭同时失败时保留原写入错误。
+
+        参数: path为本次新CSV路径。返回: 独占创建的二进制句柄。
+        异常: 原写入错误优先；未关闭句柄归writer，关闭可以重试。
+        """
+        if self._pending_output is not None:
+            raise RuntimeError('可读结果仍有未关闭的输出，请先重试关闭')
+        handle = failure = None
+        try:
+            handle = path.open('xb')
+            self._pending_output = handle
+            yield handle
+        except BaseException as error:
+            failure = error
+            raise
+        finally:
+            try:
+                if handle is not None:
+                    handle.close()
+            except BaseException as cleanup:
+                original = cleanup if failure is None else failure
+                original.readable_cleanup_owner = self
+                if failure is None:
+                    raise
+                failure.add_note('可读CSV输出关闭附加失败: ' + type(cleanup).__name__)
+            finally:
+                if handle is not None and handle.closed:
+                    self._pending_output = None
+                handle = failure = None
+
     def _rows(self, table):
         """按原游标逐条读已计算结果，保持严格解析和真实关闭。
 
         参数: table为启用表。返回: 平坦字段生成器。异常: 读取/校验/关闭错误传播。
         """
-        with closing(self.iterator_factory(self.owner, table)) as iterator:
-            count = 0
-            for row in iterator:
-                count += 1
-                fields = summary_fields(row)
-                # 显式质量诊断仍随唯一必要读取得到，不另扫一遍结果。
-                if self.quality_handle is not None:
-                    state_field = {'selections': 'selection', 'contributions': 'reason',
-                                   'input_trace': 'record_type'}.get(table, 'status')
-                    key = table + ':' + fields[state_field]
-                    self.coverage[key] = self.coverage.get(key, 0) + 1
-                    diagnostic = {key: fields[key] for key in ('sequence', *IDENTITY, 'quality', state_field)}
-                    diagnostic['table'] = table
-                    self.quality_handle.write(_json(diagnostic) + '\n')
-                yield fields
-            if count != self.owner.spool.counts.get(table, 0):
-                raise ResultFormatError('可读导出行数与暂存不一致')
+        row = fields = diagnostic = None
+        try:
+            with self._reader(table) as iterator:
+                count = 0
+                for row in iterator:
+                    count += 1
+                    fields = summary_fields(row)
+                    # 显式质量诊断仍随唯一必要读取得到，不另扫一遍结果。
+                    if self.quality_handle is not None:
+                        state_field = {'selections': 'selection', 'contributions': 'reason',
+                                       'input_trace': 'record_type'}.get(table, 'status')
+                        key = table + ':' + fields[state_field]
+                        self.coverage[key] = self.coverage.get(key, 0) + 1
+                        diagnostic = {key: fields[key] for key in ('sequence', *IDENTITY, 'quality', state_field)}
+                        diagnostic['table'] = table
+                        self.quality_handle.write(_json(diagnostic) + '\n')
+                    yield fields
+                if count != self.owner.spool.counts.get(table, 0):
+                    raise ResultFormatError('可读导出行数与暂存不一致')
+        finally:
+            # 生成器结束或出错后，不让本层异常帧保留刚读出的行。
+            row = fields = diagnostic = iterator = None
 
     def prepare(self):
         """建立必要关联和列定义，不读取原始日志。
@@ -216,42 +293,83 @@ class ReadableWriter:
                 STATES[row['status']], quality_text(row['quality'])]
 
     def _write(self, table, columns, rows):
-        """直接写最终CSV并随写计算可选摘要，不写后回读。
+        """借用行流写最终CSV，并随写计算显式请求的摘要。
 
-        参数: table/columns/rows为本次有限列与流。返回: 路径。异常: 编码、IO或取消传播。
+        参数: table/columns/rows为本次有限列和借用的流；不关闭调用者的rows。
+        返回: 路径。异常: 编码、IO或取消原样传播；仅清理本层编码缓冲。
         """
         path = self.directory / FILES[table]
         digest = hashlib.sha256() if self.owner.metadata.integrity_diagnostics else None
         count, size = 0, 0
-        # BOM使Windows表格软件能直接识别中文；仅可读CSV使用它。
-        with path.open('xb') as handle:
-            header = b'\xef\xbb\xbf'
-            handle.write(header)
-            size += len(header)
-            if digest is not None:
-                digest.update(header)
-            # StringIO每次只持一条CSV，避免跨结果累计。
-            import io
-            buffer = io.StringIO(newline='')
-            writer = csv.writer(buffer)
-            for index, values in enumerate(_with_header(columns, rows)):
-                buffer.seek(0)
-                buffer.truncate(0)
-                writer.writerow(values)
-                payload = buffer.getvalue().encode('utf-8')
-                if handle.write(payload) != len(payload):
-                    raise OSError('可读CSV写入不完整')
-                size += len(payload)
+        buffer = writer = values = payload = failure = None
+        try:
+            # BOM使Windows表格软件能识别中文；chain不把关闭操作转发给借用流。
+            with self._output(path) as handle:
+                header = b'\xef\xbb\xbf'
+                handle.write(header)
+                size += len(header)
                 if digest is not None:
-                    digest.update(payload)
-                if index:
-                    count += 1
-        self.counts[table] = count
-        info = dict(name=path.name, bytes=size)
-        if digest is not None:
-            info['sha256'] = digest.hexdigest()
-        self.infos[path.name] = info
-        return path
+                    digest.update(header)
+                import io
+                buffer = io.StringIO(newline='')
+                writer = csv.writer(buffer)
+                for index, values in enumerate(chain((columns,), rows)):
+                    buffer.seek(0)
+                    buffer.truncate(0)
+                    writer.writerow(values)
+                    payload = buffer.getvalue().encode('utf-8')
+                    if handle.write(payload) != len(payload):
+                        raise OSError('可读CSV写入不完整')
+                    size += len(payload)
+                    if digest is not None:
+                        digest.update(payload)
+                    if index:
+                        count += 1
+            self.counts[table] = count
+            info = dict(name=path.name, bytes=size)
+            if digest is not None:
+                info['sha256'] = digest.hexdigest()
+            self.infos[path.name] = info
+            return path
+        except BaseException as exc:
+            failure = exc
+            raise
+        finally:
+            # traceback可以继续保留本帧，但不继续持有整行和CSV缓冲；rows由调用方拥有。
+            rows = columns = values = payload = writer = None
+            try:
+                if buffer is not None:
+                    buffer.close()
+            except BaseException as cleanup:
+                if failure is None:
+                    raise
+                failure.add_note('可读CSV缓冲清理附加失败: ' + type(cleanup).__name__)
+            finally:
+                buffer = failure = None
+
+    def _write_owned_rows(self, table, columns, *, detail=False):
+        """写入本对象刚创建的行流，成功、失败或取消后结束该流。
+
+        参数: table/columns定位本次表；detail选择明细流，默认主表。
+        返回: 已写路径。异常: 原写入异常优先；关闭失败由原游标/父结果继续承担。
+        """
+        rows = failure = None
+        try:
+            rows = self._detail_rows(table) if detail else self._main_rows(table)
+            return self._write(table, columns, rows)
+        except BaseException as exc:
+            failure = exc
+            raise
+        finally:
+            try:
+                if rows is not None:
+                    rows.close()
+            except BaseException as cleanup:
+                if failure is None:
+                    raise
+                failure.add_note('可读结果行流清理附加失败: ' + type(cleanup).__name__)
+            finally:
+                rows = failure = columns = None
 
     def write(self, quality_handle=None, coverage=None):
         """发布全部关联主表；明细由后续专门分支逐条处理。
@@ -277,7 +395,7 @@ class ReadableWriter:
                 continue
             if table == 'calculations' and not self.metrics['session']:
                 continue
-            paths.append(self._write(table, [LABELS[i] for i in self.varying] + columns[table], self._main_rows(table)))
+            paths.append(self._write_owned_rows(table, [LABELS[i] for i in self.varying] + columns[table]))
         # 明细无需重排或宽表聚合，直接从原暂存逐行写出，不进入SQLite索引。
         detail_columns = {
             'aggregations': ['聚合项','分组','结果','单位','状态','原因','候选数','参与数','定义排除数','质量排除数',
@@ -288,7 +406,7 @@ class ReadableWriter:
         }
         for table, names in detail_columns.items():
             if table in self.owner.spool.tables:
-                paths.append(self._write(table, [LABELS[i] for i in self.varying] + names, self._detail_rows(table)))
+                paths.append(self._write_owned_rows(table, [LABELS[i] for i in self.varying] + names, detail=True))
         return tuple(paths)
 
     def _detail_rows(self, table):
@@ -296,42 +414,66 @@ class ReadableWriter:
 
         参数: table为明细表。返回: 有界CSV行。异常: 缺失父对象或原读取错误。
         """
-        for row in self._rows(table):
-            if table == 'aggregations':
-                values=[row['aggregation_id'],_json(dict(zip(row['group_keys'],row['group_values']))),
-                        row['value'],row['unit'],{'complete':'完整','partial':'部分','indeterminate':'不能确定','empty':'确定为空'}[row['status']],
-                        {'ok':'正常','partial_population':'总体不完整','no_observation':'无观测','insufficient_data':'观测不足',
-                         'empty_population':'无参与值','insufficient_count':'样本数不足','numeric_error':'数值不能确定'}[row['reason']],
-                        row['candidate_count'],row['included_count'],row['definition_excluded_count'],row['quality_excluded_count'],
-                        row['included_partial_count'],row['matched_count'],row['timeout_count'],row['insufficient_observation_count'],
-                        row['pending_count'],'是' if row['discovery_complete'] else '否',quality_text(row['quality'])]
-            elif table == 'selections':
-                scope = row['scope']
-                parent = '' if scope == 'session' else self._number(
-                    'events' if scope == 'event' else 'segments', row, row['parent_id'])
-                values = [row['calculation_id'], {'session': '会话', 'event': '事件', 'segment': '窗口'}[scope],
-                          parent, seconds(row['time_ns']), row['value'], row['unit'],
-                          '有效' if row['valid'] else '无效', STATES[row['selection']], explanation(row)]
-            elif table == 'contributions':
-                values = [row['calculation_id'], row['source'], row['original_sequence'], row['evaluation_index'],
-                          row['value'], explanation(row)]
-            else:
-                kinds = {'decoded_message': '解码报文', 'signal_sample': '信号样本', 'signal_clock': '信号时刻'}
-                values = [row['source'], row['original_sequence'], seconds(row['time_ns']), kinds[row['record_type']],
-                          row['locator'], row['values_json'], quality_text(row['quality'])]
-            yield [row[IDENTITY[i]] for i in self.varying] + values
+        rows = row = values = failure = None
+        try:
+            rows = self._rows(table)
+            for row in rows:
+                if table == 'aggregations':
+                    values=[row['aggregation_id'],_json(dict(zip(row['group_keys'],row['group_values']))),
+                            row['value'],row['unit'],{'complete':'完整','partial':'部分','indeterminate':'不能确定','empty':'确定为空'}[row['status']],
+                            {'ok':'正常','partial_population':'总体不完整','no_observation':'无观测','insufficient_data':'观测不足',
+                             'empty_population':'无参与值','insufficient_count':'样本数不足','numeric_error':'数值不能确定'}[row['reason']],
+                            row['candidate_count'],row['included_count'],row['definition_excluded_count'],row['quality_excluded_count'],
+                            row['included_partial_count'],row['matched_count'],row['timeout_count'],row['insufficient_observation_count'],
+                            row['pending_count'],'是' if row['discovery_complete'] else '否',quality_text(row['quality'])]
+                elif table == 'selections':
+                    scope = row['scope']
+                    parent = '' if scope == 'session' else self._number(
+                        'events' if scope == 'event' else 'segments', row, row['parent_id'])
+                    values = [row['calculation_id'], {'session': '会话', 'event': '事件', 'segment': '窗口'}[scope],
+                              parent, seconds(row['time_ns']), row['value'], row['unit'],
+                              '有效' if row['valid'] else '无效', STATES[row['selection']], explanation(row)]
+                elif table == 'contributions':
+                    values = [row['calculation_id'], row['source'], row['original_sequence'], row['evaluation_index'],
+                              row['value'], explanation(row)]
+                else:
+                    kinds = {'decoded_message': '解码报文', 'signal_sample': '信号样本', 'signal_clock': '信号时刻'}
+                    values = [row['source'], row['original_sequence'], seconds(row['time_ns']), kinds[row['record_type']],
+                              row['locator'], row['values_json'], quality_text(row['quality'])]
+                yield [row[IDENTITY[i]] for i in self.varying] + values
+        except GeneratorExit:
+            # 外层主动关闭时，内部关闭错误仍须传回实际所有者。
+            raise
+        except BaseException as exc:
+            failure = exc
+            raise
+        finally:
+            try:
+                if rows is not None:
+                    rows.close()
+            except BaseException as cleanup:
+                if failure is None:
+                    raise
+                failure.add_note('可读明细输入清理附加失败: ' + type(cleanup).__name__)
+            finally:
+                rows = row = values = failure = None
 
     def _main_rows(self, table):
         """按索引顺序产生一行，查询不在RAM排序全表。
 
         参数: table为主表。返回: CSV行生成器。异常: JSON/关联错误。
         """
-        if self.connection is None:
-            return
-        with closing(self.connection.execute('SELECT n,payload FROM objects WHERE kind=? ORDER BY n', (table,))) as cursor:
-            for number, payload in cursor:
-                row = json.loads(payload)
-                yield [row[IDENTITY[i]] for i in self.varying] + self._base(table, row, number)
+        payload = row = None
+        try:
+            if self.connection is None:
+                return
+            with self._reader(table, indexed=True) as cursor:
+                for number, payload in cursor:
+                    row = json.loads(payload)
+                    yield [row[IDENTITY[i]] for i in self.varying] + self._base(table, row, number)
+        finally:
+            # 生成器结束或出错后，不让本层异常帧保留刚读出的行。
+            payload = row = cursor = None
 
     def presentation(self):
         """仅返回共同身份和必要使用说明，不增加ID映射副本。
@@ -350,6 +492,16 @@ class ReadableWriter:
         """
         if self.closed:
             return
+        if self._pending_output is not None:
+            handle = self._pending_output
+            try:
+                handle.close()
+            finally:
+                if handle.closed:
+                    self._pending_output = None
+        if self._pending_reader is not None:
+            self._pending_reader.close()
+            self._pending_reader = None
         if self.connection is not None:
             self.connection.close()
             self.connection = None
@@ -357,9 +509,3 @@ class ReadableWriter:
         self.metrics.clear()
         _release_owned_ram(self, self._ram_cost, '_ram_cost')
         self.closed = True
-
-
-def _with_header(columns, rows):
-    """逐条提供表头及内容。参数: columns/rows。返回: 生成器。异常: 原流错误传播。"""
-    yield columns
-    yield from rows

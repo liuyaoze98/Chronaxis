@@ -3,7 +3,7 @@
 合成文件写入独占工作目录。每次运行核资源释放，测试不更改原DBC或历史读取实现。
 """
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from uuid import uuid4
 import multiprocessing
 import unittest

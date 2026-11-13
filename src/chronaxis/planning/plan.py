@@ -286,7 +286,7 @@ class AnalysisPlan:
             if ready:
                 raw_execution = object_at(root.get('execution', {}), '$.execution', (), ('backend', 'batch_rows', 'memory_budget_bytes', 'result_buffer_rows', 'partial_policy', 'on_budget_exceeded', 'spool_quota_bytes', 'process_count'))
                 # 只允许'numpy'或'reference'，不为未知实现名称自动回退。
-                backend = choice_at(raw_execution.get('backend', 'numpy'), ('numpy', 'reference'), '$.execution.backend')
+                backend = choice_at(raw_execution.get('backend', 'auto'), ('numpy', 'reference', 'auto'), '$.execution.backend')
                 # 分批行数、内存预算和结果缓冲行数必须为正整数，不能是布尔值。
                 limits = tuple(number_at(raw_execution.get(key, default), '$.execution.' + key, integer=True, minimum=1) for key, default in (('batch_rows', 65536), ('memory_budget_bytes', 268435456), ('result_buffer_rows', 4096)))
                 # 检查数据覆盖不完整时采用'report'还是'strict'策略。
@@ -342,6 +342,13 @@ class AnalysisPlan:
                 from .export_options import parse_signal_output,parse_frame_output
                 outputs=replace(outputs,signal_csv=parse_signal_output(raw_outputs.get('signal_csv'),signals,windows,sources=sources),
                     can_frames=parse_frame_output(raw_outputs.get('can_frames'),sources,windows))
+        # 设备标签是可选的客户文本；在静态检查时拒绝空白和非文本，避免运行到导出才失败。
+        metadata = None
+        with collection.stage('$.metadata', check=False) as ready:
+            if ready:
+                metadata = metadata_at(root.get('metadata', {}), '$.metadata')
+                if 'device_label' in metadata:
+                    text_at(metadata['device_label'], '$.metadata.device_label')
         # 在构造完整计划前拒绝任何结构/依赖错误，不输出部分可执行对象。
         collection.finish()
         from dataclasses import replace
@@ -352,7 +359,7 @@ class AnalysisPlan:
         identity = sha256(canonical(identity_parts).encode('utf-8')).hexdigest()
         # 返回完整计划；原配置和附加元数据均保存为独立的只读副本。
         plan = cls(version, dataset, sources, signals, tuple(derived), rules, windows, calculations, presets, preset_bindings, execution, outputs,
-                   bindings, expressions, metadata_at(root.get('metadata', {}), '$.metadata'), frozen, base, identity,
+                   bindings, expressions, metadata, frozen, base, identity,
                    message_calculations=message_calculations, sequences=sequences, aggregations=aggregations,
                    transforms=transforms)
         # 在全部消费者已确定后解析有限间隔选择，DBC实际周期留运行初始化。

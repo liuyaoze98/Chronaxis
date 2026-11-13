@@ -175,6 +175,8 @@ def explanation_dict(report):
         'source_names': list(report.source_names), 'nodes': [{'node_id': item.node_id, 'node_type': item.node_type,
             'dependencies': list(item.dependencies), 'unit': item.unit, 'backend': item.backend} for item in report.nodes],
         'history_ns': dict(report.history_ns), 'budget': dict(report.budget),
+        'requested_backend': report.requested_backend, 'selected_backend': report.selected_backend,
+        'backend_reason': report.backend_reason,
         'intervals': {name: dict(mode=choice.mode, step_ns=choice.step_ns, driver=choice.driver)
                       for name, choice in report.intervals.resolved},
         'diagnostics': dict(trace=report.diagnostics.trace, integrity=report.diagnostics.integrity,
@@ -254,7 +256,7 @@ class StaticCLITests(unittest.TestCase):
         plan = load_analysis_plan(self.config)
         actual = self.success(self.invoke(['explain', self.config]))
         self.assertEqual(actual, explanation_dict(AnalysisRunner().explain(plan)))
-        self.assertEqual(set(actual), {'source_execution', 'input_requirements', 'validation', 'plan_identity', 'source_names', 'nodes', 'history_ns', 'budget', 'intervals', 'diagnostics'})
+        self.assertEqual(set(actual), {'source_execution', 'input_requirements', 'validation', 'plan_identity', 'source_names', 'nodes', 'history_ns', 'budget', 'intervals', 'diagnostics', 'requested_backend', 'selected_backend', 'backend_reason'})
         self.assertEqual(len(actual['input_requirements']), 1)
         scope = actual['input_requirements'][0]
         self.assertEqual((scope['source'], scope['input_check'], scope['time_scope']), ('table', 'auto', 'source'))
@@ -322,7 +324,7 @@ class StaticCLITests(unittest.TestCase):
                 self.assertEqual(completed.returncode, 0, completed.stderr)
                 self.assertIn('usage:', completed.stdout.lower())
                 self.assertEqual(completed.stderr, '')
-        for arguments in (['validate'], ['explain'], ['validate', 'absent.json', '--backend', 'auto'],
+        for arguments in (['validate'], ['explain'], ['validate', 'absent.json', '--backend', 'not-a-backend'],
                           ['explain', 'absent.json', '--output', 'forbidden-output']):
             with self.subTest(arguments=arguments):
                 completed = self.invoke(arguments, stdlib=True)

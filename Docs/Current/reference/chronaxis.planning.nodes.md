@@ -8,7 +8,7 @@
 节点按用户顺序保存。本模块不读来源或DBC，不运行时序规则或积分；
 可配置的节点不等于运行接入完成，实际能力由计划报告说明。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -73,7 +73,7 @@ StaticExpression。保留类型、单位和依赖，尚未读取数据或执行�
 
 PlanValidationError: 受控语法、名称、依赖、类型、单位或同步声明不合法。
 
-源码：[`src/chronaxis/planning/nodes.py:28`](../../../src/chronaxis/planning/nodes.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/nodes.py:28`](../../../src/chronaxis/planning/nodes.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-register_id"></a>
 ## `register_id`
@@ -106,7 +106,7 @@ PlanValidationError: ID非法或已经存在，不自动改名或覆盖。
 
 返回类型：str。
 
-源码：[`src/chronaxis/planning/nodes.py:56`](../../../src/chronaxis/planning/nodes.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/nodes.py:56`](../../../src/chronaxis/planning/nodes.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_rules"></a>
 ## `parse_rules`
@@ -136,7 +136,7 @@ PlanValidationError: 字段、ID、kind、条件类型、初始触发或持续�
 
 返回类型：tuple[[RulePlan](chronaxis.planning.models.md#api-RulePlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:82`](../../../src/chronaxis/planning/nodes.py#L82)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/nodes.py:82`](../../../src/chronaxis/planning/nodes.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_windows"></a>
 ## `parse_windows`
@@ -170,7 +170,7 @@ PlanValidationError: 引用、ID、锚点、扩展时间或合并参数冲突。
 
 返回类型：tuple[[WindowPlan](chronaxis.planning.models.md#api-WindowPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:187`](../../../src/chronaxis/planning/nodes.py#L187)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/nodes.py:187`](../../../src/chronaxis/planning/nodes.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_calculations"></a>
 ## `parse_calculations`
@@ -209,4 +209,4 @@ PlanValidationError: 算子、ID、引用、信号类型、条件、单位或覆
 
 返回类型：tuple[[CalculationPlan](chronaxis.planning.models.md#api-CalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:264`](../../../src/chronaxis/planning/nodes.py#L264)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/nodes.py:264`](../../../src/chronaxis/planning/nodes.py#L264)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

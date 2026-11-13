@@ -40,7 +40,16 @@ function destination(target){
   if(target.startsWith(output+path.sep))return target;
   if(target.startsWith(docs+path.sep))return path.join(output,htmlName(path.relative(docs,target)));
   const repositoryRelative=path.relative(root,target);
-  if(!['Docs/Schema/','Docs/Release/'].some(prefix=>slash(repositoryRelative).startsWith(prefix)))throw new Error('文档附件超出公开范围: '+target);
+  // 环境快照仅发布这五个明确文件，不能把整个requirements目录开放为附件。
+  const requirements=[
+    'requirements/README.md',
+    'requirements/constraints-windows-py312-min.txt',
+    'requirements/constraints-windows-py312-max.txt',
+    'requirements/constraints-windows-py313-min.txt',
+    'requirements/constraints-windows-py313-max.txt',
+  ];
+  if(!['Docs/Schema/','Docs/Release/'].some(prefix=>slash(repositoryRelative).startsWith(prefix))
+     && !requirements.includes(slash(repositoryRelative)))throw new Error('文档附件超出公开范围: '+target);
   const dest=path.join(output,'attachments',repositoryRelative);
   attachments.set(target,dest);return dest;
 }

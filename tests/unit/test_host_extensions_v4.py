@@ -4,7 +4,7 @@
 分别跑自己的内核。故障时核对取消、关闭和共享预算，不把异常当作有效缺省值。
 """
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 import numpy as np
 from chronaxis import AnalysisPlan, AnalysisRunner

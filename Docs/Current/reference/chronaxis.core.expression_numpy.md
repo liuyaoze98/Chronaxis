@@ -15,7 +15,7 @@ evaluate_memory_numpy从已有内存行归一化信号，用searchsorted找到�
 依赖NumPy及核心编译、数值和对齐模块；共享检查协议，不调用参考数值
 求值器。结果为独立只读存储，当前批次缓存不跨调用保留，不修改输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -82,7 +82,7 @@ class ArrayEvaluation
 |`value`|[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)|是|无|真实逻辑结果列。|
 |`dependency_quality`|np.ndarray|是|无|同长uint16原因并集。|
 
-源码：[`src/chronaxis/core/expression_numpy.py:54`](../../../src/chronaxis/core/expression_numpy.py#L54)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:54`](../../../src/chronaxis/core/expression_numpy.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ArrayEvaluation-__post_init__"></a>
 ### `ArrayEvaluation.__post_init__`
@@ -113,7 +113,7 @@ TypeError/ValueError为结构/长度/未知位。
 - `TypeError`：ArrayEvaluation诊断需1维uint16列。
 - `ValueError`：ArrayEvaluation诊断长度/原因不合法。
 
-源码：[`src/chronaxis/core/expression_numpy.py:66`](../../../src/chronaxis/core/expression_numpy.py#L66)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:66`](../../../src/chronaxis/core/expression_numpy.py#L66)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_logic"></a>
 ## `_logic`
@@ -139,7 +139,7 @@ NumericArray，known决定时质量NONE，否则UNKNOWN原因并集。
 
 调用者保证static BOOL及shape，分配错误传播。
 
-源码：[`src/chronaxis/core/expression_numpy.py:85`](../../../src/chronaxis/core/expression_numpy.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:85`](../../../src/chronaxis/core/expression_numpy.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_constant"></a>
 ## `_constant`
@@ -165,7 +165,7 @@ _constant(node, size)
 
 模型/分配错误传播，不自动promotion。
 
-源码：[`src/chronaxis/core/expression_numpy.py:120`](../../../src/chronaxis/core/expression_numpy.py#L120)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:120`](../../../src/chronaxis/core/expression_numpy.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_literal_compare"></a>
 ## `_literal_compare`
@@ -191,7 +191,7 @@ BOOL列，invalid保持原原因，不转float或cast越界常量。
 
 编译器保证类型与注册比较，分配错误传播。
 
-源码：[`src/chronaxis/core/expression_numpy.py:135`](../../../src/chronaxis/core/expression_numpy.py#L135)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:135`](../../../src/chronaxis/core/expression_numpy.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_where"></a>
 ## `_where`
@@ -219,7 +219,7 @@ ArrayEvaluation；条件未知的行保留条件原因，其他行仅并入所�
 
 模型、数组布局或分配发生异常时直接交给调用者处理；不以逐行解释器代替掩码计算。
 
-源码：[`src/chronaxis/core/expression_numpy.py:163`](../../../src/chronaxis/core/expression_numpy.py#L163)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:163`](../../../src/chronaxis/core/expression_numpy.py#L163)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_evaluate"></a>
 ## `_evaluate`
@@ -247,7 +247,7 @@ ArrayEvaluation，完整诊断不因known逻辑结果丢失。
 
 静态/输入模型问题传播，不调用reference/eval/逐样本Python。
 
-源码：[`src/chronaxis/core/expression_numpy.py:200`](../../../src/chronaxis/core/expression_numpy.py#L200)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:200`](../../../src/chronaxis/core/expression_numpy.py#L200)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-evaluate_numpy"></a>
 ## `evaluate_numpy`
@@ -290,7 +290,7 @@ TypeError、ValueError: 模型、绑定身份、依赖键、类型、枚举域�
 
 返回类型：[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)。
 
-源码：[`src/chronaxis/core/expression_numpy.py:297`](../../../src/chronaxis/core/expression_numpy.py#L297)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:297`](../../../src/chronaxis/core/expression_numpy.py#L297)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-evaluate_memory_numpy"></a>
 ## `evaluate_memory_numpy`
@@ -329,4 +329,4 @@ TypeError: 非memory绑定，包括DecodedBindings；其他时间/归属/形状�
 
 返回类型：[ArrayEvaluation](chronaxis.core.expression_numpy.md#api-ArrayEvaluation)。
 
-源码：[`src/chronaxis/core/expression_numpy.py:348`](../../../src/chronaxis/core/expression_numpy.py#L348)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_numpy.py:348`](../../../src/chronaxis/core/expression_numpy.py#L348)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

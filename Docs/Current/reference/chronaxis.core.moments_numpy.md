@@ -6,7 +6,7 @@
 离均差，跨块用两总体均值差合并离散度。用根均方形式存储二阶量，开方与
 目标倍率在可表示范围内求值，不把两个大均方相减，也不逐样本运行标量实现。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -40,7 +40,7 @@ NumpyMoments(operation)
 ```
 
 
-源码：[`src/chronaxis/core/moments_numpy.py:13`](../../../src/chronaxis/core/moments_numpy.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_numpy.py:13`](../../../src/chronaxis/core/moments_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyMoments-__init__"></a>
 ### `NumpyMoments.__init__`
@@ -65,7 +65,7 @@ NumpyMoments.__init__(operation)
 
 调用侧校验操作。
 
-源码：[`src/chronaxis/core/moments_numpy.py:16`](../../../src/chronaxis/core/moments_numpy.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_numpy.py:16`](../../../src/chronaxis/core/moments_numpy.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyMoments-push"></a>
 ### `NumpyMoments.push`
@@ -91,7 +91,7 @@ NumpyMoments.push(values, weights=None)
 
 非法权重。
 
-源码：[`src/chronaxis/core/moments_numpy.py:22`](../../../src/chronaxis/core/moments_numpy.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_numpy.py:22`](../../../src/chronaxis/core/moments_numpy.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-NumpyMoments-finish"></a>
 ### `NumpyMoments.finish`
@@ -117,4 +117,4 @@ NumpyMoments.finish(ddof, factor)
 
 配置错误。
 
-源码：[`src/chronaxis/core/moments_numpy.py:71`](../../../src/chronaxis/core/moments_numpy.py#L71)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/moments_numpy.py:71`](../../../src/chronaxis/core/moments_numpy.py#L71)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

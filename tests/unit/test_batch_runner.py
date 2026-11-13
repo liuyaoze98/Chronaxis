@@ -186,8 +186,8 @@ class BatchRunnerTests(unittest.TestCase):
         report.close()
         self.assertFalse(report.jobs[0].to_dict()['cleanup_pending'])
 
-    def test_preflight_rejects_bad_declarations_and_protected_or_existing_paths(self):
-        """非法ID、选项、重复任务及已有目录在启动前拒绝，不改原文件。参数: 无。返回: None。异常: 断言。"""
+    def test_preflight_rejects_bad_declarations_and_preserves_reused_paths(self):
+        """非法声明在启动前拒绝；已有输出和客户同名目录可用，不覆盖原文件。"""
         good = self.job('valid')
         for args in ((0,), (True,), (-1,)):
             with self.assertRaises(ValueError):
@@ -200,10 +200,14 @@ class BatchRunnerTests(unittest.TestCase):
             with self.assertRaises((ValueError, TypeError)):
                 BatchRunner().run(jobs, self.work/'not_created')
         self.assertFalse((self.work/'not_created').exists())
-        for target in (self.work/'RefProjects'/'new',):
-            with self.assertRaises((ValueError, FileExistsError)):
-                BatchRunner().run((good,), target)
-        self.assertFalse((self.work/'RefProjects').exists())
+        target=self.work/'RefProjects'/'new'
+        target.mkdir(parents=True)
+        sentinel=target/'user.txt'
+        sentinel.write_bytes(b'keep')
+        named=BatchRunner().run((good,), target)
+        self.addCleanup(named.close)
+        self.assertEqual(named.status,'completed')
+        self.assertEqual(sentinel.read_bytes(),b'keep')
         reused = BatchRunner().run((good,), self.work)
         self.addCleanup(reused.close)
         self.assertEqual(reused.status, 'completed')

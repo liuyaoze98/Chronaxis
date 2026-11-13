@@ -6,7 +6,7 @@ actual 以实际纳秒度量历史。fixed/dbc 每对真实驱动贡献一个周
 在该对内部按实际经过比例取权重。只存原起止、值和有效截止，不存第二条
 累计时间轴，也不为整个观测域预生成网格。缓存由执行者的共享预算预付。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -54,7 +54,7 @@ class TransformSpan
 |`point`|ScalarValue|是|无|区间起点经过同一时刻原子更新后的点值，与右侧连续视图分别保存。|
 |`pair_width`|int &#124; None|否|None|相邻两次原驱动的实际间隔纳秒，用于将组内重叠比例折算为选定周期；未知时为空。|
 
-源码：[`src/chronaxis/execution/transform_window.py:15`](../../../src/chronaxis/execution/transform_window.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:15`](../../../src/chronaxis/execution/transform_window.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-first_grid"></a>
 ## `first_grid`
@@ -81,7 +81,7 @@ first_grid(start, origin, step)
 
 步长非正。
 
-源码：[`src/chronaxis/execution/transform_window.py:26`](../../../src/chronaxis/execution/transform_window.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:26`](../../../src/chronaxis/execution/transform_window.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow"></a>
 ## `TransformWindow`
@@ -93,7 +93,7 @@ TransformWindow(budget, window_ns, period_ns)
 ```
 
 
-源码：[`src/chronaxis/execution/transform_window.py:33`](../../../src/chronaxis/execution/transform_window.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:33`](../../../src/chronaxis/execution/transform_window.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-__init__"></a>
 ### `TransformWindow.__init__`
@@ -120,7 +120,7 @@ owner。
 
 非法窗口。
 
-源码：[`src/chronaxis/execution/transform_window.py:36`](../../../src/chronaxis/execution/transform_window.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:36`](../../../src/chronaxis/execution/transform_window.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-append"></a>
 ### `TransformWindow.append`
@@ -145,7 +145,7 @@ TransformWindow.append(span)
 
 端点不连续或预算不足。
 
-源码：[`src/chronaxis/execution/transform_window.py:43`](../../../src/chronaxis/execution/transform_window.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:43`](../../../src/chronaxis/execution/transform_window.py#L43)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-_weight"></a>
 ### `TransformWindow._weight`
@@ -170,7 +170,7 @@ TransformWindow._weight(span)
 
 非正驱动跨度。
 
-源码：[`src/chronaxis/execution/transform_window.py:51`](../../../src/chronaxis/execution/transform_window.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:51`](../../../src/chronaxis/execution/transform_window.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-trim"></a>
 ### `TransformWindow.trim`
@@ -196,7 +196,7 @@ TransformWindow.trim()
 
 退款失败。
 
-源码：[`src/chronaxis/execution/transform_window.py:56`](../../../src/chronaxis/execution/transform_window.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:56`](../../../src/chronaxis/execution/transform_window.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-slices"></a>
 ### `TransformWindow.slices`
@@ -221,7 +221,7 @@ TransformWindow.slices(time)
 
 结构错误。
 
-源码：[`src/chronaxis/execution/transform_window.py:67`](../../../src/chronaxis/execution/transform_window.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:67`](../../../src/chronaxis/execution/transform_window.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TransformWindow-close"></a>
 ### `TransformWindow.close`
@@ -247,4 +247,4 @@ TransformWindow.close()
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/transform_window.py:81`](../../../src/chronaxis/execution/transform_window.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_window.py:81`](../../../src/chronaxis/execution/transform_window.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

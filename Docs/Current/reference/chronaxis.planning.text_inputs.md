@@ -2,7 +2,7 @@
 
 把ASC或原始报文CSV来源配置转换成读取规格，明确文件顺序、时间格式、偏移和DBC通道；不会自动猜日期或格式。见[文本输入](../text-inputs.md)。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -56,4 +56,4 @@ SourcePlan。
 
 PlanValidationError定位配置问题；不发生原始输入I/O。
 
-源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/text_inputs.py:22`](../../../src/chronaxis/planning/text_inputs.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

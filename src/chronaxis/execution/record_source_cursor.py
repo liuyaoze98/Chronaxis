@@ -12,11 +12,18 @@ from ..sources.models import ReadRequest
 from .history import _metadata_bytes
 from .raw_signal_groups import RawSignalGroups
 from .batch_signal_groups import BatchSignalGroups
-from .can_reader import BudgetedLegacyCANSourceAdapter
 from .text_can_reader import BudgetedTextCANSourceAdapter
 from .memory_reader import BudgetedMemorySourceAdapter
 from .csv_reader import BudgetedSignalCSVSourceAdapter
 from .frame_capture import FrameDBCContext
+
+
+def _queued_group_cost(sample_count):
+    """返回现有待消费时间组费用，同时供 CSV 判断可交接的批容量。
+
+    参数: sample_count 为组内样本数。返回: 字节估算。异常: 输入由内部计数保证。
+    """
+    return 4096 + sample_count * 8192
 
 
 class RecordSourceCursor:
@@ -40,6 +47,7 @@ class RecordSourceCursor:
         self._queue = self._current = self.metadata = None
         self._current_cost = 0
         self._closed = self._closing = self._failed = self._finished = self._saw_eof = False
+        self._reading_started = False
         self._raw = source.source_type in ('can_blf', 'can_asc', 'asc_or_blf', 'raw_can_csv')
         self._message_consumer = message_consumer
         self._observe_bounds=observe_bounds
@@ -82,49 +90,47 @@ class RecordSourceCursor:
                 options.update(work_dir=work_dir, retain_raw_frames=retain_frames, cycle_fields=cycles, metadata_fields=fields,
                     message_keys=keys, message_consumer=self._consume_message)
                 files = source.config.input_paths if source.source_type=='can_blf' else source.config.inputs
-                # 进程数是上限；一份文件的普通接续仍沿原路径，避免无益地更换读取政策。
+                # 进程数是上限；单文件或上限1的接续在宿主内读取，解码政策单独传递。
                 parallel = min(plan.execution.process_count,len(files)) > 1 or getattr(source.config,'file_merge','concatenate') == 'time_order'
-                if source.source_type == 'can_blf' and not parallel:
-                    factory, recovery = BudgetedLegacyCANSourceAdapter, 'can_source_cleanup_owner'
+                factory, recovery = BudgetedTextCANSourceAdapter, 'text_can_source_cleanup_owner'
+                options['integrity']=plan.diagnostics.integrity
+                options['trace']=False
+                if self._dbc_context is not None:
+                    options['database_context']=self._dbc_context
+                if source.source_type == 'can_blf':
                     full = (source.config.input_check == 'full' or source.config.decode_scope == 'all') if requirements is None else requirements.input_check=='full'
                     scope = requirements.time_scope if requirements is not None else ('source' if full or grouped or observe_bounds or retain_frames else 'selected' if plan.dataset.domain is not None else 'none')
-                    options.update(batch_read=True, input_check='full' if full else 'auto',
-                        time_scope=scope, input_fingerprints=False,history_integrity=plan.diagnostics.integrity)
-                    if self._dbc_context is not None:
-                        self._capture_messages=bool(self._dbc_context.rules)
-                        options.update(capture_message_updates=self._capture_messages,
-                            extra_fields=self._dbc_context.extra_fields,
-                            message_frame_ids=tuple(sorted({r.frame_id for r in self._dbc_context.rules})),
-                            frame_observer=self._dbc_context.observe)
+                    if source.config.file_merge=='time_order':
+                        scope='source' if scope=='source' else 'selected'
+                    # 低层调用可不传requirements，沿既有值、时钟和导出声明推导目标ID。
+                    decode_ids = (requirements.decode_frame_ids if requirements is not None else tuple(sorted(
+                        {can_field_from_key(item.field).frame_id for item in definitions if item.name in values}
+                        | {key[1] for key in keys}
+                        | {field.frame_id for field in (() if self._dbc_context is None else self._dbc_context.extra_fields)})))
+                    options['blf_time_scope']=scope
+                    options['legacy_blf_decode']=source.config.decode_policy=='legacy'
+                    if not parallel:
+                        options['serial_blf_policy']=source.config.decode_scope
+                    if scope!='source':
+                        options['time_frame_ids']=decode_ids
+                    if not retain_frames:
+                        if source.config.decode_scope=='all':
+                            if not parallel:
+                                # 串行all完成全部解码/值检查后，才按旧ID范围交付；并行保持原政策。
+                                options['post_decode_frame_ids']=decode_ids
+                        else:
+                            options['emit_frame_ids']=decode_ids
                 else:
-                    factory, recovery = BudgetedTextCANSourceAdapter, 'text_can_source_cleanup_owner'
-                    options['integrity']=plan.diagnostics.integrity
-                    # 新版追溯由同次必要更新直接输出，不另生成旧原文字/重建证明副本。
-                    options['trace']=False
                     if (requirements is not None and requirements.input_check == 'auto'
                             and source.source_type in ('can_asc','asc_or_blf') and not retain_frames):
-                        # 普通时序分析需要全来源范围，但只需参与计算的帧保持先后顺序。
                         options['time_frame_ids'] = requirements.decode_frame_ids
                     if (requirements is not None and requirements.input_check == 'auto'
                             and requirements.time_scope != 'source' and not retain_frames):
                         options['selected_ids'] = requirements.decode_frame_ids
-                    if self._dbc_context is not None:
-                        options['database_context']=self._dbc_context
-                    if parallel:
-                        options['process_count']=plan.execution.process_count
-                        if not retain_frames and requirements is not None:
-                            options['emit_frame_ids']=requirements.decode_frame_ids
-                        # 拼接保持纯BLF原按需时间范围；显式归并才增加排序键所需时间检查。
-                        if source.source_type=='can_blf':
-                            # 明确来源转换才保留旧BLF解码政策；不能按文件扩展名放松ASC/混合来源。
-                            options['legacy_blf_decode']=source.config.decode_policy=='legacy'
-                            options.pop('time_frame_ids',None)
-                            scope=requirements.time_scope if requirements is not None else 'source'
-                            if source.config.file_merge=='time_order':
-                                scope='source' if scope=='source' else 'selected'
-                            options['blf_time_scope']=scope
-                            if scope!='source':
-                                options['time_frame_ids']=requirements.decode_frame_ids
+                    if parallel and not retain_frames and requirements is not None:
+                        options['emit_frame_ids']=requirements.decode_frame_ids
+                if parallel:
+                    options['process_count']=plan.execution.process_count
                 adapter_definitions = tuple(item for item in definitions if item.name in values)
                 names = ()
             else:
@@ -134,14 +140,18 @@ class RecordSourceCursor:
                 names = tuple(item.name for item in definitions)
                 options.update(clock_only=tuple(item.name for item in definitions if item.name in clocks-values),
                                retain_original=False)
+                if source.source_type == 'signal_csv':
+                    # 单批可出现每样本一个时间组；给接收队列留出空间，实际费用仍由队列自己预约。
+                    options['consumer_sample_bytes'] = _queued_group_cost(1)
             config=source.config
-            # 同一种BLF来源可使用两种同次暂存协议；导出按实际适配器选择连接方式。
-            self.legacy_frame_storage = factory is BudgetedLegacyCANSourceAdapter
-            if self._raw and parallel and source.source_type=='can_blf':
+            # 公共原帧来源统一使用同次文本原帧仓；旧低层仓仍由其独立API管理。
+            self.legacy_frame_storage = False
+            if self._raw and source.source_type=='can_blf':
                 from ..sources.text_can_spec import CANTextSpec
                 from ..sources.blf import BLFSpec
                 config=CANTextSpec(config.name,tuple(BLFSpec(p,config.offset_ns) for p in config.input_paths),
-                    config.dbc_path,config.channel,config.timebase,config.decode_policy,config.input_check,config.file_merge)
+                    config.dbc_path,config.channel,config.timebase,config.decode_policy,
+                    'full' if config.decode_scope=='all' else config.input_check,config.file_merge)
             self._adapter = self._new(factory, recovery, budget, config,
                                       plan.dataset.session_id, adapter_definitions, **options)
             self._read = self._adapter.iter_batches(ReadRequest(plan.dataset.session_id, names,
@@ -169,6 +179,26 @@ class RecordSourceCursor:
         finally:
             update = None
 
+    def _attach_raw_groups(self, definitions: tuple, session_id: str, backend: str) -> None:
+        """候选绑定不适用时，在同一游标首帧前建立普通归组。
+
+        参数: 本次实际所需定义、会话和明确后端。返回: None。异常: 已开始读取或构造错误。
+        只用于无纯时钟/导出的直接积分候选；复用已加载DBC，不重开适配器。
+        """
+        if not self._raw or self._reading_started or self._groups is not None or self._closed or self._failed:
+            raise ResultClosedError('只能在原始来源首次读取前附加普通归组')
+        self._groups = self._new(RawSignalGroups, 'raw_groups_cleanup_owner',
+            self._budget, definitions, session_id, self._enqueue, backend=backend)
+        self._groups.configure_metadata(self.metadata['fields'])
+
+    def _refresh_observed_bounds(self) -> None:
+        """同步消息回调中取得同次读取已见范围。参数: 无。返回: None。异常: 原读取状态错误。
+
+        不主动读下一条；EOF关闭后保留原游标已经记录的最终范围。
+        """
+        if self._raw and self._read is not None:
+            self.observed_start, self.observed_end = self._read.observed_bounds
+
     def _new(self, factory, recovery, *args, **kwargs):
         """接实际未返回的子owner。参数: 工厂/属性/参数。返回: owner。异常: 原错。"""
         try:
@@ -180,7 +210,7 @@ class RecordSourceCursor:
     def _enqueue(self, group):
         """在上游释放组费用前接管必要组。参数: 完整组。返回: None。异常: 预算/取消。"""
         try:
-            cost = 4096 + len(group.samples)*8192
+            cost = _queued_group_cost(len(group.samples))
             _reserve_owned_ram(self, cost, '_queue_cost')
             self._queue.append((group, cost))
         finally:
@@ -193,6 +223,7 @@ class RecordSourceCursor:
         """
         if self._closed or self._closing or self._failed:
             raise ResultClosedError('记录流来源已关闭或失败')
+        self._reading_started = True
         batch = None
         try:
             while self._current is None and not self._queue and not self._finished:

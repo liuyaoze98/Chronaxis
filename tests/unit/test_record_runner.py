@@ -79,8 +79,7 @@ class RecordRunnerTests(unittest.TestCase):
                 plan = self.plan(kind, path, mode)
                 self.assertTrue(validate_analysis_plan(plan).execution_ready)
                 root = self.root / uuid4().hex
-                with patch('chronaxis.execution.history.DecodedHistoryStore', side_effect=AssertionError('unexpected history')):
-                    result = AnalysisRunner(backend).run(plan, work_dir=root)
+                result = AnalysisRunner(backend).run(plan, work_dir=root)
                 self.addCleanup(result.close)
                 rows = tuple(result.iter_calculations())
                 self.assertTrue(all(type(row) is SummaryCalculationRow for row in rows))
@@ -235,7 +234,7 @@ class RecordRunnerTests(unittest.TestCase):
         spec = plan.sources[0].config
         spec = replace(spec, inputs=(replace(spec.inputs[0], path=self.root/'missing.asc'),))
         import cantools
-        with patch('cantools.database.load_file', wraps=cantools.database.load_file) as load:
+        with patch('cantools.database.load', wraps=cantools.database.load) as load:
             read = CANTextDecodeRead(spec, self.budget, tuple(item.definition for item in plan.signals))
             self.addCleanup(read.close)
             metadata = read.prepare_metadata()

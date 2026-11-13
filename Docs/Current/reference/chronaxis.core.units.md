@@ -2,7 +2,7 @@
 
 检查转换系数和范围端点的原生有限数值；单位关系由 unit_registry 统一提供。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -44,4 +44,4 @@ TypeError为其他类型；ValueError为非有限float。
 
 返回类型：int &#124; float。
 
-源码：[`src/chronaxis/core/units.py:6`](../../../src/chronaxis/core/units.py#L6)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/units.py:6`](../../../src/chronaxis/core/units.py#L6)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

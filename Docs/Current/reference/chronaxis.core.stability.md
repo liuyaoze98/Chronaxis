@@ -2,7 +2,7 @@
 
 根据一个条件进行防抖，或根据两个条件进行迟滞报警。计时跨数据批次保持，数据未知会中断活动；详见[规则例子](../rules.md)。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -59,7 +59,7 @@ class StabilitySpec
 |`exit_ns`|int|否|0|退出条件连续满足多久才切换为非活动。|
 |`track_duration`|bool|否|False|仅显式需求累计，普通规则不增加逐步统计。|
 
-源码：[`src/chronaxis/core/stability.py:19`](../../../src/chronaxis/core/stability.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:19`](../../../src/chronaxis/core/stability.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilitySpec-__post_init__"></a>
 ### `StabilitySpec.__post_init__`
@@ -90,7 +90,7 @@ StabilitySpec.__post_init__()
 - `TypeError`：track_duration必须bool。
 - `ValueError`：防抖时长不能为负。
 
-源码：[`src/chronaxis/core/stability.py:29`](../../../src/chronaxis/core/stability.py#L29)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:29`](../../../src/chronaxis/core/stability.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-invert_tick"></a>
 ## `invert_tick`
@@ -119,7 +119,7 @@ TypeError为非ConditionTick；不修改输入。
 
 - `TypeError`：防抖条件需要ConditionTick。
 
-源码：[`src/chronaxis/core/stability.py:40`](../../../src/chronaxis/core/stability.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:40`](../../../src/chronaxis/core/stability.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector"></a>
 ## `StabilityDetector`
@@ -135,7 +135,7 @@ StabilityDetector(rule, start_ns, end_ns, spec, source_refs=(), *, backend='refe
 ```
 
 
-源码：[`src/chronaxis/core/stability.py:52`](../../../src/chronaxis/core/stability.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:52`](../../../src/chronaxis/core/stability.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-__init__"></a>
 ### `StabilityDetector.__init__`
@@ -171,7 +171,7 @@ None；初始化实例状态。
 - `ValueError`：迟滞需要StabilitySpec及duration=0活动规则。
 - `ValueError`：迟滞后端需reference或numpy。
 
-源码：[`src/chronaxis/core/stability.py:60`](../../../src/chronaxis/core/stability.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:60`](../../../src/chronaxis/core/stability.py#L60)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-_push_core"></a>
 ### `StabilityDetector._push_core`
@@ -197,7 +197,7 @@ StabilityDetector._push_core(tick, advance=None)
 
 原活动核校验错误；失败实例不能继续使用。
 
-源码：[`src/chronaxis/core/stability.py:88`](../../../src/chronaxis/core/stability.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:88`](../../../src/chronaxis/core/stability.py#L88)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-duration_counts"></a>
 ### `StabilityDetector.duration_counts`
@@ -229,7 +229,7 @@ ValueError表示请求统计但尚未正常finish。
 
 - `ValueError`：迟滞累计只能在finish后读取。
 
-源码：[`src/chronaxis/core/stability.py:104`](../../../src/chronaxis/core/stability.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:104`](../../../src/chronaxis/core/stability.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-next_deadline_ns"></a>
 ### `StabilityDetector.next_deadline_ns`
@@ -259,7 +259,7 @@ int或None。
 
 加法使用Python整数，域外结果不转换为int64或回绕。
 
-源码：[`src/chronaxis/core/stability.py:117`](../../../src/chronaxis/core/stability.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:117`](../../../src/chronaxis/core/stability.py#L117)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-_target"></a>
 ### `StabilityDetector._target`
@@ -292,7 +292,7 @@ ValueError为同时满足进出条件。
 
 - `ValueError`：迟滞进入和退出条件同时成立，请设置不重叠的条件。
 
-源码：[`src/chronaxis/core/stability.py:125`](../../../src/chronaxis/core/stability.py#L125)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:125`](../../../src/chronaxis/core/stability.py#L125)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-_settle"></a>
 ### `StabilityDetector._settle`
@@ -318,7 +318,7 @@ StabilityDetector._settle()
 
 无。
 
-源码：[`src/chronaxis/core/stability.py:141`](../../../src/chronaxis/core/stability.py#L141)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:141`](../../../src/chronaxis/core/stability.py#L141)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-_point"></a>
 ### `StabilityDetector._point`
@@ -344,7 +344,7 @@ StabilityDetector._point(target, quality)
 
 无。
 
-源码：[`src/chronaxis/core/stability.py:147`](../../../src/chronaxis/core/stability.py#L147)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:147`](../../../src/chronaxis/core/stability.py#L147)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-_continuous"></a>
 ### `StabilityDetector._continuous`
@@ -371,7 +371,7 @@ None，修改实例。
 
 无；超域deadline仅用于比较。
 
-源码：[`src/chronaxis/core/stability.py:160`](../../../src/chronaxis/core/stability.py#L160)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:160`](../../../src/chronaxis/core/stability.py#L160)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-push"></a>
 ### `StabilityDetector.push`
@@ -403,7 +403,7 @@ StabilityDetector.push(ticks, exit_ticks=None, *, advances=None)
 - `ValueError`：迟滞检测器已finish。
 - `ValueError`：迟滞两个条件必须在相同的完整时间组求值。
 
-源码：[`src/chronaxis/core/stability.py:182`](../../../src/chronaxis/core/stability.py#L182)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:182`](../../../src/chronaxis/core/stability.py#L182)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-drain_events"></a>
 ### `StabilityDetector.drain_events`
@@ -429,7 +429,7 @@ Event tuple。
 
 分配错误。
 
-源码：[`src/chronaxis/core/stability.py:241`](../../../src/chronaxis/core/stability.py#L241)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:241`](../../../src/chronaxis/core/stability.py#L241)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-StabilityDetector-finish"></a>
 ### `StabilityDetector.finish`
@@ -455,4 +455,4 @@ StabilityDetector.finish()
 
 缺terminal/重复。
 
-源码：[`src/chronaxis/core/stability.py:245`](../../../src/chronaxis/core/stability.py#L245)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/stability.py:245`](../../../src/chronaxis/core/stability.py#L245)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

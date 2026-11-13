@@ -2,7 +2,7 @@
 
 定义预设配置及其角色要求。例如充电预设需要电流角色，角色可要求特定单位、方向或测量位置。展开后的规则、窗口和指标仍是普通分析配置，可以保存为JSON。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -62,7 +62,7 @@ class RoleContract
 |`version`|str|否|'1'|本公开候选契约版本。|
 |`forbidden_quality`|int|否|511|核心已定义九位基础质量全部禁止。|
 
-源码：[`src/chronaxis/planning/preset_models.py:23`](../../../src/chronaxis/planning/preset_models.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:23`](../../../src/chronaxis/planning/preset_models.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetSpec"></a>
 ## `PresetSpec`
@@ -86,7 +86,7 @@ PresetSpec(id: str, preset_type: str, version: str, role_bindings: collections.a
 |`role_bindings`|Mapping|是|无|将业务角色关联到signals中已定义的分析名，例如{"signal": "temperature"}。允许角色由preset_type决定；省略角色时须符合语义声明自动查找要求。|
 |`parameters`|Mapping|是|无|提供所选预设的业务参数字典，例如阈值预设的unit、enter_threshold、exit_threshold。值来自业务阈值和设备单位；各类型字段不能互相套用，完整选项见预设指南。|
 
-源码：[`src/chronaxis/planning/preset_models.py:52`](../../../src/chronaxis/planning/preset_models.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:52`](../../../src/chronaxis/planning/preset_models.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetSpec-__post_init__"></a>
 ### `PresetSpec.__post_init__`
@@ -116,7 +116,7 @@ PlanValidationError为名称、版本、JSON结构或角色别名错误。
 
 - `PlanValidationError`：$.preset。
 
-源码：[`src/chronaxis/planning/preset_models.py:65`](../../../src/chronaxis/planning/preset_models.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:65`](../../../src/chronaxis/planning/preset_models.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetSpec-from_dict"></a>
 ### `PresetSpec.from_dict`
@@ -160,7 +160,7 @@ print(spec.id, spec.preset_type)
 
 ```
 
-源码：[`src/chronaxis/planning/preset_models.py:90`](../../../src/chronaxis/planning/preset_models.py#L90)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:90`](../../../src/chronaxis/planning/preset_models.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RoleBinding"></a>
 ## `RoleBinding`
@@ -182,7 +182,7 @@ class RoleBinding
 |`definition`|[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)|是|无|原不可变完整绑定，包含转换证据。|
 |`resolution`|str|是|无|`"explicit"`表示用户通过role_bindings指定了信号；`"semantic_unique"`表示按semantic_id和角色要求恰好找到了一个符合要求的信号。|
 
-源码：[`src/chronaxis/planning/preset_models.py:103`](../../../src/chronaxis/planning/preset_models.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:103`](../../../src/chronaxis/planning/preset_models.py#L103)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetRule"></a>
 ## `PresetRule`
@@ -211,7 +211,7 @@ class PresetRule
 |`enter_delay_ns`|int|否|0|进入确认等待，纳秒。|
 |`exit_delay_ns`|int|否|0|退出确认等待，纳秒。|
 
-源码：[`src/chronaxis/planning/preset_models.py:116`](../../../src/chronaxis/planning/preset_models.py#L116)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:116`](../../../src/chronaxis/planning/preset_models.py#L116)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetCalculation"></a>
 ## `PresetCalculation`
@@ -238,7 +238,7 @@ class PresetCalculation
 |`operation`|str|否|'integral'|integral或按实际事件区间计算duration。|
 |`condition`|str &#124; None|否|None|duration可用恒真条件计整个已知活动区间。 None表示没有额外选择条件，统计范围内全部有效值。|
 
-源码：[`src/chronaxis/planning/preset_models.py:136`](../../../src/chronaxis/planning/preset_models.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:136`](../../../src/chronaxis/planning/preset_models.py#L136)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanFragment"></a>
 ## `PlanFragment`
@@ -259,7 +259,7 @@ PlanFragment(derived: tuple[chronaxis.core.expression.DerivedDefinition, ...] = 
 |`calculations`|tuple[[PresetCalculation](chronaxis.planning.preset_models.md#api-PresetCalculation), ...]|否|()|预设生成的指标配置；空元组表示没有新增指标。|
 |`sequences`|tuple[[SequencePlan](chronaxis.planning.sequences.md#api-SequencePlan), ...]|否|()|读取预设生成的SequencePlan元组；没有配对任务时为空。to_dict()将非空项转换为可合入完整配置的sequences列表。|
 
-源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:154`](../../../src/chronaxis/planning/preset_models.py#L154)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanFragment-to_dict"></a>
 ### `PlanFragment.to_dict`
@@ -285,4 +285,4 @@ dict，可合入AnalysisPlan.from_dict；不含伪造来源或执行结果。
 
 无主动异常；实例由build_preset构造。
 
-源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/preset_models.py:167`](../../../src/chronaxis/planning/preset_models.py#L167)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -2,7 +2,7 @@
 
 共享配置语法入口；只读指定文件，返回原生值和加载期位置，不读取业务输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -61,7 +61,7 @@ parse_configuration(text, *, format, source='<configuration>')
 
 不替换环境变量或执行模板。UTF-8文件开头的BOM可选；字段原始字符串保留。
 
-源码：[`src/chronaxis/configuration/__init__.py:12`](../../../src/chronaxis/configuration/__init__.py#L12)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/__init__.py:12`](../../../src/chronaxis/configuration/__init__.py#L12)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-load_configuration"></a>
 ## `load_configuration`
@@ -88,4 +88,4 @@ load_configuration(path)
 
 后缀不识别时不打开文件；读取结束即关闭句柄，再解析文本，不持有调用者输入文件。
 
-源码：[`src/chronaxis/configuration/__init__.py:30`](../../../src/chronaxis/configuration/__init__.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/__init__.py:30`](../../../src/chronaxis/configuration/__init__.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

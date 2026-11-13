@@ -2,7 +2,7 @@
 
 定义积分求和之前的各段面积。每段使用左端最近一次有效值乘以该段秒数，这种计算方式称为前值保持积分。面积按原时间顺序保存，另有有效标记；无效位置即使存了0，也不能当成测得的零。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -56,7 +56,7 @@ class IntegralFacts
 |`binding_identity`|str|是|无|产生这份数值输入的信号绑定标识。调用方用它检查各块是否来自同一次配置和输入，不能把不同绑定的块混在一起累计。|
 |`source_refs`|tuple[[SourceRef](chronaxis.core.models.md#api-SourceRef), ...]|是|无|参与计算的数据来源及其位置，例如来源名、字段名和原记录位置。保留具体SourceRef子类，便于从结果追溯输入。|
 
-源码：[`src/chronaxis/core/integral_terms.py:21`](../../../src/chronaxis/core/integral_terms.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:21`](../../../src/chronaxis/core/integral_terms.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-IntegralFacts-__post_init__"></a>
 ### `IntegralFacts.__post_init__`
@@ -90,7 +90,7 @@ IntegralFacts.__post_init__()
 - `ValueError`：积分项未知范围必须位于实际窗口。
 - `TypeError`：积分项需要带有明确类型的质量与完整来源tuple。
 
-源码：[`src/chronaxis/core/integral_terms.py:38`](../../../src/chronaxis/core/integral_terms.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:38`](../../../src/chronaxis/core/integral_terms.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralTerms"></a>
 ## `ReferenceIntegralTerms`
@@ -109,7 +109,7 @@ class ReferenceIntegralTerms
 |`valid`|tuple[bool, ...]|是|无|只有True位置可参与后续数值归约。|
 |`facts`|[IntegralFacts](chronaxis.core.integral_terms.md#api-IntegralFacts)|是|无|当前块覆盖/原请求/诊断，不是最终CalculationResult。|
 
-源码：[`src/chronaxis/core/integral_terms.py:68`](../../../src/chronaxis/core/integral_terms.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:68`](../../../src/chronaxis/core/integral_terms.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReferenceIntegralTerms-__post_init__"></a>
 ### `ReferenceIntegralTerms.__post_init__`
@@ -140,7 +140,7 @@ TypeError/ValueError为列/掩码/面积错误。
 - `TypeError`：参考积分项需要同长tuple及IntegralFacts。
 - `ValueError`：参考积分面积需有限float，未知使用掩码及0存储。
 
-源码：[`src/chronaxis/core/integral_terms.py:75`](../../../src/chronaxis/core/integral_terms.py#L75)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:75`](../../../src/chronaxis/core/integral_terms.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_valid_until"></a>
 ## `require_valid_until`
@@ -166,7 +166,7 @@ None。
 
 类型/长度/范围错误。
 
-源码：[`src/chronaxis/core/integral_terms.py:88`](../../../src/chronaxis/core/integral_terms.py#L88)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:88`](../../../src/chronaxis/core/integral_terms.py#L88)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_integral_terms"></a>
 ## `require_integral_terms`
@@ -199,4 +199,4 @@ require_integral_terms(series, spec, *, step_ns=None, valid_until_ns=None)
 - `ValueError`：当前积分项只支持无选择条件的integral。
 - `OverflowError`：积分区间时长不能超过正int64。
 
-源码：[`src/chronaxis/core/integral_terms.py:98`](../../../src/chronaxis/core/integral_terms.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/integral_terms.py:98`](../../../src/chronaxis/core/integral_terms.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

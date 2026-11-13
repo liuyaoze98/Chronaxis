@@ -1,7 +1,7 @@
 """检查CAN可选解码范围的配置、静态能力与旧配置身份，不读取分析来源。
 
 输入为既有独立静态夹具及本文件的有限变体；输出为schema、计划和报告断言。
-仅类初始化读取公开schema，后续阻断输入文件和进程操作。requested为默认值，
+只允许读取随软件提供的公开schema，阻断分析输入文件和进程操作。requested为默认值，
 支持普通和逐消息消费者混合；显式all保留完整解码声明。默认不回填用户配置，
 typed选项独立检查。本文件不验证实际decoder调用数，运行证据由CAN专项负责。
 """
@@ -13,6 +13,8 @@ from copy import deepcopy
 from dataclasses import fields, replace
 from hashlib import sha256
 import json
+import builtins
+import os
 import multiprocessing
 from pathlib import Path
 import unittest
@@ -44,22 +46,54 @@ def requested_config():
 
 
 def static_only():
-    """阻断来源I/O和进程入口，允许计划仅按词法处理路径。
+    """阻断来源I/O和进程入口，允许读取随软件提供的只读分析Schema。
 
     参数: 无。返回: 可恢复ExitStack，调用方须用with关闭。
-    异常: 禁止动作触发AssertionError；安装失败先恢复已经安装的探针。
+    异常: 用户输入、DBC、目录写入或进程动作触发AssertionError；不依赖Schema缓存预热。
     """
+    from chronaxis.planning import diagnostic_collection
+    # 只登记软件模块自身及其两处合法Schema位置；不读取任何分析来源。
+    module = Path(diagnostic_collection.__file__)
+    package = module.resolve().parents[1]
+    def normalized(path):
+        """参数: 路径。返回: 词法绝对规范文本。异常: 非路径类型拒绝；无文件访问。"""
+        return os.path.normcase(os.path.abspath(os.fspath(path)))
+    schema_paths = {normalized(package/'schemas'/'analysis.schema.json'),
+                    normalized(package.parents[1]/'Docs'/'Schema'/'analysis.schema.json')}
+    module_path = normalized(module)
+    originals = {name:getattr(Path,name) for name in ('open','read_text','read_bytes','stat','resolve')}
+    original_open = builtins.open
+    def guarded_path_method(name):
+        """参数: 被测Path方法名。返回: 精确文件白名单探针。异常: 未允许动作拒绝。"""
+        def checked(path,*args,**kwargs):
+            """参数: 原Path调用。返回: 原结果。异常: 用户文件或Schema写入拒绝。"""
+            allowed = (normalized(path)==module_path if name=='resolve' else
+                       normalized(path) in schema_paths or name=='stat' and normalized(path)==module_path)
+            if name=='open':
+                allowed = allowed and kwargs.get('mode',args[0] if args else 'r') in ('r','rt','rb')
+            if not allowed:
+                raise AssertionError('禁止输入Path.'+name)
+            return originals[name](path,*args,**kwargs)
+        return checked
+    def checked_open(file,*args,**kwargs):
+        """参数: 原open调用。返回: 只读Schema流。异常: 其他文件及写入拒绝。"""
+        if (not isinstance(file,(str,bytes,os.PathLike)) or normalized(file) not in schema_paths
+                or kwargs.get('mode',args[0] if args else 'r') not in ('r','rt','rb')):
+            raise AssertionError('禁止输入open')
+        return original_open(file,*args,**kwargs)
     stack = ExitStack()
     try:
-        for name in ('open', 'read_text', 'read_bytes', 'stat', 'resolve', 'mkdir'):
-            stack.enter_context(patch.object(Path, name, side_effect=AssertionError('禁止输入Path.' + name)))
-        stack.enter_context(patch('builtins.open', side_effect=AssertionError('禁止输入open')))
-        stack.enter_context(patch.object(multiprocessing, 'get_context', side_effect=AssertionError('禁止spawn')))
-        stack.enter_context(patch.object(multiprocessing, 'Process', side_effect=AssertionError('禁止Process')))
+        for name in originals:
+            stack.enter_context(patch.object(Path,name,new=guarded_path_method(name)))
+        stack.enter_context(patch.object(Path,'mkdir',side_effect=AssertionError('禁止输入Path.mkdir')))
+        stack.enter_context(patch('builtins.open',new=checked_open))
+        stack.enter_context(patch.object(multiprocessing,'get_context',side_effect=AssertionError('禁止spawn')))
+        stack.enter_context(patch.object(multiprocessing,'Process',side_effect=AssertionError('禁止Process')))
         return stack
     except BaseException:
         stack.close()
         raise
+
 
 
 class CANDecodeScopePlanningTests(unittest.TestCase):
@@ -67,13 +101,41 @@ class CANDecodeScopePlanningTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """只读取一次公开schema，后续计划检查全部在内存进行。
+        """为结构断言读取公开Schema，不预热产品校验器的缓存。
 
         参数: 无。返回: None，保存标准验证器。异常: JSON/schema/文件错误直接失败。
         """
         schema = json.loads((ROOT / 'Docs/Schema/analysis.schema.json').read_text(encoding='utf-8'))
         Draft202012Validator.check_schema(schema)
         cls.validator = Draft202012Validator(schema)
+
+    def test_cold_schema_load_is_allowed_without_user_input_io(self):
+        """清空真实Schema缓存后仍能构建静态计划；不靠其他测试预热。"""
+        from chronaxis.planning.diagnostic_collection import schema_validator
+        schema_validator.cache_clear()
+        config=requested_config()
+        with static_only():
+            plan=AnalysisPlan.from_dict(current_fixture(config),base_dir=ROOT)
+        self.assertEqual(plan.sources[0].config.decode_scope,'requested')
+        self.assertEqual(schema_validator.cache_info().misses,1)
+
+    def test_schema_exception_does_not_allow_inputs_or_writes(self):
+        """只读Schema例外仍拒绝ASC/BLF/CSV/DBC读取、路径探测、目录写入和Schema写入。"""
+        schema=ROOT/'Docs'/'Schema'/'analysis.schema.json'
+        with static_only():
+            for suffix in ('asc','blf','csv','dbc'):
+                path=Path('must-not-read.'+suffix)
+                for action in (path.read_bytes,path.read_text,path.stat,path.resolve,
+                               lambda path=path:open(path,'rb')):
+                    with self.subTest(suffix=suffix,action=action),self.assertRaises(AssertionError):
+                        action()
+            with self.assertRaises(AssertionError):
+                Path('must-not-create').mkdir()
+            for mode in ('w','a','x','r+'):
+                with self.subTest(mode=mode),self.assertRaises(AssertionError):
+                    schema.open(mode)
+                with self.subTest(mode=mode,entry='builtins'),self.assertRaises(AssertionError):
+                    open(schema,mode)
 
     def test_omitted_scope_defaults_to_requested_without_rewriting_config(self):
         """省略范围时typed默认为requested，原位置参数与原始配置身份公式仍有效。
@@ -97,7 +159,8 @@ class CANDecodeScopePlanningTests(unittest.TestCase):
             self.assertEqual(spec.decode_scope, 'requested')
             self.assertEqual(tuple(item.name for item in fields(LegacyCANSpec)[8:10]),
                 ('decode_scope', 'input_check'))
-            self.assertEqual(tuple(item.name for item in fields(LegacyCANSpec)[10:]),('paths','decode_policy'))
+            self.assertEqual(tuple(item.name for item in fields(LegacyCANSpec)[10:12]),('paths','decode_policy'))
+            self.assertEqual(spec.file_merge, 'concatenate')
             self.assertTrue(validate_analysis_plan(plan).valid)
         # 身份记录实际配置；默认策略不暗中补入raw。这里独立重建规范化公式。
         old_source = deepcopy(config['sources'][0])

@@ -6,7 +6,7 @@
 冻结节点。先检查完整输入，再按所有参数的原始声明尺度解释裸常量，
 最后确定公共数值表示。仅对不依赖样本的clip边界执行静态判序。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -58,7 +58,7 @@ _common_unit(compiler, args, call)
 
 ValueError为量种不兼容、未知单位异名或裸数字有多种尺度解释。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:19`](../../../src/chronaxis/core/expression_math_v4.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:19`](../../../src/chronaxis/core/expression_math_v4.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_common_dtype"></a>
 ## `_common_dtype`
@@ -85,7 +85,7 @@ _common_dtype(compiler, args, call)
 
 ValueError为原信号类型冲突、定宽字面量越界或不允许的提升。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:53`](../../../src/chronaxis/core/expression_math_v4.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:53`](../../../src/chronaxis/core/expression_math_v4.py#L53)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-check_integer_leaves"></a>
 ## `check_integer_leaves`
@@ -112,7 +112,7 @@ None。
 
 ValueError为叶节点定宽越界。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:85`](../../../src/chronaxis/core/expression_math_v4.py#L85)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:85`](../../../src/chronaxis/core/expression_math_v4.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compile_math"></a>
 ## `compile_math`
@@ -138,4 +138,4 @@ ExprNode；平方直接复用经过定宽溢出检查的乘法节点。
 
 ValueError为非法参数、越界常量、不可推导的单位或静态倒置边界。
 
-源码：[`src/chronaxis/core/expression_math_v4.py:104`](../../../src/chronaxis/core/expression_math_v4.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_math_v4.py:104`](../../../src/chronaxis/core/expression_math_v4.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

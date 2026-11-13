@@ -2,11 +2,11 @@
 
 逐段计算条件积分面积，供NumPy实现作结果对照。只有筛选条件为真且数值有效时才计算面积。无法精确转换的值、溢出及非零值下溢都会记录原因；条件未知不会被补成零。返回各段面积，最后的求和由后续模块完成。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceConditionalIntegralTerms](chronaxis.core.conditional_integral_terms.md#api-ReferenceConditionalIntegralTerms)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[ConditionalIntegralFacts](chronaxis.core.conditional_integral_terms.md#api-ConditionalIntegralFacts)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ReferenceConditionalIntegralTerms](chronaxis.core.conditional_integral_terms.md#api-ReferenceConditionalIntegralTerms)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -56,4 +56,4 @@ ReferenceConditionalIntegralTerms；面积为输入单位乘秒，无效槽位0�
 
 输入、单位、时间与分配错误传播；精度、面积溢出/下溢写入质量及未知。
 
-源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/conditional_integral_terms_reference.py:20`](../../../src/chronaxis/core/conditional_integral_terms_reference.py#L20)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

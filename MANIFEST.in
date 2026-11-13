@@ -70,6 +70,7 @@ include Docs/Current/examples/analysis.yaml
 include Docs/Current/examples/batch-minimal.yaml
 include Docs/Current/examples/batch/energy.yaml
 include Docs/Current/examples/batch/voltage.yaml
+include Docs/Current/examples/calculation-minimal.yaml
 include Docs/Current/examples/conditional-energy.yaml
 include Docs/Current/examples/continuous-parallel.yaml
 include Docs/Current/examples/continuous-time-order.yaml
@@ -221,6 +222,8 @@ include Docs/Release/release-notes-0.1.0.dev2.en.md
 include Docs/Release/release-notes-0.1.0.dev2.md
 include Docs/Release/release-notes-0.1.0.dev3.en.md
 include Docs/Release/release-notes-0.1.0.dev3.md
+include Docs/Release/release-notes-0.1.0.dev4.en.md
+include Docs/Release/release-notes-0.1.0.dev4.md
 include Docs/Release/security.md
 include Docs/Release/third-party.md
 include Docs/Release/trusted-publishing.en.md
@@ -232,6 +235,11 @@ include Docs/Schema/definitions.schema.json
 include LICENSE
 include README.en.md
 include README.md
+include requirements/README.md
+include requirements/constraints-windows-py312-max.txt
+include requirements/constraints-windows-py312-min.txt
+include requirements/constraints-windows-py313-max.txt
+include requirements/constraints-windows-py313-min.txt
 include tools/ai_field_views.py
 include tools/ai_resource_bytes.py
 include tools/build_ai_guide.py

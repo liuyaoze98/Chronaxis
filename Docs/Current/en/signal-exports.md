@@ -2,12 +2,12 @@
 
 <a id="信号csv导出与重采样"></a>
 
-`outputs.signal_csv` exports updates of selected original signals. You can additionally request regularly spaced values estimated by linear interpolation. Export settings do not change the analysis integral. See [Outputs](exports.md) for common scopes, publication, and the current environment restriction.
+`outputs.signal_csv` exports updates of selected original signals. You can additionally request regularly spaced values estimated by linear interpolation. Export settings do not change the analysis integral. See [Outputs](exports.md) for common scopes, publication, and optional device labels.
 
 <a id="完整最小例与网格扩展"></a>
 ## Complete minimal and grid examples
 
-[export-signal-minimal.yaml](../examples/export-signal-minimal.yaml) reads `power` from the supplied `quickstart.asc` and `teaching.dbc`. Its integral remains **38 J**; it additionally exports the four original updates at 0, 1, 3, and 4 seconds within `[0,6)`. Sources, signals, and the currently required device label are already defined.
+[export-signal-minimal.yaml](../examples/export-signal-minimal.yaml) reads `power` from the supplied `quickstart.asc` and `teaching.dbc`. Its integral remains **38 J**; it additionally exports the four original updates at 0, 1, 3, and 4 seconds within `[0,6)`. Sources and signals are defined. The device label is optional; omitting it does not prevent export.
 
 [export-signal-grid.yaml](../examples/export-signal-grid.yaml) adds a 500 ms grid and `max_gap=3s`, producing 12 points from 0 to 5.5 seconds. The estimate at 0.5 seconds is **3 W**. The 4.5, 5, and 5.5 second points have no right-hand update inside the range, so remain `missing` instead of being extrapolated. The integral is still **38 J**. Run `chronaxis run FILE.yaml --output RESULT_DIRECTORY`, read the manifest returned by the CLI, then use its `exports.index_file` and `exports.directory` to locate this export's index and `original.csv` or `resampled.csv`.
 

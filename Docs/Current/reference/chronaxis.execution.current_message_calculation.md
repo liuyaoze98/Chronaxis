@@ -7,7 +7,7 @@
 中时不再乘dt。结果是累计快照；来源是否完整读完由拥有读取器的调用方确认。
 此组件由当前记录执行器调用，不创建旧绑定证明或额外核验扫描。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -63,7 +63,7 @@ CurrentMessageCalculation(calculation, sources, bindings, session_id, budget, *,
 ```
 
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:30`](../../../src/chronaxis/execution/current_message_calculation.py#L30)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:30`](../../../src/chronaxis/execution/current_message_calculation.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-__init__"></a>
 ### `CurrentMessageCalculation.__init__`
@@ -83,7 +83,7 @@ CurrentMessageCalculation.__init__(calculation, sources, bindings, session_id, b
 |`bindings`|tuple[tuple[str, str], ...]|是|无|位置或关键字。每个所需别名及其实际原字段的对应关系，公共来源说明只保存一次。|
 |`session_id`|str|是|无|位置或关键字。本次连续分析会话的标识；跨连续文件保持同一会话，独立任务各自隔离。|
 |`budget`|[ResourceBudget](chronaxis.results.budget.md#api-ResourceBudget)|是|无|位置或关键字。本次分析共享的资源用量记录；新对象先预约所需内存和磁盘额度，关闭时归还自己的内存费用。|
-|`backend`|str|否|'numpy'|仅关键字。计算实现：reference使用独立参考核，numpy使用数组核；两者遵守相同的业务和缺失数据规则。|
+|`backend`|str|否|'numpy'|仅关键字。计算实现：reference使用独立参考核，numpy在内建逐点路径使用独立生产标量核；扩展仍调用其所选后端。两者遵守相同业务和缺失数据规则。|
 |`batch_rows`|int|否|64|仅关键字。每次交给计算器的最大目标记录数；限制临时数组大小，不是整文件记录数。|
 |`domain`|[Interval](chronaxis.core.models.md#api-Interval) &#124; None|否|None|仅关键字。明确的实际统计范围，左闭右开；None表示不额外限制文件记录范围。|
 |`contribution_consumer`|Callable[[[LegacySumContribution](chronaxis.legacy.sum.md#api-LegacySumContribution)], None] &#124; None|否|None|仅关键字。逐次贡献接收函数；None不构造或交付逐次贡献。|
@@ -96,7 +96,7 @@ CurrentMessageCalculation.__init__(calculation, sources, bindings, session_id, b
 
 声明/预算/取消错误；失败构造携带可重试清理句柄。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:33`](../../../src/chronaxis/execution/current_message_calculation.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:33`](../../../src/chronaxis/execution/current_message_calculation.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-_require_open"></a>
 ### `CurrentMessageCalculation._require_open`
@@ -122,7 +122,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:100`](../../../src/chronaxis/execution/current_message_calculation.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:100`](../../../src/chronaxis/execution/current_message_calculation.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-_matches"></a>
 ### `CurrentMessageCalculation._matches`
@@ -147,7 +147,7 @@ bool。
 
 类型/身份错。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:105`](../../../src/chronaxis/execution/current_message_calculation.py#L105)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:105`](../../../src/chronaxis/execution/current_message_calculation.py#L105)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-consume"></a>
 ### `CurrentMessageCalculation.consume`
@@ -172,7 +172,7 @@ None。
 
 输入/数值/预算/回调/取消错误原样传播；失败后只能close。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:136`](../../../src/chronaxis/execution/current_message_calculation.py#L136)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:136`](../../../src/chronaxis/execution/current_message_calculation.py#L136)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-snapshot"></a>
 ### `CurrentMessageCalculation.snapshot`
@@ -198,7 +198,7 @@ LegacySumSnapshot。
 
 状态错。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:223`](../../../src/chronaxis/execution/current_message_calculation.py#L223)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:223`](../../../src/chronaxis/execution/current_message_calculation.py#L223)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-quality"></a>
 ### `CurrentMessageCalculation.quality`
@@ -226,7 +226,7 @@ QualityFlag。
 
 状态错。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:229`](../../../src/chronaxis/execution/current_message_calculation.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:229`](../../../src/chronaxis/execution/current_message_calculation.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-closed"></a>
 ### `CurrentMessageCalculation.closed`
@@ -254,7 +254,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:235`](../../../src/chronaxis/execution/current_message_calculation.py#L235)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:235`](../../../src/chronaxis/execution/current_message_calculation.py#L235)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CurrentMessageCalculation-close"></a>
 ### `CurrentMessageCalculation.close`
@@ -280,4 +280,4 @@ None。
 
 释放失败保留句柄供重试。
 
-源码：[`src/chronaxis/execution/current_message_calculation.py:239`](../../../src/chronaxis/execution/current_message_calculation.py#L239)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/current_message_calculation.py:239`](../../../src/chronaxis/execution/current_message_calculation.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

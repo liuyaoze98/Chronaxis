@@ -45,7 +45,7 @@ class TransformStage:
         self.domain=plan.bindings.domain
         self.ref=SourceRef(plan.dataset.session_id,item.output.source,item.output.field)
         self.names=set(item.expression.dependencies)|({self.clock} if self.clock else set())
-        self.closed=False
+        self.closed=self.failed=False
         try:
             _reserve_owned_ram(self,65536+1024*len(self.names),'_fixed_cost')
             self.state=LatestSignalState(budget,tuple(d for d in defs if d.name in self.names),plan.dataset.session_id)
@@ -65,6 +65,12 @@ class TransformStage:
                 self.state=getattr(error,'state_cleanup_owner',None)
             _cleanup_owner(self,error,'transform_cleanup_owner','时序变换')
             raise
+
+    def _ensure_active(self):
+        """拒绝关闭或失败后的继续推进，避免重发未完成网格。参数: 无。返回: None。异常: 生命周期错误。"""
+        from ..results.errors import ResultClosedError
+        if self.closed or self.failed:
+            raise ResultClosedError('时序变换已关闭或失败')
 
     def bounds(self):
         """取得实际可观测起点和已知终点。参数: 无。返回: 起点/可选终点。异常: 游标错误。"""
@@ -93,63 +99,69 @@ class TransformStage:
 
     def _at_grid(self,t,point,update):
         """从原区间读取[t-W,t)及变化率端点。参数: 网格时刻、可选同刻点和更新。返回: ScalarValue。异常: 预算/数值错误。"""
-        op=self.item.operation
-        values,weights,fit=[],[],[]
-        valid=Fraction(0)
-        width=Fraction(0)
-        quality=Q.NONE
-        left_value=right_value=None
-        partial=False
-        for span,left,right,ratio in self.history.slices(t):
-            w=(right-left)*ratio
-            if right_value is None:
-                right_value=span.value if span.deadline is None or t<span.deadline else self._invalid(Q.STALE)
-            left_value=span.value if span.deadline is None or left<span.deadline else self._invalid(Q.STALE)
-            good=max(0,min(right,span.deadline)-left)*ratio if span.deadline is not None else w
-            if span.value.valid and good:
-                valid+=good
-                partial |= span.value.partial
-                weights.append(good)
-                values.append(span.value.value)
-            if not span.value.valid:
-                quality|=span.value.quality
-            elif good<w:
-                quality|=Q.STALE
-            width+=w
-            if op=='sample_fit_slope' and span.update and span.start>=left and span.point.valid:
-                fit.append((-width,span.point))
-                partial |= span.point.partial
-        # 斜率会使用右端新读数；即使此前整个窗口都有完整实测值，新读数也可能是估值。
-        if point is not None and point.partial and (op=='window_rate' or op=='sample_fit_slope' and update):
-            partial=True
-            quality|=Q.ESTIMATED
-        window=self.item.window_ns
-        if width<window:
-            quality|=Q.MISSING
-        partial |= valid<window
-        if (not valid or partial and self.item.partial_policy=='strict'
-                or valid < Fraction(str(self.item.minimum_coverage))*window):
-            return self._invalid(quality)
-        if self.host is not None:
-            from ..extension_runtime import advance_grid
-            value = advance_grid(self.host,t,window,values,weights,self.item.conversion)
-        elif op.startswith('rolling_'):
-            from ..core.rolling_values import rolling_value
-            value=rolling_value(op,self.backend,values,weights,self.item.conversion,self.item.expression.root.dtype)
-        else:
-            from ..core.rate_transforms import rate_difference, rate_fit
-            right_value=point if point is not None else right_value
-            if op=='window_rate':
-                if width!=window or left_value is None or right_value is None:
-                    return self._invalid(Q.MISSING)
-                value=rate_difference(self.backend,left_value,right_value,window)
+        values = weights = fit = span = left_value = right_value = value = None
+        try:
+            op=self.item.operation
+            values,weights,fit=[],[],[]
+            valid=Fraction(0)
+            width=Fraction(0)
+            quality=Q.NONE
+            left_value=right_value=None
+            partial=False
+            for span,left,right,ratio in self.history.slices(t):
+                w=(right-left)*ratio
+                if right_value is None:
+                    right_value=span.value if span.deadline is None or t<span.deadline else self._invalid(Q.STALE)
+                left_value=span.value if span.deadline is None or left<span.deadline else self._invalid(Q.STALE)
+                good=max(0,min(right,span.deadline)-left)*ratio if span.deadline is not None else w
+                if span.value.valid and good:
+                    valid+=good
+                    partial |= span.value.partial
+                    weights.append(good)
+                    values.append(span.value.value)
+                if not span.value.valid:
+                    quality|=span.value.quality
+                elif good<w:
+                    quality|=Q.STALE
+                width+=w
+                if op=='sample_fit_slope' and span.update and span.start>=left and span.point.valid:
+                    fit.append((-width,span.point))
+                    partial |= span.point.partial
+            # 斜率会使用右端新读数；即使此前整个窗口都有完整实测值，新读数也可能是估值。
+            if point is not None and point.partial and (op=='window_rate' or op=='sample_fit_slope' and update):
+                partial=True
+                quality|=Q.ESTIMATED
+            window=self.item.window_ns
+            if width<window:
+                quality|=Q.MISSING
+            partial |= valid<window
+            if (not valid or partial and self.item.partial_policy=='strict'
+                    or valid < Fraction(str(self.item.minimum_coverage))*window):
+                return self._invalid(quality)
+            if self.host is not None:
+                from ..extension_runtime import advance_grid
+                value = advance_grid(self.host,t,window,values,weights,self.item.conversion)
+            elif op.startswith('rolling_'):
+                from ..core.rolling_values import rolling_value
+                value=rolling_value(op,self.backend,values,weights,self.item.conversion,self.item.expression.root.dtype)
             else:
-                fit.reverse()
-                if update and point is not None and point.valid:
-                    fit.append((0,point))
-                value=rate_fit(self.backend,[p for p,_ in fit],[s for _,s in fit])
-            value=self._convert_rate(value)
-        return replace(value,partial=True) if value.valid and partial else value
+                from ..core.rate_transforms import rate_difference, rate_fit
+                right_value=point if point is not None else right_value
+                if op=='window_rate':
+                    if width!=window or left_value is None or right_value is None:
+                        return self._invalid(Q.MISSING)
+                    value=rate_difference(self.backend,left_value,right_value,window)
+                else:
+                    fit.reverse()
+                    if update and point is not None and point.valid:
+                        fit.append((0,point))
+                    value=rate_fit(self.backend,[p for p,_ in fit],[s for _,s in fit])
+                value=self._convert_rate(value)
+            return replace(value,partial=True) if value.valid and partial else value
+        finally:
+            # 网格费用由调用层释放，本层错误回溯不再持有窗口临时列表或最后一段。
+            # 只清自身局部引用；历史与用户回调仍保有的数据不会被修改。
+            values = weights = fit = span = left_value = right_value = point = value = None
 
     def _convert_rate(self,value):
         """换算变化率目标单位。参数: 自然单位结果。返回: 新标量。异常: 转换错误。"""
@@ -174,6 +186,7 @@ class TransformStage:
 
     def _drain(self,group,point=None,update=False,*,through=None,unresolved=False):
         """按网格和原组时间归并。参数: 当前组/点、真实更新或EOF截止。返回: 无。异常: 下游/预算错误。"""
+        self._ensure_active()
         t=group.time_ns if group is not None else through
         start,end=self.bounds()
         if self.next_grid is None and start is not None:
@@ -187,12 +200,27 @@ class TransformStage:
             when=clock if tick is None else tick if clock is None else min(clock,tick)
             value=None
             if tick==when:
-                _reserve_owned_ram(self,8192+1024*len(self.history.spans),'_work_cost')
+                failure = None
                 try:
+                    # 申请也在保护域内，扣账后取消仍有本阶段的实际费用槽。
+                    _reserve_owned_ram(self,8192+1024*len(self.history.spans),'_work_cost')
                     value=self._invalid(Q.MISSING) if unresolved else self._at_grid(when,point if when==t else None,
                                                                                  update and when==t)
+                except BaseException as error:
+                    failure = error
+                    self.failed = True
+                    error.transform_cleanup_owner = self
+                    raise
                 finally:
-                    _release_owned_ram(self,self._work_cost,'_work_cost')
+                    try:
+                        _release_owned_ram(self,self._work_cost,'_work_cost')
+                    except BaseException as cleanup:
+                        self.failed = True
+                        original = cleanup if failure is None else failure
+                        original.transform_cleanup_owner = self
+                        if failure is None:
+                            raise
+                        failure.add_note('时序变换网格工作区释放失败: ' + type(cleanup).__name__)
                 self.next_grid+=self.item.step_ns
             self._deliver(group if clock==when else None,when,value)
             if clock==when:
@@ -206,6 +234,7 @@ class TransformStage:
 
     def push(self,group):
         """消费上游完整组。参数: 原子组。返回: 无；向后继交付。异常: 原输入/预算/求值错误。"""
+        self._ensure_active()
         t=group.time_ns
         if self.period is None:
             self._process(group,None)
@@ -286,6 +315,7 @@ class TransformStage:
 
     def finish(self):
         """完成真正EOF后标记宿主状态正常结束。参数: 无。返回: None。异常: 最后网格失败仍通知取消。"""
+        self._ensure_active()
         self._finish_grid()
         self.host_finished = True
 

@@ -51,13 +51,20 @@ from ..results.summary import SummarySelectionRow
 class RecordSessionCalculations:
     """拥有实时计算和读取子资源；计划与最终结果仓只借用。"""
 
-    def __init__(self, plan, budget, work_dir, *, requirements=None):
+    def __init__(self, plan, budget, work_dir, *, requirements=None, declaration_owner=None, direct_integrals: bool=False):
         """预约有限声明空间，不启动读取。
 
-        参数: plan已校验计划、budget共享预算、work_dir已有私有运行目录。
+        参数: plan已校验计划、budget共享预算、work_dir已有私有运行目录；
+            declaration_owner为持有共享声明的父RunSession，独立使用时省略；
+            direct_integrals仅由公共入口的auto选择启用，仍需首帧前证明适用。
         返回: 新owner。异常: 构造原错附record_session_cleanup_owner供父会话接管。
         """
+        if type(direct_integrals) is not bool:
+            raise TypeError('直接积分内部选择需要bool')
+        from ..planning.backend_selection import execution_plan
+        plan = execution_plan(plan)
         self._plan, self._budget, self._path = plan, budget, work_dir
+        self._declaration_owner = declaration_owner
         self._full_domain = plan.dataset.domain is None
         self._observed_domain = None
         if requirements is None:
@@ -83,6 +90,8 @@ class RecordSessionCalculations:
         self._transform_aliases = frozenset()
         self._time_indexes=self._windows=self._exports=None
         self._diagnostics=None
+        self._direct_requested = direct_integrals
+        self._direct_binding = self._direct_owner = None
         self._rules_begun = False
         self._constant_calculations=frozenset()
         self._spool = None
@@ -92,8 +101,10 @@ class RecordSessionCalculations:
         self._outcome_counts = dict(complete=0, partial=0, indeterminate=0, no_observation=0)
         self._closed = self._closing = self._failed = self._started = False
         try:
-            _reserve_owned_ram(self, 131584 + 64 * _metadata_bytes(
-                (plan.calculations, plan.intervals, plan.signals)), '_fixed_cost')
+            # 本层只创建子资源槽、来源索引和计数；表达式/信号声明仍借用原计划。
+            count = (len(plan.calculations) + len(plan.message_calculations) + len(plan.rules)
+                     + len(plan.windows) + len(plan.sources) + len(plan.signals))
+            _reserve_owned_ram(self, 131584 + 4096 * count, '_fixed_cost')
             self._calculations, self._expressions, self._cursors, self._messages = [], [], [], []
             self._source_ends = {}
             self._rules = []
@@ -204,17 +215,39 @@ class RecordSessionCalculations:
         self._next_sequence+=1
 
     def execute_into(self, spool):
-        """一次读取并向原结果仓追加已完成指标；不发布文件。
+        """准备输入与算子，推进一次输入，并把已完成结果写入原结果仓。
 
-        参数: 本次原ResultSpool。返回: None。异常: 任一输入/计算失败附真实恢复owner。
-        只构造所需字段；独立驱动仅传帧定位，DBC周期在首帧前取得一次。
+        参数: spool为本次ResultSpool。返回: None，不在这里发布文件。
+        异常: 原始准备、读取或计算错误；保留可重试的record_session_cleanup_owner。
         """
         if self._closed or self._closing or self._failed or self._started:
             raise ResultClosedError('记录流会话只能执行一次')
         self._started = True
         self._spool = spool
-        plan = self._plan
+        session_values = choices = definitions = source_cursors = state = None
         try:
+            session_values, choices = self._prepare_requests(spool)
+            definitions, source_cursors, state = self._prepare_input_state(choices)
+            self._prepare_operators(session_values, choices, definitions, source_cursors, state)
+            self._merge_sources()
+            if self._direct_owner is not None:
+                self._direct_owner.finish(self._source_ends.get(self._direct_binding.source))
+            self._complete_results(session_values, spool)
+        except BaseException as error:
+            self._failed = True
+            error.record_session_cleanup_owner = self
+            raise
+        finally:
+            # 只解除编排帧对已交付声明和资源的借用，不关闭调用方结果仓。
+            session_values = choices = definitions = source_cursors = state = spool = None
+            self._spool = self._append_result = None
+
+    def _prepare_requests(self, spool):
+        """从已验证计划取得请求和间隔选择；只为实际输出建立汇总状态。
+
+        参数: 结果仓。返回: 会话数值请求与间隔选择。异常: 汇总状态构造错误。"""
+        try:
+            plan = self._plan
             self._append_result = spool.append
             if plan.aggregations:
                 from .result_aggregations import ResultAggregations
@@ -233,6 +266,18 @@ class RecordSessionCalculations:
                 enumerate(session_values)
                 if choices[calculation.calculation_id].driver is None and not any(
                     expression.dependencies for expression in (calculation.signal,calculation.condition) if expression is not None))
+            return session_values, choices
+        finally:
+            # 仅放开本栈帧的临时引用；返回值已交付，子资源仍由会话所有者关闭。
+            spool = plan = choices = hosted_reductions = session_values = request = None
+
+    def _prepare_input_state(self, choices):
+        """按共用需求打开来源并建立最新信号状态，不提前读完文件。
+
+        参数: 已解析间隔选择。返回: 实际定义、来源游标映射和状态。
+        异常: 来源、DBC周期或资源构造错误；子资源立即登记到本会话。"""
+        try:
+            plan = self._plan
             needed=self._requirements
             active_transforms=tuple(t for t in plan.transforms if t.name in needed.transform_names)
             self._transform_aliases=frozenset(t.name for t in active_transforms)
@@ -265,6 +310,8 @@ class RecordSessionCalculations:
             definitions = tuple(replace(item.definition, capture_code=True) if item.definition.name in requested_codes
                                 else item.definition for item in plan.signals
                                 if item.definition.name in values | clocks)
+            from .same_frame_integrals import direct_integral_inputs, same_frame_binding
+            direct = self._direct_requested and direct_integral_inputs(plan) is not None
             state = None
             source_cursors = {}
             for source in plan.sources:
@@ -276,14 +323,21 @@ class RecordSessionCalculations:
                 if source_requirement.active:
                     cursor = self._new(RecordSourceCursor, 'record_source_cleanup_owner',
                         plan, source, source_definitions, values, clocks, self._budget,
-                        self._path / ('input-' + source.name), group_names=group_names,
-                        message_consumer=self._consume_message if keys or self._diagnostics is not None else None, message_keys=keys,observe_bounds=observe_bounds or source.name in export_sources,retain_frames=retain_frames,requirements=source_requirement)
+                        self._path / ('input-' + source.name), group_names=() if direct else group_names,
+                        message_consumer=self._consume_direct_update if direct else self._consume_message if keys or self._diagnostics is not None else None, message_keys=keys,observe_bounds=observe_bounds or source.name in export_sources,retain_frames=retain_frames,requirements=source_requirement)
                     self._cursors.append(cursor)
                     source_cursors[source.name] = cursor
             # 复用本次来源初始化得到的DBC周期，首帧前补齐默认有效期。
             # 不提前构造带假有效期的计算状态；无关信号不进入definitions。
             from .signal_validity import resolve_signal_validity
             definitions = resolve_signal_validity(definitions, source_cursors)
+            if direct:
+                cursor = source_cursors[definitions[0].source]
+                self._direct_binding = same_frame_binding(definitions, cursor.metadata['fields'])
+                if self._direct_binding is None:
+                    # 首帧前决定普通路径；原DBC和游标保留，不再次加载或读取。
+                    cursor._message_consumer = None
+                    cursor._attach_raw_groups(definitions, plan.dataset.session_id, plan.execution.backend)
             definitions += tuple(t.output for t in active_transforms)
             # 由最后一层向前接回调。每层只打开自己所需状态，原Reader仍只消费一次。
             if active_transforms:
@@ -306,12 +360,28 @@ class RecordSessionCalculations:
                 # 游标已用原始None请求创建；每轮前瞻后改成真实已读范围。
                 plan = replace(plan, dataset=replace(plan.dataset, domain=Interval(0, 0)))
                 self._plan = plan
-            if state_names or observe_bounds:
+            if self._direct_binding is None and (state_names or observe_bounds):
                 state = self._state = self._new(LatestSignalState, 'state_cleanup_owner',
-                    self._budget, tuple(item for item in definitions if item.name in state_names), plan.dataset.session_id)
+                    self._budget, tuple(item for item in definitions if item.name in state_names), plan.dataset.session_id,
+                    declaration_owner=self._declaration_owner)
             if plan.outputs.can_frames is not None or plan.outputs.signal_csv is not None:
                 self._exports=self._new(RecordExports,'record_exports_cleanup_owner',
                     plan,self._budget,self._path/'exports',self._cursors)
+            return definitions, source_cursors, state
+        finally:
+            # 仅放开本栈帧的临时引用；返回值已交付，子资源仍由会话所有者关闭。
+            choices = plan = needed = active_transforms = values = clocks = group_names = state_names = export_names = export_sources = None
+            request = owner = expressions = requested_codes = definitions = state = source_cursors = source = source_definitions = selectors = keys = source_requirement = cursor = None
+            emit = t = choice = definition = locator = stage = None
+
+    def _prepare_operators(self, session_values, choices, definitions, source_cursors, state):
+        """依次建立实际请求的计算、事件、窗口和序列算子。
+
+        参数: 会话请求、间隔选择、实际信号定义及本次来源与状态。
+        返回: None。异常: 单位、周期或资源构造错误，已构造对象仍由本会话持有。"""
+        try:
+            plan = self._plan
+            hosted_reductions = plan.extensions.reductions if plan.extensions is not None else {}
             derived = tuple(item.definition for item in plan.derived)
             for request in session_values:
                 choice = choices[request.calculation_id]
@@ -323,12 +393,13 @@ class RecordSessionCalculations:
                 expression = request.signal if request.signal is not None else request.condition
                 condition = request.condition if request.signal is not None else None
                 # 先登记可达槽，再构造下一个子资源，避免后续构造失败遗失前者。
-                self._expressions.append([None, None])
-                for index, static in enumerate((expression, condition)):
-                    if static is not None:
-                        self._expressions[-1][index] = self._new(DriverExpression,
-                            'driver_expression_cleanup_owner', static, state, choice.driver,
-                            backend=plan.execution.backend, derived=derived, observation_ends=self._source_ends)
+                if self._direct_binding is None:
+                    self._expressions.append([None, None])
+                    for index, static in enumerate((expression, condition)):
+                        if static is not None:
+                            self._expressions[-1][index] = self._new(DriverExpression,
+                                'driver_expression_cleanup_owner', static, state, choice.driver,
+                                backend=plan.execution.backend, derived=derived, observation_ends=self._source_ends)
                 descriptor=hosted_reductions.get(request.operation)
                 spec = CalculationDefinition(request.calculation_id, 'sample_minimum' if descriptor else request.operation, plan.dataset.domain,
                                   request.partial_policy, request.unit, minimum_coverage=request.minimum_coverage,
@@ -344,6 +415,12 @@ class RecordSessionCalculations:
                 self._calculations.append(self._new(factory, recovery, self._budget, spec,
                     expression.root.unit, expression.root.dtype, step, backend=plan.execution.backend,
                     batch_intervals=min(plan.execution.batch_rows, 4096), conditioned=condition is not None, **extra))
+            if self._direct_binding is not None:
+                from .same_frame_integrals import SameFrameIntegrals
+                self._direct_owner = self._new(SameFrameIntegrals, 'same_frame_cleanup_owner',
+                    self._budget, definitions, tuple(item.signal for item in session_values),
+                    tuple(self._calculations), self._direct_binding, plan.dataset.session_id,
+                    self._before_direct_group, derived=derived)
             metadata = None
             event_requests=tuple(item for item in plan.calculations if is_event_duration(item))
             index_ids={item.calculation_id for item in event_requests}|{item.window_id for item in plan.windows}
@@ -418,7 +495,17 @@ class RecordSessionCalculations:
                 self._rules.append(self._new(RecordRuleTimeline,'record_rule_cleanup_owner',
                     plan,request,state,self._budget,step,choice.driver,self._source_ends,self._emit_event,
                     step_consumer=None if self._sequences is None else self._sequences.observe))
-            self._merge_sources()
+        finally:
+            # 仅放开本栈帧的临时引用；返回值已交付，子资源仍由会话所有者关闭。
+            session_values = choices = definitions = source_cursors = state = plan = hosted_reductions = derived = request = choice = metadata = expression = condition = static = None
+            descriptor = spec = factory = extra = event_requests = index_ids = drivers = steps = definition = locator = scope_requests = None
+
+    def _complete_results(self, session_values, spool):
+        """输入真正EOF后完成尾部、统计和结果汇总，不发布未完成前缀。
+
+        参数: 会话请求和原结果仓。返回: None。异常: 尾部计算、封存或写入错误。"""
+        try:
+            plan = self._plan
             # 真正EOF并关闭来源后，提交不足一批的尾部；失败不发布前缀。
             self._flush_messages()
             if self._exports is not None:
@@ -457,13 +544,9 @@ class RecordSessionCalculations:
                 for row in self._aggregations.rows(self._rules,self._next_sequence):
                     spool.append(row)
                     self._next_sequence+=1
-        except BaseException as error:
-            self._failed = True
-            error.record_session_cleanup_owner = self
-            raise
         finally:
-            metadata = definitions = derived = state = batch = result = source_cursors = cursor = source_definitions = None
-            self._spool=self._append_result=None
+            # 仅放开本栈帧的临时引用；返回值已交付，子资源仍由会话所有者关闭。
+            session_values = spool = plan = request = calculation = result = owner = row = None
 
     def _append_aggregate_input(self,row):
         """从同一源行同时得到公开记录和聚合输入，不复制或重扫源表。
@@ -685,6 +768,18 @@ class RecordSessionCalculations:
                     raise
                 primary.add_note('目标消息批费用清理失败：' + type(cleanup).__name__)
 
+    def _consume_direct_update(self, update: 'LegacyDecodedUpdate') -> None:
+        """向已完成首帧前检查的同帧owner交付更新。参数: 更新。返回: None。异常: 原消费错误。"""
+        self._direct_owner.consume(update)
+
+    def _before_direct_group(self) -> None:
+        """结算前更新省略domain的实际范围；显式裁剪不额外查询。参数: 无。返回: None。异常: 原读取状态错误。"""
+        if not self._full_domain:
+            return
+        for cursor in self._cursors:
+            cursor._refresh_observed_bounds()
+        self._advance_observed_domain()
+
     def _advance_observed_domain(self):
         """用已付费游标的真实首末更新在线范围，不读取更多输入或保存时间序列。
 
@@ -810,6 +905,7 @@ class RecordSessionCalculations:
         self._transform_stages.clear()
         self._close_slot('_aggregations')
         self._close_slot('_diagnostics')
+        self._close_slot('_direct_owner')
         self._close_slot('_exports')
         for index, owner in enumerate(self._cursors or ()):
             if owner is not None:
@@ -847,6 +943,8 @@ class RecordSessionCalculations:
                     pair[index] = None
         self._close_slot('_state')
         self._calculations = self._expressions = self._cursors = self._messages = self._plan = self._source_ends = None
+        self._declaration_owner = None
+        self._direct_binding = None
         self._rules=self._spool=self._requirements=None
         _release_owned_ram(self, self._group_cost, '_group_cost')
         _release_owned_ram(self, self._fixed_cost, '_fixed_cost')

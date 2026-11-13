@@ -2,11 +2,11 @@
 
 批量工作进程控制消息；只在收到对应任务时加载计算实现。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)
+[ControlChannel](chronaxis._control_wire.md#api-ControlChannel)、[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects)、[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)
 
 ## 对象导航
 
@@ -21,6 +21,7 @@
 from dataclasses import replace
 from pathlib import Path
 from threading import Event
+from ._control_wire import ControlChannel
 ```
 
 </details>
@@ -50,7 +51,7 @@ _diagnostics(error) -> tuple[str, ...]
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/_batch_worker.py:8`](../../../src/chronaxis/_batch_worker.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/_batch_worker.py:9`](../../../src/chronaxis/_batch_worker.py#L9)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -76,4 +77,4 @@ None。
 
 断管退出，父进程负责树清理。
 
-源码：[`src/chronaxis/_batch_worker.py:19`](../../../src/chronaxis/_batch_worker.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/_batch_worker.py:20`](../../../src/chronaxis/_batch_worker.py#L20)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

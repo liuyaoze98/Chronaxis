@@ -5,7 +5,7 @@
 不重新扫描BLF、不重新解码；新DBC上下文只提供编码布局和复用选择器。
 原帧与解码记录的序号、时间和公开帧字段逐项相符，结束时两仓均完整核验。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -43,7 +43,7 @@ LegacyFrameSamples(raw_store, message_store, context, budget, *, read_identity, 
 ```
 
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:13`](../../../src/chronaxis/execution/legacy_frame_samples.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:13`](../../../src/chronaxis/execution/legacy_frame_samples.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyFrameSamples-__init__"></a>
 ### `LegacyFrameSamples.__init__`
@@ -80,7 +80,7 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 - `ValueError`：重建需要同预算已封口原帧仓。
 - `ValueError`：原帧与解码仓不是同次读取。
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:16`](../../../src/chronaxis/execution/legacy_frame_samples.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:16`](../../../src/chronaxis/execution/legacy_frame_samples.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyFrameSamples-closed"></a>
 ### `LegacyFrameSamples.closed`
@@ -108,7 +108,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:38`](../../../src/chronaxis/execution/legacy_frame_samples.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:38`](../../../src/chronaxis/execution/legacy_frame_samples.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyFrameSamples-__iter__"></a>
 ### `LegacyFrameSamples.__iter__`
@@ -134,7 +134,7 @@ LegacyFrameSamples.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:43`](../../../src/chronaxis/execution/legacy_frame_samples.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:43`](../../../src/chronaxis/execution/legacy_frame_samples.py#L43)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyFrameSamples-__next__"></a>
 ### `LegacyFrameSamples.__next__`
@@ -167,7 +167,7 @@ EOF/来源不符/IO错。
 - `ResultFormatError`：原帧和解码仓没有共同完整结束。
 - `ResultFormatError`：重建原帧与解码记录内容不符。
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:48`](../../../src/chronaxis/execution/legacy_frame_samples.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:48`](../../../src/chronaxis/execution/legacy_frame_samples.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-LegacyFrameSamples-close"></a>
 ### `LegacyFrameSamples.close`
@@ -193,4 +193,4 @@ LegacyFrameSamples.close()
 
 原close错可重试。
 
-源码：[`src/chronaxis/execution/legacy_frame_samples.py:84`](../../../src/chronaxis/execution/legacy_frame_samples.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/legacy_frame_samples.py:84`](../../../src/chronaxis/execution/legacy_frame_samples.py#L84)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

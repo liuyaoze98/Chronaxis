@@ -6,7 +6,7 @@
 既有无损规则转为浮点轴，只有有效且位于开区间内部时才执行插值。
 临时列随本批行数增长，不调用标量核，也不改变输入与其质量。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -51,4 +51,4 @@ lookup_numpy(table, value)
 
 类型、分配或布局错误。
 
-源码：[`src/chronaxis/core/lookup_numpy.py:13`](../../../src/chronaxis/core/lookup_numpy.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/lookup_numpy.py:13`](../../../src/chronaxis/core/lookup_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

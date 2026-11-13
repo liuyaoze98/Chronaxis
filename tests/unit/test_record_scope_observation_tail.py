@@ -2,7 +2,7 @@
 import json
 from itertools import product
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from uuid import uuid4
 import unittest
 

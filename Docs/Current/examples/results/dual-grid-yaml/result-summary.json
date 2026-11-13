@@ -29,8 +29,8 @@
   "files": [
     {
       "path": "exports/export-00000000/manifest.json",
-      "bytes": 756,
-      "sha256": "0cb9280a3daf9a8c8b9177295287f00e8088df3b06b1b6ce0ed8f087c397689a",
+      "bytes": 760,
+      "sha256": "2c03b01737dbd45054a65221032e56e4f470a288a030ad4e06c2cdd617991f93",
       "status": "completed"
     },
     {
@@ -46,8 +46,8 @@
     },
     {
       "path": "exports/export-00000001/manifest.json",
-      "bytes": 1016,
-      "sha256": "4e3974eafead4adce22d1d1b5210a5a3493bac03f6983c36305089832053e02c",
+      "bytes": 1020,
+      "sha256": "38b0e7ce07035585b1497d766954ce5956739cb598b6aa6fb3166c1cb29cbeec",
       "frames": 5,
       "generated": 5,
       "passthrough": 0,
@@ -58,7 +58,7 @@
     {
       "path": "exports.jsonl",
       "bytes": 518,
-      "sha256": "2f7c0aa7f57aa306449b0b00a4b3acfc068e3922aff67f4dc72c0c7d44ce1d44"
+      "sha256": "ac63550274ead294df74b5d32c2d8c0f4a6fc3c6009a7f686e75fcb4f599fd86"
     },
     {
       "path": "会话结果.csv",

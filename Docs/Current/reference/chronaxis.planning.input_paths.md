@@ -6,7 +6,7 @@
 只枚举显式请求的目录，不递归追踪子目录；递归必须通过**通配符提出。
 展开最多4096项，空匹配及无效路径报配置错误，不悄悄跳过缺失目录。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,7 +54,7 @@ natural_path_key(path)
 
 无主动异常；不访问文件系统。
 
-源码：[`src/chronaxis/planning/input_paths.py:21`](../../../src/chronaxis/planning/input_paths.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/input_paths.py:21`](../../../src/chronaxis/planning/input_paths.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-expand_source_files"></a>
 ## `expand_source_files`
@@ -86,7 +86,7 @@ PlanValidationError表示缺项、空匹配或超限；
 
 仅目录/通配符声明枚举文件名；明确文件不stat、不读数据内容。
 
-源码：[`src/chronaxis/planning/input_paths.py:34`](../../../src/chronaxis/planning/input_paths.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/input_paths.py:34`](../../../src/chronaxis/planning/input_paths.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-expand_input_paths"></a>
 ## `expand_input_paths`
@@ -113,7 +113,7 @@ Path元组。
 
 与expand_source_files一致；目录扫描只执行一次。
 
-源码：[`src/chronaxis/planning/input_paths.py:94`](../../../src/chronaxis/planning/input_paths.py#L94)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/input_paths.py:101`](../../../src/chronaxis/planning/input_paths.py#L101)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-source_path_fields"></a>
 ## `source_path_fields`
@@ -139,4 +139,4 @@ source_path_fields(source, where='$.sources')
 
 PlanValidationError为错误结构。不扫描目录，不改变offset或其他元数据。
 
-源码：[`src/chronaxis/planning/input_paths.py:103`](../../../src/chronaxis/planning/input_paths.py#L103)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/input_paths.py:110`](../../../src/chronaxis/planning/input_paths.py#L110)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

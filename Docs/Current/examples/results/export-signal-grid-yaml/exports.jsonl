@@ -1,1 +1,1 @@
-{"device_label": "home", "directory": "export-00000000", "export_type": "signal_csv", "files": [{"bytes": 748, "name": "manifest.json"}, {"bytes": 491, "name": "resampled.csv"}], "index": 0, "interval": [0, 6000000000], "scope": "session", "segment_id": null}
+{"device_label": "home", "directory": "export-00000000", "export_type": "signal_csv", "files": [{"bytes": 752, "name": "manifest.json"}, {"bytes": 491, "name": "resampled.csv"}], "index": 0, "interval": [0, 6000000000], "scope": "session", "segment_id": null}

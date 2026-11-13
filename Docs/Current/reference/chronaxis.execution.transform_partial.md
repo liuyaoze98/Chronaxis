@@ -2,7 +2,7 @@
 
 区分滚动输入窗口的部分性和下游查询轴的覆盖率，只标记确实参与的原值。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -49,7 +49,7 @@ partial_in_block(rows, window, *, samples)
 
 内部行损坏时传播结构错误；不把末端共享点计入两块。
 
-源码：[`src/chronaxis/execution/transform_partial.py:7`](../../../src/chronaxis/execution/transform_partial.py#L7)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_partial.py:7`](../../../src/chronaxis/execution/transform_partial.py#L7)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-partial_result"></a>
 ## `partial_result`
@@ -75,4 +75,4 @@ partial_result(result, policy)
 
 非结果对象。
 
-源码：[`src/chronaxis/execution/transform_partial.py:36`](../../../src/chronaxis/execution/transform_partial.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/transform_partial.py:36`](../../../src/chronaxis/execution/transform_partial.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

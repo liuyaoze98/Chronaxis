@@ -99,7 +99,7 @@ chronaxis run fault-demo/plan.yaml --output fault-result
 |can-export|CAN原帧导出|plan.yaml|分析积分13V·s；请求范围内原帧按原顺序导出，不重采样。|
 |batch|两个独立任务的批量清单|batch.yaml|两个任务各自读取同一合成输入，均完成且各得38J；它们不是同会话时间切片。|
 
-普通分析模板用`chronaxis run 目录/plan.yaml --output 结果目录`；batch模板用`chronaxis batch run 目录/batch.yaml --output 结果目录`。CAN类模板所需CAN依赖随正常安装提供。导出模板中的设备标签反映[当前实现限制](exports.md)，不能当作任意设备的通用标识。
+普通分析模板用`chronaxis run 目录/plan.yaml --output 结果目录`；batch模板用`chronaxis batch run 目录/batch.yaml --output 结果目录`。CAN类模板所需CAN依赖随正常安装提供。导出不要求设备标签；需要记录设备时，按[输出说明](exports.md)添加非空自定义文本。
 
 
 
@@ -137,7 +137,7 @@ chronaxis run message-energy.yaml --output message-result
 <a id="dual-grid"></a>
 ### 信号250ms与CAN500ms两个导出网格
 
-[dual-grid.yaml](examples/dual-grid.yaml)读取与联合案例相同的joint.asc和joint.dbc，同时导出电压和重建CAN帧。signals的分析名是voltage，DBC字段名是Voltage；两处不能互换。metadata.device_label受当前独立导出实现限制，本合成案例填home，具体限制见[输出配置](exports.md)。
+[dual-grid.yaml](examples/dual-grid.yaml)读取与联合案例相同的joint.asc和joint.dbc，同时导出电压和重建CAN帧。signals的分析名是voltage，DBC字段名是Voltage；两处不能互换。本合成案例的metadata.device_label为home，记录示例来源；实际使用可省略，或填写自己的非空设备标签，见[输出配置](exports.md)。
 
 ```powershell
 chronaxis run dual-grid.yaml --output grid-result

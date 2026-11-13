@@ -2,11 +2,11 @@
 
 记录流只保一份逻辑值；枚举单独保必要整数码，公共来源定义共享引用。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalSample](chronaxis.core.models.md#api-SignalSample)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
+[D](chronaxis.core.types.md#api-SignalDType)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SignalSample](chronaxis.core.models.md#api-SignalSample)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
 
 ## 对象导航
 
@@ -17,6 +17,7 @@
 |[`RecordSample.array_value`](#api-RecordSample-array_value)|按需取得数组值；无效值只返回类型占位。|
 |[`RecordSample.original_present`](#api-RecordSample-original_present)|本样本不保存原文。|
 |[`RecordSample.original_value`](#api-RecordSample-original_value)|本样本无额外原值。|
+|[`_record_from_validated_fields`](#api-_record_from_validated_fields)|把已校验列或解码归一化结果包装为当前运行记录，不再创建校验样本。|
 
 <details><summary>导入与重导出来源（展开）</summary>
 
@@ -45,12 +46,12 @@ class RecordSample
 |`name`|str|是|无|信号在当前计划中的简单别名，用于查定义和表达式依赖。|
 |`time_ns`|int|是|无|保存此条归一化样本的实际时间，必须是int64范围内整数纳秒，不允许None。|
 |`sequence`|int|是|无|当前记录的非负顺序号；同一时刻记录仍有独立序号，不能当作时间戳。|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|本条信号的唯一分析值，包含dtype、有效性、质量和枚举域；不另存原值副本。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|本条信号的唯一分析值，包含dtype、有效性、质量和枚举域；不另存原值副本。|
 |`unit`|str|是|无|物理量或结果单位，如W、J、s；按本接口的单位检查与换算规则使用。|
 |`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|当前样本的共享来源字段引用；包含会话、来源和字段，默认不增加逐帧证明副本。|
 |`enum_code`|int &#124; None|否|None|枚举的原整数码，配合共享labels恢复文字；普通数值不额外保存第二份值。|
 
-源码：[`src/chronaxis/execution/record_sample.py:8`](../../../src/chronaxis/execution/record_sample.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sample.py:8`](../../../src/chronaxis/execution/record_sample.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSample-__post_init__"></a>
 ### `RecordSample.__post_init__`
@@ -76,7 +77,7 @@ None。
 
 类型/值矛盾。
 
-源码：[`src/chronaxis/execution/record_sample.py:18`](../../../src/chronaxis/execution/record_sample.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sample.py:18`](../../../src/chronaxis/execution/record_sample.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSample-array_value"></a>
 ### `RecordSample.array_value`
@@ -104,7 +105,7 @@ RecordSample.array_value
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:32`](../../../src/chronaxis/execution/record_sample.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sample.py:32`](../../../src/chronaxis/execution/record_sample.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSample-original_present"></a>
 ### `RecordSample.original_present`
@@ -132,7 +133,7 @@ False。
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:39`](../../../src/chronaxis/execution/record_sample.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sample.py:39`](../../../src/chronaxis/execution/record_sample.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSample-original_value"></a>
 ### `RecordSample.original_value`
@@ -160,4 +161,36 @@ None。
 
 无。
 
-源码：[`src/chronaxis/execution/record_sample.py:44`](../../../src/chronaxis/execution/record_sample.py#L44)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sample.py:44`](../../../src/chronaxis/execution/record_sample.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+
+<a id="api-_record_from_validated_fields"></a>
+## `_record_from_validated_fields`
+
+把已校验列或解码归一化结果包装为当前运行记录，不再创建校验样本。
+
+```python
+_record_from_validated_fields(name, time_ns, sequence, value, unit, source_ref, enum_code=None)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`name`|str|是|无|位置或关键字。已核对绑定的信号别名。|
+|`time_ns`|int|是|无|位置或关键字。已验证的原生纳秒时间。|
+|`sequence`|int|是|无|位置或关键字。来源已经提供并检查的记录序号。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。本次归一化或计算已经验证的值及质量。|
+|`unit`|str|是|无|位置或关键字。与信号声明一致的单位标签。|
+|`source_ref`|[SourceRef](chronaxis.core.models.md#api-SourceRef)|是|无|位置或关键字。已验证的来源定位，不增加重复历史记录。|
+|`enum_code`|int &#124; None|否|None|位置或关键字。枚举需要的原整数码；其他类型为None。|
+
+### 返回说明
+
+冻结RecordSample。
+
+### 异常说明
+
+分配错误；本函数不接外部未校验输入。
+调用方必须完成列布局/时间/枚举域验证，公开RecordSample构造保持原检查。
+
+源码：[`src/chronaxis/execution/record_sample.py:49`](../../../src/chronaxis/execution/record_sample.py#L49)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

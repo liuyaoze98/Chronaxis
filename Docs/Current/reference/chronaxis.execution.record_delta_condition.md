@@ -5,11 +5,11 @@
 实际模式在旧边界移出窗口时继续求值；固定/DBC只在选定驱动到达时移动窗口，
 其他更新只处理失效。原实际坐标和TTL不改变，变化量仍交原独立两后端核计算。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[DeltaSpan](chronaxis.core.window_delta.md#api-DeltaSpan)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[T](chronaxis.core.types.md#api-Truth)
+[D](chronaxis.core.types.md#api-SignalDType)、[DeltaSpan](chronaxis.core.window_delta.md#api-DeltaSpan)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[T](chronaxis.core.types.md#api-Truth)
 
 ## 对象导航
 
@@ -51,7 +51,7 @@ RecordDeltaCondition(budget, spec, dtype, backend, step_ns)
 ```
 
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:18`](../../../src/chronaxis/execution/record_delta_condition.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:18`](../../../src/chronaxis/execution/record_delta_condition.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-__init__"></a>
 ### `RecordDeltaCondition.__init__`
@@ -80,7 +80,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:21`](../../../src/chronaxis/execution/record_delta_condition.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:21`](../../../src/chronaxis/execution/record_delta_condition.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-_condition"></a>
 ### `RecordDeltaCondition._condition`
@@ -107,7 +107,7 @@ ScalarValue。
 
 原类型错。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:40`](../../../src/chronaxis/execution/record_delta_condition.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:40`](../../../src/chronaxis/execution/record_delta_condition.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-_append"></a>
 ### `RecordDeltaCondition._append`
@@ -123,8 +123,8 @@ RecordDeltaCondition._append(time_ns, point, right)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`time_ns`|int|是|无|位置或关键字。本次操作对应的实际时刻，单位纳秒；必须按输入的单调顺序推进，不是累计的固定周期数。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。当前表达式值及其类型、有效性和质量；无效值不会用0代替。|
-|`right`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。当前右端条件值；用于窗口变化量的条件组合，不代表另一个实际时间轴。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。当前表达式值及其类型、有效性和质量；无效值不会用0代替。|
+|`right`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。当前右端条件值；用于窗口变化量的条件组合，不代表另一个实际时间轴。|
 
 #### 返回说明
 
@@ -134,7 +134,7 @@ None。
 
 预算/时间回退。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:45`](../../../src/chronaxis/execution/record_delta_condition.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:45`](../../../src/chronaxis/execution/record_delta_condition.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-_left"></a>
 ### `RecordDeltaCondition._left`
@@ -159,7 +159,7 @@ RecordDeltaCondition._left(time_ns)
 
 无。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:64`](../../../src/chronaxis/execution/record_delta_condition.py#L64)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:64`](../../../src/chronaxis/execution/record_delta_condition.py#L64)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-update"></a>
 ### `RecordDeltaCondition.update`
@@ -175,8 +175,8 @@ RecordDeltaCondition.update(time_ns, point, right, expires_at_ns, *, driver=Fals
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`time_ns`|int|是|无|位置或关键字。本次操作对应的实际时刻，单位纳秒；必须按输入的单调顺序推进，不是累计的固定周期数。|
-|`point`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。当前表达式值及其类型、有效性和质量；无效值不会用0代替。|
-|`right`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。当前右端条件值；用于窗口变化量的条件组合，不代表另一个实际时间轴。|
+|`point`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。当前表达式值及其类型、有效性和质量；无效值不会用0代替。|
+|`right`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。当前右端条件值；用于窗口变化量的条件组合，不代表另一个实际时间轴。|
 |`expires_at_ns`|int &#124; None|是|无|位置或关键字。当前值按实际时间计算的有效截止纳秒时刻；None表示没有额外截止。|
 |`driver`|bool|否|False|仅关键字。当前点是否来自所选驱动；False仅更新条件/失效边界，不增加固定周期。|
 
@@ -188,7 +188,7 @@ RecordDeltaCondition.update(time_ns, point, right, expires_at_ns, *, driver=Fals
 
 倒序、预算或原数值错误；失败只能清理。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:78`](../../../src/chronaxis/execution/record_delta_condition.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:78`](../../../src/chronaxis/execution/record_delta_condition.py#L78)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-closed"></a>
 ### `RecordDeltaCondition.closed`
@@ -216,7 +216,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:164`](../../../src/chronaxis/execution/record_delta_condition.py#L164)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:164`](../../../src/chronaxis/execution/record_delta_condition.py#L164)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordDeltaCondition-close"></a>
 ### `RecordDeltaCondition.close`
@@ -242,4 +242,4 @@ None。
 
 原预算关闭错，可重试。
 
-源码：[`src/chronaxis/execution/record_delta_condition.py:168`](../../../src/chronaxis/execution/record_delta_condition.py#L168)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_delta_condition.py:168`](../../../src/chronaxis/execution/record_delta_condition.py#L168)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

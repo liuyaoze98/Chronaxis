@@ -78,13 +78,26 @@ Fields below are inside `sources[].reader`.
 
 | `reader.version` | Supported layout |
 |---|---|
-| `vector-asc-v1` (default) | Classic: `0.1 1 123 Rx d 1 FF`; FD: `0.1 CANFD 1 Rx 123 1 0 1 1 FF`. |
-| `vector-asc-statistics-v1` | The classic layout with a strictly matching `Length = … BitCount = … ID = …` statistics suffix; trailing ID must match the main ID. |
+| `vector-asc-v1` (default) | Classic: `0.1 1 123 Rx d 1 FF`, optionally followed by the standard statistics suffix described below; FD: `0.1 CANFD 1 Rx 123 1 0 1 1 FF`. |
+| `vector-asc-statistics-v1` | Explicit statistics-format selection remains available and applies the same classic-frame and suffix checks as the default. A suffix alone does not require this setting. |
 | `sclicer-asc-v1` | FD: `0.1 CANFD 1 123 Rx 1 0 d 1 1 FF`; classic frames can also appear. |
 
 ASC time unit defaults to s and, if explicit, must be s. Encoding defaults to utf-8-sig; UTF-16/32 are unsupported. A line not matching the selected dialect fails; the reader does not try different parsers until one accepts it.
 
 ASC channel 1 is configuration channel 1. ID suffix `x` marks extended frames; ID magnitude alone cannot decide. FD DLC differs from byte count: DLC 10 means 16 bytes, 15 means 64. A zero-byte FD data frame is not automatically a remote frame.
+
+A classic frame may have a suffix such as `Length = 238000 BitCount = 123 ID = 440`. All three fields must be present in that order with nonnegative decimal values. The trailing ID must equal the main message ID: hexadecimal `1B8`, for example, matches decimal `440`. The suffix is recognized during the same read; missing fields, wrong order and inconsistent IDs still fail.
+
+ASC also accepts the following records:
+
+| Record | Handling and limits |
+|---|---|
+| Classic remote frame, such as `0.5 1 100 Rx r` or `0.5 1 100 Rx r 8` | DLC may be omitted, meaning unknown rather than zero. ASC export keeps it omitted; BLF export fails because the actual DLC is unavailable and must not be invented as zero. Raw CAN CSV still requires an explicit DLC for remote frames. |
+| `CAN 1 Status:chip status error active` status event | Supported states are `error active`, `error passive`, `warning level`, `busoff` and `bus off`, optionally followed by complete counters such as `- TxErr: 8 RxErr: 0`. The timestamp advances the file clock before the status is skipped; no signal sample is generated. |
+| Classic `ErrorFrame` | Accepts a bare error frame, an eight-bit binary diagnostic such as `ECC: 10100010`, or the complete ordered suffix `Flags = … CodeExt = … Code = … ID = … DLC = … Position = … Length = …`. Values in the latter use decimal or `0x` hexadecimal notation. |
+| CAN FD `ErrorFrame` | The standard Vector readers (default and vector-asc-statistics-v1) support bare error frames and the Vector diagnostic layout containing error text, flags/code/codeExt, an Arb./Data. phase, position, diagnostic ID, BRS/ESI, DLC, partial payload and all seven timing fields. Diagnostic DLC need not match the partial payload length; extFlags identifies the actual frame type. The Sclicer FD reader still accepts only its specified data-frame layout. |
+
+Error frames remain error frames: diagnostic IDs, DLCs and possibly damaged data are not decoded as normal messages. Unknown events, incomplete diagnostics and malformed data rows still fail with the file and physical line number.
 
 Two meanings of absolute/relative time must be distinguished:
 

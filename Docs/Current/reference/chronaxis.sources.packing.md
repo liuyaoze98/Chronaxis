@@ -14,7 +14,7 @@ pack_message_values只返回没有时间轴的NumericArray，供固定周期逐�
 reference与NumPy数值实现独立。输出复制为自身拥有的只读数组；
 本模块不读取文件或调用旧解码路径。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -76,7 +76,7 @@ TypeError或ValueError: 原值不合法；调用者已校验声明、tuple与后
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/sources/packing.py:36`](../../../src/chronaxis/sources/packing.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/packing.py:36`](../../../src/chronaxis/sources/packing.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-pack_message_values"></a>
 ## `pack_message_values`
@@ -111,7 +111,7 @@ TypeError或ValueError: 声明、后端、tuple或原值不合法。
 
 返回类型：[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray)。
 
-源码：[`src/chronaxis/sources/packing.py:108`](../../../src/chronaxis/sources/packing.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/packing.py:108`](../../../src/chronaxis/sources/packing.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-pack_decoded"></a>
 ## `pack_decoded`
@@ -149,4 +149,4 @@ TypeError或ValueError: 输入结构、后端、原值、列布局或身份不�
 
 返回类型：[SignalSeries](chronaxis.sources.models.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/sources/packing.py:133`](../../../src/chronaxis/sources/packing.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/packing.py:133`](../../../src/chronaxis/sources/packing.py#L133)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

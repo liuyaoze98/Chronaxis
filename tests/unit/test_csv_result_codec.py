@@ -4,6 +4,8 @@
 真实暂存检查预算先于编码、单行缓冲与关闭费用，不读取RefProjects。
 """
 
+from workspace_fixtures import TemporaryDirectory as workspace_temporary_directory
+
 from configuration_fixtures import current_fixture
 from dataclasses import dataclass
 from pathlib import Path
@@ -80,7 +82,7 @@ class CSVResultCodecTests(unittest.TestCase):
 
     def test_requested_trace_uses_current_small_spool(self):
         """三条明确请求的追溯在单行缓冲落盘，定位和原文本精确往返。"""
-        with tempfile.TemporaryDirectory(prefix='csv-current-codec-', dir='work') as directory:
+        with workspace_temporary_directory(prefix='csv-current-codec-', dir='work') as directory:
             budget = ResourceBudget(4 * 1024**2)
             spool = ResultSpool(budget, Path(directory) / 'results', 1, enable_trace=True, requested_tables=('input_trace',))
             self.addCleanup(spool.close)
@@ -102,7 +104,7 @@ class CSVResultCodecTests(unittest.TestCase):
         self.assertGreater(estimate_row_bytes(long), estimate_row_bytes(short) + 100000)
         with self.assertRaises(ResultFormatError):
             encode_row(long, 256)
-        with tempfile.TemporaryDirectory(prefix='csv-current-limit-', dir='work') as directory:
+        with workspace_temporary_directory(prefix='csv-current-limit-', dir='work') as directory:
             budget = ResourceBudget(1024**2)
             spool = ResultSpool(budget, Path(directory) / 'results', 1, enable_trace=True, requested_tables=('input_trace',))
             self.addCleanup(spool.close)

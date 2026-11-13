@@ -47,4 +47,4 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:369`](../../../src/chronaxis/planning/plan.py#L369)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

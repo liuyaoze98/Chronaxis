@@ -216,6 +216,7 @@ class BudgetedTemporalDetector:
         self._budget, self._fixed_cost, self._closed, self._failed = budget, 0, False, False
         self._rule = self._start = self._end = self._refs = self._detector = self._results = None
         self._event_metadata_cost = 0
+        self._failed_workspace_cost = 0
         # 申请前快照覆盖reserve返回取消，避免已扣账但owner尚未记录申请的窗口。
         before = budget.ram_bytes
         try:
@@ -256,6 +257,8 @@ class BudgetedTemporalDetector:
         self._ensure_open()
         if self._failed:
             raise AnalysisError('预算时序检测器已失败，禁止重试当前状态')
+        if self._failed_workspace_cost:
+            raise AnalysisError('上次工作区尚未释放，请先关闭预算时序检测器')
 
     @property
     def rule(self):
@@ -383,6 +386,37 @@ class BudgetedTemporalDetector:
         self._failed = True
         self._detector = None
 
+    def _release_failed_workspace(self):
+        """退还未交付批的实际申请，释放完成后取消也立即清槽。
+
+        参数: 无。返回: None。异常: 原退款错误；尚未释放的金额留给下一次close。
+        本槽与固定申请、此前已交付批分开；只围绕一次直接账本调用判断副作用。
+        """
+        cost = self._failed_workspace_cost
+        if not cost:
+            return
+        before = self._budget.ram_bytes
+        try:
+            self._budget.release_ram(cost)
+            self._failed_workspace_cost = 0
+        except BaseException:
+            if self._budget.ram_bytes == before - cost:
+                self._failed_workspace_cost = 0
+            raise
+
+    def _refund_failed_workspace(self, cost, original):
+        """接管本次未交付批的费用并尝试归还，保留原推进错误和最高owner。
+
+        参数: cost为本次已实际申请字节，original为业务或取消异常。
+        返回: None。退款失败只追加说明；调用方继续抛原异常，close负责重试。
+        """
+        self._failed_workspace_cost = cost
+        try:
+            self._release_failed_workspace()
+        except BaseException as cleanup:
+            original.add_note('时序检测工作区释放失败: ' + type(cleanup).__name__)
+            original.temporal_detector_cleanup_owner = self
+
     def push(self, ticks: tuple[ConditionTick, ...], exit_ticks=None, *, advances=None) -> TemporalEventBatch:
         """在预算内整批推进独立core，随后正式排空当前最终事件。
 
@@ -430,14 +464,14 @@ class BudgetedTemporalDetector:
             self._results.add(result)
             # 交付只读批，完整本批申请转交结果直到其close。
             return result
-        except BaseException:
+        except BaseException as error:
             # 排空/构造/登记属于推进后失败，preflight拒绝或取消则保留原core状态。
             if started:
                 self._discard_unreturned(result)
                 self._fail()
             # 正常申请记录与单线程快照共同覆盖reserve成功返回前的取消窗口。
             if reserved or self._budget.ram_bytes == before + cost:
-                self._budget.release_ram(cost)
+                self._refund_failed_workspace(cost, error)
             raise
 
     def finish(self) -> TemporalEventBatch:
@@ -468,14 +502,14 @@ class BudgetedTemporalDetector:
             result = self._register(cost, events)
             self._results.add(result)
             return result
-        except BaseException:
+        except BaseException as error:
             # terminal部分封闭不可重试，尚未开始的preflight仍保持原检测器可用。
             if started:
                 self._discard_unreturned(result)
                 self._fail()
             # 不对未成功的申请做释放，也不漏掉已扣账但返回取消的申请。
             if reserved or self._budget.ram_bytes == before + cost:
-                self._budget.release_ram(cost)
+                self._refund_failed_workspace(cost, error)
             raise
 
     def close(self):
@@ -488,6 +522,8 @@ class BudgetedTemporalDetector:
         # 关闭可重复调用，不重复释放固定或批申请。
         if self._closed:
             return
+        # 未交付批的失败退款不属于任何已交付结果，先处理它且保留重试金额。
+        self._release_failed_workspace()
         # 逐项关闭避免收尾时再复制活动批集合；没有其它owner的结果进入此集合。
         while self._results:
             next(iter(self._results)).close()

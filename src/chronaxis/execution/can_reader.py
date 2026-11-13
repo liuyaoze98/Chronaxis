@@ -25,7 +25,7 @@ close可重试且不抵销借款。完成read脱离adapter活登记，事实可�
 全部只用新分析层和已有pack_decoded两后端，不修改旧链、重复读DBC或声明RSS上限。
 batch_read默认自动选择：requested由can_batch_reader接有限批，all保原逐条读取；
 显式bool仍覆盖自动选择。未保存raw由公开元数据None/None/0明确表达。
-直接累计且没有普通样本请求时，[home]另核两段真实输入字节的SHA256：全部原时间、
+直接累计且没有普通样本请求时，另核两段真实输入字节的SHA256：全部原时间、
 所需记录的长度与JSON；selected/none的全时间SHA为None。只借用已严格解包的原包，不重编码或保存副本；真实EOF及
 进程关闭后才开放指纹。它不是普通信号样本摘要，read关闭后由接收方自付保留费用。
 """
@@ -216,8 +216,6 @@ class BudgetedLegacyCANSourceAdapter:
                     raise ValueError('requested最多声明4096个不同报文ID')
             self._requests = set()
             path = Path(work_dir).resolve()
-            if any(part.casefold() == 'refprojects' for part in path.parts):
-                raise ValueError('CAN工作目录禁止RefProjects')
             path.mkdir(parents=True, exist_ok=False)
             self.work_dir = path
             locator = {'path': str(spec.path), 'dbc_path': str(spec.dbc_path), 'channel': spec.channel,

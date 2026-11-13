@@ -5,7 +5,7 @@
 源码检出从自身项目的pyproject.toml读取；构建包使用构建时自动生成的版本模块。
 只依赖标准库且不写文件，缺失或损坏的版本资料明确报错，不回退为另一版本。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -48,4 +48,4 @@ software_version() -> str
 
 返回类型：str。
 
-源码：[`src/chronaxis/_version.py:11`](../../../src/chronaxis/_version.py#L11)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/_version.py:11`](../../../src/chronaxis/_version.py#L11)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

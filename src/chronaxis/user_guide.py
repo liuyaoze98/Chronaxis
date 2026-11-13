@@ -65,8 +65,6 @@ def export_guide(output):
             raise FileNotFoundError("安装包缺少用户指南，请重新安装同版本的完整wheel")
         data = run_path(str(builder))["build"]()
     target = Path(output)
-    if any(part.casefold() == "refprojects" for part in (*target.absolute().parts, *target.resolve().parts)):
-        raise ValueError("资料输出不能位于RefProjects")
     # 独占创建避免覆盖用户资料；只有自己成功创建且写入失败时才移除残件。
     stream = target.open("xb")
     try:

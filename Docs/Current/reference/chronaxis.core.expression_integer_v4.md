@@ -6,7 +6,7 @@ mod及位操作在单位为1的64位整数域工作，位号在编译时校验�
 显式cast先确定输入的物理尺度，再选择结果dtype。编译只访问声明与纯常量，
 逐点的溢出、域错误和精度失败交给各自的参考/数组内核处理。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -58,7 +58,7 @@ None。
 
 ValueError为非整数、未知单位、带物理单位或非1倍率。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:21`](../../../src/chronaxis/core/expression_integer_v4.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:21`](../../../src/chronaxis/core/expression_integer_v4.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_bit_parameter"></a>
 ## `_bit_parameter`
@@ -85,7 +85,7 @@ _bit_parameter(compiler, child, call)
 
 ValueError为依赖运行数据或静态数值本身无效。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:34`](../../../src/chronaxis/core/expression_integer_v4.py#L34)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:34`](../../../src/chronaxis/core/expression_integer_v4.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compile_integer"></a>
 ## `compile_integer`
@@ -111,4 +111,4 @@ ExprNode；cast结果按所选尺度保持目标dtype，位索引不构造运行
 
 ValueError为签名、输入类型/单位、位参数、常量越界或隐式混合定宽。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:51`](../../../src/chronaxis/core/expression_integer_v4.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:51`](../../../src/chronaxis/core/expression_integer_v4.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

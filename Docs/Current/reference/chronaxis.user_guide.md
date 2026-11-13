@@ -6,7 +6,7 @@
 默认只检查入口并返回路径，不构建、解压或复制。源码使用Docs/AI，
 安装使用包内guide目录；显式导出才读取整套资料并写用户指定的新文件。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,7 +54,7 @@ README的绝对Path。
 
 未知语言ValueError；指南缺失FileNotFoundError。只支持普通目录安装。
 
-源码：[`src/chronaxis/user_guide.py:14`](../../../src/chronaxis/user_guide.py#L14)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/user_guide.py:14`](../../../src/chronaxis/user_guide.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_installed_archive"></a>
 ## `_installed_archive`
@@ -79,7 +79,7 @@ _installed_archive(root)
 
 清单/资源缺失或越界。
 
-源码：[`src/chronaxis/user_guide.py:37`](../../../src/chronaxis/user_guide.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/user_guide.py:37`](../../../src/chronaxis/user_guide.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-export_guide"></a>
 ## `export_guide`
@@ -94,7 +94,7 @@ export_guide(output)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`output`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|是|无|位置或关键字。用户指定的新ZIP文件路径；父目录须已存在，不允许覆盖文件或写入RefProjects。|
+|`output`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; str|是|无|位置或关键字。用户指定的新ZIP文件路径；父目录须已存在，不允许覆盖已有文件。|
 
 ### 返回说明
 
@@ -104,4 +104,4 @@ export_guide(output)
 
 已有目标、缺资料或I/O失败。
 
-源码：[`src/chronaxis/user_guide.py:56`](../../../src/chronaxis/user_guide.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/user_guide.py:56`](../../../src/chronaxis/user_guide.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

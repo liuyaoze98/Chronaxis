@@ -7,7 +7,7 @@ SignalCSVSpec接收有序路径、时间列、时间单位、时区、编码、�
 CSVSourceRef在通用来源引用上增加文件路径、记录末物理行和原始单元格
 文本，供实际读取后追溯。时间量化诊断单独保留，不从文件名推断观测范围。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 继承字段
 
@@ -68,11 +68,11 @@ class SignalCSVSpec
 |`unit`|str|是|无|s/ms/us/ns或absolute的ISO8601。|
 |`offset_ns`|int|否|0|显式固定偏移，不能证明同步。|
 |`timezone`|tzinfo &#124; None|否|None|ISO无offset时明确采用的时区。 None表示没有补充时区；ISO文本自身也不含时区时会报错，不采用电脑时区。|
-|`encoding`|str|否|'utf-8'|不猜文件编码。|
+|`encoding`|str|否|'utf-8-sig'|默认接受普通UTF-8及文件开头BOM；显式编码仍优先。|
 |`delimiter`|str|否|','|单字符分隔符，不自动sniff。|
 |`missing_values`|tuple[str, ...]|否|('',)|精确匹配原cell，不strip标记。|
 
-源码：[`src/chronaxis/sources/csv_spec.py:28`](../../../src/chronaxis/sources/csv_spec.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/csv_spec.py:28`](../../../src/chronaxis/sources/csv_spec.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVSpec-__post_init__"></a>
 ### `SignalCSVSpec.__post_init__`
@@ -104,7 +104,7 @@ TypeError: 路径、时区或声明结构类型错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/csv_spec.py:51`](../../../src/chronaxis/sources/csv_spec.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/csv_spec.py:51`](../../../src/chronaxis/sources/csv_spec.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVSourceRef"></a>
 ## `CSVSourceRef`
@@ -133,7 +133,7 @@ class CSVSourceRef(SourceRef)
 |`value_text`|str|是|无|原字段cell文本，解析异常诊断不丢原文。|
 |`time_quantized`|bool|是|无|时间转换曾按纳秒half-even量化。|
 
-源码：[`src/chronaxis/sources/csv_spec.py:98`](../../../src/chronaxis/sources/csv_spec.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/csv_spec.py:98`](../../../src/chronaxis/sources/csv_spec.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CSVSourceRef-__post_init__"></a>
 ### `CSVSourceRef.__post_init__`
@@ -169,4 +169,4 @@ TypeError或ValueError: 来源名称、字段、路径、正整数行号或附�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/csv_spec.py:114`](../../../src/chronaxis/sources/csv_spec.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/csv_spec.py:114`](../../../src/chronaxis/sources/csv_spec.py#L114)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -7,7 +7,7 @@
 新编码的DBC身份/字段声明，可借给新文本解码器共用一次加载。旧BLF链自身的
 DBC加载和解码不改变；为新增编码另加载同一哈希的定义属于新输出的显式成本。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -38,6 +38,7 @@ DBC加载和解码不改变；为新增编码另加载同一哈希的定义属�
 ```python
 from hashlib import file_digest
 from pathlib import Path
+from ..dbc_loading import load_dbc_file
 from ..legacy.records import LegacyCANField
 from ..legacy.binding import dbc_candidates, select_message
 from ..results.budget import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
@@ -61,7 +62,7 @@ FrameDBCContext(path, rules, budget, *, cycle_periods=False, integrity=True)
 ```
 
 
-源码：[`src/chronaxis/execution/frame_capture.py:23`](../../../src/chronaxis/execution/frame_capture.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:25`](../../../src/chronaxis/execution/frame_capture.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-__init__"></a>
 ### `FrameDBCContext.__init__`
@@ -94,7 +95,7 @@ DBC/预算/字段/I/O错。
 
 - `ValueError`：新增编码加载DBC期间内容发生变化。
 
-源码：[`src/chronaxis/execution/frame_capture.py:26`](../../../src/chronaxis/execution/frame_capture.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:28`](../../../src/chronaxis/execution/frame_capture.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-_hash"></a>
 ### `FrameDBCContext._hash`
@@ -120,7 +121,7 @@ SHA256文本。
 
 打开/读取/真实关闭错。
 
-源码：[`src/chronaxis/execution/frame_capture.py:78`](../../../src/chronaxis/execution/frame_capture.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:80`](../../../src/chronaxis/execution/frame_capture.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-require_open"></a>
 ### `FrameDBCContext.require_open`
@@ -150,7 +151,7 @@ ResultClosedError。
 
 - `ResultClosedError`：导出DBC上下文已关闭。
 
-源码：[`src/chronaxis/execution/frame_capture.py:86`](../../../src/chronaxis/execution/frame_capture.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:88`](../../../src/chronaxis/execution/frame_capture.py#L88)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-pairs"></a>
 ### `FrameDBCContext.pairs`
@@ -176,7 +177,7 @@ tuple。
 
 已关闭或身份缺失。
 
-源码：[`src/chronaxis/execution/frame_capture.py:92`](../../../src/chronaxis/execution/frame_capture.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:94`](../../../src/chronaxis/execution/frame_capture.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-observe"></a>
 ### `FrameDBCContext.observe`
@@ -205,7 +206,7 @@ ValueError：规则匹配多种实际身份或多个输出规则；ResultClosedE
 
 每条规则只保存一个已识别定义和身份，不保留额外帧或扫描文件。
 
-源码：[`src/chronaxis/execution/frame_capture.py:110`](../../../src/chronaxis/execution/frame_capture.py#L110)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:112`](../../../src/chronaxis/execution/frame_capture.py#L112)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-is_known_frame"></a>
 ### `FrameDBCContext.is_known_frame`
@@ -234,7 +235,7 @@ ResultClosedError：上下文已关闭。
 
 无，不解码或记录帧内容。
 
-源码：[`src/chronaxis/execution/frame_capture.py:137`](../../../src/chronaxis/execution/frame_capture.py#L137)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:139`](../../../src/chronaxis/execution/frame_capture.py#L139)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameDBCContext-close"></a>
 ### `FrameDBCContext.close`
@@ -260,7 +261,7 @@ FrameDBCContext.close()
 
 原关闭/释放错可恢复。
 
-源码：[`src/chronaxis/execution/frame_capture.py:148`](../../../src/chronaxis/execution/frame_capture.py#L148)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:150`](../../../src/chronaxis/execution/frame_capture.py#L150)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore"></a>
 ## `TextFrameStore`
@@ -272,7 +273,7 @@ TextFrameStore(path, budget, source, session_id, read_identity, *, database_cont
 ```
 
 
-源码：[`src/chronaxis/execution/frame_capture.py:162`](../../../src/chronaxis/execution/frame_capture.py#L162)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:164`](../../../src/chronaxis/execution/frame_capture.py#L164)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-__init__"></a>
 ### `TextFrameStore.__init__`
@@ -305,7 +306,7 @@ __init__返回None；使用类名构造时得到已经初始化的对象。后�
 
 I/O/预算错。
 
-源码：[`src/chronaxis/execution/frame_capture.py:165`](../../../src/chronaxis/execution/frame_capture.py#L165)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:167`](../../../src/chronaxis/execution/frame_capture.py#L167)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-append"></a>
 ### `TextFrameStore.append`
@@ -335,7 +336,7 @@ TextFrameStore.append(record)
 - `ValueError`：文本原帧仓状态或连续序号不符。
 - `ValueError`：文本原帧时间回退。
 
-源码：[`src/chronaxis/execution/frame_capture.py:183`](../../../src/chronaxis/execution/frame_capture.py#L183)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:185`](../../../src/chronaxis/execution/frame_capture.py#L185)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-seal"></a>
 ### `TextFrameStore.seal`
@@ -365,7 +366,7 @@ TextFrameStore.seal()
 
 - `ResultClosedError`：文本原帧仓不能重复封口。
 
-源码：[`src/chronaxis/execution/frame_capture.py:205`](../../../src/chronaxis/execution/frame_capture.py#L205)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:207`](../../../src/chronaxis/execution/frame_capture.py#L207)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-iter_samples"></a>
 ### `TextFrameStore.iter_samples`
@@ -396,7 +397,7 @@ FrameSample生成器。
 - `ResultClosedError`：文本原帧仓不可读。
 - `ValueError`：文本原帧暂存序号不一致。
 
-源码：[`src/chronaxis/execution/frame_capture.py:212`](../../../src/chronaxis/execution/frame_capture.py#L212)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:214`](../../../src/chronaxis/execution/frame_capture.py#L214)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-iter_frames"></a>
 ### `TextFrameStore.iter_frames`
@@ -422,7 +423,7 @@ ExportCANFrame生成器。
 
 原回放错。
 
-源码：[`src/chronaxis/execution/frame_capture.py:227`](../../../src/chronaxis/execution/frame_capture.py#L227)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:229`](../../../src/chronaxis/execution/frame_capture.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-TextFrameStore-close"></a>
 ### `TextFrameStore.close`
@@ -448,4 +449,4 @@ TextFrameStore.close()
 
 清理错可重试。
 
-源码：[`src/chronaxis/execution/frame_capture.py:237`](../../../src/chronaxis/execution/frame_capture.py#L237)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/frame_capture.py:239`](../../../src/chronaxis/execution/frame_capture.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

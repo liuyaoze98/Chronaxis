@@ -1,4 +1,6 @@
 """对照标准JSON和手写YAML语义，核受限语法、位置、隔离及真实配置句柄生命周期。"""
+
+from workspace_fixtures import test_directory
 from concurrent.futures import ThreadPoolExecutor
 import json
 import math
@@ -170,7 +172,7 @@ message: |-
 
     def test_loader_formats_bom_errors_and_only_config_io(self):
         """真实文件只按后缀读取，未知后缀不打开；源路径只是文本。参数: 无。返回: None。异常: 断言。"""
-        root=Path(tempfile.mkdtemp(prefix='config-parser-',dir='work'))
+        root=Path(test_directory(self,prefix='config-parser-',dir='work'))
         for suffix,text in (('.JSON','{"path":"missing.blf"}'),('.yaml','path: missing.blf'),('.yml','path: missing.blf')):
             target=root/('plan'+suffix);target.write_text('\ufeff'+text,encoding='utf-8')
             self.assertEqual(load_configuration(target).data,{'path':'missing.blf'})
@@ -184,7 +186,7 @@ message: |-
 
     def test_real_fd_is_closed_before_parse_cancel_or_error(self):
         """实际配置FD在后续解析报错/取消前已关，不吞KeyboardInterrupt。参数: 无。返回: None。异常: 断言。"""
-        root=Path(tempfile.mkdtemp(prefix='config-fd-',dir='work'));path=root/'config.yaml'
+        root=Path(test_directory(self,prefix='config-fd-',dir='work'));path=root/'config.yaml'
         path.write_text('a: 1',encoding='utf-8');opened=[];original=Path.open
         def observe(target,*args,**kwargs):
             """登记本次真实句柄。参数: 原打开参数。返回: FD。异常: 原IO错误。"""

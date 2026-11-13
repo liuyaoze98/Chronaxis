@@ -75,13 +75,26 @@ sources:               # 列出输入来源；每项规定数据位置、格式�
 
 |reader.version|支持的文字排列及用途|
 |---|---|
-|vector-asc-v1（默认）|经典帧如`0.1 1 123 Rx d 1 FF`；FD如`0.1 CANFD 1 Rx 123 1 0 1 1 FF`|
-|vector-asc-statistics-v1|上述经典帧允许严格匹配的`Length = … BitCount = … ID = …`统计尾部；末尾ID要与主字段一致|
+|vector-asc-v1（默认）|经典帧如`0.1 1 123 Rx d 1 FF`，可带下面说明的标准统计尾；FD如`0.1 CANFD 1 Rx 123 1 0 1 1 FF`|
+|vector-asc-statistics-v1|保留显式统计格式入口，经典帧及标准统计尾的检查与默认入口相同；不必仅因出现统计尾而额外配置|
 |sclicer-asc-v1|FD排列如`0.1 CANFD 1 123 Rx 1 0 d 1 1 FF`；可混合经典帧|
 
 ASC的time.unit默认s，通常不填写；显式填写也必须为s。reader还可设置encoding，默认utf-8-sig，不支持UTF-16/32。遇到不符合指定格式的行就失败，不依次尝试不同解析器直到某个成功。
 
 ASC文字通道1在配置中填写1；ID后缀x表示扩展帧，不能只看ID数值大小猜扩展标志。FD的DLC码与实际字节数不同，例如DLC 10代表16字节、15代表64字节。FD零字节数据帧也不能自动当成远程请求帧。
+
+经典帧的标准统计尾为`Length = 238000 BitCount = 123 ID = 440`。三个字段的数量、顺序和非负十进制数值必须正确，尾部ID还要与主报文ID相同；例如主ID为十六进制`1B8`时，尾部填写十进制`440`。程序在同次读取中识别它，缺项、错序和ID不符仍报错。
+
+以下非数据记录也可出现在ASC中：
+
+|记录|读取行为及边界|
+|---|---|
+|经典远程帧，如`0.5 1 100 Rx r`或`0.5 1 100 Rx r 8`|允许省略DLC，但省略表示长度未知，不等于0。原样导出ASC仍省略它；导出BLF时因缺少真实DLC而报错，不补造0。此规则不改变原始CAN CSV对远程帧显式DLC的要求。|
+|`CAN 1 Status:chip status error active`状态事件|支持`error active`、`error passive`、`warning level`、`busoff`或`bus off`；可带完整的`- TxErr: 8 RxErr: 0`计数。先按文件时间规则推进时钟，再跳过状态内容，不生成信号样本。|
+|经典`ErrorFrame`|支持裸错误帧、`ECC: 10100010`这样的8位二进制诊断，或完整的`Flags = … CodeExt = … Code = … ID = … DLC = … Position = … Length = …`诊断尾。后者各数值使用十进制或`0x`十六进制；字段必须完整且有序。|
+|CAN FD `ErrorFrame`|标准Vector入口（默认及vector-asc-statistics-v1）支持裸错误帧，以及含错误说明、flags/code/codeExt、Arb./Data.阶段、位置、诊断ID、BRS/ESI、DLC、部分载荷及完整七项计时尾的Vector诊断布局。诊断DLC不要求等于已取得的部分载荷长度；实际帧类型采用extFlags。Sclicer FD入口仍只支持其明确的数据帧布局。|
+
+错误帧保留错误帧身份，不把诊断中的ID、DLC或可能损坏的数据作为普通报文解码。其他未知事件、残缺诊断及损坏的数据行仍带文件名和物理行号报错，不静默忽略。
 
 ASC里有两个容易混淆的“绝对/相对时间”：
 

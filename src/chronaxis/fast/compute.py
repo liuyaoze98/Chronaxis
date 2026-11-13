@@ -156,11 +156,34 @@ def _bind(node, signals, depth=0):
     raise ValueError(f'无效的数值指令 {op}')
 
 
-class _Metric:
-    """只属于当前文件的累计器。求值和分桶均成功后才更新累计和计数。"""
+class _Accumulator:
+    """按原顺序累加已经求好的贡献，不解析公式或保存解码字段。"""
+
+    def __init__(self, spec):
+        """读取结果名称和单位；新累计器没有观测值，不把空输入记为零。"""
+        self.name, self.unit = spec['name'], spec['unit']
+        self.matched = self.selected = 0
+        self.total = 0.0
+
+    def add(self, contribution, keep):
+        """提交一条已核验贡献；溢出时保留此前累计及计数，原异常传播。"""
+        if keep:
+            self.total = _float(self.total + contribution)
+            self.selected += 1
+        self.matched += 1
+
+    def result(self):
+        """返回当前业务行；区分没有目标、空方向桶和贡献相消。"""
+        reason = None if self.selected else 'no_selected_direction' if self.matched else 'no_target_frames'
+        return dict(name=self.name, unit=self.unit, value=self.total if self.matched else None,
+                    status='complete' if self.matched else 'indeterminate', reason=reason)
+
+
+class _Metric(_Accumulator):
+    """当前文件的求值器和累计状态；先求公式和方向，再提交本条贡献。"""
 
     def __init__(self, spec, formula):
-        self.name, self.unit = spec['name'], spec['unit']
+        super().__init__(spec)
         self.evaluate = formula
         self.factor = _float(spec.get('output_scale', 1))
         self.direction = None
@@ -169,8 +192,6 @@ class _Metric:
             if direction['bucket'] not in ('positive','negative'):
                 raise ValueError('方向桶需要 positive 或 negative')
             self.direction = (direction['signal'], direction['bucket'] == 'positive')
-        self.matched = self.selected = 0
-        self.total = 0.0
 
     def consume(self, decoded):
         """消费一条已匹配记录。除零、溢出或缺值直接使本文件失败。"""
@@ -194,24 +215,6 @@ class _Metric:
             keep = value > 0 if positive else value < 0
         return contribution, keep
 
-    def add(self, contribution, keep):
-        """按原顺序提交一次贡献，零值仍计入入选数。
-
-        参数: contribution有限float；keep为方向是否入选。返回: None。
-        异常: 累计溢出；调用方已验证贡献来源，不进行重新求值。
-        """
-        if keep:
-            self.total = _float(self.total + contribution)
-            self.selected += 1
-        self.matched += 1
-
-    def result(self):
-        """区分无目标、空方向桶和贡献相消，以原始精度给出当前结果。"""
-        reason = None if self.selected else 'no_selected_direction' if self.matched else 'no_target_frames'
-        return dict(name=self.name, unit=self.unit, value=self.total if self.matched else None,
-                    status='complete' if self.matched else 'indeterminate', reason=reason)
-
-
 def prepare_metric(spec):
     """创建一个计算项的求值/累计状态。参数为简单声明字典；拒绝冲突别名和未知指令。"""
     signals, parameters = spec['signals'], spec.get('parameters', {})
@@ -219,3 +222,31 @@ def prepare_metric(spec):
         raise ValueError('参数与信号名称冲突')
     natural = _syntax(spec['expr'], signals, parameters)
     return _Metric(spec, _bind(spec.get('program', natural), signals))
+
+
+def _prepare_program_metric(spec):
+    """绑定内部已检查的指令，不重新解析原公式。
+
+    参数: spec来自公共 fast 编译器，或本会话已经检查的低层声明。
+    返回: 每文件独立的求值/累计状态。异常: 指令、类型或数值声明错误。
+    仅内部调用；普通字典入口仍通过 prepare_metric 检查文本，即使带有 program。
+    """
+    signals = spec['signals']
+    if signals.keys() & spec.get('parameters', {}).keys():
+        raise ValueError('参数与信号名称冲突')
+    return _Metric(spec, _bind(spec['program'], signals))
+
+
+def _check_program_spec(spec):
+    """为低层会话检查一次文本及指令，并返回带指令的新声明。
+
+    参数: 原计算项字典，不修改它。返回: 浅复制的内部声明。
+    异常: 与 prepare_metric 相同；非法文本不能借合法 program 绕过检查。
+    """
+    signals, parameters = spec['signals'], spec.get('parameters', {})
+    if signals.keys() & parameters.keys():
+        raise ValueError('参数与信号名称冲突')
+    natural = _syntax(spec['expr'], signals, parameters)
+    checked = dict(spec, program=spec.get('program', natural))
+    _prepare_program_metric(checked)
+    return checked

@@ -6,6 +6,7 @@
 所有输入与输出均由既有ProcessFixture放在新项目work目录。
 """
 
+from chronaxis.can_dependencies import runtime_dependency_versions
 from functools import partial
 from dataclasses import replace
 import os
@@ -21,7 +22,6 @@ from chronaxis.legacy.batch_wire import encode_batch
 from chronaxis.legacy.process_read import RemoteLegacyError
 from chronaxis.legacy.records import (MAX_WIRE_BYTES, PROFILE_ID, LegacyCANRequest, LegacyDecodedFrame,
     decode_packet, decoded_to_dict, encode_packet)
-from chronaxis.legacy.worker import VENDOR_SHA256
 from chronaxis.results.budget import ResourceBudget
 from chronaxis.sources.can_spec import LegacyCANSpec
 from chronaxis.sources.models import ReadRequest
@@ -40,8 +40,7 @@ def fault_batch_worker(connection, *, mode='normal'):
         initial = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))
         ready = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
             'worker_pid': os.getpid(), 'fields': [{'locator': item, 'unit': 'V'} for item in initial['fields']],
-            'dependency_versions': {'python': platform.python_version(), 'python-can': '4.6.1',
-                'cantools': '39.4.3', 'natsort': '8.4.0'}, 'vendor_sha256': VENDOR_SHA256}
+            'dependency_versions': runtime_dependency_versions()}
         connection.send_bytes(encode_packet(ready))
         for index in range(2):
             packet = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))
@@ -83,8 +82,7 @@ def same_time_batch_worker(connection):
         initial = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))
         connection.send_bytes(encode_packet({'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
             'worker_pid': os.getpid(), 'fields': [{'locator': item, 'unit': 'V'} for item in initial['fields']],
-            'dependency_versions': {'python': platform.python_version(), 'python-can': '4.6.1',
-                'cantools': '39.4.3', 'natsort': '8.4.0'}, 'vendor_sha256': VENDOR_SHA256}))
+            'dependency_versions': runtime_dependency_versions()}))
         position, total = 0, 2048
         while True:
             packet = decode_packet(connection.recv_bytes(MAX_WIRE_BYTES))

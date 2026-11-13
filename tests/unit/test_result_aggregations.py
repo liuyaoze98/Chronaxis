@@ -1,7 +1,7 @@
 """从已观测的活动及请求配对核验总体分类、严格政策、资源清理和实际结果发布。"""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from contextlib import closing
 from unittest.mock import patch
 import unittest
@@ -171,7 +171,9 @@ class AggregationTests(unittest.TestCase):
         参数: 无。返回: None。异常: 吞取消、部分发布或资源泄漏。
         """
         raw=self.sequence_config(); raw['aggregations']=raw['aggregations'][:1]
-        plan=AnalysisPlan.from_dict(raw);budget=ResourceBudget()
+        # 内部聚合器由Runner接收已选后端的计划；auto先经过相同的静态步骤。
+        from chronaxis.planning.backend_selection import execution_plan
+        plan=execution_plan(AnalysisPlan.from_dict(raw));budget=ResourceBudget()
         owner=ResultAggregations(plan,budget)
         try:
             for i in range(4):

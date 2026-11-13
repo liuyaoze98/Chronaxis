@@ -16,11 +16,11 @@ SelectionRow迭代器，其输入和中间历史仍完整物化，不能据此�
 这是完整内存历史的便利入口，创建本次局部结果，不修改输入，不跨任务
 继承绑定或信号值，也不调用NumPy数值内核。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)
+[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[CompiledExpression](chronaxis.core.expression.md#api-CompiledExpression)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)
 
 ## 对象导航
 
@@ -74,7 +74,7 @@ _scalar_context(bindings, aligned, index)
 
 无效绑定或位置直接报错。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:38`](../../../src/chronaxis/core/calculations_memory_reference.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:38`](../../../src/chronaxis/core/calculations_memory_reference.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_calculation_plan"></a>
 ## `require_calculation_plan`
@@ -112,7 +112,7 @@ TypeError: 数值计划或请求模型类型错误。
 
 只合并分析层依赖并检查当前同步声明，不改变旧读取范围或解码调用。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:52`](../../../src/chronaxis/core/calculations_memory_reference.py#L52)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:52`](../../../src/chronaxis/core/calculations_memory_reference.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-build_calculation_series_reference"></a>
 ## `build_calculation_series_reference`
@@ -146,7 +146,7 @@ CalculationSeries。时间为整数纳秒，值与条件共用完整轴；窗口
     条件依赖可增加时间边界，真实样本标志只来自数值依赖。
     保留完整内存历史和新结果，不延长会话观测域，也不额外读取或解码。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:93`](../../../src/chronaxis/core/calculations_memory_reference.py#L93)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:93`](../../../src/chronaxis/core/calculations_memory_reference.py#L93)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-select_memory_reference"></a>
 ## `select_memory_reference`
@@ -177,7 +177,7 @@ SelectionRow迭代器，不积累全部输出行。
 
 输入和中间历史仍完整物化，不声明生产有界预算；不接旧reader/decoder。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:161`](../../../src/chronaxis/core/calculations_memory_reference.py#L161)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:161`](../../../src/chronaxis/core/calculations_memory_reference.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_memory_reference"></a>
 ## `compute_memory_reference`
@@ -209,4 +209,4 @@ CalculationResult，保存面积、时间/样本统计或TRUE时长，以及覆�
 
 先建立CalculationSeries，再独立执行参考指标计算；不修改原行或调用数组后端。
 
-源码：[`src/chronaxis/core/calculations_memory_reference.py:174`](../../../src/chronaxis/core/calculations_memory_reference.py#L174)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_memory_reference.py:174`](../../../src/chronaxis/core/calculations_memory_reference.py#L174)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

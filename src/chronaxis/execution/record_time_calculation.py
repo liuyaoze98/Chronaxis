@@ -73,6 +73,8 @@ class RecordTimeCalculation(RecordPointBuffer):
         if type(batch_intervals) is not int or not 1 <= batch_intervals <= 4096:
             raise ValueError('记录批上限需要1到4096')
         self._samples=spec.operation in ('sample_count','sample_minimum','sample_maximum','sample_mean', *SAMPLE_MOMENTS, *SAMPLE_QUANTILES)
+        # 宿主归约自行管理其状态；只有内建精确分位数在本层预估样本保留费用。
+        self._builtin_quantile = hosted is None and spec.operation in SAMPLE_QUANTILES
         if hosted is not None:
             from ..core.calculations import calculation_conversion
             from ..core.unit_registry import resolve_unit,conversion
@@ -168,10 +170,27 @@ class RecordTimeCalculation(RecordPointBuffer):
                 # 系数沿用原样本核对最多两个TTL插入点的保守预付。
                 available = self._budget.memory_budget_bytes - self._budget.ram_bytes
                 count = min(len(self._rows), (available - 65536) // 36864)
+                if self._builtin_quantile:
+                    # 临时工作区与本块新增的持久样本同时存活。右端不属于半开块，
+                    # TTL插入点也不是真实样本，故至多保留count-1个值。按缓冲器
+                    # 的实际计费规则找最大可用块，不用固定百分比吞掉剩余预算。
+                    lower, upper = 0, max(0, count)
+                    while lower < upper:
+                        middle = (lower + upper + 1) // 2
+                        needed = (65536 + middle * 36864
+                                  + self._reduction._quantile._append_memory_bytes(max(0, middle - 1)))
+                        if needed <= available:
+                            lower = middle
+                        else:
+                            upper = middle - 1
+                    count = lower
                 if count < 2:
+                    minimum = 139264
+                    if self._builtin_quantile:
+                        minimum += self._reduction._quantile._append_memory_bytes(1)
                     raise BudgetExceededError(
                         f'计算项 {self._spec.calculation_id}（{self._spec.operation}）'
-                        f'样本统计工作区不足：最小两点需要139264字节，当前可用{available}字节；'
+                        f'样本统计工作区不足：最小两点及必要样本存储需要{minimum}字节，当前可用{available}字节；'
                         '已尝试按可用预算分块，请减少同时运行的计算项或读取批量，'
                         '核实必要状态后再调整memory_budget_bytes')
                 if count == len(self._rows):

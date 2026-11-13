@@ -1,7 +1,7 @@
 """公开旧CAN记录，以及按需加载的记录仓、逐次模型与贡献累计原语。
 
 输入输出和wire边界由records统一；实际进程由调用方显式创建，worker只在INIT后
-加载vendor。包导入无输入/DBC读取、logger配置或子进程副作用；不代表旧reader关闭
+加载CAN依赖。包导入无输入/DBC读取、logger配置或子进程副作用；不代表旧reader关闭
 缺陷已修复。单BLF公共AnalysisRunner和原始片段已在其任务中验收；独立逐次模型及累计
 只接收调用方提供的记录和已求值贡献，不证明表达式、旧ChrgInfo出口或公共
 legacy_sum来源已经接通。原语不替输入提供者补缓存、施加TTL或重新解码。

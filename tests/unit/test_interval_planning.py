@@ -253,7 +253,7 @@ class IntervalPlanningTests(unittest.TestCase):
             self.assertEqual(report.capability_status['demand_lifecycle'],'implemented')
             explained=explanation_json(explain_analysis_plan(plan))
         self.assertEqual(explained['intervals']['energy']['driver'],'power')
-        args=SimpleNamespace(plan='unused.json',backend=None,command='explain',format='json')
+        args=SimpleNamespace(plan='unused.json',backend=None,process_count=None,command='explain',format='json')
         sink=io.StringIO()
         with patch('chronaxis.analysis_cli.load_analysis_plan',return_value=plan),redirect_stdout(sink),static_only():
             code=run_static(args)

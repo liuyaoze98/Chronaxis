@@ -1,8 +1,7 @@
-"""新原始报文入口的长度政策；只检查实际需要解码的数据帧。
+"""原始报文的长度检查与显式纯BLF串行解码政策。
 
-不改旧解码函数，也不再次解码。旧函数返回空值时，下游把所需字段置为无效；
-旧接口没有暴露失败原因，本层不猜测原因。legacy保留原来的调用行为。
-"""
+只对所需数据帧核所选长度规则。串行兼容函数保留唯一ID和多定义ID的既有异常
+范围；普通并行和文本入口不自动使用这一兼容规则。返回空值时不继承前值。"""
 
 
 def validate_decode_policy(value):
@@ -26,3 +25,24 @@ def check_decode_length(frame, expected, policy):
     if (type(frame.dlc) is not int or not 0 <= frame.dlc <= 64 or frame.dlc != size
             or (size != expected if policy == 'strict' else size > expected)):
         raise ValueError('已选DBC报文载荷长度不一致')
+
+
+def decode_serial_frame(database, frame, message, duplicate_ids):
+    """保留纯BLF串行的既有解码政策，不重复检查报文长度或缩放物理值。
+
+    参数: database为本次DBC；frame为当前原消息；message为按实际帧型选择的定义或None；
+        duplicate_ids为同ID多定义集合。返回: 解码值字典或失败时的空字典。
+    异常: 唯一ID捕获普通Exception；多定义仅捕获DecodeError，其他错误原样传播。
+        这一区别只用于明确的串行兼容入口，普通并行和文本入口不自动套用。
+    """
+    if message is None or frame.arbitration_id not in duplicate_ids:
+        try:
+            return database.decode_message(frame.arbitration_id, frame.data,
+                decode_choices=False, allow_truncated=True)
+        except Exception:
+            return {}
+    from cantools.database.errors import DecodeError
+    try:
+        return message.decode(frame.data, decode_choices=False, allow_truncated=True)
+    except DecodeError:
+        return {}

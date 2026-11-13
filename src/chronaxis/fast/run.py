@@ -10,11 +10,12 @@ from ..results.publication import PublicationNames, output_root
 
 def run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | None = None,
                  cancel_event: object | None = None, _return_rows: bool = False,
-                 work_dir: str | Path | None = None) -> Path | tuple[Path, tuple]:
+                 work_dir: str | Path | None = None, _programs_checked: bool = False) -> Path | tuple[Path, tuple]:
     """执行冻结会话并最后发布清单。
 
     参数: spec编译声明，output结果目录，engine执行器标识，database可复用DBC，
     cancel_event可选取消，_return_rows控制独立batch同时取得未舍入行，work_dir暂存父目录。
+    _programs_checked仅供紧接公共编译器的内部调用；默认False仍检查全部原始公式。
     返回: 清单Path；_return_rows=True时返回(Path, 行tuple)。异常: 执行/取消/发布错误。
     """
     table_format = spec.get('table_format','jsonl')
@@ -23,7 +24,8 @@ def run_prepared(spec: dict, output: str | Path, *, engine: str, database: objec
     root = output_root(output)
     from .session import run_session
     execution = {}
-    rows,warnings = run_session(spec,database,cancel_event=cancel_event,work_dir=work_dir,statistics=execution)
+    rows,warnings = run_session(spec,database,cancel_event=cancel_event,work_dir=work_dir,
+                               statistics=execution,_programs_checked=_programs_checked)
     if cancel_event is not None and cancel_event.is_set():
         raise InterruptedError('发布结果前取消')
     table = 'results.jsonl' if table_format == 'jsonl' else 'results.csv'
@@ -73,4 +75,4 @@ def run(config: str | Path, output: str | Path, *, process_count: int | None = N
     from .session import effective_spec
     spec = effective_spec(compile_config(config,_with_database=True),process_count)
     return run_prepared(spec,output,engine='base_hpc_v1',database=spec.pop('_database'),
-                        work_dir=work_dir,cancel_event=cancel_event)
+                        work_dir=work_dir,cancel_event=cancel_event,_programs_checked=True)

@@ -7,7 +7,7 @@
 
 错误保留原异常和明确的清理所有者。只有各层实际关闭后才退还对应费用；成功移交
 后的结果由调用方关闭，本会话不重复关闭它。现场留存仅由diagnostics.retain_work
-决定；目录删除始终核对本次创建身份，不触碰已有目录或RefProjects。
+决定；目录删除始终核对本次创建身份，不触碰已有目录或其他任务的文件。
 """
 
 # 协调层只调用已有生产协议；UUID/时区时间是运行身份，不参与稳定输入摘要。
@@ -24,6 +24,7 @@ from ..results.manifest import RunMetadata
 from ..results.result import AnalysisResult
 from ..results.spool import ResultSpool, _cleanup_owner, _reserve_owned_ram, _release_owned_ram
 from .history import _metadata_bytes
+from .static_metadata import static_metadata_bytes
 
 
 class RunSession:
@@ -37,13 +38,16 @@ class RunSession:
     def __init__(self, plan, work_dir=None):
         """申请有限固定状态，拒绝已有或受保护目录，不读取来源。
 
-        参数: plan为已选实际backend的AnalysisPlan；work_dir为全新路径，None创建
+        参数: plan为AnalysisPlan，auto在资源申请前解析；work_dir为全新路径，None创建
             唯一临时根。返回: 单次执行owner。异常: 类型、路径、预算或取消原错；
             持续构造清理失败附runner_cleanup_owner，已有目录不会被写入诊断。
         """
         # 类型拒绝不接管调用方计划；其来源与raw_config从未复制或修改。
         if not isinstance(plan, AnalysisPlan) or work_dir is not None and not isinstance(work_dir, (str, Path)):
             raise TypeError('RunSession需AnalysisPlan及可选新工作路径')
+        from ..planning.backend_selection import execution_plan
+        self._automatic_backend = plan.execution.backend == 'auto'
+        plan = execution_plan(plan)
         # typed计划也可直接构造；先检查有限策略值，实际需求在支付协调费用后统一计算。
         require_can_decode_scope(plan)
         from ..planning.export_options import require_export_options
@@ -68,16 +72,19 @@ class RunSession:
                     plan.dataset.entity, plan.dataset.session_id, plan.dataset.domain, plan.dataset.timebase))
                 + (0 if work_dir is None else 32 * _metadata_bytes(str(work_dir))))
             _reserve_owned_ram(self, cost, '_fixed_cost')
-            # 需求索引只含有限声明字段；先覆盖集合、定位解析及冻结tuple，再创建实际需求。
-            _reserve_owned_ram(self, 65536 + 64 * _metadata_bytes(plan.bindings)
-                + 32 * _metadata_bytes((plan.rules, plan.windows, plan.calculations, plan.message_calculations)), '_fixed_cost')
+            # 原计划共享同一套绑定；按对象身份收一次声明费用，不按计算项重复展开。
+            # 新需求集合/定位索引另按声明个数付费，不用共享树大小乘放大系数。
+            declarations = (plan.bindings, plan.rules, plan.windows, plan.calculations,
+                            plan.message_calculations, plan.intervals, plan.derived)
+            index_count = (len(plan.signals) + len(plan.sources) + len(plan.rules)
+                           + len(plan.windows) + len(plan.calculations) + len(plan.message_calculations))
+            _reserve_owned_ram(self, 65536 + static_metadata_bytes(declarations)
+                + 4096 * index_count, '_fixed_cost')
             self._require_static_derived()
             self._requirements = collect_input_requirements(plan)
-            # resolve同时防止符号链接把看似新目录导入历史快照；保护检查在mkdir前。
+            # 先解析实际工作路径，再独占创建本次目录并保存其身份。
             candidate = Path(tempfile.gettempdir()) if work_dir is None else Path(work_dir)
             candidate = candidate.resolve()
-            if any(part.casefold() == 'refprojects' for part in candidate.parts):
-                raise ValueError('运行工作目录不能位于RefProjects')
             if work_dir is None:
                 self._path = Path(tempfile.mkdtemp(prefix='chronaxis-run-', dir=candidate))
             else:
@@ -256,7 +263,9 @@ class RunSession:
             enable_selections=any(m.operation=='select' for m in plan.calculations),
             enable_aggregations=bool(plan.aggregations),
             failure_diagnostics=plan.diagnostics.retain_work)
-        self._construct('_record_calculations', RecordSessionCalculations, plan, self._budget, self._path, requirements=self._requirements)
+        self._construct('_record_calculations', RecordSessionCalculations, plan, self._budget, self._path,
+                        requirements=self._requirements, declaration_owner=self,
+                        direct_integrals=self._automatic_backend)
         self._record_calculations.execute_into(self._spool)
         if self._record_calculations._exports is not None:
             self._record_calculations._exports.take_exports(self)

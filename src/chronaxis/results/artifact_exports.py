@@ -5,6 +5,7 @@
 """
 
 from pathlib import Path
+from ..core.validation import require_text
 import os
 import stat
 from hashlib import sha256
@@ -27,8 +28,7 @@ class ArtifactExportStore:
         self._held_cost=self._fixed_cost=0; self._sort=None; self._input=self._output=self._index=self._cursor=None
         self.count=0; self.state='building'; self._closed=False
         try:
-            if device_label not in ('home','work') or any(p.casefold()=='refprojects' for p in self.path.resolve().parts):
-                raise ValueError('新导出需要实际设备标签及新工作目录')
+            require_text(device_label, 'device_label')
             _reserve_owned_ram(self,524288,'_fixed_cost')
             self.path.mkdir(parents=True,exist_ok=False)
             try:
@@ -74,39 +74,44 @@ class ArtifactExportStore:
 
     def _file(self,path,destination=None,expected=None,identity=None):
         """必要复制时才读内容；请求摘要则在同次读取计算。参数: 路径/目标/大小摘要/身份。返回: 大小和可选摘要。"""
-        if self._input is not None or self._output is not None:
-            raise ResultClosedError('导出文件还有未清理句柄')
-        before=self._identity(path)
-        # 摘要模式会核实际内容，允许修复为原字节后重试；普通模式没有内容依据，仍拒身份变化。
-        if identity is not None and tuple(identity)!=before and not self._integrity:
-            raise ResultFormatError('导出文件已被替换或修改')
-        if expected is not None and before[2]!=expected[0]:
-            raise ResultFormatError('导出文件大小与登记不同')
-        if destination is None and not self._integrity:
-            return before[2],None
-        self._input=path.open('rb',buffering=0)
-        opened=os.fstat(self._input.fileno())
-        if (opened.st_dev,opened.st_ino,opened.st_size,opened.st_mtime_ns)!=before:
-            raise ResultFormatError('导出文件在打开时变化')
-        if destination is not None:
-            self._output=destination.open('xb',buffering=0)
-        digest=sha256() if self._integrity else None; count=0
-        while True:
-            block=self._input.read(65536)
-            if not block: break
-            count+=len(block)
-            if count>before[2]: raise ResultFormatError('导出文件超过登记大小')
-            if digest is not None: digest.update(block)
-            if self._output is not None:
-                self._budget.reserve_spool(len(block)); _write_all(self._output,block)
-        value=None if digest is None else digest.hexdigest()
-        if count!=before[2] or self._identity(path)!=before:
-            raise ResultFormatError('导出文件在读取时变化')
-        if expected is not None and expected[1] is not None and value!=expected[1]:
-            raise ResultFormatError('导出文件内容与登记摘要不同')
-        self._close_slot('_output'); self._close_slot('_input')
-        # 写成功和真实close已确认；不再把新目标整份回读一次。
-        return count,value
+        block = None
+        try:
+            if self._input is not None or self._output is not None:
+                raise ResultClosedError('导出文件还有未清理句柄')
+            before=self._identity(path)
+            # 摘要模式会核实际内容，允许修复为原字节后重试；普通模式没有内容依据，仍拒身份变化。
+            if identity is not None and tuple(identity)!=before and not self._integrity:
+                raise ResultFormatError('导出文件已被替换或修改')
+            if expected is not None and before[2]!=expected[0]:
+                raise ResultFormatError('导出文件大小与登记不同')
+            if destination is None and not self._integrity:
+                return before[2],None
+            self._input=path.open('rb',buffering=0)
+            opened=os.fstat(self._input.fileno())
+            if (opened.st_dev,opened.st_ino,opened.st_size,opened.st_mtime_ns)!=before:
+                raise ResultFormatError('导出文件在打开时变化')
+            if destination is not None:
+                self._output=destination.open('xb',buffering=0)
+            digest=sha256() if self._integrity else None; count=0
+            while True:
+                block=self._input.read(65536)
+                if not block: break
+                count+=len(block)
+                if count>before[2]: raise ResultFormatError('导出文件超过登记大小')
+                if digest is not None: digest.update(block)
+                if self._output is not None:
+                    self._budget.reserve_spool(len(block)); _write_all(self._output,block)
+            value=None if digest is None else digest.hexdigest()
+            if count!=before[2] or self._identity(path)!=before:
+                raise ResultFormatError('导出文件在读取时变化')
+            if expected is not None and expected[1] is not None and value!=expected[1]:
+                raise ResultFormatError('导出文件内容与登记摘要不同')
+            self._close_slot('_output'); self._close_slot('_input')
+            # 写成功和真实close已确认；不再把新目标整份回读一次。
+            return count,value
+        finally:
+            # 文件槽仍由本对象的可重试关闭负责；这里只清异常帧内的当前复制块。
+            block = None
 
     def append(self,export_type,scope,interval,*,segment_id=None,completed_files=None):
         """登记刚生成目录中有限文件的实际身份。参数: 类型/范围/区间/片段ID。返回: None。异常: 文件/索引错。

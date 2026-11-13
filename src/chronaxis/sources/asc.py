@@ -1,6 +1,6 @@
-"""逐行读取显式版本的标准/统计尾/Sclicer ASC，返回带物理行号的真实CAN记录。
+"""逐行读取标准ASC及显式Sclicer布局，返回带物理行号的真实CAN记录。
 
-支持标准经典CAN、远程/错误帧和CAN FD数据行；header的absolute是段内累计时间，
+支持标准经典CAN及统计尾、远程/错误帧和CAN FD数据行；header的absolute是段内累计时间，
 relative是相邻事件时间差。relative输出以首段为零，epoch输出使用显式时区的日期。
 日期/进制/通道/载荷长度严格检查；时间顺序默认全检，实际计算可限定所需帧。
 未知行拒绝，不从头回退或修复输入文件。
@@ -32,7 +32,7 @@ class ASCSpec:
     """固定一次ASC读取的格式、编码、时间参考；不猜测本地时区。"""
 
     path: Path  # 单文件，连续多文件的时序合并由外层负责。
-    parser_version: str = 'vector-asc-v1'  # 标准、statistics或显式sclicer布局；不自动尝试。
+    parser_version: str = 'vector-asc-v1'  # 标准布局含统计尾；statistics保留显式入口，sclicer须显式选择。
     encoding: str = 'utf-8-sig'  # 严格解码，兼容UTF-8 BOM，不自动换编码。
     time_reference: str = 'relative'  # relative为首段原点，epoch为显式日期/时区。
     timezone_offset_minutes: int | None = None  # epoch必填，避免依赖宿主时区。
@@ -93,12 +93,104 @@ def _unsigned(text, base, maximum, label):
     return value
 
 
+def _status_event(tokens: list[str]) -> bool:
+    """识别已知CAN控制器状态事件，验证格式后告知调用方不产生数据帧。
+
+    参数: tokens为去掉时间的有界字段列表；时间累加必须由调用方预先完成。
+    返回: bool；普通帧为False，完整的chip status事件为True，无文件或状态副作用。
+    异常: ValueError为CAN事件的未知状态、通道、计数或残缺布局；不跳过未知事件。
+    """
+    # 仅接受明确的状态事件，避免把损坏帧和其他协议行当作可忽略的元数据。
+    if not tokens or tokens[0] != 'CAN':
+        return False
+    match = re.fullmatch(
+        r'CAN ([0-9]+) Status:\s*chip status '
+        r'(?:error active|error passive|warning level|busoff|bus off)'
+        r'(?: - TxErr: ([0-9]+) RxErr: ([0-9]+))?', ' '.join(tokens), re.IGNORECASE)
+    if match is None:
+        raise ValueError('不支持或损坏的ASC总线状态事件，需要chip status及完整的可选TxErr/RxErr计数')
+    channel = _unsigned(match[1], 10, 65536, 'ASC状态事件通道')
+    if channel == 0:
+        raise ValueError('ASC状态事件通道从1开始')
+    # 诊断计数仅验证为有界非负整数，不把状态行转换成信号样本或保存额外结果。
+    if match[2] is not None:
+        _unsigned(match[2], 10, 0xffffffffffffffff, 'ASC发送错误计数')
+        _unsigned(match[3], 10, 0xffffffffffffffff, 'ASC接收错误计数')
+    return True
+
+
+def _fd_error_diagnostics(tokens: list[str]) -> int:
+    """检查Vector CAN FD错误帧的结构，返回描述实际帧类型的扩展标志。
+
+    参数: tokens为ErrorFrame后的错误文字、诊断字段、部分载荷和完整计时尾。
+    返回: extFlags整数；不保留错误文字、部分载荷或诊断ID供正常信号解码。
+    异常: ValueError为未知阶段、缺字段、无效数值、载荷数量不符或保留位非零。
+    已损坏帧的DLC与已取得的DataLength可能不一致，不套用正常帧的长度关系。
+    """
+    # 错误描述含空格；Arb./Data.之后的位置字段结构固定，不能按描述的词数切割。
+    phases = [index for index, token in enumerate(tokens) if token in ('Arb.', 'Data.')]
+    if len(phases) != 1 or phases[0] < 4:
+        raise ValueError('ASC CAN FD错误帧需要错误描述、flags/code/codeExt及Arb.或Data.阶段')
+    phase = phases[0]
+    for name, value in zip(('flags', 'code', 'codeExt'), tokens[phase - 3:phase]):
+        _unsigned(value, 16, 0xffffffffffffffff, 'ASC CAN FD错误帧' + name)
+    fields = tokens[phase + 1:]
+    if len(fields) < 13:
+        raise ValueError('ASC CAN FD错误帧诊断字段或计时尾不完整')
+    position, identifier, brs, esi, dlc, length = fields[:6]
+    _unsigned(position, 10, 0xffffffffffffffff, 'ASC CAN FD错误位置')
+    numeric_id = identifier[:-1] if identifier[-1:].lower() == 'x' else identifier
+    _unsigned(numeric_id, 16, 0xffffffff, 'ASC CAN FD诊断ID')
+    if brs not in ('0', '1') or esi not in ('0', '1'):
+        raise ValueError('ASC CAN FD错误帧BRS/ESI需要0或1')
+    _unsigned(dlc, 16, 15, 'ASC CAN FD诊断DLC')
+    size = _unsigned(length, 10, 64, 'ASC CAN FD诊断载荷长度')
+    if len(fields) != 6 + size + 7:
+        raise ValueError('ASC CAN FD错误帧载荷数量或七项计时尾不符')
+    # 诊断字段固定为十六进制，Position、DataLength和MessageDuration使用十进制。
+    for token in fields[6:6 + size]:
+        _unsigned(token, 16, 255, 'ASC CAN FD诊断载荷字节')
+    duration, extended, *timing = fields[6 + size:]
+    _unsigned(duration, 10, 0xffffffffffffffff, 'ASC CAN FD错误帧持续时间')
+    flags = _unsigned(extended, 16, 31, 'ASC CAN FD扩展错误标志')
+    for token in timing:
+        _unsigned(token, 16, 0xffffffffffffffff, 'ASC CAN FD错误帧CRC或位时序')
+    return flags
+
+
+def _error_diagnostics(tokens: list[str], *, fd: bool) -> int | None:
+    """验证错误帧的已知诊断尾，不将可能受损的诊断ID或DLC当成正常帧字段。
+
+    参数: tokens为ErrorFrame之后的字段；fd表明是否为CAN FD布局。
+    返回: 完整FD诊断的extFlags，其他已知形式返回None；无副作用。
+    异常: ValueError为未知/残缺诊断或无效数值。
+    """
+    # 裸错误帧继续可用；FD附诊断按自身完整布局核验，不套用经典ECC尾。
+    if not tokens:
+        return
+    if fd:
+        return _fd_error_diagnostics(tokens)
+    text = ' '.join(tokens)
+    if re.fullmatch(r'ECC:\s*[01]{8}', text):
+        return
+    names = ['Flags', 'CodeExt', 'Code', 'ID', 'DLC', 'Position', 'Length']
+    if len(tokens) != 21 or tokens[0::3] != names or tokens[1::3] != ['='] * 7:
+        raise ValueError('ASC错误帧诊断需8位ECC或完整Flags/CodeExt/Code/ID/DLC/Position/Length字段')
+    # 此诊断格式明确使用0x前缀或十进制数，不跟随数据载荷的base头部。
+    for name, value in zip(names, tokens[2::3]):
+        hexadecimal = value.startswith(('0x', '0X'))
+        _unsigned(value[2:] if hexadecimal else value, 16 if hexadecimal else 10,
+                  0xffffffffffffffff, 'ASC错误帧' + name)
+
+
 def _frame(tokens, base, seconds):
     """解析标准数据部分，精确检查长度。参数: tokens不含时间；base为10/16；seconds为兼容秒。
 
     返回: (LegacyRawFrame, DLC编码或None)。异常: ValueError为未知布局、身份或载荷错误。
     """
     # CAN FD标准顺序是CANFD 通道 方向 ID；经典CAN是通道 ID 方向 类型。
+    if not tokens:
+        raise ValueError('ASC行缺少帧或事件内容')
     fd = tokens[0] == 'CANFD'
     if fd:
         tokens = tokens[1:]
@@ -111,6 +203,9 @@ def _frame(tokens, base, seconds):
     rest = tokens[1:]
     if fd:
         direction, rest = rest[0], rest[1:]
+    elif rest and rest[0].lower() == 'errorframe':
+        # 经典错误帧没有独立方向字段；后面可能是ECC或CAN-Core诊断，不能当作方向。
+        direction = 'Rx'
     else:
         direction = rest[1] if len(rest) > 1 else 'Rx'
     # 错误帧没有载荷，但FD格式仍明确给出方向，必须在提前返回前保存。
@@ -118,9 +213,12 @@ def _frame(tokens, base, seconds):
         raise ValueError('ASC方向需要Rx或Tx')
     fields['is_rx'] = direction == 'Rx'
     if rest[0].lower() == 'errorframe':
-        if len(rest) != 1:
-            raise ValueError('暂不支持带附加诊断的ASC错误帧')
+        error_flags = _error_diagnostics(rest[1:], fd=fd)
         fields['is_error_frame'] = True
+        if error_flags is not None:
+            # CANFD通道也可能接收经典错误帧；使用扩展标志，不把部分诊断数据伪装成有效载荷。
+            fields.update(is_fd=bool(error_flags & 1), bitrate_switch=bool(error_flags & 2),
+                          error_state_indicator=bool(error_flags & 4))
         return LegacyRawFrame(**fields), None
     identifier = rest[0]
     extended = identifier[-1:].lower() == 'x'
@@ -148,9 +246,18 @@ def _frame(tokens, base, seconds):
             _unsigned(token, 16 if index >= 2 else 10, 0xffffffffffffffff, 'CAN FD附加字段')
         payload = payload[:length]
     else:
-        _, _, frame_type, dlc_text, *payload = rest
+        if len(rest) < 3:
+            raise ValueError('经典CAN行缺少ID、方向或d/r类型')
+        _, _, frame_type, *tail = rest
         if frame_type not in ('d', 'r'):
             raise ValueError('经典CAN类型需要d或r')
+        # 远程帧可省略DLC；None保留未知含义。兼容帧的0仅是内存占位，导出须看dlc_code。
+        if frame_type == 'r' and not tail:
+            fields['is_remote_frame'] = True
+            return LegacyRawFrame(**fields), None
+        if not tail:
+            raise ValueError('经典CAN数据帧缺少DLC')
+        dlc_text, *payload = tail
         code = length = _unsigned(dlc_text, base, 8, '经典CAN DLC')
         fields['is_remote_frame'] = frame_type == 'r'
         if fields['is_remote_frame']:
@@ -163,14 +270,16 @@ def _frame(tokens, base, seconds):
 
 
 def _repository_frame(tokens, base, seconds, version):
-    """按显式版本转换仓库布局，再复用标准字段检查。
+    """同次解析标准统计尾或显式Sclicer布局，再复用标准字段检查。
 
     参数: tokens为不含时间的有界字段；base为头部进制；seconds为兼容秒；version为选定版本。
     返回: (原帧快照, DLC编码)。异常: ValueError/IndexError为布局、统计身份或载荷错误。
     不探测后重新读取；同文件可含该版本规定的经典及FD行，未声明变体拒绝。
     """
+    if not tokens:
+        raise ValueError('ASC行缺少帧或事件内容')
     if tokens[0] == 'CANFD':
-        if version == 'vector-asc-statistics-v1':
+        if version != 'sclicer-asc-v1':
             return _frame(tokens, base, seconds)
         # Sclicer样例顺序固定为CANFD 通道 ID 方向 BRS ESI d 十进制DLC 十进制长度。
         _, channel, identifier, direction, brs, esi, frame_type, code_text, length, *payload = tokens
@@ -182,6 +291,9 @@ def _repository_frame(tokens, base, seconds, version):
         normalized = ['CANFD', channel, direction, identifier, brs, esi,
                       format(code, 'x') if base == 16 else str(code), length, *payload]
         return _frame(normalized, base, seconds)
+    # 错误帧的诊断Length属于独立布局，不能当成普通报文的统计尾。
+    if len(tokens) > 1 and tokens[1].lower() == 'errorframe':
+        return _frame(tokens, base, seconds)
     # 统计尾必须完整且字段名/顺序正确；不能把任意多余内容当注释丢掉。
     if 'Length' not in tokens:
         return _frame(tokens, base, seconds)
@@ -319,11 +431,11 @@ class ASCRead:
             self._check_order(exact)
         if ' '.join(tokens).lower() == 'start of measurement':
             return None
-        if self.spec.parser_version == 'vector-asc-v1':
-            frame, code = _frame(tokens, self._base, ns / 10**9)
-        else:
-            # 仅按构造声明选择一种布局，不在异常后换解析器，也不重放已经返回的前缀。
-            frame, code = _repository_frame(tokens, self._base, ns / 10**9, self.spec.parser_version)
+        # 状态事件也占relative时间，只在完成上面的时钟推进后跳过。
+        if _status_event(tokens):
+            return None
+        # 标准入口同次处理可选统计尾；Sclicer FD仍须显式选择，不在失败后重读或换格式。
+        frame, code = _repository_frame(tokens, self._base, ns / 10**9, self.spec.parser_version)
         # 不把无关帧当作已选时间序列的前点，仍保留其原始时间供范围统计。
         if self._time_selector is not None and self._time_selector(frame):
             self._check_order(exact)

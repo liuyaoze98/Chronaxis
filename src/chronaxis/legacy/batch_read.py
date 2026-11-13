@@ -1,6 +1,6 @@
-"""在共享预算内按批取得原CAN解码结果，保全量观测时间与需要的完整原记录。
+"""在共享预算内按批取得BLF解码结果，按配置保留观测时间与所需原始记录。
 
-复用逐条read的INIT/READY验证、实际进程关闭和失败恢复，不改变原逐条入口。
+复用逐条read的INIT/READY验证、实际进程关闭和失败恢复；子进程使用共用BLF读取器。
 父在授予一批许可前预付两端缓冲、解析模型和时间数组的保守费用；同时只一批在途。
 每批最多4096原帧且256KiB，预算较小时缩字节上限。默认同步；显式开启预取时，
 当前批交付前可再预付并授权一批，使子读取与父计算重叠。取消或当前批处理失败时
@@ -181,7 +181,7 @@ class LegacyCANBatchRead(LegacyCANProcessRead):
         if self._decode_scope == 'all':
             return super()._check_ready(packet)
         required_keys = {'op', 'version', 'profile', 'worker_pid', 'fields',
-                           'dependency_versions', 'vendor_sha256', 'decode_scope', 'decode_frame_ids',
+                           'dependency_versions', 'decode_scope', 'decode_frame_ids',
                            'decoded_values_policy'}
         if self._input_check == 'auto':
             required_keys.update(('input_check', 'time_scope'))

@@ -17,11 +17,11 @@ compute_reference接收CalculationSeries和CalculationDefinition，先裁剪观�
 检查、单位与结果分类，但归约独立实现。保留完整内存输入，不读写文件，
 不修改原数据或持有跨任务状态；本模块不提供流式内存预算保证。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[Truth](chronaxis.core.types.md#api-Truth)
+[CalculationDefinition](chronaxis.core.calculations.md#api-CalculationDefinition)、[CalculationSeries](chronaxis.core.calculations.md#api-CalculationSeries)、[D](chronaxis.core.types.md#api-SignalDType)、[Interval](chronaxis.core.models.md#api-Interval)、[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SelectionRow](chronaxis.core.selection.md#api-SelectionRow)、[Truth](chronaxis.core.types.md#api-Truth)
 
 ## 对象导航
 
@@ -80,7 +80,7 @@ TypeError为无类型占位输入；ValueError为select标量执行或dtype不�
 - `ValueError`：select需选择行流入口。
 - `ValueError`：指标算子与输入dtype不匹配。
 
-源码：[`src/chronaxis/core/calculations_reference.py:38`](../../../src/chronaxis/core/calculations_reference.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_reference.py:38`](../../../src/chronaxis/core/calculations_reference.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-select_reference"></a>
 ## `select_reference`
@@ -111,7 +111,7 @@ SelectionRow迭代器；UNKNOWN保留诊断，FALSE排除，窗口右端不输�
 遍历完整时间轴，只处理请求与观测交集内的真实目标依赖更新。
     合成边界与条件独自更新不产生行；无效值保持原质量，不填正常零。
 
-源码：[`src/chronaxis/core/calculations_reference.py:62`](../../../src/chronaxis/core/calculations_reference.py#L62)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_reference.py:62`](../../../src/chronaxis/core/calculations_reference.py#L62)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-compute_reference"></a>
 ## `compute_reference`
@@ -148,4 +148,4 @@ CalculationResult。未换单位的整数极值可保持精确整数；积分和
     最后应用一次输出单位转换并分类结果。正常零与无效数据位置暂存的值分别处理。
     临时值和诊断列表只用于本次计算，不修改调用者的CalculationSeries。
 
-源码：[`src/chronaxis/core/calculations_reference.py:98`](../../../src/chronaxis/core/calculations_reference.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/calculations_reference.py:98`](../../../src/chronaxis/core/calculations_reference.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

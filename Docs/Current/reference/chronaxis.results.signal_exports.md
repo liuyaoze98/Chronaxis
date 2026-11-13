@@ -8,7 +8,7 @@
 值无效时留空并保质量原因和完整来源引用；原无效值以既有安全编码保存。
 逐行缓冲和编码先付预算，输入正常/失败/取消均关闭，整个目录最终独占发布。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -37,7 +37,7 @@
 from dataclasses import dataclass
 from io import StringIO
 from ..core.models import Interval
-from ..core.validation import require_identifier
+from ..core.validation import require_identifier, require_text
 from ..execution.record_sample import RecordSample
 from ..execution.history_records import HistorySample, HistoryProgress, estimate_record_bytes
 from ..execution.history import _metadata_bytes
@@ -65,7 +65,7 @@ class SignalCSVExportSpec
 |`signals`|tuple[str, ...]|是|无|唯一非空别名，最多4096，保持配置顺序。|
 |`resampling`|[SignalGridSpec](chronaxis.results.signal_grid.md#api-SignalGridSpec) &#124; None|否|None|默认原始采样，显式连续量才进入线性网格。|
 
-源码：[`src/chronaxis/results/signal_exports.py:27`](../../../src/chronaxis/results/signal_exports.py#L27)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:27`](../../../src/chronaxis/results/signal_exports.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVExportSpec-__post_init__"></a>
 ### `SignalCSVExportSpec.__post_init__`
@@ -97,7 +97,7 @@ SignalCSVExportSpec.__post_init__()
 - `ValueError`：信号CSV别名重复。
 - `ValueError`：重采样必须是所选信号的明确子集。
 
-源码：[`src/chronaxis/results/signal_exports.py:33`](../../../src/chronaxis/results/signal_exports.py#L33)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:33`](../../../src/chronaxis/results/signal_exports.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_csv_bytes"></a>
 ## `_csv_bytes`
@@ -122,7 +122,7 @@ UTF8 bytes。
 
 CSV/Unicode/内存错。
 
-源码：[`src/chronaxis/results/signal_exports.py:51`](../../../src/chronaxis/results/signal_exports.py#L51)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:51`](../../../src/chronaxis/results/signal_exports.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_sample_row"></a>
 ## `_sample_row`
@@ -148,7 +148,7 @@ _sample_row(sample, compact=False)
 
 安全编码错。
 
-源码：[`src/chronaxis/results/signal_exports.py:60`](../../../src/chronaxis/results/signal_exports.py#L60)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:60`](../../../src/chronaxis/results/signal_exports.py#L60)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_reference_json"></a>
 ## `_reference_json`
@@ -173,7 +173,7 @@ JSON文本或空字符串。
 
 安全编码错。
 
-源码：[`src/chronaxis/results/signal_exports.py:74`](../../../src/chronaxis/results/signal_exports.py#L74)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:74`](../../../src/chronaxis/results/signal_exports.py#L74)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_write_grid"></a>
 ## `_write_grid`
@@ -201,7 +201,7 @@ _write_grid(owner, rows, counts, compact=False)
 
 编码/预算/I/O/取消错。
 
-源码：[`src/chronaxis/results/signal_exports.py:81`](../../../src/chronaxis/results/signal_exports.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:81`](../../../src/chronaxis/results/signal_exports.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVWriter"></a>
 ## `SignalCSVWriter`
@@ -215,7 +215,7 @@ SignalCSVWriter(spec, interval, destination, budget, *, device_label, check_canc
 继承关系：[ExportFiles](chronaxis.results.export_files.md#api-ExportFiles)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/signal_exports.py:101`](../../../src/chronaxis/results/signal_exports.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:101`](../../../src/chronaxis/results/signal_exports.py#L101)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVWriter-__init__"></a>
 ### `SignalCSVWriter.__init__`
@@ -234,7 +234,7 @@ SignalCSVWriter.__init__(spec, interval, destination, budget, *, device_label, c
 |`interval`|[Interval](chronaxis.core.models.md#api-Interval)|是|无|位置或关键字。要处理的实际半开时间范围，包含start_ns而不包含end_ns之后的时长。|
 |`destination`|str &#124; Path|是|无|位置或关键字。本次新输出路径，已有目标不能覆盖；不能位于只读历史目录。|
 |`budget`|ResourceBudget|是|无|位置或关键字。本次分析共享的资源用量记录；新对象先预约所需内存和磁盘额度，关闭时归还自己的内存费用。|
-|`device_label`|str|是|无|仅关键字。记录本次导出的设备来源标签；当前这个导出入口只接受home或work，pending会被拒绝。标签应来自已确认的执行设备映射，不从输入路径推断。|
+|`device_label`|str|是|无|仅关键字。本次产出的设备标签，接受任意非空文本，如lab-pc或试验台一号；pending表示未指定。标签不参与计算，不从路径推断；此Python参数是否可省略以签名为准，分析配置省略metadata.device_label时使用pending。|
 |`check_cancel`|Callable[[], None] &#124; None|否|None|仅关键字。可选取消检查函数；正常返回None，需要中止时抛异常，原错误继续传播。|
 |`definitions`|Mapping[str, SignalDefinition]|否|()|仅关键字。以信号别名为键的定义，提供来源、类型、单位和有效期；不会在这里重新加载DBC。|
 |`backend`|str|否|'numpy'|仅关键字。计算实现：reference使用独立参考核，numpy使用数组核；两者遵守相同的业务和缺失数据规则。|
@@ -250,7 +250,7 @@ owner。
 
 原构造错。
 
-源码：[`src/chronaxis/results/signal_exports.py:104`](../../../src/chronaxis/results/signal_exports.py#L104)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:104`](../../../src/chronaxis/results/signal_exports.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVWriter-push"></a>
 ### `SignalCSVWriter.push`
@@ -275,7 +275,7 @@ None。
 
 原输入/写入错。
 
-源码：[`src/chronaxis/results/signal_exports.py:140`](../../../src/chronaxis/results/signal_exports.py#L140)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:141`](../../../src/chronaxis/results/signal_exports.py#L141)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVWriter-observed_end"></a>
 ### `SignalCSVWriter.observed_end`
@@ -300,7 +300,7 @@ None。
 
 越界。
 
-源码：[`src/chronaxis/results/signal_exports.py:161`](../../../src/chronaxis/results/signal_exports.py#L161)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:162`](../../../src/chronaxis/results/signal_exports.py#L162)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalCSVWriter-complete"></a>
 ### `SignalCSVWriter.complete`
@@ -326,7 +326,7 @@ SignalCSVWriter.complete()
 
 原完成错。
 
-源码：[`src/chronaxis/results/signal_exports.py:171`](../../../src/chronaxis/results/signal_exports.py#L171)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:172`](../../../src/chronaxis/results/signal_exports.py#L172)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-export_signal_csv"></a>
 ## `export_signal_csv`
@@ -346,7 +346,7 @@ export_signal_csv(records, spec, interval, destination, budget, *, device_label,
 |`interval`|[Interval](chronaxis.core.models.md#api-Interval)|是|无|位置或关键字。interval半开范围|
 |`destination`|str &#124; [pathlib.Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。可重复使用的导出目录；公开直接调用生成带统一时间后缀的文件，内部file_consumer交接仍使用独占目录。|
 |`budget`|ResourceBudget|是|无|位置或关键字。本次运行共用的ResourceBudget对象，用于检查内存和临时磁盘用量。当前对象在分配前申请额度，用完后归还；同一次运行的组件应使用同一个对象。|
-|`device_label`|str|是|无|仅关键字。记录本次导出的设备来源标签；当前这个导出入口只接受home或work，pending会被拒绝。标签应来自已确认的执行设备映射，不从输入路径推断。|
+|`device_label`|str|是|无|仅关键字。本次产出的设备标签，接受任意非空文本，如lab-pc或试验台一号；pending表示未指定。标签不参与计算，不从路径推断；此Python参数是否可省略以签名为准，分析配置省略metadata.device_label时使用pending。|
 |`check_cancel`|Callable[[], None] &#124; None|否|None|仅关键字。可选的无参取消检查函数。需要终止时由它抛出异常；None表示不额外调用取消检查。|
 |`definitions`|tuple[SignalDefinition, ...]|否|()|仅关键字。导出信号在原绑定中的定义，提供类型、单位和有效期，供可选重采样使用。|
 |`backend`|str|否|'numpy'|仅关键字。`"reference"`使用独立参考计算；`"numpy"`使用NumPy数组计算。须明确选择一种。|
@@ -365,7 +365,8 @@ export_signal_csv(records, spec, interval, destination, budget, *, device_label,
 本函数直接报告的具体错误：
 
 - `TypeError`：信号导出需要选择及明确Interval。
-- `ValueError`：导出需要实际设备标签及可选取消回调。
+- `TypeError`：device_label必须为字符串。
+- `ValueError`：device_label不能为空或全空白；导出需要有效后端及可选取消回调。
 - `TypeError`：信号导出只接受已解码历史记录。
 
-源码：[`src/chronaxis/results/signal_exports.py:191`](../../../src/chronaxis/results/signal_exports.py#L191)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/signal_exports.py:192`](../../../src/chronaxis/results/signal_exports.py#L192)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

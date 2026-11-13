@@ -20,4 +20,4 @@ class ResultClosedError(AnalysisError)
 继承关系：[AnalysisError](AnalysisError.md#api-AnalysisError)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/results/errors.py:16`](../../../src/chronaxis/results/errors.py#L16)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/errors.py:16`](../../../src/chronaxis/results/errors.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

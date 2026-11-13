@@ -1,27 +1,17 @@
-"""在独立spawn子进程按单次PUT许可调用冻结的原BLF写出链。
+"""在独立spawn进程按PUT许可将原报文写入新的BLF文件。
 
-输入为有界INIT/PUT/FINISH JSON bytes，输出同次READY、逐帧ACK和完成候选。
-INIT才核三份vendor及锁定依赖，独占取得新输出文件，再原样调用一次
-build_writer(str(path),'blf')。每PUT完整恢复同一LegacyRawFrame公开字段并
-构造can.Message，原writer.on_message_received只调用一次，不读源CAN或DBC。
-FINISH仅在原stop成功后发送完成候选；父仍须核真实子退出、句柄及费用收尾。
+有效INIT后核现有依赖版本，BLFWrite独占取得文件并把同一句柄交给python-can。
+每PUT恢复原公开字段并写一次，不读取来源或DBC；FINISH仅在最终写入成功后确认。
+关闭失败保留原错误与实际文件owner，第三方stop不重复执行，父侧仍核实际子退出。"""
 
-本模块复用CAN读取协议的有界JSON、错误摘要和vendor加载函数，不修改或继承其read
-生命周期。失败保有限远端事实并非零退出，finally只对尚未尝试stop的writer调用
-一次原stop；失败的stop不被静默重试或改写。实际子退出回收未公开旧FD，不能
-据父RAM账本声称旧库、压缩缓存或整进程RSS受限。产物保留，不自动删除失败文件。
-"""
-
-# 模块导入不加载CAN库或打开输出；只有有效INIT之后才进入原样vendor。
-from importlib import metadata
+# 模块导入不加载CAN库或打开输出；只有有效INIT之后才加载CAN依赖。
 import os
 from pathlib import Path
-import platform
 from .records import PROFILE_ID, frame_from_dict
-from .worker import VENDOR_SHA256, _exact, _load_vendor, _receive, _report_error, _send
+from .worker import _exact, _load_can_runtime, _receive, _report_error, _send
 
 
-WRITE_DEPENDENCIES = {'python-can': '4.6.1', 'cantools': '39.4.3', 'natsort': '8.4.0'}
+from ..can_dependencies import runtime_dependency_versions
 
 
 def _output(packet):
@@ -38,9 +28,9 @@ def _output(packet):
             or type(packet['path']) is not str):
         raise ValueError('原CAN写出需要init/version1及固定profile路径')
     path = Path(packet['path']).resolve()
-    # resolve先于保护检查，不能经目录链接把新产物写进历史快照。
-    if path.suffix.lower() != '.blf' or any(part.casefold() == 'refprojects' for part in path.parts):
-        raise ValueError('原CAN写出仅支持RefProjects之外的新BLF')
+    # 先取得实际目标，再检查后缀和存在性；独占创建仍由写入器执行。
+    if path.suffix.lower() != '.blf':
+        raise ValueError('原CAN写出仅支持新的BLF文件')
     if path.exists():
         raise FileExistsError(path)
     if not path.parent.is_dir():
@@ -51,7 +41,7 @@ def _output(packet):
 def _message(can, frame):
     """把全部原公开写出字段交给原can.Message构造，不添加check或归一化参数。
 
-    参数: can为原vendor实际导入的模块；frame为已校验LegacyRawFrame。
+    参数: can为本次已加载的python-can模块；frame为已校验LegacyRawFrame。
     返回: 新can.Message，timestamp/data/DLC及全部标志保持原参数。
     异常: 原can.Message构造错误；不以新层猜测修正旧格式限制。
     """
@@ -65,34 +55,26 @@ def _message(can, frame):
 
 
 def worker_main(connection):
-    """作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一原writer。
+    """作为真实spawn目标，按INIT/单PUT/FINISH顺序调用唯一BLF writer。
 
     参数: connection为父传来的实际duplex端点。返回: 原stop成功并发送候选后None。
     异常: 原错误尽力发送有限ERROR，最终SystemExit(1)；管道清理也不能伪成正常退出。
-    副作用: 独占创建一个新BLF、一次build_writer、每许可一次on_message_received，
+    副作用: 独占创建一个新BLF、一次BLFWrite、每许可一次on_message_received，
         至多一次stop；不读取输入CAN/DBC，不调parse或为ACK额外写帧。
     """
-    writer = claim = failure = request_id = None
+    writer = failure = request_id = None
     phase, frame_count, stop_attempted = 'init', 0, False
     try:
         path = _output(_receive(connection))
-        phase = 'vendor'
-        _, processor, hashes = _load_vendor()
-        versions = {'python': platform.python_version(),
-            **{name: metadata.version(name) for name in WRITE_DEPENDENCIES}}
-        if any(versions[name] != expected for name, expected in WRITE_DEPENDENCIES.items()):
-            raise ValueError('原CAN writer依赖不符合已验证profile')
-        # xb原子拒绝已有文件；原build_writer只重开本child刚取得的自有空产物。
-        phase = 'claim'
-        claim = path.open('xb')
-        claim.close()
-        claim = None
+        phase = 'dependencies'
+        can, cantools = _load_can_runtime()
+        versions = runtime_dependency_versions()
+        # 同一独占文件对象交给python-can，不关闭后按路径重新打开。
         phase = 'build_writer'
-        writer, actual_path = processor.build_writer(str(path), 'blf')
-        if actual_path != str(path):
-            raise ValueError('原build_writer返回的路径与本次目标不一致')
+        from ..results.blf_writer import BLFWrite
+        writer = BLFWrite(path)
         _send(connection, {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
-            'worker_pid': os.getpid(), 'dependency_versions': versions, 'vendor_sha256': hashes})
+            'worker_pid': os.getpid(), 'dependency_versions': versions})
         # 仅收到一条PUT后写一帧；下一许可前不保留当前消息或构造额外帧。
         while True:
             phase, request_id = 'control', None
@@ -102,7 +84,7 @@ def worker_main(connection):
                 if type(packet['frame_count']) is not int or packet['frame_count'] != frame_count:
                     raise ValueError('FINISH帧数与本次原writer确认数量不符')
                 phase, stop_attempted = 'stop', True
-                writer.stop()
+                writer.finish()
                 writer = None
                 _send(connection, {'op': 'finished', 'frame_count': frame_count})
                 break
@@ -113,28 +95,30 @@ def worker_main(connection):
                 raise ValueError('PUT许可必须从0严格连续且为原生int')
             phase = 'frame'
             frame = frame_from_dict(packet['frame'])
-            message = _message(processor.can, frame)
+            message = _message(can, frame)
             phase = 'write'
-            writer.on_message_received(message)
+            writer.write(message)
             frame_count += 1
             _send(connection, {'op': 'ack', 'request_id': request_id, 'frame_count': frame_count})
             frame = message = None
     except BaseException as exc:
+        if writer is None:
+            writer=getattr(exc,'blf_write_cleanup_owner',None)
         failure = exc
         _report_error(connection, exc, phase, request_id)
     finally:
         # 失败或父提前断管只结束已有writer；不重发PUT，不重试已经失败的原stop。
-        if writer is not None and not stop_attempted:
+        if writer is not None:
             try:
                 stop_attempted = True
-                writer.stop()
+                writer.close()
             except BaseException as cleanup:
                 if failure is None:
                     failure = cleanup
                     _report_error(connection, cleanup, 'stop', request_id)
                 else:
                     failure.add_note('原writer.stop附加失败: ' + type(cleanup).__name__)
-        for resource, label in ((claim, '新文件声明句柄'), (connection, '子连接')):
+        for resource, label in ((connection, '子连接'),):
             if resource is not None:
                 try:
                     resource.close()

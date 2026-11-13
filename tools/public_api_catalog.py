@@ -9,12 +9,15 @@ import inspect
 import io
 import json
 from pathlib import Path
+from runpy import run_path
 import subprocess
 import sys
 import tarfile
 from tempfile import TemporaryDirectory
 
 ROOT = Path(__file__).resolve().parents[1]
+# 隔离反射使用-I，不依赖脚本目录进入sys.path；只加载已知的说明来源。
+PARAMETER_TYPES = run_path(str(ROOT / 'tools/public_api_notes.py'))['PARAMETER_TYPES']
 EXTRA = (
     ('fast.run', 'chronaxis.fast', 'run', '高性能积分器'),
     ('fast.batch.run_batch', 'chronaxis.fast.batch', 'run_batch', '高性能积分器'),
@@ -40,7 +43,8 @@ def collect(source, previous):
             signature = str(spec)
             for parameter in spec.parameters.values():
                 parameters.append(dict(name=parameter.name, kind=parameter.kind.name,
-                                       type=inspect.formatannotation(parameter.annotation) if parameter.annotation is not inspect.Parameter.empty else '',
+                                       type=(inspect.formatannotation(parameter.annotation) if parameter.annotation is not inspect.Parameter.empty
+                                             else PARAMETER_TYPES.get(name, {}).get(parameter.name, '')),
                                        required=parameter.default is inspect.Parameter.empty and parameter.kind not in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD),
                                        default=None if parameter.default is inspect.Parameter.empty else repr(parameter.default)))
         except ValueError:

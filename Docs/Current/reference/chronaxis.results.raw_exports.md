@@ -16,7 +16,7 @@ copy_to只逐条读索引、有限块复制和核现成BLF；发布副本不计�
 及最高raw_export_store_cleanup_owner；文件与累计spool保留，不凭共享余额补账。
 本模块只依赖标准库、创建后不可修改的对象和有界JSON，不导入CAN库，不声称整进程RSS受限。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -101,7 +101,7 @@ _integer(value, name, maximum=INT64_MAX)
 
 TypeError/ValueError为类型或范围错误；不截断、不转换。
 
-源码：[`src/chronaxis/results/raw_exports.py:40`](../../../src/chronaxis/results/raw_exports.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:40`](../../../src/chronaxis/results/raw_exports.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_text"></a>
 ## `_text`
@@ -128,7 +128,7 @@ _text(value, name, *, identifier=False)
 
 TypeError/ValueError为非原生str、空白、控制字符、过长或名称非法。
 
-源码：[`src/chronaxis/results/raw_exports.py:53`](../../../src/chronaxis/results/raw_exports.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:53`](../../../src/chronaxis/results/raw_exports.py#L53)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_interval"></a>
 ## `_interval`
@@ -154,7 +154,7 @@ _interval(value, name)
 
 TypeError/ValueError/OverflowError为类型、顺序或整数范围非法。
 
-源码：[`src/chronaxis/results/raw_exports.py:68`](../../../src/chronaxis/results/raw_exports.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:68`](../../../src/chronaxis/results/raw_exports.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_packet"></a>
 ## `_packet`
@@ -179,7 +179,7 @@ _packet(record)
 
 内部模型属性错误传播；调用者另核整包64KiB上限。
 
-源码：[`src/chronaxis/results/raw_exports.py:86`](../../../src/chronaxis/results/raw_exports.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:86`](../../../src/chronaxis/results/raw_exports.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportRecord"></a>
 ## `RawExportRecord`
@@ -208,7 +208,7 @@ class RawExportRecord
 |`status`|str|是|无|`exported`表示已生成报文文件；`empty_range`表示选定时间范围为空；`no_observation`表示没有能支持该范围的来源观测。后两者不能当成成功导出了一个非空日志。|
 |`device_label`|str|是|无|本条产生设备标签，与store严格一致。|
 
-源码：[`src/chronaxis/results/raw_exports.py:100`](../../../src/chronaxis/results/raw_exports.py#L100)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:100`](../../../src/chronaxis/results/raw_exports.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportRecord-__post_init__"></a>
 ### `RawExportRecord.__post_init__`
@@ -244,7 +244,7 @@ TypeError/ValueError/OverflowError为非法事实；不打开、stat或创建文
 - `ValueError`：原始导出SHA需64位十六进制。
 - `ValueError`：无观测/零范围必须保原actual且不得带文件、SHA或帧字节数。
 
-源码：[`src/chronaxis/results/raw_exports.py:117`](../../../src/chronaxis/results/raw_exports.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:117`](../../../src/chronaxis/results/raw_exports.py#L117)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_decode"></a>
 ## `_decode`
@@ -275,7 +275,7 @@ ResultFormatError保留底层结构/类型/时间校验原因；取消原样传�
 - `ValueError`：索引范围必须精确含start_ns/end_ns。
 - `TypeError`：索引范围端点必须为原生int。
 
-源码：[`src/chronaxis/results/raw_exports.py:151`](../../../src/chronaxis/results/raw_exports.py#L151)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:151`](../../../src/chronaxis/results/raw_exports.py#L151)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_write_all"></a>
 ## `_write_all`
@@ -305,7 +305,7 @@ _write_all(handle, payload)
 
 - `OSError`：原始导出文件写入未正确推进。
 
-源码：[`src/chronaxis/results/raw_exports.py:175`](../../../src/chronaxis/results/raw_exports.py#L175)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:175`](../../../src/chronaxis/results/raw_exports.py#L175)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore"></a>
 ## `RawExportStore`
@@ -325,7 +325,7 @@ RawExportStore(budget, work_dir, source, session_id, device_label='pending')
 |---|---|---|---|---|
 |`format`|str|类成员，不作为构造参数填写|'blf'|原始导出格式，由现有导出合同确定；决定文件编码，不表示分析结果表格式。|
 
-源码：[`src/chronaxis/results/raw_exports.py:189`](../../../src/chronaxis/results/raw_exports.py#L189)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:189`](../../../src/chronaxis/results/raw_exports.py#L189)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-__init__"></a>
 ### `RawExportStore.__init__`
@@ -344,7 +344,7 @@ RawExportStore.__init__(budget, work_dir, source, session_id, device_label='pend
 |`work_dir`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。本次运行独占的工作目录，用来保存中间文件。自行指定时要求尚不存在；不会覆盖旧目录。|
 |`source`|str|是|无|位置或关键字。source/session_id     为安全名|
 |`session_id`|str|是|无|位置或关键字。本次会话的名字，用来防止把不同试验的数据混在一起。|
-|`device_label`|str|否|'pending'|位置或关键字。产出记录的设备标签，例如已核实的"home"或"work"；未确定时用"pending"。这是来源说明，不参与数值计算，也不根据文件路径猜测。|
+|`device_label`|str|否|'pending'|位置或关键字。产出记录的设备标签，接受任意非空文本，如lab-pc或试验台一号；省略时使用pending。标签不参与计算，也不根据文件路径猜测。|
 
 #### 返回说明
 
@@ -358,9 +358,8 @@ building仓。
 
 - `TypeError`：原始导出仓需ResourceBudget及显式新目录。
 - `ValueError`：原始导出工作路径超过有界能力。
-- `ValueError`：原始导出仓禁止写入RefProjects。
 
-源码：[`src/chronaxis/results/raw_exports.py:198`](../../../src/chronaxis/results/raw_exports.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:198`](../../../src/chronaxis/results/raw_exports.py#L198)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-closed"></a>
 ### `RawExportStore.closed`
@@ -388,7 +387,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无，FD或费用未清不为True。
 
-源码：[`src/chronaxis/results/raw_exports.py:240`](../../../src/chronaxis/results/raw_exports.py#L240)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:238`](../../../src/chronaxis/results/raw_exports.py#L238)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-spool_bytes"></a>
 ### `RawExportStore.spool_bytes`
@@ -416,7 +415,7 @@ int。
 
 无，不含BLF或发布副本。
 
-源码：[`src/chronaxis/results/raw_exports.py:245`](../../../src/chronaxis/results/raw_exports.py#L245)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:243`](../../../src/chronaxis/results/raw_exports.py#L243)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_require"></a>
 ### `RawExportStore._require`
@@ -445,7 +444,7 @@ ResultClosedError/RuntimeError。
 
 - `ResultClosedError`：原始导出仓已关闭或正在清理。
 
-源码：[`src/chronaxis/results/raw_exports.py:249`](../../../src/chronaxis/results/raw_exports.py#L249)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:247`](../../../src/chronaxis/results/raw_exports.py#L247)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_fail"></a>
 ### `RawExportStore._fail`
@@ -470,7 +469,7 @@ RawExportStore._fail(exc)
 
 清理错误不替代原exc。
 
-源码：[`src/chronaxis/results/raw_exports.py:259`](../../../src/chronaxis/results/raw_exports.py#L259)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:257`](../../../src/chronaxis/results/raw_exports.py#L257)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-next_path"></a>
 ### `RawExportStore.next_path`
@@ -496,7 +495,7 @@ RawExportStore.next_path()
 
 状态错误或索引超过12位能力；原writer由调用方独立持有和关闭。
 
-源码：[`src/chronaxis/results/raw_exports.py:268`](../../../src/chronaxis/results/raw_exports.py#L268)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:266`](../../../src/chronaxis/results/raw_exports.py#L266)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_relation"></a>
 ### `RawExportStore._relation`
@@ -527,7 +526,7 @@ TypeError/ValueError。
 - `TypeError`：原始导出仓仅接受RawExportRecord。
 - `ValueError`：原始导出记录索引/来源/会话/设备不属于本仓。
 
-源码：[`src/chronaxis/results/raw_exports.py:278`](../../../src/chronaxis/results/raw_exports.py#L278)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:276`](../../../src/chronaxis/results/raw_exports.py#L276)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_close_fd"></a>
 ### `RawExportStore._close_fd`
@@ -552,7 +551,7 @@ RawExportStore._close_fd(slot)
 
 原close/取消，持续失败可重试。
 
-源码：[`src/chronaxis/results/raw_exports.py:289`](../../../src/chronaxis/results/raw_exports.py#L289)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:287`](../../../src/chronaxis/results/raw_exports.py#L287)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_file"></a>
 ### `RawExportStore._file`
@@ -582,7 +581,7 @@ RawExportStore._file(record, destination=None)
 
 - `ResultClosedError`：原始导出仓有未完成文件资源待清理。
 
-源码：[`src/chronaxis/results/raw_exports.py:302`](../../../src/chronaxis/results/raw_exports.py#L302)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:300`](../../../src/chronaxis/results/raw_exports.py#L300)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_check_copy"></a>
 ### `RawExportStore._check_copy`
@@ -615,7 +614,7 @@ RawExportStore._check_copy(path, expected_bytes, expected_sha)
 - `ResultFormatError`：发布文件字节数或SHA与封口事实不符。
 - `ResultFormatError`：发布文件字节数超过封口事实。
 
-源码：[`src/chronaxis/results/raw_exports.py:347`](../../../src/chronaxis/results/raw_exports.py#L347)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:345`](../../../src/chronaxis/results/raw_exports.py#L345)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-append"></a>
 ### `RawExportStore.append`
@@ -640,7 +639,7 @@ RawExportStore.append(record)
 
 原归属/预算/文件/编码/取消；开始后的失败poison，原BLF费用不重复预约。
 
-源码：[`src/chronaxis/results/raw_exports.py:370`](../../../src/chronaxis/results/raw_exports.py#L370)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:368`](../../../src/chronaxis/results/raw_exports.py#L368)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-seal"></a>
 ### `RawExportStore.seal`
@@ -666,7 +665,7 @@ RawExportStore.seal()
 
 原flush/close/取消，失败不能冒充sealed。
 
-源码：[`src/chronaxis/results/raw_exports.py:400`](../../../src/chronaxis/results/raw_exports.py#L400)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:398`](../../../src/chronaxis/results/raw_exports.py#L398)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-iter_records"></a>
 ### `RawExportStore.iter_records`
@@ -696,7 +695,7 @@ RawExportStore.iter_records()
 
 - `ResultClosedError`：原始导出仓有未返回reader待清理。
 
-源码：[`src/chronaxis/results/raw_exports.py:414`](../../../src/chronaxis/results/raw_exports.py#L414)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:412`](../../../src/chronaxis/results/raw_exports.py#L412)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-copy_to"></a>
 ### `RawExportStore.copy_to`
@@ -723,7 +722,7 @@ RawExportStore.copy_to(destination)
     输出失败保本次FD责任及部分文件，不覆盖已有工件或关闭sealed输入；
     入口先恢复上次复制，持续关闭失败时不得覆盖旧槽或创建下个目标。
 
-源码：[`src/chronaxis/results/raw_exports.py:430`](../../../src/chronaxis/results/raw_exports.py#L430)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:428`](../../../src/chronaxis/results/raw_exports.py#L428)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-recover_copy"></a>
 ### `RawExportStore.recover_copy`
@@ -750,7 +749,7 @@ None；copy_to入口会自动调用，调用方也可显式恢复。
 原FD/reader/费用关闭错误或状态错误；持续失败保最高store与原槽，
     不把整个输入仓置关闭中，不覆盖上次复制尚未释放的资源。
 
-源码：[`src/chronaxis/results/raw_exports.py:492`](../../../src/chronaxis/results/raw_exports.py#L492)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:488`](../../../src/chronaxis/results/raw_exports.py#L488)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-_close_copy_resources"></a>
 ### `RawExportStore._close_copy_resources`
@@ -776,7 +775,7 @@ None；不操作固定费、原索引writer或其他独立reader。
 
 首个真实关闭/抵销错误，副错记note；最高store保存未完成实际槽。
 
-源码：[`src/chronaxis/results/raw_exports.py:502`](../../../src/chronaxis/results/raw_exports.py#L502)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:498`](../../../src/chronaxis/results/raw_exports.py#L498)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RawExportStore-close"></a>
 ### `RawExportStore.close`
@@ -803,7 +802,7 @@ None，完成后幂等。
 首个真实关闭/抵销错误，副错记note；
     持续故障保原槽/最高owner，不能从共用的资源用量记录总额倒推或多扣费用。
 
-源码：[`src/chronaxis/results/raw_exports.py:539`](../../../src/chronaxis/results/raw_exports.py#L539)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:535`](../../../src/chronaxis/results/raw_exports.py#L535)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_RawExportReader"></a>
 ## `_RawExportReader`
@@ -817,7 +816,7 @@ _RawExportReader(owner, *, copy=False)
 ```
 
 
-源码：[`src/chronaxis/results/raw_exports.py:592`](../../../src/chronaxis/results/raw_exports.py#L592)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:588`](../../../src/chronaxis/results/raw_exports.py#L588)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_RawExportReader-__init__"></a>
 ### `_RawExportReader.__init__`
@@ -843,7 +842,7 @@ _RawExportReader.__init__(owner, *, copy=False)
 
 原预算/打开/登记/取消；真实父槽始终保未返回self。
 
-源码：[`src/chronaxis/results/raw_exports.py:598`](../../../src/chronaxis/results/raw_exports.py#L598)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:594`](../../../src/chronaxis/results/raw_exports.py#L594)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_RawExportReader-__iter__"></a>
 ### `_RawExportReader.__iter__`
@@ -869,7 +868,7 @@ _RawExportReader.__iter__()
 
 无，不重新开文件。
 
-源码：[`src/chronaxis/results/raw_exports.py:626`](../../../src/chronaxis/results/raw_exports.py#L626)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:622`](../../../src/chronaxis/results/raw_exports.py#L622)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_RawExportReader-__next__"></a>
 ### `_RawExportReader.__next__`
@@ -904,7 +903,7 @@ RawExportRecord。
 - `ResultFormatError`：原始导出索引出现额外后缀。
 - `ResultFormatError`：原始导出索引归属或序号非法。
 
-源码：[`src/chronaxis/results/raw_exports.py:630`](../../../src/chronaxis/results/raw_exports.py#L630)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:626`](../../../src/chronaxis/results/raw_exports.py#L626)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_RawExportReader-close"></a>
 ### `_RawExportReader.close`
@@ -930,4 +929,4 @@ _RawExportReader.close()
 
 原close/预算/取消；最高store仍持本实例。
 
-源码：[`src/chronaxis/results/raw_exports.py:671`](../../../src/chronaxis/results/raw_exports.py#L671)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/raw_exports.py:667`](../../../src/chronaxis/results/raw_exports.py#L667)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

@@ -44,7 +44,7 @@ class ResultBytesTests(unittest.TestCase):
         data = b'a,b\r\n1,2\r\n'
         for suffix in ('csv', 'jsonl', 'json', 'asc'):
             self.assertEqual(resource_bytes('Docs/Current/examples/results/example/table.' + suffix, data), data)
-        self.assertEqual(resource_bytes('Docs/Current/examples/input.csv', data), b'a,b\n1,2\n')
+        self.assertEqual(resource_bytes('Docs/Current/examples/input.csv', data), data)
         self.assertEqual(resource_bytes('Docs/AI/README.md', data), b'a,b\n1,2\n')
         self.assertEqual(resource_bytes('Docs/Current/examples/data/input.blf', data), data)
 

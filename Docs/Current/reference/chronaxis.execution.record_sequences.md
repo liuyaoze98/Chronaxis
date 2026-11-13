@@ -6,7 +6,7 @@
 建立本对象；不会为配对保存整段信号历史或另一时间轴。每个规则的观测终点
 由其必要来源决定，响应来源提前结束只使后续响应未知，不提前结束其他来源。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -54,7 +54,7 @@ RecordSequences(plan, state, budget, steps, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/record_sequences.py:19`](../../../src/chronaxis/execution/record_sequences.py#L19)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:19`](../../../src/chronaxis/execution/record_sequences.py#L19)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-__init__"></a>
 ### `RecordSequences.__init__`
@@ -83,7 +83,7 @@ owner。
 
 构造原错附owner。
 
-源码：[`src/chronaxis/execution/record_sequences.py:22`](../../../src/chronaxis/execution/record_sequences.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:22`](../../../src/chronaxis/execution/record_sequences.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-_open"></a>
 ### `RecordSequences._open`
@@ -109,7 +109,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_sequences.py:36`](../../../src/chronaxis/execution/record_sequences.py#L36)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:36`](../../../src/chronaxis/execution/record_sequences.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-_entry"></a>
 ### `RecordSequences._entry`
@@ -134,7 +134,7 @@ RecordSequences._entry(time_ns)
 
 预算原错。
 
-源码：[`src/chronaxis/execution/record_sequences.py:41`](../../../src/chronaxis/execution/record_sequences.py#L41)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:41`](../../../src/chronaxis/execution/record_sequences.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-bounds"></a>
 ### `RecordSequences.bounds`
@@ -160,7 +160,7 @@ None。
 
 范围/预算错误。
 
-源码：[`src/chronaxis/execution/record_sequences.py:48`](../../../src/chronaxis/execution/record_sequences.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:48`](../../../src/chronaxis/execution/record_sequences.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-observe"></a>
 ### `RecordSequences.observe`
@@ -187,7 +187,7 @@ None。
 
 预算/重复点错误。
 
-源码：[`src/chronaxis/execution/record_sequences.py:92`](../../../src/chronaxis/execution/record_sequences.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:92`](../../../src/chronaxis/execution/record_sequences.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-drivers"></a>
 ### `RecordSequences.drivers`
@@ -212,7 +212,7 @@ None。
 
 预算错误。
 
-源码：[`src/chronaxis/execution/record_sequences.py:108`](../../../src/chronaxis/execution/record_sequences.py#L108)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:108`](../../../src/chronaxis/execution/record_sequences.py#L108)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-_consume"></a>
 ### `RecordSequences._consume`
@@ -239,7 +239,7 @@ None。
 
 原计算错。
 
-源码：[`src/chronaxis/execution/record_sequences.py:117`](../../../src/chronaxis/execution/record_sequences.py#L117)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:117`](../../../src/chronaxis/execution/record_sequences.py#L117)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-flush_before"></a>
 ### `RecordSequences.flush_before`
@@ -264,7 +264,7 @@ None。
 
 原错并封闭实例。
 
-源码：[`src/chronaxis/execution/record_sequences.py:163`](../../../src/chronaxis/execution/record_sequences.py#L163)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:163`](../../../src/chronaxis/execution/record_sequences.py#L163)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-closed"></a>
 ### `RecordSequences.closed`
@@ -292,7 +292,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_sequences.py:188`](../../../src/chronaxis/execution/record_sequences.py#L188)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:188`](../../../src/chronaxis/execution/record_sequences.py#L188)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-RecordSequences-close"></a>
 ### `RecordSequences.close`
@@ -318,4 +318,4 @@ None。
 
 预算释放原错可重试。
 
-源码：[`src/chronaxis/execution/record_sequences.py:192`](../../../src/chronaxis/execution/record_sequences.py#L192)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/record_sequences.py:192`](../../../src/chronaxis/execution/record_sequences.py#L192)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

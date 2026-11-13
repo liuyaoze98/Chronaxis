@@ -19,9 +19,11 @@ The order is: **local build and verification → public source and release asset
 
 PyPI accepts short-lived GitHub identity credentials; no password or token needs to be shared with an AI. The existing publisher supports later releases. Recheck the binding if the repository, workflow filename, or environment changes. Both workflows are manually triggered; pushing source does not automatically deploy the site or publish packages.
 
+Before the next release, also verify the candidate public source with all four `verify.yml` test groups and isolated installation checks; see [continuous testing](../Current/en/maintenance.md#continuous-tests-and-pre-release-checks). This verification workflow does not change the manual publishing entry points. Historical dev1/dev3 reports cannot replace checks of the new candidate.
+
 ## 1. Build and verify locally
 
-Synchronize the version in `pyproject.toml`, both READMEs, Chinese and English installation instructions, AI guides, and release notes. Also update `RunMetadata.software_version` and the wheel filename in the missing-dependency hint. `Documentation` points to the online HTML manual; `Changelog` points to this version's notes. The build converts relative README file links to URLs under the public version tag.
+Use `project.version` in `pyproject.toml` as the sole release-version source. Change it and synchronize both READMEs, installation examples, AI guides and release notes. The builder writes the installed version automatically; the default `RunMetadata.software_version` reads the current software version rather than maintaining another constant, while explicit historical values remain unchanged. Verify the runtime version, package metadata and AI manifest together. `Documentation` points to the online HTML manual and `Changelog` to the release-history entry. The build converts relative README links to URLs under the public version tag.
 
 Verify and commit in the internal repository, then export a specific commit. The following tools formed the actual build chain. Any revision passed to a tool must have been reviewed.
 
@@ -69,7 +71,7 @@ The workflows do not infer new versions or rebuild files. **Changing the local `
 |`.github/workflows/pages.yml`|Release tag, manual ZIP filename, and SHA256|`contents: read`, `pages: write`, `id-token: write`|
 |`.github/workflows/pypi-publish.yml`|Version description, Release tag, public source SHA resolved by that tag, wheel/sdist filenames, and both SHA256 values|`contents: read`, `id-token: write`|
 
-Both workflows are restricted to this repository and `main`, with official Actions pinned to commits. After freezing the source tag, make a separate workflow commit on `main` if necessary; do not move the tag to fill in its source SHA. This is the sequence used for `dev1`. The committed workflows currently remain pinned to `0.1.0.dev1` and must be updated before releasing another version.
+Both workflows are restricted to this repository and `main`, with official Actions pinned to commits. After freezing the source tag, make a separate workflow commit on `main` if necessary; do not move the tag to fill in its source SHA. This is the sequence used for `dev1`. Read the current workflow files to determine their pinned versions and hashes; do not infer them from this historical record. Keep existing workflows while a candidate still lacks its final public-source commit or asset hashes. Update and verify those values together before an authorized publication, without placeholder hashes or premature dispatch.
 
 ## 4. Deploy HTML
 

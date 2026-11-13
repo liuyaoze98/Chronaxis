@@ -1,5 +1,12 @@
-# 这三份M0原样vendor按字节核验，禁止跨设备检出/暂存时自动转换换行。
-/src/chronaxis/legacy/vendor/sclicer_functions_v1/*.py -text
-
 # 教学结果摘要记录文件原始字节；检出、归档和打包都不得改变结果换行。
 /Docs/Current/examples/results/** -text
+# 教学输入摘要按交付原字节计算，Git归档不得按平台转换换行。
+/Docs/Current/examples/data/** -text
+/Docs/Current/examples/power.csv -text
+/Docs/Current/examples/**/*.asc -text
+/Docs/Current/examples/**/*.dbc -text
+/Docs/Current/examples/**/*.csv -text
+/Docs/Current/examples/**/*.txt -text
+/Docs/Current/examples/**/*.blf -text
+# Archived experiment evidence is byte-preserved; CRLF conversion would invalidate its recorded hashes.
+Docs/Archive/Tools/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

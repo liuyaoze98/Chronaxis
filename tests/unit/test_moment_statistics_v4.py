@@ -7,7 +7,7 @@
 from dataclasses import replace
 from math import sqrt
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 import json
@@ -153,33 +153,6 @@ class MomentStatisticsTests(unittest.TestCase):
                 self.assertEqual(rows['v1'].value,5000.)
                 self.assertEqual(rows['v2'].value,50e6)
 
-    def test_historical_blocks_agree_with_hand_weight_and_sample_count(self):
-        """参数: 无。返回: 无。异常: 历史值/条件块接线导致分母或共享端点重复。"""
-        from chronaxis.core.models import MemoryRow
-        from chronaxis.core.binding import SignalDefinition
-        from chronaxis.execution.historical_conditional_time_calculation import HistoricalConditionalTimeCalculation
-        from chronaxis.execution.historical_sample_calculation import HistoricalSampleCalculation
-        from test_window_replay import WindowReplayTests
-
-        for backend in ('reference','numpy'):
-            factory = WindowReplayTests()
-            self.addCleanup(lambda f=factory:self.assertTrue(f.doCleanups()))
-            f = factory.fixture(domain=(0,4),backend=backend,
-                definitions=(SignalDefinition('a','table','raw.a',D.FLOAT64,'V',10,config_version=4),),
-                rows_by_source={'table':tuple(MemoryRow(t,{'raw.a':v},i)
-                                  for i,(t,v) in enumerate(((0,0.),(1,10.),(4,-1.))))},
-                texts=('a','a>=0'))
-            for typ, op, ddof, expected in ((HistoricalConditionalTimeCalculation,'time_variance',0,18.75),
-                                            (HistoricalSampleCalculation,'sample_variance',1,50.)):
-                spec = CalculationDefinition('m',op,f.domain,config_version=4,ddof=ddof)
-                owner = typ(f.history,f.holds._context,f.lease.bindings,f.compiled[0],spec,f.compiled[1],
-                            backend=backend,batch_intervals=1)
-                self.addCleanup(owner.close)
-                while owner.step():
-                    pass
-                self.assertAlmostEqual(owner.result.value,expected)
-                self.assertEqual(owner.result.valid_sample_count,2)
-                owner.close()
 
     def test_budget_and_cancellation_release_run_without_partial_result(self):
         """参数: 无。返回: 无。异常: 预算或取消错误未原样传播、留下暂存结果或RAM。"""

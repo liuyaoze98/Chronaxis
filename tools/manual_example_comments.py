@@ -269,6 +269,9 @@ parameters|定义逐消息公式使用的固定参数；名称由公式引用，
 parameters.period|提供名为period的公式参数；在本例表示每条消息计入的时间
 parameters.period.value|填写每条消息代表的时间数值；从消息周期或业务规则取得
 parameters.period.unit|声明该公式参数的单位；本例s表示秒
+parameters.frame_duration|定义每条目标报文计入的时间；这个自定义名称由公式引用
+parameters.frame_duration.value|填写每条报文代表的时长；从采集或业务定义取得
+parameters.frame_duration.unit|声明每条贡献所用时长的单位；本例s表示秒
 profile|选择逐消息求值所使用的CAN读取规则；必须与来源读取路径相符
 message_policy|选择每条目标报文使用哪些值；current_message-v1仅使用本条携带的值
 ''')
@@ -437,7 +440,7 @@ def comment(path):
     if path.startswith('presets[].role_bindings.'):
         return '为'+path.rsplit('.',1)[1]+'角色选择上方已定义的分析信号名；仍须符合该角色要求'
     if path.startswith('metadata.'):
-        return {'metadata.device_label':'记录产出设备标签；当前独立导出仅接受home/work，普通分析与批量报告规则见对应说明',
+        return {'metadata.device_label':'可选设备标签；任意非空文本，省略为pending，不影响计算或导出',
                 'metadata.data_kind':'记录数据来源性质；synthetic表示人工构造的测试输入',
                 'metadata.purpose':'记录这份配置的用途；不参与条件判断或数值计算'}[path]
     if path.startswith('intervals.overrides.'):

@@ -2269,8 +2269,8 @@ Start with the [configuration guide](../configuration.md). The paths below locat
   "type": "string",
   "minLength": 1,
   "pattern": "\\S",
-  "description": "Input text encoding used during reading. Static checks do not prove that the file can be read. Decoded CSV defaults to utf-8.",
-  "default": "utf-8"
+  "description": "Text encoding used when reading; static validation does not establish that a file is readable. Decoded CSV defaults to utf-8-sig, accepting UTF-8 with or without a file-leading BOM. An explicit encoding takes precedence; U+FEFF inside the file is not removed.",
+  "default": "utf-8-sig"
 }
 ```
 
@@ -2826,7 +2826,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "requested"
   ],
   "default": "requested",
-  "description": "CAN decoding scope. Defaults to requested, decoding only needed messages/signals. all requests full decoding and diagnostics and requires an explicit analysis range. Options: \"all\", full decoding and diagnostic scope; \"requested\", only fields required by actual consumers."
+  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
 }
 ```
 
@@ -3377,7 +3377,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "vector-asc-statistics-v1",
     "sclicer-asc-v1"
   ],
-  "description": "Version of this specific format contract; it does not enable older analysis configurations. Options: \"vector-asc-v1\", standard Vector ASC; \"vector-asc-statistics-v1\", Vector ASC with statistics records; \"sclicer-asc-v1\", legacy Sclicer ASC output."
+  "description": "Select the ASC row layout. Default vector-asc-v1 reads standard Vector ASC with an optional Length/BitCount/ID suffix, retaining strict field-order, value and ID checks. vector-asc-statistics-v1 remains an explicit standard-statistics selection; sclicer-asc-v1 selects the different Sclicer FD layout. Dialects are not guessed."
 }
 ```
 
@@ -7005,7 +7005,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "vector-asc-statistics-v1",
     "sclicer-asc-v1"
   ],
-  "description": "Version of this specific format contract; it does not enable older analysis configurations. Options: \"vector-asc-v1\", standard Vector ASC; \"vector-asc-statistics-v1\", Vector ASC with statistics records; \"sclicer-asc-v1\", legacy Sclicer ASC output."
+  "description": "Select the ASC row layout. Default vector-asc-v1 reads standard Vector ASC with an optional Length/BitCount/ID suffix, retaining strict field-order, value and ID checks. vector-asc-statistics-v1 remains an explicit standard-statistics selection; sclicer-asc-v1 selects the different Sclicer FD layout. Dialects are not guessed."
 }
 ```
 
@@ -7044,7 +7044,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "requested"
   ],
   "default": "requested",
-  "description": "CAN decoding scope. Defaults to requested, decoding only needed messages/signals. all requests full decoding and diagnostics and requires an explicit analysis range. Options: \"all\", full decoding and diagnostic scope; \"requested\", only fields required by actual consumers."
+  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
 }
 ```
 
@@ -7607,7 +7607,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
   ],
   "minLength": 1,
   "pattern": "\\S",
-  "description": "Version of this semantic contract, independent of the analysis configuration version. It does not establish that the actual input was verified. May be omitted or null; otherwise must be non-empty text."
+  "description": "Version of the business meaning identified by this signal's semantic_id, independent of the analysis configuration version. It does not establish that actual inputs were verified. May be omitted or null; every non-null value must be non-empty text and requires semantic_id on the same signal."
 }
 ```
 
@@ -8262,7 +8262,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
   ],
   "minLength": 1,
   "pattern": "\\S",
-  "description": "Version of this semantic contract, independent of the analysis configuration version. It does not establish that the actual input was verified. May be omitted or null; otherwise must be non-empty text."
+  "description": "Version of the business meaning identified by this signal's semantic_id, independent of the analysis configuration version. It does not establish that actual inputs were verified. May be omitted or null; every non-null value must be non-empty text and requires semantic_id on the same signal."
 }
 ```
 
@@ -12930,10 +12930,11 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 {
   "enum": [
     "numpy",
-    "reference"
+    "reference",
+    "auto"
   ],
-  "description": "Numeric implementation. Both backends follow the same business semantics; the setting does not mean every rule is vectorized. Options: \"numpy\", NumPy implementation; \"reference\", independent reference implementation.",
-  "default": "numpy"
+  "description": "Numerical implementation selection. auto selects reference or numpy from verified whole-plan categories without reading or trial runs; numpy and reference select their respective numerical implementations. Explicit choices are preserved and runtime errors do not switch backends.",
+  "default": "auto"
 }
 ```
 
@@ -14676,10 +14677,11 @@ Start with the [configuration guide](../configuration.md). The paths below locat
   "enum": [
     null,
     "reference",
-    "numpy"
+    "numpy",
+    "auto"
   ],
   "default": null,
-  "description": "Numeric implementation. Both backends follow the same business semantics; not every rule is necessarily vectorized. Options: null, use each plan's backend; \"reference\", independent reference implementation; \"numpy\", NumPy implementation."
+  "description": "Numerical implementation override. null inherits each analysis plan; auto selects per plan from its static category; reference and numpy fix the numerical implementation. Explicit choices are preserved and runtime errors do not switch backends."
 }
 ```
 
@@ -14865,7 +14867,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Chronaxis shared definition file",
-  "description": "Shares only sources, signals, and derived expressions. No version wrapper or nested imports; the structure is interpreted under the referencing version-3 configuration.",
+  "description": "Shares only sources, signals, and derived expressions. No version wrapper or nested imports; the structure is interpreted under the referencing current analysis configuration (config_version: 4).",
   "$comment": "公共定义文件结构；由分析配置通过单层imports引用。",
   "type": "object",
   "minProperties": 1,

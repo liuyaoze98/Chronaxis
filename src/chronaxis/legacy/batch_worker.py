@@ -1,10 +1,10 @@
-"""在隔离子进程按有限批次调用原CAN函数，默认仍解码全部报文。
+"""在隔离子进程按有限批次读取BLF，并按显式串行政策解码。
 
-INIT仍仅加载原DBC和公开字段元数据；每次pull_batch明确许可原帧条数与字节上限。
-默认每条执行原next/parse一次。显式decode_frame_ids限制允许解码的ID，只有其中
-实际请求了字段的ID才调用parse；纯常量触发帧不调用parse。全部原帧仍
-顺序读取并保留原时间、字段校验；所选帧仍一次调用原parse，参数不变。按需模式在
-原parse返回后立即只取INIT所需字段，缺失键保持缺失；v3 READY确认这一投影策略。
+INIT仅加载DBC和公开字段元数据；每次pull_batch明确许可原帧条数与字节上限。
+共用BLFRead按原序读取；默认all范围逐帧解码，strict/partial政策跳过非数据帧。
+显式decode_frame_ids限制允许解码的ID，只有其中实际请求了字段的ID才调用
+decode_serial_frame；纯常量触发帧不解码。按需模式在解码后立即只取INIT所需
+字段，缺失键保持缺失；v3 READY确认这一投影策略。
 原帧保留集合与解码集合独立，导出原始帧可保留全部帧而不解码无需求ID。
 auto模式在原生消息ID不匹配时先跳过；仅source需要读其时间。selected/none目标
 只保存必要身份与所需值；非原生消息沿完整原帧检查并计入新包的回退数量。
@@ -19,6 +19,7 @@ import json
 from math import isfinite
 import os
 import platform
+from ..dbc_loading import load_dbc_file
 
 from . import worker
 from .records import (PROFILE_ID, MAX_WIRE_BYTES, LegacyDecodedFrame, decoded_to_dict,
@@ -29,24 +30,11 @@ from .batch_validation import validate_discarded, _item_base_size
 from .required_records import RequiredCANFrame, RequiredDecodedFrame, required_to_dict
 
 
-# [home] READY明确区分按字段投影与旧v2的整条消息values，不能把两种检查范围混同。
+# READY区分按字段投影与整条消息values，避免混淆两种检查范围。
 REQUESTED_VALUES_POLICY = 'requested_fields-v1'
 
 
-def _parse_selected(processor, db, frame, message, duplicate_ids):
-    """普通ID复用原解码入口，同ID多定义时直接调用选中的同库解码实现。
-
-    参数: processor旧入口、db同次数据库、frame原帧、message已选定义、duplicate_ids重复ID集合。
-    返回: 原物理值dict；DBC解码失败为空dict。异常: 非DBC结构错误由外层传播。
-    """
-    if message is None or frame.arbitration_id not in duplicate_ids:
-        return processor.parse_frame(frame, db)
-    # 不改冻结旧函数；其仅按整数ID查表会选错定义，此处使用相同库参数和解码方法。
-    from cantools.database.errors import DecodeError
-    try:
-        return message.decode(frame.data, decode_choices=False, allow_truncated=True)
-    except DecodeError:
-        return {}
+from .decode_policy import decode_serial_frame as _parse_selected
 
 
 def _requested_fields(fields, decode_ids):
@@ -73,7 +61,7 @@ def _requested_fields(fields, decode_ids):
 def _project_values(values, names):
     """只读取本报文所需的原值，让后续完整模型只检查这些值。
 
-    参数: values为原parse返回值；names为本ID需要的名字映射或空tuple。
+    参数: values为显式串行解码政策返回值；names为本ID需要的名字映射或空tuple。
     返回: 新dict，保留实际存在的所需键；KeyError代表缺失，不补None或零。
     异常: 有字段需求时非Mapping报TypeError；所需键访问和取消错误原样传播。
     无字段的常量触发报文直接返回空dict，不遍历或校验没有用途的原values。
@@ -148,14 +136,15 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
         原生tuple明确本次固定解码ID，允许空集合；input_check默认full保持旧行为，
         auto必须固定解码ID；time_scope为source/selected/none，full必须source。
         input_paths为原序路径文本tuple或None；decode_policy为legacy/strict/partial。
-        cycle_fields显式请求同次DBC周期，metadata_fields仅取候选；不改变request.fields或原parse调用集合。
+        cycle_fields显式请求同次DBC周期，metadata_fields仅取候选；不改变request.fields或值解码的报文集合。
         新政策只核有字段需求的帧长度，非数据帧不解码；解码空值不继承前值。
     返回: 正常STOP或真实EOF时None。
     异常: 失败发送有限事实并以SystemExit(1)退出；清理副错不替代原错误。
-    副作用: 子进程内一次load_file，每个声明文件一次iter_frames；每原帧顺序next，默认全部parse，
-        显式按需只对固定集合内有字段需求的帧调用parse，并立即投影所需字段。未解码帧不产生或检查
+    副作用: 子进程内加载一次DBC，每个声明文件建立一个共用BLFRead，按原序取帧；
+        默认all解码全部帧，strict/partial跳过非数据帧；按需只解码固定集合中有字段需求的帧，
+        并立即投影所需字段。未解码帧不产生或检查
         解码值，仍检查原帧；原始帧保留范围不扩大解码范围。
-        只关闭自己连接和原生成器；不声称原reader已有可靠公开close实现。
+        只关闭自己连接及同次共用读取器；第三方内部RSS仍不作硬上限保证。
     """
     iterator = failure = request_id = None
     phase, frames_returned, pulls_received, parse_calls = 'init', 0, 0, 0
@@ -185,12 +174,12 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
                 raise ValueError('按需解码ID必须是无重复29位整数tuple')
             decode_ids = frozenset(decode_frame_ids)
             projected_fields = _requested_fields(request.fields, decode_ids)
-        phase = 'vendor'
-        files, processor, vendor = worker._load_vendor()
-        # 仅取旧模块已加载的真实类，不提前导入CAN库；测试替身没有此类时沿用原字段路径。
-        native_message_type = getattr(getattr(files, 'can', None), 'Message', None)
+        phase = 'dependencies'
+        can, cantools = worker._load_can_runtime()
+        # 仅取初始化刚加载的真实类，不提前导入CAN库；测试替身没有此类时沿用原字段路径。
+        native_message_type = getattr(can, 'Message', None)
         phase = 'dbc'
-        db = processor.cantools.database.load_file(str(request.dbc_path))
+        db = load_dbc_file(str(request.dbc_path), cantools)
         phase = 'metadata'
         from .binding import FrameBindingResolver
         resolver = FrameBindingResolver(db, request.fields)
@@ -208,12 +197,11 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
         # 长度表只在新政策且字段确有需求时建立，旧调用不增加DBC查询。
         if (input_paths is not None or decode_policy != 'legacy') and os.path.isdir(paths[0]):
             raise ValueError('新原始报文入口需要文件，不能隐式扫描目录')
-        iterator = files.iter_frames(paths[0])
+        iterator = worker._iter_blf(paths[0])
         versions = {'python': platform.python_version(), 'python-can': metadata.version('python-can'),
                     'cantools': metadata.version('cantools'), 'natsort': metadata.version('natsort')}
         ready = {'op': 'ready', 'version': 1, 'profile': PROFILE_ID,
-            'worker_pid': os.getpid(), 'fields': fields, 'dependency_versions': versions,
-            'vendor_sha256': vendor}
+            'worker_pid': os.getpid(), 'fields': fields, 'dependency_versions': versions}
         if decode_ids is not None:
             ready.update(version=3, decode_scope='requested', decode_frame_ids=list(decode_frame_ids),
                          decoded_values_policy=REQUESTED_VALUES_POLICY)
@@ -262,7 +250,7 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
                     input_index += 1
                     if os.path.isdir(paths[input_index]):
                         raise ValueError('连续原始报文需要文件，不能隐式扫描目录')
-                    iterator = files.iter_frames(paths[input_index])
+                    iterator = worker._iter_blf(paths[input_index])
                 try:
                     msg = next(iterator)
                 except StopIteration:
@@ -311,7 +299,7 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
                         else:
                             check_decode_length(msg, message.length, decode_policy)
                             parse_calls += 1
-                            values = _parse_selected(processor, db, msg, message, duplicate_ids)
+                            values = _parse_selected(db, msg, message, duplicate_ids)
                     else:
                         values = {}
                     phase = 'batch'
@@ -349,7 +337,7 @@ def batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', 
                         check_decode_length(msg, message.length, decode_policy)
                     if message is not None or decode_ids is None:
                         parse_calls += 1
-                        values = _parse_selected(processor, db, msg, message, duplicate_ids)
+                        values = _parse_selected(db, msg, message, duplicate_ids)
                     else:
                         values = {}
                 else:

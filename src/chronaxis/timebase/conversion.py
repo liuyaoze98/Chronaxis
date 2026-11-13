@@ -74,6 +74,12 @@ def require_int64_ns(value: int, field: str = "time_ns") -> int:
         TypeError: 非整数或bool，不能靠隐式截断转换。
         TimeOverflowError: 超出有符号64位纳秒范围。
     """
+    # 记录流已规范为原生整数，直接核范围避免每次查询Integral注册关系。
+    # 精确类型判断不会把bool或自定义整数子类当成这一分支。
+    if type(value) is int:
+        if not INT64_MIN <= value <= INT64_MAX:
+            raise TimeOverflowError(f"{field}超出int64纳秒范围")
+        return value
     # bool虽是Python整数子类，时间协议不得把True当1ns。
     if isinstance(value, bool) or not isinstance(value, Integral):
         # 输入类型错误在运算之前定位，不生成正常结果。

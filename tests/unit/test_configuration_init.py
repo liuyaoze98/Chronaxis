@@ -1,4 +1,6 @@
 """初始化从真实CLI到可运行产物，覆盖独占写入和失败清理。"""
+
+from workspace_fixtures import test_directory
 import csv
 import os
 from pathlib import Path
@@ -17,7 +19,7 @@ class ConfigurationInitTests(unittest.TestCase):
 
     def setUp(self):
         """建立work目录。参数: 无。返回: None。异常: IO。"""
-        self.root=Path(tempfile.mkdtemp(prefix='configuration-init-',dir='work')).resolve()
+        self.root=Path(test_directory(self,prefix='configuration-init-',dir='work')).resolve()
 
     def command(self,*args):
         """实际CLI进程。参数: 参数。返回: CompletedProcess。异常: 超时。"""

@@ -1,6 +1,6 @@
 """D2 通过真实公共 Runner 校核滚动输出、事件、条件、真实周期、EOF及前史。"""
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import json
 import unittest
 from unittest.mock import patch

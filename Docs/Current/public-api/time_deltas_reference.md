@@ -42,4 +42,4 @@ TypeError/ValueError: 非整数或来源内时间回退。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/timebase/conversion.py:338`](../../../src/chronaxis/timebase/conversion.py#L338)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/timebase/conversion.py:344`](../../../src/chronaxis/timebase/conversion.py#L344)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

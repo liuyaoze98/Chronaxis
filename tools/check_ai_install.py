@@ -1,4 +1,4 @@
-"""在仓库以外的新目录安装候选wheel，直接使用安装目录的用户资料执行实际任务。
+"""在仓库以外安装候选wheel，分别从安装资料和独立AI ZIP执行实际任务。
 
 输入为wheel、手册渠道的指南ZIP、本地已安装的离线依赖目录与报告目标。保留独立
 环境、各场景日志和结果供复查；不安装到用户Python，不修改输入、历史快照或服务。
@@ -6,19 +6,131 @@
 import argparse
 import csv
 from hashlib import sha256
+from importlib.metadata import distributions
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
+from zipfile import ZipFile
+from example_result_contracts import verify_power_statistics_csv, verify_power_statistics_publication
 
 ROOT = Path(__file__).resolve().parents[1]
+CAN_DISTRIBUTIONS = ('python-can', 'cantools', 'natsort')
+CAN_VERSION_CHECK = """from importlib.metadata import version
+import json
+import sys
+expected = json.loads(sys.argv[1])
+actual = {name: version(name) for name in expected}
+if actual != expected:
+    raise RuntimeError(f'隔离环境CAN依赖与来源目录版本不一致：actual={actual}, expected={expected}')
+print(json.dumps(actual, sort_keys=True))
+"""
+
+
+def dependency_can_versions(directory):
+    """从指定依赖目录读取三项CAN发行版本，不借用当前解释器的安装状态。
+
+    参数: directory为本次将复制的site-packages目录。返回: 发行名到精确版本的映射。
+    异常: ValueError表示目录缺失、所需元数据缺失、版本为空或同一发行重复。
+    允许范围由目标环境既有pip check核验；这里仅确定复制前后的比较依据。
+    """
+    directory = Path(directory).resolve()
+    if not directory.is_dir():
+        raise ValueError('依赖目录不存在或不是目录：' + str(directory))
+    found = {}
+    for distribution in distributions(path=[str(directory)]):
+        metadata = distribution.metadata
+        name = re.sub(r'[-_.]+', '-', metadata.get('Name', '')).lower()
+        if name not in CAN_DISTRIBUTIONS:
+            continue
+        if name in found:
+            raise ValueError(f'依赖目录存在重复的发行元数据：{name}，目录：{directory}')
+        version = metadata.get('Version')
+        if not isinstance(version, str) or not version.strip():
+            raise ValueError(f'依赖发行元数据缺少版本：{name}，目录：{directory}')
+        found[name] = version
+    missing = [name for name in CAN_DISTRIBUTIONS if name not in found]
+    if missing:
+        raise ValueError('依赖目录缺少所需发行元数据：' + ', '.join(missing) + '，目录：' + str(directory))
+    return {name: found[name] for name in CAN_DISTRIBUTIONS}
+
+
+def extract_guide(archive_path, destination):
+    """独立解压待交付指南。参数: ZIP路径和新目录。返回: 原字节文件映射。异常: 路径或文件冲突。"""
+    files = {}
+    with ZipFile(archive_path) as archive:
+        for member in archive.infolist():
+            path = PurePosixPath(member.filename)
+            if path.is_absolute() or '..' in path.parts or '\\' in member.filename or ':' in member.filename:
+                raise ValueError('AI指南包含非法路径：' + member.filename)
+            if member.is_dir():
+                continue
+            if member.filename in files:
+                raise ValueError('AI指南包含重复文件：' + member.filename)
+            files[member.filename] = archive.read(member)
+    destination.mkdir()
+    for name, data in files.items():
+        target = destination / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open('xb') as stream:
+            stream.write(data)
+    return files
+
+
+def verify_review_task(manifest_path, task):
+    """按任务卡逐项读取实际发布结果。
+
+    参数: manifest_path为主完成清单，task为条件能量、单位换算或导出任务ID。
+    返回: 本次结果表及导出链证据。异常: 任务未知、结果缺项或数值/状态/说明不符。
+    """
+    fields = {'CONDITION_ENERGY': ('事件结果_', 'energy_kwh', 'kWh', 4000 * 61 / 3600000),
+              'UNITS': ('会话结果_', 'maximum_current', 'A', 7),
+              'EXPORT': ('会话结果_', 'voltage_area', 'V*s', 13)}
+    if task not in fields:
+        raise ValueError('没有登记此任务的结果核验：' + task)
+    manifest_path = Path(manifest_path)
+    manifest = json.loads(manifest_path.read_bytes())
+    assert manifest['status'] == 'completed', manifest_path
+    prefix, metric, unit, expected = fields[task]
+    table, = [manifest_path.parent / item['name'] for item in manifest['outputs']
+              if item['name'].startswith(prefix)]
+    with table.open(encoding='utf-8-sig', newline='') as stream:
+        row, = csv.DictReader(stream)
+    value = float(row[f'{metric}（{unit}）'])
+    assert abs(value - expected) < 1e-12, row
+    assert row[metric + '：状态'] == '完整' and row[metric + '：说明'] == '', row
+    evidence = dict(task=task, manifest=str(manifest_path), table=str(table), value=value,
+                    unit=unit, status=row[metric + '：状态'], explanation=row[metric + '：说明'])
+    if task == 'CONDITION_ENERGY':
+        assert (row['开始时间（s）'], row['结束时间（s）']) == ('61', '122'), row
+        evidence['interval_s'] = [61, 122]
+    if task == 'EXPORT':
+        # 主清单只指向索引与目录；格式、帧数和原帧文件来自每项导出自己的清单。
+        exports = manifest['exports']
+        index = manifest_path.parent / exports['index_file']
+        entry, = [json.loads(line) for line in index.read_text(encoding='utf8').splitlines()]
+        assert exports['record_count'] == 1 and entry['export_type'] == 'can_frames', entry
+        directory = manifest_path.parent / exports['directory'] / entry['directory']
+        exported_manifest = directory / 'manifest.json'
+        detail = json.loads(exported_manifest.read_bytes())
+        assert detail['status'] == 'completed' and detail['format'] == 'asc' and detail['frames'] == 3, detail
+        files = [directory / item['name'] for item in detail['files']]
+        assert any(path.name == 'frames.asc' for path in files) and all(path.is_file() for path in files), files
+        evidence.update(export_index=str(index), export_manifest=str(exported_manifest),
+                        export_files=list(map(str, files)), frames=detail['frames'], format=detail['format'])
+    return evidence
 
 
 def check(wheel, guide, deps, report, device):
     """参数: wheel和guide为发行物、deps已装依赖、report新报告、device设备。返回: 摘要。异常: 原环境/行为错误。"""
+    # CI使用自身标签，不能冒记为本地home/work；空标签仍在创建环境之前拒绝。
+    if not isinstance(device, str) or not device.strip():
+        raise ValueError('安装验证设备标签必须为非空文本')
+    expected_can_versions = dependency_can_versions(deps)
     # 使用系统临时目录创建一次性独立运行区；必须实际位于项目根目录外。
     area = Path(tempfile.mkdtemp(prefix="chronaxis-user-"))
     if area.resolve().is_relative_to(ROOT):
@@ -28,7 +140,8 @@ def check(wheel, guide, deps, report, device):
     env.update(PIP_NO_INDEX="1",PIP_NO_CACHE_DIR="1",PIP_DISABLE_PIP_VERSION_CHECK="1",
                PYTHONUTF8="1",PYTHONIOENCODING="utf-8",PYTHONDONTWRITEBYTECODE="1",CHRONAXIS_DEVICE_LABEL=device)
     summary = dict(device_label=device, wheel=wheel.name, wheel_sha256=sha256(wheel.read_bytes()).hexdigest(),
-                   directory=str(area), logs=[], cases={}, completed=False)
+                   directory=str(area), logs=[], cases={}, completed=False,
+                   dependency_source=str(Path(deps).resolve()), expected_can_versions=expected_can_versions)
     report.parent.mkdir(parents=True, exist_ok=True)
     if report.exists():
         raise FileExistsError(report)
@@ -57,9 +170,10 @@ def check(wheel, guide, deps, report, device):
         ignore=shutil.ignore_patterns("*.pth","*editable*","chronaxis*","__pycache__","pip","pip-*","setuptools*","wheel*","_distutils_hack","pkg_resources"))
     command("install",[sys.executable,"-m","pip","--python",python,"install","--no-index","--no-deps",wheel])
     command("dependencies",[sys.executable,"-m","pip","--python",python,"check"])
-    command("can-versions",[python,"-I","-c",
-        "from importlib.metadata import version; expected={'python-can':'4.6.1','cantools':'39.4.3','natsort':'8.4.0'}; "
-        "actual={name:version(name) for name in expected}; assert actual==expected,(actual,expected); print(actual)"])
+    # pip check验证wheel的允许范围；本项另外确认离线复制没有改变选定的精确版本。
+    summary['actual_can_versions'] = json.loads(command("can-versions", [
+        python, "-I", "-c", CAN_VERSION_CHECK, json.dumps(expected_can_versions, sort_keys=True)]))
+    save()
     check_name = "import chronaxis,pathlib,sys;assert pathlib.Path(chronaxis.__file__).is_relative_to(sys.prefix);print(chronaxis.__file__)"
     summary["import_path"]=command("import",[python,"-I","-c",check_name]).strip()
     # 在真正的安装环境核对构建版本，摘要/详细元数据都不得借用仓库或旧安装身份。
@@ -81,6 +195,34 @@ print(expected)
     def cli(name,*args,cwd=area):
         """参数: name为日志名、args公开命令参数、cwd运行目录。返回: stdout。异常: 非零退出。"""
         return command(name,[python,"-I","-B","-m","chronaxis",*args],cwd)
+
+    def integral_result(manifest_path):
+        """核对通用积分默认表。参数: 完成清单路径。返回: 结果证据。异常: 数值、状态或版本不符。"""
+        manifest = json.loads(manifest_path.read_bytes())
+        assert manifest['status'] == 'completed', manifest_path
+        assert manifest['run']['software_version'] == summary['software_version'], manifest_path
+        table, = [manifest_path.parent / item['name'] for item in manifest['outputs']
+                  if item['name'].startswith('会话结果_')]
+        with table.open(encoding='utf-8-sig', newline='') as stream:
+            row, = csv.DictReader(stream)
+        assert float(row['energy（J）']) == 30 and row['energy：状态'] == '完整', row
+        return dict(manifest=str(manifest_path), table=str(table), energy_j=30, status='完整')
+
+    def integrator_lookup(base, lookup, language, label):
+        """从双语入口确认任务首项。参数: 入口/脚本/语言/日志前缀。返回: 通用任务与查询证据。异常: 路由错误。"""
+        records = []
+        general = None
+        for number, term in enumerate(('积分器', 'integrator', '通用时间积分器', 'general time integrator',
+                                       'integral', '高性能积分器', 'high-performance integrator')):
+            expected = 'FAST_MESSAGE_ENERGY' if '高性能' in term or term.startswith('high-') else 'GENERAL_TIME_INTEGRAL'
+            rows = json.loads(command(f'{label}-lookup-{number}',
+                [python, '-X', 'utf8', '-I', '-B', lookup, 'task', term, '--language', language], base))
+            assert rows and rows[0]['id'] == expected, (language, term, rows)
+            records.append(dict(query=term, first_task=rows[0]['id']))
+            if expected == 'GENERAL_TIME_INTEGRAL':
+                general = rows[0]
+        return general, records
+
     cli("guide","guide","--output",out)
     assert out.read_bytes()==guide.read_bytes(), "手册与安装包提供不同指南"
     direct = Path(cli("guide-path", "guide").strip()).parent
@@ -90,6 +232,42 @@ print(expected)
     assert json.loads((direct / 'manifest.json').read_bytes())['package_version'] == summary['software_version']
     original_files = {p.relative_to(direct).as_posix(): sha256(p.read_bytes()).hexdigest()
                       for p in direct.rglob("*") if p.is_file()}
+    summary['integrator_routing'] = {}
+    for language in ('zh', 'en'):
+        base = direct / ('en' if language == 'en' else '')
+        _, records = integrator_lookup(base, direct / 'lookup.py', language, 'installed-' + language)
+        summary['integrator_routing'][language] = records
+    # 另从传入ZIP独立解压。查询与配置只取此目录，不能借用安装资源或主手册。
+    standalone = area / 'standalone-ai'
+    standalone_files = extract_guide(guide, standalone)
+    assert json.loads(standalone_files['manifest.json'])['package_version'] == summary['software_version']
+    standalone_evidence = dict(directory=str(standalone), archive_sha256=sha256(guide.read_bytes()).hexdigest(),
+                               files=len(standalone_files), languages={})
+    summary['standalone_ai'] = standalone_evidence
+    if 'examples/results/index.json' in standalone_files:
+        from example_inventory import validate_example_inventory
+        standalone_evidence['example_inventory'] = dict(status='verified', **validate_example_inventory(standalone_files))
+    else:
+        # AI包可只分发任务所需子集；没有全手册索引时不声称校验过其全部摘要。
+        standalone_evidence['example_inventory'] = dict(status='not_bundled', path='examples/results/index.json')
+    for language in ('zh', 'en'):
+        base = standalone / ('en' if language == 'en' else '')
+        script = '../lookup.py' if language == 'en' else 'lookup.py'
+        task, records = integrator_lookup(base, script, language, 'standalone-' + language)
+        example = (base / task['example']).resolve()
+        assert example.is_relative_to(standalone) and example.is_file(), example
+        assert example.suffix == '.yaml', example
+        valid = json.loads(cli('standalone-validate-' + language, 'validate', example, '--format', 'json', cwd=base))
+        assert valid['valid'] and valid['execution_ready'], valid
+        publication = json.loads(cli('standalone-run-' + language, 'run', example,
+            '--output', area / ('standalone-result-' + language), cwd=base))
+        assert publication['status'] == 'completed', publication
+        standalone_evidence['languages'][language] = dict(task=task['id'], example=task['example'],
+            configuration=str(example), lookup=records, **integral_result(Path(publication['manifest'])))
+        save()
+    assert standalone_files == {p.relative_to(standalone).as_posix(): p.read_bytes()
+                                for p in standalone.rglob('*') if p.is_file()}, '运行示例改写了独立AI资料'
+    standalone_evidence['files_unchanged'] = True
     user = area/"user"
     user.mkdir()
     # 极少数内置异常没有可反射签名；必须和参考页同样明确为空，而非伪造(*args)。
@@ -155,12 +333,18 @@ print(len(rows))
     english_manifest=Path(english_output.strip().splitlines()[-1])
     english_info=json.loads(english_manifest.read_bytes())
     assert english_info['run']['software_version'] == summary['software_version']
-    english_table=next(english_manifest.parent/item["name"] for item in english_info["outputs"] if item["name"].startswith("事件结果_"))
-    with english_table.open(encoding="utf-8-sig", newline="") as stream:
-        en_events = list(csv.DictReader(stream))
-    assert len(en_events) == 1 and (en_events[0]["开始时间（s）"], en_events[0]["结束时间（s）"]) == ("61", "122")
-    summary["english_energy_kwh"] = float(en_events[0]["energy_kwh（kWh）"])
-    assert abs(summary["english_energy_kwh"] - 4000*61/3600000) < 1e-12
+    english_condition = verify_review_task(english_manifest, 'CONDITION_ENERGY')
+    summary['review_tasks'] = {'en': {'CONDITION_ENERGY': english_condition}, 'zh': {}}
+    summary['english_energy_kwh'] = english_condition['value']
+    # 从英文卡片自己的相对位置运行换算和导出，核实际CSV以及导出索引链。
+    english_tasks = json.loads((direct / 'en/tasks.json').read_bytes())['tasks']
+    for slug in ('UNITS', 'EXPORT'):
+        task = next(item for item in english_tasks if item['id'] == slug)
+        publication = json.loads(cli('english-run-' + slug, 'run', task['example'],
+            '--output', user / ('out-english-' + slug), cwd=direct / 'en'))
+        assert publication['status'] == 'completed', publication
+        summary['review_tasks']['en'][slug] = verify_review_task(Path(publication['manifest']), slug)
+    save()
     for task in plan_index["tasks"]:
         slug,plan=task["id"],str((direct / task["example"]).resolve())
         if slug == "FAST_CONTINUOUS_SESSION":
@@ -253,6 +437,21 @@ print(len(rows))
             manifest_path=Path(published["manifest"])
             manifest=json.loads(manifest_path.read_bytes())
             assert manifest['run']['software_version'] == summary['software_version'], slug
+            if slug in ('CONDITION_ENERGY', 'UNITS', 'EXPORT'):
+                summary['review_tasks']['zh'][slug] = verify_review_task(manifest_path, slug)
+                if slug == 'CONDITION_ENERGY':
+                    summary['conditional_energy_kwh'] = summary['review_tasks']['zh'][slug]['value']
+            if slug == 'GENERAL_TIME_INTEGRAL':
+                summary['general_time_integral'] = integral_result(manifest_path)
+            if slug == 'POWER_STATISTICS':
+                # 安装包输出直接对照独立真值，不仅检查任务成功或附带快照摘要。
+                summary['power_statistics'] = {'numpy': verify_power_statistics_publication(manifest_path)}
+                reference = json.loads(cli('power-statistics-reference', 'run', plan, '--backend', 'reference',
+                                           '--output', 'out-power-reference', cwd=user))
+                summary['power_statistics']['reference'] = verify_power_statistics_publication(Path(reference['manifest']))
+                # 可直接阅读的教学结果也须满足同一业务合同，不能仅让外层ZIP摘要自洽。
+                sample = Path(plan).parent / 'results/power-statistics-yaml/会话结果.csv'
+                verify_power_statistics_csv(sample)
             if slug=="CONTINUOUS_FILES":
                 # 从安装资料运行真实文件池；核独立手算值、静态上限及时间归并扩展。
                 table=next(manifest_path.parent/item['name'] for item in manifest['outputs'] if item['name'].startswith('会话结果_'))
@@ -291,16 +490,6 @@ print(len(rows))
                     value = float(next(csv.DictReader(stream))["rated_power（W）"])
                 assert abs(value - 50/3) < 1e-12, value
                 summary["calibration_mean_w"] = value
-            if slug=="CONDITION_ENERGY":
-                # 发布环境实际运行跨卷严格门槛例子，不能仅用completed判定业务正确。
-                with next(manifest_path.parent/item["name"] for item in manifest["outputs"] if item["name"].startswith("事件结果_")).open(encoding="utf-8-sig",newline="") as stream:
-                    events=list(csv.DictReader(stream))
-                assert len(events)==1,events
-                row=events[0]
-                assert (row["开始时间（s）"],row["结束时间（s）"])==("61","122"),row
-                assert row["energy_kwh：状态"]=="完整",row
-                assert abs(float(row["energy_kwh（kWh）"])-4000*61/3600000)<1e-12,row
-                summary["conditional_energy_kwh"]=float(row["energy_kwh（kWh）"])
         summary["cases"][slug]="published"
         save()
     # 专题附带的脚本按用户普通调用方式运行；它会从自身目录导入同包辅助文件。
@@ -327,7 +516,7 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ("wheel","guide","deps","report"):
         parser.add_argument(name,type=Path)
-    parser.add_argument("--device-label",required=True,choices=("home","work"))
+    parser.add_argument("--device-label", required=True, help="本次实际验证环境标签，例如home、work或ci")
     args=parser.parse_args()
     result=check(args.wheel.resolve(),args.guide.resolve(),args.deps.resolve(),args.report.resolve(),args.device_label)
     print(json.dumps(dict(directory=result["directory"],cases=len(result["cases"]),completed=result["completed"])))

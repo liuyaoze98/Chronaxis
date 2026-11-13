@@ -5,7 +5,7 @@
 目录中保存最小版和完整注释版YAML及小型合成输入。本模块仅提供有限模板清单
 和文件内容，不创建用户目录、不执行分析、不把模板阈值当作真实设备参数。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -46,7 +46,7 @@ class ConfigurationTemplate
 |`entrypoint`|str|是|无|模板目录内的主配置相对路径；分析用plan.yaml，批量用batch.yaml。|
 |`expected`|str|是|无|合成场景的独立手算预期；只解释模板数据，不作为真实设备参数建议。|
 
-源码：[`src/chronaxis/configuration/template_catalog.py:13`](../../../src/chronaxis/configuration/template_catalog.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/template_catalog.py:13`](../../../src/chronaxis/configuration/template_catalog.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_catalog"></a>
 ## `_catalog`
@@ -72,7 +72,7 @@ dict。
 
 缺失或损坏资源不隐藏。
 
-源码：[`src/chronaxis/configuration/template_catalog.py:22`](../../../src/chronaxis/configuration/template_catalog.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/template_catalog.py:22`](../../../src/chronaxis/configuration/template_catalog.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-available_templates"></a>
 ## `available_templates`
@@ -98,7 +98,7 @@ ConfigurationTemplate tuple。
 
 包资源错误。
 
-源码：[`src/chronaxis/configuration/template_catalog.py:28`](../../../src/chronaxis/configuration/template_catalog.py#L28)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/template_catalog.py:28`](../../../src/chronaxis/configuration/template_catalog.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_relative_path"></a>
 ## `_relative_path`
@@ -125,7 +125,7 @@ ValueError。
 
 清单由项目维护；仍拒绝绝对路径、返回父目录和Windows反斜线，防止资源误配越界。
 
-源码：[`src/chronaxis/configuration/template_catalog.py:35`](../../../src/chronaxis/configuration/template_catalog.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/template_catalog.py:35`](../../../src/chronaxis/configuration/template_catalog.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-template_files"></a>
 ## `template_files`
@@ -152,4 +152,4 @@ template_files(name, *, style='annotated')
 未知场景/风格为ValueError，包内文件错误直接传播；不读取用户配置或写文件。
 两种风格只有注释不同，批量子计划也按同一风格选择。资源不含环境变量或模板执行。
 
-源码：[`src/chronaxis/configuration/template_catalog.py:46`](../../../src/chronaxis/configuration/template_catalog.py#L46)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/template_catalog.py:46`](../../../src/chronaxis/configuration/template_catalog.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

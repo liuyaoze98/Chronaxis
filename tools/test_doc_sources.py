@@ -42,22 +42,22 @@ class DocSourceTests(unittest.TestCase):
 
     @patch.dict('os.environ', {'CHRONAXIS_DOC_SOURCE_TREE': '1'})
     def test_windows_checkout_preserves_git_source_text(self):
-        """普通 Windows 检出文本恢复 LF，原样 vendor 的 CRLF 仍保留。"""
+        """当前发行树各层Python文本均恢复LF，不再依赖退出的vendor例外。"""
         ordinary = 'src/chronaxis/__init__.py'
-        vendor = 'src/chronaxis/legacy/vendor/sclicer_functions_v1/reader.py'
+        nested = 'src/chronaxis/sources/reader.py'
         data = (self.root/ordinary).read_bytes()
-        for name in (ordinary, vendor):
+        for name in (ordinary, nested):
             path = self.root/name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data.replace(b'\n', b'\r\n'))
-        material = ''.join(name+'\0'+sha256(data).hexdigest()+'\n' for name in (ordinary, vendor))
+        material = ''.join(name+'\0'+sha256(data).hexdigest()+'\n' for name in (ordinary, nested))
         lock_path = self.root/'Docs/AI/inputs.lock.json'
         lock = json.loads(lock_path.read_bytes())
         lock['runtime_sha256'] = sha256(material.encode()).hexdigest()
         lock_path.write_text(json.dumps(lock), encoding='utf8')
         source = DocSources(self.root, 'release-origin', 'Current')
         self.assertEqual(source.text(ordinary), data.decode())
-        self.assertEqual(source.text(vendor), data.decode().replace('\n', '\r\n'))
+        self.assertEqual(source.text(nested), data.decode())
 
     @patch.dict('os.environ', {'CHRONAXIS_DOC_SOURCE_TREE': '1'})
     def test_source_and_schema_drift_are_rejected(self):

@@ -4,7 +4,7 @@ from copy import deepcopy
 from io import StringIO
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 

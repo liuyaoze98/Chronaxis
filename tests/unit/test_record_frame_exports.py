@@ -42,7 +42,7 @@ class RecordFrameExportTests(unittest.TestCase):
                 self.assertTrue(validate_analysis_plan(plan).execution_ready)
                 from chronaxis.execution.can_reader import BudgetedLegacyCANSourceAdapter
                 from chronaxis.execution.text_can_reader import BudgetedTextCANSourceAdapter
-                adapter=BudgetedLegacyCANSourceAdapter if kind=='can_blf' else BudgetedTextCANSourceAdapter
+                adapter=BudgetedTextCANSourceAdapter
                 original=adapter.iter_batches;scans=[]
                 def scan(owner,*args,**kwargs):
                     """只记录真实入口调用，不替换数据。参数: 原调用。返回: 原reader。异常: 原错。"""

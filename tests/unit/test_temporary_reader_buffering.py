@@ -1,6 +1,6 @@
-"""用真实FileIO底层计数验证四类新暂存reader的有界缓冲及原资源协议。
+"""用真实FileIO底层计数验证三类暂存读取器的有界缓冲及原资源协议。
 
-现场构造真实sealed消息仓、解码history、原帧仓和原始导出索引；不读CAN/DBC、
+现场构造真实封存消息仓、原帧仓和原始导出索引；不读CAN/DBC、
 不改旧reader/vendor，不以假文件或定时性能阈值证明优化。计数FileIO子类每次都
 调用原read/readinto，Path.open观察器只按产品实际buffering参数组装同一真实FD。
 测试核完整原字节/SHA/typed行、跨8192边界和长行、真正EOF、预算先于open、
@@ -23,7 +23,6 @@ from uuid import uuid4
 from chronaxis.core.binding import SignalDefinition
 from chronaxis.core.models import Interval, MemoryRow, SourceSpec, TimebaseSpec
 from chronaxis.core.types import SignalDType, TimeType
-from chronaxis.execution.history import DecodedHistoryStore
 from chronaxis.legacy.message_store import DecodedMessageStore
 from chronaxis.legacy.raw_store import RawFrameStore
 from chronaxis.legacy.records import LegacyRawFrame, LegacyDecodedFrame
@@ -33,7 +32,7 @@ from chronaxis.results.raw_exports import RawExportStore, RawExportRecord
 from chronaxis.sources import MemorySourceAdapter, ReadRequest
 
 
-KINDS = ('message', 'history', 'raw', 'index')
+KINDS = ('message', 'raw', 'index')
 WORK = Path(__file__).resolve().parents[2] / 'work/m2-real-acceptance-tests/buffered-readers'
 
 
@@ -74,7 +73,7 @@ class CountingRaw(io.FileIO):
 
 
 class TemporaryReaderBufferingTests(unittest.TestCase):
-    """四个实际产品owner共享同类黑盒断言，不构造假owner或模拟数值真值。"""
+    """三个实际产品owner共享同类黑盒断言，不构造假owner或模拟数值真值。"""
 
     def setUp(self):
         """建立独占work根与真实资源清单。参数: 无。返回: None。异常: 原目录错误。"""
@@ -99,33 +98,15 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
             self.assertEqual(budget.ram_bytes, 0)
 
     def fixture(self, kind):
-        """构造真实封存输入，消息/history/index包含大于8192字节的合法单行。
+        """构造真实封存输入，消息仓和原始导出索引包含大于8192字节的合法单行。
 
-        参数: kind为四固定仓类别。返回: owner/path/open/budget/count小描述。
+        参数: kind为三种固定仓类别。返回: owner/path/open/budget/count小描述。
         异常: 原模型、预算或文件错误传播；原帧64字节上限保持，靠多行跨buffer。
         """
         budget = ResourceBudget(128 * 1024**2)
         budget.reserve_ram(777)
         self.budgets.append(budget)
         path = self.root / (kind + '-' + uuid4().hex)
-        if kind == 'history':
-            field = 'raw.' + 'x' * 9000
-            source = SourceSpec('bus', TimebaseSpec('clock', TimeType.RELATIVE, 'buffer-test'),
-                tuple(MemoryRow(time_ns=index, sequence=index, values={field: index}) for index in range(4)),
-                observation_start_ns=0, observation_end_ns=4)
-            definition = SignalDefinition('value', 'bus', field, SignalDType.FLOAT64, '1', 10)
-            adapter = MemorySourceAdapter(source, 'session', (definition,), backend='reference')
-            request = ReadRequest('session', ('value',), 0, 4, 1)
-            owner = DecodedHistoryStore(budget, path, (adapter.describe(),), {'bus': request})
-            self.owners.append(owner)
-            try:
-                for batch in adapter.iter_batches(request):
-                    owner.append(batch)
-            finally:
-                adapter.close()
-            owner.seal()
-            return SimpleNamespace(kind=kind, owner=owner, path=owner.paths['bus'],
-                open=lambda: owner.iter_records('bus'), budget=budget, expected_count=None)
         if kind == 'index':
             owner = RawExportStore(budget, path, 'bus', 'session', 'home')
             self.owners.append(owner)
@@ -175,8 +156,8 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
 
         return opened
 
-    def test_all_four_readers_use_block_reads_and_preserve_exact_eof(self):
-        """四仓真实底层调用接近块数而非字节数，完整typed内容与SHA保持且末条仍未EOF。
+    def test_all_readers_use_block_reads_and_preserve_exact_eof(self):
+        """三仓真实底层调用接近块数而非字节数，完整typed内容与SHA保持且末条仍未EOF。
 
         参数: 无。返回: None。异常: 原读错、字节/行/EOF/费用或分块断言失败。
         """
@@ -225,11 +206,8 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
                     elif kind == 'index':
                         self.assertEqual(tuple(row.index for row in actual), tuple(range(4)))
                         self.assertTrue(all(row.status == 'empty_range' and row.actual == Interval(5, 5) for row in actual))
-                    else:
-                        samples = [row for row in actual if hasattr(row, 'value')]
-                        self.assertEqual(tuple(row.value.value for row in samples), (0.0, 1.0, 2.0, 3.0))
                     self.assertEqual(fixture.path.read_bytes(), before)
-                    digest = fixture.owner.hashes['bus'].hexdigest() if kind == 'history' else fixture.owner.sha256
+                    digest = fixture.owner.sha256
                     self.assertEqual(sha256(before).hexdigest(), digest)
                     self.assertEqual(fixture.budget.ram_bytes, baseline)
                 finally:
@@ -257,8 +235,7 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
             for corruption in ('suffix', 'overlong'):
                 with self.subTest(kind=kind, corruption=corruption):
                     fixture, handles = self.fixture(kind), []
-                    limit = (fixture.owner.line_limits['bus'] if kind == 'history'
-                             else fixture.owner.max_row_bytes if kind in ('message', 'raw') else 65536)
+                    limit = fixture.owner.max_row_bytes if kind in ('message', 'raw') else 65536
                     if corruption == 'suffix':
                         with fixture.path.open('ab') as handle:
                             handle.write(b'{}\n')
@@ -285,8 +262,7 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
             baseline = fixture.budget.ram_bytes
             reader = fixture.open()
             amount = fixture.budget.ram_bytes - baseline
-            original_cost = (fixture.owner.line_limits['bus'] * 64 + 8192 if kind == 'history'
-                else 65536 + 64 * (fixture.owner.max_row_bytes if kind in ('message', 'raw') else 65536))
+            original_cost = 65536 + 64 * (fixture.owner.max_row_bytes if kind in ('message', 'raw') else 65536)
             self.assertEqual(amount, original_cost + 16384)
             reader.close()
             for after in (False, True):
@@ -348,11 +324,10 @@ class TemporaryReaderBufferingTests(unittest.TestCase):
                             reader.close()
                         self.assertIs(caught.exception, marker)
                         self.assertIs(reader.handle, buffer)
-                        if kind != 'history':
-                            name = {'message': 'decoded_message_store_cleanup_owner',
-                                    'raw': 'raw_frame_store_cleanup_owner',
-                                    'index': 'raw_export_store_cleanup_owner'}[kind]
-                            self.assertIs(getattr(marker, name), fixture.owner)
+                        name = {'message': 'decoded_message_store_cleanup_owner',
+                                'raw': 'raw_frame_store_cleanup_owner',
+                                'index': 'raw_export_store_cleanup_owner'}[kind]
+                        self.assertIs(getattr(marker, name), fixture.owner)
                         self.assertFalse(sibling.closed or sibling.handle.closed or handles[1].closed)
                     self.assertEqual(raw.close_failures, 1 if after else 3)
                     self.assertEqual(raw.closed, after)

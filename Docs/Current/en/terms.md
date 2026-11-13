@@ -60,7 +60,7 @@ Coverage has several meanings: whether logs cover the requested time, whether si
 | Term | Meaning here | Example |
 |---|---|---|
 | Analysis plan (`AnalysisPlan`) | Checked declarations describing inputs, calculations, and outputs, before business logs are read. | `load_analysis_plan("analysis.yaml")` builds a plan. |
-| Backend | An implementation of the same calculation rules; not a web server. | `numpy` uses arrays; `reference` supplies an independent implementation for comparison. |
+| Backend | An implementation of the same calculation rules; not a web server. | `numpy` uses point or array calculations as appropriate; `reference` supplies an independent implementation for comparison. |
 | Batch | A portion of a large input processed at a time. | Process 1000 records, then the next 1000. A batch boundary does not end an activity. |
 | Buffer | Data temporarily retained in memory to reduce frequent reads or writes. | Accumulate result rows before writing them together. |
 | Budget | A permitted resource amount measured in bytes or rows, not money. | `memory_budget_bytes=268435456` manages the new analysis components within 256 MiB. |

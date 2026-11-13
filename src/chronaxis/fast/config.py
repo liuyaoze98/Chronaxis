@@ -15,7 +15,7 @@ from ..planning.dbc_defaults import load_dbc, scoped_dbc_cache
 from ..planning.plan import AnalysisPlan
 from ..sources.asc import ASCSpec
 from ..sources.can_spec import LegacyCANSpec, can_field_from_key
-from .compute import encode_program, prepare_metric
+from .compute import encode_program, _prepare_program_metric
 
 
 def _unsupported(path, message):
@@ -148,7 +148,8 @@ def _metric(plan, item, database):
                 parameters={p.name:p.value for p in item.parameters},
                 direction=dict(signal=fields[direction.signal].signal,bucket=direction.bucket) if direction else None,
                 output_scale=1,program=encode_program(item.expr.root))
-    prepare_metric(spec)
+    # 公共编译器已检查原式；只绑定已编码指令，避免第二套文本语法重新解释同一公式。
+    _prepare_program_metric(spec)
     return spec, message
 
 

@@ -14,7 +14,7 @@ import re
 from types import MappingProxyType
 
 
-REGISTRY_VERSION = "chronaxis-units-v4.1"
+REGISTRY_VERSION = "chronaxis-units-v4.2"
 KIND_BASES = ("V", "A", "s", "N", "m", "K", "delta_K", "rad")
 # 各量种在质量、长度、时间、电流、温度五个物理维度上的指数。
 _PHYSICAL_BASES = (
@@ -333,16 +333,31 @@ def conversion(source: Unit, target: Unit) -> tuple[Scale, Fraction]:
 
 
 def _kind_symbol(kind: tuple[int, ...]) -> str:
-    """为未命名量种构造固定基顺序的可解析乘除文本。
+    """把量种指数写成可重解析的复合单位，优先显示电功率W和电能J。
 
-    参数: kind为八维整数指数。
-    返回: 只含规范原子和乘除幂的文本。
-    异常: 无，模型已限制指数。
+    参数: kind为已验证的八维整数指数。
+    返回: 由规范单位和整数乘除幂组成的文本；不修改尺度或温度偏移。
+    异常: 无，模型已限制指数。力矩等不同量种不按物理维度折成电能。
     """
-    # 分母多项必须加括号，避免a/b*c与a/(b*c)混淆。
+    remaining = list(kind)
+    shared = 0
+    if remaining[0] * remaining[1] > 0:
+        sign = 1 if remaining[0] > 0 else -1
+        shared = sign * min(abs(remaining[0]), abs(remaining[1]))
+    energy = 0
+    if shared * remaining[2] > 0:
+        sign = 1 if shared > 0 else -1
+        energy = sign * min(abs(shared), abs(remaining[2]))
+    remaining[0] -= shared
+    remaining[1] -= shared
+    remaining[2] -= energy
+
+    # 只合并相同量种的V、A、s整数指数；N*m及温差维度保持原样。
+    factors = [("J", energy), ("W", shared - energy)]
+    factors.extend(zip(KIND_BASES, remaining))
     numerator = []
     denominator = []
-    for base, exponent in zip(KIND_BASES, kind):
+    for base, exponent in factors:
         if not exponent:
             continue
         destination = numerator if exponent > 0 else denominator

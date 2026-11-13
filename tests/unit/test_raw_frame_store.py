@@ -14,7 +14,7 @@ from configuration_fixtures import current_fixture
 from hashlib import sha256
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 from chronaxis.legacy.raw_store import RawFrameStore
@@ -231,8 +231,8 @@ class RawFrameStoreTests(unittest.TestCase):
                 with self.assertRaises(ResultClosedError):
                     owner.seal()
 
-    def test_existing_and_ref_directory_are_rejected_without_writing(self):
-        """已有目录保哨兵；本例命名RefProjects的子树在mkdir前拒绝。
+    def test_existing_directory_rejected_and_customer_named_directory_allowed(self):
+        """已有目录保哨兵；测试根内名为RefProjects的客户目录可用。
 
         参数: 无。返回: None。异常: 原拒绝或写入边界/借用费用断言失败。
         """
@@ -245,10 +245,14 @@ class RawFrameStoreTests(unittest.TestCase):
             RawFrameStore(budget, existing, 'raw_source')
         self.assertEqual(sentinel.read_bytes(), b'keep')
         self.assertEqual(tuple(existing.iterdir()), (sentinel,))
-        forbidden = self.root / 'RefProjects' / 'new'
-        with self.assertRaises(ValueError):
-            RawFrameStore(budget, forbidden, 'raw_source')
-        self.assertFalse(forbidden.parent.exists())
+        allowed = self.root / 'RefProjects' / 'new'
+        allowed.parent.mkdir()
+        marker=allowed.parent/'user.txt'
+        marker.write_bytes(b'keep')
+        owner=RawFrameStore(budget, allowed, 'raw_source')
+        self.assertTrue(allowed.is_dir())
+        owner.close()
+        self.assertEqual(marker.read_bytes(),b'keep')
         self.assertEqual(budget.ram_bytes, 4096)
 
     def test_constructor_reserve_after_cancel_and_mkdir_original_error_recover(self):

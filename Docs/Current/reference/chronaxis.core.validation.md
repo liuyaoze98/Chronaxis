@@ -7,7 +7,7 @@
 不得占用Python关键字或已注册的表达式函数名。本模块不裁剪或改名，不把bool
 当整数，不检查样本质量。仅依赖标准库，没有数据读取、日志或会话状态。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -52,7 +52,7 @@ TypeError为非文本；ValueError为空或全空白。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/validation.py:23`](../../../src/chronaxis/core/validation.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/validation.py:23`](../../../src/chronaxis/core/validation.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_identifier"></a>
 ## `require_identifier`
@@ -80,7 +80,7 @@ TypeError为非文本；ValueError为语法、关键字或保留名冲突。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/validation.py:42`](../../../src/chronaxis/core/validation.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/validation.py:42`](../../../src/chronaxis/core/validation.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_sequence"></a>
 ## `require_sequence`
@@ -112,7 +112,7 @@ TypeError为非整数或bool；ValueError为负序号。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/validation.py:59`](../../../src/chronaxis/core/validation.py#L59)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/validation.py:59`](../../../src/chronaxis/core/validation.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-require_scalar"></a>
 ## `require_scalar`
@@ -144,4 +144,4 @@ TypeError: 输入不是允许的原生标量类型。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/validation.py:80`](../../../src/chronaxis/core/validation.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/validation.py:80`](../../../src/chronaxis/core/validation.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

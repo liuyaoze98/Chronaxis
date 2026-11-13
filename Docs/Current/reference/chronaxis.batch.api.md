@@ -2,7 +2,7 @@
 
 执行一份批量计划，并返回每个任务的状态和结果目录。任务按同一套AnalysisRunner接口运行；批量报告写出失败时，异常上的batch_report仍可用于查看已完成的任务和关闭资源。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -42,7 +42,7 @@ run_batch(plan: BatchPlan, output_dir, *, process_count: int | None=None, cancel
 |`output_dir`|str &#124; Path|是|无|位置或关键字。可重复使用的批量结果目录；任务子目录带本批时间后缀，已有结果保持。实际路径从报告读取。|
 |`process_count`|int &#124; None|否|None|仅关键字。覆盖本次分析工作进程数。填正整数，例如4；None沿用BatchPlan.process_count，不修改原计划。|
 |`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|否|None|仅关键字。可选取消标记；None表示没有。其他线程调用set()后停止派发新任务，正在执行的任务继续收尾。|
-|`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，例如已核实的"home"或"work"；未确定时用"pending"。这是来源说明，不参与数值计算，也不根据文件路径猜测。|
+|`device_label`|str|否|'pending'|仅关键字。产出记录的设备标签，接受任意非空文本，如lab-pc或试验台一号；省略时使用pending。标签不参与计算，也不根据文件路径猜测。|
 
 ### 返回说明
 
@@ -50,7 +50,7 @@ BatchReport；report_path为本次实际报告，jobs各项的manifest_path为�
 
 ### 异常说明
 
-TypeError：plan不是BatchPlan或取消对象类型不合法。ValueError：并发/后端/任务声明不合法。目录创建、调度或报告发布失败按具体异常类型抛出；若已产生报告，异常batch_report保存实际进度，调用者仍须close处理cleanup_pending。单任务失败通常保存在报告jobs中，不作为整个函数抛错。见[按阶段处理错误](../troubleshooting.md#api-errors)。
+TypeError：plan不是BatchPlan或取消对象类型不合法。ValueError：并发/后端/任务声明不合法。目录创建、调度或报告发布失败按具体异常类型抛出；若已产生报告，异常batch_report保存实际进度，调用者仍须close处理cleanup_pending。单任务失败通常保存在报告jobs中，不作为整个函数抛错。见[按阶段处理错误](../troubleshooting.md#api-errors)。 worker构造期间KeyboardInterrupt且清理未完成时，原异常还可带batch_worker_cleanup_owner；未完成构造的worker可能不在报告任务中，须对实际存在的该对象重试close。
 
 ### 调用示例
 
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     main()
 ```
 
-源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

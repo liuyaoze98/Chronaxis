@@ -7,7 +7,7 @@
 可选语义、方向、测量位置和枚举标签。内存来源与已解码CSV共用该转换。
 本模块不读取输入文件或DBC，也不核实声明是否与实际表头或物理测量一致。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -64,7 +64,7 @@ TypeError/OverflowError为未声明时基或非法偏移；不读取输入。
 
 返回类型：str。
 
-源码：[`src/chronaxis/sources/descriptions.py:23`](../../../src/chronaxis/sources/descriptions.py#L23)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/descriptions.py:23`](../../../src/chronaxis/sources/descriptions.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-describe_fields"></a>
 ## `describe_fields`
@@ -99,4 +99,4 @@ TypeError或ValueError: 字段描述或定位信息不符合公共模型要求�
 
 返回类型：tuple[[FieldDescription](chronaxis.sources.models.md#api-FieldDescription), ...]。
 
-源码：[`src/chronaxis/sources/descriptions.py:38`](../../../src/chronaxis/sources/descriptions.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/descriptions.py:38`](../../../src/chronaxis/sources/descriptions.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

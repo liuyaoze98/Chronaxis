@@ -2,7 +2,7 @@
 
 在读取前校验逐消息计划的时间域与CAN读取策略；不选择历史兼容路径。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -57,4 +57,4 @@ PlanValidationError定位时间域、陈旧绑定或来源策略错误；其他�
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/legacy_execution.py:8`](../../../src/chronaxis/planning/legacy_execution.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

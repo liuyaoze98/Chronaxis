@@ -129,7 +129,7 @@ class CANSourceMetadata:
     session_id: str  # 同次分析会话，运行清单另核会话归属。
     legacy_profile: str  # 固定sclicer-functions-v1。
     path: str  # 原单BLF路径文本，不在元数据模型中resolve。
-    dbc_path: str  # 同次原load_file路径，不是DBC内容哈希。
+    dbc_path: str  # 同次DBC加载路径，不是DBC内容哈希。
     channel: int  # 明确单通道，非负原生int。
     read_identity: str  # 同次实际read身份，不与随机运行ID或物理行号混淆。
     worker_pid: int  # 实际子进程正整数PID，不能用bool表示。
@@ -140,7 +140,7 @@ class CANSourceMetadata:
     raw_store_sha256: str | None  # 仅实际保存原帧时给整流SHA，不冒充原BLF或DBC的SHA。
     raw_spool_bytes: int  # 本raw_store累计预留字节，不是RSS或已归还磁盘。
     dependency_versions: tuple[tuple[str, str], ...]  # 同次READY版本事实，键唯一。
-    vendor_sha256: tuple[tuple[str, str], ...]  # 同次三原模块证据，键唯一、值为SHA。
+    vendor_sha256: tuple[tuple[str, str], ...]  # 历史结果的原模块证据；当前共用路径为空，键唯一、值为SHA。
     unit_checks: tuple[CANUnitCheck, ...]  # 每别名单位事实，不能重复别名。
     frame_format_notices: tuple[CANFrameFormatNotice, ...] = ()  # 无差异保空，不新增旧序列化键或费用。
     decode_scope: str = 'all'  # 默认不新增旧清单键；requested由同次READY认证。

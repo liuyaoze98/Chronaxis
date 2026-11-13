@@ -4,9 +4,9 @@
 
 每个输入保留A/B已校验的解析配置，文件严格按声明顺序接续，不排序或猜测换日。
 时间在各解析器中已变为纳秒；本层不再施加偏移。通用时基由调用方显式提供。
-混合BLF复用python-can格式读取；既有纯BLF的LegacyCANSpec调用路径保持原样。
+混合及纯BLF复用python-can格式读取；纯BLF声明由公共游标转换并显式保留原解码政策。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -57,7 +57,7 @@ class CANTextSpec
 |`input_check`|str|否|'auto'|auto按任务所需的时间序列检查；full要求完整来源顺序。普通ASC/混合来源的auto只核所需通道/ID顺序，全部已解析帧在同次读取中用于来源最早/最晚范围；原帧导出仍要求完整顺序。不是解码范围或输出开关。|
 |`file_merge`|str|否|'concatenate'|控制本来源文件记录的组合顺序。concatenate按声明文件顺序接续，沿用任务输入检查范围；time_order检查各文件所需时间非递减后，按时间/文件位置/局部序号稳定归并，不平移或去重。默认concatenate，与进程数独立。|
 
-源码：[`src/chronaxis/sources/text_can_spec.py:18`](../../../src/chronaxis/sources/text_can_spec.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:18`](../../../src/chronaxis/sources/text_can_spec.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextSpec-__post_init__"></a>
 ### `CANTextSpec.__post_init__`
@@ -89,7 +89,7 @@ CANTextSpec.__post_init__()
 - `TypeError`：文本CAN需要DBC Path及TimebaseSpec。
 - `ValueError`：文本CAN通道需要非负原生整数。
 
-源码：[`src/chronaxis/sources/text_can_spec.py:31`](../../../src/chronaxis/sources/text_can_spec.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:31`](../../../src/chronaxis/sources/text_can_spec.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextSpec-source_type"></a>
 ### `CANTextSpec.source_type`
@@ -105,7 +105,7 @@ CANTextSpec.source_type
 读取属性，不使用调用括号。
 
 
-源码：[`src/chronaxis/sources/text_can_spec.py:53`](../../../src/chronaxis/sources/text_can_spec.py#L53)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:53`](../../../src/chronaxis/sources/text_can_spec.py#L53)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANTextSpec-offset_ns"></a>
 ### `CANTextSpec.offset_ns`
@@ -133,4 +133,4 @@ CANTextSpec.offset_ns
 
 无。
 
-源码：[`src/chronaxis/sources/text_can_spec.py:61`](../../../src/chronaxis/sources/text_can_spec.py#L61)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/text_can_spec.py:61`](../../../src/chronaxis/sources/text_can_spec.py#L61)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

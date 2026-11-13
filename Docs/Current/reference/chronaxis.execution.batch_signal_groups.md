@@ -5,11 +5,11 @@
 来源适配器负责原输入及跨批合同。本层只保尚未完整的组，最大时间组等到
 后续时间或真实EOF才交付；超出预算直接失败，不拆散同一时刻更新。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[D](chronaxis.core.types.md#api-SignalDType)、[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[RecordSample](chronaxis.execution.record_sample.md#api-RecordSample)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
+[D](chronaxis.core.types.md#api-SignalDType)、[DecodedTimeGroup](chronaxis.execution.groups.md#api-DecodedTimeGroup)、[ResultClosedError](chronaxis.results.errors.md#api-ResultClosedError)、[SourceRef](chronaxis.core.models.md#api-SourceRef)
 
 ## 对象导航
 
@@ -29,9 +29,9 @@ from ..core.models import SourceRef
 from ..results.errors import ResultClosedError
 from ..results.spool import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from .groups import DecodedTimeGroup
-from .record_sample import RecordSample
+from .record_sample import _record_from_validated_fields
 from ..core.types import SignalDType as D
-from .calculation_values import scalar_from_column
+from .calculation_values import _scalar_from_validated_column
 from .history import _metadata_bytes
 ```
 
@@ -47,7 +47,7 @@ BatchSignalGroups(budget, definitions, session_id, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchSignalGroups-__init__"></a>
 ### `BatchSignalGroups.__init__`
@@ -75,7 +75,7 @@ owner。
 
 预算/取消原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchSignalGroups-consume"></a>
 ### `BatchSignalGroups.consume`
@@ -100,7 +100,7 @@ None。
 
 预算/模型/回退，失败后只清理。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchSignalGroups-_flush"></a>
 ### `BatchSignalGroups._flush`
@@ -126,7 +126,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:68`](../../../src/chronaxis/execution/batch_signal_groups.py#L68)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:69`](../../../src/chronaxis/execution/batch_signal_groups.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchSignalGroups-finish"></a>
 ### `BatchSignalGroups.finish`
@@ -152,7 +152,7 @@ None。
 
 失败拒绝完成。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:101`](../../../src/chronaxis/execution/batch_signal_groups.py#L101)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:102`](../../../src/chronaxis/execution/batch_signal_groups.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BatchSignalGroups-close"></a>
 ### `BatchSignalGroups.close`
@@ -178,4 +178,4 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:114`](../../../src/chronaxis/execution/batch_signal_groups.py#L114)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:115`](../../../src/chronaxis/execution/batch_signal_groups.py#L115)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

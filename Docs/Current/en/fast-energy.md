@@ -1,8 +1,8 @@
 # High-performance integrator (same-frame per-message accumulation)
 
-This integrator adds the expression result from each matching message. To calculate energy from power, multiply by the duration represented by that message, for example `power * period`. If each message already supplies an energy contribution, add it directly: contributions of 400 J and 600 J total 1000 J without another time factor.
+This integrator adds the expression result from each matching message. To calculate energy from power, multiply by the duration represented by that message, for example `power * frame_duration`. If each message already supplies an energy contribution, add it directly: contributions of 400 J and 600 J total 1000 J without another time factor.
 
-`period` is a parameter name chosen for the example, not a required parameter. The runner does not automatically multiply by the actual interval between adjacent messages. Use the [time integral](calculations.md#integrators) when the integral must follow actual elapsed time.
+`frame_duration` is a parameter name chosen for the example, not a required parameter. The runner does not automatically multiply by the actual interval between adjacent messages. Use the [time integral](calculations.md#integrators) when the integral must follow actual elapsed time.
 
 Use fast when one matched power message represents a fixed contribution time, such as 0.1 s. Use one fast session for volumes of one recording and fast batch for independent trials. Use ordinary analysis for held cross-message values, events or elapsed-time integration. The basic plan explicitly sets `execution.process_count: 4`, allowing up to four file workers to read, decode and evaluate individual contributions. The main process accumulates them in the required order. Two files can use at most two workers; a single file runs inline. Omission still defaults to one.
 
@@ -10,11 +10,11 @@ Download the [ASC plan](../examples/fast/analysis.yaml), [BLF plan](../examples/
 
 ## Install and run
 
-Install the local Chronaxis 0.1.0.dev3 wheel using its actual file path below, with access to its dependencies. See [Installation](installation.md) to install from the matching source tree. After activating the environment, change to the directory containing the downloaded plans. Preserve the data subdirectory.
+Install the local Chronaxis 0.1.0.dev4 wheel using its actual file path below, with access to its dependencies. See [Installation](installation.md) to install from the matching source tree. After activating the environment, change to the directory containing the downloaded plans. Preserve the data subdirectory.
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev3-py3-none-any.whl"
+.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
 .\.venv\Scripts\Activate.ps1
 python -m chronaxis fast --help
 ```
@@ -30,34 +30,33 @@ python -m chronaxis fast batch batch.yaml --output result-batch --total
 ## Single-file plan and result
 
 ```yaml
-config_version: 4          # Current analysis configuration version
-dataset:                   # Analysis identity and optional input range
-  name: energy_demo        # Name used to identify and reference this object
-sources:                   # Input sources used by this analysis
-  - paths: data/run2.asc   # One ASC file in this example, relative to the configuration
-    dbc_by_channel:        # DBC files indexed by user-facing CAN channel
-      '1': data/power.dbc  # DBC for channel 1; channel keys are strings
-signals:                   # Signals available to expressions
-  - name: power            # Name used to identify and reference this object
-    field:                 # Locate the original input field
-      frame_id: 0x100      # CAN message identifier; decimal or prefixed hexadecimal/binary
-      signal: Power        # Exact signal name defined in the DBC
-    period: 100ms          # Normal signal update period, also used for default validity
-message_calculations:      # Accumulate one expression result for each matching message
-  - name: energy           # Name used to identify and reference this object
-    update_message:        # Message whose arrival triggers this formula
-      frame_id: 0x100      # CAN message identifier; decimal or prefixed hexadecimal/binary
-    parameters:            # Named constants used in the per-message formula
-      period:              # Time represented by each matched message
-        value: 0.1         # Count 0.1 seconds per message
-        unit: s            # Express this duration in seconds
-    expr: power * period   # Formula using the declared signal or derived names
-    unit: J                # Result unit, compatible with the expression
-execution:                 # File-worker limit for this analysis
-  process_count: 4         # Up to four; this single-file example runs inline
+config_version: 4                 # Current analysis configuration version
+dataset:                          # Analysis identity and optional input range
+  name: energy_demo               # Name used to identify and reference this object
+sources:                          # Input sources used by this analysis
+  - paths: data/run2.asc          # One ASC file in this example, relative to the configuration
+    dbc_by_channel:               # DBC files indexed by user-facing CAN channel
+      '1': data/power.dbc         # DBC for channel 1; channel keys are strings
+signals:                          # Signals available to expressions
+  - name: power                   # Name used to identify and reference this object
+    field:                        # Locate the original input field
+      frame_id: 0x100             # CAN message identifier; decimal or prefixed hexadecimal/binary
+      signal: Power               # Exact signal name defined in the DBC
+message_calculations:             # Accumulate one expression result for each matching message
+  - name: energy                  # Name used to identify and reference this object
+    update_message:               # Message whose arrival triggers this formula
+      frame_id: 0x100             # CAN message identifier; decimal or prefixed hexadecimal/binary
+    parameters:                   # Named constants used in the per-message formula
+      frame_duration:             # Time represented by each matched message
+        value: 0.1                # Count 0.1 seconds per message
+        unit: s                   # Express this duration in seconds
+    expr: power * frame_duration  # Formula using the declared signal or derived names
+    unit: J                       # Result unit, compatible with the expression
+execution:                        # File-worker limit for this analysis
+  process_count: 4                # Up to four; this single-file example runs inline
 ```
 
-Indentation groups the fields in YAML. The DBC maps message 0x100 on channel 1 to the Power signal in W. The formula calls this signal power. The signal declaration period is 100 ms. The similarly named formula parameter is the time to count for **each matched message**, 0.1 s. Confirm this assumption for the device. For a time integral based on actual observed intervals, use the general run command with an integral plan.
+Indentation groups the fields in YAML. The DBC maps message 0x100 on channel 1 to the Power signal in W. The formula calls this signal power. The formula parameter `frame_duration` supplies the duration counted for **each matched message**, 0.1 s. Obtain it from the capture or business definition. This current-message calculation needs no held previous value, so its signal declaration omits `period` and `valid_for`. For a time integral based on actual observed intervals, use the general run command with an integral plan.
 
 The first ASC contains two messages at the same timestamp, each at 4000 W. Each contributes 400 J. The CSV energy row therefore contains **800.0 J**, with complete status (完整 in the default Chinese table). The BLF contains the same two power readings and also produces 800 J. Read the manifest_path printed for this run, then open the table named in its outputs. Repeated runs have distinct output filenames.
 
@@ -104,7 +103,7 @@ python -m chronaxis fast run session.yaml --output result-session --process-coun
 python -m chronaxis fast run session-time-order.yaml --output result-time-order
 ```
 
-`explain.worker_process_limit` is a declared upper bound, not measured activity; it is 0 for inline execution. The completion manifest lists every file in `inputs`, actual worker PIDs in `execution.worker_pids`, and per-calculation target/valid/selected counts in `calculation_counts`. Inspect `value/status/reason` in the results. Complete processing does not prove the physical recording contains no missing messages.
+`explain.worker_process_limit` is a declared upper bound, not measured activity; it is 0 for inline execution. The completion manifest lists every file in `inputs`, actual worker PIDs in `execution.worker_pids`, and per-calculation target/valid/selected counts in `execution.calculation_counts` (Python: `manifest["execution"]["calculation_counts"]`). For the default CSV, read `计算项`, `结果`, `单位`, `状态`, and `说明` (calculation, value, unit, status, reason). With an explicitly selected exchange format `outputs.tables: csv` or `jsonl`, the fields are `name/value/unit/status/reason`. Complete processing does not prove the physical recording contains no missing messages.
 
 |Whole-session condition for one calculation|Result|
 |---|---|
@@ -180,10 +179,12 @@ Import `run` from `chronaxis.fast` and `run_batch` from `chronaxis.fast.batch`. 
 | `output` | Output directory path. It may already exist; timestamped files preserve earlier runs. |
 | `process_count` | Optional positive integer, excluding Boolean values. run uses execution.process_count; run_batch uses the batch root process_count. Both default to 1 and cap workers at the file/job count. |
 | `cancel_event` | Optional `threading.Event`. Calling `set()` requests cancellation: no new jobs are dispatched, and active fast workers are asked to stop and then reclaimed. run raises InterruptedError on cancellation without publishing success; run_batch reports individual job states. |
-| `work_dir` | run only: optional parent directory for temporary contributions; omission uses the system temporary directory. This invocation cleans up its own temporary files on success, failure and cancellation. |
+| `work_dir` | run only: optional parent directory for temporary contributions; omission uses the system temporary directory. This invocation owns its temporary files; retry failed cleanup as described below. |
 | `total` | Boolean, default `False`. `True` requires a single analysis template expanded over distinct independent files, with matching definitions and DBC bindings; explicit unrelated jobs are rejected. It does not combine arbitrary same-named columns. |
 
 Configuration errors raise before analysis starts. A read, decode, formula or publication failure in any required session file raises rather than publishing a normal successful total. Batch file failures are recorded per job; other jobs continue unless `fail_fast` is enabled. An infrastructure failure can raise with a `batch_report` attribute when a report was saved; a report is not guaranteed for every error. Keyboard interruption performs cleanup and propagates the interruption. For run_batch, requested cancellation can return a report with cancelled jobs, so a returned path is not itself proof that all files succeeded. A metric's total is unavailable when a required member failed, was cancelled or has no numeric result.
+
+The single-session `run` preserves the original read, calculation, or cancellation exception type. If session cleanup has not completed, inspect `getattr(exc, "fast_session_cleanup_owner", None)` on the caught exception and call that object's `close()` after resolving the resource fault; its child resources do not need to be closed separately. Recovery neither reruns calculations nor publishes a partial successful total. The attribute is not guaranteed, and it may refer to an object closed by a later retry. See [batch tasks](batch.md) for batch recovery and cancellation during worker construction.
 
 Full definitions: [run](public-api/fast.run.md), [run_batch](public-api/fast.batch.run_batch.md).
 

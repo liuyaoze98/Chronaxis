@@ -5,13 +5,13 @@
 |交付物|包含|不包含|
 |---|---|---|
 |公开源码|运行代码、许可证、README、打包文件、可独立执行的测试与合成夹具、公开手册及所需工具|内部开发计划、问题和审计归档、机器标识、真实车辆日志/DBC、历史项目、缓存、冲突副本|
-|wheel|chronaxis包、模板、已授权旧读取代码、AI指南、许可证与包元数据|开发测试、完整源码手册、业务日志|
-|sdist|重新构建wheel需要的源码、配置、许可证、指南输入及生成工具|开发工作目录、内部验收材料|
+|wheel|chronaxis包、模板、AI指南、许可证与包元数据|开发测试、完整源码手册、业务日志、独立安装的运行依赖代码|
+|sdist|重新构建wheel需要的源码、配置、许可证、指南输入及生成工具，以及公开依赖环境约束|开发工作目录、内部验收材料|
 |离线手册|HTML、相对链接、搜索资源、合成示例和配置规范|内部审计附件、作者机器上的文件路径|
 
 从单独导出的清洁源码树构建发行包。内部开发仓库包含历史资料，不直接推送整个开发历史；导出不删除或重写原仓库。
 
-具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev2](release-notes-0.1.0.dev2.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
+具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev4](release-notes-0.1.0.dev4.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
 
 ## 发布前检查
 
@@ -30,10 +30,16 @@
 
 ```powershell
 python -m pip install -e ".[test]"
-$env:PYTHONPATH = "src"
-python -B -m unittest discover -s tests/unit -p "test_*.py"
+python -B tools/run_ci_tests.py --group core --report work/ci/core.json
+python -B tools/run_ci_tests.py --group input --report work/ci/input.json
+python -B tools/run_ci_tests.py --group docs --report work/ci/docs.json
+python -B tools/run_ci_tests.py --group install --report work/ci/install.json
 ```
 
-公开测试使用合成输入。依赖私人历史项目的四份回归测试及九份内部性能/实测工具测试不包含在公开树中；具体文件名记录在导出清单 `PUBLIC-SOURCE.json`。受操作系统权限限制的符号链接用例、未提供真实表格的可选对照会明确跳过，不能把跳过写成通过。运行测试会创建独立临时目录及 `work/` 输出，不要求发布既有工作数据。
+`core`检查计算与执行，`input`检查读取与导出，`docs`检查手册、AI指南及生成工具，`install`检查版本和安装入口。分组报告列出实际运行、失败及跳过原因；跳过不能计为通过。文档组还需要Node.js及`marked`，安装和定位方式见[维护说明](../Current/maintenance.md)。缺少文档工具应先补齐依赖，不能跳过整组后宣称完整回归通过。可用`--group all`一次运行四组，或用`--list-only`仅核对分组清单。
+
+性能比较应使用同一输入、分析含义、后端和批量配置；专项测试耗时不是产品性能基准。
+
+公开测试使用合成输入。依赖内部资料的9个测试模块不随公开源码分发；具体文件名记录在导出清单 `PUBLIC-SOURCE.json`。受操作系统权限限制的符号链接用例、未提供真实表格的可选对照会明确跳过，不能把跳过写成通过。运行测试会创建独立临时目录及 `work/` 输出，不要求发布既有工作数据。
 
 公开文档可按[维护说明](../Current/maintenance.md)在无私有Git历史的情况下重建；必须显式启用源码树模式，并通过发行摘要检查。

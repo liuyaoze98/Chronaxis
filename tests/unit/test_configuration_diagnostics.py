@@ -1,4 +1,6 @@
 """从真实文件验证错误能定位并指导修改；静态检查不得读数据，建议不替用户改值。"""
+
+from workspace_fixtures import test_directory
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -18,7 +20,7 @@ class ConfigurationDiagnosticTests(unittest.TestCase):
 
     def setUp(self):
         """准备独立目录。参数: 无。返回: None。异常: 实际IO错误。"""
-        self.root=Path(tempfile.mkdtemp(prefix='configuration-diagnostics-',dir='work')).resolve()
+        self.root=Path(test_directory(self,prefix='configuration-diagnostics-',dir='work')).resolve()
 
     def write(self,data,suffix='yaml'):
         """保存标准输出的原生配置。参数: 值/后缀。返回: 文件。异常: IO或格式错误。"""

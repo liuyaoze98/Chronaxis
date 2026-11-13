@@ -92,7 +92,7 @@ results/
 
 后缀使用本机时间，格式为年月日、时分秒、微秒；同刻或并发冲突时再加序号。它表示这批输出的命名时间，不改变报文时间、结果起止或能量。已有文件不会被覆盖，未请求的表和导出也不会生成。
 
-程序先完成本次临时文件并关闭，再逐项发布，最后发布完成清单。只有清单存在且状态为completed，才表示这批输出已齐全。普通失败会清理本次拥有的文件；进程被强杀或断电可能留下没有完成清单的文件，不能把它们当成已完成结果。下次运行不会扫描或删除旧结果。本页结果发布流程已在Windows环境验证；其他平台尚未完成相同验证。
+程序先完成本次临时文件并关闭，再逐项发布，最后发布完成清单。只有清单存在且状态为completed，才表示这批输出已齐全。普通失败会清理本次拥有的文件；进程被强杀或断电可能留下没有完成清单的文件，不能把它们当成已完成结果。下次运行不会扫描或删除旧结果。本页结果发布流程已在 Windows 和[安装说明](installation.md)列出的 Linux 环境验证。Linux 发布需要 `renameat2`、目标文件系统支持 `RENAME_NOREPLACE`，且移动位于同一文件系统；其他系统和文件系统的支持范围以安装说明为准。
 
 CLI完成摘要的manifest、API返回的OutputManifest.manifest_path指向本次实际清单；从清单outputs读取本次表文件。不要拼固定run_manifest.json，也不要在同目录内随意挑一个同类CSV或“最新文件”。同一AnalysisResult在关闭前可再次write到同一目录或其他目录，无需重读输入。显式work_dir仍须为新目录，与可复用的最终结果目录不同。
 
@@ -186,6 +186,8 @@ print(names)             # ['MISSING', 'STALE']
 
 同一个hot规则可能产生很多次事件，因此rule_id=hot只是配置定义名称，不能唯一定位某次活动。关联时使用同一运行清单关联文件中的event_id/segment_id；不要按表的行顺序拼接，也不要只按sequence跨表拼接。
 
+结果行的sequence是本次写入序号，不是跨运行稳定的业务标识，也不是原始报文序号。比较不同批大小或进程设置的结果时，按规则、窗口、计算项名称、实际时间及本次父事件关联匹配，并核对重复项数量、数值、单位、状态和质量；逐消息明细还需保留原消息顺序。不要把运行ID、生成时间或写入序号的变化当作数值差异。
+
 以下来自[activity.yaml](examples/activity.yaml)的一次真实运行。为了表格可读，E1、S1仅是这里的显示缩写，实际字段保存下列完整字符串；使用时读取自己这次输出中的ID，不硬编码本例字符串。
 
 - E1（event_id）：`3d7375484e46c0da41755d73629db92c3f87b98da58891b2c238c5a6517b848f`
@@ -224,7 +226,7 @@ for row in result.iter_calculations():
 <a id="metadata-output"></a>
 ## 运行清单的摘要与详细字段
 
-RunMetadata保存运行信息，to_dict()决定哪些字段写入JSON。默认detailed_diagnostics=False输出run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、worker_config、retain_work和detailed_diagnostics；输入身份、会话边界、限制等仅在满足对应条件时补充。开启trace/integrity还会输出相应诊断信息。
+RunMetadata保存运行信息，to_dict()决定哪些字段写入JSON。省略software_version时，每次构造RunMetadata才读取当前这份源码或安装包的发行版本；已经创建的对象和显式传入的历史版本不随之改写。这不表示已加载的Python代码会自动更新。默认detailed_diagnostics=False输出run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、worker_config、retain_work和detailed_diagnostics；输入身份、会话边界、限制等仅在满足对应条件时补充。开启trace/integrity还会输出相应诊断信息。
 
 | 模型状态 | 默认摘要模式 | detailed_diagnostics=True |
 |---|---|---|

@@ -5,7 +5,7 @@
 """
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from threading import Event
 from threading import Timer
 import struct
@@ -40,7 +40,11 @@ def missing_block_worker(control, data, cancel):
     """谎报一个未交付块的EOF。参数: 协议/取消。返回: None。异常: 无。"""
     import os
     command = control.recv()
-    control.send(('eof', command[1], 1, {}, {}, os.getpid()))
+    # 协议字段本身合法，仍谎报一块未交付数据，专门验证父调度的缺块检查。
+    count=len(command[2]['metrics'])
+    facts=dict(raw=0,targets=[0]*count,valid=[0]*count,selected=[0]*count,
+               kinds=[0]*count,compatible=[])
+    control.send(('eof', command[1], 1, facts, {}, os.getpid()))
     cancel.wait(20)
 
 
@@ -121,7 +125,20 @@ class FastSessionTests(unittest.TestCase):
         """配额1字节不能写一块；拼接仍计算全部240万J，时间归并明确失败。"""
         for path in self.paths:
             self.asc(path.name, range(3000))
-        rows, report = self.result(self.config(count=2, quota=1))
+        from chronaxis.fast.session import FilePool
+        from time import monotonic
+        original_start=FilePool.start
+        def start_with_backpressure(pool,*args,**kwargs):
+            """先接到第二文件的真实报价，暂不消费第一文件，确定性建立背压。"""
+            original_start(pool,*args,**kwargs)
+            deadline=monotonic()+30
+            while not any(slot.get('file')==1 and slot.get('paused') for slot in pool.slots):
+                if monotonic()>deadline:
+                    pool.close()
+                    raise AssertionError('未收到第二文件的配额背压握手')
+                pool.pump()
+        with patch.object(FilePool,'start',new=start_with_backpressure):
+            rows, report = self.result(self.config(count=2, quota=1))
         self.assertEqual(rows[0]['value'], 2400000.0)
         self.assertEqual(report['execution']['spool_written_bytes'], 0)
         self.assertGreater(report['execution']['prefetch_pauses'], 0)

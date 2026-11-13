@@ -2,7 +2,7 @@
 
 把分析中使用的名称对应到实际信号。例如把current对应到来源pack的电流字段，随后表达式就可以使用current。模块检查名称冲突、字段是否存在、单位转换和多个来源的时间关系，再生成SignalBindings。绑定标识还包含输入内容及转换设置，用来识别两次计算是否使用了相同输入。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -72,7 +72,7 @@ TypeError为内部未声明结构；不读取文件或执行任意对象repr。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/binding.py:26`](../../../src/chronaxis/core/binding.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:26`](../../../src/chronaxis/core/binding.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_source_identity"></a>
 ## `_source_identity`
@@ -99,7 +99,7 @@ TypeError为内部结构错误；无文件或旧reader副作用。
 
 返回类型：str。
 
-源码：[`src/chronaxis/core/binding.py:63`](../../../src/chronaxis/core/binding.py#L63)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:63`](../../../src/chronaxis/core/binding.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalDefinition"></a>
 ## `SignalDefinition`
@@ -141,7 +141,7 @@ class SignalDefinition
 |`capture_code`|bool|否|dataclass_field(default=False, kw_only=True, compare=False, repr=False)|当前执行投影要求。|
 |`unit_status`|str|不填写|构造时计算|`"verified"`表示单位及换算关系已通过程序的单位表检查；`"unverified"`表示使用未登记的单位文字，程序未验证其物理换算关系。|
 
-源码：[`src/chronaxis/core/binding.py:81`](../../../src/chronaxis/core/binding.py#L81)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:81`](../../../src/chronaxis/core/binding.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalDefinition-__post_init__"></a>
 ### `SignalDefinition.__post_init__`
@@ -170,7 +170,7 @@ TypeError为字段结构；ValueError为缺项/策略/映射/转换冲突；
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:120`](../../../src/chronaxis/core/binding.py#L120)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:120`](../../../src/chronaxis/core/binding.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalDefinition-identity"></a>
 ### `SignalDefinition.identity`
@@ -198,7 +198,7 @@ tuple；含实际定位、转换、有效期、质量及语义/版本元数据�
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/core/binding.py:275`](../../../src/chronaxis/core/binding.py#L275)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:275`](../../../src/chronaxis/core/binding.py#L275)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalDefinition-unit_conversion_promoted"></a>
 ### `SignalDefinition.unit_conversion_promoted`
@@ -228,7 +228,7 @@ SignalDefinition.unit_conversion_promoted: bool
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/binding.py:297`](../../../src/chronaxis/core/binding.py#L297)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:297`](../../../src/chronaxis/core/binding.py#L297)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SynchronizationEvidence"></a>
 ## `SynchronizationEvidence`
@@ -251,7 +251,7 @@ class SynchronizationEvidence
 |`analysis_timebase`|[TimebaseSpec](chronaxis.core.models.md#api-TimebaseSpec)|是|无|offset映射后的公共分析基准。|
 |`evidence`|str|是|无|调用者声明的核实依据，不自动生成业务事实。|
 
-源码：[`src/chronaxis/core/binding.py:311`](../../../src/chronaxis/core/binding.py#L311)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:311`](../../../src/chronaxis/core/binding.py#L311)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SynchronizationEvidence-__post_init__"></a>
 ### `SynchronizationEvidence.__post_init__`
@@ -283,7 +283,7 @@ TypeError/ValueError为无效声明。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:323`](../../../src/chronaxis/core/binding.py#L323)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:323`](../../../src/chronaxis/core/binding.py#L323)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBindings"></a>
 ## `SignalBindings`
@@ -312,7 +312,7 @@ class SignalBindings
 |`lookups`|tuple[[LookupTablePlan](chronaxis.core.lookup.md#api-LookupTablePlan), ...]|否|dataclass_field(default=(), kw_only=True)|数值标定表声明。|
 |`identity`|str|不填写|构造时计算|实际校验所得完整绑定SHA。|
 
-源码：[`src/chronaxis/core/binding.py:341`](../../../src/chronaxis/core/binding.py#L341)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:341`](../../../src/chronaxis/core/binding.py#L341)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBindings-__post_init__"></a>
 ### `SignalBindings.__post_init__`
@@ -348,7 +348,7 @@ TypeError为结构；ValueError为名称、来源字段或证据冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:359`](../../../src/chronaxis/core/binding.py#L359)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:359`](../../../src/chronaxis/core/binding.py#L359)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBindings-resolve"></a>
 ### `SignalBindings.resolve`
@@ -375,7 +375,7 @@ ValueError为非法或未知别名；不访问Python对象属性。
 
 返回类型：[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)。
 
-源码：[`src/chronaxis/core/binding.py:449`](../../../src/chronaxis/core/binding.py#L449)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:449`](../../../src/chronaxis/core/binding.py#L449)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBindings-source_ref"></a>
 ### `SignalBindings.source_ref`
@@ -402,7 +402,7 @@ ValueError为未定义或非法别名。
 
 返回类型：[SourceRef](chronaxis.core.models.md#api-SourceRef)。
 
-源码：[`src/chronaxis/core/binding.py:467`](../../../src/chronaxis/core/binding.py#L467)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:467`](../../../src/chronaxis/core/binding.py#L467)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBindings-require_synchronized"></a>
 ### `SignalBindings.require_synchronized`
@@ -433,4 +433,4 @@ TypeError为容器；ValueError为未知别名或同步缺项。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/binding.py:479`](../../../src/chronaxis/core/binding.py#L479)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/binding.py:479`](../../../src/chronaxis/core/binding.py#L479)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

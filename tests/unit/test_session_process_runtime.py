@@ -5,7 +5,7 @@
 """
 from copy import deepcopy
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from workspace_fixtures import TemporaryDirectory
 from uuid import uuid4
 import unittest
 from unittest.mock import patch

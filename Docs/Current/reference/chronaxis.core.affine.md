@@ -8,11 +8,11 @@
 不会因为乘零或加偏移变成正常数据。本模块不依赖 NumPy，不读取文件，
 不改变输入，也不保存转换前后副本或跨批次状态。单位关系由编译器验证。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
-[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)、[SignalDType](chronaxis.core.types.md#api-SignalDType)
+[QualityFlag](chronaxis.core.types.md#api-QualityFlag)、[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)、[SignalDType](chronaxis.core.types.md#api-SignalDType)
 
 ## 对象导航
 
@@ -59,7 +59,7 @@ TypeError为非数值类型/系数；ValueError为非有限系数或错误类型
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/affine.py:17`](../../../src/chronaxis/core/affine.py#L17)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/affine.py:17`](../../../src/chronaxis/core/affine.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-affine_reference"></a>
 ## `affine_reference`
@@ -74,7 +74,7 @@ affine_reference(value: ScalarValue, scale: int | float, offset: int | float, dt
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`value`|[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)|是|无|位置或关键字。value为已校验数值|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。value为已校验数值|
 |`scale`|int &#124; float|是|无|位置或关键字。源物理值先乘的有限倍率；整数输出要求倍率为原生整数。|
 |`offset`|int &#124; float|是|无|位置或关键字。乘完倍率再加的有限偏移量；纯比例换算填零。|
 |`dtype`|[SignalDType](chronaxis.core.types.md#api-SignalDType)|是|无|位置或关键字。dtype为静态     目标数值类型。整数目标只接整数输入和系数，浮点目标检查大整数精度。|
@@ -93,6 +93,6 @@ TypeError或ValueError为声明结构错误；不将配置错误变成样本质�
 -273.15乘1再加273.15得到正常0；整数中间乘积可以超过64位，
     只要完整仿射结果仍在目标范围。无副作用，不保留转换历史。
 
-返回类型：[ScalarValue](chronaxis.core.numeric.md#api-ScalarValue)。
+返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/affine.py:40`](../../../src/chronaxis/core/affine.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/core/affine.py:40`](../../../src/chronaxis/core/affine.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

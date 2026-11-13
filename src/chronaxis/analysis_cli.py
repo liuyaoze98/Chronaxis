@@ -52,7 +52,9 @@ def explanation_json(report) -> dict:
     output = dict(source_execution=[dict(item) for item in report.source_execution],
                 input_requirements=scopes, validation=validation_json(report.validation), plan_identity=report.plan_identity,
                 source_names=list(report.source_names), nodes=nodes,
-                history_ns=dict(report.history_ns), budget=dict(report.budget))
+                history_ns=dict(report.history_ns), budget=dict(report.budget),
+                requested_backend=report.requested_backend, selected_backend=report.selected_backend,
+                backend_reason=report.backend_reason)
     # 解释已解析的间隔声明，不推测DBC周期或输出第二时间轴。
     if report.intervals is not None:
         choices = {}
@@ -96,18 +98,15 @@ def run_static(arguments) -> int:
 
 
 def _new_output(arguments) -> Path:
-    """在扫描来源前检查可复用输出根、历史目录和冲突工作路径。
+    """在扫描来源前检查可复用输出根和冲突工作路径。
 
     参数: arguments包含output和可选work_dir，由argparse限定为路径文本。
     返回: 绝对输出Path；不创建目录，工作目录实际分配仍归AnalysisRunner。
-    异常: FileExistsError或原lstat错误为文件失败；PlanValidationError为Ref或路径冲突。
+    异常: FileExistsError或原lstat错误为文件失败；PlanValidationError为路径冲突。
     """
     output = Path(arguments.output).absolute()
-    # 同时检查词法与物理路径，不能借符号链接把新产物写进历史快照。
+    # 输出根可复用，工作目录仍须独占；两者都保留原来的存在性检查。
     candidates = (output,) if arguments.work_dir is None else (output, Path(arguments.work_dir).absolute())
-    for path in candidates:
-        if any(part.casefold() == 'refprojects' for part in (*path.parts, *path.resolve().parts)):
-            raise PlanValidationError('$.cli.output', '运行输出和工作目录不能位于RefProjects')
     if arguments.work_dir is not None:
         work = Path(arguments.work_dir).absolute().resolve()
         destination = output.resolve()

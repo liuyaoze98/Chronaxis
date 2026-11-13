@@ -2,7 +2,7 @@
 
 规定读取来源时怎样描述字段、提出读取请求，以及怎样返回一批信号数据。ReadRequest.batch_rows是所有信号样本数之和，例如一行CSV包含两个信号更新，就占两个样本。这里的数据对象帮助读取器和分析器按同一格式交接。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -83,7 +83,7 @@ TypeError: 出现非JSON对象或非字符串键。
 
 返回类型：JsonValue。
 
-源码：[`src/chronaxis/sources/models.py:42`](../../../src/chronaxis/sources/models.py#L42)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:42`](../../../src/chronaxis/sources/models.py#L42)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FieldLocation"></a>
 ## `FieldLocation`
@@ -106,7 +106,7 @@ class FieldLocation
 |`field`|str|是|无|列或已解码字段原文，允许点号。|
 |`locator`|Mapping[str, JsonValue]|否|{}|profile额外定位证据。|
 
-源码：[`src/chronaxis/sources/models.py:80`](../../../src/chronaxis/sources/models.py#L80)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:80`](../../../src/chronaxis/sources/models.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FieldLocation-__post_init__"></a>
 ### `FieldLocation.__post_init__`
@@ -138,7 +138,7 @@ TypeError或ValueError: 名称、字段文本或JSON定位信息不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:92`](../../../src/chronaxis/sources/models.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:92`](../../../src/chronaxis/sources/models.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FieldDescription"></a>
 ## `FieldDescription`
@@ -164,7 +164,7 @@ class FieldDescription
 |`unit`|str|是|无|已归一化输出单位，未知标签不自动verified。|
 |`metadata`|Mapping[str, JsonValue]|否|{}|可选声明与转换证据。|
 
-源码：[`src/chronaxis/sources/models.py:115`](../../../src/chronaxis/sources/models.py#L115)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:115`](../../../src/chronaxis/sources/models.py#L115)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FieldDescription-__post_init__"></a>
 ### `FieldDescription.__post_init__`
@@ -198,7 +198,7 @@ TypeError或ValueError: 名称、定位、类型、单位文本、JSON结构或�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:130`](../../../src/chronaxis/sources/models.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:130`](../../../src/chronaxis/sources/models.py#L130)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SourceCapabilities"></a>
 ## `SourceCapabilities`
@@ -225,7 +225,7 @@ class SourceCapabilities
 |`diagnostics`|tuple[str, ...]|否|()|已实际暴露的诊断。|
 |`limitations`|tuple[str, ...]|否|()|未获得的元数据或兼容限制。|
 
-源码：[`src/chronaxis/sources/models.py:167`](../../../src/chronaxis/sources/models.py#L167)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:167`](../../../src/chronaxis/sources/models.py#L167)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SourceCapabilities-__post_init__"></a>
 ### `SourceCapabilities.__post_init__`
@@ -258,7 +258,7 @@ TypeError或ValueError: 开关不是bool，文本列表不是tuple，或说明�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:183`](../../../src/chronaxis/sources/models.py#L183)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:183`](../../../src/chronaxis/sources/models.py#L183)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SourceDescription"></a>
 ## `SourceDescription`
@@ -288,7 +288,7 @@ class SourceDescription
 |`legacy_profile`|str &#124; None|否|None|仅旧来源需要冻结profile身份。 None表示不是通过旧解码实现接入的来源。|
 |`metadata_status`|str|否|'declared'|verified/declared/unavailable。|
 
-源码：[`src/chronaxis/sources/models.py:210`](../../../src/chronaxis/sources/models.py#L210)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:210`](../../../src/chronaxis/sources/models.py#L210)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SourceDescription-__post_init__"></a>
 ### `SourceDescription.__post_init__`
@@ -321,7 +321,7 @@ TypeError或ValueError: 描述类型、归属、重复名称、状态或旧契�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:229`](../../../src/chronaxis/sources/models.py#L229)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:229`](../../../src/chronaxis/sources/models.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReadRequest"></a>
 ## `ReadRequest`
@@ -348,7 +348,7 @@ class ReadRequest
 |`domain_end_ns`|int &#124; None|是|无|分析域终点；与起点同时未声明。|
 |`batch_rows`|int|是|无|所有series样本数总和上限。|
 
-源码：[`src/chronaxis/sources/models.py:275`](../../../src/chronaxis/sources/models.py#L275)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:275`](../../../src/chronaxis/sources/models.py#L275)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ReadRequest-__post_init__"></a>
 ### `ReadRequest.__post_init__`
@@ -377,7 +377,7 @@ TypeError或ValueError: 名称、容器、重复别名、时间范围或批次�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:291`](../../../src/chronaxis/sources/models.py#L291)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:291`](../../../src/chronaxis/sources/models.py#L291)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalSeries"></a>
 ## `SignalSeries`
@@ -414,7 +414,7 @@ class SignalSeries
 |`original_values`|tuple[int &#124; float &#124; bool &#124; str &#124; None, ...] &#124; None|否|None|原无效诊断可保留。 None表示未附加原始诊断值列，仍保留标准值列的质量标记。|
 |`code`|[NumericArray](chronaxis.core.numeric_numpy.md#api-NumericArray) &#124; None|否|None|请求 enum_code 时携带同坐标整数原码。|
 
-源码：[`src/chronaxis/sources/models.py:325`](../../../src/chronaxis/sources/models.py#L325)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:325`](../../../src/chronaxis/sources/models.py#L325)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalSeries-__post_init__"></a>
 ### `SignalSeries.__post_init__`
@@ -447,7 +447,7 @@ TypeError或ValueError: 名称、数组形状或类型、质量、时间顺序�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:351`](../../../src/chronaxis/sources/models.py#L351)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:351`](../../../src/chronaxis/sources/models.py#L351)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalSeries-nbytes"></a>
 ### `SignalSeries.nbytes`
@@ -477,7 +477,7 @@ int。数组字节总和；不含枚举标签、来源引用、原诊断或其�
 
 返回类型：int。
 
-源码：[`src/chronaxis/sources/models.py:412`](../../../src/chronaxis/sources/models.py#L412)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:412`](../../../src/chronaxis/sources/models.py#L412)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBatch"></a>
 ## `SignalBatch`
@@ -505,7 +505,7 @@ class SignalBatch
 |`source_eof`|bool|是|无|整个来源终点，不能仅单文件EOF。|
 |`observed_end_ns`|int &#124; None|是|无|观测未知保留None，不补周期。|
 
-源码：[`src/chronaxis/sources/models.py:428`](../../../src/chronaxis/sources/models.py#L428)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:428`](../../../src/chronaxis/sources/models.py#L428)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBatch-__post_init__"></a>
 ### `SignalBatch.__post_init__`
@@ -534,7 +534,7 @@ TypeError或ValueError: 映射或结束标记类型、别名、样本归属或�
 
 返回类型：None。
 
-源码：[`src/chronaxis/sources/models.py:445`](../../../src/chronaxis/sources/models.py#L445)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:445`](../../../src/chronaxis/sources/models.py#L445)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-SignalBatch-sample_count"></a>
 ### `SignalBatch.sample_count`
@@ -564,4 +564,4 @@ int。空批为0；同一时间的多个信号分别计数，用于核对batch_r
 
 返回类型：int。
 
-源码：[`src/chronaxis/sources/models.py:488`](../../../src/chronaxis/sources/models.py#L488)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/models.py:488`](../../../src/chronaxis/sources/models.py#L488)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

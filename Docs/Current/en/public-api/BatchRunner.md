@@ -30,7 +30,7 @@ BatchRunner.__init__(process_count=1, *, fail_fast=False, backend=None)
 |---|---|---|---|---|
 |`process_count`|int|No|1|Positional or keyword. Positive maximum analysis-worker count. Fewer jobs need fewer workers; empty batches start none. Excludes scheduler and CAN reader subprocesses.|
 |`fail_fast`|bool|No|False|Keyword-only. False continues later jobs after failure; True stops new dispatch after observing failure and waits for started jobs to finish cleanup.|
-|`backend`|str &#124; None|No|None|Keyword-only. `reference` or `numpy`; None uses each plan's setting.|
+|`backend`|str &#124; None|No|None|Keyword-only. `auto` selects from each job's plan; `reference` or `numpy` fixes its numerical implementation. None uses each plan's setting.|
 
 The initializer returns None; calling BatchRunner(...) creates the instance. Invalid types, ranges, or backends are rejected. Specific errors include `ValueError` (“process_count需要正原生int。”: requires a positive native int) and `TypeError` (“fail_fast需要bool。”: requires bool).
 
@@ -50,7 +50,7 @@ BatchRunner.run(jobs, output_dir, *, cancel_event=None, device_label='pending') 
 |`cancel_event`|[threading.Event](https://docs.python.org/3.12/library/threading.html#event-objects) &#124; None|No|None|Keyword-only. Another thread can call set() to stop new dispatch; running jobs continue to finish cleanup. None disables this cancellation signal.|
 |`device_label`|str|No|'pending'|Keyword-only. Verified source-device label, such as home/work, or pending when unknown. It does not affect calculations or infer the device from paths.|
 
-Returns [BatchReport](BatchReport.md#api-BatchReport); its close() retries failed cleanup in child processes. Declaration/path errors are rejected before creating workers. Worker-scheduler or other infrastructure errors propagate after cleanup.
+Returns [BatchReport](BatchReport.md#api-BatchReport); its close() retries failed cleanup in child processes. Declaration/path errors are rejected before creating workers. Worker-scheduler or other infrastructure errors propagate after cleanup, with `batch_report` when a report was created. If worker construction is interrupted and cleanup still needs recovery, the original `KeyboardInterrupt` propagates with `batch_worker_cleanup_owner`; that unfinished worker may not belong to a report job. Retain both the report and any recovery object, and retry their close methods after resolving the resource fault. Ctrl+C whose cleanup completed follows the normal cancelled-report path.
 
 Specific errors: `TypeError` if jobs is not a BatchJob tuple (“批量任务需要BatchJob tuple。”); `ValueError` for duplicate or case-colliding IDs (“批量job_id不能重复，大小写冲突也拒绝。”); `TypeError` for a non-threading.Event cancellation signal (“cancel_event需要threading.Event。”); `ValueError` for an empty/nontext device label (“device_label需要非空文本。”).
 
@@ -58,6 +58,6 @@ Side effects: starts at most process_count workers and publishes each job indepe
 
 ## Source locations
 
-- [`src/chronaxis/batch/runner.py:108`](../../../../src/chronaxis/batch/runner.py#L108) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/batch/runner.py:111`](../../../../src/chronaxis/batch/runner.py#L111) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
-- [`src/chronaxis/batch/runner.py:124`](../../../../src/chronaxis/batch/runner.py#L124) — line at `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`.
+- [`src/chronaxis/batch/runner.py:108`](../../../../src/chronaxis/batch/runner.py#L108) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/batch/runner.py:111`](../../../../src/chronaxis/batch/runner.py#L111) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/batch/runner.py:124`](../../../../src/chronaxis/batch/runner.py#L124) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.

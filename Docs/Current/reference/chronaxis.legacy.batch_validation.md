@@ -8,7 +8,7 @@
 本模块不读取或解码报文，不改公共records模型，不写文件或保留输入引用。
 原帧临时对象和标量编码的费用由调用方在批次许可前预约；不承诺旧库RSS受控。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -61,7 +61,7 @@ _item_base_size(frame, sequence)
 
 标志按true/false计长，未知is_rx按null计长；原浮点repr保负零和指数，data每字节为两位hex。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:18`](../../../src/chronaxis/legacy/batch_validation.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:18`](../../../src/chronaxis/legacy/batch_validation.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_validate_native_frame"></a>
 ## `_validate_native_frame`
@@ -103,7 +103,7 @@ _validate_native_frame(msg, values, sequence)
 按原构造实参顺序读取字段和转换data，随后保持原模型的校验先后。
 常见完整值字典可用安全上界证明合法；无法证明时仍走原精确检查函数。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:39`](../../../src/chronaxis/legacy/batch_validation.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:39`](../../../src/chronaxis/legacy/batch_validation.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-validate_discarded"></a>
 ## `validate_discarded`
@@ -140,4 +140,4 @@ None；既不复制values，也不持有通过检查的数据。
 原字段校验→安全上界正证明，或原ITEM精确计长与完整values检查。没有待保存副本，
     所以不执行公共LegacyDecodedFrame为防止复制时Mapping变化而进行的第二遍检查。
 
-源码：[`src/chronaxis/legacy/batch_validation.py:110`](../../../src/chronaxis/legacy/batch_validation.py#L110)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/legacy/batch_validation.py:110`](../../../src/chronaxis/legacy/batch_validation.py#L110)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

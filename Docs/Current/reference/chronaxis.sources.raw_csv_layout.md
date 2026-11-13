@@ -2,7 +2,7 @@
 
 定义原始报文CSV的列名/列号、固定值和值映射；只做列对应，不解码报文。它供已实现的raw_can_csv公共入口使用。见[完整例子](../text-inputs.md)。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -60,7 +60,7 @@ _scalar(value, label, *, limit=MAX_FIXED_TEXT)
 
 类型/长度错误。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:24`](../../../src/chronaxis/sources/raw_csv_layout.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:24`](../../../src/chronaxis/sources/raw_csv_layout.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_fields"></a>
 ## `_fields`
@@ -88,7 +88,7 @@ _fields(value, allowed, required, label)
 
 类型/未知缺失键。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:37`](../../../src/chronaxis/sources/raw_csv_layout.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:37`](../../../src/chronaxis/sources/raw_csv_layout.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_physical_value"></a>
 ## `_physical_value`
@@ -119,7 +119,7 @@ _physical_value(name, value)
 - `ValueError`：CSV帧种类需要data/remote/error映射。
 - `ValueError`：CSV载荷需要明确的十六进制文本。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:48`](../../../src/chronaxis/sources/raw_csv_layout.py#L48)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:48`](../../../src/chronaxis/sources/raw_csv_layout.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_common_value"></a>
 ## `_common_value`
@@ -137,7 +137,7 @@ _common_value(name, value)
 |`name`|str|是|无|位置或关键字。common中当前固定报文字段的名称。|
 |`value`|object|是|无|位置或关键字。本文件所有记录共用的该字段原生值，按字段类型校验。|
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:67`](../../../src/chronaxis/sources/raw_csv_layout.py#L67)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:67`](../../../src/chronaxis/sources/raw_csv_layout.py#L67)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ColumnMapping"></a>
 ## `ColumnMapping`
@@ -157,7 +157,7 @@ class ColumnMapping
 |`value_map`|Mapping[str, str &#124; int &#124; bool] &#124; None|否|None|1～256项原文字到目标值的对应，如 `{"Rx":true,"Tx":false}`。原文字未列出时会报错。目标类型须符合上方字段，例如is_rx的目标是布尔值。|
 |`strip`|bool|否|True|true去掉单元格两端空白后再映射；false保留两端空白。不会删掉载荷字节之间的空格。|
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:84`](../../../src/chronaxis/sources/raw_csv_layout.py#L84)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:84`](../../../src/chronaxis/sources/raw_csv_layout.py#L84)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ColumnMapping-__post_init__"></a>
 ### `ColumnMapping.__post_init__`
@@ -193,7 +193,7 @@ ColumnMapping.__post_init__()
 - `ValueError`：value_map键需不超过256字符的文本。
 - `ValueError`：strip模式的映射键不能有边缘空白。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:92`](../../../src/chronaxis/sources/raw_csv_layout.py#L92)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:92`](../../../src/chronaxis/sources/raw_csv_layout.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ColumnMapping-from_dict"></a>
 ### `ColumnMapping.from_dict`
@@ -220,7 +220,7 @@ ColumnMapping。
 
 未知键/值错误。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:123`](../../../src/chronaxis/sources/raw_csv_layout.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:123`](../../../src/chronaxis/sources/raw_csv_layout.py#L123)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-ColumnMapping-to_dict"></a>
 ### `ColumnMapping.to_dict`
@@ -246,7 +246,7 @@ ColumnMapping.to_dict()
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:131`](../../../src/chronaxis/sources/raw_csv_layout.py#L131)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:131`](../../../src/chronaxis/sources/raw_csv_layout.py#L131)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVLayout"></a>
 ## `CANCSVLayout`
@@ -268,7 +268,7 @@ class CANCSVLayout
 |`skip_rows`|int|否|0|从文件开头跳过多少条CSV记录，0～100000。例如文件头有两行说明文字，就填2；不会自动寻找表头。|
 |`layout_version`|str|否|'raw-can-csv-layout-v1'|当前布局格式版本，填写这个值或省略即可。|
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:142`](../../../src/chronaxis/sources/raw_csv_layout.py#L142)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:142`](../../../src/chronaxis/sources/raw_csv_layout.py#L142)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVLayout-__post_init__"></a>
 ### `CANCSVLayout.__post_init__`
@@ -305,7 +305,7 @@ CANCSVLayout.__post_init__()
 - `TypeError`：CSV fields值需要ColumnMapping。
 - `ValueError`：无表头CSV不能按列名取值。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:152`](../../../src/chronaxis/sources/raw_csv_layout.py#L152)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:152`](../../../src/chronaxis/sources/raw_csv_layout.py#L152)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVLayout-from_dict"></a>
 ### `CANCSVLayout.from_dict`
@@ -336,7 +336,7 @@ CANCSVLayout。
 
 - `TypeError`：raw_csv_layout.fields需要dict。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:198`](../../../src/chronaxis/sources/raw_csv_layout.py#L198)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:198`](../../../src/chronaxis/sources/raw_csv_layout.py#L198)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVLayout-to_dict"></a>
 ### `CANCSVLayout.to_dict`
@@ -362,7 +362,7 @@ CANCSVLayout.to_dict()
 
 无。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:208`](../../../src/chronaxis/sources/raw_csv_layout.py#L208)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:208`](../../../src/chronaxis/sources/raw_csv_layout.py#L208)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-CANCSVLayout-bind_header"></a>
 ### `CANCSVLayout.bind_header`
@@ -395,7 +395,7 @@ BoundCANCSVLayout。
 - `ValueError`：无表头配置不能另传表头。
 - `ValueError`：CSV映射列号超出表头。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:215`](../../../src/chronaxis/sources/raw_csv_layout.py#L215)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:215`](../../../src/chronaxis/sources/raw_csv_layout.py#L215)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BoundCANCSVLayout"></a>
 ## `BoundCANCSVLayout`
@@ -412,7 +412,7 @@ class BoundCANCSVLayout
 |---|---|---|---|---|
 |`bindings`|tuple|是|无|(规范字段名,冻结映射,0基列位置或None)。|
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:251`](../../../src/chronaxis/sources/raw_csv_layout.py#L251)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:251`](../../../src/chronaxis/sources/raw_csv_layout.py#L251)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BoundCANCSVLayout-__post_init__"></a>
 ### `BoundCANCSVLayout.__post_init__`
@@ -448,7 +448,7 @@ BoundCANCSVLayout.__post_init__()
 - `ValueError`：CSV绑定列位置错误。
 - `ValueError`：CSV绑定列号与位置矛盾。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:256`](../../../src/chronaxis/sources/raw_csv_layout.py#L256)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:256`](../../../src/chronaxis/sources/raw_csv_layout.py#L256)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-BoundCANCSVLayout-map_row"></a>
 ### `BoundCANCSVLayout.map_row`
@@ -478,4 +478,4 @@ BoundCANCSVLayout.map_row(row, *, names=None)
 
 - `ValueError`：CSV记录需要不超过4096列。
 
-源码：[`src/chronaxis/sources/raw_csv_layout.py:279`](../../../src/chronaxis/sources/raw_csv_layout.py#L279)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/sources/raw_csv_layout.py:279`](../../../src/chronaxis/sources/raw_csv_layout.py#L279)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

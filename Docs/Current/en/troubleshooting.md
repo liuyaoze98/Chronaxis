@@ -26,11 +26,26 @@ except PlanValidationError as error:
 |---|---|---|
 | Load or construct | `PlanValidationError`, with a code such as `unknown_field` | Correct the field using path/message and any source location. |
 | Static checking | `ValidationReport.errors` or `execution_ready=False` | Resolve the report; validation does not imply business inputs have been read. |
-| Run | `AnalysisError`, possibly caused by `SourceReadError`, `BudgetExceededError`, `ValueError`, etc. | Preserve the chain and correct the read/resource/expression cause; do not turn the failure into “no events.” |
+| Run | `AnalysisError`; `exc.__cause__` can be `SourceReadError`, `BudgetExceededError`, `ValueError`, etc., or None. | Preserve the chain and correct the read/resource/expression cause; do not turn the failure into “no events.” |
 | Stream results | `ResultClosedError`, `ContributionsUnavailableError`, or staging read failure | Read while the result is open. Missing contributions require another run with `full`. |
-| Publish | `AnalysisError` and its cause, e.g. a non-directory path or write failure | Check output permissions and fix the environment. An open result can be published again without rereading input. |
+| Publish | `AnalysisError` and `exc.__cause__`, e.g. a non-directory path or write failure; the cause can be None | Check output permissions and fix the environment. An open result can be published again without rereading input. |
 | Batch | A normal report can contain failed jobs; an infrastructure exception may carry `batch_report` | Inspect job `error_type`, `error_message`, and `error_chain`. Preserve completed results; close `cleanup_pending` resources. |
 | Close | Actual file/resource-close error | Keep the cleanup object supplied by the result or exception, release the obstruction, and retry `close`. |
+
+This fragment follows the earlier code that loads `plan`. After catching an execution or publication error, read the wrapped original exception through `exc.__cause__`. A directly raised error may have no wrapped cause, so this property can be `None`. `AnalysisError` does not promise a common `cause` or `diagnostics` attribute. See [AnalysisRunner exceptions](public-api/AnalysisRunner.md#api-AnalysisRunner-run).
+
+```python
+from chronaxis import AnalysisRunner, AnalysisError
+
+try:
+    with AnalysisRunner().run(plan) as result:
+        result.write("results")
+except AnalysisError as exc:
+    print(type(exc).__name__, str(exc))
+    if exc.__cause__ is not None:
+        print(type(exc.__cause__).__name__, str(exc.__cause__))
+    raise  # Preserve the exception chain; failure is not an empty result.
+```
 
 `KeyboardInterrupt` and `SystemExit` mean cancellation, not success. Exception-chain attributes `runner_cleanup_owner` and `analysis_result_cleanup_owner` appear only when failed cleanup remains pending. Check for their existence before calling `close`; not every error has them.
 
@@ -86,8 +101,8 @@ For `condition_duration`, a missing `duration_comparison` requires a business ch
 | `BudgetExceededError` | Identify the resource named by the error: memory, result buffering, or spool disk. Reduce `batch_rows`/`result_buffer_rows`, or increase the corresponding quota after checking available resources. Required state memory may not shrink with batch size. |
 | Output path is unusable | Existing directories can be reused. Select a writable directory if the path names a file or protected location. Timestamp suffixes prevent overwriting previous files. |
 | Output is inside the owned work directory | Default close cleans that work directory; place final output outside it. |
-| Publication fails on non-Windows | The safe publication path is currently validated on Windows; see [Support status](status.md). |
-| Standalone signal/CAN export label failure | These paths currently restrict `metadata.device_label` to `home`/`work`; see [Output limitations](exports.md). Ordinary analysis can omit these exports. |
+| Execution or publication fails because a platform capability is unavailable | Inspect the original exception chain. Managed Linux workers require pidfd process-group signals; publication requires `renameat2`, target-filesystem support for `RENAME_NOREPLACE`, and a same-filesystem move. Ordinary and fast validation probe the current capability only when managed workers are required and report unavailable or inconclusive results in warnings. Independent batches issue a Python warning before dispatch. These notices do not change configuration validity. Publication EINVAL can also mean an invalid source/target combination or argument, so it does not by itself prove missing filesystem support. Check the failing stage and verified environments in [Installation](installation.md); execution and publication still perform their checks. |
+| metadata.device_label validation fails | Omit the field to use `pending`, or supply a nonblank string such as `lab-pc` or `试验台一号`. Null, whitespace-only and non-string values are invalid. See [Outputs](exports.md). |
 | Corrupt staged format or read `OSError` | Stop using that result, preserve the exception and necessary evidence, and check disk/access. Do not treat the failure as an empty table. |
 | Batch report includes failed jobs | Inspect each job's status, error, and output path in the actual CLI `report` path. Fix and rerun failed jobs independently without overwriting completed directories. |
 

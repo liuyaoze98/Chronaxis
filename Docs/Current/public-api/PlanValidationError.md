@@ -25,7 +25,7 @@ PlanValidationError(path: str, message: str, code: str = 'invalid_config', *, hi
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:26`](../../../src/chronaxis/planning/checks.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanValidationError-__init__"></a>
 ### `PlanValidationError.__init__`
@@ -57,7 +57,7 @@ None；异常文本含路径和原因。
 
 无；参数由校验器内部构造。
 
-源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:32`](../../../src/chronaxis/planning/checks.py#L32)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanValidationError-refresh_text"></a>
 ### `PlanValidationError.refresh_text`
@@ -83,7 +83,7 @@ None。
 
 无；附加定位后调用。
 
-源码：[`src/chronaxis/planning/checks.py:58`](../../../src/chronaxis/planning/checks.py#L58)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:58`](../../../src/chronaxis/planning/checks.py#L58)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanValidationError-to_dict"></a>
 ### `PlanValidationError.to_dict`
@@ -109,7 +109,7 @@ PlanValidationError.to_dict()
 
 无。
 
-源码：[`src/chronaxis/planning/checks.py:78`](../../../src/chronaxis/planning/checks.py#L78)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:78`](../../../src/chronaxis/planning/checks.py#L78)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanValidationError-diagnostics"></a>
 ### `PlanValidationError.diagnostics`
@@ -137,7 +137,7 @@ tuple；单错也为一项。
 
 无。
 
-源码：[`src/chronaxis/planning/checks.py:86`](../../../src/chronaxis/planning/checks.py#L86)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:86`](../../../src/chronaxis/planning/checks.py#L86)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PlanValidationError-from_diagnostics"></a>
 ### `PlanValidationError.from_diagnostics`
@@ -165,4 +165,4 @@ PlanValidationError.from_diagnostics(errors, blocked=())
 
 空序列ValueError。
 
-源码：[`src/chronaxis/planning/checks.py:91`](../../../src/chronaxis/planning/checks.py#L91)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/planning/checks.py:91`](../../../src/chronaxis/planning/checks.py#L91)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

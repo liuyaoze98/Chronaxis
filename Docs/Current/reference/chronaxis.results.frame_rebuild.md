@@ -2,7 +2,7 @@
 
 用同次读取中已解码的连续物理量，在指定时间网格上生成报文。只改选中字段的位，其他位复制同一最近原帧；未选报文默认原样透传。见[导出限制](../exports.md)。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -80,7 +80,7 @@ class FrameSample
 |`known`|bool|否|False|本次读取是否在DBC中识别出该报文，默认False。|
 |`valid`|bool|否|True|该帧是否可作为重建端点，默认True；False使相关区间不插值。|
 
-源码：[`src/chronaxis/results/frame_rebuild.py:31`](../../../src/chronaxis/results/frame_rebuild.py#L31)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:31`](../../../src/chronaxis/results/frame_rebuild.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameSample-__post_init__"></a>
 ### `FrameSample.__post_init__`
@@ -112,7 +112,7 @@ FrameSample.__post_init__()
 - `ValueError`：重建样本字段超过有限能力。
 - `ValueError`：重建样本字段重复或类型非法。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:40`](../../../src/chronaxis/results/frame_rebuild.py#L40)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:40`](../../../src/chronaxis/results/frame_rebuild.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameGridSpec"></a>
 ## `FrameGridSpec`
@@ -133,7 +133,7 @@ class FrameGridSpec
 |`unknown_policy`|str|否|'passthrough'|passthrough按原时间透传未选择报文；nearest按网格取最近完整原帧。|
 |`max_distance_ns`|int &#124; None|否|None|nearest时必须给出的非负整数纳秒距离上限；超过时不生成，默认None。|
 
-源码：[`src/chronaxis/results/frame_rebuild.py:56`](../../../src/chronaxis/results/frame_rebuild.py#L56)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:56`](../../../src/chronaxis/results/frame_rebuild.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameGridSpec-__post_init__"></a>
 ### `FrameGridSpec.__post_init__`
@@ -165,7 +165,7 @@ FrameGridSpec.__post_init__()
 - `ValueError`：未知报文最近邻必须声明最大距离。
 - `ValueError`：最近邻距离不能为负。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:65`](../../../src/chronaxis/results/frame_rebuild.py#L65)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:65`](../../../src/chronaxis/results/frame_rebuild.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_frame_packet"></a>
 ## `_frame_packet`
@@ -190,7 +190,7 @@ JSON dict。
 
 原模型非法。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:83`](../../../src/chronaxis/results/frame_rebuild.py#L83)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:83`](../../../src/chronaxis/results/frame_rebuild.py#L83)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_restore_frame"></a>
 ## `_restore_frame`
@@ -215,7 +215,7 @@ ExportCANFrame。
 
 非法模型。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:98`](../../../src/chronaxis/results/frame_rebuild.py#L98)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:100`](../../../src/chronaxis/results/frame_rebuild.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_sample_packet"></a>
 ## `_sample_packet`
@@ -240,7 +240,7 @@ _sample_packet(sample)
 
 编码错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:109`](../../../src/chronaxis/results/frame_rebuild.py#L109)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:112`](../../../src/chronaxis/results/frame_rebuild.py#L112)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_restore_sample"></a>
 ## `_restore_sample`
@@ -265,7 +265,7 @@ FrameSample。
 
 结构错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:116`](../../../src/chronaxis/results/frame_rebuild.py#L116)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:119`](../../../src/chronaxis/results/frame_rebuild.py#L119)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-_facts"></a>
 ## `_facts`
@@ -290,7 +290,7 @@ _facts(sample)
 
 编码错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:123`](../../../src/chronaxis/results/frame_rebuild.py#L123)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:126`](../../../src/chronaxis/results/frame_rebuild.py#L126)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead"></a>
 ## `FrameRebuildRead`
@@ -302,7 +302,7 @@ FrameRebuildRead(records, spec, interval, rules, budget, work_dir, *, backend='n
 ```
 
 
-源码：[`src/chronaxis/results/frame_rebuild.py:130`](../../../src/chronaxis/results/frame_rebuild.py#L130)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:133`](../../../src/chronaxis/results/frame_rebuild.py#L133)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-__init__"></a>
 ### `FrameRebuildRead.__init__`
@@ -342,9 +342,8 @@ FrameRebuildRead.__init__(records, spec, interval, rules, budget, work_dir, *, b
 - `ValueError`：报文重建需要网格、范围及明确后端。
 - `ValueError`：重建规则需要有限(rule,Message)tuple。
 - `ValueError`：不能对同一报文身份声明两个重建规则。
-- `ValueError`：报文重建不能写RefProjects。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:133`](../../../src/chronaxis/results/frame_rebuild.py#L133)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:136`](../../../src/chronaxis/results/frame_rebuild.py#L136)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_cancel"></a>
 ### `FrameRebuildRead._cancel`
@@ -374,7 +373,7 @@ FrameRebuildRead._cancel()
 
 - `ResultClosedError`：报文重建已关闭。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:186`](../../../src/chronaxis/results/frame_rebuild.py#L186)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:187`](../../../src/chronaxis/results/frame_rebuild.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_output"></a>
 ### `FrameRebuildRead._output`
@@ -400,7 +399,7 @@ FrameRebuildRead._output(item, identity=())
 
 排序/配额错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:194`](../../../src/chronaxis/results/frame_rebuild.py#L194)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:195`](../../../src/chronaxis/results/frame_rebuild.py#L195)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-prepare"></a>
 ### `FrameRebuildRead.prepare`
@@ -432,7 +431,7 @@ self。
 - `ValueError`：原帧时间或原序回退，不能借离线排序掩盖输入错误。
 - `ValueError`：已选报文缺真实DBC解码身份或长度异常。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:209`](../../../src/chronaxis/results/frame_rebuild.py#L209)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:210`](../../../src/chronaxis/results/frame_rebuild.py#L210)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_group"></a>
 ### `FrameRebuildRead._group`
@@ -459,7 +458,7 @@ FrameRebuildRead._group(samples, patcher, identity)
 
 原重建错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:283`](../../../src/chronaxis/results/frame_rebuild.py#L283)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:284`](../../../src/chronaxis/results/frame_rebuild.py#L284)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_reason"></a>
 ### `FrameRebuildRead._reason`
@@ -488,7 +487,7 @@ FrameRebuildRead._reason(left, right, left_bad, right_bad, patcher)
 
 非法DBC布局。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:308`](../../../src/chronaxis/results/frame_rebuild.py#L308)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:309`](../../../src/chronaxis/results/frame_rebuild.py#L309)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_skip"></a>
 ### `FrameRebuildRead._skip`
@@ -515,7 +514,7 @@ FrameRebuildRead._skip(time_ns, reason, identity)
 
 输出错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:334`](../../../src/chronaxis/results/frame_rebuild.py#L334)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:335`](../../../src/chronaxis/results/frame_rebuild.py#L335)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_emit"></a>
 ### `FrameRebuildRead._emit`
@@ -547,7 +546,7 @@ FrameRebuildRead._emit(time_ns, base, left, right, patcher, values, identity, mo
 
 量化/输出错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:339`](../../../src/chronaxis/results/frame_rebuild.py#L339)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:340`](../../../src/chronaxis/results/frame_rebuild.py#L340)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_nearest"></a>
 ### `FrameRebuildRead._nearest`
@@ -577,7 +576,7 @@ FrameRebuildRead._nearest(time_ns, left, right, left_bad, right_bad, identity)
 
 输出错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:364`](../../../src/chronaxis/results/frame_rebuild.py#L364)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:365`](../../../src/chronaxis/results/frame_rebuild.py#L365)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_segment"></a>
 ### `FrameRebuildRead._segment`
@@ -607,7 +606,7 @@ FrameRebuildRead._segment(left, right, left_bad, right_bad, patcher, identity)
 
 原计算/输出错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:375`](../../../src/chronaxis/results/frame_rebuild.py#L375)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:376`](../../../src/chronaxis/results/frame_rebuild.py#L376)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-__iter__"></a>
 ### `FrameRebuildRead.__iter__`
@@ -633,7 +632,7 @@ FrameRebuildRead.__iter__()
 
 准备或重复游标错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:411`](../../../src/chronaxis/results/frame_rebuild.py#L411)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:412`](../../../src/chronaxis/results/frame_rebuild.py#L412)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-export_metadata"></a>
 ### `FrameRebuildRead.export_metadata`
@@ -661,7 +660,7 @@ dict或None。
 
 无。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:420`](../../../src/chronaxis/results/frame_rebuild.py#L420)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:421`](../../../src/chronaxis/results/frame_rebuild.py#L421)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-__next__"></a>
 ### `FrameRebuildRead.__next__`
@@ -687,7 +686,7 @@ ExportCANFrame/SkippedCANFrame。
 
 EOF/校验错。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:425`](../../../src/chronaxis/results/frame_rebuild.py#L425)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:426`](../../../src/chronaxis/results/frame_rebuild.py#L426)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-_close_input"></a>
 ### `FrameRebuildRead._close_input`
@@ -713,7 +712,7 @@ FrameRebuildRead._close_input()
 
 原关闭错保责任。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:435`](../../../src/chronaxis/results/frame_rebuild.py#L435)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:436`](../../../src/chronaxis/results/frame_rebuild.py#L436)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-FrameRebuildRead-close"></a>
 ### `FrameRebuildRead.close`
@@ -739,13 +738,13 @@ FrameRebuildRead.close()
 
 原关闭/释放错可重试。
 
-源码：[`src/chronaxis/results/frame_rebuild.py:444`](../../../src/chronaxis/results/frame_rebuild.py#L444)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/frame_rebuild.py:445`](../../../src/chronaxis/results/frame_rebuild.py#L445)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 ## 内部匿名回调
 
 
-<a id="lambda-370"></a>
-### 第370行匿名函数
+<a id="lambda-371"></a>
+### 第371行匿名函数
 
 ```python
 lambda s: (abs(s.record.time_ns - time_ns), s.record.time_ns)
@@ -753,10 +752,10 @@ lambda s: (abs(s.record.time_ns - time_ns), s.record.time_ns)
 
 |参数|含义|返回/异常|
 |---|---|---|
-|`s`|候选报文样本。|返回与目标时间的绝对距离及原时间；等距离选较早帧。|
+|`s`|参数按上方签名传入；具体调用语义尚待补充。|返回值由上方表达式决定；具体用途和异常尚待核对，不据模板推断。|
 
-<a id="lambda-252"></a>
-### 第252行匿名函数
+<a id="lambda-253"></a>
+### 第253行匿名函数
 
 ```python
 lambda row: row[0][:-2]
@@ -764,4 +763,4 @@ lambda row: row[0][:-2]
 
 |参数|含义|返回/异常|
 |---|---|---|
-|`row`|已排序的报文行。|取排序键中除最后两项外的报文身份，供相同报文分组。|
+|`row`|参数按上方签名传入；具体调用语义尚待补充。|返回值由上方表达式决定；具体用途和异常尚待核对，不据模板推断。|

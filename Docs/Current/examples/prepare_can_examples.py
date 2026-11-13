@@ -6,13 +6,52 @@
 import argparse
 from copy import deepcopy
 import json
+from io import StringIO
 from math import isclose
 from pathlib import Path
 import shutil
 import struct
 
 import can
-from chronaxis import AnalysisPlan, AnalysisRunner
+from ruamel.yaml import YAML
+from chronaxis import AnalysisRunner, load_analysis_plan
+
+
+def commented_yaml(config):
+    """将同一配置对象写成带说明的教学YAML，不另维护一套配置。
+
+    参数: config为本脚本生成的配置字典。返回: 可解析、行末注释对齐的文本。
+    异常: 未登记字段或序列化后内容改变时拒绝输出。无文件副作用。
+    """
+    comments = {
+        'config_version': '分析配置版本，填写整数4',
+        'dataset': '命名这次连续分析', 'name': '本对象名称，供引用或结果识别',
+        'execution': '设置文件读取和解码的并行上限',
+        'process_count': '最多4个文件工作进程；本例两卷，最多使用两个',
+        'sources': '同一次记录的输入来源', 'paths': '输入目录，相对本配置；文件按自然序接续',
+        'dbc_by_channel': '各通道使用的DBC文件', '1': '用户通道1的DBC，相对本配置',
+        'time': '将日志时间转换到共同起点', 'offset': '减去合成记录的绝对起点，得到0至6秒',
+        'signals': '定义计算可引用的功率信号', 'field': '在DBC中定位原始信号',
+        'frame_id': '报文ID，十进制256等于0x100', 'signal': 'DBC中的原始信号名',
+        'calculations': '请求能量、样本均值和时间加权均值',
+        'operation': '选择本项计算方法', 'expr': '使用已定义的power功率值',
+    }
+    yaml = YAML(typ='safe', pure=True)
+    yaml.default_flow_style = False
+    yaml.sort_base_mapping_type_on_output = False
+    stream = StringIO()
+    yaml.dump(config, stream)
+    lines = stream.getvalue().splitlines()
+    width = max(map(len, lines)) + 2
+    # 此配置的列表项均为映射；逐键注释，不改动缩进、值或列表结构。
+    annotated = []
+    for line in lines:
+        key = line.strip().removeprefix('- ').split(':', 1)[0].strip("'\"")
+        annotated.append(line.ljust(width) + '# ' + comments[key])
+    text = '\n'.join(annotated) + '\n'
+    if yaml.load(text) != config:
+        raise ValueError('教学YAML与原配置不同')
+    return text
 
 
 def main():
@@ -55,8 +94,11 @@ def main():
     for kind in ('asc', 'blf', 'mixed'):
         config = deepcopy(raw)
         config['sources'][0]['paths'] = kind
+        path = output/f'{kind}.yaml'
+        path.write_text(commented_yaml(config), encoding='utf-8', newline='\n')
+        # JSON仍可供程序读取；教程和本次验证实际使用生成的YAML文件。
         (output/f'{kind}.json').write_text(json.dumps(config, indent=2)+'\n', encoding='utf-8')
-        with AnalysisRunner().run(AnalysisPlan.from_dict(config, base_dir=output), work_dir=output/(kind+'-run')) as result:
+        with AnalysisRunner().run(load_analysis_plan(path), work_dir=output/(kind+'-run')) as result:
             values = {row.calculation_id:row.value for row in result.iter_calculations()}
             assert values.keys() == expected.keys() and all(isclose(values[k], v) for k,v in expected.items()), (kind, values)
             records.append({'directory':kind, 'values':values})

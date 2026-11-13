@@ -2,7 +2,7 @@
 
 在运行清单中记录使用了哪个预设版本，以及每个角色最终对应哪个信号。这里只保存已有选择，不重新读取来源或再次检查信号的业务含义。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 对象导航
 
@@ -41,7 +41,7 @@ class PresetRoleMetadata
 |`contract_version`|str|是|无|实际检查的角色契约版本。|
 |`contract_status`|str|否|'checked_against_declared_metadata'|校验的是给定声明。|
 
-源码：[`src/chronaxis/results/binding_metadata.py:15`](../../../src/chronaxis/results/binding_metadata.py#L15)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/binding_metadata.py:15`](../../../src/chronaxis/results/binding_metadata.py#L15)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetRoleMetadata-__post_init__"></a>
 ### `PresetRoleMetadata.__post_init__`
@@ -72,7 +72,7 @@ PresetRoleMetadata.__post_init__()
 - `ValueError`：预设角色查找方式需explicit或semantic_unique。
 - `ValueError`：预设角色状态只能说明已检查声明元数据。
 
-源码：[`src/chronaxis/results/binding_metadata.py:24`](../../../src/chronaxis/results/binding_metadata.py#L24)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/binding_metadata.py:24`](../../../src/chronaxis/results/binding_metadata.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetBindingMetadata"></a>
 ## `PresetBindingMetadata`
@@ -92,7 +92,7 @@ class PresetBindingMetadata
 |`version`|str|是|无|原预设版本，与角色契约版本独立。|
 |`roles`|tuple[[PresetRoleMetadata](chronaxis.results.binding_metadata.md#api-PresetRoleMetadata), ...]|是|无|有限冻结记录，不含输入行。|
 
-源码：[`src/chronaxis/results/binding_metadata.py:37`](../../../src/chronaxis/results/binding_metadata.py#L37)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/binding_metadata.py:37`](../../../src/chronaxis/results/binding_metadata.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-PresetBindingMetadata-__post_init__"></a>
 ### `PresetBindingMetadata.__post_init__`
@@ -123,4 +123,4 @@ PresetBindingMetadata.__post_init__()
 - `TypeError`：预设清单角色需冻结PresetRoleMetadata tuple。
 - `ValueError`：预设清单不能重复同一角色。
 
-源码：[`src/chronaxis/results/binding_metadata.py:45`](../../../src/chronaxis/results/binding_metadata.py#L45)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/results/binding_metadata.py:45`](../../../src/chronaxis/results/binding_metadata.py#L45)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。

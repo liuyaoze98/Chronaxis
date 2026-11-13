@@ -9,13 +9,17 @@ from pathlib import Path
 import signal
 from time import perf_counter
 
+from .._control_wire import ControlChannel
 from .blocks import batches, encode, LIMIT
+from ..dbc_loading import load_dbc_file
 
 
 def worker_main(control, data, cancel):
     """运行父授权的文件任务。参数: 控制连接、单向数据连接、取消事件。返回: None。
     异常: 原错误通过控制通道报告；断管退出，finally释放读取器。
     """
+    if type(control) is not ControlChannel:
+        raise TypeError('fast工作进程需要固定字节控制端点')
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     reader = None
     database = None
@@ -25,8 +29,9 @@ def worker_main(control, data, cancel):
             command = control.recv()
             if command[0] == 'close':
                 break
-            if command[0] != 'file':
+            if command[0] not in ('file', 'program_file'):
                 raise ValueError('未知fast文件命令')
+            programs_checked = command[0] == 'program_file'
             _, index, spec, directory, expected_digest = command
             from .stream import FileContributions
             import cantools
@@ -36,11 +41,11 @@ def worker_main(control, data, cancel):
             if digest != expected_digest:
                 raise ValueError('运行期间DBC内容变化')
             if identity != digest:
-                database = cantools.database.load_file(spec['dbc'])
+                database = load_dbc_file(spec['dbc'], cantools)
                 if sha256(Path(spec['dbc']).read_bytes()).hexdigest() != digest:
                     raise ValueError('加载期间DBC内容变化')
                 identity = digest
-            reader = FileContributions(spec, database, cancel)
+            reader = FileContributions(spec, database, cancel, _programs_checked=programs_checked)
             count = 0
             clocks = dict(compute_seconds=0.0, credit_wait_seconds=0.0, send_seconds=0.0, write_seconds=0.0)
             blocks = iter(batches(reader))
@@ -73,7 +78,8 @@ def worker_main(control, data, cancel):
                     with temporary.open('xb') as output:
                         if output.write(packet) != len(packet):
                             raise OSError('贡献暂存未完整写入')
-                    temporary.rename(path)
+                    from ..results.platform_files import move_no_replace
+                    move_no_replace(temporary,path)
                     clocks['write_seconds'] += perf_counter() - started
                     control.send(('stored', index, count, len(packet)))
                 else:

@@ -2,7 +2,7 @@
 
 通过独立纯Python安全解析器读取YAML1.2受限子集，不构造任意标签对象。
 
-这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象、嵌套函数和vendor实现供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
+这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
 
 ## 相关类型
 
@@ -55,7 +55,7 @@ parse_yaml(text, source)
 
 受限语法错误。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:8`](../../../src/chronaxis/configuration/yaml_parser.py#L8)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:8`](../../../src/chronaxis/configuration/yaml_parser.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-Yaml12"></a>
 ### `parse_yaml.Yaml12`
@@ -69,7 +69,7 @@ class parse_yaml.Yaml12(YAML)
 继承关系：YAML。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:18`](../../../src/chronaxis/configuration/yaml_parser.py#L18)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:18`](../../../src/chronaxis/configuration/yaml_parser.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-Yaml12-version"></a>
 ### `parse_yaml.Yaml12.version`
@@ -96,7 +96,7 @@ None。
 
 明确配置版本错误。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:22`](../../../src/chronaxis/configuration/yaml_parser.py#L22)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:22`](../../../src/chronaxis/configuration/yaml_parser.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-location"></a>
 ### `parse_yaml.location`
@@ -121,7 +121,7 @@ parse_yaml.location(event)
 
 无。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:35`](../../../src/chronaxis/configuration/yaml_parser.py#L35)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:35`](../../../src/chronaxis/configuration/yaml_parser.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-reject"></a>
 ### `parse_yaml.reject`
@@ -149,7 +149,7 @@ parse_yaml.reject(event, path, code, message)
 
 ConfigurationError。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:39`](../../../src/chronaxis/configuration/yaml_parser.py#L39)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:39`](../../../src/chronaxis/configuration/yaml_parser.py#L39)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-check"></a>
 ### `parse_yaml.check`
@@ -175,7 +175,7 @@ None。
 
 定位配置错误。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:43`](../../../src/chronaxis/configuration/yaml_parser.py#L43)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:43`](../../../src/chronaxis/configuration/yaml_parser.py#L43)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-scalar"></a>
 ### `parse_yaml.scalar`
@@ -201,7 +201,7 @@ parse_yaml.scalar(event, path)
 
 不支持类型或非有限数。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:49`](../../../src/chronaxis/configuration/yaml_parser.py#L49)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:49`](../../../src/chronaxis/configuration/yaml_parser.py#L49)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
 
 <a id="api-parse_yaml-value"></a>
 ### `parse_yaml.value`
@@ -228,4 +228,4 @@ parse_yaml.value(event, path=(), depth=0)
 
 受限语法或嵌套超限。
 
-源码：[`src/chronaxis/configuration/yaml_parser.py:77`](../../../src/chronaxis/configuration/yaml_parser.py#L77)（行号属于 `afc8d5eb1dc95c26176b20ebedaeda6a0a643540`）。
+源码：[`src/chronaxis/configuration/yaml_parser.py:77`](../../../src/chronaxis/configuration/yaml_parser.py#L77)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
