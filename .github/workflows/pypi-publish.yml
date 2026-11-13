@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       upload:
-        description: Upload the verified 0.1.0.dev3 files to PyPI
+        description: Upload the verified 0.1.0.dev4 files to PyPI
         type: boolean
         required: true
         default: false
@@ -34,17 +34,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag_object=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.1.0.dev3" --jq '.object.sha')
+          tag_object=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.1.0.dev4" --jq '.object.sha')
           source_commit=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$tag_object" --jq '.object.sha')
-          test "$source_commit" = 'f89048c04cb4ed9f2f7c39fcf1c8c646750f3176'
-          gh release download v0.1.0.dev3 --repo "$GITHUB_REPOSITORY" --dir dist \
-            --pattern chronaxis-0.1.0.dev3-py3-none-any.whl \
-            --pattern chronaxis-0.1.0.dev3.tar.gz
+          test "$source_commit" = '3426eb67668cbf9f95784ba0275bd3bf3b444e54'
+          gh release download v0.1.0.dev4 --repo "$GITHUB_REPOSITORY" --dir dist \
+            --pattern chronaxis-0.1.0.dev4-py3-none-any.whl \
+            --pattern chronaxis-0.1.0.dev4.tar.gz
           test "$(find dist -maxdepth 1 -type f | wc -l)" -eq 2
           cd dist
           sha256sum --strict --check - <<'SHA256'
-          37c63f2fe39cedc42ad0585ac80e21f325ca0f4c2bb1e1029298a9e28ebb01c2  chronaxis-0.1.0.dev3-py3-none-any.whl
-          1dcaa321d79b52666ffd2df809222dd5f41ad0762bccd2ce44fcbed7e35631f5  chronaxis-0.1.0.dev3.tar.gz
+          915d0cb3227868822bdf3f71fadd54dd73969fc0e97a67e5ca6d18503b666f75  chronaxis-0.1.0.dev4-py3-none-any.whl
+          4ea3a0f6d62e891d574a31235833e945fb8f74c4c93442a0b1f5513cb796a473  chronaxis-0.1.0.dev4.tar.gz
           SHA256
 
       - name: Publish verified packages using PyPI Trusted Publishing
