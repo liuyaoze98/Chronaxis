@@ -1,5 +1,5 @@
 {
-  "source_revision": "d8baf49431b3fa95108ca180005304ff1066bd52",
+  "source_revision": "92e39b185667f6d1032e63dd1744cdd334d7c7a0",
   "author": "liuyaoze",
   "transformed_markdown": [
     "Docs/AI/README.md",
@@ -1847,7 +1847,7 @@
     "tests/unit/result_test_fixture.py": "82b5199b45a05b9186bd8830dd977cf082a3ef148a34bf92620532a94dee3f2d",
     "tests/unit/test_affine_conversion.py": "b26e4fc9621aa8046ae32f53e35f251ccf1cd1ad02929915467272dedc95e724",
     "tests/unit/test_ai_english_paths.py": "becb4b302bc28a49b383af7eb7bf30161d67a9e593cde29ed622aca581e98732",
-    "tests/unit/test_ai_install_dependencies.py": "23ca3461edac22d299281e73af3f39674ad7559ad5c64a330a3f3e2cd681d0bc",
+    "tests/unit/test_ai_install_dependencies.py": "576f618d740283e3f75c7e7e0ecc22fe0776c023e8dfb8a5a949fa1ab63434e4",
     "tests/unit/test_ai_release_resources.py": "e9930af95b1d6e6c30ecd4760e1c88124c46762f527fee317e2a3a92f32a16f7",
     "tests/unit/test_ai_source_entry.py": "96b841057e52344b4cd53506123b66dc53315d475531fc3a02c8ca4d5ee09184",
     "tests/unit/test_analysis_outcome.py": "8dc1b72e55ee312c95ddd0248df7d03665e4bf94457adabe9cfd13e62e68f484",
@@ -2161,7 +2161,7 @@
     "tools/annotate_manual_examples.py": "14d60fb2a8471ea93e5ae8a024afd4cac6032a6abfa30cde231acd460f0d7861",
     "tools/build_ai_guide.py": "3aa653813a3889fb8313e5324643e216cbd83dfb7defdc8eb2d2e7360da48d78",
     "tools/build_m2_docs.py": "ae80594439069b7585215a3d962958e33bd9cd03a8a024480124452cfe348713",
-    "tools/check_ai_install.py": "d0e4537ee0b3fb2d6ca168fd177eaf903d7f018245cd5a9b6e29c315af53130c",
+    "tools/check_ai_install.py": "e9c9ff29563e28e8dbc2f655c25ff42148074d8ec75dff07a7c2f868430a809a",
     "tools/check_current_html.py": "b2595ccdf38ea32bc1f1e4e63f0ff74fc3ec358a4c711421a3d5c295550ded13",
     "tools/check_manual_followup_api.py": "3c4bee9740c7b1f10758d0ab0688fb3cb47d4d605b3c2b8c3983615a1e215f4b",
     "tools/doc_public_api.py": "5972bc7720e9d51a524caa0fc5b36d5f116e2acb92e9a4a85257dc1d57b9ba48",

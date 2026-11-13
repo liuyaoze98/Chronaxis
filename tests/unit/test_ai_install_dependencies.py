@@ -4,10 +4,13 @@
 目标检查直接执行工具传给隔离解释器的原脚本，最低与较新合法组合均须能通过。
 """
 from contextlib import redirect_stdout
+import ast
 from importlib import metadata
 from io import StringIO
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
@@ -192,6 +195,64 @@ class AIInstallDependenciesTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             with self.assertRaises(AssertionError):
                 installation_path_probe(Path(temporary), wrong_english=True)
+
+    def test_every_isolated_install_command_explicitly_enables_utf8(self):
+        """参数: 无。返回: None。异常: 任一隔离解释器命令仍依赖UTF-8环境变量时失败。"""
+        tree = ast.parse((ROOT/'tools/check_ai_install.py').read_text(encoding='utf-8'))
+        commands = [node for node in ast.walk(tree) if isinstance(node, ast.List) and node.elts
+                    and isinstance(node.elts[0], ast.Name) and node.elts[0].id == 'python'
+                    and any(isinstance(item, ast.Constant) and item.value == '-I' for item in node.elts)]
+        self.assertGreater(len(commands), 0)
+        for command in commands:
+            with self.subTest(line=command.lineno):
+                options = []
+                for item in command.elts[1:]:
+                    if not isinstance(item, ast.Constant) or item.value in ('-c', '-m'):
+                        break
+                    if not (options and options[-1] == '-X') and not str(item.value).startswith('-'):
+                        break
+                    options.append(item.value)
+                self.assertIn('-I', options)
+                self.assertTrue(any(options[i:i+2] == ['-X', 'utf8']
+                                    for i in range(len(options)-1)), options)
+
+    def test_isolated_cli_flags_read_and_print_utf8_without_environment_support(self):
+        """参数: 无。返回: None。异常: 真实子进程隔离或UTF-8读写/诊断输出不符时失败。"""
+        tree = ast.parse((ROOT/'tools/check_ai_install.py').read_text(encoding='utf-8'))
+        cli = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == 'cli')
+        command = next(node for node in ast.walk(cli) if isinstance(node, ast.List))
+        flags = []
+        for item in command.elts[1:]:
+            value = ast.literal_eval(item)
+            if value == '-m':
+                break
+            flags.append(value)
+        code = '''from pathlib import Path
+import json, sys
+assert sys.flags.isolated == 1 and sys.flags.utf8_mode == 1
+path = Path(sys.argv[1])
+with path.open() as stream:
+    text = stream.read()
+with path.with_suffix('.out').open('w') as stream:
+    stream.write(text)
+print(json.dumps({'text': text, 'stdout_encoding': sys.stdout.encoding}, ensure_ascii=False))
+sys.stderr.write('中文诊断：充电区间\\n')
+'''
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary)/'中文输入.txt'
+            path.write_text('事件：充电，单位：千瓦时', encoding='utf-8')
+            for conflicting in (False, True):
+                env = {key:value for key,value in os.environ.items()
+                       if key.upper() not in {'PYTHONUTF8','PYTHONIOENCODING','PYTHONHOME','PYTHONPATH'}}
+                if conflicting:
+                    env.update(PYTHONUTF8='0', PYTHONIOENCODING='ascii')
+                completed = subprocess.run([sys.executable, *flags, '-c', code, str(path)],
+                                           env=env, capture_output=True, timeout=30)
+                self.assertEqual(completed.returncode, 0, completed.stderr.decode('utf-8', errors='replace'))
+                result = json.loads(completed.stdout.decode('utf-8'))
+                self.assertEqual(result, {'text':'事件：充电，单位：千瓦时', 'stdout_encoding':'utf-8'})
+                self.assertEqual(completed.stderr.decode('utf-8').splitlines(), ['中文诊断：充电区间'])
+                self.assertEqual(path.with_suffix('.out').read_bytes(), path.read_bytes())
 
 
 if __name__ == '__main__':

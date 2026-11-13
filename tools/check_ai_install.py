@@ -166,17 +166,17 @@ def check(wheel, guide, deps, report, device):
     # 不向隔离环境添加项目PYTHONPATH，只复制已准备好的第三方依赖，排除旧包和pth。
     command("venv",[sys.executable,"-m","venv","--without-pip",runtime])
     python = runtime / ("Scripts/python.exe" if os.name=="nt" else "bin/python")
-    site = Path(command("purelib",[python,"-I","-c","import sysconfig;print(sysconfig.get_path('purelib'))"]).strip()).resolve(strict=True)
+    site = Path(command("purelib",[python,"-X","utf8","-I","-c","import sysconfig;print(sysconfig.get_path('purelib'))"]).strip()).resolve(strict=True)
     shutil.copytree(deps,site,dirs_exist_ok=True,
         ignore=shutil.ignore_patterns("*.pth","*editable*","chronaxis*","__pycache__","pip","pip-*","setuptools*","wheel*","_distutils_hack","pkg_resources"))
     command("install",[sys.executable,"-m","pip","--python",python,"install","--no-index","--no-deps",wheel])
     command("dependencies",[sys.executable,"-m","pip","--python",python,"check"])
     # pip check验证wheel的允许范围；本项另外确认离线复制没有改变选定的精确版本。
     summary['actual_can_versions'] = json.loads(command("can-versions", [
-        python, "-I", "-c", CAN_VERSION_CHECK, json.dumps(expected_can_versions, sort_keys=True)]))
+        python, "-X", "utf8", "-I", "-c", CAN_VERSION_CHECK, json.dumps(expected_can_versions, sort_keys=True)]))
     save()
     check_name = "import chronaxis,pathlib,sys;assert pathlib.Path(chronaxis.__file__).is_relative_to(sys.prefix);print(chronaxis.__file__)"
-    summary["import_path"]=command("import",[python,"-I","-c",check_name]).strip()
+    summary["import_path"]=command("import",[python,"-X","utf8","-I","-c",check_name]).strip()
     # 在真正的安装环境核对构建版本，摘要/详细元数据都不得借用仓库或旧安装身份。
     version_check = """from importlib.metadata import version
 from dataclasses import replace
@@ -191,11 +191,12 @@ for item in (metadata, replace(metadata, detailed_diagnostics=True)):
 assert replace(metadata, software_version='0.0.1').to_dict()['software_version'] == '0.0.1'
 print(expected)
 """
-    summary['software_version'] = command('software-version', [python, '-I', '-B', '-c', version_check]).strip()
+    summary['software_version'] = command('software-version', [python, '-X', 'utf8', '-I', '-B', '-c', version_check]).strip()
     out = area/"from-installed.zip"
+    # -I忽略PYTHONUTF8等环境变量，隔离子解释器必须通过命令行明确启用UTF-8。
     def cli(name,*args,cwd=area):
         """参数: name为日志名、args公开命令参数、cwd运行目录。返回: stdout。异常: 非零退出。"""
-        return command(name,[python,"-I","-B","-m","chronaxis",*args],cwd)
+        return command(name,[python,"-X","utf8","-I","-B","-m","chronaxis",*args],cwd)
 
     def integral_result(manifest_path):
         """核对通用积分默认表。参数: 完成清单路径。返回: 结果证据。异常: 数值、状态或版本不符。"""
@@ -285,19 +286,19 @@ for row in rows:
     assert actual==row['signature'],(row['name'],actual,row['signature'])
 print(len(rows))
 """
-    summary["signature_count"]=int(command("public-signatures",[python,"-I","-c",check_api],direct))
+    summary["signature_count"]=int(command("public-signatures",[python,"-X","utf8","-I","-c",check_api],direct))
     # 直接读取安装资源；配置用绝对路径，输出写外部工作目录，不复制或解压指南。
     plan_index = json.loads((direct/"tasks.json").read_bytes())
     for kind,term,args in (("task","充电",[]),("api","AnalysisRunner",[]),("field","valid_for",["--schema","analysis"]),
                           ("field","source_type",["--schema","analysis","--branch","can_asc"])):
-        found = json.loads(command("lookup-"+term,[python,"-I","lookup.py",kind,term,*args],direct))
+        found = json.loads(command("lookup-"+term,[python,"-X","utf8","-I","lookup.py",kind,term,*args],direct))
         assert found,term
     for term in ("持续", "能量"):
-        found=json.loads(command("lookup-"+term,[python,"-I","lookup.py","task",term],direct))
+        found=json.loads(command("lookup-"+term,[python,"-X","utf8","-I","lookup.py","task",term],direct))
         assert any(item["id"]=="CONDITION_ENERGY" for item in found),found
     for kind, term in (("task", "energy"), ("api", "AnalysisRunner"), ("field", "valid_for")):
         found = json.loads(command("english-lookup-" + kind,
-            [python, "-I", "../lookup.py", "--language", "en", kind, term], direct / "en"))
+            [python, "-X", "utf8", "-I", "../lookup.py", "--language", "en", kind, term], direct / "en"))
         assert found, (kind, term)
     # 从真正查询结果继续阅读完整参考；不能只检验索引或示例可运行。
     summary['task_reading'] = []
@@ -330,7 +331,7 @@ print(len(rows))
     save()
     # 按英文README的相对路径，从en目录真正执行同一跨卷例子并核对能量。
     en_task = next(t for t in json.loads((direct / "en/tasks.json").read_bytes())["tasks"] if t["id"] == "CONDITION_ENERGY")
-    english_output=command("english-run", [python, "-I", "../run_analysis.py", en_task["example"], user / "out-english"], direct / "en")
+    english_output=command("english-run", [python, "-X", "utf8", "-I", "../run_analysis.py", en_task["example"], user / "out-english"], direct / "en")
     english_manifest=Path(english_output.strip().splitlines()[-1])
     english_info=json.loads(english_manifest.read_bytes())
     assert english_info['run']['software_version'] == summary['software_version']
@@ -370,7 +371,7 @@ print(len(rows))
                 'if __name__ == "__main__":\n'
                 f'    path = run({str(folder/"session.yaml")!r}, "out-fast-python", process_count=4, work_dir="fast-work")\n'
                 '    print(json.dumps({"manifest_path": str(path)}))\n', encoding='utf8')
-            command('python-fast-session', [python,'-I','-B',script], user)
+            command('python-fast-session', [python,'-X','utf8','-I','-B',script], user)
             published = json.loads((area/'python-fast-session.stdout').read_bytes())
             manifest = Path(published['manifest_path'])
             data = json.loads(manifest.read_bytes())
@@ -399,7 +400,7 @@ print(len(rows))
                 assert (row["计算项"], float(row["结果"]), row["单位"], row["状态"]) == ("energy", 800., "J", "完整"), row
             assert len(set(manifests)) == 2 and all(path.is_file() for path in manifests), manifests
             invalid = folder / "unsupported.yaml"
-            command("reject-fast-full", [python, "-I", "-B", "-m", "chronaxis", "fast", "validate", invalid], user, 2)
+            command("reject-fast-full", [python, "-X", "utf8", "-I", "-B", "-m", "chronaxis", "fast", "validate", invalid], user, 2)
             errors = json.loads((area / "reject-fast-full.stderr").read_bytes())["errors"]
             assert any(item["path"] == "$.outputs.contributions" for item in errors), errors
             summary["cases"][slug] = "ASC and BLF each 800 J"
@@ -503,7 +504,7 @@ print(len(rows))
     verify.mkdir()
     driver=verify/"check_behavior.py"
     shutil.copyfile(ROOT/"tests/ai_release/check_behavior.py",driver)
-    summary["behavior"]=json.loads(command("behavior",[python,"-I","-B",driver,direct],verify))
+    summary["behavior"]=json.loads(command("behavior",[python,"-X","utf8","-I","-B",driver,direct],verify))
     assert original_files == {p.relative_to(direct).as_posix(): sha256(p.read_bytes()).hexdigest()
                               for p in direct.rglob("*") if p.is_file()}, "阅读/运行示例改写了安装资料"
     summary["direct_guide"] = str(direct)
