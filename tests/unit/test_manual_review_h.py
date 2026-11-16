@@ -27,7 +27,7 @@ class ManualReviewHTests(unittest.TestCase):
         """在内存生成阅读专题；输入为主文和已存在附件，不写文件。"""
         names = ('aggregations', 'message-calculations', 'expressions', 'continuous-files',
                  'results', 'example-results', 'examples', 'calculations',
-                 'fast-energy', 'configuration-language')
+                 'fast-energy', 'configuration-language', 'execution', 'inputs')
         sources = {f'Docs/Current/{language}{name}.md':
                    source_bytes(ROOT / f'Docs/Current/{language}{name}.md')
                    for language in ('', 'en/') for name in names}

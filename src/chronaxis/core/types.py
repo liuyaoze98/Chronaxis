@@ -77,6 +77,25 @@ BASE_FORBIDDEN_QUALITY = int(QualityFlag(511))
 # 仅供已通过模型/输入边界检查的内部位合并使用。固定512项，不随会话增长；
 # 外部整数仍必须调用QualityFlag，不能用tuple索引的负数语义接受非法位。
 _QUALITY_BY_MASK = tuple(QualityFlag(mask) for mask in range(BASE_FORBIDDEN_QUALITY + 1))
+_INTFLAG_OR = QualityFlag.__or__
+
+
+def _quality_or(self, other):
+    """两个QualityFlag的并集直接查固定表；其他操作数仍走标准IntFlag路径及其STRICT检查。
+
+    参数: self/other为位或两侧。返回: 与标准实现相同的QualityFlag对象（同一缓存成员），
+    或标准运算协议的NotImplemented，交给其他操作数处理。
+    异常: 非QualityFlag操作数沿用标准库的类型/越界行为。
+    """
+    if type(other) is QualityFlag:
+        # 两侧都已是合法成员，并集仍在9位以内；表项就是标准构造缓存的同一对象。
+        return _QUALITY_BY_MASK[int.__or__(self, other)]
+    return _INTFLAG_OR(self, other)
+
+
+# 标准Flag.__or__每次做成员解析和类型分派，是逐点路径的主要固定开销之一。
+QualityFlag.__or__ = _quality_or
+QualityFlag.__ror__ = _quality_or
 
 
 class SignalDType(Enum):

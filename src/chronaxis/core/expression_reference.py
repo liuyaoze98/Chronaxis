@@ -122,17 +122,36 @@ def _logic(operator, values):
     return ScalarValue(not deciding, D.BOOL)
 
 
+def visited_nodes(cache):
+    """返回本次求值实际访问过的节点。参数: _evaluate使用过的cache。返回: 节点迭代器。异常: 无。"""
+    return (entry[0] for entry in cache.values())
+
+
+def _cache_key(node):
+    """选择本次求值的节点缓存键，保留宿主函数的结构复用规则。
+
+    参数: node 为已编译的冻结 ExprNode。
+    返回: 普通节点的整数身份，或宿主节点的 ("host", node) 结构键。
+    异常: 非法内部节点缺少 operator 时传播 AttributeError。
+    键仅用于当前点；结构相同的宿主调用在该点执行一次，不跨点缓存结果。
+    """
+    return ('host', node) if node.operator == 'host_function' else id(node)
+
+
 def _evaluate(node, context, cache):
     """用独立参考数值解释单个冻结节点及局部公共子树。
 
-    参数: node静态树；context当前typed值；cache仅本次point局部缓存。
+    参数: node静态树；context当前typed值；cache仅本次point局部缓存，普通节点用身份键，宿主函数用结构键，
+        值为(节点, Evaluation)。冻结节点在本次求值期间由调用方持有，身份不会被复用。
     返回: Evaluation，完整诊断与逻辑有效性分开。
     异常: 静态模型/类型错误直接传播，不eval或吞配置异常。
     """
-    # 公共表达式复用只限同一点/当前真实输入。
-    if node in cache:
+    # 公共表达式复用只限同一点/当前真实输入。按身份查找避免每层递归重算整棵子树哈希。
+    key = _cache_key(node)
+    hit = cache.get(key)
+    if hit is not None:
         # 不跨point继承旧信号值。
-        return cache[node]
+        return hit[1]
     # 常量字面量已由编译器完成上下文dtype/域检查。
     if node.operator == 'const':
         # dtype/labels构造不能任意隐式转值。
@@ -221,7 +240,7 @@ def _evaluate(node, context, cache):
         # 结果原因是诊断子集，known决断不丢所有依赖质量。
         result = Evaluation(value, diagnostic | value.quality)
     # 仅当前point的公共子树值可以复用。
-    cache[node] = result
+    cache[key] = (node, result)
     # 冻结结果不持有跨调用可变状态。
     return result
 

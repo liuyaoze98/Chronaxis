@@ -16,18 +16,18 @@ examples/
   data/can/teaching.dbc
 ~~~
 
-这里的examples指[当前手册的examples目录](examples.md)。在仓库根执行：
+在[手册的 examples 目录](installation.md#find-examples)执行：
 
 ~~~powershell
 New-Item -ItemType Directory -Force work | Out-Null
-python -m chronaxis validate Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis explain Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config resolve Docs/Current/examples/analysis-imports.yaml --defaults --output work/independent.yaml
+python -m chronaxis validate analysis-imports.yaml
+python -m chronaxis explain analysis-imports.yaml
+python -m chronaxis config origins analysis-imports.yaml
+python -m chronaxis config resolve analysis-imports.yaml --defaults --output work/independent.yaml
 python -m chronaxis run work/independent.yaml --output work/imports-result
 ~~~
 
-两次分析的结果目录可以复用，自动增加时间文件名；后面的config resolve导出配置仍需使用新文件路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（NumPy数值实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；执行命令为python Docs/Current/examples/imports_example.py。
+两次分析的结果目录可以复用，自动增加时间文件名；后面的config resolve导出配置仍需使用新文件路径。[imports_example.py](examples/imports_example.py)会自动创建独立工作目录，分别用reference（参考实现）和numpy（NumPy数值实现）运行并核对38J和76J；随后导出独立配置，移除本次复制的公共文件，再运行导出的配置。两种实现的区别见[运行设置](execution.md)；在 examples 目录执行 `python imports_example.py`。
 
 ## 主配置怎样引用
 
@@ -100,8 +100,8 @@ overrides:                          # 明确覆盖导入的公共定义；仅在
 查看定义来源：
 
 ~~~text
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml --fields --format json
+python -m chronaxis config origins analysis-imports.yaml
+python -m chronaxis config origins analysis-imports.yaml --fields --format json
 ~~~
 
 默认列来源、信号、派生定义及其文件位置；--fields改为逐项列出用户实际写入、合并后仍生效的字段，例如signals[0].unit。--format默认text；选择json时，报告结构如下。

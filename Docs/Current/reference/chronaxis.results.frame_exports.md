@@ -68,7 +68,7 @@ class FrameExportSpec
 |`capture_date`|str &#124; None|否|None|relative输出BLF时的实际采集日期；不能用电脑今天日期猜测。 None表示未提供；relative时间导出BLF时需要显式补齐该日期。|
 |`timezone_offset_minutes`|int &#124; None|否|None|采集日期的UTC偏移，整数分钟；例如北京时间480。 None表示未提供；需要用采集日期构造BLF绝对时间时必须补齐。|
 
-源码：[`src/chronaxis/results/frame_exports.py:28`](../../../src/chronaxis/results/frame_exports.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:28`](../../../src/chronaxis/results/frame_exports.py#L28)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FrameExportSpec-__post_init__"></a>
 ### `FrameExportSpec.__post_init__`
@@ -103,7 +103,7 @@ FrameExportSpec.__post_init__()
 - `ValueError`：需要YYYY-MM-DD实际采集日期及合法整数时区分钟。
 - `ValueError`：已有绝对时间不能重复叠加采集日期。
 
-源码：[`src/chronaxis/results/frame_exports.py:37`](../../../src/chronaxis/results/frame_exports.py#L37)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:37`](../../../src/chronaxis/results/frame_exports.py#L37)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FrameExportSpec-date_origin_ns"></a>
 ### `FrameExportSpec.date_origin_ns`
@@ -129,7 +129,7 @@ FrameExportSpec.date_origin_ns()
 
 int64溢出。
 
-源码：[`src/chronaxis/results/frame_exports.py:59`](../../../src/chronaxis/results/frame_exports.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:59`](../../../src/chronaxis/results/frame_exports.py#L59)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ExportCANFrame"></a>
 ## `ExportCANFrame`
@@ -152,7 +152,7 @@ class ExportCANFrame
 |`frame_origin`|str|否|'passthrough'|passthrough表示原帧透传，generated表示生成帧；默认passthrough。|
 |`remote_dlc_known`|bool|否|True|远程帧的长度是否由原记录明确给出；未知不能写成零。|
 
-源码：[`src/chronaxis/results/frame_exports.py:74`](../../../src/chronaxis/results/frame_exports.py#L74)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:74`](../../../src/chronaxis/results/frame_exports.py#L74)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ExportCANFrame-__post_init__"></a>
 ### `ExportCANFrame.__post_init__`
@@ -185,7 +185,7 @@ ExportCANFrame.__post_init__()
 - `TypeError`：帧定位需要有限键值tuple。
 - `ValueError`：帧定位重复或非有限。
 
-源码：[`src/chronaxis/results/frame_exports.py:85`](../../../src/chronaxis/results/frame_exports.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:85`](../../../src/chronaxis/results/frame_exports.py#L85)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SkippedCANFrame"></a>
 ## `SkippedCANFrame`
@@ -204,7 +204,7 @@ class SkippedCANFrame
 |`reason`|str|是|无|未生成原因，例如缺少端点或两端间隔过大。|
 |`details`|str|是|无|补充定位信息的不可变键值对元组；不放伪造报文字节。|
 
-源码：[`src/chronaxis/results/frame_exports.py:106`](../../../src/chronaxis/results/frame_exports.py#L106)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:106`](../../../src/chronaxis/results/frame_exports.py#L106)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SkippedCANFrame-__post_init__"></a>
 ### `SkippedCANFrame.__post_init__`
@@ -234,7 +234,7 @@ SkippedCANFrame.__post_init__()
 
 - `ValueError`：未生成帧需要有限原因及JSON说明文本。
 
-源码：[`src/chronaxis/results/frame_exports.py:113`](../../../src/chronaxis/results/frame_exports.py#L113)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:113`](../../../src/chronaxis/results/frame_exports.py#L113)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-as_export_frame"></a>
 ## `as_export_frame`
@@ -264,7 +264,7 @@ ExportCANFrame。
 
 - `TypeError`：帧导出需要同次原始/解码暂存记录。
 
-源码：[`src/chronaxis/results/frame_exports.py:121`](../../../src/chronaxis/results/frame_exports.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:121`](../../../src/chronaxis/results/frame_exports.py#L121)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_asc_line"></a>
 ## `_asc_line`
@@ -298,7 +298,7 @@ _asc_line(record, output_ns)
 - `ValueError`：ASC FD长度或DLC不一致。
 - `ValueError`：ASC经典帧长度不一致。
 
-源码：[`src/chronaxis/results/frame_exports.py:145`](../../../src/chronaxis/results/frame_exports.py#L145)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:145`](../../../src/chronaxis/results/frame_exports.py#L145)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-export_can_frames"></a>
 ## `export_can_frames`
@@ -342,4 +342,4 @@ export_can_frames(records, spec, interval, destination, budget, *, source, devic
 - `ValueError`：现有BLF写库不支持1990年以前的日期，不能改写为固定参考日期。
 - `ValueError`：BLF需要0至65534的明确整数通道，避免写库隐式改通道。
 
-源码：[`src/chronaxis/results/frame_exports.py:189`](../../../src/chronaxis/results/frame_exports.py#L189)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/frame_exports.py:189`](../../../src/chronaxis/results/frame_exports.py#L189)（行号对应 Chronaxis 0.1.0.dev5 源码）。

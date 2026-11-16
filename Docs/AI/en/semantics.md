@@ -2,23 +2,9 @@
 
 # Establish what can be calculated before generating configuration
 
-## Choosing the calculation implementation
-
-Ordinary analysis defaults to `execution.backend: auto` when omitted. It selects reference or numpy from the whole plan without reading data, trial runs or runtime retries. It selects reference for simple actual-time session ZOH integrals of one signal from one signal CSV, or at most two signals with the same CAN message selector. Other statistics, rules, windows, temporal transforms, lookups and host extensions select numpy. Explicit reference/numpy choices take priority; batch auto selects per job. Explain reports requested_backend, selected_backend and backend_reason; the run manifest records the actual numerical backend. Built-in streaming expressions process the current normalized values directly; suitable batch calculations still use arrays. Do not describe every step as vectorized. `reference` retains an independent numerical implementation for comparisons with the same input. Host extensions keep the selected backend interface. Backend choice changes neither timing, validity, missing-data rules nor requested outputs, and does not guarantee that one implementation is faster for every task. For eligible same-frame CAN actual integrals, auto uses a direct path when the binding is unambiguous and signal/raw-frame export, trace and integrity are not requested. Otherwise it selects the general flow before the first frame; failures never retry the input. Raw CAN formats and continuous volumes keep the same timing and validity rules. See the [execution schema](../../Schema/analysis.schema.json#/properties/execution).
-
-## Output directories and device labels
-
-Do not require a device label to generate analysis or signal/CAN export configurations. `metadata.device_label` is optional and defaults to `pending`. When users want to record a device, preserve their nonblank label, such as `lab-pc` or `试验台一号`; do not invent `home` or `work`. Explicit null, whitespace-only and non-string values are configuration errors. Existing result directories can be reused without replacing old files; an explicit working directory must still be new. Users choose input and output directories; directory names add no restrictions.
-
-## Simultaneous updates and result comparison
-
-Ordinary signal updates can merge when value, type, validity, quality and raw enum code agree. Conflicts fail by default under same_time_policy: error; last_by_sequence selects the greatest source sequence, not worker arrival order. Per-message accumulation still keeps every contribution. Explicit path entries preserve order; directory/wildcard matches sort naturally within each entry. Validate does not scan business records, so bad rows, timestamps or resource problems may still fail during run. Compare runs by business objects, actual times and parent relationships while preserving duplicate counts; append sequence is not a stable business ID. Unit display may use W/s, 1/W or 1/J, but mA scale, temperature roles and N*m quantity kind remain unchanged; relabeling does not replace numeric conversion.
-
-## Continuous files in one session
-
-Put files from one charge in one ASC/BLF source. execution.process_count is a positive reading/decoding worker limit, default 1; ordinary run/validate/explain and AnalysisRunner accept an explicit override. The main process preserves event, validity and integration state. file_merge: concatenate consumes file order; time_order validates each required sequence then stably merges a verified shared clock, without shifting or deduplicating records. Do not split a continuous recording into independent batch jobs and add their results. Current support is one ASC/BLF source with requested decoding, with no nested file pool inside a batch worker. With default 1 and concatenate, ASC/BLF are read and decoded inline; time_order uses file workers even at a limit of 1. Time merging uses quota-controlled staging and a shared memory budget; more workers do not guarantee speedup. See the [runnable guide](../../Current/en/continuous-files.md).
-
 ## Facts needed for every task
+
+Before generating a configuration, establish each of these facts with the user. List missing facts as open questions; do not assume them.
 
 | Task | Facts to establish | How to decide |
 |---|---|---|
@@ -31,6 +17,57 @@ Put files from one charge in one ASC/BLF source. execution.process_count is a po
 | Events and segments | Two activities can merge into one surrounding segment without making their gap an activity. | `segments.parent_event_ids` may reference several `events.event_id` values in the same run. Link calculations using `scope` and `parent_id`, not row number or rule name alone. |
 | Timing and output | Batch size changes execution chunks only. Unknown response differs from decidable timeout. Actual-time integration differs from per-message accumulation. | Inspect dependencies, intervals, output units, and requested ranges in `explain`. `coverage_status` exists only for applicable result types and thresholds; it is not a numerical coverage ratio. Do not invent a `coverage` field. |
 | Business presets | Charging, for example, needs `mode`/`current` and `voltage` when energy is requested. Direction, units, and measurement point must meet role requirements. | Missing facts or two matching candidates do not authorize choosing the first. Explicit bindings still undergo role validation. Example thresholds and codes do not transfer automatically to another vehicle. |
+
+## Output directories and device labels
+
+Do not require a device label to generate analysis or signal/CAN export configurations. `metadata.device_label` is optional and defaults to `pending`. When users want to record a device, preserve their nonblank label, such as `lab-pc` or `试验台一号`; do not invent `home` or `work`. Explicit null, whitespace-only and non-string values are configuration errors. Existing result directories can be reused without replacing old files; an explicit working directory must still be new. Users choose input and output directories; directory names add no restrictions.
+
+## Simultaneous updates and result comparison
+
+- Simultaneous updates: ordinary signal updates can merge when value, type, validity, quality and raw enum code agree. Conflicts fail by default under same_time_policy: error; last_by_sequence selects the greatest source sequence, not worker arrival order. Per-message accumulation still keeps every contribution.
+- Path order: explicit path entries preserve order; directory/wildcard matches sort naturally within each entry.
+- Validate scope: validate does not scan business records, so bad rows, timestamps or resource problems may still fail during run.
+- Comparing runs: compare by business objects, actual times and parent relationships while preserving duplicate counts; append sequence is not a stable business ID.
+- Unit display: may use W/s, 1/W or 1/J, but mA scale, temperature roles and N*m quantity kind remain unchanged; relabeling does not replace numeric conversion.
+
+## Continuous files in one session
+
+Put files from one charge in one ASC/BLF source. Do not split a continuous recording into independent batch jobs and add their results. See the [runnable guide](../../Current/en/continuous-files.md).
+
+- Process count: execution.process_count is a positive file-worker limit, default 1; keep 4 in basic examples. Ordinary run/validate/explain and AnalysisRunner accept an explicit override. The main process preserves cross-file analysis state, while eligible integrals can use the parallel path described in [Choosing the calculation implementation](#backend-choice).
+- File order: file_merge: concatenate consumes file order; time_order validates each required sequence then stably merges a verified shared clock, without shifting or deduplicating records.
+- Current scope: one ASC/BLF source with requested decoding, with no nested file pool inside a batch worker.
+- Defaults: with default 1 and concatenate, ASC/BLF are read and decoded inline; time_order uses file workers even at a limit of 1, with quota-controlled staging and a shared memory budget. More workers do not guarantee speedup.
+
+<a id="backend-choice"></a>
+
+## Choosing the calculation implementation
+
+Configurations usually omit `execution.backend`; skip this section unless the user asks about the calculation implementation, performance, or result differences between the two implementations.
+
+Ordinary analysis defaults to `execution.backend: auto` when omitted.
+
+`auto` selects the numerical implementation from the whole plan. It selects `reference` when the plan has at least one calculation, every calculation belongs to the verified streaming categories below, and the plan has no host extensions, temporal transforms, sequences, result aggregations, or per-message calculations. Rules, windows, and a calculation's `condition` do not by themselves prevent this selection. Plans containing calculations outside this set continue to use `numpy`. Explicit `reference` or `numpy` choices take priority. Selection happens before reading input, without trial runs or switching implementations after a failure.
+
+| Category | Calculations |
+|---|---|
+| Integration, duration, and time-weighted mean | `integral`, `duration`, `time_weighted_mean` |
+| Extrema | `min_time`, `max_time`, `sample_minimum`, `sample_maximum` |
+| Counts and sample selection | `sample_count`, `point_event_count`, `activity_count`, `segment_count`, `select` |
+
+Sample means (`sample_mean`), variance, standard deviation, RMS, quantiles, and medians continue to select `numpy`.
+
+Batch auto selects per job. Explain reports requested_backend, selected_backend and backend_reason; the run manifest records the actual numerical backend. Built-in streaming expressions process the current normalized values directly; suitable batch calculations still use arrays. Do not describe every step as vectorized. `reference` retains an independent numerical implementation for comparisons with the same input. Host extensions keep the selected backend interface. Backend choice changes neither timing, validity, missing-data rules nor requested outputs.
+
+The numerical backend and the integration path are selected separately. After `auto` selects `reference`, direct integration still has narrower requirements: in addition to the plan restrictions above, every calculation must be a simple numeric integral over the session; all input signals must come from the same source and CAN message; the interval basis must be actual elapsed time (`actual`) with zero-order hold (`zoh`), without a separate timing driver, rules, windows, or a calculation `condition`.
+
+Bindings must also be unambiguous, with ordinary numeric signals that do not capture enum raw codes, and no signal export, raw-frame export, tracing, or integrity diagnostics requested. These conditions apply to ASC, BLF, raw CAN CSV, and continuous volumes. Fixed-period, DBC-period, or conditional integrals keep the general flow even when `reference` is selected. If the binding cannot establish eligibility, the general flow is retained before reading the first frame; runtime failures are reported. Explicit `reference` or `numpy` also uses its corresponding general flow.
+
+Within those direct-integration requirements, `auto` also distributes expression evaluation and integral areas within each file when there is exactly one ASC/BLF source, at least two continuous files, `file_merge: concatenate`, `process_count > 1`, and no lookup declarations or requested work other than session integrals. The main process handles cross-file state and accumulates areas in their original order, producing one continuous-session result. Simple derived expressions using those same-frame numeric signals are supported; there is no new required switch. Single-file, single-process, `time_order`, raw CAN CSV, and other ineligible tasks retain their existing paths. Do not replace advanced analysis requirements with simple integration to enter this path.
+
+Budget selection for parallel integration happens before reading the first frame. If it does not fit, the original reading and calculation path is retained. If that path also does not fit, or a budget is exceeded during execution, the run still fails without rereading input or dropping data. Workers share the managed budget; a process count does not guarantee a speedup.
+
+See [integral path conditions](../../Current/en/execution.md#integral-path-conditions) for expression and binding requirements. The shared [machine execution schema](../../Schema/analysis.schema.json#/properties/execution) has Chinese descriptions and is intended for machine constraints; use the English conditions for reading.
 
 <a id="从报告定位错误"></a>
 ## Diagnose using actual reports
@@ -87,7 +124,10 @@ Readable tables retain calculation names and units. Empty cells are not zero. Ea
 <a id="独立批量的进程数"></a>
 ## Process count for independent batch tasks
 
-Root-level batch `process_count` is a positive integer, default 1, limiting analysis worker processes. It excludes the scheduler and workers for requested exports. Ordinary ASC/BLF concatenation runs inside the analysis worker, without an additional pure-BLF reader subprocess. `run_batch(plan, output, process_count=4)` and CLI `--process-count 4` override it. Only the Python API accepts `None` to inherit the plan; configuration rejects null and Booleans. Call from a Python script inside `if __name__ == "__main__":`. Ordinary AnalysisRunner separately accepts a reading/decoding worker limit from execution.process_count. Continuous paths retain one analysis state and are not split into independent jobs.
+- Limit: root-level batch `process_count` is a positive integer, default 1, limiting analysis worker processes. It excludes the scheduler and workers for requested exports. Configuration rejects null and Booleans.
+- Reading: ordinary ASC/BLF concatenation runs inside the analysis worker, without an additional pure-BLF reader subprocess.
+- Overrides: `run_batch(plan, output, process_count=4)` and CLI `--process-count 4` override it. Only the Python API accepts `None` to inherit the plan. Call from a Python script inside `if __name__ == "__main__":`.
+- Difference: ordinary AnalysisRunner separately accepts a reading/decoding worker limit from execution.process_count. Continuous paths retain one analysis state and are not split into independent jobs.
 
 Each task has its own budgets and output. Cancellation prevents tasks that have not started; in-flight tasks finish and close. `report.close()` can retry remote cleanup. Unstarted tasks and worker crashes are not successes. Legacy `workers`, `max_workers`, and `--workers` are rejected.
 

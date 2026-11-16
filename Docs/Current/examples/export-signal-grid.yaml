@@ -7,10 +7,10 @@ sources:                              # 列出输入来源；每项规定数据�
     dbc_by_channel:                   # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
       '1': data/can/teaching.dbc      # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
 signals:                              # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+  - name: power                       # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
       frame_id: '0x100'               # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
       signal: Power                   # 填写DBC中的信号名称，大小写须一致
-    name: power                       # 给分析信号取名称；后续表达式和计算通过此名称引用它
 calculations:                         # 列出希望获得的统计或积分结果，每项独立选择范围和算法
   - name: energy                      # 为这项计算结果取唯一名称；结果表用它区分计算项
     operation: integral               # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
@@ -23,6 +23,6 @@ outputs:                              # 选择额外导出的数据及格式；�
       period: 500ms                   # 指定信号导出网格间隔；依据输出采样需求填写
     signals: [power]                  # 选择要导出的分析信号名；来自前面的信号定义
 metadata:                             # 保存说明性信息；字段不会自动校准数据或更改计算公式
-  device_label: home                  # 可选设备标签；任意非空文本，省略为pending，不影响计算或导出
+  device_label: lab-pc                # 可选设备标签；任意非空文本，省略为pending，不影响计算或导出
 execution:                            # 设置本次分析的并行处理方式
   process_count: 4                    # 最多4个文件工作进程；实际并行数不超过输入文件数

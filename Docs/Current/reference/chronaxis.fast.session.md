@@ -90,7 +90,7 @@ effective_spec(spec, process_count=None)
 
 非正原生整数；不接受bool、字符串或浮点数。
 
-源码：[`src/chronaxis/fast/session.py:26`](../../../src/chronaxis/fast/session.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:26`](../../../src/chronaxis/fast/session.py#L26)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_worker_process_limit"></a>
 ## `_worker_process_limit`
@@ -113,7 +113,7 @@ _worker_process_limit(process_count: int, file_count: int) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/fast/session.py:36`](../../../src/chronaxis/fast/session.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:36`](../../../src/chronaxis/fast/session.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-file_specs"></a>
 ## `file_specs`
@@ -138,7 +138,7 @@ file_specs(spec)
 
 无输入IO。
 
-源码：[`src/chronaxis/fast/session.py:46`](../../../src/chronaxis/fast/session.py#L46)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:46`](../../../src/chronaxis/fast/session.py#L46)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_checked_file_specs"></a>
 ## `_checked_file_specs`
@@ -164,7 +164,7 @@ _checked_file_specs(spec, programs_checked)
 
 非法公式或声明错误；不因顶层已编译就放行另一组覆盖值。
 
-源码：[`src/chronaxis/fast/session.py:54`](../../../src/chronaxis/fast/session.py#L54)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:54`](../../../src/chronaxis/fast/session.py#L54)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SessionAccumulator"></a>
 ## `SessionAccumulator`
@@ -176,7 +176,7 @@ SessionAccumulator(spec)
 ```
 
 
-源码：[`src/chronaxis/fast/session.py:77`](../../../src/chronaxis/fast/session.py#L77)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:77`](../../../src/chronaxis/fast/session.py#L77)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SessionAccumulator-__init__"></a>
 ### `SessionAccumulator.__init__`
@@ -201,7 +201,7 @@ SessionAccumulator.__init__(spec)
 
 名称或单位字段缺失。
 
-源码：[`src/chronaxis/fast/session.py:80`](../../../src/chronaxis/fast/session.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:80`](../../../src/chronaxis/fast/session.py#L80)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SessionAccumulator-consume"></a>
 ### `SessionAccumulator.consume`
@@ -226,7 +226,7 @@ None。
 
 累计溢出。
 
-源码：[`src/chronaxis/fast/session.py:92`](../../../src/chronaxis/fast/session.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:92`](../../../src/chronaxis/fast/session.py#L92)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SessionAccumulator-finish_file"></a>
 ### `SessionAccumulator.finish_file`
@@ -251,7 +251,7 @@ None。
 
 计数或身份非法。
 
-源码：[`src/chronaxis/fast/session.py:100`](../../../src/chronaxis/fast/session.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:100`](../../../src/chronaxis/fast/session.py#L100)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SessionAccumulator-result"></a>
 ### `SessionAccumulator.result`
@@ -277,7 +277,7 @@ SessionAccumulator.result()
 
 贡献计数不符。
 
-源码：[`src/chronaxis/fast/session.py:120`](../../../src/chronaxis/fast/session.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:120`](../../../src/chronaxis/fast/session.py#L120)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool"></a>
 ## `FilePool`
@@ -289,7 +289,7 @@ FilePool(specs, budget, directory, cancel, statistics, *, _programs_checked=Fals
 ```
 
 
-源码：[`src/chronaxis/fast/session.py:135`](../../../src/chronaxis/fast/session.py#L135)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:135`](../../../src/chronaxis/fast/session.py#L135)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-__init__"></a>
 ### `FilePool.__init__`
@@ -320,7 +320,7 @@ FilePool.__init__(specs, budget, directory, cancel, statistics, *, _programs_che
 无；start安装进程资源的关闭责任。
 _programs_checked只来自父会话的实际准备结果，不读取配置中的标志。
 
-源码：[`src/chronaxis/fast/session.py:138`](../../../src/chronaxis/fast/session.py#L138)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:138`](../../../src/chronaxis/fast/session.py#L138)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-check_cancel"></a>
 ### `FilePool.check_cancel`
@@ -346,7 +346,7 @@ None。
 
 InterruptedError。
 
-源码：[`src/chronaxis/fast/session.py:161`](../../../src/chronaxis/fast/session.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:161`](../../../src/chronaxis/fast/session.py#L161)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-start"></a>
 ### `FilePool.start`
@@ -372,7 +372,7 @@ None。
 原预算/启动/归属错误；
 持续清理失败在原异常的fast_pool_cleanup_owner保留内部恢复入口。
 
-源码：[`src/chronaxis/fast/session.py:169`](../../../src/chronaxis/fast/session.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:169`](../../../src/chronaxis/fast/session.py#L169)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-assign"></a>
 ### `FilePool.assign`
@@ -397,7 +397,7 @@ None。
 
 断管。
 
-源码：[`src/chronaxis/fast/session.py:225`](../../../src/chronaxis/fast/session.py#L225)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:225`](../../../src/chronaxis/fast/session.py#L225)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-grant"></a>
 ### `FilePool.grant`
@@ -422,7 +422,7 @@ None。
 
 必要暂存超额。
 
-源码：[`src/chronaxis/fast/session.py:235`](../../../src/chronaxis/fast/session.py#L235)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:235`](../../../src/chronaxis/fast/session.py#L235)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-pump"></a>
 ### `FilePool.pump`
@@ -447,7 +447,7 @@ None。
 
 协议、worker退出、取消或IO错误。
 
-源码：[`src/chronaxis/fast/session.py:256`](../../../src/chronaxis/fast/session.py#L256)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:256`](../../../src/chronaxis/fast/session.py#L256)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-message"></a>
 ### `FilePool.message`
@@ -473,7 +473,7 @@ None。
 
 错误或协议不符。
 
-源码：[`src/chronaxis/fast/session.py:299`](../../../src/chronaxis/fast/session.py#L299)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:299`](../../../src/chronaxis/fast/session.py#L299)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-packet_records"></a>
 ### `FilePool.packet_records`
@@ -500,7 +500,7 @@ FilePool.packet_records(index, number, packet)
 
 顺序或协议错误。
 
-源码：[`src/chronaxis/fast/session.py:338`](../../../src/chronaxis/fast/session.py#L338)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:338`](../../../src/chronaxis/fast/session.py#L338)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-read_spool"></a>
 ### `FilePool.read_spool`
@@ -527,7 +527,7 @@ bytes。
 缺失、超长、IO。
 删除仅减少当前占用，不返还累计预约额度。
 
-源码：[`src/chronaxis/fast/session.py:355`](../../../src/chronaxis/fast/session.py#L355)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:355`](../../../src/chronaxis/fast/session.py#L355)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-concatenate"></a>
 ### `FilePool.concatenate`
@@ -552,7 +552,7 @@ None。
 
 运行或累计错误。
 
-源码：[`src/chronaxis/fast/session.py:370`](../../../src/chronaxis/fast/session.py#L370)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:370`](../../../src/chronaxis/fast/session.py#L370)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-file_records"></a>
 ### `FilePool.file_records`
@@ -577,7 +577,7 @@ FilePool.file_records(index)
 
 缺块/完整性错。
 
-源码：[`src/chronaxis/fast/session.py:400`](../../../src/chronaxis/fast/session.py#L400)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:400`](../../../src/chronaxis/fast/session.py#L400)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-time_order"></a>
 ### `FilePool.time_order`
@@ -602,7 +602,7 @@ None。
 
 输入/资源/计算错误。
 
-源码：[`src/chronaxis/fast/session.py:410`](../../../src/chronaxis/fast/session.py#L410)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:410`](../../../src/chronaxis/fast/session.py#L410)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-FilePool-close"></a>
 ### `FilePool.close`
@@ -628,7 +628,7 @@ None。
 原取消或汇总关闭错误；
 不删除任何暂存目录，未关闭资源仍由本池持有。
 
-源码：[`src/chronaxis/fast/session.py:435`](../../../src/chronaxis/fast/session.py#L435)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:435`](../../../src/chronaxis/fast/session.py#L435)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources"></a>
 ## `_SessionResources`
@@ -640,7 +640,7 @@ _SessionResources(budget)
 ```
 
 
-源码：[`src/chronaxis/fast/session.py:523`](../../../src/chronaxis/fast/session.py#L523)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:523`](../../../src/chronaxis/fast/session.py#L523)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources-__init__"></a>
 ### `_SessionResources.__init__`
@@ -665,7 +665,7 @@ _SessionResources.__init__(budget)
 
 无资源创建。
 
-源码：[`src/chronaxis/fast/session.py:526`](../../../src/chronaxis/fast/session.py#L526)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:526`](../../../src/chronaxis/fast/session.py#L526)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources-open_reader"></a>
 ### `_SessionResources.open_reader`
@@ -693,7 +693,7 @@ FileContributions。
 原构造错误。
 ASC/BLF构造失败均收编实际未关闭的来源owner，直到成功关闭才清槽。
 
-源码：[`src/chronaxis/fast/session.py:532`](../../../src/chronaxis/fast/session.py#L532)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:532`](../../../src/chronaxis/fast/session.py#L532)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources-close_reader"></a>
 ### `_SessionResources.close_reader`
@@ -719,7 +719,7 @@ None。
 
 原关闭错误。
 
-源码：[`src/chronaxis/fast/session.py:553`](../../../src/chronaxis/fast/session.py#L553)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:553`](../../../src/chronaxis/fast/session.py#L553)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources-create_directory"></a>
 ### `_SessionResources.create_directory`
@@ -744,7 +744,7 @@ Path。
 
 创建或身份登记错误，已有目录不删除。
 
-源码：[`src/chronaxis/fast/session.py:566`](../../../src/chronaxis/fast/session.py#L566)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:566`](../../../src/chronaxis/fast/session.py#L566)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_SessionResources-close"></a>
 ### `_SessionResources.close`
@@ -770,7 +770,7 @@ None。
 
 原清理错误；未确认停止写入者时不删除目录。
 
-源码：[`src/chronaxis/fast/session.py:578`](../../../src/chronaxis/fast/session.py#L578)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:578`](../../../src/chronaxis/fast/session.py#L578)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-run_session"></a>
 ## `run_session`
@@ -801,4 +801,4 @@ run_session(spec, database=None, *, work_dir=None, cancel_event=None, statistics
 配置/读取/公式/资源/协议/取消；不返回部分结果。
 _programs_checked由公共编译后的内部入口传入；直接调用默认仍检查文本和指令。
 
-源码：[`src/chronaxis/fast/session.py:606`](../../../src/chronaxis/fast/session.py#L606)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session.py:606`](../../../src/chronaxis/fast/session.py#L606)（行号对应 Chronaxis 0.1.0.dev5 源码）。

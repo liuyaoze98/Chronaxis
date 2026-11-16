@@ -4,7 +4,7 @@
   "row_counts": {
     "events": 1
   },
-  "device_label": "home",
+  "device_label": "school",
   "threshold_durations": [
     {
       "preset_id": "demo_preset",

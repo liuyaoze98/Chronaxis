@@ -51,4 +51,4 @@ lookup_numpy(table, value)
 
 类型、分配或布局错误。
 
-源码：[`src/chronaxis/core/lookup_numpy.py:13`](../../../src/chronaxis/core/lookup_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/lookup_numpy.py:13`](../../../src/chronaxis/core/lookup_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。

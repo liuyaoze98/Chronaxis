@@ -4,7 +4,7 @@
 
 ## 基础配置：设置并行进程数
 
-对同一次试验的 ASC／BLF 连续分卷，推荐先设置最多 4 个文件工作进程。普通分析由工作进程读取、解析和 DBC 解码，主进程接续信号状态、检测事件并完成计算。使用[高性能积分器](fast-energy.md)时，工作进程还会计算每条报文的贡献。
+对同一次试验的 ASC／BLF 连续分卷，推荐先设置最多 4 个文件工作进程。普通分析由工作进程读取、解析和 DBC 解码，主进程保留连续分析状态。满足[连续分卷积分条件](continuous-files.md#parallel-integrals)时，工作进程还会计算表达式和文件内积分面积；其他普通分析的计算仍在主进程完成。使用[高性能积分器](fast-energy.md)时，工作进程计算每条报文的贡献。
 
 下面的片段放在完整分析配置根级；已有 `execution` 时，只增加或修改其中的 `process_count`，保留其他设置。与 `dataset`、`sources` 对齐，不添加第二个同名父键。
 
@@ -39,7 +39,7 @@ execution:          # 设置本次分析的运行方式
 
 ```yaml
 execution:                        # 设置计算实现、资源上限和数据不全时的处理方式
-  process_count: 1                # 设置本任务读取/解码工作进程上限；不包含主进程，默认1
+  process_count: 1                # 设置本任务文件工作进程上限；不包含主进程，默认1
   backend: auto                   # 按整个计划选择计算实现；可省略，显式reference/numpy固定使用对应实现
   batch_rows: 65536               # 限制一次交给分析层的记录数；按内存和处理开销选择，不是采样周期
   memory_budget_bytes: 268435456  # 限制新分析层管理的内存字节数；按可用内存留出其他进程开销
@@ -57,14 +57,14 @@ execution本身可以省略。填写时使用根级映射，例如`execution: {b
 
 |字段|数据类型|必填|默认值|可填写的值及含义|
 |---|---|---|---|---|
-|process_count|整数|否|1|控制本任务共用的文件读取/解码进程上限。填写正整数，按可用CPU和内存设置；不包含主进程，不超过可处理文件数。默认1；不能填null或布尔值。当前支持范围见[连续多进程](continuous-files.md)。|
+|process_count|整数|否|1|控制本任务共用的文件工作进程上限。填写正整数，按可用CPU和内存设置；不包含主进程，不超过可处理文件数。默认1；不能填null或布尔值。读取、解码及适用积分的支持范围见[连续多进程](continuous-files.md)。|
 |backend|字符串|否|`"auto"`|选择数值计算实现。`auto`按整份计划选择已验证的实现；`numpy`、`reference`固定使用对应实现。下表说明适用范围。|
-|batch_rows|整数|否|65536|控制一次交付的信号样本数量，按内存与批次切换开销选择。大于0；每批交付的信号样本数上限。|
-|memory_budget_bytes|整数|否|268435456|限制引擎可分配的受管理内存，按机器可用资源以字节设置。大于0，单位字节；分析状态及文件工作进程受管理缓冲共用的内存额度。|
-|result_buffer_rows|整数|否|4096|限制暂存前积累的结果行数，按结果数量和缓冲开销选择。大于0；结果写入暂存前积累的行数上限。|
-|spool_quota_bytes|整数或null|否|`null`|限制本任务受管理的暂存磁盘用量，按工作目录可用空间以字节设置。正整数：暂存的磁盘额度，单位字节；null：不另外设置配额。|
+|batch_rows|整数|否|65536|每批交付的信号样本数上限，大于0，按内存与批次切换开销选择。|
+|memory_budget_bytes|整数|否|268435456|分析状态及文件工作进程受管理缓冲共用的内存额度，单位字节，大于0，按机器可用资源设置。|
+|result_buffer_rows|整数|否|4096|结果写入暂存前积累的行数上限，大于0，按结果数量和缓冲开销选择。|
+|spool_quota_bytes|整数或null|否|`null`|本任务受管理的暂存磁盘额度：正整数为字节数，按工作目录可用空间设置；null不另外设置配额。|
 |partial_policy|字符串|否|`"report"`|选择数据不完整时是否保留已知部分的数值，按是否允许部分结果选择。`"report"`返回已知部分并标注；`"strict"`在所需数据不全时返回空值。|
-|on_budget_exceeded|字符串|否|`"error"`|选择受管理资源不足时的处理方式；目前只能停止并报错。当前填写 `"error"`，表示额度不足时报错并停止；没有丢弃部分数据继续计算的选项。|
+|on_budget_exceeded|字符串|否|`"error"`|受管理资源不足时的处理方式；目前只能填 `"error"`，即报错并停止；没有丢弃部分数据继续计算的选项。|
 
 ## backend：计算实现
 
@@ -76,13 +76,19 @@ execution本身可以省略。填写时使用根级映射，例如`execution: {b
 |`numpy`|内建流式表达式直接逐点计算；适合整批处理的计算仍用NumPy数组，扩展调用所登记的numpy实现|需要固定使用NumPy实现作对照时使用|
 |`reference`|使用另一套独立的数值实现计算，便于与NumPy结果对照|怀疑计算结果有问题时，用相同输入和配置换它复算|
 
-`auto`目前为两类计划选择reference：单个独立信号CSV的一路信号实际时间积分，以及同一CAN来源、同一报文定位、最多两路信号的简单实际时间积分。整份计划只能包含会话范围的ZOH积分和内建简单算术，且每个积分都未设置`condition`；包含事件、窗口、时序变换、其他统计、查表或宿主扩展时使用numpy。选择只看配置，不预读数据；运行错误直接报告，不换实现重跑。
+`auto`按整份计划选择计算实现。计划至少包含一项计算，所有计算项都属于下表的已验证流式类别，且没有宿主扩展、时序变换、序列、结果聚合或逐消息计算时，选择`reference`。规则、窗口和计算项的`condition`本身不会阻止这一选择。包含集合外计算项的计划继续使用`numpy`；显式指定`reference`或`numpy`时按指定值执行。选择在读取数据前完成，不通过试跑决定，也不在运行失败后切换实现。
 
-例如[最小积分配置](examples/calculation-minimal.yaml)的`explain.selected_backend`为`reference`。复制该文件，只在原`calculations`的energy列表项中增加`condition: power > 0`，再次运行`python -m chronaxis explain 配置路径 --format json`，`selected_backend`变为`numpy`；无需先声明事件或窗口。两个计划都合法。这里选择的是普通运行器的数值后端，不会自动改用独立fast入口。
+|类别|计算项|
+|---|---|
+|积分、时长与加权均值|`integral`、`duration`、`time_weighted_mean`|
+|极值|`min_time`、`max_time`、`sample_minimum`、`sample_maximum`|
+|计数与样本选择|`sample_count`、`point_event_count`、`activity_count`、`segment_count`、`select`|
 
-选择auto的同帧CAN积分会在绑定明确、且未请求信号导出、原帧导出、追溯或完整性诊断时使用直接积分路径；ASC、BLF、原始报文CSV及连续分卷共用这个规则。绑定不能明确证明适用时，读取首帧前改用通用流程；运行失败仍直接报错。显式reference/numpy使用各自通用流程。
+样本均值（`sample_mean`）、方差、标准差、均方根（RMS）、分位数和中位数等计算继续选择`numpy`。
 
-这仍是实际时间积分。例如0秒4000W，0.12秒更新为4800W，采集在0.30秒结束且信号一直有效，结果为4000×0.12＋4800×0.18＝1344J。它不会自动改用DBC周期，也不改变[高性能积分器](fast-energy.md)直接累计逐条表达式贡献的含义。
+例如[最小积分配置](examples/calculation-minimal.yaml)的`explain.selected_backend`为`reference`。给原`calculations`的energy项增加`condition: power > 0`，仍选择`reference`。另复制原配置，把该计算项替换为`name: average_power`、`operation: sample_mean`、`expr: power`，则选择`numpy`，结果单位由功率信号推导为W；如果保留了另行填写的积分结果单位J，须删除该`unit`或改成W。使用`python -m chronaxis explain 配置路径 --format json`查看选择和原因。这里选择的是普通运行器的数值后端，不会自动改用独立fast入口。
+
+积分符合一定条件时，程序还会自动把文件内的积分面积交给文件工作进程并行计算。这项优化由程序自行判断，不需要也不能手动开关，积分的含义不变；条件见本页末尾的[附录：并行积分路径何时生效](#integral-path-conditions)，排查性能时再阅读。
 
 两种实际计算实现遵守相同的单位、有效期和缺失数据规则。更换backend不应把4000J变成另一种业务含义；但不能因此承诺所有任务的速度相同，或者numpy一定更快。
 
@@ -196,16 +202,10 @@ diagnostics:   # 选择是否额外记录定位信息、校验摘要以及保留
 
 [readability_examples.py](examples/readability_examples.py)使用同一份5行输入，比较两个backend、不同batch_rows及report/strict，并断言事件数和能量。该脚本还运行表达式说明中的每项例子，失败时直接报错。
 
-在离线手册解压根目录运行（该目录直接包含`examples`）：
+在[手册的 examples 目录](installation.md#find-examples)运行：
 
 ```powershell
-python -B examples/readability_examples.py
-```
-
-如使用源码仓库，则在含`pyproject.toml`的仓库根目录运行：
-
-```powershell
-python -B Docs/Current/examples/readability_examples.py
+python -B readability_examples.py
 ```
 
 脚本默认把输出放在系统临时目录中新建的独立目录；可用--output-root指定既有父目录，合成数据的阈值不代表真实设备应采用这些阈值。
@@ -226,3 +226,34 @@ metadata保存运行附加信息，缺省为空对象。其中metadata.device_la
 metadata:               # 保存说明性信息；字段不会自动校准数据或更改计算公式
   device_label: lab_pc  # 可选设备标签；任意非空文本，省略为pending，不影响计算或导出
 ```
+
+
+<a id="integral-path-conditions"></a>
+
+## 附录：并行积分路径何时生效
+
+本节说明并行积分路径何时生效。它由程序自动选择，用户不需要设置；能得到正确结果也不代表启用了这项优化。
+
+程序分别选择数值后端和积分路径。`auto`选中`reference`后，直接积分仍须满足更小的范围：在上面的计划限制下，全部计算都是会话范围的简单数值积分；参与信号来自同一来源的同一CAN报文；使用实际帧间隔（`actual`）及零阶保持（`zoh`），未另指定计时驱动，也没有规则、窗口或计算条件`condition`。
+
+此外，信号绑定必须明确，信号是未提取枚举原码的普通数值，且未请求信号导出、原帧导出、追溯或完整性诊断。ASC、BLF、原始报文CSV及连续分卷共用这些条件。固定周期、DBC周期或含条件的积分即使选中`reference`，也沿用通用计算流程。绑定不能证明适用时，在读取首帧前保留通用流程；运行失败直接报告。显式`reference`或`numpy`也使用对应的通用流程。
+
+
+这里允许的表达式形式是信号引用、有限数值常量、`+`、`-`、`*`、`/`、一元负号、`abs`、兼容单位换算（`quantity`／`to_unit`）和 `to_float64`。每项计算必须实际依赖至少一个输入信号；引用派生表达式时，其内部每个运算也须符合这些条件。`clip`、`minimum`、`maximum`、`where`、`square`、`sqrt`、查表和宿主函数在各自支持的场景可以正常使用，但不进入这条积分路径。信号类型须为 `int64`、`uint64` 或 `float64`，且未启用枚举原码捕获。来源、通道、报文ID及帧型事实须能确定同一物理报文；从DBC成功推导的定位也有效，不要求为优化重复填写已能推导的选填字段。
+
+使用同一份[两分卷配置](examples/continuous-parallel.yaml)，只替换 `calculations[0].expr`：
+
+|表达式|数值后端|文件工作进程计算面积？|结果|
+|---|---|---|---|
+|`abs(power)`|`reference`|是，预算允许时|38 J|
+|`power * 2`|`reference`|是，预算允许时|76 J|
+|`clip(power, quantity(0,"W"), quantity(1000,"W"))`|`reference`|否，仍可并行读取和解码|38 J|
+|`minimum(power, power)`|`reference`|否，仍可并行读取和解码|38 J|
+
+声明派生信号 `twice_power = power * 2` 后引用它，表达式适用性相同。`explain.selected_backend` 和 `source_execution.read_process_limit` 分别说明后端与读取上限，不能据此判断是否由工作进程计算面积；能得到正确结果也不代表启用了这项优化。
+
+符合上述条件的任务，若只有一个 ASC／BLF 来源、至少两个文件，使用 `file_merge: concatenate`，并将 `process_count` 设为大于 `1`，还会自动并行计算文件内的积分面积。工作进程读取、解码和求表达式；主进程处理文件交界并按原始顺序累计。此方式要求 `auto`，不带查表声明，也未请求积分以外的计算或导出；无需再加开关。原始报文 CSV、`time_order`、单文件和单进程继续使用原路径。
+
+这条并行积分路径会在读取首帧前核对预算，不合适时沿用原来的读取和计算方式。原路径也放不下，或读取开始后发生预算、数据或进程错误时，仍停止并报告；不会重扫数据来换一种算法。文件工作进程共用当前内存预算，不能按进程数分别重复分配。
+
+这仍是实际时间积分。例如0秒4000W，0.12秒更新为4800W，采集在0.30秒结束且信号一直有效，结果为4000×0.12＋4800×0.18＝1344J。它不会自动改用DBC周期，也不改变[高性能积分器](fast-energy.md)直接累计逐条表达式贡献的含义。

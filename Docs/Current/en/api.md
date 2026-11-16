@@ -20,9 +20,9 @@ Find an entry point by task. Each linked object page gives its full constructor 
 
 | Public name | Reference and purpose |
 |---|---|
-| `chronaxis.AnalysisRunner` | [AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner): Stores an optional backend override, uses the same static validation, and creates independent resources for each run. |
-| `chronaxis.AnalysisResult` | [AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult): Stores staging paths and small metadata objects; it does not hold full lists of events, segments, or calculations. |
-| `chronaxis.OutputManifest` | [OutputManifest](public-api/OutputManifest.md#api-OutputManifest): Stores the successfully published directory, manifest, and row counts for the fixed table whitelist; legacy entries appear only when enabled. |
+| `chronaxis.AnalysisRunner` | [AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner): Runs an analysis plan: `run` returns an AnalysisResult, and `validate` and `explain` perform static checks. A calculation implementation (backend) can be chosen when creating it. Each run uses its own resources. |
+| `chronaxis.AnalysisResult` | [AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult): The result of one run: read rows with methods such as `iter_calculations`, publish them with `write`, and close it when finished. Data stays in staging files rather than being loaded into memory at once. |
+| `chronaxis.OutputManifest` | [OutputManifest](public-api/OutputManifest.md#api-OutputManifest): Returned by `write`: the published directory, the run manifest path and the row count of each result table. |
 | `chronaxis.ExportManifest` | [ExportManifest](public-api/ExportManifest.md#api-ExportManifest): Provides the actual directory, completion manifest, and data-file paths returned by direct signal-CSV or raw-message exports. |
 | `chronaxis.RunMetadata` | [RunMetadata](public-api/RunMetadata.md#api-RunMetadata): Stores run identity, actual backend, time interpretation, session boundaries, and compatibility limitations. |
 | `chronaxis.AnalysisError` | [AnalysisError](public-api/AnalysisError.md#api-AnalysisError): Signals an analysis or result-publication failure. The exception alone does not guarantee that old output was rolled back. |
@@ -38,7 +38,7 @@ Find an entry point by task. Each linked object page gives its full constructor 
 | `chronaxis.BatchJobResult` | [BatchJobResult](public-api/BatchJobResult.md#api-BatchJobResult): Stores the final status of a job. A close failure after publication still means failed, with the published path retained. |
 | `chronaxis.BatchReport` | [BatchReport](public-api/BatchReport.md#api-BatchReport): Lists results in original job order. Numerical tables remain in each job directory; values from separate jobs are not added together. |
 | `chronaxis.BatchRunner` | [BatchRunner](public-api/BatchRunner.md#api-BatchRunner): Uses process_count to select analysis workers. Each run creates and reclaims its workers; plans and state are not cached across batches. |
-| `chronaxis.load_batch_plan` | [load_batch_plan](public-api/load_batch_plan.md#api-load_batch_plan): Loads strict batch JSON/YAML. Takes a UTF-8 configuration path, returns BatchPlan, and raises configuration errors with paths. |
+| `chronaxis.load_batch_plan` | [load_batch_plan](public-api/load_batch_plan.md#api-load_batch_plan): Loads a batch JSON/YAML file and returns a BatchPlan; configuration errors report their location. |
 | `chronaxis.run_batch` | [run_batch](public-api/run_batch.md#api-run_batch): Runs the batch and publishes its report. |
 
 <a id="业务预设"></a>
@@ -78,14 +78,14 @@ Complete contracts and examples are in [custom analysis operators](host-extensio
 
 | Public name | Reference and purpose |
 |---|---|
-| `chronaxis.TimeConversion` | [TimeConversion](public-api/TimeConversion.md#api-TimeConversion): Stores normalized time and source precision without sharing mutable conversion diagnostics across tasks. |
+| `chronaxis.TimeConversion` | [TimeConversion](public-api/TimeConversion.md#api-TimeConversion): Returned by `convert_time`: the converted integer nanoseconds (`time_ns`) and input-precision information such as `precision_limited`. |
 | `chronaxis.TimeOverflowError` | [TimeOverflowError](public-api/TimeOverflowError.md#api-TimeOverflowError): Rejects time coordinates, shifted coordinates, or nonnegative spans outside int64. |
 | `chronaxis.checked_add_ns` | [checked_add_ns](public-api/checked_add_ns.md#api-checked_add_ns): Adds a fixed offset to one nanosecond coordinate and checks that the result remains in int64. |
 | `chronaxis.convert_time` | [convert_time](public-api/convert_time.md#api-convert_time): Converts an explicitly specified time unit to nanoseconds, rounding the final result to nearest, ties to even. |
 | `chronaxis.parse_datetime_ns` | [parse_datetime_ns](public-api/parse_datetime_ns.md#api-parse_datetime_ns): Converts a complete ISO date/time to integer UTC nanoseconds, preserving sub-microsecond fractions. |
 | `chronaxis.parse_duration` | [parse_duration](public-api/parse_duration.md#api-parse_duration): Parses a nonnegative duration with a unit, including an explicit zero duration. |
-| `chronaxis.shift_times_reference` | [shift_times_reference](public-api/shift_times_reference.md#api-shift_times_reference): Calculates each fixed offset independently as an integer reference for the array kernel. |
-| `chronaxis.time_deltas_reference` | [time_deltas_reference](public-api/time_deltas_reference.md#api-time_deltas_reference): Calculates adjacent spans in nondecreasing integer timestamps, allowing different samples at the same time. |
+| `chronaxis.shift_times_reference` | [shift_times_reference](public-api/shift_times_reference.md#api-shift_times_reference): Adds a fixed offset to each integer-nanosecond time and checks for overflow. This is a reference implementation for development checks; ordinary analyses do not need it. |
+| `chronaxis.time_deltas_reference` | [time_deltas_reference](public-api/time_deltas_reference.md#api-time_deltas_reference): Calculates adjacent spans in nondecreasing integer timestamps, allowing different samples at the same time. This is a reference implementation for development checks; ordinary analyses do not need it. |
 
 <a id="功能与配置关联"></a>
 ## Related features and configuration

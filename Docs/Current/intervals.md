@@ -11,47 +11,20 @@
 
 [interval-actual.yaml](examples/interval-actual.yaml)省略intervals，得到1200J。[interval-fixed.yaml](examples/interval-fixed.yaml)省略全局intervals，仅对energy计算增加fixed=100ms，得到800J；power在同一文件中先定义。两者使用相同0、0.12、0.30秒三条记录，可直接运行`chronaxis run 文件名.yaml --output 结果目录`。
 
-## 一个完整的最小例子
+<a id="一个完整的最小例子"></a>
 
-以下是合成数据，功率和预期能量均可手算。把它保存为`energy.yaml`：
+## 对全部计算统一设置间隔
 
-完整文件：保存为本节指定的文件名，包含根级字段，不需要再套父键；结果目录可以重复使用，每次生成带时间后缀的结果文件。
+interval-fixed.yaml只对energy这一项设置了固定间隔。要让全部计算统一使用固定周期，在配置根级加入下面的片段（它与sources、calculations同级）：
 
 ```yaml
-config_version: 4        # 当前分析配置版本
-dataset:                 # 设置本次分析名称及可选的对象、会话和时间范围
-  name: demo             # 命名本次分析数据集；名称写入结果身份字段
-sources:                 # 列出输入来源；每项规定数据位置、格式和时间解释方式
-  - source_type: memory  # 选择数据格式；memory内存记录、signal_csv物理量表、can_blf/can_asc/raw_can_csv原始CAN
-    rows:                # 提供内存来源的记录列表；每条记录含时间及该时刻的字段值
-      - time: 0s         # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          p: 4000        # 本时刻原字段p的合成输入值；其类型和单位由下方信号定义说明
-      - time: 0.12s      # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          p: 4000        # 本时刻原字段p的合成输入值；其类型和单位由下方信号定义说明
-      - time: 0.3s       # 填写本条合成记录的发生时间，按本来源的time声明解释
-        values:          # 列出本条记录实际更新的原字段及值；字段名供signals.field选择
-          p: 4000        # 本时刻原字段p的合成输入值；其类型和单位由下方信号定义说明
-signals:                 # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - name: power          # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    field: p             # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
-    dtype: float64       # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
-    unit: W              # 声明分析值的单位；按物理含义填写，无量纲用字符串"1"；未填scale/offset时按已登记的兼容单位换算
-    valid_for: 1s        # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-calculations:            # 列出希望获得的统计或积分结果，每项独立选择范围和算法
-  - name: energy         # 为这项计算结果取唯一名称；结果表用它区分计算项
-    operation: integral  # 选择计算方法；本例将有效数值乘持续时间后累计，例如功率乘秒得到能量
-    expr: power          # 指定参与计算的数值或信号表达式；引用前面已定义的信号
 intervals:               # 选择时间计算使用实际间隔还是指定周期；不修改原记录时间
   default:               # 设置未单独覆盖的计算节点采用的时间间隔依据
     mode: fixed          # 选择actual实际时间差、fixed固定周期或dbc报文周期
     value: 100ms         # 给fixed模式提供固定周期；从采集设置或业务规则取得
-execution:               # 本次分析的执行方式
-  process_count: 1       # 本例为内存输入，使用单进程
 ```
 
-运行`python -m chronaxis run energy.yaml --output work/energy-v2-result`，结果目录可以重复使用。`会话结果_<运行时间>.csv`中的energy（J）应为800。删除整个intervals即可改用实际间隔，应为1200J。原始CAN来源才能将mode设为dbc并删除value；上述memory来源不支持DBC周期，选择dbc会在配置校验时报错。
+把这段加到interval-actual.yaml末尾后运行，energy同样为800J；删除整个intervals即回到实际间隔的1200J。原始CAN来源还可以把mode设为dbc并删除value，改用DBC报文周期；已解码CSV或内存来源没有DBC周期，选择dbc会在配置校验时报错。
 
 ## intervals的全部字段
 

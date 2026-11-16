@@ -31,22 +31,22 @@ Chronaxis 希望把日志读取、条件筛选和指标计算整理成可复用�
 
 ## 安装与运行环境
 
-本源码及配套资料对应 **0.1.0.dev4**，属于开发预览版。Python 支持 **3.12 和 3.13**；Windows 可直接按下方步骤安装，Linux 的进程与文件系统条件见[安装说明](Docs/Current/installation.md)。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev4.md)。
+本源码及配套资料对应 **0.1.0.dev5**，属于开发预览版。Python 支持 **3.12 和 3.13**；Windows 可直接按下方步骤安装，Linux 的进程与文件系统条件见[安装说明](Docs/Current/installation.md)。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev5.md)。
 
 创建独立环境，从 PyPI 安装本版：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev4"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev5"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-若已有同版源码，可在包含 `pyproject.toml` 的目录将安装命令改为 `python -m pip install .`。仅安装包的用户可用 `python -m chronaxis guide` 定位同版指南和随包示例。
+若已有同版源码，可在包含 `pyproject.toml` 的目录将安装命令改为 `python -m pip install .`。安装包附带完整的 Markdown 用户手册和 AI 指南：`python -m chronaxis manual` 显示手册首页路径，`python -m chronaxis guide` 显示 AI 指南路径，均可直接打开阅读并运行其中示例。
 
 若取得的是同版 wheel，将上面的安装命令替换为以下命令，并填写实际文件路径：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev5-py3-none-any.whl"
 ```
 
 安装时会自动安装 CAN 读取、DBC 解码等所需依赖。离线安装请提前准备依赖包，具体方法见[安装说明](Docs/Current/installation.md)。
@@ -119,6 +119,7 @@ if __name__ == "__main__":
 | `batch run` | 运行多个独立分析任务 |
 | `config resolve` / `config origins` | 查看展开后的配置／配置定义来源 |
 | `guide` | 显示可直接阅读的AI指南路径；`--language en`选择英文 |
+| `manual` | 显示随包Markdown用户手册首页路径；`--language en`选择英文 |
 
 - [在线 HTML 用户手册](https://liuyaoze98.github.io/Chronaxis/)：配置、运行与结果解读；[源码中的手册](Docs/Current/index.md)可在本地阅读。
 - [配置说明](Docs/Current/configuration.md)与[完整字段参考](Docs/Current/reference/configuration-schema.md)。
@@ -131,10 +132,6 @@ if __name__ == "__main__":
 问题和建议可发送至 [work@liuyaoze.com](mailto:work@liuyaoze.com)，也可通过 [GitHub Issues](https://github.com/liuyaoze98/Chronaxis/issues) 反馈。报告问题时，请提供软件版本、Python 和系统版本、最小配置、复现步骤，以及预期与实际结果。
 
 参与开发可从[公开测试命令](Docs/Release/distribution.md)和[文档维护说明](Docs/Current/maintenance.md)开始。已知依赖问题见[依赖安全说明](Docs/Release/security.md)。
-
-## 资助致谢
-
-Chronaxis 获得了郑州日产汽车有限公司（Zhengzhou Nissan Automobile Co., Ltd.）2025 年度创新课题的资助，谨此致谢。
 
 ## AI 工具声明
 

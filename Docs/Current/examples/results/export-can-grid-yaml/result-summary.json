@@ -4,7 +4,7 @@
   "row_counts": {
     "calculations": 1
   },
-  "device_label": "home",
+  "device_label": "school",
   "analysis_outcome": {
     "rules": [],
     "calculations": {
@@ -34,8 +34,8 @@
     },
     {
       "path": "exports/export-00000000/manifest.json",
-      "bytes": 1020,
-      "sha256": "38b0e7ce07035585b1497d766954ce5956739cb598b6aa6fb3166c1cb29cbeec",
+      "bytes": 1022,
+      "sha256": "4fd8ee600455d49b74f367cd4d4c1a6d2c7816c1324cfcfb5e341c6b312dc83a",
       "frames": 5,
       "generated": 5,
       "passthrough": 0,
@@ -45,8 +45,8 @@
     },
     {
       "path": "exports.jsonl",
-      "bytes": 258,
-      "sha256": "8ea6f880ca10dc8ffea4a61e4ead40e4d12024b999eb6a0ea67a7a23742f978b"
+      "bytes": 260,
+      "sha256": "f3b27645e56bc02e454a2314ffb4563d95333e7b679d63cc32995d506f527676"
     },
     {
       "path": "会话结果.csv",

@@ -59,4 +59,4 @@ run_batch_cli(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/batch/cli.py:18`](../../../src/chronaxis/batch/cli.py#L18)（行号对应 Chronaxis 0.1.0.dev5 源码）。

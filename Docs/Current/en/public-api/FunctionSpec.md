@@ -44,4 +44,4 @@ Inherited method: backend is required and must be reference or numpy. Returns th
 
 [Worked host example](../host-extensions.md)
 
-Source: [`src/chronaxis/extensions.py:73`](../../../../src/chronaxis/extensions.py#L73) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).
+Source: [`src/chronaxis/extensions.py:73`](../../../../src/chronaxis/extensions.py#L73) (line number in the Chronaxis 0.1.0.dev5 source).

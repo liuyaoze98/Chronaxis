@@ -64,7 +64,7 @@ TransformStage(plan, item, defs, choice, period, ends, cursors, budget, emit)
 ```
 
 
-源码：[`src/chronaxis/execution/transform_stream.py:22`](../../../src/chronaxis/execution/transform_stream.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:22`](../../../src/chronaxis/execution/transform_stream.py#L22)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-__init__"></a>
 ### `TransformStage.__init__`
@@ -97,7 +97,7 @@ owner。
 
 预算/绑定错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:25`](../../../src/chronaxis/execution/transform_stream.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:25`](../../../src/chronaxis/execution/transform_stream.py#L25)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_ensure_active"></a>
 ### `TransformStage._ensure_active`
@@ -123,7 +123,7 @@ None。
 
 生命周期错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:69`](../../../src/chronaxis/execution/transform_stream.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:69`](../../../src/chronaxis/execution/transform_stream.py#L69)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-bounds"></a>
 ### `TransformStage.bounds`
@@ -149,7 +149,7 @@ TransformStage.bounds()
 
 游标错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:75`](../../../src/chronaxis/execution/transform_stream.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:75`](../../../src/chronaxis/execution/transform_stream.py#L75)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_invalid"></a>
 ### `TransformStage._invalid`
@@ -174,7 +174,7 @@ ScalarValue。
 
 非法质量位。
 
-源码：[`src/chronaxis/execution/transform_stream.py:90`](../../../src/chronaxis/execution/transform_stream.py#L90)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:90`](../../../src/chronaxis/execution/transform_stream.py#L90)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_sample"></a>
 ### `TransformStage._sample`
@@ -200,7 +200,7 @@ RecordSample。
 
 模型错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:94`](../../../src/chronaxis/execution/transform_stream.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:94`](../../../src/chronaxis/execution/transform_stream.py#L94)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_at_grid"></a>
 ### `TransformStage._at_grid`
@@ -227,7 +227,7 @@ ScalarValue。
 
 预算/数值错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:100`](../../../src/chronaxis/execution/transform_stream.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:100`](../../../src/chronaxis/execution/transform_stream.py#L100)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_convert_rate"></a>
 ### `TransformStage._convert_rate`
@@ -252,7 +252,7 @@ TransformStage._convert_rate(value)
 
 转换错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:166`](../../../src/chronaxis/execution/transform_stream.py#L166)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:166`](../../../src/chronaxis/execution/transform_stream.py#L166)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_deliver"></a>
 ### `TransformStage._deliver`
@@ -279,7 +279,7 @@ TransformStage._deliver(group, t, value=None)
 
 下游错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:178`](../../../src/chronaxis/execution/transform_stream.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:178`](../../../src/chronaxis/execution/transform_stream.py#L178)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_drain"></a>
 ### `TransformStage._drain`
@@ -308,7 +308,7 @@ TransformStage._drain(group, point=None, update=False, *, through=None, unresolv
 
 下游/预算错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:187`](../../../src/chronaxis/execution/transform_stream.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:187`](../../../src/chronaxis/execution/transform_stream.py#L187)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_append_span"></a>
 ### `TransformStage._append_span`
@@ -334,7 +334,7 @@ TransformStage._append_span(t, pair_width=None)
 
 预算/顺序错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:229`](../../../src/chronaxis/execution/transform_stream.py#L229)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:229`](../../../src/chronaxis/execution/transform_stream.py#L229)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-push"></a>
 ### `TransformStage.push`
@@ -359,7 +359,7 @@ TransformStage.push(group)
 
 原输入/预算/求值错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:235`](../../../src/chronaxis/execution/transform_stream.py#L235)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:235`](../../../src/chronaxis/execution/transform_stream.py#L235)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_flush_waiting"></a>
 ### `TransformStage._flush_waiting`
@@ -384,7 +384,7 @@ TransformStage._flush_waiting(width)
 
 交付/退款错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:262`](../../../src/chronaxis/execution/transform_stream.py#L262)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:262`](../../../src/chronaxis/execution/transform_stream.py#L262)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_process"></a>
 ### `TransformStage._process`
@@ -411,7 +411,7 @@ TransformStage._process(group, width, *, unresolved=False)
 
 原错。
 
-源码：[`src/chronaxis/execution/transform_stream.py:270`](../../../src/chronaxis/execution/transform_stream.py#L270)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:270`](../../../src/chronaxis/execution/transform_stream.py#L270)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-finish"></a>
 ### `TransformStage.finish`
@@ -437,7 +437,7 @@ None。
 
 最后网格失败仍通知取消。
 
-源码：[`src/chronaxis/execution/transform_stream.py:316`](../../../src/chronaxis/execution/transform_stream.py#L316)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:316`](../../../src/chronaxis/execution/transform_stream.py#L316)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-_finish_grid"></a>
 ### `TransformStage._finish_grid`
@@ -463,7 +463,7 @@ TransformStage._finish_grid()
 
 交付错误。
 
-源码：[`src/chronaxis/execution/transform_stream.py:322`](../../../src/chronaxis/execution/transform_stream.py#L322)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:322`](../../../src/chronaxis/execution/transform_stream.py#L322)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TransformStage-close"></a>
 ### `TransformStage.close`
@@ -489,4 +489,4 @@ TransformStage.close()
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/transform_stream.py:337`](../../../src/chronaxis/execution/transform_stream.py#L337)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/transform_stream.py:337`](../../../src/chronaxis/execution/transform_stream.py#L337)（行号对应 Chronaxis 0.1.0.dev5 源码）。

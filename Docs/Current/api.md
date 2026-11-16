@@ -16,9 +16,9 @@
 
 |公开名称|定义与用途|
 |---|---|
-|`chronaxis.AnalysisRunner`|[AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner)：保存可选后端覆盖，复用同一静态校验，逐次创建独立运行资源。|
-|`chronaxis.AnalysisResult`|[AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult)：保存暂存路径和小型元数据，无events/segments/calculations全量列表。|
-|`chronaxis.OutputManifest`|[OutputManifest](public-api/OutputManifest.md#api-OutputManifest)：保存成功发布目录、清单和固定白名单表行数；legacy只在启用时出现。|
+|`chronaxis.AnalysisRunner`|[AnalysisRunner](public-api/AnalysisRunner.md#api-AnalysisRunner)：执行分析计划：run返回AnalysisResult，validate和explain做静态检查；创建时可指定计算实现（backend）。每次run使用独立的运行资源。|
+|`chronaxis.AnalysisResult`|[AnalysisResult](public-api/AnalysisResult.md#api-AnalysisResult)：一次运行的结果：用iter_calculations等方法逐行读取，用write发布到结果目录，用完需关闭。数据保存在暂存文件中，不会一次性载入内存。|
+|`chronaxis.OutputManifest`|[OutputManifest](public-api/OutputManifest.md#api-OutputManifest)：write的返回值：本次发布的目录、运行清单路径和各结果表的行数。|
 |`chronaxis.ExportManifest`|[ExportManifest](public-api/ExportManifest.md#api-ExportManifest)：提供直接信号CSV或原帧导出的实际目录、完成清单及数据文件路径。|
 |`chronaxis.RunMetadata`|[RunMetadata](public-api/RunMetadata.md#api-RunMetadata)：保存运行身份、实际后端、时间解释、会话边界与兼容限制。|
 |`chronaxis.AnalysisError`|[AnalysisError](public-api/AnalysisError.md#api-AnalysisError)：表示分析或结果交付失败；异常本身不承诺旧输出已回滚。|
@@ -33,7 +33,7 @@
 |`chronaxis.BatchJobResult`|[BatchJobResult](public-api/BatchJobResult.md#api-BatchJobResult)：保存一个任务的最终状态；发布后关闭失败仍为failed，并保留已发布路径。|
 |`chronaxis.BatchReport`|[BatchReport](public-api/BatchReport.md#api-BatchReport)：按原任务顺序汇总结果；每个任务数值表仍在各自目录，不会把不同任务的数值相加。|
 |`chronaxis.BatchRunner`|[BatchRunner](public-api/BatchRunner.md#api-BatchRunner)：通过process_count设置分析工作进程数，每次run创建并回收本批的工作进程；不跨批次缓存计划和状态。|
-|`chronaxis.load_batch_plan`|[load_batch_plan](public-api/load_batch_plan.md#api-load_batch_plan)：读取严格批量JSON/YAML。参数: path为UTF-8配置文件。返回: BatchPlan。异常: 带路径配置错误。|
+|`chronaxis.load_batch_plan`|[load_batch_plan](public-api/load_batch_plan.md#api-load_batch_plan)：读取批量JSON/YAML配置文件，返回BatchPlan；配置有误时报告出错位置。|
 |`chronaxis.run_batch`|[run_batch](public-api/run_batch.md#api-run_batch)：运行并发布批量报告。|
 
 ## 高性能积分器
@@ -71,14 +71,14 @@
 
 |公开名称|定义与用途|
 |---|---|
-|`chronaxis.TimeConversion`|[TimeConversion](public-api/TimeConversion.md#api-TimeConversion)：保存规范时间及来源精度，避免跨任务修改转换诊断。|
+|`chronaxis.TimeConversion`|[TimeConversion](public-api/TimeConversion.md#api-TimeConversion)：convert_time的返回值：换算后的整数纳秒（time_ns）及输入精度信息（如precision_limited）。|
 |`chronaxis.TimeOverflowError`|[TimeOverflowError](public-api/TimeOverflowError.md#api-TimeOverflowError)：时间坐标、偏移后坐标或非负跨度超出int64时拒绝运算。|
 |`chronaxis.checked_add_ns`|[checked_add_ns](public-api/checked_add_ns.md#api-checked_add_ns)：为一个纳秒坐标添加固定偏移，并检查结果是否仍在int64范围内。|
 |`chronaxis.convert_time`|[convert_time](public-api/convert_time.md#api-convert_time)：按明确单位换算纳秒，并在最终结果处取最近偶数舍入。|
 |`chronaxis.parse_datetime_ns`|[parse_datetime_ns](public-api/parse_datetime_ns.md#api-parse_datetime_ns)：将ISO完整日期转换为UTC整数纳秒，保留亚微秒分数。|
 |`chronaxis.parse_duration`|[parse_duration](public-api/parse_duration.md#api-parse_duration)：解析带单位的非负持续参数，允许显式零长度。|
-|`chronaxis.shift_times_reference`|[shift_times_reference](public-api/shift_times_reference.md#api-shift_times_reference)：逐项独立计算固定偏移，作为数组内核的整数真值参考。|
-|`chronaxis.time_deltas_reference`|[time_deltas_reference](public-api/time_deltas_reference.md#api-time_deltas_reference)：计算非递减整数时间的相邻跨度，允许同时间不同样本。|
+|`chronaxis.shift_times_reference`|[shift_times_reference](public-api/shift_times_reference.md#api-shift_times_reference)：给一组整数纳秒时间逐项加固定偏移并检查溢出。这是供开发核对的参考实现，普通分析不需要调用。|
+|`chronaxis.time_deltas_reference`|[time_deltas_reference](public-api/time_deltas_reference.md#api-time_deltas_reference)：计算非递减整数时间的相邻跨度，允许同时间不同样本。这是供开发核对的参考实现，普通分析不需要调用。|
 
 ## 功能与配置关联
 

@@ -8,7 +8,7 @@ For ASC/BLF sources, optional `file_merge` controls record ordering: `concatenat
 
 A reader opens the source and interprets its records. `source_type` selects the format: CSV physical-value text is parsed into values; CAN bytes are decoded through a DBC. Signals then name, optionally convert, and validate those values. “Original value” therefore depends on the stage: in a signal declaration it has already been parsed/decoded and is not necessarily the file's original text or bytes.
 
-Basic single-source ASC/BLF configurations use `execution.process_count: 4`: workers read and decode different files, then feed one analysis session in the selected order. A single file uses at most one reading worker. CSV, memory, and multi-source analyses currently keep `process_count: 1`. For independent experiments, use [batch execution](batch.md) to run whole tasks in parallel. The program default remains one; see [continuous-file multiprocessing](continuous-files.md) for supported combinations.
+When one source has several ASC/BLF files, `execution.process_count` lets workers read and decode different files and feed one analysis session in the selected order. CSV, memory, and multi-source analyses keep 1; run independent experiments in parallel with [batch execution](batch.md). See [continuous-file multiprocessing](continuous-files.md) for values and supported combinations.
 
 <a id="选择输入格式"></a>
 ## Choose an input format
@@ -50,7 +50,7 @@ Paths below are relative to `sources[]`. Thus `sources[].paths` means the `paths
 | `time` | Optional object; CSV still needs a time unit | Relative; CAN/memory unit s | Groups time type, unit, shared origin, and offset. Source origins are independent by default, not implicitly synchronized. |
 | `metadata` | Optional object | `{}` | Source notes, such as acquisition-device model. Keys follow your project conventions and do not execute as extra reader options. |
 | `path` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, or wildcard with the same selection rules as `paths`. Prefer consistent `paths`; not used for memory. |
-| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list. Files discovered within each directory or wildcard entry use natural order; explicit list entries preserve order without a later global reorder. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Files are concatenated by default; overlapping ASC/BLF files may explicitly select `file_merge: time_order`, described above. |
+| `paths` | Path string or list; exactly one of `path`/`paths` for file sources | None | File, directory, wildcard, or explicit list that expands to 1–4096 files. Files discovered within each directory or wildcard entry use natural order; explicit list entries preserve order without a later global reorder. Default ASC/BLF, explicit `can_asc`, and `raw_can_csv` also accept `{path: FILE, offset: 2s}` entries. `signal_csv` and explicit `can_blf` do not accept per-file offsets. Files are concatenated by default; overlapping ASC/BLF files may explicitly select `file_merge: time_order`, described above. |
 
 `load_analysis_plan` resolves paths from the declaring configuration file. `AnalysisPlan.from_dict` uses `base_dir`, or the current directory when omitted.
 
@@ -109,7 +109,36 @@ signals:                   # Signals available to expressions
       signal: PackVoltage  # Actual case-sensitive DBC name
 ```
 
-This assumes the DBC supplies a unit and message period. Numeric type, unit, and frame type are inferred; validity defaults to three periods. Add `period` or `valid_for` when the needed period is unavailable. Add location fields only when multiple channels/frame candidates cannot be distinguished.
+This assumes the DBC supplies a unit and message period. Numeric type, unit, and frame type are inferred; validity defaults to three periods. Add `period` or `valid_for` when the needed period is unavailable. Each source must select exactly one channel and its DBC. A signal's `field.channel` cannot select from a source containing two DBC channels. With multiple sources, use the signal's `source` to select its owner. If the same source and message ID still have multiple standard/extended or CAN/FD candidates, add `is_extended` or `is_fd`.
+
+For two channels, declare two named sources, each with one `dbc_by_channel` entry, and use `signals[].source` to select the corresponding source. For example, `channel_one` can read `trial.blf` with `{'1': 'network1.dbc'}`, while `channel_two` reads the same log with `{'2': 'network2.dbc'}`. Bind each signal to its source name; the channel can be inferred from that source's single mapping. Replace these example filenames and DBC signal identifiers with actual inputs. Multiple sources use the default single process: omit `execution` rather than retaining `process_count: 4`. This establishes ownership, not synchronization; joint analysis also needs a shared time basis justified by the acquisition setup, as described in [time and result quality](concepts.md).
+
+Replace root `sources` and `signals` with this excerpt and retain the remaining task settings. Paths are relative to the configuration file. The example files, message IDs, signal names, and validity periods must be adapted to the actual logs and DBCs; this excerpt is not a complete analysis.
+
+```yaml
+sources:                       # Declare one source per channel
+  - name: channel_one          # Name referenced by signals.source
+    path: trial.blf            # Actual log containing the channels
+    dbc_by_channel:            # Exactly one channel and DBC per source
+      '1': network1.dbc        # Actual DBC for channel 1
+  - name: channel_two          # Separate source for channel 2
+    path: trial.blf            # Read the other channel from the same log
+    dbc_by_channel:            # Do not combine channels in one source
+      '2': network2.dbc        # Actual DBC for channel 2
+signals:                       # Bind each signal to its source
+  - name: voltage_one          # Analysis name for the first voltage
+    source: channel_one        # Channel follows this source's single mapping
+    field:                     # Locate the signal in its DBC
+      frame_id: 0x100          # Replace with the actual channel 1 message ID
+      signal: PackVoltage      # Replace with the actual DBC signal name
+    valid_for: 1s              # Example validity period; adapt to the device
+  - name: voltage_two          # Analysis name for the second voltage
+    source: channel_two        # Explicit owner of this signal
+    field:                     # Different sources may share message IDs
+      frame_id: 0x100          # Replace with the actual channel 2 message ID
+      signal: PackVoltage      # Replace with the actual DBC signal name
+    valid_for: 1s              # Example validity period; adapt to the device
+```
 
 <a id="can共同字段"></a>
 ### Common CAN fields
@@ -126,6 +155,18 @@ Fields are in `sources[]` and apply to BLF, ASC, and raw-message CSV. `signal_cs
 ### Additional options for the BLF reader entry point
 
 Only the `can_blf` entry point accepts these options: explicit `source_type: can_blf`, or a default source containing only BLF with no per-file offsets. Mixed ASC/BLF, `can_asc`, and `raw_can_csv` do not accept them explicitly.
+
+When `source_type` is omitted or is `asc_or_blf`, the expanded file list and per-file offsets determine the reader route. This table uses `process_count: 1` and default `concatenate`:
+
+| Expanded inputs | Omit `reader.decode_scope` | Set `requested` | Set `all` |
+|---|---|---|---|
+| Pure BLF, no per-file offsets | Decode required messages | Accepted | Accepted, with the limits below |
+| Pure ASC | Decode required messages | Rejected; omit the field | Rejected; omit the field |
+| Mixed ASC/BLF | Decode required messages | Rejected; omit the field | Rejected; omit the field |
+| Pure BLF with per-file offsets | Decode required messages | Rejected; omit the field | Rejected; omit the field |
+
+Decoding only required messages is a behavior, not permission to write `requested` on every route. File multiprocessing or `time_order` for one CAN source also requires this behavior; text routes must still omit the field. Do not add it to enable multiprocessing. The Schema checks structure; plan loading checks these restrictions based on actual file paths. Per-file `offsets` are distinct from the whole-source `time.offset`.
+
 
 | Field relative to `sources[]` | Type and requirement | Default | Meaning |
 |---|---|---|---|
@@ -269,12 +310,13 @@ This complete [minimal memory configuration](../examples/input-memory-minimal.ya
 ```yaml
 config_version: 4          # Current analysis configuration format
 dataset:                   # Name and requested analysis interval
-  domain:                  # Integrate the half-open interval [0, 2) seconds
-    end: 2s                # Right endpoint is not an extra interval
-    start: 0s              # Include the start
   name: memory_power       # Name of this synthetic analysis
+  domain:                  # Integrate the half-open interval [0, 2) seconds
+    start: 0s              # Include the start
+    end: 2s                # Right endpoint is not an extra interval
 sources:                   # Explicit records; no external data files
-  - rows:                  # Each record updates the stated field
+  - source_type: memory    # Read records from this configuration
+    rows:                  # Each record updates the stated field
       - time: 0s           # First observation
         values:            # Fields updated at this timestamp
           power: 2         # 2 W, interpreted by the signal below
@@ -284,11 +326,10 @@ sources:                   # Explicit records; no external data files
       - time: 2s           # Marks the observed endpoint
         values:            # Fields updated at this timestamp
           power: 4         # No duration remains inside the requested interval
-    source_type: memory    # Read records from this configuration
 signals:                   # Type, unit and validity of the input field
-  - dtype: float64         # Numeric values used in the calculation
+  - name: power            # Name used by the expression
     field: power           # Original key in rows[].values
-    name: power            # Name used by the expression
+    dtype: float64         # Numeric values used in the calculation
     unit: W                # Watts
     valid_for: 3s          # Each value remains valid across these one-second intervals
 calculations:              # Requested output

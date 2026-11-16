@@ -181,8 +181,8 @@ These fields belong inside `presets[].parameters`, with `preset_type: threshold_
 | `unit` | String | No | Bound signal's unit | Threshold unit; it must exactly match the signal unit. Usually omit it for a signal already declared in `degC`. |
 | `enter_threshold` | Number | Yes | None | Enter when the value is at least this threshold. Must be greater than `exit_threshold`, for example 80. |
 | `exit_threshold` | Number | Yes | None | Clear when the value is at most this threshold, for example 75. Between 75 and 80, retain known state. |
-| `enter_delay` | Nonnegative duration string | No | `0ns` | Continuous entry-condition wait; zero confirms immediately. |
-| `exit_delay` | Nonnegative duration string | No | `0ns` | Continuous exit-condition wait; zero clears immediately. |
+| `enter_delay` | Nonnegative duration string | No | `0s` | Continuous entry-condition wait; zero confirms immediately. |
+| `exit_delay` | Nonnegative duration string | No | `0s` | Continuous exit-condition wait; zero clears immediately. |
 
 Numeric thresholds must be finite: NaN and Infinity are invalid. Durations support `ns`, `us`, `ms`, and `s`, such as `200ms`. See [configuration conventions](configuration.md).
 
@@ -288,7 +288,7 @@ For nine observed seconds with the first three unknown and the last six definite
 | `unit` | `s` | Unit of `value`, always seconds. |
 | `status` | `partial` | Some intervals are unknown; retain this status when reading the value. |
 
-Ordinary calculation `partial_policy` and the preset total summary are separate interfaces. Lower-level fields such as `known_active_duration_ns` are not fields of this public summary. In [preset-threshold-partial.yaml](../examples/preset-threshold-partial.yaml), 77 during 0–1 s leaves the preceding alarm state unknown, while 1–3 s is known alarm: `value=2.0`, `status=partial`.
+Ordinary calculation `partial_policy` and the preset total summary are separate interfaces. The preset summary provides only the fields in the table above. In [preset-threshold-partial.yaml](../examples/preset-threshold-partial.yaml), 77 during 0–1 s leaves the preceding alarm state unknown, while 1–3 s is known alarm: `value=2.0`, `status=partial`.
 
 A confirmation wait can also make the initial state unknown. In [preset-threshold-delay.yaml](../examples/preset-threshold-delay.yaml), `exit_delay` is 500 ms: the initial 70°C does not establish a confirmed non-alarm state until 0.5 s. The activity [1.5,3.5) is complete and its per-activity result is 2 s / `complete`, but the session total is 2 s / `partial` because the first 0.5 s is unknown. These statuses describe different ranges.
 

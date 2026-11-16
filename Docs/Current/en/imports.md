@@ -17,21 +17,21 @@ examples/
   data/can/teaching.dbc
 ```
 
-Open [the analysis configuration](../examples/analysis-imports.yaml) and [shared definitions](../examples/shared/definitions.yaml). Run these commands from the repository root. The resolved configuration file must be new; the analysis result directory can be reused:
+Open [the analysis configuration](../examples/analysis-imports.yaml) and [shared definitions](../examples/shared/definitions.yaml). Run these commands in the manual's [examples directory](installation.md#find-examples). The resolved configuration file must be new; the analysis result directory can be reused:
 
 ```powershell
 New-Item -ItemType Directory -Force work | Out-Null
-python -m chronaxis validate Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis explain Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config resolve Docs/Current/examples/analysis-imports.yaml --defaults --output work/independent.yaml
+python -m chronaxis validate analysis-imports.yaml
+python -m chronaxis explain analysis-imports.yaml
+python -m chronaxis config origins analysis-imports.yaml
+python -m chronaxis config resolve analysis-imports.yaml --defaults --output work/independent.yaml
 python -m chronaxis run work/independent.yaml --output work/imports-result
 ```
 
 The executable [imports example](../examples/imports_example.py) creates its own temporary copy, checks **38 J / 76 J** with both backends, exports a standalone configuration, removes its copied shared definitions, and runs the standalone configuration again:
 
 ```powershell
-python Docs/Current/examples/imports_example.py
+python imports_example.py
 ```
 
 <a id="主配置怎样引用"></a>
@@ -107,8 +107,8 @@ A shared source's `path`, `paths`, and `dbc_by_channel` paths are relative to th
 Diagnostics identify the actual file, original list positions, and one-based line and column. For a missing field, they identify the nearest existing parent. To inspect origins:
 
 ```powershell
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml
-python -m chronaxis config origins Docs/Current/examples/analysis-imports.yaml --fields --format json
+python -m chronaxis config origins analysis-imports.yaml
+python -m chronaxis config origins analysis-imports.yaml --fields --format json
 ```
 
 The default report lists definition origins. `--fields` lists explicit fields that still contribute to the resolved configuration, without copying their values. Defaults do not receive invented source locations.

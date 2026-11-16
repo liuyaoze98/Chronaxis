@@ -15,6 +15,8 @@ from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
 resource_bytes = run_path(str(ROOT / "tools/ai_resource_bytes.py"))["resource_bytes"]
+# 随包手册的选文规则与构建器共用一个函数；在加载时按工具自身位置读取。
+is_manual_source = run_path(str(ROOT / "tools/build_user_manual.py"))["is_manual_source"]
 
 
 def git(*args):
@@ -44,7 +46,8 @@ def lock(manual, runtime, device):
     # 任务后续阅读使用同一手册正文；方向扩展示例也随专题分发。
     names.update("Docs/Current/" + language + topic + ".md"
                  for language in ("", "en/") for topic in ("aggregations", "message-calculations", "expressions", "configuration-language",
-                     "results", "examples", "example-results", "fast-energy", "calculations", "continuous-files"))
+                     "results", "examples", "example-results", "fast-energy", "calculations", "continuous-files",
+                     "execution", "inputs"))
     # 结果链接提供同源实际表和解释，不能只用配置文件充当输出。
     names.update("Docs/Current/examples/results/power-statistics-yaml/" + name
                  for name in ("result-summary.json", "事件结果.csv", "会话结果.csv", "窗口结果.csv", "聚合结果.csv"))
@@ -61,13 +64,21 @@ def lock(manual, runtime, device):
                 "Docs/Current/public-api", "Docs/Current/en/public-api", "Docs/Schema").decode().splitlines()
     names.update(p for p in paths if p.endswith((".json",".md",".csv",".asc",".blf",".dbc"))
                  and not p.startswith("Docs/Schema/README"))
+    # 随包用户手册单独登记全部中英文章节、公开API页和示例，不扩大AI指南已审核的文件集合；
+    # -z输出不转义中文文件名。
+    listed = git("ls-tree", "-r", "-z", "--name-only", revision, "Docs/Current")
+    manual_names = {p for p in listed.decode("utf8").split("\0") if p and is_manual_source(p)}
     # 普通文本统一LF，已记录摘要的结果保留字节；与构建器使用同一规则。
-    inputs = {}
-    for name in sorted(names):
+    inputs, manual_inputs = {}, {}
+    for name in sorted(names | manual_names):
         data = git("show", f"{revision}:{name}")
         if name.startswith("Docs/Schema/") and data != git("show", f"{product}:{name}"):
             raise ValueError("规范与产品基线不一致：" + name)
-        inputs[name] = sha256(resource_bytes(name, data)).hexdigest()
+        digest = sha256(resource_bytes(name, data)).hexdigest()
+        if name in names:
+            inputs[name] = digest
+        if name in manual_names:
+            manual_inputs[name] = digest
     # 版本号和导出名不一定反映运行语义；一次读取已审核的产品树（含指南入口）。
     runtime_rev = git("rev-parse", "--verify", runtime + "^{commit}").decode().strip()
     material = []
@@ -80,7 +91,8 @@ def lock(manual, runtime, device):
     runtime_hash = sha256("".join(material).encode()).hexdigest()
     version = tomllib.loads(git("show", runtime_rev+":pyproject.toml").decode())["project"]["version"]
     result = dict(device_label=device, manual_revision=revision, product_baseline=product, package_version=version,
-                  runtime_revision=runtime_rev, runtime_sha256=runtime_hash, inputs=inputs)
+                  runtime_revision=runtime_rev, runtime_sha256=runtime_hash, inputs=inputs,
+                  manual_inputs=manual_inputs)
     (ROOT/"Docs/AI/inputs.lock.json").write_text(json.dumps(result, indent=2)+"\n", encoding="utf8",newline="\n")
     # sdist精确打包含依赖的构建文件；不夹带未登记数据或Docs内的构建产物。
     resources = ["README.md", "README.en.md", "LICENSE", "Docs/Release/versioning.md", "Docs/Release/distribution.md",
@@ -89,16 +101,17 @@ def lock(manual, runtime, device):
                  "Docs/Release/release-notes-0.1.0.dev2.md", "Docs/Release/release-notes-0.1.0.dev2.en.md",
                  "Docs/Release/release-notes-0.1.0.dev3.md", "Docs/Release/release-notes-0.1.0.dev3.en.md",
                  "Docs/Release/release-notes-0.1.0.dev4.md", "Docs/Release/release-notes-0.1.0.dev4.en.md",
+                 "Docs/Release/release-notes-0.1.0.dev5.md", "Docs/Release/release-notes-0.1.0.dev5.en.md",
                  "requirements/README.md", "requirements/constraints-windows-py312-min.txt",
                  "requirements/constraints-windows-py312-max.txt", "requirements/constraints-windows-py313-min.txt",
                  "requirements/constraints-windows-py313-max.txt",
                  "Docs/Release/trusted-publishing.md", "Docs/Release/trusted-publishing.en.md",
                  "Docs/Release/third-party.md", "Docs/Release/security.md", "Docs/Release/ThirdParty/highlight.js-LICENSE.txt",
-                 "Docs/Release/ThirdParty/marked-LICENSE.txt", "tools/public_docs.py",
+                 "Docs/Release/ThirdParty/marked-LICENSE.txt", "tools/public_docs.py", "tools/build_user_manual.py",
                  "tools/build_ai_guide.py", "tools/ai_resource_bytes.py", "tools/pypi_readme.py", "tools/ai_field_views.py", "tools/english_docs.py", "Docs/AI/lookup.py",
                  "Docs/AI/semantics.md", "Docs/AI/workflow.md", "Docs/AI/README.md", "Docs/AI/tasks.json",
                  "Docs/AI/run_analysis.py","Docs/AI/inputs.lock.json"]
-    manifest = "".join("include " + f + "\n" for f in sorted(set(resources) | names))
+    manifest = "".join("include " + f + "\n" for f in sorted(set(resources) | names | manual_names))
     (ROOT/"MANIFEST.in").write_text(manifest, encoding="utf8",newline="\n")
 
 
@@ -107,6 +120,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manual")
     parser.add_argument("--runtime", required=True, help="审核过的产品及指南入口提交")
-    parser.add_argument("--device-label", required=True, choices=("home","work"))
+    # 仅接受AGENTS 1.1已登记的实测设备标签；school为2026-11-15用户确认的新设备。
+    parser.add_argument("--device-label", required=True, choices=("home","work","school"))
     args = parser.parse_args()
     lock(args.manual, args.runtime, args.device_label)

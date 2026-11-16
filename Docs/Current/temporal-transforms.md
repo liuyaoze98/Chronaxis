@@ -77,14 +77,12 @@ execution:                        # 本次分析的执行方式
 
 ## 先运行再核对
 
-从该目录运行以下命令。两次运行可分别用 `--backend reference` 与 `--backend numpy`，并指定不同的结果目录。
+从该目录运行以下命令。输出目录可复用，每次生成带时间后缀的新结果。
 
 ```powershell
 python -m chronaxis validate analysis.yaml
-python -m chronaxis run analysis.yaml --backend numpy --work-dir work-grid --output result-grid
+python -m chronaxis run analysis.yaml --output result-grid
 ```
-
-比较 reference 后端时，改用 `--backend reference --work-dir work-grid-reference`。工作目录须与前次分开；输出目录可复用，每次生成带时间后缀的新结果。
 
 `signals` 将通道 1、标准帧 0x100 中的 Current 绑定为 `current`。`transforms` 的每个 `name` 是一条新的有单位序列，可直接写进规则条件、后续变换或 `calculations.expr`。本例使用 `select`，所以要按**选择行上的实际时刻**核对。
 
@@ -104,7 +102,7 @@ python -m chronaxis run analysis.yaml --backend numpy --work-dir work-grid --out
 
 ## 选对变化率
 
-- `adjacent_rate` 在右侧真实数值更新时间给出结果，`max_gap` 与源信号 `valid_for` 都按**实际时间**检查。两个真实点之间若存在未知或过期间隙，重新取得有效点后要等下一对连续点。驱动与输入可以不同。驱动在 0、0.12 秒更新，电流在 0.03、0.09 秒分别为 1、7 A，固定周期 0.1 秒，折算间隔是 0.05 秒。读到 0.12 秒后，在 **0.09 秒**得到 120 A/s。
+- `adjacent_rate` 在右侧真实数值更新时间给出结果，`max_gap` 与源信号 `valid_for` 都按**实际时间**检查。两个真实点之间若存在未知或过期间隙，重新取得有效点后要等下一对连续点。驱动与输入可以不同。驱动在 0、0.12 秒更新，电流在 0.03、0.09 秒分别为 1、7 A，固定周期 0.1 秒。两次电流读数相差 0.06 秒，正好是驱动间隔 0.12 秒的一半，因此折算为半个周期，即 0.1×0.5＝0.05 秒。读到 0.12 秒后，在 **0.09 秒**得到 (7−1)÷0.05＝120 A/s。
 - `window_rate` 在网格上取两个边界的有效保持值并作差，再除以所选窗口宽度。右边界若恰有新实测，取更新后的值。滚动积分与均值采用左闭右开窗口，右端新值不会倒算进此前的面积。
 - `sample_fit_slope` 在网格窗口内对实际更新点等权拟合，边界上的实点可参加，至少需要两个不同位置。它不把窗口裁剪点或一次保持刷新造为新测量。温度为 0 秒 20℃、1 秒 21℃、3 秒 26℃，按 actual 计算，3 秒处的相邻、3 秒端点和拟合斜率分别为 2.5、2、约 2.071429，单位是 `delta_K/s`。[窗口变化量事件规则 `window_delta`](rules.md#rule-window-delta)检测窗口两端的值之差是否满足阈值；它不把差值除以时长，与这里计算变化率的操作不同。
 

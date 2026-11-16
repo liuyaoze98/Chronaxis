@@ -2,8 +2,6 @@
 
 > 本页使用随册合成数据，结果由实际运行产生；不能作为其他日志的预期值。
 
-随包`examples/results/index.json`的`input_digest_policy`说明摘要算法：配置先用安全YAML解析，再对UTF-8 JSON（键排序、保留中文、紧凑分隔符、不接受NaN）计算SHA-256，忽略注释及缩进；其他输入和结果直接对最终交付文件的原始字节计算SHA-256，不转换换行。算法不额外保存第二套摘要。
-
 本页覆盖76份可运行YAML（含2份批量清单）和2份JSON配置。两份教学基础配置及一份公共定义不独立运行，单列在末尾。
 
 命令以`examples`为当前目录，结果目录可复用，每次输出增加时间文件名。普通例默认中文可读CSV，时间列为精确秒、同区间指标合并，各指标分别显示状态和说明。显式csv/jsonl交换格式及原帧/信号导出仍采用各自约定；空单元格不是零。
@@ -431,7 +429,7 @@ chronaxis run dual-grid.yaml --output result-dual-grid-yaml
 
 [导出说明 exports/export-00000001/manifest.json](examples/results/dual-grid-yaml/exports/export-00000001/manifest.json)：frames=5，generated=5，passthrough=0，skipped_grid_points=1。
 
-[下载 exports.jsonl](examples/results/dual-grid-yaml/exports.jsonl)（518字节）。
+[下载 exports.jsonl](examples/results/dual-grid-yaml/exports.jsonl)（522字节）。
 
 **会话结果：[下载完整 会话结果.csv](examples/results/dual-grid-yaml/会话结果.csv)（1行）**
 
@@ -575,7 +573,7 @@ chronaxis run export-can-all-windows.yaml --output result-export-can-all-windows
 
 [导出说明 exports/export-00000001/manifest.json](examples/results/export-can-all-windows-yaml/exports/export-00000001/manifest.json)：frames=2，generated=0，passthrough=2，skipped_grid_points=0。
 
-[下载 exports.jsonl](examples/results/export-can-all-windows-yaml/exports.jsonl)（648字节）。
+[下载 exports.jsonl](examples/results/export-can-all-windows-yaml/exports.jsonl)（652字节）。
 
 **事件结果：[下载完整 事件结果.csv](examples/results/export-can-all-windows-yaml/事件结果.csv)（1行）**
 
@@ -616,7 +614,7 @@ chronaxis run export-can-grid.yaml --output result-export-can-grid-yaml
 
 [导出说明 exports/export-00000000/manifest.json](examples/results/export-can-grid-yaml/exports/export-00000000/manifest.json)：frames=5，generated=5，passthrough=0，skipped_grid_points=1。
 
-[下载 exports.jsonl](examples/results/export-can-grid-yaml/exports.jsonl)（258字节）。
+[下载 exports.jsonl](examples/results/export-can-grid-yaml/exports.jsonl)（260字节）。
 
 **会话结果：[下载完整 会话结果.csv](examples/results/export-can-grid-yaml/会话结果.csv)（1行）**
 
@@ -644,7 +642,7 @@ chronaxis run export-can-minimal.yaml --output result-export-can-minimal-yaml
 
 [导出说明 exports/export-00000000/manifest.json](examples/results/export-can-minimal-yaml/exports/export-00000000/manifest.json)：frames=3，generated=0，passthrough=3，skipped_grid_points=0。
 
-[下载 exports.jsonl](examples/results/export-can-minimal-yaml/exports.jsonl)（257字节）。
+[下载 exports.jsonl](examples/results/export-can-minimal-yaml/exports.jsonl)（259字节）。
 
 **会话结果：[下载完整 会话结果.csv](examples/results/export-can-minimal-yaml/会话结果.csv)（1行）**
 
@@ -685,7 +683,7 @@ chronaxis run export-signal-grid.yaml --output result-export-signal-grid-yaml
 
 表内共12行，此处显示前8行；下载文件包含全部行。
 
-[下载 exports.jsonl](examples/results/export-signal-grid-yaml/exports.jsonl)（260字节）。
+[下载 exports.jsonl](examples/results/export-signal-grid-yaml/exports.jsonl)（262字节）。
 
 **会话结果：[下载完整 会话结果.csv](examples/results/export-signal-grid-yaml/会话结果.csv)（1行）**
 
@@ -720,7 +718,7 @@ chronaxis run export-signal-minimal.yaml --output result-export-signal-minimal-y
 | 3000000000 | power | 8.0 | W | 0 |
 | 4000000000 | power | 10.0 | W | 0 |
 
-[下载 exports.jsonl](examples/results/export-signal-minimal-yaml/exports.jsonl)（259字节）。
+[下载 exports.jsonl](examples/results/export-signal-minimal-yaml/exports.jsonl)（261字节）。
 
 **会话结果：[下载完整 会话结果.csv](examples/results/export-signal-minimal-yaml/会话结果.csv)（1行）**
 
@@ -2190,4 +2188,6 @@ python tools/build_example_results.py --check
 
 生成时先执行76份YAML并核对案例对应的独立数学断言，再执行2份JSON及规则、时间、窗口等已有脚本的明确预期；解释文字单独维护，不由实测倒推。`--check`核对配置解析值、输入和结果文件摘要：配置注释/缩进不影响摘要，输入和结果按实际字节检查；它只证明文件一致性，不替代重新执行。
 
-生成来源标签可用`--device-label home`或`--device-label work`按实际设备填写；省略时读取CHRONAXIS_DEVICE_LABEL，未知则记pending。它只标注本次结果文件，不修改原教学输入的来源。
+随包`examples/results/index.json`的`input_digest_policy`说明摘要算法：配置先用安全YAML解析，再对UTF-8 JSON（键排序、保留中文、紧凑分隔符、不接受NaN）计算SHA-256，忽略注释及缩进；其他输入和结果直接对最终交付文件的原始字节计算SHA-256，不转换换行。算法不额外保存第二套摘要。
+
+生成来源标签用`--device-label`按实际设备填写（可选值见该工具的`--help`）；省略时读取CHRONAXIS_DEVICE_LABEL，未知则记pending。它只标注本次结果文件，不修改原教学输入的来源。

@@ -39,4 +39,4 @@ None。
 
 TypeError/ValueError，不推进任何状态；首点不能虚构前序周期。
 
-源码：[`src/chronaxis/core/temporal_clock.py:8`](../../../src/chronaxis/core/temporal_clock.py#L8)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/temporal_clock.py:8`](../../../src/chronaxis/core/temporal_clock.py#L8)（行号对应 Chronaxis 0.1.0.dev5 源码）。

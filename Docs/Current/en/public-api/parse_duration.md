@@ -21,4 +21,4 @@ Raises `TypeError` for non-text input; `ValueError` for missing units, invalid s
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:210`](../../../../src/chronaxis/timebase/conversion.py#L210) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/timebase/conversion.py:210`](../../../../src/chronaxis/timebase/conversion.py#L210) — line number in the Chronaxis 0.1.0.dev5 source.

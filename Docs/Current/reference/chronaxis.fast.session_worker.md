@@ -55,4 +55,4 @@ None。
 
 原错误通过控制通道报告；断管退出，finally释放读取器。
 
-源码：[`src/chronaxis/fast/session_worker.py:17`](../../../src/chronaxis/fast/session_worker.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/fast/session_worker.py:17`](../../../src/chronaxis/fast/session_worker.py#L17)（行号对应 Chronaxis 0.1.0.dev5 源码）。

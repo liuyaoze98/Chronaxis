@@ -1,4 +1,4 @@
-"""提供当前配置检查、分析发布、独立批量和高性能积分器入口。
+"""提供当前配置检查、分析发布、独立批量、高性能积分器及指南/手册定位入口。
 
 参数为命令行选项；按命令延迟导入实现，帮助只依赖标准库。
 检查按需读取配置和DBC元数据，运行命令才扫描业务输入并发布结果。
@@ -35,6 +35,8 @@ def _parser() -> argparse.ArgumentParser:
     guide = commands.add_parser('guide', help='显示可直接阅读的AI指南路径')
     guide.add_argument('--language', choices=('zh', 'en'), default='zh', help='阅读入口语言，默认zh；不写文件')
     guide.add_argument('--output', help='可选：另存完整双语ZIP；父目录须存在，目标不能已存在')
+    manual = commands.add_parser('manual', help='显示随包Markdown用户手册首页路径')
+    manual.add_argument('--language', choices=('zh', 'en'), default='zh', help='手册语言，默认zh；不写文件')
     configuration = commands.add_parser('config', help='初始化及检查配置文件')
     configuration_actions = configuration.add_subparsers(dest='config_command', required=True)
     initialize = configuration_actions.add_parser('init', help='从合成场景生成完整新目录')
@@ -92,12 +94,17 @@ def main(argv=None) -> int:
     副作用: 静态命令只读计划；run分析后发布本次时间文件到可复用目录。
     """
     arguments = _parser().parse_args(argv)
-    operation = {'guide': '资料读取'}.get(arguments.command, '计划')
+    operation = {'guide': '资料读取', 'manual': '资料读取'}.get(arguments.command, '计划')
     try:
         if arguments.command == 'guide':
             # 默认只定位已经存在的README；显式output才生成独立副本。
             from .user_guide import export_guide, guide_path
             print(export_guide(arguments.output) if arguments.output else guide_path(arguments.language))
+            return 0
+        if arguments.command == 'manual':
+            # 只显示随包手册首页路径；不复制、不解压，也不读取业务数据。
+            from .user_guide import manual_path
+            print(manual_path(arguments.language))
             return 0
         if arguments.command == 'fast':
             from .fast.cli import execute

@@ -62,8 +62,8 @@ AnalysisPlan(config_version: int, dataset: chronaxis.planning.models.DatasetPlan
 ```python
 from chronaxis import load_analysis_plan
 
-# Run from the repository root; this file defines the required sources, signals, and preset.
-plan = load_analysis_plan("Docs/Current/examples/preset-charge-minimal.yaml")
+# Run in the directory containing the manual's home page; this file defines the required sources, signals, and preset.
+plan = load_analysis_plan("examples/preset-charge-minimal.yaml")
 for preset, bindings in zip(plan.presets, plan.preset_bindings):
     for binding in bindings:
         print(preset.id, binding.contract.role,
@@ -129,7 +129,7 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/planning/plan.py:63`](../../../../src/chronaxis/planning/plan.py#L63) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/plan.py:109`](../../../../src/chronaxis/planning/plan.py#L109) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/plan.py:114`](../../../../src/chronaxis/planning/plan.py#L114) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/plan.py:121`](../../../../src/chronaxis/planning/plan.py#L121) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/plan.py:63`](../../../../src/chronaxis/planning/plan.py#L63) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/plan.py:109`](../../../../src/chronaxis/planning/plan.py#L109) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/plan.py:114`](../../../../src/chronaxis/planning/plan.py#L114) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/plan.py:121`](../../../../src/chronaxis/planning/plan.py#L121) — line number in the Chronaxis 0.1.0.dev5 source.

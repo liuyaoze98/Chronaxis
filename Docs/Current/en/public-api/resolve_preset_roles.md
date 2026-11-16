@@ -24,4 +24,4 @@ Explicit aliases do not require semantic_id, but type, unit, direction, location
 
 ## Source locations
 
-- [`src/chronaxis/presets.py:104`](../../../../src/chronaxis/presets.py#L104) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/presets.py:104`](../../../../src/chronaxis/presets.py#L104) — line number in the Chronaxis 0.1.0.dev5 source.

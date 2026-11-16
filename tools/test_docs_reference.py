@@ -11,6 +11,7 @@ import unittest
 import build_m2_docs as docs
 from doc_type_links import imports, type_cell
 from doc_public_api import members, public_page
+from verify_m2_docs import InventoryVisitor
 
 
 class ReferenceTables(unittest.TestCase):
@@ -65,6 +66,71 @@ class ReferenceTables(unittest.TestCase):
         """调用签名移除接收者并保留位置/关键字边界。"""
         node = ast.parse('def run(self, plan, /, *, work_dir=None) -> int: pass').body[0]
         self.assertEqual(docs.call_signature('Runner.run', node), 'Runner.run(plan, /, *, work_dir=None) -> int')
+
+    def _render_receivers(self, source):
+        """只在内存渲染最小源码并独立收集接收者；返回页面与访问器，解析错误传播。"""
+        prior_edition, prior_language = docs.EDITION, docs.LANGUAGE
+        try:
+            docs.EDITION = 'Current'
+            docs.LANGUAGE = {'phrases': {}, 'terms': []}
+            rendered, _, missing = docs.render_module('src/chronaxis/receivers.py', source, {})
+            self.assertEqual(missing, [])
+            visitor = InventoryVisitor()
+            visitor.visit(ast.parse(source))
+            return rendered, visitor
+        finally:
+            docs.EDITION, docs.LANGUAGE = prior_edition, prior_language
+
+    def test_module_self_is_an_explicit_argument(self):
+        """模块函数的self保留于签名及参数表；无参数和返回值，失败抛AssertionError。"""
+        source = ('def combine(self: int, other: int):\n'
+                  '    """参数: self: 左操作数；other: 右操作数。返回: 相加结果。"""\n'
+                  '    return self + other\n')
+        page, visitor = self._render_receivers(source)
+        self.assertIn('combine(self: int, other: int)', page)
+        self.assertIn('|`self`|int|是|无|', page)
+        self.assertNotIn('Python自动传入', page)
+        self.assertIsNone(visitor.receivers['combine'])
+
+    def test_instance_method_hides_only_its_receiver(self):
+        """实例方法省略首位self，但保留同名约定之外的cls参数；断言不符报错。"""
+        source = ('class Model:\n'
+                  '    def run(self, *, cls: int):\n'
+                  '        """参数: cls: 用户显式传入的数字。返回: 原数字。"""\n'
+                  '        return cls\n')
+        page, visitor = self._render_receivers(source)
+        self.assertIn('Model.run(*, cls: int)', page)
+        self.assertNotIn('|`self`|', page)
+        self.assertIn('|`cls`|int|是|无|', page)
+        self.assertEqual(visitor.receivers['Model.run'], 'self')
+
+    def test_static_method_keeps_named_self(self):
+        """静态方法不会绑定self；签名、必填说明及独立AST判断均保留该参数。"""
+        source = ('class Model:\n'
+                  '    @staticmethod\n'
+                  '    def echo(self: int):\n'
+                  '        """参数: self: 要原样返回的数字。返回: 原数字。"""\n'
+                  '        return self\n')
+        page, visitor = self._render_receivers(source)
+        self.assertIn('Model.echo(self: int)', page)
+        self.assertIn('|`self`|int|是|无|', page)
+        self.assertIsNone(visitor.receivers['Model.echo'])
+
+    def test_nested_cls_is_not_a_method_receiver(self):
+        """类方法内的嵌套函数cls是显式参数；仅真正类方法的cls自动传入。"""
+        source = ('class Model:\n'
+                  '    @classmethod\n'
+                  '    def decorate(cls):\n'
+                  '        def checked(cls: type):\n'
+                  '            """参数: cls: 被包装调用显式传入的类。返回: 原类。"""\n'
+                  '            return cls\n'
+                  '        return checked\n')
+        page, visitor = self._render_receivers(source)
+        self.assertIn('Model.decorate()', page)
+        self.assertIn('Model.decorate.checked(cls: type)', page)
+        self.assertIn('|`cls`|type|是|无|', page)
+        self.assertEqual(visitor.receivers['Model.decorate'], 'cls')
+        self.assertIsNone(visitor.receivers['Model.decorate.checked'])
 
     def test_property_is_not_rendered_as_method(self):
         """属性类型可读，但不制造函数调用。"""

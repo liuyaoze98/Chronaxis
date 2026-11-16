@@ -76,6 +76,8 @@ node tools/test_manual_search.mjs
 
 `build_ai_guide.build_files()`组装同一套已审核资料。wheel安装到`chronaxis/guide`，HTML附带`ai-guide`目录；`python -m chronaxis guide`只定位README，`--language en`选择英文，可编辑安装直接定位Docs/AI。ZIP是按需独立副本，由同一文件集合生成。
 
+`tools/build_user_manual.py`从同一份`inputs.lock.json`取出中英文章节、公开API页和全部示例，wheel安装到`chronaxis/manual`。正文去掉末尾履历；包内链接保持相对路径，AI指南链接改到同包`guide`，内部模块参考、源码、Schema和发行说明链接改到Repository在`v<版本>`标签下的同一文件。构建后检查全部相对链接，任何无法解析或指向公开源码以外的链接都会使构建失败。`python -m chronaxis manual`只定位首页，可编辑安装返回`Docs/Current/index.md`。`lock_ai_inputs.py`把手册文件登记在锁的`manual_inputs`中，与AI指南使用的`inputs`分开，不扩大AI指南的文件集合，并写入MANIFEST；新增或删除手册页、示例后须重新锁定。
+
 校核安装目录、HTML目录、相对链接、两种语言和可选ZIP的内容一致；直接使用安装目录的输入运行示例，输出放外部工作目录，核对安装资料没有被改写。覆盖缺资源和拒绝覆盖情形。只通过ZIP导出测试不能证明可直接阅读。
 
 ## PyPI页面链接

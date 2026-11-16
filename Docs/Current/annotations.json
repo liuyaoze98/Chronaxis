@@ -197,6 +197,62 @@
       "device_label": "home",
       "author": "liuyaoze",
       "scope": "J10/J15：AnalysisRunner构造、属性和静态方法的准确异常与后端说明；不改变行为。"
+    },
+    "perf_round2_01": {
+      "updated_at": "2026-11-14T12:08:59+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "PERF-ROUND2-01/C2：按当前实现补齐40项内部参数说明，覆盖浮点表达式闭包、信号归一化、同帧更新、已核验原帧/原记录构造及流式后端选择；不改变产品行为。",
+      "type_review": {
+        "updated_at": "2026-11-14T12:15:19+08:00",
+        "device_label": "home",
+        "change": "逐项补充47个生成参考中的未定类型，并明确参考求值缓存的身份/宿主结构键及(节点,Evaluation)值；保留原默认值与参数要求。"
+      },
+      "receiver_review": {
+        "updated_at": "2026-11-14T12:24:08+08:00",
+        "device_label": "home",
+        "change": "区分真实类方法接收者与模块/静态/嵌套函数的self或cls；为质量位或和两个计划装饰器恢复显示的三项显式参数补类型与用途，产品代码不变。"
+      }
+    },
+    "perf_p5_01": {
+      "updated_at": "2026-11-14T15:21:06+08:00",
+      "device_label": "home",
+      "author": "liuyaoze",
+      "change": "按当前已审阅源码补齐同帧求值、文件面积、父累计及会话选择的逐参数类型和用途；传输模块待定稿后补齐，最终产品提交关联待核对。",
+      "transport_updated_at": "2026-11-14T15:30:44+08:00",
+      "transport_change": "补齐固定块、读取工作槽、面积进程和会话分派的参数类型及用途；区分数据eof与资源finished，涵盖单边界准入和事实费用；控制族说明加入integral。最终产品提交关联仍待核对。 同次最小参考校核发现原控制包装__exit__/poll的变长参数类型栏为空，补精确类型与底层委托含义。",
+      "source_baseline": "34a2bc6219c03f7ae4dec14ef12fd3d6ff26a7e8",
+      "source_verified_at": "2026-11-14T15:34:16+08:00",
+      "source_verification": "对固定产品提交的10模块逐参数校核并最小内存渲染，共230定义，参数说明及显示类型缺口均为0；完整文档构建和英文审阅由主流程继续。",
+      "public_process_docs_updated_at": "2026-11-14T15:38:15+08:00",
+      "public_process_docs_change": "同步公开Runner与ExecutionPlan进程上限用途及实际积分适用链接；保留read_process_limit为静态计划上限，不当作实际进程数。",
+      "budget_preflight_review": {
+        "updated_at": "2026-11-14T16:45:56+08:00",
+        "device_label": "home",
+        "author": "liuyaoze",
+        "source_baseline": "c97b6675b6879e7dbfbe0eb10c9334f87db62956",
+        "change": "追加必要预算下界的四个辅助函数说明，明确计算项数、工作槽上限、批容量和费用排除范围；保留此前固定产品34a2bc62的230项定义审阅事实，不将本次局部校核冒称完整重建。",
+        "verification": "当前两模块最小内存渲染通过；四个新增定义、10项显式参数的集合、int类型及用途与源码一致，局部模块待审参数为0；未构建完整手册或运行产品回归。",
+        "definitions": [
+          "chronaxis.execution.file_integral_terms.file_terms_minimum_cost",
+          "chronaxis.execution.file_integral_terms.parent_terms_minimum_cost",
+          "chronaxis.execution.parallel_integral_pool._configuration_rows",
+          "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.configuration_minimum_cost"
+        ],
+        "parameter_count": 10,
+        "modules": [
+          {
+            "module": "chronaxis.execution.file_integral_terms",
+            "definitions": 35,
+            "unresolved": 0
+          },
+          {
+            "module": "chronaxis.execution.parallel_integral_pool",
+            "definitions": 26,
+            "unresolved": 0
+          }
+        ]
+      }
     }
   },
   "chronaxis.core.conditional_time_reduction.require_conditional_time_series": {
@@ -2694,9 +2750,9 @@
     "fields": {
       "backend": "选择auto、reference或numpy。auto读取数据前按整个计划的静态类别选一次，其他两个值固定数值实现；错误不换路重跑。",
       "partial_policy": "`\"report\"`：数据不全时保留已知部分算出的数值，并标记partial；`\"strict\"`：所需范围内有数据缺失时返回None。它不会补出缺失数据。",
-      "process_count": "控制本任务共用的读取/解码进程上限；正整数，默认1，不包含主进程；不根据CPU自动增加。文件不足时实际数量减少。"
+      "process_count": "控制本任务共用的文件工作进程上限；正整数，默认1，不包含主进程，不根据CPU数量自动增加。实际是否启动及数量由文件数、归并方式和适用路径决定；满足[连续积分条件](../continuous-files.md#parallel-integrals)时工作进程也计算文件内面积。"
     },
-    "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、部分结果政策及文件读取/解码进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。"
+    "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、部分结果政策及文件工作进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。"
   },
   "chronaxis.planning.preset_models.RoleBinding": {
     "fields": {
@@ -4013,7 +4069,7 @@
       },
       "process_count": {
         "type": "int | None",
-        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
+        "description": "控制本次运行的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。工作进程负责读取和DBC解码，满足[连续积分条件](../continuous-files.md#parallel-integrals)时还计算文件内积分面积。"
       }
     },
     "example": "\"\"\"从YAML配置执行分析并逐行读取结果；输入为配置路径，可选结果输出目录。\"\"\"\nimport argparse\nfrom pathlib import Path\n\nfrom chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan\n\n\ndef main():\n    \"\"\"检查配置后执行，显式关闭游标和结果。返回None；配置/执行错误保留异常链。\"\"\"\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument('plan', nargs='?', type=Path, default=Path(__file__).parent / 'analysis.yaml')\n    parser.add_argument('--output', type=Path, help='可复用的正式输出目录；省略则只打印结果')\n    args = parser.parse_args()\n    plan = load_analysis_plan(args.plan)\n    report = validate_analysis_plan(plan)\n    if not report.valid or not report.execution_ready:\n        raise RuntimeError(report)\n    with AnalysisRunner().run(plan) as result:\n        rows = result.iter_calculations()\n        try:\n            for row in rows:\n                print(row.calculation_id, row.value, row.unit, row.status, row.reason)\n        finally:\n            rows.close()\n        if args.output is not None:\n            manifest = result.write(args.output)\n            print(manifest)\n\n\nif __name__ == '__main__':\n    main()\n",
@@ -7427,7 +7483,7 @@
       },
       "process_count": {
         "type": "int | None",
-        "description": "本次读取与解码进程上限的可选覆盖；None沿用原计划，正原生整数构建新的执行视图，不修改原计划；布尔值、非正数及其他类型抛ValueError。"
+        "description": "本次文件工作进程上限的可选覆盖；None沿用原计划，正原生整数构建新的执行视图，不修改原计划；布尔值、非正数及其他类型抛ValueError。"
       }
     },
     "异常": "TypeError为非计划/执行声明；不重新解析配置或复制原输入行。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。"
@@ -7441,7 +7497,7 @@
       },
       "process_count": {
         "type": "int | None",
-        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
+        "description": "本次静态检查使用的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。只检查或解释计划，不启动工作进程；具体工作范围见[连续文件指南](../continuous-files.md#parallel-integrals)。"
       }
     },
     "异常": "TypeError：plan不是AnalysisPlan或其execution不是合法执行模型。正常计划的静态问题通过ValidationReport.errors返回，执行能力看execution_ready；不读取输入，不能把空errors当作实际日志已验证。\n\nValueError：process_count显式覆盖不是正原生int（含bool），或Runner与计划没有共享同一个ExtensionRegistry实例。注册对象按身份比较，即使声明内容相同也不能换成另一个对象；这些错误在返回报告之前直接抛出。本方法不接收extensions参数，需在创建Runner时传入计划所用的注册对象。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。",
@@ -7456,7 +7512,7 @@
       },
       "process_count": {
         "type": "int | None",
-        "description": "控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。"
+        "description": "本次静态检查使用的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。只检查或解释计划，不启动工作进程；具体工作范围见[连续文件指南](../continuous-files.md#parallel-integrals)。"
       }
     },
     "异常": "TypeError：plan不是AnalysisPlan或其execution类型不符。手工破坏typed引用可能引发AttributeError/KeyError；重新使用from_dict/load_analysis_plan构造合法计划。函数不打开CSV/DBC，不测量实际耗时或内存。\n\nValueError：process_count显式覆盖不是正原生int（含bool），或Runner与计划没有共享同一个ExtensionRegistry实例。注册对象按身份比较，即使声明内容相同也不能换成另一个对象；这些错误在返回报告之前直接抛出。本方法不接收extensions参数，需在创建Runner时传入计划所用的注册对象。支持范围错误在validate/explain的校验报告中返回，run拒绝执行并抛AnalysisError。"
@@ -8033,8 +8089,8 @@
         "description": "信号别名到当前时刻数值的映射，包含值类型、有效性和质量原因。"
       },
       "cache": {
-        "type": "dict",
-        "description": "本次计算使用的局部缓存。表达式求值按节点保存已算结果，编译入口按表达式保存编译结果；不能跨绑定或跨次运行复用。"
+        "type": "dict[int | tuple[str, ExprNode], tuple[ExprNode, Evaluation]]",
+        "description": "仅供本次单点求值的可变缓存：普通节点键为id(node)，宿主函数键为(\"host\", node)，值为(ExprNode, Evaluation)。调用方在本次求值期间持有冻结节点；不得跨点复用，也不是表达式编译缓存。"
       }
     }
   },
@@ -10835,7 +10891,7 @@
   },
   "chronaxis.planning.reports.validate_analysis_plan": {
     "异常": "TypeError: 输入不是AnalysisPlan；配置构建错误应由构建入口先报告。\n\n本函数直接报告的具体错误：\n\n- `TypeError`：validate_analysis_plan需要AnalysisPlan。",
-    "example": "from chronaxis import load_analysis_plan, validate_analysis_plan\nplan = load_analysis_plan(\"Docs/Current/examples/analysis.yaml\")\nreport = validate_analysis_plan(plan)\nprint(report.valid, report.execution_ready)",
+    "example": "# 在手册首页所在的目录运行；该目录直接包含examples。\nfrom chronaxis import load_analysis_plan, validate_analysis_plan\nplan = load_analysis_plan(\"examples/analysis.yaml\")\nreport = validate_analysis_plan(plan)\nprint(report.valid, report.execution_ready)",
     "parameters": {
       "plan": "提供已校验的AnalysisPlan，通过load_analysis_plan(\"analysis.yaml\")取得，或用AnalysisPlan.from_dict(config)从Python字典建立；这里不接收YAML文件名字符串。"
     }
@@ -14739,7 +14795,7 @@
     "summary": "一次成功分析的结果对象。通常由AnalysisRunner.run返回；通过iter_*逐行读取，通过write发布，通过close或with释放资源。内部构造参数用于接管暂存，不建议业务调用者手工构造。"
   },
   "chronaxis.planning.plan.load_analysis_plan": {
-    "example": "from chronaxis import load_analysis_plan\nplan = load_analysis_plan(\"Docs/Current/examples/analysis.yaml\")",
+    "example": "# 在手册首页所在的目录运行；该目录直接包含examples。\nfrom chronaxis import load_analysis_plan\nplan = load_analysis_plan(\"examples/analysis.yaml\")",
     "summary": "加载JSON/YAML及显式公共定义，应用受限覆盖并编译分析计划。目录输入会展开文件名；信号缺省类型、单位或枚举映射时按需读取DBC，不扫描业务报文。",
     "返回": "AnalysisPlan：已检查并编译的计划。加载主配置与显式公共定义，按声明展开文件集合，必要时读取DBC元数据；不读取业务报文或CSV记录。",
     "副作用": "打开指定配置及公共定义文件，按需求读取DBC或枚举目录；句柄在正常或异常返回前关闭，不创建结果文件。",
@@ -14751,7 +14807,7 @@
     }
   },
   "chronaxis.planning.reports.explain_analysis_plan": {
-    "example": "from chronaxis import load_analysis_plan, explain_analysis_plan\nplan = load_analysis_plan(\"Docs/Current/examples/analysis.yaml\")\nprint(explain_analysis_plan(plan))",
+    "example": "# 在手册首页所在的目录运行；该目录直接包含examples。\nfrom chronaxis import load_analysis_plan, explain_analysis_plan\nplan = load_analysis_plan(\"examples/analysis.yaml\")\nprint(explain_analysis_plan(plan))",
     "parameters": {
       "plan": "提供已校验的AnalysisPlan，通过load_analysis_plan(\"analysis.yaml\")取得，或用AnalysisPlan.from_dict(config)从Python字典建立；这里不接收YAML文件名字符串。"
     }
@@ -15110,7 +15166,7 @@
         "description": "编译后的时序变换元组，所依赖的变换先于使用它的变换。"
       }
     },
-    "example": "from chronaxis import load_analysis_plan\n\n# 从仓库根目录运行；此文件已定义所需来源、信号和预设。\nplan = load_analysis_plan(\"Docs/Current/examples/preset-charge-minimal.yaml\")\nfor preset, bindings in zip(plan.presets, plan.preset_bindings):\n    for binding in bindings:\n        print(preset.id, binding.contract.role,\n              binding.definition.name, binding.resolution)\n# demo_preset mode mode explicit\n# demo_preset current current explicit"
+    "example": "from chronaxis import load_analysis_plan\n\n# 在手册首页所在的目录运行；此文件已定义所需来源、信号和预设。\nplan = load_analysis_plan(\"examples/preset-charge-minimal.yaml\")\nfor preset, bindings in zip(plan.presets, plan.preset_bindings):\n    for binding in bindings:\n        print(preset.id, binding.contract.role,\n              binding.definition.name, binding.resolution)\n# demo_preset mode mode explicit\n# demo_preset current current explicit"
   },
   "chronaxis.planning.preset_models.PresetSpec": {
     "fields": {
@@ -15484,6 +15540,10 @@
       "kwargs": {
         "type": "dict[str, object]",
         "description": "原样传给被包装方法的关键字实参，例如base_dir；是否接受由原方法决定。"
+      },
+      "cls": {
+        "type": "type[chronaxis.planning.plan.AnalysisPlan]",
+        "description": "被包装的计划构建类，当前调用来自AnalysisPlan.from_dict；包装函数将该类原样传给原构建方法，不在这里实例化，也不是checked自身的隐式接收者。"
       }
     }
   },
@@ -16077,6 +16137,10 @@
       "kwargs": {
         "type": "dict",
         "description": "原构建方法的关键字参数，原样转交。"
+      },
+      "cls": {
+        "type": "type[chronaxis.planning.plan.AnalysisPlan]",
+        "description": "被诊断包装的计划构建类，当前为AnalysisPlan.from_dict接收到的类；在收集诊断的上下文内原样传给原构建方法，不替换为局部计划。"
       }
     }
   },
@@ -21389,7 +21453,7 @@
     "parameters": {
       "family": {
         "type": "str",
-        "description": "已选控制通道族，只使用can、fast或batch；决定哪些参数按固定模型展开。"
+        "description": "已选控制通道族，只使用can、fast、batch或integral；决定哪些参数按固定模型展开。"
       },
       "message": {
         "type": "tuple[Any, ...] | list[Any]",
@@ -21401,7 +21465,7 @@
     "parameters": {
       "family": {
         "type": "str",
-        "description": "can、fast或batch之一，与已校验控制消息头相同，用于选择固定恢复规则。"
+        "description": "can、fast、batch或integral之一，与已校验控制消息头相同，用于选择固定恢复规则。"
       },
       "operation": {
         "type": "str",
@@ -21461,7 +21525,7 @@
     "parameters": {
       "family": {
         "type": "str",
-        "description": "can、fast或batch控制族，选择要核的固定大消息规则。"
+        "description": "can、fast、batch或integral控制族，选择要核的固定大消息规则。"
       },
       "operation": {
         "type": "str",
@@ -21497,7 +21561,7 @@
       },
       "maximum": {
         "type": "int | None",
-        "description": "本次JSON主体字节上限；CAN/fast取现有预算，batch固定大消息可为None，不表示零字节。"
+        "description": "本次JSON主体字节上限；CAN/fast/integral取现有预算，batch固定大消息可为None，不表示零字节。"
       }
     }
   },
@@ -21541,7 +21605,7 @@
     "parameters": {
       "family": {
         "type": "str",
-        "description": "can、fast或batch之一，决定命令的基础参数形状。"
+        "description": "can、fast、batch或integral之一，决定命令的基础参数形状。"
       },
       "command": {
         "type": "str",
@@ -21589,7 +21653,7 @@
       },
       "family": {
         "type": "str",
-        "description": "本连接的固定族：can、fast或batch；两端必须一致。"
+        "description": "本连接的固定族：can、fast、batch或integral；两端必须一致。"
       },
       "parent": {
         "type": "bool",
@@ -21597,7 +21661,7 @@
       },
       "max_bytes": {
         "type": "int | None",
-        "description": "CAN/fast固定大消息可用的正数字节额度；batch大任务/结果允许None，分片64KiB不是总RAM限制。"
+        "description": "CAN/fast/integral固定大消息可用的正数字节额度；batch大任务/结果允许None，分片64KiB不是总RAM限制。"
       }
     }
   },
@@ -22334,5 +22398,1529 @@
         "description": "完整且已解析的原计划；保留raw_config和identity，不试读或试跑输入。"
       }
     }
+  },
+  "chronaxis.execution.same_frame_integrals._has_shared_composite_nodes": {
+    "parameters": {
+      "roots": {
+        "description": "已校验表达式根节点的可迭代对象。按节点对象身份判断多个表达式是否共享含子节点的复合节点；共享时保留原求值核的结果缓存。",
+        "type": "Iterable[ExprNode]"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._compile_float_program": {
+    "parameters": {
+      "node": {
+        "description": "已校验的表达式根节点或子节点。数值常量须能无损表示为float；其余节点须为FLOAT64且属于支持的简单运算，否则抛出_NotCompilable。",
+        "type": "ExprNode"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._compile_float_program.binary": {
+    "parameters": {
+      "context": {
+        "description": "本次同刻组的归一化值映射：键为信号别名，值为(value, quality)；有效值使用有限float和None，无效值使用None及原因标志。",
+        "type": "Mapping[str, tuple[float | None, QualityFlag | None]]"
+      },
+      "left": {
+        "description": "编译时捕获的左侧子程序；接收同一context，返回数值与质量二元组。通常由闭包默认值传入。",
+        "type": "Callable[[Mapping[str, tuple[float | None, QualityFlag | None]]], tuple[float | None, QualityFlag | None]]"
+      },
+      "right": {
+        "description": "编译时捕获的右侧子程序；接收同一context，返回数值与质量二元组。通常由闭包默认值传入。",
+        "type": "Callable[[Mapping[str, tuple[float | None, QualityFlag | None]]], tuple[float | None, QualityFlag | None]]"
+      },
+      "op": {
+        "description": "编译时捕获的二元运算名称：add、sub、mul或div；用于选择计算并保留左右原因合并和除零处理。",
+        "type": "str"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._compile_float_program.unary": {
+    "parameters": {
+      "context": {
+        "description": "本次同刻组的信号别名到(value, quality)映射；无效输入的原因由子程序原样返回。",
+        "type": "Mapping[str, tuple[float | None, QualityFlag | None]]"
+      },
+      "child": {
+        "description": "编译时捕获的单个子程序；使用同一context求得待处理的有限float或无效原因。通常不用另传。",
+        "type": "Callable[[Mapping[str, tuple[float | None, QualityFlag | None]]], tuple[float | None, QualityFlag | None]]"
+      },
+      "negate": {
+        "description": "编译时捕获的布尔选择：True执行取负值，False取绝对值；不是用户配置项。",
+        "type": "bool"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._compile_float_program.affine": {
+    "parameters": {
+      "context": {
+        "description": "本次同刻组的信号别名到(value, quality)映射；先由子程序取值，无效值不参与换算。",
+        "type": "Mapping[str, tuple[float | None, QualityFlag | None]]"
+      },
+      "child": {
+        "description": "编译时捕获的待换算子程序；接收context，返回数值与质量二元组。通常不用另传。",
+        "type": "Callable[[Mapping[str, tuple[float | None, QualityFlag | None]]], tuple[float | None, QualityFlag | None]]"
+      },
+      "factor": {
+        "description": "从单位换算节点取得且已证明可精确转为float的倍率；按number * factor + shift的顺序计算。",
+        "type": "float"
+      },
+      "shift": {
+        "description": "从单位换算节点取得且已证明可精确转为float的加法偏移；为0时还检查纯倍率换算是否下溢为0。",
+        "type": "float"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._float_normalizer": {
+    "parameters": {
+      "definition": {
+        "description": "已解析的FLOAT64信号定义；使用其scale、offset、invalid_values和valid_range。普通有限数按原换算顺序处理，其余情况交给参考归一化函数。",
+        "type": "SignalDefinition"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._float_normalizer.slow": {
+    "parameters": {
+      "raw": {
+        "description": "当前报文该信号的原始解码值；可以是缺失、非有限或显式无效值，由normalize_reference按信号定义判断数值和质量。",
+        "type": "int | float | bool | str | None"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._float_normalizer.normalize": {
+    "parameters": {
+      "raw": {
+        "description": "当前报文该信号的原始解码值。有限float及范围内、转float不丢精度的int可直接换算；其他类型、异常值或换算结果交参考归一化处理。",
+        "type": "int | float | bool | str | None"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.SameFrameIntegrals._consume_fast": {
+    "parameters": {
+      "update": {
+        "description": "当前会话的一条LegacyDecodedUpdate。其来源、通道及帧身份用于匹配，time_ns用于实际时间顺序，sequence用于同刻选择，values提供全部已证明的同帧字段。",
+        "type": "LegacyDecodedUpdate"
+      }
+    }
+  },
+  "chronaxis.legacy.records._raw_frame_from_validated_fields": {
+    "parameters": {
+      "timestamp": {
+        "description": "已由读取器核验的有限float秒，保留原帧时间表示；本函数不重新换算或检查。",
+        "type": "float"
+      },
+      "arbitration_id": {
+        "description": "已核验的整数报文ID，范围0至0x1FFFFFFF；不把通道拼入ID，也不从ID推断帧类型。",
+        "type": "int"
+      },
+      "is_extended_id": {
+        "description": "已核验的bool标准/扩展帧标志；True为扩展帧，False为标准帧。",
+        "type": "bool"
+      },
+      "is_remote_frame": {
+        "description": "已核验的bool远程帧标志；保留原值，不因当前分析未使用远程帧而改写。",
+        "type": "bool"
+      },
+      "is_error_frame": {
+        "description": "已核验的bool错误帧标志；保留原值。",
+        "type": "bool"
+      },
+      "channel": {
+        "description": "已核验的原公开通道值，允许int、str或None；不猜测缺失通道，也不在此执行配置通道换算。",
+        "type": "int | str | None"
+      },
+      "dlc": {
+        "description": "已核验的原公开DLC值，整数范围0至64；直接保存，不按data长度重算。CAN FD的编码值另由记录的dlc_code表示。",
+        "type": "int"
+      },
+      "data": {
+        "description": "已核验且不超过64字节的bytes负载；直接保存不可变字节值，不重新编码或增删字节。",
+        "type": "bytes"
+      },
+      "is_fd": {
+        "description": "已核验的bool CAN FD标志；不根据DBC或负载长度重新推断。",
+        "type": "bool"
+      },
+      "is_rx": {
+        "description": "已核验的收发方向：True为接收，False为发送，None为未知；未知不会被补成接收或发送。",
+        "type": "bool | None"
+      },
+      "bitrate_switch": {
+        "description": "已核验的bool CAN FD速率切换标志，直接保存原值。",
+        "type": "bool"
+      },
+      "error_state_indicator": {
+        "description": "已核验的bool CAN FD错误状态指示，直接保存原值。",
+        "type": "bool"
+      }
+    }
+  },
+  "chronaxis.planning.backend_selection._streaming_selection": {
+    "parameters": {
+      "plan": {
+        "description": "已解析且至少含一项计算的计划；上层已排除宿主扩展、时序变换、序列、结果聚合和逐消息计算。本函数只按每项operation是否属于已验证流式集合选择数值后端。",
+        "type": "AnalysisPlan"
+      },
+      "conservative": {
+        "description": "上层预先建立的保守BackendSelection结果，当前为auto请求下选择numpy；遇到集合外计算项时原样返回，不在此试跑或切换读取路径。",
+        "type": "BackendSelection"
+      }
+    },
+    "异常": "无；只读静态声明，不读取数据。这里只选择数值后端；是否采用同帧直接积分由独立资格检查决定。"
+  },
+  "chronaxis.sources.raw_can._raw_record_from_validated_fields": {
+    "parameters": {
+      "time_ns": {
+        "description": "读取器已核验的int64纳秒时间；已按声明的参考原点及显式平移解释，作为该记录的分析时间。",
+        "type": "int"
+      },
+      "path": {
+        "description": "已核验的Path，指向实际读取文件；本函数不转绝对路径、不访问文件，也不生成内容指纹。",
+        "type": "Path"
+      },
+      "line_number": {
+        "description": "已核验的文本物理行号，从1开始；BLF二进制记录为None，通过sequence定位。",
+        "type": "int | None"
+      },
+      "sequence": {
+        "description": "同次读取从0开始的非负整数记录序号；不是文本物理行号，同一时间可有不同序号。",
+        "type": "int"
+      },
+      "raw_time": {
+        "description": "可选的原始时间文本，仅在请求原文诊断时保留；普通计算为None，不额外构造第二份时间记录。",
+        "type": "str | None"
+      },
+      "parser_version": {
+        "description": "已经确定且非空的格式版本字符串；用于标识本记录的解析规则，读取中途不自动切换。",
+        "type": "str"
+      },
+      "dlc_code": {
+        "description": "真实DLC编码，已核验为0至15的整数或None；错误帧及未声明长度的远程帧可以没有此值，不等同于负载字节数。",
+        "type": "int | None"
+      },
+      "time_quantized": {
+        "description": "已核验的bool，记录文本时间精度细于纳秒时是否实际发生舍入；默认False，不据此重新舍入时间。",
+        "type": "bool"
+      },
+      "source_time_ns": {
+        "description": "可选的显式平移前int64纳秒时间；None表示未单独提供，调用方按同一记录的time_ns处理。本函数直接保存，不补造另一套时间。",
+        "type": "int | None"
+      },
+      "frame": {
+        "type": "LegacyRawFrame",
+        "description": "读取器已核验字段后创建的LegacyRawFrame，通道已统一为内部零起序号；本函数直接保存，不重复校验原帧字段。"
+      }
+    }
+  },
+  "chronaxis.core.expression_reference.visited_nodes": {
+    "parameters": {
+      "cache": {
+        "type": "dict[int | tuple[str, ExprNode], tuple[ExprNode, Evaluation]]",
+        "description": "本次单点求值使用的局部缓存。普通节点以id(node)整数为键，宿主函数以(\"host\", node)结构键复用；每个值为(ExprNode, Evaluation)。这里只枚举实际访问过的节点，不跨点复用。"
+      }
+    }
+  },
+  "chronaxis.core.expression_reference._cache_key": {
+    "parameters": {
+      "node": {
+        "type": "ExprNode",
+        "description": "已经编译的冻结ExprNode；普通节点使用对象身份，host_function节点使用结构键，使同一点内结构相同的宿主调用只执行一次。"
+      }
+    }
+  },
+  "chronaxis.core.integral_sum_numpy.NumpyIntegralSum._push_scalar": {
+    "parameters": {
+      "values": {
+        "type": "numpy.ndarray",
+        "description": "已核验的只读一维float64数组，保存每项积分面积；借用现有数组，不复制成与输入长度相同的Python列表。"
+      },
+      "indices": {
+        "type": "numpy.ndarray",
+        "description": "np.flatnonzero(valid)产生的一维整数索引数组；按原顺序指向values中有效的面积位置。"
+      }
+    }
+  },
+  "chronaxis.core.types._quality_or": {
+    "parameters": {
+      "other": {
+        "type": "QualityFlag | int",
+        "description": "位或右操作数。QualityFlag走已验证成员的缓存表；整数沿标准IntFlag的STRICT构造检查，其他对象继续使用标准位运算协议的NotImplemented或异常行为。"
+      },
+      "self": {
+        "type": "QualityFlag",
+        "description": "位或左操作数，是已经构造的合法QualityFlag成员。通过q1 | q2使用时由Python绑定；若直接调用本模块函数，须显式传入self和other。"
+      }
+    }
+  },
+  "chronaxis.execution.record_point_buffer.RecordPointBuffer._append_validated": {
+    "parameters": {
+      "time": {
+        "type": "int",
+        "description": "已经由读取协议核验的原生int、int64范围纳秒；必须比上次驱动点严格递增，同刻记录应先按既有规则归组。"
+      },
+      "value": {
+        "type": "ScalarValue",
+        "description": "本统计dtype对应的ScalarValue，数值、有效性与质量已在上游构造；仅供无条件驱动点入口使用。"
+      },
+      "deadline": {
+        "type": "int | None",
+        "description": "可选的int64纳秒有效截止；None表示没有单独的截止时刻。与(time, value)一同进入现有缓冲，不额外生成驱动点。"
+      }
+    }
+  },
+  "chronaxis.sources.asc._seconds_from_ns": {
+    "parameters": {
+      "value": {
+        "type": "int",
+        "description": "已经验证的int64整数纳秒；构造精确Decimal秒，避免受调用方Decimal精度和舍入模式影响。"
+      }
+    }
+  },
+  "chronaxis.sources.asc.ASCRead._fast_data_line": {
+    "parameters": {
+      "line": {
+        "type": "str",
+        "description": "已去首尾空白、以数字开头的ASC数据行；不完全满足快速解析条件时返回None，由原解析器处理并保留原错误。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms._conflict": {
+    "parameters": {
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "已合并或单文件同刻组，first_conflicts保存每信号首次冲突位置。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms._offset_group": {
+    "parameters": {
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "使用文件内原帧序号的摘要。"
+      },
+      "offset": {
+        "type": "int",
+        "description": "此前文件全部原帧数量的非负偏移，包含未参与积分的原帧。"
+      }
+    },
+    "返回": "SameTimeGroupSummary，仅平移原帧序号，时间和值保持不变。"
+  },
+  "chronaxis.execution.file_integral_terms._merge_group": {
+    "parameters": {
+      "left": {
+        "type": "SameTimeGroupSummary",
+        "description": "前一文件或已合并的同刻组，使用全局原帧序号。"
+      },
+      "right": {
+        "type": "SameTimeGroupSummary",
+        "description": "后一文件同刻组；时间必须与left相等，首序号必须晚于left末序号。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      }
+    },
+    "返回": "SameTimeGroupSummary，保留首值、最终值和最早冲突位置；不保存逐帧序号列表。"
+  },
+  "chronaxis.execution.file_integral_terms._columns": {
+    "parameters": {
+      "points": {
+        "type": "Sequence[tuple[int, tuple[tuple[ScalarValue, int | None], ...]]]",
+        "description": "按时间递增的有限点列；每点包含实际纳秒及各表达式的值、有效截止纳秒。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      }
+    },
+    "返回": "tuple[IntegralColumnTerms, ...]，按计算项顺序保留面积、掩码和覆盖事实，不先求和。"
+  },
+  "chronaxis.execution.file_integral_terms.file_terms_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "每批区间数上限，默认64，允许1至4096的原生整数；与报文采样周期无关。"
+      }
+    },
+    "返回": "int，文件面积状态与求值器的保守预约字节数；不含读取器、通信包和任务重建。"
+  },
+  "chronaxis.execution.file_integral_terms.parent_terms_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "每批区间数上限，默认64，允许1至4096的原生整数；与报文采样周期无关。"
+      }
+    },
+    "返回": "int，父边界状态与求值器的保守预约字节数；借用的RecordIntegral另行预约。"
+  },
+  "chronaxis.execution.file_integral_terms.FileIntegralTerms.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "与父会话共享的受管理预算；本对象只预约和归还自身持有的费用。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "每批区间数上限，默认64，允许1至4096的原生整数；与报文采样周期无关。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.FileIntegralTerms._flush_points": {
+    "parameters": {
+      "right_closed": {
+        "type": "bool",
+        "description": "默认True表示块右端同刻组已经关闭；False表示仍需等待跨文件同刻合并后才能归约最后一个区间。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.FileIntegralTerms._append_group": {
+    "parameters": {
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "同刻组的冻结摘要，包含首末值和原帧序号。"
+      },
+      "check_conflict": {
+        "type": "bool",
+        "description": "默认True，立即按原帧顺序报告组内冲突；文件末组由父进程报告时传False。"
+      },
+      "right_closed": {
+        "type": "bool",
+        "description": "默认True表示块右端同刻组已经关闭；False表示仍需等待跨文件同刻合并后才能归约最后一个区间。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.FileIntegralTerms.feed": {
+    "parameters": {
+      "record": {
+        "type": "DecodedCANRecord",
+        "description": "读取器交付的一条已解码原帧记录；保留本条真实时间和文件内sequence，无关帧不缓存载荷。"
+      }
+    },
+    "返回": "tuple[FileIntegralHead | IntegralTermsChunk, ...]；没有新边界或完整块时为空tuple。"
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "与父会话共享的受管理预算；本对象只预约和归还自身持有的费用。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "calculations": {
+        "type": "tuple[RecordIntegral, ...]",
+        "description": "父会话拥有的实际时间reference积分器，顺序对应expressions；本对象不代替父会话关闭它们。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms.begin_file": {
+    "parameters": {
+      "sequence_offset": {
+        "type": "int",
+        "description": "之前全部文件的原帧总数，非负原生整数；用于把当前文件局部sequence转为全局序号。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms._drain": {
+    "parameters": {
+      "final": {
+        "type": "bool",
+        "description": "默认False，只归约完整全局批；整体EOF后为True，允许处理不足一批的已关闭区间。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms._accept": {
+    "parameters": {
+      "columns": {
+        "type": "tuple[IntegralColumnTerms, ...]",
+        "description": "与父积分器同序的有限面积列；各列长度一致且为1至4096，覆盖事实可先于末区间归约。"
+      },
+      "right_closed": {
+        "type": "bool",
+        "description": "默认True表示块右端同刻组已经关闭；False表示仍需等待跨文件同刻合并后才能归约最后一个区间。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms._boundary": {
+    "parameters": {
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "边界区间左端已解决同刻选择的组。"
+      },
+      "right": {
+        "type": "int",
+        "description": "边界区间右端实际纳秒，必须严格大于group.time_ns。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms.consume": {
+    "parameters": {
+      "event": {
+        "type": "FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier",
+        "description": "当前文件按读取顺序交付的冻结事件；Frontier确认已关闭右端，不自行增加面积。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.ParentIntegralTerms.finish": {
+    "parameters": {
+      "observed_end": {
+        "type": "int | None",
+        "description": "所有文件真正EOF后的实际观测末端纳秒；无观测时为None，不超出输入范围补造尾段。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals._reference_group_values": {
+    "parameters": {
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "definitions": {
+        "type": "Mapping[str, SignalDefinition]",
+        "description": "信号名到实际定义的映射，包含已解析的真实有效期。"
+      },
+      "time": {
+        "type": "int",
+        "description": "当前同刻组的实际纳秒，用于计算有效截止，不使用固定周期改写时间。"
+      },
+      "context": {
+        "type": "Mapping[str, ScalarValue]",
+        "description": "当前组各依赖信号的规范值，包含有效性与质量；无效新值覆盖旧值。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.same_frame_evaluator_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.SameFrameEvaluator.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "与父会话共享的受管理预算；本对象只预约和归还自身持有的费用。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.SameFrameEvaluator.normalize": {
+    "parameters": {
+      "values": {
+        "type": "Mapping[str, object]",
+        "description": "DBC信号名到本条解码值的映射，必须包含已证明的全部字段；缺值或无效值不沿用上一条。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.SameFrameEvaluator.evaluate": {
+    "parameters": {
+      "time": {
+        "type": "int",
+        "description": "已解决同刻选择的当前组实际纳秒。"
+      },
+      "values": {
+        "type": "tuple[ScalarValue, ...]",
+        "description": "按definitions顺序排列的归一化信号值，与本组时间对应。"
+      }
+    }
+  },
+  "chronaxis.execution.record_integral.record_integral_cost": {
+    "parameters": {
+      "spec": {
+        "type": "CalculationDefinition",
+        "description": "已验证积分请求，包含单位、请求窗口和完整性规则。"
+      },
+      "input_unit": {
+        "type": "str",
+        "description": "输入表达式的单位文本，计入固定声明费用，不在这里执行单位换算。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "每批区间数上限，默认64，允许1至4096的原生整数；与报文采样周期无关。"
+      },
+      "partial_limit": {
+        "type": "int",
+        "description": "保留误差项的数量上限，默认4096；必须是正原生整数，不允许截断误差项继续计算。"
+      }
+    }
+  },
+  "chronaxis.execution.record_integral.RecordIntegral._accept_terms": {
+    "parameters": {
+      "areas": {
+        "type": "tuple[float, ...] | numpy.ndarray",
+        "description": "按输入顺序排列、尚未换算最终单位的面积；无效位置保留0，并由valid排除。"
+      },
+      "valid": {
+        "type": "tuple[bool, ...] | numpy.ndarray",
+        "description": "与areas同长的有效掩码；True才参与累计，不能把无效存储零当作有效零。"
+      },
+      "covered_ns": {
+        "type": "int",
+        "description": "当前块与请求范围相交的实际纳秒数，非负；仅更新覆盖事实时允许没有面积项。"
+      },
+      "valid_ns": {
+        "type": "int",
+        "description": "当前覆盖中数值有效的实际纳秒数，满足0≤valid_ns≤covered_ns。"
+      },
+      "quality": {
+        "type": "QualityFlag",
+        "description": "原面积核已确认的质量位，合并到本次积分状态。"
+      },
+      "conditional": {
+        "type": "ConditionalIntegralFacts | None",
+        "description": "条件积分的当前块事实；默认None使用无条件覆盖规则，不把条件未知当成条件为假。"
+      }
+    }
+  },
+  "chronaxis.execution.record_integral.RecordIntegral.consume_terms": {
+    "parameters": {
+      "areas": {
+        "type": "tuple[float, ...]",
+        "description": "按输入顺序排列、尚未换算最终单位的面积；无效位置保留0，并由valid排除。"
+      },
+      "valid": {
+        "type": "tuple[bool, ...]",
+        "description": "与areas同长的有效掩码；True才参与累计，不能把无效存储零当作有效零。"
+      },
+      "covered_ns": {
+        "type": "int",
+        "description": "当前块与请求范围相交的实际纳秒数，非负；仅更新覆盖事实时允许没有面积项。"
+      },
+      "valid_ns": {
+        "type": "int",
+        "description": "当前覆盖中数值有效的实际纳秒数，满足0≤valid_ns≤covered_ns。"
+      },
+      "quality": {
+        "type": "QualityFlag",
+        "description": "原面积核已确认的质量位，合并到本次积分状态。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_session.parallel_integral_inputs": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "已验证并解析数值后端的计划；调用方另外确认原请求为auto，只检查适用范围，不读DBC或原帧。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_session.parallel_integral_source": {
+    "parameters": {
+      "source": {
+        "type": "SourcePlan",
+        "description": "当前计划唯一的ASC/BLF来源，沿用普通并行CAN读取的源配置和解码政策。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "requirement": {
+        "type": "SourceInputRequirements",
+        "description": "共用需求分析对该来源的结果，决定目标ID和所需时间检查范围。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_session.ParallelIntegralSession.fixed_cost": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "已满足静态并行积分条件的计划，用于计算会话声明固定费用。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_session.ParallelIntegralSession.__init__": {
+    "parameters": {
+      "plan": {
+        "type": "AnalysisPlan",
+        "description": "已满足静态条件的连续多文件会话计划，尚未读取原帧。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "与父会话共享的受管理预算；本对象只预约和归还自身持有的费用。"
+      },
+      "requirements": {
+        "type": "InputRequirements",
+        "description": "当前计划的共用输入需求，按来源获取解码和时间检查范围。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_session.ParallelIntegralSession._new": {
+    "parameters": {
+      "factory": {
+        "type": "Callable[..., object]",
+        "description": "构造受本会话管理资源的工厂；返回需要close清理的owner。"
+      },
+      "recovery": {
+        "type": "str",
+        "description": "构造失败异常上保存清理owner的准确属性名，不按异常文字推断资源。"
+      },
+      "args": {
+        "type": "tuple[object, ...]",
+        "description": "原样交给factory的位置参数。"
+      },
+      "kwargs": {
+        "type": "dict[str, object]",
+        "description": "原样交给factory的关键字参数。"
+      }
+    },
+    "返回": "object，factory成功返回的资源owner；构造失败时只接管恢复属性并重新抛出原异常。"
+  },
+  "chronaxis.execution.integral_blocks._timebase": {
+    "parameters": {
+      "value": {
+        "type": "TimebaseSpec",
+        "description": "要展开的已验证时基，保留名称、时间类型和原点。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._restore_timebase": {
+    "parameters": {
+      "value": {
+        "type": "dict[str, object]",
+        "description": "只含timebase_id、time_type和origin的固定JSON对象。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._interval": {
+    "parameters": {
+      "value": {
+        "type": "Interval | None",
+        "description": "实际纳秒范围；None保留没有显式请求范围的含义。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._restore_interval": {
+    "parameters": {
+      "value": {
+        "type": "list[int] | None",
+        "description": "依次为起止纳秒的两元素列表；None保持无显式范围，其他长度拒绝。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.pack_task": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "单个传输面积块的区间上限，默认64，允许1至64；不是原帧读取数或采样周期。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.check_task": {
+    "parameters": {
+      "task": {
+        "type": "dict[str, object]",
+        "description": "pack_task格式的固定任务树；核白名单、列表数量和会话积分操作，不接收额外指令。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.restore_task": {
+    "parameters": {
+      "task": {
+        "type": "dict[str, object]",
+        "description": "已接收的固定数值任务树；仍核对字段和声明身份，只调用列出的模型构造器。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.event_cost": {
+    "parameters": {
+      "event": {
+        "type": "FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier",
+        "description": "已形成的首组、内部面积、末组或错误前缀已关闭边界事件；不含文件部分和。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._group_cost": {
+    "parameters": {
+      "count": {
+        "type": "int",
+        "description": "已验证的非负信号字段数；按每字段最大整数和标量编码估算首尾摘要。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._compatibility_cost": {
+    "parameters": {
+      "names": {
+        "type": "Iterable[str]",
+        "description": "规范CAN字段键序列，按每项实际UTF-8长度估算兼容提示编码与展开。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.facts_cost": {
+    "parameters": {
+      "facts": {
+        "type": "dict[str, object]",
+        "description": "同次读取事实：原帧/解码累计数、实际首末纳秒、Decimal顺序时间及compatibility_fields tuple。"
+      },
+      "cache": {
+        "type": "dict[int, tuple[int, int]]",
+        "description": "当前批次的费用缓存，以compatibility_fields tuple的对象身份为键，值为编码/展开字节数；不跨无限批保留。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.boundary_supported": {
+    "parameters": {
+      "definitions": {
+        "type": "Sequence[SignalDefinition]",
+        "description": "已验证的必要信号定义；只据声明数量和字段键检查单个首尾摘要能否装入既有包，不读取DBC或原帧。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Writer.add": {
+    "parameters": {
+      "value": {
+        "type": "bytes",
+        "description": "待追加到当前正文的编码片段；追加后含8字节包头仍不得超过WIRE_LIMIT。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Writer.byte": {
+    "parameters": {
+      "value": {
+        "type": "int",
+        "description": "要写入的无符号8位值，0至255；调用方已按字段含义约束。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Writer.count": {
+    "parameters": {
+      "value": {
+        "type": "int",
+        "description": "要写入的无符号32位数量，不是负索引。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Writer.integer": {
+    "parameters": {
+      "value": {
+        "type": "int | None",
+        "description": "无损编码的原生整数或缺值；幅值最多128位，None使用独立标记。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Writer.decimal": {
+    "parameters": {
+      "value": {
+        "type": "Decimal | None",
+        "description": "有限的精确顺序时间；编码符号、十进制数字与指数，不转为float。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Reader.__init__": {
+    "parameters": {
+      "packet": {
+        "type": "bytes",
+        "description": "包含固定8字节包头的完整积分包，长度为8至WIRE_LIMIT字节。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Reader.take": {
+    "parameters": {
+      "size": {
+        "type": "int",
+        "description": "本次从游标读取的非负字节数；超过剩余长度时报IntegralBlockError。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Reader.charge": {
+    "parameters": {
+      "size": {
+        "type": "int",
+        "description": "即将展开模型的非负字节估算，累计不得超过MODEL_LIMIT。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._Reader.count": {
+    "parameters": {
+      "maximum": {
+        "type": "int",
+        "description": "该字段允许的数量上限，默认4096；读出数量还不得超过当前包的剩余字节数。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._write_scalar": {
+    "parameters": {
+      "writer": {
+        "type": "_Writer",
+        "description": "当前积分包的有限编码器。"
+      },
+      "value": {
+        "type": "ScalarValue",
+        "description": "INT64、UINT64或FLOAT64规范标量；不允许labels、枚举原码或partial扩展状态。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._read_scalar": {
+    "parameters": {
+      "reader": {
+        "type": "_Reader",
+        "description": "当前积分包的有界解码器，恢复类型、数值、有效性和质量。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._write_group": {
+    "parameters": {
+      "writer": {
+        "type": "_Writer",
+        "description": "当前积分包编码器。"
+      },
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "首末同刻摘要，字段数与首值、末值、冲突位置tuple对应。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._read_group": {
+    "parameters": {
+      "reader": {
+        "type": "_Reader",
+        "description": "当前积分包解码器；先核字段数量并记展开费用，再恢复同刻摘要。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.encode_packet": {
+    "parameters": {
+      "file_index": {
+        "type": "int",
+        "description": "来源声明中的零起文件序号，按配置顺序消费，不按工作进程完成次序重排。"
+      },
+      "number": {
+        "type": "int",
+        "description": "该文件从0递增的数据块序号，父进程逐包核对。"
+      },
+      "events": {
+        "type": "tuple[FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier, ...]",
+        "description": "本包按顺序交付的有限事件，不改变原面积float64位型。"
+      },
+      "eof": {
+        "type": "bool",
+        "description": "标记最后数据包；读取器和数值owner已关闭，发送后的工作区释放由finished另行确认。"
+      },
+      "facts": {
+        "type": "dict[str, object]",
+        "description": "同次读取事实：原帧/解码累计数、实际首末纳秒、Decimal顺序时间及compatibility_fields tuple。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.decode_packet": {
+    "parameters": {
+      "packet": {
+        "type": "bytes",
+        "description": "完整积分二进制包；核版本、长度、有限计数、精确时间和尾随内容。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.IntegralPacket": {
+    "fields": {
+      "events": {
+        "type": "tuple[FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier, ...]",
+        "description": "固定事件的原序集合；没有逐帧载荷或文件部分和。"
+      },
+      "eof": {
+        "type": "bool",
+        "description": "数据终点标志；完整资源释放必须继续等待finished控制确认。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool._task_bytes": {
+    "parameters": {
+      "value": {
+        "type": "dict | list | str | int | float | bool | None",
+        "description": "本模块已生成的有限JSON树，递归估算其容器和标量费用，不接受任意Python对象。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool._startup_costs": {
+    "parameters": {
+      "spec": {
+        "type": "CANTextSpec",
+        "description": "同一来源的连续ASC/BLF输入，file_merge必须为concatenate；保留原路径、时基和读取政策。"
+      },
+      "signals": {
+        "type": "Sequence[SignalDefinition]",
+        "description": "当前任务所需的原信号定义，启动时据此加载同次DBC事实；实际有效期在数值配置前补齐。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "正原生整数工作进程上限，实际槽数不超过输入文件数，不含主进程。"
+      },
+      "options": {
+        "type": "dict[str, object]",
+        "description": "共用CANTextDecodeRead的固定读取选项；不接受非空database_context原帧捕获上下文。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "CANTextSpec",
+        "description": "同一来源的连续ASC/BLF输入，file_merge必须为concatenate；保留原路径、时基和读取政策。"
+      },
+      "signals": {
+        "type": "Sequence[SignalDefinition]",
+        "description": "当前任务所需的原信号定义，启动时据此加载同次DBC事实；实际有效期在数值配置前补齐。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "正原生整数工作进程上限，实际槽数不超过输入文件数，不含主进程。"
+      },
+      "options": {
+        "type": "dict[str, object]",
+        "description": "共用CANTextDecodeRead的固定读取选项；不接受非空database_context原帧捕获上下文。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "父会话共享预算，本池预约声明、工作槽、任务和元数据费用并负责归还。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.startup_cost": {
+    "parameters": {
+      "spec": {
+        "type": "CANTextSpec",
+        "description": "同一来源的连续ASC/BLF输入，file_merge必须为concatenate；保留原路径、时基和读取政策。"
+      },
+      "signals": {
+        "type": "Sequence[SignalDefinition]",
+        "description": "当前任务所需的原信号定义，启动时据此加载同次DBC事实；实际有效期在数值配置前补齐。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "正原生整数工作进程上限，实际槽数不超过输入文件数，不含主进程。"
+      },
+      "options": {
+        "type": "dict[str, object]",
+        "description": "共用CANTextDecodeRead的固定读取选项；不接受非空database_context原帧捕获上下文。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._dispatch": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      },
+      "index": {
+        "type": "int",
+        "description": "来源声明中的零起文件序号，按配置顺序消费，不按工作进程完成次序重排。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._bytes": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      },
+      "size": {
+        "type": "int",
+        "description": "控制通道声明的正整数包长，不能超过WIRE_LIMIT；接收后还核实际长度。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._configure_slot": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._request": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._raise_file": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._accept_metadata": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._wait": {
+    "parameters": {
+      "slot": {
+        "type": "dict[str, object]",
+        "description": "池拥有的工作槽，包含进程、端点、当前文件/块序号及READY、待交付包和释放确认状态。"
+      },
+      "metadata": {
+        "type": "bool",
+        "description": "默认False；True时等待同次DBC的READY。优先于finished，不读取原帧来补元数据。"
+      },
+      "finished": {
+        "type": "bool",
+        "description": "默认False；metadata为False且本项True时等待最终工作区释放确认，否则等待数据包。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._accept_metadata.reserve_model": {
+    "parameters": {
+      "size": {
+        "type": "int",
+        "description": "单份元数据展开图的保守字节数；预约同时存在的解码图、冻结图及已持有首文件图。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._configuration": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.configuration_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.configure": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本次积分实际依赖的信号定义，按冻结顺序排列；已由同次DBC事实补齐有效期。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "已验证的简单数值表达式，与积分计算项顺序一致。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "首帧前由同次DBC元数据证明的唯一共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "本次连续分析的会话名称，文件切换时保持不变。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool._accept_facts": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "来源声明中的零起文件序号，按配置顺序消费，不按工作进程完成次序重排。"
+      },
+      "facts": {
+        "type": "dict[str, object]",
+        "description": "同次读取事实：原帧/解码累计数、实际首末纳秒、Decimal顺序时间及compatibility_fields tuple。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.iter_file": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "来源声明中的零起文件序号，按配置顺序消费，不按工作进程完成次序重排。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker._facts": {
+    "parameters": {
+      "reader": {
+        "type": "CANTextDecodeRead",
+        "description": "当前文件的活读取器，保留同次读取计数和精确时间，调用方负责关闭。"
+      },
+      "terms": {
+        "type": "FileIntegralTerms",
+        "description": "当前文件的有界归组与面积owner，不保存完整原帧或局部总和。"
+      },
+      "compatibility": {
+        "type": "dict[str, object]",
+        "description": "本文件的必要帧型提示缓存，只记录已见兼容字段并复用冻结tuple。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker._error_text": {
+    "parameters": {
+      "error": {
+        "type": "BaseException",
+        "description": "要报告的主异常；保留其文字及最多4条、每条至多256字符的清理说明，通道仍另做字节限长。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker._close_file": {
+    "parameters": {
+      "reader": {
+        "type": "CANTextDecodeRead | None",
+        "description": "待关闭读取器；None表示已经关闭或未构造。"
+      },
+      "terms": {
+        "type": "FileIntegralTerms | None",
+        "description": "待关闭数值owner；None表示已经关闭或未构造。"
+      },
+      "primary": {
+        "type": "BaseException | None",
+        "description": "原主异常，默认None；后续清理错误只附注，不替换已有主错。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker.read_events": {
+    "parameters": {
+      "reader": {
+        "type": "CANTextDecodeRead",
+        "description": "当前文件的活读取器，保留同次读取计数和精确时间，调用方负责关闭。"
+      },
+      "terms": {
+        "type": "FileIntegralTerms",
+        "description": "当前文件的有界归组与面积owner，不保存完整原帧或局部总和。"
+      },
+      "compatibility": {
+        "type": "dict[str, object]",
+        "description": "本文件的必要帧型提示缓存，只记录已见兼容字段并复用冻结tuple。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker.read_events.append": {
+    "parameters": {
+      "items": {
+        "type": "tuple[FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier, ...]",
+        "description": "数值owner本次产生的有限事件；附带同一时刻的读取事实并累计编码/展开估算。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker.take_events": {
+    "parameters": {
+      "items": {
+        "type": "tuple[tuple[FileIntegralHead | IntegralTermsChunk | FileIntegralTail | FileIntegralFrontier, dict[str, object]], ...]",
+        "description": "已经形成、尚未交付的事件与对应facts条目；保留原顺序。"
+      },
+      "last_facts": {
+        "type": "dict[str, object]",
+        "description": "同次读取事实：原帧/解码累计数、实际首末纳秒、Decimal顺序时间及compatibility_fields tuple。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker.worker_main": {
+    "parameters": {
+      "control": {
+        "type": "ControlChannel",
+        "description": "integral族的工作端控制通道；只接受固定file、budget、configure、next和close命令。"
+      },
+      "data": {
+        "type": "multiprocessing.connection.Connection",
+        "description": "单向发送二进制元数据和面积包的实际管道端点；本函数结束时关闭。"
+      }
+    }
+  },
+  "chronaxis.execution.record_session_calculations.RecordSessionCalculations._execute_parallel_integrals": {
+    "parameters": {
+      "requests": {
+        "type": "tuple[CalculationPlan, ...]",
+        "description": "_prepare_requests取得的会话数值计算请求，顺序与计划一致；静态条件、绑定或预算不适合时不消费输入。"
+      }
+    }
+  },
+  "chronaxis._control_wire.ControlChannel.__exit__": {
+    "parameters": {
+      "args": {
+        "type": "tuple[type[BaseException] | None, BaseException | None, TracebackType | None]",
+        "description": "上下文管理器传入的异常类型、异常对象和traceback三项；正常离开时均为None，原样交给实际Connection.__exit__。"
+      }
+    }
+  },
+  "chronaxis._control_wire.ControlChannel.poll": {
+    "parameters": {
+      "args": {
+        "type": "tuple[int | float | None, ...]",
+        "description": "沿用Connection.poll的位置参数，省略时立即检查；最多一个以秒计的timeout，None表示等待直到可读。"
+      }
+    }
+  },
+  "chronaxis.execution.file_integral_terms.file_terms_minimum_cost": {
+    "parameters": {
+      "calculation_count": {
+        "type": "int",
+        "description": "本次会话的积分计算项数量，允许非负原生整数，不接受bool；用于估算每项必须保留的状态，不是报文数。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "文件内每批面积区间数上限，默认64，允许1至4096的原生整数；据此估算批容量，不改变采样周期。"
+      }
+    },
+    "返回": "int，文件面积固定状态、批容量和求值器固定费的必要字节下界；尚未计入DBC、声明图、表达式及读取费用。",
+    "异常": "计算项数不是非负原生整数，或批上限不是1至4096的原生整数时抛ValueError；只计算费用，不构造数值状态或读取文件。"
+  },
+  "chronaxis.execution.file_integral_terms.parent_terms_minimum_cost": {
+    "parameters": {
+      "calculation_count": {
+        "type": "int",
+        "description": "本次会话的积分计算项数量，允许非负原生整数，不接受bool；用于估算每项必须保留的状态，不是报文数。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "父进程按原顺序累计的全局区间批上限，默认64，允许1至4096的原生整数；用于估算固定状态和待处理余量。"
+      }
+    },
+    "返回": "int，父边界固定状态、全局余量及求值器固定费的必要字节下界；声明图和借用的RecordIntegral另计。",
+    "异常": "计算项数不是非负原生整数，或批上限不是1至4096的原生整数时抛ValueError；不申请预算或构造求值器。"
+  },
+  "chronaxis.execution.parallel_integral_pool._configuration_rows": {
+    "parameters": {
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户给定的正原生整数区间批上限；实际传输块还受最多64行和计算项宽度约束，本函数与正式配置共用这一计算。"
+      },
+      "calculation_count": {
+        "type": "int",
+        "description": "同一工作块中的积分计算项数，允许非负原生整数，不接受bool；计算项越多，每行越宽，可容纳行数相应减少。"
+      }
+    },
+    "返回": "int，1至64之间且不超过用户批上限的实际工作块行数；不读取文件或修改预算。",
+    "异常": "批上限不是正原生整数，或计算项数不是非负原生整数时抛ValueError。"
+  },
+  "chronaxis.execution.parallel_integral_pool.ParallelIntegralPool.configuration_minimum_cost": {
+    "parameters": {
+      "calculation_count": {
+        "type": "int",
+        "description": "本次会话的积分计算项数量，允许非负原生整数，不接受bool；用于估算每项必须保留的状态，不是报文数。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "配置允许的文件工作进程上限，必须是正原生整数；与file_count取较小值确定需要预留的工作槽数，不代表已启动进程数。"
+      },
+      "file_count": {
+        "type": "int",
+        "description": "连续输入文件数量，必须是正原生整数；限制同时需要的工作槽数，不能用采样数量代替。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户指定的正原生整数区间批上限，默认64；与正式配置共用工作块行数计算，再估算每个工作槽必须持有的数值状态。"
+      }
+    },
+    "返回": "int，父任务及全部工作槽的必要数值任务字节下界；包括固定重建和数值状态，不含DBC和声明图。用于创建进程前排除预算必然不足的情况，不能代替后续完整费用核对。",
+    "异常": "计算项数不是非负原生整数，或进程上限、文件数、批上限不是正原生整数时抛ValueError；不创建进程、任务树或修改预算。"
   }
 }

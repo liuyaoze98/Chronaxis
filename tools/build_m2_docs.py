@@ -35,6 +35,7 @@ PUBLIC_SIGNATURES = {}
 TYPE_LOCATIONS = {}
 TYPE_IMPORTS = {}
 SOURCES = None
+VERSION = ''
 SECTIONS = ('参数', '返回', '异常', '处理流程', '副作用', '边界与示例', '边界', '流程', '约束')
 LAYER_GUIDES = {
     'core': ('时序与数值核心', '../concepts.md'),
@@ -54,6 +55,17 @@ def git_text(path):
     参数: path为仓库相对路径。返回: 解码后的文本。异常: Git读取失败或编码错误传播。
     """
     return SOURCES.text(path) if SOURCES is not None else subprocess.check_output(['git', 'show', f'{BASELINE}:{path}'], cwd=ROOT).decode('utf-8-sig')
+
+
+def source_note():
+    """返回源码行号所属版本的说明。
+
+    参数: 无。返回: 说明文字。异常: 无。
+    当前版写产品版本号，读者不需要知道内部提交号；M2/M3 历史版保持原有写法。
+    """
+    if EDITION == 'Current':
+        return f'行号对应 Chronaxis {VERSION} 源码'
+    return f'行号属于 `{BASELINE}`'
 
 
 def cell(text):
@@ -95,10 +107,11 @@ def anchor(name):
     return 'api-' + name.replace('.', '-')
 
 
-def call_signature(name, node, qualified=''):
+def call_signature(name, node, qualified='', *, receiver=True):
     """生成调用签名；实例接收者不作为用户参数，属性不显示调用括号。
 
-    参数: name为限定对象名；node为AST定义；qualified用于查询经核对的公开构造签名。
+    参数: name为限定对象名；node为AST定义；qualified用于查询经核对的公开构造签名；
+        receiver表示此定义是有隐式接收者的方法，模块或嵌套函数应传False。
     返回: 签名文本。异常: AST解析错误传播；不导入产品或推断继承构造器。
     """
     if isinstance(node, ast.ClassDef):
@@ -106,16 +119,18 @@ def call_signature(name, node, qualified=''):
             return name + PUBLIC_SIGNATURES[qualified]
         constructor = next((x for x in node.body if isinstance(x, ast.FunctionDef) and x.name == '__init__'), None)
         if constructor:
-            return call_signature(name, constructor)
+            return call_signature(name, constructor, receiver=not any(
+                ast.unparse(decorator).split('.')[-1] == 'staticmethod'
+                for decorator in constructor.decorator_list))
         # 内部类声明只列真实基类；不把字段列表猜成完整构造签名。
         bases = ', '.join(ast.unparse(x) for x in node.bases)
         return f'class {name}' + (f'({bases})' if bases else '')
     decorators = [ast.unparse(x) for x in node.decorator_list]
-    if 'property' in decorators:
+    if receiver and 'property' in decorators:
         return name + (': ' + ast.unparse(node.returns) if node.returns else '')
     args = copy.deepcopy(node.args)
     candidates = args.posonlyargs or args.args
-    if candidates and candidates[0].arg in ('self', 'cls'):
+    if receiver and candidates and candidates[0].arg in ('self', 'cls'):
         candidates.pop(0)
     signature = name + '(' + ast.unparse(args) + ')'
     if node.returns:
@@ -165,16 +180,17 @@ def parameters(node):
     return result
 
 
-def describe_parameter(name, section, overrides, qualified):
+def describe_parameter(name, section, overrides, qualified, *, receiver=True):
     """将具体参数和原说明对应；语义补充优先于旧注释，缺项留给审核而不猜。
 
-    参数: name参数名；section原参数段；overrides人工补充表；qualified完整对象名。
+    参数: name参数名；section原参数段；overrides人工补充表；qualified完整对象名；
+        receiver表示本参数是否可能是由Python传入的方法接收者。
     返回: 说明文本及是否缺少对应说明。异常: 无。
     """
     supplied = overrides.get(qualified, {}).get('parameters', {}).get(name)
     if supplied:
         return supplied['description'] if isinstance(supplied, dict) else supplied, False
-    if name in ('self', 'cls'):
+    if receiver and name in ('self', 'cls'):
         return ('当前实例，调用obj.method(...)时由Python传入。' if name == 'self'
                 else '当前类，调用类方法时由Python传入。'), False
     # 正式参数段常换行续写。取到下一项参数为止，不能只显示名称所在的第一行。
@@ -196,10 +212,11 @@ def describe_parameter(name, section, overrides, qualified):
     return section or '原说明没有单独解释此参数；调用位置与源码见下方。', True
 
 
-def documented_item(item, override, node, *, is_field=False):
+def documented_item(item, override, node, *, is_field=False, receiver=True):
     """分开显示调用要求和源码默认表达式，保留原清单供独立AST核对。
 
-    参数: item为AST条目；override为逐项人工说明；node为定义节点；is_field区分类成员。
+    参数: item为AST条目；override为逐项人工说明；node为定义节点；is_field区分类成员；
+        receiver区分隐式方法接收者和名称恰好为self/cls的普通参数。
     返回: 类型、必填、默认三个展示单元；不修改item中的源码证据。
     异常: 人工说明结构或字段表达式错误时传播KeyError、TypeError或SyntaxError。
     """
@@ -208,7 +225,7 @@ def documented_item(item, override, node, *, is_field=False):
     typename = supplied.get('type') or item['type']
     required = '是' if item['default'] == '必填' else '否'
     default = supplied.get('default', item['default'] if item['default'] != '必填' else '无')
-    if item['name'] in ('self', 'cls') and not is_field:
+    if receiver and item['name'] in ('self', 'cls') and not is_field:
         return ('当前实例' if item['name'] == 'self' else '当前类', '不手动传入', 'Python自动传入')
     if is_field and not any('dataclass' in ast.unparse(d) for d in node.decorator_list):
         required = '类成员，不作为构造参数填写'
@@ -310,6 +327,11 @@ def render_module(path, source, overrides):
     异常: Python语法或说明结构异常传播。副作用: 无文件写入。
     """
     tree = ast.parse(source)
+    # 只有类体的直接方法会绑定接收者；静态方法和函数内定义不因参数名相同而省略参数。
+    methods = {id(member) for owner in ast.walk(tree) if isinstance(owner, ast.ClassDef)
+               for member in owner.body if isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef))
+               and not any(ast.unparse(decorator).split('.')[-1] == 'staticmethod'
+                           for decorator in member.decorator_list)}
     module = path.removeprefix('src/').removesuffix('.py').replace('/', '.')
     module = module.removesuffix('.__init__')
     layer = module.split('.')[1] if '.' in module else 'root'
@@ -364,6 +386,9 @@ def render_module(path, source, overrides):
     lines = source.splitlines()
     for name, node in symbols:
         qualified = module + '.' + name
+        positional = node.args.posonlyargs + node.args.args if hasattr(node, 'args') else []
+        receiver_name = (positional[0].arg if id(node) in methods and positional
+                         and positional[0].arg in ('self', 'cls') else None)
         record = {'name': name, 'kind': 'class' if isinstance(node, ast.ClassDef) else 'function', 'line': node.lineno}
         sections = split_doc(ast.get_docstring(node) or '')
         level = '###' if EDITION == 'Current' and '.' in name else '##'
@@ -387,7 +412,7 @@ def render_module(path, source, overrides):
             record['parameters'] = parameters(node)
             record['decorators'] = [ast.unparse(d) for d in node.decorator_list]
         if EDITION == 'Current':
-            signature = call_signature(name, node, qualified)
+            signature = call_signature(name, node, qualified, receiver=id(node) in methods)
         out += ['```python\n' + signature + '\n```\n\n']
         if EDITION == 'Current' and isinstance(node, ast.ClassDef) and node.bases:
             # 继承字段不冒充本类新增字段；给出可达的完整基类字段入口。
@@ -397,7 +422,7 @@ def render_module(path, source, overrides):
             out += ['装饰器：' + ', '.join(f'`{d}`' for d in record['decorators']) + '。\n\n']
         items = record.get('parameters', record.get('fields', []))
         if EDITION == 'Current' and not isinstance(node, ast.ClassDef):
-            items = [item for item in items if item['name'] not in ('self', 'cls')]
+            items = [item for item in items if item['name'] != receiver_name]
         if items:
             out += [detail_level + ' ' + ('属性与数据字段' if isinstance(node, ast.ClassDef) and EDITION == 'Current' else '构造字段与类成员' if isinstance(node, ast.ClassDef) else '参数') + '\n\n',
                     ('|名称|数据类型|必填|省略时的值|用途、取值和效果|\n|---|---|---|---|---|\n' if EDITION in ('M3', 'Current')
@@ -415,18 +440,21 @@ def render_module(path, source, overrides):
                         if missing:
                             unresolved.append(qualified + ':' + item['name'])
                 else:
-                    description, missing = describe_parameter(item['name'], sections.get('参数', ''), overrides, qualified)
+                    description, missing = describe_parameter(item['name'], sections.get('参数', ''), overrides, qualified,
+                                                              receiver=item['name'] == receiver_name)
                     if missing:
                         unresolved.append(qualified + ':' + item['name'])
                     description = f"{item['kind']}。{description}"
                 if EDITION in ('M3', 'Current'):
-                    typename, required, default = documented_item(item, override, node, is_field=isinstance(node, ast.ClassDef))
+                    typename, required, default = documented_item(item, override, node, is_field=isinstance(node, ast.ClassDef),
+                                                                 receiver=item['name'] == receiver_name)
                     shown_type = type_cell(typename,module,aliases,TYPE_LOCATIONS,TYPE_IMPORTS) if EDITION=='Current' else typename
                     out.append(f"|`{item['name']}`|{cell(shown_type)}|{cell(required)}|{cell(default)}|{cell(plain(description))}|\n")
                 else:
                     out.append(f"|`{item['name']}`|{cell(item['type'] or '源码未注解；见说明')}|`{cell(item['default'])}`|{cell(plain(description))}|\n")
         elif not isinstance(node, ast.ClassDef):
-            out += [('读取属性，不使用调用括号。\n\n' if EDITION == 'Current' and 'property' in record.get('decorators', []) else '参数：无显式参数。\n\n')]
+            out += [('读取属性，不使用调用括号。\n\n' if EDITION == 'Current' and receiver_name
+                     and 'property' in record.get('decorators', []) else '参数：无显式参数。\n\n')]
         for title in SECTIONS:
             if sections.get(title):
                 # 逐参数表已经给出完整解释；保留原段落供核对，不重复展示缩写式参数串。
@@ -439,7 +467,7 @@ def render_module(path, source, overrides):
         if override.get('example'):
             out += [f'\n{detail_level} 调用示例\n\n```python\n', override['example'], '\n```\n']
         # 链到当前仓库源文件时显式附基线行号，网页另提供冻结源文件以避开M3偏移。
-        out += [f'\n源码：[`{path}:{node.lineno}`](../../../{path}#L{node.lineno})（行号属于 `{BASELINE}`）。\n']
+        out += [f'\n源码：[`{path}:{node.lineno}`](../../../{path}#L{node.lineno})（{source_note()}）。\n']
         inventory['objects'].append(record)
     # 匿名排序/分组键没有公共名称，以源码行定位并允许逐个补充解释。
     lambdas = [node for node in ast.walk(tree) if isinstance(node, ast.Lambda)]
@@ -466,7 +494,9 @@ def schema_reference(schema):
 
     参数: schema为固定版本JSON schema。返回: 完整字段Markdown。异常: JSON结构错误传播。
     """
-    out = [f'# 配置字段完整参考\n\n> 基线{BASELINE}；device_label: {LABEL}。\n\n',
+    # 当前版公开页只写产品版本；提交号和设备标签仍记录在 documentation.json 及审阅清单中。
+    heading = f'> 对应 Chronaxis {VERSION}。' if EDITION == 'Current' else f'> 基线{BASELINE}；device_label: {LABEL}。'
+    out = [f'# 配置字段完整参考\n\n{heading}\n\n',
            '先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；'
            '`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。\n\n']
     stack = [('$', schema)]
@@ -496,7 +526,7 @@ def main():
     副作用: 仅写所选Docs版本的reference和_build中的审阅清单，不修改人工手册或产品。
     """
     # 版本由调用者明确指定；元数据固定Git提交，避免当前HEAD变化悄悄改变手册。
-    global EDITION, DOC, OUT, BASELINE, STAMP, LABEL, TASK, LANGUAGE, PUBLIC_SIGNATURES, TYPE_LOCATIONS, TYPE_IMPORTS, SOURCES
+    global EDITION, DOC, OUT, BASELINE, STAMP, LABEL, TASK, LANGUAGE, PUBLIC_SIGNATURES, TYPE_LOCATIONS, TYPE_IMPORTS, SOURCES, VERSION
     parser = argparse.ArgumentParser(description='从固定Git版本生成完整API参考')
     parser.add_argument('--edition', choices=('M2', 'M3', 'Current'), default='M2')
     EDITION = parser.parse_args().edition
@@ -517,6 +547,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     overrides = json.loads((DOC / 'annotations.json').read_text(encoding='utf-8'))
     SOURCES = DocSources(ROOT, BASELINE, EDITION)
+    VERSION = SOURCES.version()
     paths = SOURCES.paths()
     # 先取得完整限定名和真实导入，再渲染链接；禁止把threading.Event按短名猜成业务Event。
     sources={path:git_text(path) for path in paths if path.endswith('.py')}
@@ -533,13 +564,19 @@ def main():
         for name,node in definitions(ast.parse(source)):
             if isinstance(node,ast.ClassDef):TYPE_LOCATIONS[module+'.'+name]=module+'.md#'+anchor(name)
     records, unresolved = [], []
-    index = [f'# {EDITION}完整API参考\n\n> 固定源码基线{BASELINE}；device_label: {LABEL}。\n\n',
-             '覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。'
-             '测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。'
-             '不包含RefProjects及未跟踪的同步冲突副本。\n\n',
-             '用户优先从[公开API用法](../api-usage.md)开始；需要修改内部实现时再按包查找。'
-             '源码无类型注解时不会伪造签名，业务类型/单位以说明为准。\n\n',
-             '## 模块\n\n|模块|职责|定义数|\n|---|---|---|\n']
+    if EDITION == 'Current':
+        # 当前版公开页只写产品版本；提交号和设备标签仍记录在 documentation.json 及审阅清单中。
+        index = [f'# 完整API参考\n\n> 对应 Chronaxis {VERSION}。\n\n',
+                 '覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。'
+                 '测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。\n\n']
+    else:
+        index = [f'# {EDITION}完整API参考\n\n> 固定源码基线{BASELINE}；device_label: {LABEL}。\n\n',
+                 '覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。'
+                 '测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。'
+                 '不包含RefProjects及未跟踪的同步冲突副本。\n\n']
+    index += ['用户优先从[公开API用法](../api-usage.md)开始；需要修改内部实现时再按包查找。'
+              '源码无类型注解时不会伪造签名，业务类型/单位以说明为准。\n\n',
+              '## 模块\n\n|模块|职责|定义数|\n|---|---|---|\n']
     for path in paths:
         if not path.endswith('.py'):
             continue
@@ -590,6 +627,9 @@ def main():
     (OUT / 'configuration-schema.md').write_text(schema_reference(json.loads(git_text('Docs/Schema/analysis.schema.json' if EDITION == 'Current' else 'Docs/Schema/analysis-v1.schema.json'))), encoding='utf-8', newline='\n')
     manifest = {'baseline': SOURCES.revision(),
                 'device_label': LABEL, 'modules': records}
+    if EDITION == 'Current':
+        # 冻结源码网页只向读者显示产品版本；提交号仍保留在本清单中供核对。
+        manifest['version'] = VERSION
     (OUT / 'inventory.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if EDITION=='Current':build_public(DOC,public,records,anchor)
     build = DOC / '_build'

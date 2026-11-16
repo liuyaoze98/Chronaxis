@@ -147,7 +147,7 @@ Use `config_version: 4`. Compatible registered units are converted automatically
 | Energy and charge | J, Wh, kWh; Ah, A*s (also A·s) |
 | Time | s, ms, us, ns; µs and μs are aliases for us |
 | Temperature and differences | K, degC (°C, ℃); delta_K, delta_degC (ΔK, Δ°C, Δ℃) |
-| Resistance | Ohm, mOhm, kOhm, MOhm; Ω and Ω are aliases for Ohm; prefixed symbol forms are mΩ, kΩ and MΩ |
+| Resistance | Ohm, mOhm, kOhm, MOhm; the Greek letter Ω (U+03A9) and the ohm sign Ω (U+2126), which look the same, are aliases for Ohm; prefixed symbol forms are mΩ, kΩ and MΩ |
 | Length, speed, acceleration | m, m/s, m/s^2 |
 | Frequency, angular speed, angle | Hz, rpm, rad/s; rad, deg (°) |
 | Force, torque, pressure | N, N*m (N·m); Pa, kPa, bar |

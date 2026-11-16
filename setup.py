@@ -1,4 +1,4 @@
-"""扩展标准wheel构建：填入同版用户指南和自动生成的运行版本。
+"""扩展标准wheel构建：填入同版AI指南、Markdown用户手册和自动生成的运行版本。
 
 仅在构建产物中增加资源，不依赖Git或产品运行环境；sdist通过显式清单携带输入。
 """
@@ -74,6 +74,12 @@ class GuideBuild(build_py):
             obsolete.unlink()
         for name, data in builder().items():
             target = package / "guide" / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        # 随包Markdown用户手册与指南来自同一份锁定资料；构建器自行核对摘要与链接。
+        manual = run_path(str(root / "tools/build_user_manual.py"))["build_files"]
+        for name, data in manual().items():
+            target = package / "manual" / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
 

@@ -71,7 +71,7 @@ class CANBlockError(ValueError)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/can_block_codec.py:21`](../../../src/chronaxis/execution/can_block_codec.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:21`](../../../src/chronaxis/execution/can_block_codec.py#L21)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer"></a>
 ## `_Writer`
@@ -83,7 +83,7 @@ _Writer()
 ```
 
 
-源码：[`src/chronaxis/execution/can_block_codec.py:25`](../../../src/chronaxis/execution/can_block_codec.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:25`](../../../src/chronaxis/execution/can_block_codec.py#L25)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-__init__"></a>
 ### `_Writer.__init__`
@@ -109,7 +109,7 @@ _Writer.__init__()
 
 内存分配错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:28`](../../../src/chronaxis/execution/can_block_codec.py#L28)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:28`](../../../src/chronaxis/execution/can_block_codec.py#L28)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-add"></a>
 ### `_Writer.add`
@@ -134,7 +134,7 @@ None。
 
 超过512KiB时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:40`](../../../src/chronaxis/execution/can_block_codec.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:40`](../../../src/chronaxis/execution/can_block_codec.py#L40)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-byte"></a>
 ### `_Writer.byte`
@@ -159,7 +159,7 @@ None。
 
 范围或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:51`](../../../src/chronaxis/execution/can_block_codec.py#L51)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:51`](../../../src/chronaxis/execution/can_block_codec.py#L51)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-uint"></a>
 ### `_Writer.uint`
@@ -184,7 +184,7 @@ None。
 
 范围或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:60`](../../../src/chronaxis/execution/can_block_codec.py#L60)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:60`](../../../src/chronaxis/execution/can_block_codec.py#L60)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-text"></a>
 ### `_Writer.text`
@@ -209,7 +209,7 @@ None，首次出现时登记UTF8/surrogatepass内容。
 
 类型或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:69`](../../../src/chronaxis/execution/can_block_codec.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:69`](../../../src/chronaxis/execution/can_block_codec.py#L69)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-scalar"></a>
 ### `_Writer.scalar`
@@ -234,7 +234,7 @@ None。
 
 未支持类型或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:89`](../../../src/chronaxis/execution/can_block_codec.py#L89)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:89`](../../../src/chronaxis/execution/can_block_codec.py#L89)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-optional_text"></a>
 ### `_Writer.optional_text`
@@ -259,7 +259,7 @@ None。
 
 类型或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:115`](../../../src/chronaxis/execution/can_block_codec.py#L115)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:115`](../../../src/chronaxis/execution/can_block_codec.py#L115)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-pairs"></a>
 ### `_Writer.pairs`
@@ -284,7 +284,7 @@ None。
 
 字段类型或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:126`](../../../src/chronaxis/execution/can_block_codec.py#L126)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:126`](../../../src/chronaxis/execution/can_block_codec.py#L126)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-decimal"></a>
 ### `_Writer.decimal`
@@ -309,7 +309,7 @@ None，不按指数展开文本。
 
 类型、非有限值或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:138`](../../../src/chronaxis/execution/can_block_codec.py#L138)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:138`](../../../src/chronaxis/execution/can_block_codec.py#L138)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Writer-finish"></a>
 ### `_Writer.finish`
@@ -334,7 +334,7 @@ _Writer.finish(magic=b'CND1')
 
 超过512KiB时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:155`](../../../src/chronaxis/execution/can_block_codec.py#L155)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:155`](../../../src/chronaxis/execution/can_block_codec.py#L155)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader"></a>
 ## `_Reader`
@@ -346,7 +346,7 @@ _Reader(packet, expected=b'CND1', *, on_expand=None)
 ```
 
 
-源码：[`src/chronaxis/execution/can_block_codec.py:175`](../../../src/chronaxis/execution/can_block_codec.py#L175)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:175`](../../../src/chronaxis/execution/can_block_codec.py#L175)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-__init__"></a>
 ### `_Reader.__init__`
@@ -373,7 +373,7 @@ _Reader.__init__(packet, expected=b'CND1', *, on_expand=None)
 
 版本、长度、编码或展开上限错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:178`](../../../src/chronaxis/execution/can_block_codec.py#L178)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:178`](../../../src/chronaxis/execution/can_block_codec.py#L178)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-close"></a>
 ### `_Reader.close`
@@ -399,7 +399,7 @@ None；返回模型继续持有其实际使用的不可变文本。
 
 无，重复调用无副作用。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:218`](../../../src/chronaxis/execution/can_block_codec.py#L218)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:218`](../../../src/chronaxis/execution/can_block_codec.py#L218)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-charge"></a>
 ### `_Reader.charge`
@@ -424,7 +424,7 @@ None，不改变ResourceBudget账本。
 
 超过本固定图边界时CANBlockError；父预约不足或取消原样传播。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:230`](../../../src/chronaxis/execution/can_block_codec.py#L230)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:230`](../../../src/chronaxis/execution/can_block_codec.py#L230)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-remaining"></a>
 ### `_Reader.remaining`
@@ -452,7 +452,7 @@ _Reader.remaining
 
 无。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:245`](../../../src/chronaxis/execution/can_block_codec.py#L245)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:245`](../../../src/chronaxis/execution/can_block_codec.py#L245)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-take"></a>
 ### `_Reader.take`
@@ -477,7 +477,7 @@ memoryview，不复制包主体。
 
 长度越界或截断时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:254`](../../../src/chronaxis/execution/can_block_codec.py#L254)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:254`](../../../src/chronaxis/execution/can_block_codec.py#L254)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-byte"></a>
 ### `_Reader.byte`
@@ -503,7 +503,7 @@ int。
 
 截断时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:267`](../../../src/chronaxis/execution/can_block_codec.py#L267)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:267`](../../../src/chronaxis/execution/can_block_codec.py#L267)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-uint"></a>
 ### `_Reader.uint`
@@ -529,7 +529,7 @@ int。
 
 截断时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:281`](../../../src/chronaxis/execution/can_block_codec.py#L281)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:281`](../../../src/chronaxis/execution/can_block_codec.py#L281)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-boolean"></a>
 ### `_Reader.boolean`
@@ -555,7 +555,7 @@ bool。
 
 非0/1或截断时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:295`](../../../src/chronaxis/execution/can_block_codec.py#L295)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:295`](../../../src/chronaxis/execution/can_block_codec.py#L295)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-text"></a>
 ### `_Reader.text`
@@ -581,7 +581,7 @@ str，不复制共享文本。
 
 索引越界或截断时CANBlockError。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:307`](../../../src/chronaxis/execution/can_block_codec.py#L307)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:307`](../../../src/chronaxis/execution/can_block_codec.py#L307)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-scalar"></a>
 ### `_Reader.scalar`
@@ -607,7 +607,7 @@ None/bool/int/float，保留原位型。
 
 未知标记、非最短整数、展开或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:319`](../../../src/chronaxis/execution/can_block_codec.py#L319)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:319`](../../../src/chronaxis/execution/can_block_codec.py#L319)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-nonnegative"></a>
 ### `_Reader.nonnegative`
@@ -633,7 +633,7 @@ int。
 
 负数、bool、其他类型或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:353`](../../../src/chronaxis/execution/can_block_codec.py#L353)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:353`](../../../src/chronaxis/execution/can_block_codec.py#L353)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-optional_text"></a>
 ### `_Reader.optional_text`
@@ -659,7 +659,7 @@ str或None。
 
 存在位、索引或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:365`](../../../src/chronaxis/execution/can_block_codec.py#L365)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:365`](../../../src/chronaxis/execution/can_block_codec.py#L365)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-pairs"></a>
 ### `_Reader.pairs`
@@ -684,7 +684,7 @@ tuple名称值对。
 
 计数、展开、标记或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:374`](../../../src/chronaxis/execution/can_block_codec.py#L374)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:374`](../../../src/chronaxis/execution/can_block_codec.py#L374)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_Reader-decimal"></a>
 ### `_Reader.decimal`
@@ -710,7 +710,7 @@ _Reader.decimal()
 
 符号、数字、指数、展开或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:387`](../../../src/chronaxis/execution/can_block_codec.py#L387)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:387`](../../../src/chronaxis/execution/can_block_codec.py#L387)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_write_frame"></a>
 ## `_write_frame`
@@ -736,7 +736,7 @@ None。
 
 字段或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:419`](../../../src/chronaxis/execution/can_block_codec.py#L419)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:419`](../../../src/chronaxis/execution/can_block_codec.py#L419)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_read_frame"></a>
 ## `_read_frame`
@@ -762,7 +762,7 @@ LegacyRawFrame或已知can.Message。
 
 固定字段或原模型校验错误，无时间模式不增加时间有限性检查。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:440`](../../../src/chronaxis/execution/can_block_codec.py#L440)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:440`](../../../src/chronaxis/execution/can_block_codec.py#L440)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-encode_block"></a>
 ## `encode_block`
@@ -790,7 +790,7 @@ CND1 bytes。
 
 数量、字段或原512KiB包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:470`](../../../src/chronaxis/execution/can_block_codec.py#L470)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:470`](../../../src/chronaxis/execution/can_block_codec.py#L470)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decode_block"></a>
 ## `decode_block`
@@ -815,7 +815,7 @@ decode_block(packet)
 
 结构、模型、展开、截断或尾随字节错误；保留原异常与原因链。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:516`](../../../src/chronaxis/execution/can_block_codec.py#L516)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:516`](../../../src/chronaxis/execution/can_block_codec.py#L516)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_metadata"></a>
 ## `_metadata`
@@ -840,7 +840,7 @@ _metadata(value)
 
 缺项、未知字段或类型不符。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:595`](../../../src/chronaxis/execution/can_block_codec.py#L595)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:595`](../../../src/chronaxis/execution/can_block_codec.py#L595)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-encode_metadata"></a>
 ## `encode_metadata`
@@ -865,7 +865,7 @@ CMT1 bytes，仍受原512KiB上限。
 
 字段、类型或包长错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:646`](../../../src/chronaxis/execution/can_block_codec.py#L646)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:646`](../../../src/chronaxis/execution/can_block_codec.py#L646)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decode_metadata"></a>
 ## `decode_metadata`
@@ -891,4 +891,4 @@ decode_metadata(packet, *, on_expand=None)
 
 版本、字段、包长、索引、展开或截断错误。
 
-源码：[`src/chronaxis/execution/can_block_codec.py:684`](../../../src/chronaxis/execution/can_block_codec.py#L684)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/can_block_codec.py:684`](../../../src/chronaxis/execution/can_block_codec.py#L684)（行号对应 Chronaxis 0.1.0.dev5 源码）。

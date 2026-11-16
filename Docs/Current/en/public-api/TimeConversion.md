@@ -24,4 +24,4 @@ TimeConversion(time_ns: int, input_representation: str, input_unit: str, input_t
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:47`](../../../../src/chronaxis/timebase/conversion.py#L47) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/timebase/conversion.py:47`](../../../../src/chronaxis/timebase/conversion.py#L47) — line number in the Chronaxis 0.1.0.dev5 source.

@@ -25,6 +25,7 @@ worker在INIT后才加载真实库；记录模型不声称原reader已关闭或�
 |[`_shape`](#api-_shape)|校验wire字典精确字段，拒绝额外对象标签或丢失字段。|
 |[`LegacyRawFrame`](#api-LegacyRawFrame)|保留同次原msg全部公开写出字段，不重构消息或推断DBC质量。|
 |[`LegacyRawFrame.__post_init__`](#api-LegacyRawFrame-__post_init__)|校验公开字段类型，不补帧、缩放或改变原顺序。|
+|[`_raw_frame_from_validated_fields`](#api-_raw_frame_from_validated_fields)|供已逐字段核验的读取器构造原帧快照，不重复__post_init__检查。|
 |[`LegacyDecodedFrame`](#api-LegacyDecodedFrame)|保存一次原yield和一次parse的结果，values独立只读且保留非有限诊断值。|
 |[`LegacyDecodedFrame.__post_init__`](#api-LegacyDecodedFrame-__post_init__)|冻结原数值映射，不把缺键或非有限浮点替换为零。|
 |[`StoredRawFrame`](#api-StoredRawFrame)|为首次读取保存原frame与分析坐标，供后续导出从新暂存回读。|
@@ -95,7 +96,7 @@ TypeError：bool、float及其他类型；ValueError：前缀、数字格式或�
 
 无；不用于ASC等原始文件的专有进制解析。
 
-源码：[`src/chronaxis/legacy/records.py:27`](../../../src/chronaxis/legacy/records.py#L27)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:27`](../../../src/chronaxis/legacy/records.py#L27)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_small_item_fits"></a>
 ## `_small_item_fits`
@@ -127,7 +128,7 @@ bool。True表示完整原生dict均已检查且整个ITEM的保守上界不超�
 只接受非空原生ASCII键及原生bool、有限float或绝对值不超过64bit的int。
     非有限诊断、Unicode、大整数和近限额记录都交回原精确路径；不复制或缓存值。
 
-源码：[`src/chronaxis/legacy/records.py:68`](../../../src/chronaxis/legacy/records.py#L68)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:68`](../../../src/chronaxis/legacy/records.py#L68)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_integer"></a>
 ## `_integer`
@@ -155,7 +156,7 @@ _integer(value, name, minimum=0, maximum=None)
 
 TypeError为非int，ValueError为超范围；无转换或I/O。
 
-源码：[`src/chronaxis/legacy/records.py:121`](../../../src/chronaxis/legacy/records.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:121`](../../../src/chronaxis/legacy/records.py#L121)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_text"></a>
 ## `_text`
@@ -181,7 +182,7 @@ _text(value, name)
 
 TypeError/ValueError为类型、空文本或超过单包字符上限；不改大小写/空格。
 
-源码：[`src/chronaxis/legacy/records.py:134`](../../../src/chronaxis/legacy/records.py#L134)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:134`](../../../src/chronaxis/legacy/records.py#L134)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_shape"></a>
 ## `_shape`
@@ -208,7 +209,7 @@ _shape(value, names, name)
 
 TypeError/ValueError为容器或字段不符。
 
-源码：[`src/chronaxis/legacy/records.py:147`](../../../src/chronaxis/legacy/records.py#L147)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:147`](../../../src/chronaxis/legacy/records.py#L147)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyRawFrame"></a>
 ## `LegacyRawFrame`
@@ -236,7 +237,7 @@ class LegacyRawFrame
 |`bitrate_switch`|bool|是|无|原FD速率切换标志。|
 |`error_state_indicator`|bool|是|无|原FD错误状态指示。|
 
-源码：[`src/chronaxis/legacy/records.py:161`](../../../src/chronaxis/legacy/records.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:161`](../../../src/chronaxis/legacy/records.py#L161)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyRawFrame-__post_init__"></a>
 ### `LegacyRawFrame.__post_init__`
@@ -269,7 +270,43 @@ TypeError/ValueError为非法字段或超过CAN最大payload。
 - `TypeError`：原报文channel需要int/str/None。
 - `ValueError`：原报文channel文本过长。
 
-源码：[`src/chronaxis/legacy/records.py:177`](../../../src/chronaxis/legacy/records.py#L177)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:177`](../../../src/chronaxis/legacy/records.py#L177)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-_raw_frame_from_validated_fields"></a>
+## `_raw_frame_from_validated_fields`
+
+供已逐字段核验的读取器构造原帧快照，不重复__post_init__检查。
+
+```python
+_raw_frame_from_validated_fields(timestamp, arbitration_id, is_extended_id, is_remote_frame, is_error_frame, channel, dlc, data, is_fd, is_rx, bitrate_switch, error_state_indicator)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`timestamp`|float|是|无|位置或关键字。已由读取器核验的有限float秒，保留原帧时间表示；本函数不重新换算或检查。|
+|`arbitration_id`|int|是|无|位置或关键字。已核验的整数报文ID，范围0至0x1FFFFFFF；不把通道拼入ID，也不从ID推断帧类型。|
+|`is_extended_id`|bool|是|无|位置或关键字。已核验的bool标准/扩展帧标志；True为扩展帧，False为标准帧。|
+|`is_remote_frame`|bool|是|无|位置或关键字。已核验的bool远程帧标志；保留原值，不因当前分析未使用远程帧而改写。|
+|`is_error_frame`|bool|是|无|位置或关键字。已核验的bool错误帧标志；保留原值。|
+|`channel`|int &#124; str &#124; None|是|无|位置或关键字。已核验的原公开通道值，允许int、str或None；不猜测缺失通道，也不在此执行配置通道换算。|
+|`dlc`|int|是|无|位置或关键字。已核验的原公开DLC值，整数范围0至64；直接保存，不按data长度重算。CAN FD的编码值另由记录的dlc_code表示。|
+|`data`|bytes|是|无|位置或关键字。已核验且不超过64字节的bytes负载；直接保存不可变字节值，不重新编码或增删字节。|
+|`is_fd`|bool|是|无|位置或关键字。已核验的bool CAN FD标志；不根据DBC或负载长度重新推断。|
+|`is_rx`|bool &#124; None|是|无|位置或关键字。已核验的收发方向：True为接收，False为发送，None为未知；未知不会被补成接收或发送。|
+|`bitrate_switch`|bool|是|无|位置或关键字。已核验的bool CAN FD速率切换标志，直接保存原值。|
+|`error_state_indicator`|bool|是|无|位置或关键字。已核验的bool CAN FD错误状态指示，直接保存原值。|
+
+### 返回说明
+
+字段相同的冻结LegacyRawFrame。
+
+### 异常说明
+
+仅分配错误。
+
+源码：[`src/chronaxis/legacy/records.py:200`](../../../src/chronaxis/legacy/records.py#L200)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyDecodedFrame"></a>
 ## `LegacyDecodedFrame`
@@ -288,7 +325,7 @@ class LegacyDecodedFrame
 |`frame`|[LegacyRawFrame](chronaxis.legacy.records.md#api-LegacyRawFrame)|是|无|同次原msg公开快照。|
 |`values`|Mapping[str, int &#124; float &#124; bool]|是|无|原返回字典，空dict不推断错误原因。|
 
-源码：[`src/chronaxis/legacy/records.py:201`](../../../src/chronaxis/legacy/records.py#L201)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:226`](../../../src/chronaxis/legacy/records.py#L226)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyDecodedFrame-__post_init__"></a>
 ### `LegacyDecodedFrame.__post_init__`
@@ -318,7 +355,7 @@ TypeError/ValueError为序号、frame或数值类型错误。
 
 - `TypeError`：解码记录需要LegacyRawFrame与数值Mapping。
 
-源码：[`src/chronaxis/legacy/records.py:208`](../../../src/chronaxis/legacy/records.py#L208)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:233`](../../../src/chronaxis/legacy/records.py#L233)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-StoredRawFrame"></a>
 ## `StoredRawFrame`
@@ -337,7 +374,7 @@ class StoredRawFrame
 |`time_ns`|int|是|无|明确映射后的int64纳秒，不改变原frame.timestamp。|
 |`frame`|[LegacyRawFrame](chronaxis.legacy.records.md#api-LegacyRawFrame)|是|无|原公开写出字段。|
 
-源码：[`src/chronaxis/legacy/records.py:232`](../../../src/chronaxis/legacy/records.py#L232)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:257`](../../../src/chronaxis/legacy/records.py#L257)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-StoredRawFrame-__post_init__"></a>
 ### `StoredRawFrame.__post_init__`
@@ -367,7 +404,7 @@ TypeError/ValueError为字段或int64范围不符。
 
 - `TypeError`：原始暂存需要LegacyRawFrame。
 
-源码：[`src/chronaxis/legacy/records.py:239`](../../../src/chronaxis/legacy/records.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:264`](../../../src/chronaxis/legacy/records.py#L264)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANField"></a>
 ## `LegacyCANField`
@@ -388,7 +425,7 @@ class LegacyCANField
 |`is_extended`|bool &#124; None|否|None|None表示未限定，运行时结合DBC及实际帧识别；False限定标准帧且ID不超过0x7FF，True限定扩展帧。Python允许None表达省略，JSON/YAML填写时只能是布尔值。|
 |`is_fd`|bool &#124; None|否|None|None表示未限定，按日志实际帧匹配；False限定经典CAN，True限定CAN FD。DBC为FD而实际为经典CAN可按已批准规则兼容，不修改真实帧。JSON/YAML填写时只能是布尔值。|
 
-源码：[`src/chronaxis/legacy/records.py:251`](../../../src/chronaxis/legacy/records.py#L251)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:276`](../../../src/chronaxis/legacy/records.py#L276)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANField-__post_init__"></a>
 ### `LegacyCANField.__post_init__`
@@ -414,7 +451,7 @@ LegacyCANField.__post_init__()
 
 TypeError：类型不是原生整数/字符串或布尔值；ValueError：ID格式、范围、标准帧上限或信号名非法。省略的帧型为None，允许留待运行时识别。
 
-源码：[`src/chronaxis/legacy/records.py:260`](../../../src/chronaxis/legacy/records.py#L260)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:285`](../../../src/chronaxis/legacy/records.py#L285)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANField-key"></a>
 ### `LegacyCANField.key`
@@ -442,7 +479,7 @@ LegacyCANField.key
 
 原json编码错误；无I/O或DBC查询。
 
-源码：[`src/chronaxis/legacy/records.py:274`](../../../src/chronaxis/legacy/records.py#L274)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:299`](../../../src/chronaxis/legacy/records.py#L299)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANRequest"></a>
 ## `LegacyCANRequest`
@@ -461,7 +498,7 @@ class LegacyCANRequest
 |`dbc_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|只供worker加载一次DBC。|
 |`fields`|tuple[[LegacyCANField](chronaxis.legacy.records.md#api-LegacyCANField), ...]|是|无|空tuple可原样读取全部帧，不省decode。|
 
-源码：[`src/chronaxis/legacy/records.py:283`](../../../src/chronaxis/legacy/records.py#L283)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:308`](../../../src/chronaxis/legacy/records.py#L308)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANRequest-__post_init__"></a>
 ### `LegacyCANRequest.__post_init__`
@@ -495,7 +532,7 @@ TypeError/ValueError为路径类型或重复定位错误。
 - `ValueError`：原CAN请求完整定位重复。
 - `ValueError`：原CAN路径超过wire能力。
 
-源码：[`src/chronaxis/legacy/records.py:290`](../../../src/chronaxis/legacy/records.py#L290)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:315`](../../../src/chronaxis/legacy/records.py#L315)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-LegacyCANRequest-profile"></a>
 ### `LegacyCANRequest.profile`
@@ -523,7 +560,7 @@ LegacyCANRequest.profile
 
 无。
 
-源码：[`src/chronaxis/legacy/records.py:316`](../../../src/chronaxis/legacy/records.py#L316)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:341`](../../../src/chronaxis/legacy/records.py#L341)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-frame_to_dict"></a>
 ## `frame_to_dict`
@@ -552,7 +589,7 @@ TypeError为非法模型。
 
 - `TypeError`：需要LegacyRawFrame。
 
-源码：[`src/chronaxis/legacy/records.py:322`](../../../src/chronaxis/legacy/records.py#L322)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:347`](../../../src/chronaxis/legacy/records.py#L347)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-frame_from_dict"></a>
 ## `frame_from_dict`
@@ -581,7 +618,7 @@ TypeError/ValueError为形状、hex或原frame字段非法。
 
 - `ValueError`：data_hex需要不超过64字节的完整hex。
 
-源码：[`src/chronaxis/legacy/records.py:332`](../../../src/chronaxis/legacy/records.py#L332)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:357`](../../../src/chronaxis/legacy/records.py#L357)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_value_to_wire"></a>
 ## `_value_to_wire`
@@ -610,7 +647,7 @@ TypeError为未支持值；不按数值truthiness丢弃False或0。
 
 - `TypeError`：解码wire值仅支持数值或bool。
 
-源码：[`src/chronaxis/legacy/records.py:345`](../../../src/chronaxis/legacy/records.py#L345)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:370`](../../../src/chronaxis/legacy/records.py#L370)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_value_from_wire"></a>
 ## `_value_from_wire`
@@ -640,7 +677,7 @@ TypeError/ValueError为未知类型、标签或未标记非有限数值。
 - `TypeError`：解码wire值非法或非有限标签缺失。
 - `ValueError`：未知非有限解码标签。
 
-源码：[`src/chronaxis/legacy/records.py:358`](../../../src/chronaxis/legacy/records.py#L358)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:383`](../../../src/chronaxis/legacy/records.py#L383)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decoded_to_dict"></a>
 ## `decoded_to_dict`
@@ -669,7 +706,7 @@ TypeError为非法模型；原值编码错误传播。
 
 - `TypeError`：需要LegacyDecodedFrame。
 
-源码：[`src/chronaxis/legacy/records.py:374`](../../../src/chronaxis/legacy/records.py#L374)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:399`](../../../src/chronaxis/legacy/records.py#L399)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decoded_from_dict"></a>
 ## `decoded_from_dict`
@@ -698,7 +735,7 @@ TypeError/ValueError为形状或值非法。
 
 - `TypeError`：decoded values需要dict。
 
-源码：[`src/chronaxis/legacy/records.py:386`](../../../src/chronaxis/legacy/records.py#L386)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:411`](../../../src/chronaxis/legacy/records.py#L411)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_decoded_from_checked_dict"></a>
 ## `_decoded_from_checked_dict`
@@ -741,7 +778,7 @@ LegacyDecodedFrame，原字段、数值类型及非有限诊断按公共入口�
     证明ITEM不超限，不能证明时沿原精确路径。核完ITEM外壳/全部值
     后可直接冻结，不需要公开构造器为外部可变Mapping设置的第二遍检查和复制。
 
-源码：[`src/chronaxis/legacy/records.py:401`](../../../src/chronaxis/legacy/records.py#L401)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:426`](../../../src/chronaxis/legacy/records.py#L426)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_try_decoded_small_packet"></a>
 ## `_try_decoded_small_packet`
@@ -778,7 +815,7 @@ _try_decoded_small_packet(payload)
     固定字段结构的深度与标量已由模型核定，ITEM上界也覆盖较小decoded包。
     复杂值、Unicode、近限额等均返回原路径；成功只创建一份frame及自有values。
 
-源码：[`src/chronaxis/legacy/records.py:459`](../../../src/chronaxis/legacy/records.py#L459)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:484`](../../../src/chronaxis/legacy/records.py#L484)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_decoded_from_packet"></a>
 ## `_decoded_from_packet`
@@ -808,7 +845,7 @@ LegacyDecodedFrame；完整字段、原值类型、量化前时间及非有限�
 普通失败退出except并释放试算对象后，重新由原完整解析/构建决定报错；
     不提前把frame错误置于wire错误前。公共decode_packet及decoded_from_dict不变。
 
-源码：[`src/chronaxis/legacy/records.py:509`](../../../src/chronaxis/legacy/records.py#L509)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:534`](../../../src/chronaxis/legacy/records.py#L534)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-field_to_dict"></a>
 ## `field_to_dict`
@@ -837,7 +874,7 @@ TypeError为非法模型。
 
 - `TypeError`：需要LegacyCANField。
 
-源码：[`src/chronaxis/legacy/records.py:531`](../../../src/chronaxis/legacy/records.py#L531)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:556`](../../../src/chronaxis/legacy/records.py#L556)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-field_from_dict"></a>
 ## `field_from_dict`
@@ -862,7 +899,7 @@ LegacyCANField。
 
 TypeError/ValueError为形状或字段非法。
 
-源码：[`src/chronaxis/legacy/records.py:541`](../../../src/chronaxis/legacy/records.py#L541)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:566`](../../../src/chronaxis/legacy/records.py#L566)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_scalar_size"></a>
 ## `_scalar_size`
@@ -896,7 +933,7 @@ TypeError/ValueError/UnicodeError为类型/数值/限额；标量暂态最多单
 - `TypeError`：wire标量类型不受支持。
 - `ValueError`：wire非有限数值必须显式标签。
 
-源码：[`src/chronaxis/legacy/records.py:558`](../../../src/chronaxis/legacy/records.py#L558)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:583`](../../../src/chronaxis/legacy/records.py#L583)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_decoded_entry_size"></a>
 ## `_decoded_entry_size`
@@ -923,7 +960,7 @@ _decoded_entry_size(name, value, remaining)
 
 原类型、非空名称或wire限额错误。
 
-源码：[`src/chronaxis/legacy/records.py:595`](../../../src/chronaxis/legacy/records.py#L595)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:620`](../../../src/chronaxis/legacy/records.py#L620)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_decoded_values_size"></a>
 ## `_decoded_values_size`
@@ -953,7 +990,7 @@ _decoded_values_size(values, remaining)
 
 - `ValueError`：解码信号数量超过64KiB wire能力。
 
-源码：[`src/chronaxis/legacy/records.py:606`](../../../src/chronaxis/legacy/records.py#L606)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:631`](../../../src/chronaxis/legacy/records.py#L631)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_wire_tree"></a>
 ## `_wire_tree`
@@ -988,7 +1025,7 @@ TypeError/ValueError为类型/深度/总量；无任意类构建。
 - `ValueError`：wire包超过65536字节。
 - `TypeError`：wire字典键需要str。
 
-源码：[`src/chronaxis/legacy/records.py:621`](../../../src/chronaxis/legacy/records.py#L621)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:646`](../../../src/chronaxis/legacy/records.py#L646)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-encode_packet"></a>
 ## `encode_packet`
@@ -1018,7 +1055,7 @@ TypeError/ValueError为类型/非有限/深度/字节上限或JSON编码失败�
 - `TypeError`：wire包根需要dict。
 - `ValueError`：wire包超过65536字节。
 
-源码：[`src/chronaxis/legacy/records.py:658`](../../../src/chronaxis/legacy/records.py#L658)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:683`](../../../src/chronaxis/legacy/records.py#L683)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_unique_object"></a>
 ## `_unique_object`
@@ -1047,7 +1084,7 @@ ValueError为重复字段。
 
 - `ValueError`：wire存在重复JSON键。
 
-源码：[`src/chronaxis/legacy/records.py:676`](../../../src/chronaxis/legacy/records.py#L676)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:701`](../../../src/chronaxis/legacy/records.py#L701)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_reject_constant"></a>
 ## `_reject_constant`
@@ -1072,7 +1109,7 @@ _reject_constant(value)
 
 ValueError总是抛出。
 
-源码：[`src/chronaxis/legacy/records.py:689`](../../../src/chronaxis/legacy/records.py#L689)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:714`](../../../src/chronaxis/legacy/records.py#L714)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decode_packet"></a>
 ## `decode_packet`
@@ -1102,4 +1139,4 @@ TypeError/ValueError/UnicodeError为类型、大小、格式或结构非法。
 - `ValueError`：wire包需要1至65536字节的bytes。
 - `TypeError`：wire包根需要dict。
 
-源码：[`src/chronaxis/legacy/records.py:697`](../../../src/chronaxis/legacy/records.py#L697)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/records.py:722`](../../../src/chronaxis/legacy/records.py#L722)（行号对应 Chronaxis 0.1.0.dev5 源码）。

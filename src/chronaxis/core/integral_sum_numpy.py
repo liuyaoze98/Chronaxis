@@ -3,14 +3,16 @@
 输入是有限块 NumpyIntegralTerms，只消费 valid 为 True 的 float64 面积；
 面积已经带有 input_unit 乘秒的量纲，本核不重复乘区间时长、不累计覆盖事实。
 跨块保存按绝对值递增、互不重叠的误差项，默认最多 4096 项；不保留历史面积。
-原序面积推进属于 state_driver；每项内部用真实 accumulate、ufunc 和掩码处理
-误差数组，不调用参考模块或 math.fsum，也不把整窗宣称为无状态数组求和。
+原序面积推进属于 state_driver；输入检查和状态存储使用 NumPy，短误差链按
+同一加法顺序使用双精度标量推进，不调用参考模块或 math.fsum。
+保留的 _advance 数组实现用于独立对照，不把整窗宣称为无状态数组求和。
 状态与临时数组均受 partial_limit 限制，输入索引受当前有限块长度限制；
 本纯核不管理预算或关闭资源，调用方须先预约相应空间并负责异常后的生命周期。
 finish 是不破坏状态的快照，单位换算故障只影响返回结果；原量纲累计溢出永久保留。
 """
 
 # 仅共享结果模型、参数门槛和输入模型；数值误差推进由本模块独立实现。
+from math import isfinite
 import numpy as np
 from .integral_sum import (IntegralStateLimitError, IntegralSumResult,
                            require_partial_limit, require_sum_finish)
@@ -105,22 +107,62 @@ class NumpyIntegralSum:
             if self._calculation_failed:
                 self._valid_term_count += len(indices)
                 return
-            # 原序外层属于 state_driver；每项内的误差推进是独立的真实数组运算。
+            # 原序外层属于 state_driver。误差数组只有几项，逐项调用 ufunc 的固定开销远大于运算本身；
+            # 这里用 IEEE 双精度标量逐步执行与 _advance 完全相同的 FastTwoSum 链（相同加法顺序、
+            # 相同大小比较与零项保留规则），得到逐位相同的误差状态，每个完整项分配成功后安装回 float64 数组。
+            self._push_scalar(values, indices)
+        finally:
+            # 原异常及TB仍交调用方；只断本层借入参数、视图和临时，不清外部帧。
+            self = values = valid = indices = None
+
+    def _push_scalar(self, values, indices) -> None:
+        """按原序推进面积，每个完整候选分配成功后才安装状态。
+
+        参数: values 为已检查的只读 float64 列，indices 为有效位置索引。
+        返回: None。异常: 容量、分配或取消错误传播，失败项之前的状态保留。
+        内存: 借用已有输入/索引；仅保留 O(K) 原生误差项及候选数组，不建 O(N) 浮点列表。
+        """
+        try:
+            partials = self._partials.tolist()
+            limit = self._partial_limit
             for index in indices:
                 if self._calculation_failed:
                     self._valid_term_count += 1
                     continue
-                candidate = self._advance(values[index])
-                # 容量检查已完成才安装；数值溢出单项仍计数，清空不再使用的误差状态。
-                if candidate is None:
-                    self._partials = np.empty(0, dtype=np.float64)
+                area = float(values[index])
+                lows, current, failed = [], area, False
+                for partial in partials:
+                    high = current + partial
+                    if not isfinite(high):
+                        failed = True
+                        break
+                    if abs(current) < abs(partial):
+                        large, small = partial, current
+                    else:
+                        large, small = current, partial
+                    low = small - (high - large)
+                    if low != 0:
+                        lows.append(low)
+                    current = high
+                if failed:
+                    # 与原实现相同，空状态分配成功后才记录本条溢出。
+                    candidate = np.empty(0, dtype=np.float64)
+                    self._partials = candidate
                     self._calculation_failed = True
                 else:
+                    if current != 0:
+                        lows.append(current)
+                    if len(lows) > limit:
+                        raise IntegralStateLimitError('数组积分误差状态超过 partial_limit')
+                    # 只缩减误差计算的 ufunc 开销；分配/取消失败不得先增加消费计数。
+                    candidate = np.array(lows, dtype=np.float64)
                     self._partials = candidate
+                    partials = lows
                 self._valid_term_count += 1
         finally:
-            # 原异常及TB仍交调用方；只断本层借入参数、视图和临时，不清外部帧。
-            self = values = valid = indices = candidate = None
+            # 清理本身不分配、不覆盖最初异常，回溯不钉住状态、输入或候选。
+            self = values = indices = partials = lows = current = area = partial = None
+            large = small = high = low = candidate = index = None
 
     def _advance(self, area: np.float64) -> np.ndarray | None:
         """生成一项的独立误差候选，不提前改写当前状态。

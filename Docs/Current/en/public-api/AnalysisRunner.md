@@ -92,7 +92,7 @@ AnalysisRunner.validate(plan, *, process_count=None)
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
-|`process_count`|int &#124; None|No|None|Keyword-only worker-limit override for this static check. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started.|
+|`process_count`|int &#124; None|No|None|Keyword-only file worker limit override for this static check. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started. See [continuous-file execution](../continuous-files.md#parallel-integrals).|
 
 #### Returns
 
@@ -143,7 +143,7 @@ AnalysisRunner.explain(plan, *, process_count=None)
 | Name | Type | Required | Default | Purpose, choices, and effect |
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
-|`process_count`|int &#124; None|No|None|Keyword-only worker-limit override for this explanation. None uses execution.process_count; a positive integer overrides without modifying the plan. Reported limits are not measured worker counts.|
+|`process_count`|int &#124; None|No|None|Keyword-only file worker limit override for this explanation. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started; reported limits are not measured worker counts. See [continuous-file execution](../continuous-files.md#parallel-integrals).|
 
 #### Returns
 
@@ -174,7 +174,7 @@ AnalysisRunner.run(plan, work_dir=None, *, process_count=None)
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)|Yes|No default|Positional or keyword. An AnalysisPlan built with load_analysis_plan("analysis.yaml") or AnalysisPlan.from_dict(config). A filename string is not accepted here.|
 |`work_dir`|str &#124; Path &#124; None|No|None|Positional or keyword. Exclusive intermediate-work directory for this run. An explicit path must not exist; old directories are not overwritten. None creates a unique directory automatically.|
-|`process_count`|int &#124; None|No|None|Positive reading/decoding worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. See continuous-file multiprocessing.|
+|`process_count`|int &#124; None|No|None|Positive file worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. Workers read and decode; for [eligible continuous-session integrals](../continuous-files.md#parallel-integrals), they also calculate areas within each file.|
 
 #### Returns
 
@@ -235,9 +235,9 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/runner.py:52`](../../../../src/chronaxis/runner.py#L52) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/runner.py:80`](../../../../src/chronaxis/runner.py#L80) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/runner.py:91`](../../../../src/chronaxis/runner.py#L91) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/runner.py:103`](../../../../src/chronaxis/runner.py#L103) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:52`](../../../../src/chronaxis/runner.py#L52) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:80`](../../../../src/chronaxis/runner.py#L80) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:91`](../../../../src/chronaxis/runner.py#L91) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:103`](../../../../src/chronaxis/runner.py#L103) — line number in the Chronaxis 0.1.0.dev5 source.

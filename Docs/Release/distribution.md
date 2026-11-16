@@ -5,13 +5,13 @@
 |交付物|包含|不包含|
 |---|---|---|
 |公开源码|运行代码、许可证、README、打包文件、可独立执行的测试与合成夹具、公开手册及所需工具|内部开发计划、问题和审计归档、机器标识、真实车辆日志/DBC、历史项目、缓存、冲突副本|
-|wheel|chronaxis包、模板、AI指南、许可证与包元数据|开发测试、完整源码手册、业务日志、独立安装的运行依赖代码|
+|wheel|chronaxis包、模板、AI指南、Markdown用户手册（中英文章节、公开API页和全部示例，位于`chronaxis/manual`）、许可证与包元数据|开发测试、内部模块参考与HTML手册（链接到同版本仓库或在线手册）、业务日志、独立安装的运行依赖代码|
 |sdist|重新构建wheel需要的源码、配置、许可证、指南输入及生成工具，以及公开依赖环境约束|开发工作目录、内部验收材料|
 |离线手册|HTML、相对链接、搜索资源、合成示例和配置规范|内部审计附件、作者机器上的文件路径|
 
 从单独导出的清洁源码树构建发行包。内部开发仓库包含历史资料，不直接推送整个开发历史；导出不删除或重写原仓库。
 
-具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev4](release-notes-0.1.0.dev4.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
+具体操作见[发布流程](publishing.md)（[English](publishing.en.md)），发行说明见[0.1.0.dev5](release-notes-0.1.0.dev5.md)。PyPI只接收wheel和sdist，源码和手册ZIP作为GitHub Release附件。
 
 ## 发布前检查
 

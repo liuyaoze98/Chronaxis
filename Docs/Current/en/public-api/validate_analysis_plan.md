@@ -22,12 +22,13 @@ Raises `TypeError` when input is not an AnalysisPlan (message: “validate_analy
 No source-reading side effects. Does not recheck CSV, BLF/DBC, actual fields, or physical measurement meanings.
 
 ```python
+# Run in the directory containing the manual's home page; it contains examples directly.
 from chronaxis import load_analysis_plan, validate_analysis_plan
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+plan = load_analysis_plan("examples/analysis.yaml")
 report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:287`](../../../../src/chronaxis/planning/reports.py#L287) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/reports.py:287`](../../../../src/chronaxis/planning/reports.py#L287) — line number in the Chronaxis 0.1.0.dev5 source.

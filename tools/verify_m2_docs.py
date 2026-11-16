@@ -11,6 +11,7 @@ import argparse
 from doc_sources import DocSources
 import hashlib
 import json
+import os
 import re
 import subprocess
 from datetime import datetime, timezone, timedelta
@@ -32,6 +33,7 @@ class InventoryVisitor(ast.NodeVisitor):
         参数: 无。返回: None。异常: 分配错误原样传播。
         """
         self.stack, self.objects = [], {}
+        self.scopes, self.receivers = [], {}
 
     def visit_ClassDef(self, node):
         """登记类及其内部定义。
@@ -63,7 +65,19 @@ class InventoryVisitor(ast.NodeVisitor):
         name = '.'.join(self.stack)
         assert name not in self.objects, name
         self.objects[name] = node
+        # 独立核对词法父节点及类体归属，不复用生成器的接收者判定结果。
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            parent = self.scopes[-1] if self.scopes else None
+            static = any((isinstance(item, ast.Name) and item.id == 'staticmethod')
+                         or (isinstance(item, ast.Attribute) and item.attr == 'staticmethod')
+                         for item in node.decorator_list)
+            positional = node.args.posonlyargs + node.args.args
+            receiver = (positional[0].arg if isinstance(parent, ast.ClassDef) and node in parent.body
+                        and not static and positional and positional[0].arg in ('self', 'cls') else None)
+            self.receivers[name] = receiver
+        self.scopes.append(node)
         self.generic_visit(node)
+        self.scopes.pop()
         self.stack.pop()
 
 
@@ -103,6 +117,7 @@ def main():
             assert f'id="lambda-{node.lineno}"' in page and ast.unparse(node) in page
         for name, node in visitor.objects.items():
             record = records[name]
+            receiver_name = visitor.receivers.get(name)
             if DOC.name in ('M3', 'Current'):
                 # 每项只检查自己的定义区；同页其他函数中的同名参数不能代替本项说明。
                 marker = '<a id="api-' + name.replace('.', '-') + '"></a>'
@@ -116,7 +131,7 @@ def main():
                 assert set(supplied) <= {item['name'] for item in items}, (name, 'stale explanation')
                 descriptions = []
                 for item in items:
-                    if DOC.name == 'Current' and category == 'parameters' and item['name'] in ('self', 'cls'):
+                    if DOC.name == 'Current' and category == 'parameters' and item['name'] == receiver_name:
                         # 接收者仍保留在机器清单，用户参数表不要求手动传入。
                         continue
                     # 单元格内部竖线由生成器转义，因此五列可独立计数并检查缺项。
@@ -127,7 +142,7 @@ def main():
                     assert len(cells) == 5 and all(cell.strip() for cell in cells), (name, item['name'], cells)
                     assert not any(text in cells[4] for text in ('原说明没有单独解释', '须满足本行所述内容', '具体角色见本行用途')), (name, item['name'])
                     assert 'object（此接口未限定类' not in cells[1], (name, item['name'], 'missing type review')
-                    if item['name'] not in ('self', 'cls'):
+                    if item['name'] != receiver_name:
                         descriptions.append(cells[4])
                 # 同一段话重复填入几个字段不是逐项解释，回到人工说明处拆分。
                 assert len(descriptions) == len(set(descriptions)), (name, 'combined parameter descriptions')
@@ -166,13 +181,13 @@ def main():
                     names.append(args.kwarg.arg)
                 assert names == [item['name'] for item in record['parameters']], name
                 if DOC.name == 'Current':
-                    if any(ast.unparse(d) == 'property' for d in node.decorator_list):
+                    if receiver_name and any(ast.unparse(d) == 'property' for d in node.decorator_list):
                         assert f'{name}()' not in block, name
                         assert name + (': ' + ast.unparse(node.returns) if node.returns else '') in block
                     else:
                         display_args = copy.deepcopy(args)
                         positional = display_args.posonlyargs or display_args.args
-                        if positional and positional[0].arg in ('self', 'cls'):
+                        if receiver_name:
                             positional.pop(0)
                         assert f'{name}({ast.unparse(display_args)})' in block, name
                 else:
@@ -185,7 +200,7 @@ def main():
                     assert parameter['type'] == annotations[parameter['name']], (name, parameter['name'])
                 counts['parameters'] += len(names)
                 for parameter in names:
-                    if DOC.name == 'Current' and parameter in ('self', 'cls'):
+                    if DOC.name == 'Current' and parameter == receiver_name:
                         continue
                     assert f'|`{parameter}`|' in page
         for exported in module['exports']:
@@ -223,7 +238,9 @@ def main():
     assert config == json.loads((DOC / 'examples/analysis.json').read_text(encoding='utf-8'))
     missing = json.loads((DOC / '_build/unresolved-parameters.json').read_text(encoding='utf-8'))
     assert not missing, missing
-    result = {'device_label': 'home', 'baseline': revision, 'checked_at': datetime.now(timezone(timedelta(hours=8))).isoformat(),
+    # 证据记录实际执行设备；调用方未传标签时记pending，不再固定写home。
+    label = os.environ.get('CHRONAXIS_DEVICE_LABEL', 'pending')
+    result = {'device_label': label, 'baseline': revision, 'checked_at': datetime.now(timezone(timedelta(hours=8))).isoformat(),
               'status': 'passed', 'counts': counts, 'parameter_review_gaps': len(missing),
               'scope': '具名定义/显式参数/声明字段全覆盖；lambda表达式另计，未伪造公共函数名'}
     (DOC / '_build/coverage.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

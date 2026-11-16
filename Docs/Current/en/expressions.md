@@ -119,23 +119,34 @@ Analysis aliases start with an ASCII letter or underscore, followed by ASCII let
 <a id="数值运算"></a>
 ## Arithmetic
 
-For dimensionless `x = 6.0` and `y = 2`, these are the supported operators:
+Suppose `x = 6.0` and `y = 2.0`, both float64 and dimensionless (unit `1`). These are the supported operators:
 
-| Expression | Result |
-|---|---|
-| `x + y` | 8 |
-| `x - y` | 4 |
-| `x * y` | 12 |
-| `x / y` | 3 |
-| `+x` | 6 |
-| `-x` | -6 |
+| Operator | Example | Result | Meaning |
+|---|---|---|---|
+| `+` | `x + y` | 8.0 | Addition |
+| `-` | `x - y` | 4.0 | Subtraction |
+| `*` | `x * y` | 12.0 | Multiplication |
+| `/` | `x / y` | 3.0 | Division; dividing integers also returns float64, not floor division |
+| Unary `+` | `+x` | 6.0 | Keeps the value |
+| Unary `-` | `-x` | −6.0 | Negation |
 
 Arithmetic requires numeric operands; boolean and enum signals are not numeric operands. Integer division also returns `float64`. Division by zero and numeric overflow produce invalid results, not ordinary zero values.
 
 <a id="比较运算"></a>
 ## Comparisons
 
-Numeric values support `==`, `!=`, `<`, `<=`, `>`, and `>=`. Boolean and enum operands support only `==` and `!=`; enum comparisons must use the same enum domain. Chained comparisons such as `0 <= x < 10` combine the comparisons with `and`. A single `=` is invalid, as is an undeclared enum label.
+With the same `x = 6.0` and `y = 2.0`:
+
+| Operator | Example | Result | Meaning |
+|---|---|---|---|
+| `==` | `x == y` | False | Equal |
+| `!=` | `x != y` | True | Not equal |
+| `<` | `x < y` | False | Less than |
+| `<=` | `x <= 6` | True | Less than or equal |
+| `>` | `x > y` | True | Greater than |
+| `>=` | `x >= 6` | True | Greater than or equal |
+
+Numeric values support all six comparisons. Boolean and enum operands support only `==` and `!=`; enum comparisons must use the same enum domain. Chained comparisons such as `0 <= x < 10` combine the comparisons with `and`. A single `=` is invalid, as is an undeclared enum label.
 
 <a id="布尔组合与未知状态"></a>
 <a id="逻辑-and-or-not"></a>

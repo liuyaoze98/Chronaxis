@@ -45,6 +45,8 @@ class EnglishCardPathTests(unittest.TestCase):
                       self.files['en/README.md'].decode('utf8'))
         for name in self.names:
             with self.subTest(card=name):
+                self.assertIn('Run from the English AI README directory (en)', self.example(name))
+                self.assertNotIn('index.html', self.example(name))
                 calls = [node for node in ast.walk(ast.parse(self.example(name)))
                          if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                          and node.func.id == 'load_analysis_plan']
@@ -76,3 +78,4 @@ class EnglishCardPathTests(unittest.TestCase):
                          self.files['examples/preset-charge-minimal.yaml'])
         for name in self.names:
             self.assertNotIn('../examples/analysis.yaml', self.files[f'api/{name}.md'].decode('utf8'))
+            self.assertNotIn('手册首页', self.files[f'api/{name}.md'].decode('utf8'))

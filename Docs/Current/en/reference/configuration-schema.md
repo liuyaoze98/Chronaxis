@@ -2826,7 +2826,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "requested"
   ],
   "default": "requested",
-  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
+  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. Only the can_blf reader route accepts this field explicitly. With source_type omitted or asc_or_blf, pure BLF without per-file offsets accepts it; pure ASC, mixed ASC/BLF, and pure BLF with per-file offsets must omit it (omission still decodes required messages). In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
 }
 ```
 
@@ -7044,7 +7044,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "requested"
   ],
   "default": "requested",
-  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
+  "description": "Scope of attempted CAN decoding. The default requested decodes only messages/fields needed by this analysis; all broadens attempted decoding. Only the can_blf reader route accepts this field explicitly. With source_type omitted or asc_or_blf, pure BLF without per-file offsets accepts it; pure ASC, mixed ASC/BLF, and pure BLF with per-file offsets must omit it (omission still decodes required messages). In serial pure-BLF concatenation, strict/partial skip remote and error frames. all does not guarantee a DBC definition, successful decoding, or a per-frame diagnostic for every frame. Selecting all does not itself require dataset.domain. File multiprocessing and time_order support requested only."
 }
 ```
 

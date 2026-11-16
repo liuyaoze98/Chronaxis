@@ -42,4 +42,4 @@ PlanValidationError为类型、重复别名、未知角色、缺项、候选歧�
 
 返回类型：tuple[[RoleBinding](../reference/chronaxis.planning.preset_models.md#api-RoleBinding), ...]。
 
-源码：[`src/chronaxis/presets.py:104`](../../../src/chronaxis/presets.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/presets.py:104`](../../../src/chronaxis/presets.py#L104)（行号对应 Chronaxis 0.1.0.dev5 源码）。

@@ -7,13 +7,14 @@ import json
 from pathlib import Path
 import re
 
+from doc_sources import DocSources
 from public_api_notes import NOTES, render_note
 from public_docs import reading_text
 
 PARAMETER_NOTES = {
-    ('api-AnalysisRunner-run', '`process_count`'): 'Positive reading/decoding worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. See continuous-file multiprocessing.',
-    ('api-AnalysisRunner-validate', '`process_count`'): 'Keyword-only worker-limit override for this static check. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started.',
-    ('api-AnalysisRunner-explain', '`process_count`'): 'Keyword-only worker-limit override for this explanation. None uses execution.process_count; a positive integer overrides without modifying the plan. Reported limits are not measured worker counts.',
+    ('api-AnalysisRunner-run', '`process_count`'): 'Positive file worker limit excluding the main process. None uses execution.process_count. Overrides this invocation without changing the original plan; rejects Boolean values and nonpositive counts. Workers read and decode; for [eligible continuous-session integrals](../continuous-files.md#parallel-integrals), they also calculate areas within each file.',
+    ('api-AnalysisRunner-validate', '`process_count`'): 'Keyword-only file worker limit override for this static check. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started. See [continuous-file execution](../continuous-files.md#parallel-integrals).',
+    ('api-AnalysisRunner-explain', '`process_count`'): 'Keyword-only file worker limit override for this explanation. None uses execution.process_count; a positive integer overrides without modifying the plan. No workers are started; reported limits are not measured worker counts. See [continuous-file execution](../continuous-files.md#parallel-integrals).',
     ('api-ExplainReport', '`source_execution`'): 'Static per-CAN-source execution facts: source name, file_count, file_merge, read_process_limit, continuous_session=True and temporary_merge_files. Does not scan logs or measure workers.',
     ('api-PlanValidationError-from_diagnostics', '`errors`'): 'Nonempty sequence of individual configuration errors. A single error without blocked checks is returned unchanged.',
     ('api-PlanValidationError-from_diagnostics', '`blocked`'): 'Sequence of blocked-check dictionaries with path and reason. An empty tuple means no blocked checks were recorded.',
@@ -58,10 +59,10 @@ def check_runner_contract(key, source, translated):
             raise ValueError('English AnalysisRunner.backend return choices are stale')
 
 
-def synchronize_page(source, translated, baseline):
+def synchronize_page(source, translated, version):
     """以中文生成页修复英文事实列，并将原履历保留在末尾。
 
-    参数: source为同基线中文页，translated为已有英文页，baseline为源码提交。
+    参数: source为同基线中文页，translated为已有英文页，version为源码所属的产品版本号。
     返回: 更新事实列和源码定位的英文页。异常: 缺译成员/参数或履历后混入正文。
     """
     translated = re.sub(r'(?ms)^## Source locations\s*\n.*?(?=^## |\Z)', '', translated)
@@ -141,7 +142,7 @@ def synchronize_page(source, translated, baseline):
     for match in re.finditer(r'^源码：(.*)$', source, re.M):
         link = re.search(r'\[[^\n]+?\]\([^\n]+?\)', match[1])
         if link:
-            locations.append('- '+english_links(link[0])+f' — line at `{baseline}`.\n')
+            locations.append('- '+english_links(link[0])+f' — line number in the Chronaxis {version} source.\n')
     if locations:
         result.extend(['## Source locations\n\n', *dict.fromkeys(locations)])
     if history:
@@ -154,14 +155,15 @@ def synchronize(current):
     current = Path(current)
     public = json.loads((current/'public-api.json').read_bytes())
     baseline = json.loads((current/'documentation.json').read_bytes())['baseline']
+    version = DocSources(current.parents[1], baseline, 'Current').version()
     for item in public['objects']:
         source = (current/'public-api'/f'{item["name"]}.md').read_text(encoding='utf8')
         target = current/'en/public-api'/f'{item["name"]}.md'
         if item['name'] in NOTES:
             text = render_note(item, source, 'en')
-            # 新页同样用统一基线源码定位，避免保留中文定位句。
+            # 新页同样用统一版本源码定位，避免保留中文定位句。
             text = re.sub(r'(?m)^源码：(.*)$', lambda m: 'Source: '+english_links(m[1]), text)
-            text = text.replace('（行号属于 ', ' (line at ').replace('）。', ').')
+            text = text.replace('（行号对应 Chronaxis ', ' (line number in the Chronaxis ').replace(' 源码）。', ' source).')
         else:
-            text = synchronize_page(source, target.read_text(encoding='utf8'), baseline)
+            text = synchronize_page(source, target.read_text(encoding='utf8'), version)
         target.write_text(text, encoding='utf8', newline='\n')

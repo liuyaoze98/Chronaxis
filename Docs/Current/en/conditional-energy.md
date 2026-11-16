@@ -10,15 +10,15 @@ The supplied ASC logs and DBC are synthetic examples. They do not establish the 
 
 Use [conditional-energy.yaml](../examples/conditional-energy.yaml), [part-1.asc](../examples/data/can/conditional-energy/part-1.asc), [part-2.asc](../examples/data/can/conditional-energy/part-2.asc), and [signals.dbc](../examples/data/can/conditional-energy/signals.dbc). The first log covers 0–89 seconds and the second continues at 90–123 seconds. The teaching DBC defines state, current, and voltage in message `0x100`, with a 1000 ms period.
 
-This example covers Chronaxis 0.1.0.dev4. On Windows, start in the directory containing `examples` and substitute the actual wheel path below. Installation includes the dependencies declared for this version; do not independently install an arbitrary newer `cantools` version. See [Installation](installation.md) for matching source installation and offline dependency preparation.
+This example covers Chronaxis 0.1.0.dev5. First install it as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev5"` is recommended. Installation includes the CAN dependencies declared for this version; do not independently install a different `cantools` version. Then change to the manual's [examples directory](installation.md#find-examples) and run:
 
 ```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
-.venv\Scripts\python.exe -m chronaxis validate examples/conditional-energy.yaml --format json
-.venv\Scripts\python.exe -m chronaxis explain examples/conditional-energy.yaml --format json
-.venv\Scripts\python.exe -m chronaxis run examples/conditional-energy.yaml --output result-conditional-energy
+chronaxis validate conditional-energy.yaml --format json
+chronaxis explain conditional-energy.yaml --format json
+chronaxis run conditional-energy.yaml --output result-conditional-energy
 ```
+
+If the virtual environment is not activated, replace `chronaxis` with its full path in the environment; see [Installation](installation.md#run-without-activation).
 
 CLI paths are relative to your current directory. Input and DBC paths inside the configuration are relative to the configuration file. You need not change into the data directory. The result directory can be reused. Each publication uses timestamped filenames and preserves earlier results.
 
@@ -71,9 +71,9 @@ execution:                                          # Control file reading withi
 
 The file format, sole source, and unambiguous channel are inferred. Public channel numbers start at 1. Types, units, and periods come from the DBC. Here, omitted `valid_for` becomes 3 seconds: three times the 1000 ms period. That expiry period is not the integration interval; integration uses actual elapsed time by default.
 
-`execution.process_count` parallelizes file reading and decoding. It does not split events or integrals at file boundaries. Four is the upper limit chosen for this example, while omission still defaults to one; choose another positive integer to suit available resources. See [continuous-file multiprocessing](continuous-files.md) for overlapping files and resource settings.
+`execution.process_count` parallelizes only file reading and decoding; it does not split events or integrals at file boundaries. See [execution settings](execution.md) for the value and [continuous-file multiprocessing](continuous-files.md) for merging overlapping files by time.
 
-The default interval selection starts at the condition's onset, the default interval mode is actual elapsed time, and the default output is a readable table, so those fields are omitted. `duration_comparison` is required: choose `">"` for strictly longer or `">="` to include the threshold. Omitting it produces a missing-field error. Integer state comparisons such as `state == 0x2` (decimal 2) need no Boolean or enumeration mapping. Check the actual state definition for your own data.
+The default interval selection starts at the condition's onset, the default interval mode is actual elapsed time, and the default output is a readable table, so those fields are omitted. To integrate from the confirmation time instead, add `selection_origin: confirmed` to the `eligible` item under `rules`, at the same level as `minimum_duration`. `duration_comparison` is required: choose `">"` for strictly longer or `">="` to include the threshold. Omitting it produces a missing-field error. Integer state comparisons such as `state == 0x2` (decimal 2) need no Boolean or enumeration mapping. Check the actual state definition for your own data.
 
 <a id="输入发生了什么为什么只有一条能量结果"></a>
 ## 3. What happens in the input

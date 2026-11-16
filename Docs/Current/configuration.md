@@ -22,7 +22,7 @@
 | message_calculations | 否，缺省为空 | 按原消息累计一次表达式贡献，与普通时间积分分开 |
 | intervals | 否，默认actual | intervals.default提供统一间隔；节点自己的interval就地覆盖，不另写overrides名称表 |
 | outputs | 否 | 默认中文可读CSV与JSON运行清单；需要原交换字段时显式tables: csv或jsonl；贡献明细、信号导出和CAN导出默认关闭 |
-| execution | 否 | 控制文件读取进程数、计算实现、资源使用及数据不全时的处理。单一ASC/BLF来源示例显式选择process_count: 4；省略时进程数仍为1，计算实现默认auto，按整个计划选择reference或numpy。见[执行设置](execution.md) |
+| execution | 否 | 控制文件读取进程数、计算实现、资源使用及数据不全时的处理，各项都可省略。见[执行设置](execution.md) |
 | diagnostics | 否，全为false | 选择是否额外记录逐项定位信息、完整性校验以及保留临时文件；按排错需求启用，详见[诊断](execution.md#diagnostics) |
 | metadata | 否，空对象 | 保存附加信息；device_label控制运行清单设备标签，分析和导出均缺省pending，填写时须为非空文本。见[运行说明](execution.md)，其他备注不改变计算 |
 
@@ -32,14 +32,14 @@
 
 普通BLF/ASC任务从[最小入门配置](quickstart.md)开始，只加当前任务需要的内容。不要按字段表逐项补齐：session/entity沿用dataset.name；格式、默认时间、唯一来源/通道、DBC已有类型/单位/周期、默认scope与输出均可省略。多个候选或缺少信息时，程序会指出需要补充的位置。
 
-基础示例保留一个明确的运行选择：单一ASC/BLF来源使用最多4个文件读取工作进程。下面是根级片段，加入自己的完整配置；已有`execution`时只在其中设置`process_count`，保留其他设置，不重复创建父键。
+手册的基础示例写有下面的根级片段：同一来源有多个ASC/BLF文件时，最多用4个工作进程并行读取。已有`execution`时只在其中设置`process_count`，不重复创建父键。
 
 ```yaml
 execution:          # 控制本次分析的运行方式
   process_count: 4  # 最多4个文件读取工作进程；实际不超过文件数
 ```
 
-这是手册推荐的显式配置，程序默认仍为1。只有一个文件时不会拆分该文件；多个文件仍组成同一次连续分析。CSV、内存和多来源联合分析使用1；独立任务在批量配置根级设置`process_count`，各子任务保持1。使用条件与覆盖顺序见[执行设置](execution.md)。
+省略时默认1。适用的输入、取值和覆盖方法见[执行设置](execution.md)。
 
 用户给来源、信号、规则、窗口、计算项和批量任务起的名称统一用`name`；引用使用`source`、`rule`、`window`。CAN报文编号使用`frame_id`，DBC信号名仍为`field.signal`。普通计算的输入统一写`expr`。
 
@@ -72,7 +72,7 @@ calculations:            # 列出希望获得的统计或积分结果，每项�
 
 valid_for表示一个有效样本在最后更新时间之后最多保持多久；到期即未知。timeout只表示等待或活动的上限；minimum_duration表示条件必须持续多久才确认。它们不能互换。
 
-sample_mean是按样本个数平均；time_weighted_mean按每个值实际占用的时间平均。在快速开始的同一组数据上，前者为6W，后者为38/6W，见[时间与计算](concepts.md)。
+sample_mean是按样本个数平均；time_weighted_mean按每个值实际占用的时间平均。在快速开始的同一组数据上，前者为6W，后者为38/6W，计算过程见[计算方法](calculations.md)。
 
 ## 功能与字段参考
 

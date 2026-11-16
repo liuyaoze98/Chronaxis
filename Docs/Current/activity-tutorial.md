@@ -71,18 +71,18 @@ calculations:                      # 列出希望获得的统计或积分结果�
 
 ## 运行并核对
 
-从仓库根运行；离线包examples目录中则把配置路径改为activity.yaml。activity-result可重复使用，每次输出自动增加时间后缀。
+在[手册的 examples 目录](installation.md#find-examples)运行。activity-result可重复使用，每次输出自动增加时间后缀。
 
 ```powershell
-chronaxis validate Docs/Current/examples/activity.yaml
-chronaxis run Docs/Current/examples/activity.yaml --output activity-result
+chronaxis validate activity.yaml
+chronaxis run activity.yaml --output activity-result
 ```
 
 | 输出 | 应核对的事实 |
 |---|---|
 | 事件结果.csv | 一次hot活动：开始1秒、确认3秒、结束6秒；event_energy（J）为50，状态“完整”。 |
-| 窗口结果.csv | 一段hot_context窗口：[0,7)秒，父事件区间为1；context_energy（J）为70，状态“完整”。 |
+| 窗口结果.csv | 一段hot_context窗口：[0,7)秒，“父事件区间”列为1，即事件结果表中的第1个区间；context_energy（J）为70，状态“完整”。 |
 
-10W在活动内保持5秒，因此50J；前后窗口共7秒，因此70J。将selection_origin改为confirmed时，活动计算改为[3,6)，得到30J；窗口仍为[0,7)，仍得到70J。只更改这个字段，其他数据与配置保持一致，便于理解差异。
+10W在活动内保持5秒，因此50J；前后窗口共7秒，因此70J。在hot规则中加一行`selection_origin: confirmed`（写在rules列表的这一项里，与`minimum_duration`同级）时，活动计算改为[3,6)，得到30J；窗口仍为[0,7)，仍得到70J。只更改这个字段，其他数据与配置保持一致，便于理解差异。
 
 如果自己数据的结果为partial，先检查观测范围和valid_for，再读[部分结果处理](execution.md)；增大pre/post只扩大请求范围，不会增加真实观测。

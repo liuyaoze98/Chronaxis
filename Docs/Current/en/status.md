@@ -2,7 +2,7 @@
 
 # Supported features and requirements
 
-This manual describes Chronaxis 0.1.0.dev4. Analysis configurations must use the integer `config_version: 4`. This version supports automatic unit conversion, statistics, rolling calculations and rates of change. Follow [Installation](installation.md) to install the matching source tree or local wheel before running the examples, and read the [upgrade notes](../../Release/release-notes-0.1.0.dev4.en.md) when moving from an earlier version. YAML suits hand-written plans; JSON is also supported.
+This manual describes Chronaxis 0.1.0.dev5. Analysis configurations must use the integer `config_version: 4`. This version supports automatic unit conversion, statistics, rolling calculations and rates of change. Follow [Installation](installation.md) to install the matching version (PyPI recommended) before running the examples, and read the [upgrade notes](../../Release/release-notes-0.1.0.dev5.en.md) when moving from an earlier version. YAML suits hand-written plans; JSON is also supported.
 
 One continuous ASC/BLF source can use an explicit reading/decoding process limit and stable time merging. See [continuous-file multiprocessing](continuous-files.md) for support and resource limits.
 
@@ -20,6 +20,8 @@ One continuous ASC/BLF source can use an explicit reading/decoding process limit
 <a id="需要自行确认的条件"></a>
 ## Information needed from your data
 
-Establish time synchronization, signal units and direction, measurement location, validity periods and engineering thresholds. Loading a configuration does not read business messages. If signal `dtype`, `unit`, `period` or enum `choices` are omitted, the relevant rules may obtain them from DBC. Supply `frame_id` and `signal`; channel can be omitted only when unique. Standard/extended and CAN/FD flags can be determined automatically when there is one candidate; otherwise specify them. See [signal binding](signals.md) and [sources](inputs.md). DBC metadata does not validate recorded content. Synthetic examples demonstrate calculations, not a particular device's business results.
+Establish time synchronization, signal units and direction, measurement location, validity periods and engineering thresholds.
+
+Loading a configuration does not read business messages. If signal `dtype`, `unit`, `period` or enum `choices` are omitted, the relevant rules may obtain them from DBC. Supply `frame_id` and `signal`; channel can be omitted only when unique. Standard/extended and CAN/FD flags can be determined automatically when there is one candidate; otherwise specify them. See [signal binding](signals.md) and [sources](inputs.md). DBC metadata does not validate recorded content. Synthetic examples demonstrate calculations, not a particular device's business results.
 
 Memory budgets cover managed resources, not the entire Python process. Parallel tasks and the NumPy implementation should be measured on your actual workload rather than assumed faster for every input.

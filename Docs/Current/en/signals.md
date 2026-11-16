@@ -29,10 +29,10 @@ sources:                              # Input sources used by this analysis
     dbc_by_channel:                   # DBC files indexed by user-facing CAN channel
       '1': data/can/teaching.dbc      # DBC for channel 1; channel keys are strings
 signals:                              # Signals available to expressions
-  - field:                            # Locate the original input field
+  - name: current                     # Name used to identify and reference this object
+    field:                            # Locate the original input field
       frame_id: '0x101'               # CAN message identifier; decimal or prefixed hexadecimal/binary
       signal: Current_mA              # Exact signal name defined in the DBC
-    name: current                     # Name used to identify and reference this object
     valid_for: 200ms                  # Maximum time for retaining the latest valid reading
 calculations:                         # Requested statistics or selected rows
   - name: maximum_current             # Name used to identify and reference this object
@@ -212,27 +212,27 @@ The Boolean example maps `Enabled` integer 0 to false and 1 to true: `condition:
 
 ```yaml
 signals:                                      # Signals available to expressions
-  - choices:                                  # Map input codes to Boolean or enum analysis values
-      - [0, false]                            # Input integer → Boolean
-      - [1, true]
+  - name: enabled                             # Name used to identify and reference this object
     field:                                    # Locate the original input field
       frame_id: '0x102'                       # CAN message identifier; decimal or prefixed hexadecimal/binary
       signal: Enabled                         # Exact signal name defined in the DBC
-    name: enabled                             # Name used to identify and reference this object
     valid_for: 200ms                          # Maximum time for retaining the latest valid reading
-  - choices:                                  # Map input codes to Boolean or enum analysis values
-      - [0, idle]                             # Input integer → state label
-      - [7, running]
+    choices:                                  # Map input codes to Boolean or enum analysis values
+      - [0, false]                            # Input integer → Boolean
+      - [1, true]
+  - name: mode                                # Name used to identify and reference this object
     field:                                    # Locate the original input field
       frame_id: '0x103'                       # CAN message identifier; decimal or prefixed hexadecimal/binary
       signal: ModeCode                        # Exact signal name defined in the DBC
-    name: mode                                # Name used to identify and reference this object
-    valid_for: 200ms                          # Maximum time for retaining the latest valid reading
     dtype: enum                               # Analysis value type
+    valid_for: 200ms                          # Maximum time for retaining the latest valid reading
+    choices:                                  # Map input codes to Boolean or enum analysis values
+      - [0, idle]                             # Input integer → state label
+      - [7, running]
 rules:                                        # Conditions or transitions that produce events
-  - condition: enabled and mode == "running"  # Boolean expression used to select an activity
-    name: enabled_running                     # Name used to identify and reference this object
+  - name: enabled_running                     # Name used to identify and reference this object
     rule_type: rising_edge                    # Event detection algorithm
+    condition: enabled and mode == "running"  # Boolean expression used to select an activity
 ```
 
 Each choice has exactly two values: input code and analysis value. `[7,running]` does not mean column 7; `field` selects the column. Bool targets must be YAML Booleans, not string `"true"`; enum targets must be nonempty text. A parseable but unmapped code becomes an invalid update and replaces the old state.

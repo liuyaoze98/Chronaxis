@@ -70,4 +70,4 @@ AttributeError: 名称未在公开名单中。
 
 导入planning及其依赖；不缓存任何会话输入或绑定。
 
-源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/__init__.py:33`](../../../src/chronaxis/__init__.py#L33)（行号对应 Chronaxis 0.1.0.dev5 源码）。

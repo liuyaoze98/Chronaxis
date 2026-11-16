@@ -8,7 +8,7 @@
 
 ## 先选并行运行方式
 
-单一ASC/BLF来源的基础配置显式设置`execution.process_count: 4`，以最多4个工作进程处理同一次记录的文件；实际进程数受文件数限制。程序省略此字段时仍默认1。选定配置后，先按下表确认文件关系，再修改路径、DBC和业务条件。
+示例配置中的`execution.process_count: 4`只在同一来源有多个文件时起作用，取值见[执行设置](execution.md)。选定配置后，先按下表确认文件关系，再修改路径、DBC和业务条件。
 
 |输入关系|配置进程数的位置|完整示例与核对结果|
 |---|---|---|
@@ -105,7 +105,7 @@ chronaxis run fault-demo/plan.yaml --output fault-result
 
 ## 下载完整案例并运行
 
-以下配置和data文件都随离线包提供。从examples目录运行；分析命令的结果目录可重复使用，文件名自动增加时间后缀。CAN案例所需CAN依赖随正常安装提供。它们使用合成输入，不代表真实设备阈值。
+以下配置和data文件都在[手册的 examples 目录](installation.md#find-examples)中，安装包自带的手册和离线包都有。从examples目录运行；分析命令的结果目录可重复使用，文件名自动增加时间后缀。CAN案例所需CAN依赖随正常安装提供。它们使用合成输入，不代表真实设备阈值。
 
 <a id="can-joint-analysis"></a>
 ### CAN电压与CSV电流联合分析
@@ -137,7 +137,7 @@ chronaxis run message-energy.yaml --output message-result
 <a id="dual-grid"></a>
 ### 信号250ms与CAN500ms两个导出网格
 
-[dual-grid.yaml](examples/dual-grid.yaml)读取与联合案例相同的joint.asc和joint.dbc，同时导出电压和重建CAN帧。signals的分析名是voltage，DBC字段名是Voltage；两处不能互换。本合成案例的metadata.device_label为home，记录示例来源；实际使用可省略，或填写自己的非空设备标签，见[输出配置](exports.md)。
+[dual-grid.yaml](examples/dual-grid.yaml)读取与联合案例相同的joint.asc和joint.dbc，同时导出电压和重建CAN帧。signals的分析名是voltage，DBC字段名是Voltage；两处不能互换。本合成案例的metadata.device_label为lab-pc，演示怎样记录设备；实际使用可省略，或填写自己的非空设备标签，见[输出配置](exports.md)。
 
 ```powershell
 chronaxis run dual-grid.yaml --output grid-result

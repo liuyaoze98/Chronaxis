@@ -24,4 +24,4 @@ Processing checks roles, generates an expression using simple aliases, construct
 
 ## Source locations
 
-- [`src/chronaxis/presets.py:158`](../../../../src/chronaxis/presets.py#L158) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/presets.py:158`](../../../../src/chronaxis/presets.py#L158) — line number in the Chronaxis 0.1.0.dev5 source.

@@ -13,45 +13,18 @@ Write durations as `"0.1s"` or `"100ms"`. Internal times and API/exchange-format
 [interval-actual.yaml](../examples/interval-actual.yaml) omits `intervals` and returns 1200 J. [interval-fixed.yaml](../examples/interval-fixed.yaml) also omits global `intervals`, but gives the `energy` calculation a fixed 100 ms interval and returns 800 J. Both define `power` and use the same three records. Run either with `chronaxis run filename.yaml --output results`.
 
 <a id="一个完整的最小例子"></a>
-## A complete minimal configuration
+## Set one interval for every calculation
 
-The following synthetic input and expected energy can be checked by hand. Save this complete root-level configuration as `energy.yaml`; do not wrap it in another key. The result directory can be reused; files receive a timestamp suffix.
+interval-fixed.yaml sets a fixed interval only for the `energy` calculation. To use a fixed period for every calculation, add this fragment at the configuration root (at the same level as `sources` and `calculations`):
 
 ```yaml
-config_version: 4        # Current analysis configuration version
-dataset:                 # Dataset settings.
-  name: demo             # Name included in result identity.
-sources:                 # Input sources.
-  - source_type: memory  # Synthetic records supplied in the configuration.
-    rows:                # Each record supplies a timestamp and updated values.
-      - time: 0s         # First observation.
-        values:          # Original input field names.
-          p: 4000        # Power value; its type and unit are defined below.
-      - time: 0.12s      # Second observation.
-        values:          # Values updated at this timestamp.
-          p: 4000        # Same power.
-      - time: 0.3s       # Third observation.
-        values:          # Values updated at this timestamp.
-          p: 4000        # Same power.
-signals:                 # Named analysis signals.
-  - name: power          # Name used in expressions.
-    field: p             # Original input field.
-    dtype: float64       # Numeric type for analysis.
-    unit: W              # Target analysis unit; compatible registered units convert when scale/offset are omitted.
-    valid_for: 1s        # Maximum age of a valid update.
-calculations:            # Requested results.
-  - name: energy         # Calculation name.
-    operation: integral  # Accumulate power multiplied by duration.
-    expr: power          # Signal to integrate.
 intervals:               # Duration basis; original timestamps remain intact.
   default:               # Default for nodes without their own override.
     mode: fixed          # actual, fixed, or dbc.
     value: 100ms         # Duration assigned to each driver interval.
-execution:               # Execution settings for this analysis
-  process_count: 1       # Memory input runs in one process
 ```
 
-Run `python -m chronaxis run energy.yaml --output work/energy-v2-result`. The result directory can be reused. The `energy（J）` value in `会话结果_<run timestamp>.csv` should be 800. Remove the entire `intervals` object to obtain 1200 J using actual time. Only raw CAN inputs can use `mode: dbc` without `value`; requesting `dbc` for this memory example fails instead of silently substituting a fixed period.
+Appending it to interval-actual.yaml also gives 800 J for `energy`; removing the whole `intervals` object returns to 1200 J from actual elapsed time. Raw CAN sources can instead set `mode: dbc` and omit `value` to use DBC message periods; decoded CSV and memory sources have no DBC period, so `dbc` fails validation for them.
 
 <a id="intervals的全部字段"></a>
 ## All interval fields

@@ -131,8 +131,8 @@ AnalysisPlan(config_version: int, dataset: chronaxis.planning.models.DatasetPlan
 ```python
 from chronaxis import load_analysis_plan
 
-# 从仓库根目录运行；此文件已定义所需来源、信号和预设。
-plan = load_analysis_plan("Docs/Current/examples/preset-charge-minimal.yaml")
+# 在手册首页所在的目录运行；此文件已定义所需来源、信号和预设。
+plan = load_analysis_plan("examples/preset-charge-minimal.yaml")
 for preset, bindings in zip(plan.presets, plan.preset_bindings):
     for binding in bindings:
         print(preset.id, binding.contract.role,
@@ -141,7 +141,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisPlan-__post_init__"></a>
 ### `AnalysisPlan.__post_init__`
@@ -155,7 +155,7 @@ AnalysisPlan.__post_init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisPlan-extensions"></a>
 ### `AnalysisPlan.extensions`
@@ -183,7 +183,7 @@ ExtensionRegistry或None。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisPlan-lookups"></a>
 ### `AnalysisPlan.lookups`
@@ -211,7 +211,7 @@ LookupTablePlan 元组。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -249,7 +249,7 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-load_analysis_plan"></a>
 ## `load_analysis_plan`
@@ -286,8 +286,9 @@ PlanValidationError: 路径类型错误、文件读取或编码错误、JSON/YAM
 ### 调用示例
 
 ```python
+# 在手册首页所在的目录运行；该目录直接包含examples。
 from chronaxis import load_analysis_plan
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+plan = load_analysis_plan("examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号对应 Chronaxis 0.1.0.dev5 源码）。

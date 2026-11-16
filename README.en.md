@@ -31,22 +31,22 @@ The project originated from automotive and battery test analysis. Its intended a
 
 ## Installation and environment
 
-This source tree and its documentation correspond to **0.1.0.dev4**, a development preview. Use **Python 3.12 or 3.13**. The commands below use Windows; Linux process and filesystem requirements are described in the [installation guide](Docs/Current/en/installation.md). Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev4.en.md) before upgrading.
+This source tree and its documentation correspond to **0.1.0.dev5**, a development preview. Use **Python 3.12 or 3.13**. The commands below use Windows; Linux process and filesystem requirements are described in the [installation guide](Docs/Current/en/installation.md). Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev5.en.md) before upgrading.
 
 Create an isolated environment and install this version from PyPI:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev4"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev5"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
-To install from the matching source tree, use `python -m pip install .` in the directory containing `pyproject.toml`. Package-only users can run `python -m chronaxis guide` to locate the matching guide and bundled examples.
+To install from the matching source tree, use `python -m pip install .` in the directory containing `pyproject.toml`. The package includes the complete Markdown user manual and the AI guide: `python -m chronaxis manual` prints the manual home page path and `python -m chronaxis guide` prints the AI guide path. Open them directly and run their examples.
 
 If you have a wheel for this version, use its actual file path in this installation command instead:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev5-py3-none-any.whl"
 ```
 
 Installation automatically includes the dependencies needed for CAN reading, DBC decoding, and other features. For offline installation, prepare the dependency packages in advance; see the [installation guide](Docs/Current/en/installation.md).
@@ -119,6 +119,7 @@ Append these commands to `python -m chronaxis`; add `--help` for their arguments
 | `batch run` | Run independent analysis tasks |
 | `config resolve` / `config origins` | Inspect expanded configuration / where definitions originate |
 | `guide` | Show the directly readable AI guide path; use `--language en` for English |
+| `manual` | Show the bundled Markdown user manual home page path; use `--language en` for English |
 
 - [Online HTML manual](https://liuyaoze98.github.io/Chronaxis/en/): configuration, execution, and result interpretation. The [source manual](Docs/Current/en/index.md) is also readable locally.
 - [Configuration guide](Docs/Current/en/configuration.md) and [complete field reference](Docs/Current/en/reference/configuration-schema.md).
@@ -131,10 +132,6 @@ Append these commands to `python -m chronaxis`; add `--help` for their arguments
 Send questions and suggestions to [work@liuyaoze.com](mailto:work@liuyaoze.com) or [GitHub Issues](https://github.com/liuyaoze98/Chronaxis/issues). When reporting a problem, include the package version, Python and OS versions, a minimal configuration, reproduction steps, and the expected and actual results.
 
 Contributors can start with the [public test commands](Docs/Release/distribution.md) and [documentation maintenance guide](Docs/Current/en/maintenance.md). See the [dependency security notes](Docs/Release/security.md) for known dependency issues.
-
-## Funding acknowledgement
-
-We gratefully acknowledge funding for Chronaxis from Zhengzhou Nissan Automobile Co., Ltd. (郑州日产汽车有限公司) through its 2025 innovation research program.
 
 ## AI tools disclosure
 

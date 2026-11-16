@@ -4,7 +4,7 @@
 
 Distinguish two CSV inputs. `signal_csv` already contains physical columns such as time, voltage, and current. A `raw_can_csv` row still contains a message ID and hexadecimal bytes, which need DBC decoding. Equal filename extensions do not imply equal contents.
 
-ASC/BLF continuations support `execution.process_count` and an independent `file_merge` selection. See [continuous-file multiprocessing](continuous-files.md) for complete examples and cross-file state. These added execution paths do not support raw CAN CSV.
+ASC/BLF continuations support `execution.process_count` and an independent `file_merge` selection. See [continuous-file multiprocessing](continuous-files.md) for complete examples and cross-file state. Raw CAN CSV supports neither multiprocess reading nor `file_merge`.
 
 A **DBC** defines CAN message fields: for example, the first byte of ID `0x100` may represent Voltage with scale 1 and unit V. It does not supply acquisition timestamps. It can define message periods used for defaults such as validity, but does not establish measurement points or current direction. ASC is a text message log; BLF is a binary log. Both reader paths feed decoded signals into the same analysis engine.
 

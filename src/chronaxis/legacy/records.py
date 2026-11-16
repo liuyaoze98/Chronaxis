@@ -197,6 +197,31 @@ class LegacyRawFrame:
                 raise TypeError(name + '需要bool')
 
 
+def _raw_frame_from_validated_fields(timestamp, arbitration_id, is_extended_id, is_remote_frame, is_error_frame,
+                                     channel, dlc, data, is_fd, is_rx, bitrate_switch, error_state_indicator):
+    """供已逐字段核验的读取器构造原帧快照，不重复__post_init__检查。
+
+    参数: 与LegacyRawFrame字段相同；调用方必须已证明全部字段满足其不变量
+        （有限float秒、ID/DLC范围、bytes长度、bool标志）。外部或未检查数据须用公开构造。
+    返回: 字段相同的冻结LegacyRawFrame。异常: 仅分配错误。
+    """
+    frame = object.__new__(LegacyRawFrame)
+    setter = object.__setattr__
+    setter(frame, 'timestamp', timestamp)
+    setter(frame, 'arbitration_id', arbitration_id)
+    setter(frame, 'is_extended_id', is_extended_id)
+    setter(frame, 'is_remote_frame', is_remote_frame)
+    setter(frame, 'is_error_frame', is_error_frame)
+    setter(frame, 'channel', channel)
+    setter(frame, 'dlc', dlc)
+    setter(frame, 'data', data)
+    setter(frame, 'is_fd', is_fd)
+    setter(frame, 'is_rx', is_rx)
+    setter(frame, 'bitrate_switch', bitrate_switch)
+    setter(frame, 'error_state_indicator', error_state_indicator)
+    return frame
+
+
 @dataclass(frozen=True)
 class LegacyDecodedFrame:
     """保存一次原yield和一次parse的结果，values独立只读且保留非有限诊断值。"""

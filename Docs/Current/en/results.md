@@ -8,6 +8,8 @@
 
 Ordinary configurations can omit `outputs`. After running, open the CSV files with Chinese names. Calculations for the same event or window are already on one row, so you do not need to join IDs or convert nanoseconds yourself. Files use UTF-8 with a BOM for Windows spreadsheet software. Values are not rounded merely for display.
 
+To see what the output looks like first, open [Example results](example-results.md): each complete configuration has its command, actual result tables and an explanation of the values. This page explains the fields; configuration files and result files have different structures.
+
 For example, the [conditional energy example](conditional-energy.md) produces one qualifying interval. These are the actual Chinese output headers and values:
 
 | 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
@@ -54,11 +56,11 @@ outputs:       # Additional result files to publish
 
 The only choices are `readable_csv`, `csv`, and `jsonl`. `csv` writes the original `events.csv`, `calculations.csv`, and related tables. `jsonl` writes corresponding line-delimited JSON records containing `row_schema_version` and `row`. One selected format produces one set of results, not readable and exchange copies together.
 
-Python methods such as `iter_events` and `iter_calculations` always return the original typed rows regardless of file format. The low-level `AnalysisResult` constructor still defaults to `csv`; `AnalysisRunner` follows the plan's `readable_csv` default.
+Python methods such as `iter_events` and `iter_calculations` always return the original typed rows regardless of file format.
 
-Readable export processes already computed results without rereading logs. Because event and metric sort orders differ, it may create a temporary join index, constrained by memory/disk budgets and removed before publication. This adds export work; measure its cost for large outputs. Detail-only outputs are written directly without that index.
+Readable tables are arranged from the computed results without rereading logs. Arranging them adds a little export time; estimate it at your actual scale when results are large.
 
-The remaining field descriptions apply to explicit `csv`/`jsonl` and typed APIs. For actual files and commands associated with each complete configuration, see [Example results](example-results.md). Configuration and result files have different structures.
+The remaining field descriptions apply to explicit `csv`/`jsonl` and typed APIs.
 
 An ordinary calculation row directly contains `calculation_id`, `operation`, `scope`, `value`, `unit`, `status`, `reason`, and `quality`, plus dataset/entity/session identity, parent event or segment, and sequence. Access attributes directly, such as `row.value`.
 
@@ -74,6 +76,8 @@ Unless stated otherwise, timing examples below use default `actual` intervals. W
 | `input_trace` / `iter_input_trace` | Input location and record kind when detailed tracing was requested. |
 | `contributions` / `iter_contributions` | Per-message contribution or skip reason when `outputs.contributions=full`. |
 
+<a id="coverage-status"></a>
+
 Calculations return `SummaryCalculationRow` or `SummaryCoverageCalculationRow` with `coverage_status`, according to the operation. Ordinary `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum`, `sample_mean`, and v4 sample counts, variance, standard deviation, RMS and sample quantiles include `coverage_status` when `minimum_coverage > 0`. `sufficient` means the required observation, valid-value, and known-condition ranges meet the threshold; `indeterminate` means they do not, or cannot be determined. This is not a numerical coverage ratio and does not turn sample statistics into time-weighted statistics. Select details and per-message sums are outside this scalar group. An explicit zero or omitted threshold does not add the field.
 
 Full fields are listed in [Summary row models](../reference/chronaxis.results.summary.md) (Chinese implementation reference). Matching CSV and JSONL fields represent the same facts. Exchange CSV includes a timestamped run manifest; JSONL rows include a version and row object. The manifest records the run and tables actually written. Readable `row_counts` count rows after presentation joins. A configuration hash is not an input-content hash and cannot prove two runs used identical data.
@@ -82,7 +86,16 @@ Full fields are listed in [Summary row models](../reference/chronaxis.results.su
 <a id="结果怎样发布"></a>
 ## How results are published
 
-The output directory can be reused. Every publication uses one local-time suffix, such as `20261103_091500_123456`, for its tables, manifest and requested export directory. A numeric suffix resolves same-time or concurrent collisions. This naming time does not change message times, interval boundaries or energy values. Existing files are never overwritten, and unrequested outputs are not created.
+The output directory can be reused. Every publication uses one local-time suffix, such as `20261103_091500_123456`, for its tables, manifest and requested export directory. For example, two runs into the same directory produce:
+
+```text
+results/
+  会话结果_20261103_091500_123456.csv
+  run_manifest_20261103_091500_123456.json
+  会话结果_20261103_092000_654321.csv
+  run_manifest_20261103_092000_654321.json
+```
+ A numeric suffix resolves same-time or concurrent collisions. This naming time does not change message times, interval boundaries or energy values. Existing files are never overwritten, and unrequested outputs are not created.
 
 Files are written and closed in temporary storage, then published individually; the completion manifest is published last. Treat a set as complete only when its manifest exists and reports `completed`. Normal failure cleanup touches only files owned by this publication. An abrupt process termination or power loss may leave files without a completion manifest; they are not completed outputs and subsequent runs do not scan or delete them. The result-publication procedure on this page has been verified on Windows and in the Linux environment listed in [Installation](installation.md). Linux publication requires `renameat2`, target-filesystem support for `RENAME_NOREPLACE`, and a same-filesystem move. See that page for the scope of other systems and filesystems.
 
@@ -98,7 +111,23 @@ When `value` is empty, inspect `status`, `reason`, and `quality`. Invalid update
 <a id="用实际输出理解partial"></a>
 ### A concrete partial-result example
 
-In [analysis.yaml](../examples/analysis.yaml), explicitly set `power.valid_for` to `1s`, overriding the 3-second default inferred from the DBC's 1-second period, and set the energy calculation's `partial_policy`. Keep the input and `[0,6)` range unchanged. Power expires without a replacement in `[2,3)` and `[5,6)`, leaving four calculable seconds:
+In [analysis.yaml](../examples/analysis.yaml), explicitly set `power.valid_for` to `1s`, overriding the 3-second default inferred from the DBC's 1-second period, and set the energy calculation's `partial_policy`. Add the two lines marked “Added” below; keep everything else, including the `[0,6)` range, unchanged:
+
+```yaml
+signals:                            # Input fields defined as named analysis signals
+  - name: power                     # Name used by expressions and calculations
+    field:                          # Original field: message ID and DBC signal name
+      frame_id: '0x100'             # Message that contains the signal
+      signal: Power                 # DBC signal name, case-sensitive
+    valid_for: 1s                   # Added: each power value is valid for 1 second
+calculations:                       # Requested statistics or integrals
+  - name: energy                    # Unique result name
+    partial_policy: report          # Added: keep the known part; use strict for the second row below
+    operation: integral             # Multiply valid values by duration and accumulate
+    expr: power                     # The signal defined above
+```
+
+The `sample_average` and `time_average` calculations and `execution` are unchanged and omitted from the fragment. Power expires without a replacement in `[2,3)` and `[5,6)`, leaving four calculable seconds:
 
 **2 W × 1 s + 4 W × 1 s + 8 W × 1 s + 10 W × 1 s = 24 J.**
 
@@ -229,18 +258,11 @@ Signal CSV and CAN frame exports are explicitly requested through `outputs`, wit
 
 <a id="metadata-output"></a>
 <a id="运行清单的摘要与详细字段"></a>
-## Summary and detailed run metadata
+## What the run manifest contains
 
-`RunMetadata` stores run information; `to_dict()` selects what is serialized. When software_version is omitted, each new RunMetadata reads the version of this source checkout or installed package. Existing objects and explicitly supplied historical versions are unchanged. This does not imply automatic reloading of already imported Python code. Default `detailed_diagnostics=False` writes `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `worker_config`, `retain_work`, and `detailed_diagnostics`. Input identities, session boundaries, limitations, and other conditional fields appear when their conditions apply. Trace/integrity add their corresponding diagnostics.
+The run manifest records basic information about the run: `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `worker_config`, `retain_work` and `detailed_diagnostics`, together with the result files actually written. Input identities, session boundaries, limitations and similar fields appear only when they apply. Enabling `trace` or `integrity` under `diagnostics` adds the corresponding diagnostics; see [Execution](execution.md).
 
-| Model content | Default summary serialization | `detailed_diagnostics=True` |
-|---|---|---|
-| A signal definition in `signal_bindings` | No `signal_bindings` key. | Expands that definition. |
-| Preset bindings or CAN source details | Nonempty values are not automatically emitted. | Uses detailed serialization branches; empty optional fields may still be omitted. |
-
-A missing detailed key does not prove the model never held that information. Check the serialization mode before indexing optional keys. The public runner creates summary metadata. Configuration `diagnostics` accepts only `trace`, `integrity`, and `retain_work`; it has no `detailed` or `detailed_diagnostics` switch. The table describes a model serialization branch, not a promise that the public runner populates every field. See [Execution](execution.md).
-
-The public runner currently leaves `metadata.can_sources` and `metadata.text_can_sources` as empty tuples. Those fields can receive explicitly supplied caller details; their names do not imply they will be populated after a run. Use supported diagnostics for actual input checks. Converting metadata to detailed mode cannot recreate absent details.
+Ordinary runs need no manifest settings. When reading a manifest, check that an optional key exists before using it. See [RunMetadata](public-api/RunMetadata.md) for the full field definitions.
 
 <a id="为什么运行成功却没有事件"></a>
 ## Why a successful run can have no events

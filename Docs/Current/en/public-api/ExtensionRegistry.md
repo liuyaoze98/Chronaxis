@@ -31,6 +31,6 @@ Registers declarations without executing callbacks or creating runtime state. Do
 
 [Worked host example](../host-extensions.md)
 
-Source: [`src/chronaxis/extensions.py:147`](../../../../src/chronaxis/extensions.py#L147) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).
+Source: [`src/chronaxis/extensions.py:147`](../../../../src/chronaxis/extensions.py#L147) (line number in the Chronaxis 0.1.0.dev5 source).
 
-Source: [`src/chronaxis/extensions.py:154`](../../../../src/chronaxis/extensions.py#L154) (line at `8904c2f744951857659abd40aaa3535d57faf53c`).
+Source: [`src/chronaxis/extensions.py:154`](../../../../src/chronaxis/extensions.py#L154) (line number in the Chronaxis 0.1.0.dev5 source).

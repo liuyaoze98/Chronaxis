@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chronaxis"
-version = "0.1.0.dev4"
+version = "0.1.0.dev5"
 description = "Declarative analysis of multi-source time series"
 dynamic = ["readme"]
 authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]

@@ -32,7 +32,8 @@ def main():
     build = docs / '_build'
     html = build / 'html'
     label = os.environ['CHRONAXIS_DEVICE_LABEL']
-    assert label in ('home', 'work'), '必须传入已实测的设备标签'
+    # 只接受AGENTS 1.1已登记的实测设备标签；school为2026-11-15用户确认的新设备。
+    assert label in ('home', 'work', 'school'), '必须传入已实测的设备标签'
 
     # 生成页、源码清单、随附配置规范必须属于同一交付内容。
     metadata = json.loads((docs / 'documentation.json').read_text(encoding='utf8'))

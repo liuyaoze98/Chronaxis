@@ -26,4 +26,4 @@ No side effects: inputs, Decimal context, and time basis are unchanged.
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:149`](../../../../src/chronaxis/timebase/conversion.py#L149) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/timebase/conversion.py:149`](../../../../src/chronaxis/timebase/conversion.py#L149) — line number in the Chronaxis 0.1.0.dev5 source.

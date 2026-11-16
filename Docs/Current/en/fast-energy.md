@@ -4,18 +4,15 @@ This integrator adds the expression result from each matching message. To calcul
 
 `frame_duration` is a parameter name chosen for the example, not a required parameter. The runner does not automatically multiply by the actual interval between adjacent messages. Use the [time integral](calculations.md#integrators) when the integral must follow actual elapsed time.
 
-Use fast when one matched power message represents a fixed contribution time, such as 0.1 s. Use one fast session for volumes of one recording and fast batch for independent trials. Use ordinary analysis for held cross-message values, events or elapsed-time integration. The basic plan explicitly sets `execution.process_count: 4`, allowing up to four file workers to read, decode and evaluate individual contributions. The main process accumulates them in the required order. Two files can use at most two workers; a single file runs inline. Omission still defaults to one.
+Use fast when one matched power message represents a fixed contribution time, such as 0.1 s. Use one fast session for volumes of one recording and fast batch for independent trials. Use ordinary analysis for held cross-message values, events or elapsed-time integration. The basic plan sets `execution.process_count: 4`: with several volumes, workers read files and evaluate individual contributions in parallel, and the main process accumulates them in order. See the execution field table below for the value.
 
 Download the [ASC plan](../examples/fast/analysis.yaml), [BLF plan](../examples/fast/analysis-blf.yaml), [batch plan](../examples/fast/batch.yaml), [DBC](../examples/fast/data/power.dbc), [first ASC](../examples/fast/data/run2.asc), [second ASC](../examples/fast/data/run10.asc) and [BLF](../examples/fast/data/single.blf).
 
 ## Install and run
 
-Install the local Chronaxis 0.1.0.dev4 wheel using its actual file path below, with access to its dependencies. See [Installation](installation.md) to install from the matching source tree. After activating the environment, change to the directory containing the downloaded plans. Preserve the data subdirectory.
+First install Chronaxis 0.1.0.dev5 as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev5"` is recommended. Then change to the `fast` subdirectory of the manual's [examples directory](installation.md#find-examples), keeping its data subdirectory. The commands below assume an activated environment; otherwise replace `python` with the full path of the environment's `python.exe`, as described in [Installation](installation.md#run-without-activation).
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
-.\.venv\Scripts\Activate.ps1
 python -m chronaxis fast --help
 ```
 
@@ -92,6 +89,8 @@ Start with default memory and staging settings; add the corresponding fields bel
 
 Only these three execution fields are supported by fast. Explicit ordinary-engine options such as `backend` or `batch_rows` are rejected. Changing worker count does not select a merge mode.
 
+**Sign buckets.** A sign (direction) bucket divides messages into two groups by the sign of a direction signal and accumulates only one group, for example only messages with positive current. Enable it with the calculation's `split_by_sign` field; see [split_by_sign in message calculations](message-calculations.md#split-by-sign). Without `split_by_sign`, there is no direction filtering, and the direction-related counts and statuses below do not occur.
+
 Staging writes contributions that have been evaluated but are not yet due for accumulation into temporary files owned by this run. The main process reads them later; raw logs are not copied. Managed memory accounts for estimated buffers and state. The Python interpreter and third-party libraries consume additional memory, so a 256 MiB budget does not limit the whole task to 256 MiB.
 
 When optional concatenate prefetch cannot obtain staging quota, that later file pauses and resumes direct delivery when it becomes current. This can reduce speed. Multi-file time_order requires staging; insufficient quota fails. Actual disk errors, damaged blocks or missing contributions fail the whole session. Each format retains its existing input checks.
@@ -103,7 +102,13 @@ python -m chronaxis fast run session.yaml --output result-session --process-coun
 python -m chronaxis fast run session-time-order.yaml --output result-time-order
 ```
 
-`explain.worker_process_limit` is a declared upper bound, not measured activity; it is 0 for inline execution. The completion manifest lists every file in `inputs`, actual worker PIDs in `execution.worker_pids`, and per-calculation target/valid/selected counts in `execution.calculation_counts` (Python: `manifest["execution"]["calculation_counts"]`). For the default CSV, read `计算项`, `结果`, `单位`, `状态`, and `说明` (calculation, value, unit, status, reason). With an explicitly selected exchange format `outputs.tables: csv` or `jsonl`, the fields are `name/value/unit/status/reason`. Complete processing does not prove the physical recording contains no missing messages.
+Check execution in these places:
+
+- `worker_process_limit` in the `explain` output is the planned worker limit, not measured activity; it is 0 for inline execution.
+- The completion manifest lists every file in `inputs` and the workers actually started in `execution.worker_pids`.
+- `execution.calculation_counts` in the manifest gives per-calculation target, in-domain valid and sign-bucket selected counts (Python: `manifest["execution"]["calculation_counts"]`).
+- In the default CSV, read the five columns `计算项`, `结果`, `单位`, `状态`, and `说明` (calculation, value, unit, status, reason). Only with an explicitly selected exchange format `outputs.tables: csv` or `jsonl` are the columns `name/value/unit/status/reason`.
+- Status `完整` (complete) means the selected records were all processed; it does not prove the physical recording has no missing messages.
 
 |Whole-session condition for one calculation|Result|
 |---|---|
@@ -137,7 +142,7 @@ A complete total requires a valid value from every expected member for that metr
 
 |What the task needs|Entry or setting|
 |---|---|
-|A number calculated from one message ID on one channel|Use fast with numeric constants, arithmetic and abs. Use the sign bucket when current polarity selects members.|
+|A number calculated from one message ID on one channel|Use fast with numeric constants, arithmetic and abs. To accumulate only one direction, such as positive current, set `split_by_sign` in the calculation.|
 |A named DBC choice, multiplexed or container payload, a held signal from a different ID, or an event window|Use the general engine for the requested feature where supported, or adjust the input format. Fast reports unsupported bindings before it opens the recording.|
 |Managed memory/staging budgets or full contribution evidence|Fast streams files and supports the three execution options above. Full per-message evidence requires ordinary analysis. Neither managed budget is a hard whole-process RSS limit.|
 |Missing or bad readings|No target gives null. A relevant decoding or numeric failure fails the file. The default batch policy continues other independent files. See the individual jobs in the batch report.|
@@ -187,5 +192,3 @@ Configuration errors raise before analysis starts. A read, decode, formula or pu
 The single-session `run` preserves the original read, calculation, or cancellation exception type. If session cleanup has not completed, inspect `getattr(exc, "fast_session_cleanup_owner", None)` on the caught exception and call that object's `close()` after resolving the resource fault; its child resources do not need to be closed separately. Recovery neither reruns calculations nor publishes a partial successful total. The attribute is not guaranteed, and it may refer to an object closed by a later retry. See [batch tasks](batch.md) for batch recovery and cancellation during worker construction.
 
 Full definitions: [run](public-api/fast.run.md), [run_batch](public-api/fast.batch.run_batch.md).
-
-Maintainer: liuyaoze.

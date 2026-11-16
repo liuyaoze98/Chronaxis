@@ -22,7 +22,9 @@
 
 ## 条件表达式
 
-例如`current > 5 and mode == 1`表示“电流大于5A，而且模式值等于1”。current和mode必须已经在signals里定义，不能直接写未绑定的原文件列名。
+先在`signals`中定义两个名字。若`current`是单位为`A`的数值信号，`mode`是`int64`状态信号，且设备规定目标状态编码为1，那么`current > 5 and mode == 1`表示“电流大于5A，而且整数状态等于1”。裸数5沿用电流信号的单位；需要明确固定为5A时，写`quantity(5, "A")`。
+
+若`mode`声明为`dtype: enum`，比较状态名称应写`current > quantity(5, "A") and mode == "running"`；比较保留的整数原码应写`current > quantity(5, "A") and enum_code(mode) == 7`。[枚举教学例](examples/signal-enum-minimal.yaml)的DBC把7映射到`running`，7或1都不是通用的运行状态编码。该枚举绑定不能直接写`mode == 1`；声明为`int64`的状态信号则允许直接比较整数。应按设备实际映射填写，不能直接引用未绑定的原文件列名。
 
 所有支持的算符、内置函数及其参数已经逐项列在[表达式完整说明](expressions.md)：包括一元正负号、四种算术、六种比较、and/or/not、链式比较、括号、常量、枚举、类型和单位限制，以及不支持写法。本页只讲这些计算结果在时间上如何使用。
 
@@ -59,7 +61,7 @@
 |条件全未知、无观测或零长度请求|不能据此返回正常0；保留具体原因|
 |有效贡献正负抵消得到0|正常数值0，不能与无数据混为一谈|
 
-`partial_policy="report"`表示保留已知部分的计算值，`"strict"`表示所需数据不完整时不给数值。`minimum_coverage`是使用者要求的最低数据覆盖比例，不能补齐缺失数据。完整数值对照见[运行参数](execution.md)。读取公开结果时同时查看`value`、`unit`、`status`、`reason`和`quality`。普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean，以及 v4 的样本计数、方差、标准差、RMS 和样本分位数，在 minimum_coverage 大于 0 时返回 coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。公开摘要不提供requested_coverage/value_coverage/condition_coverage三个数值比例。字段见[公开摘要行](reference/chronaxis.results.summary.md)。
+`partial_policy="report"`表示保留已知部分的计算值，`"strict"`表示所需数据不完整时不给数值。`minimum_coverage`是使用者要求的最低数据覆盖比例，不能补齐缺失数据。完整数值对照见[运行参数](execution.md)。读取公开结果时同时查看`value`、`unit`、`status`、`reason`和`quality`。设置了大于0的minimum_coverage时，计算行还带coverage_status，表示是否达到所设门槛，不是数值覆盖率；适用的计算和取值见[读取分析结果](results.md#coverage-status)。
 
 ## 时间积分与逐消息累计的区别
 

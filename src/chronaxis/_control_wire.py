@@ -1,7 +1,7 @@
 """内部有限控制消息；Connection 只收发 bytes，不使用隐含 pickle。
 
 CCP1 的固定头为版本、通道、命令和 uint64 总字节数，主体分片不超过 64KiB。
-普通CAN/fast由已有工作预算限定；独立batch沿用无全批RAM硬上限的边界。
+普通CAN、fast及并行积分控制消息由已有工作预算限定；独立batch沿用无全批RAM硬上限的边界。
 任务与固定结果逐片接收，不按声明总长预分配，也不截断合法身份。
 """
 import json
@@ -12,18 +12,20 @@ from ._control_models import pack_message, restore_message, native, check_messag
 
 CHUNK = 65536
 _HEADER = struct.Struct('!4sBBQ')
-_FAMILIES = {'can':1, 'fast':2, 'batch':3}
+_FAMILIES = {'can':1, 'fast':2, 'batch':3, 'integral':4}
 _COMMANDS = {
     'can': ('file','next','close','ready','block','sent','error'),
     'fast': ('file','program_file','direct','spool','next','close','offer','delivered','stored','eof','error'),
     'batch': ('run','fast','cleanup','close','result','fast_result','cleaned','cleanup_failed'),
+    'integral': ('file','configure','next','close','ready','block','error','budget','finished'),
 }
 _PARENT_COMMANDS = {
     'can': {'file','next','close'},
     'fast': {'file','program_file','direct','spool','next','close'},
     'batch': {'run','fast','cleanup','close'},
+    'integral': {'file','configure','next','close','budget'},
 }
-_LARGE = {'file','program_file','run','fast','result','fast_result','eof'}
+_LARGE = {'file','configure','program_file','run','fast','result','fast_result','eof'}
 
 
 class ControlProtocolError(ValueError):
@@ -148,8 +150,19 @@ def _check(family, command, args):
         raise ControlProtocolError('控制消息参数非法')
     if command in ('next','close','direct','spool','cleanup'):
         valid = len(args)==0
+    elif family == 'integral' and command == 'error':
+        valid = (len(args)==5 and all(_integer(v) for v in args[:2])
+            and args[2] in ('read','compute','cleanup') and all(type(v) is str for v in args[2:]))
     elif command == 'error':
         valid = len(args)==2 and all(type(v) is str for v in args)
+    elif family == 'integral':
+        valid = (command=='file' and len(args)==6 and _integer(args[0])
+            or command=='budget' and len(args)==1 and _integer(args[0],1)
+            or command=='configure' and len(args)==3 and _integer(args[0]) and type(args[1]) is dict and _integer(args[2],1)
+            or command=='ready' and len(args)==3 and _integer(args[0]) and _integer(args[1],1) and _integer(args[2],1)
+            or command=='finished' and len(args)==2 and all(_integer(v) for v in args)
+            or command=='block' and len(args)==4 and all(_integer(v) for v in args[:2])
+                and _integer(args[2],1) and _time(args[3]))
     elif family == 'can':
         valid = (command=='file' and len(args)==5
             or command=='ready' and len(args)==2 and _integer(args[0],1) and _integer(args[1],1)
@@ -198,6 +211,8 @@ def _diagnostics(family, command, args):
     返回: 参数列表，只修改独立结果字典中的诊断。
     异常: 诊断字段类型非法。
     """
+    if family=='integral' and command=='error':
+        return [args[0],args[1],args[2],_short(args[3],128),_short(args[4],4096)]
     if command=='error':
         return [_short(args[0],128),_short(args[1],4096)]
     if family=='batch' and command=='cleanup_failed':
@@ -215,7 +230,7 @@ class ControlChannel:
     """单个管道端的有限控制编码；不拥有额外句柄，close关闭实际Connection。
 
     parent表示父端，只允许向worker派发已定义命令；worker只能回报已定义事实。
-    max_bytes是CAN/fast已有预算。独立batch任务及固定结果总长没有原有硬上限；
+    max_bytes是CAN、fast或并行积分的已有预算。独立batch任务及固定结果总长没有原有硬上限；
     每片仍至多64KiB，只随实际收到内容增长，不能把分片长度当作总RAM上限。
     """
     def __init__(self, connection, family, *, parent, max_bytes=None):
@@ -237,8 +252,8 @@ class ControlChannel:
         """取得当前消息可用额度。
 
         参数: operation固定命令，sending区分发送或接收。
-        返回: 字节上限。
-        异常: batch固定大消息沿用None；CAN/fast未提供预算时ControlProtocolError。
+        返回: int字节上限；batch固定大消息沿用None，不表示零字节。
+        异常: CAN、fast或并行积分大消息未提供预算时ControlProtocolError。
         """
         if operation not in _LARGE:
             return CHUNK

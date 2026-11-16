@@ -206,7 +206,8 @@ class SameFrameRunnerTests(unittest.TestCase):
             work = self.root / uuid4().hex
             with AnalysisRunner().run(fixed, work) as result:
                 self.assertAlmostEqual(next(result.iter_calculations()).value, 880)
-                self.assertEqual(result.metadata.backend, 'numpy')
+                # 固定周期积分纳入已验证的 auto 类别；上面的故障注入仍禁止越过直接路径边界。
+                self.assertEqual(result.metadata.backend, 'reference')
 
     def test_failure_cancel_and_close_restore_budget_without_retry(self):
         """消费失败与取消均保持一次扫描和预算归零，失败不交付前缀。"""

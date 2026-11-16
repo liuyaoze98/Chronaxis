@@ -26,6 +26,7 @@
 ```python
 from math import isfinite
 from .numeric import INTEGER_BOUNDS, ScalarValue, _exact_float
+from .scalar import _scalar_from_validated_fields
 from .types import QualityFlag, SignalDType
 ```
 
@@ -59,7 +60,7 @@ TypeError为非数值类型/系数；ValueError为非有限系数或错误类型
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/affine.py:17`](../../../src/chronaxis/core/affine.py#L17)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/affine.py:18`](../../../src/chronaxis/core/affine.py#L18)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-affine_reference"></a>
 ## `affine_reference`
@@ -95,4 +96,4 @@ TypeError或ValueError为声明结构错误；不将配置错误变成样本质�
 
 返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/affine.py:40`](../../../src/chronaxis/core/affine.py#L40)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/affine.py:41`](../../../src/chronaxis/core/affine.py#L41)（行号对应 Chronaxis 0.1.0.dev5 源码）。

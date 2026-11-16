@@ -41,6 +41,20 @@ class RecordIntegralResult:
     coverage_status: str | None = None
 
 
+def record_integral_cost(spec, input_unit, *, batch_intervals=64, partial_limit=4096):
+    """计算现役积分器实际固定预约费用，供首帧前选择与构造共用。
+
+    参数: spec为CalculationDefinition；input_unit为单位文本；batch_intervals为1至4096的
+        区间数上限，默认64；partial_limit为误差项容量，默认4096，按现役容量规则校验。
+    返回: int，保守预约的字节数；不创建累计器、不读取输入。
+    异常: 批上限或误差项容量不合法时ValueError；静态元数据原错误继续传播。
+    """
+    if type(batch_intervals) is not int or not 1 <= batch_intervals <= 4096:
+        raise ValueError('记录流区间批上限需要1到4096')
+    limit = require_partial_limit(partial_limit)
+    return 65536 + limit * 256 + (batch_intervals + 1) * 1024 + 16 * _metadata_bytes((spec, input_unit))
+
+
 class RecordIntegral(RecordPointBuffer):
     """拥有有限驱动点缓冲和累计状态；失败后只能关闭，完成后只读结果。
 
@@ -85,8 +99,8 @@ class RecordIntegral(RecordPointBuffer):
         self._coverage_value_ns=0 if spec.minimum_coverage>0 else None
         try:
             # 固定费覆盖误差求和的有限候选及点缓冲，不按总记录数扩大。
-            _reserve_owned_ram(self, 65536 + limit * 256 + (batch_intervals + 1) * 1024
-                               + 16 * _metadata_bytes((spec, input_unit)), '_fixed_cost')
+            _reserve_owned_ram(self, record_integral_cost(spec, input_unit,
+                               batch_intervals=batch_intervals, partial_limit=limit), '_fixed_cost')
             self._rows = []
             self._sum = (ReferenceIntegralSum if backend == 'reference' else NumpyIntegralSum)(limit)
             self._compute = compute_integral_terms_reference if backend == 'reference' else compute_integral_terms_numpy
@@ -123,23 +137,14 @@ class RecordIntegral(RecordPointBuffer):
             options = {'condition_valid_until_ns': condition_deadlines} if self._conditioned else {}
             terms = self._compute(series, self._spec, step_ns=self._step_ns,
                                   retain_unknown_ranges=False, valid_until_ns=deadlines, **options)
-            self._sum.push_values(terms.areas, terms.valid)
             facts = terms.facts
             from .transform_partial import partial_in_block
             if partial_in_block(self._rows,self._spec.window,samples=False):
                 self._transform_partial=True
-            if self._coverage_value_ns is not None:
-                self._coverage_value_ns+=facts.value_valid_duration_ns
-            if facts.actual_window is not None:
-                span = facts.actual_window.end_ns - facts.actual_window.start_ns
-                self._covered_ns += span
-                self._known_ns += facts.condition_known_duration_ns if self._conditioned else span
-                self._selected_ns += facts.selected_duration_ns if self._conditioned else facts.value_valid_duration_ns
-                self._selected_unknown_ns += (facts.selected_value_unknown_duration_ns if self._conditioned
-                                              else span - facts.value_valid_duration_ns)
-                if self._conditioned:
-                    self._false_ns += facts.false_duration_ns
-            self._quality |= facts.quality
+            span = (0 if facts.actual_window is None else
+                    facts.actual_window.end_ns - facts.actual_window.start_ns)
+            self._accept_terms(terms.areas, terms.valid, span, facts.value_valid_duration_ns,
+                               facts.quality, facts if self._conditioned else None)
             self._rows[:] = self._rows[-1:]
         except BaseException as exc:
             primary = exc
@@ -155,6 +160,51 @@ class RecordIntegral(RecordPointBuffer):
                 if primary is None:
                     raise
                 primary.add_note('记录流积分临时费用清理失败：' + type(cleanup).__name__)
+
+    def _accept_terms(self, areas, valid, covered_ns, valid_ns, quality, conditional=None):
+        """按原序消费面积及覆盖事实，行缓冲与并行块共用同一累计逻辑。
+
+        参数: 面积和有效掩码、裁剪后覆盖/有效纳秒、质量及可选条件事实。
+        返回: None。异常: 原误差求和的TypeError、ValueError及IntegralStateLimitError继续传播；
+            数值前缀溢出保存在累计失败状态中，由finish返回失败结果。
+        """
+        self._sum.push_values(areas, valid)
+        if self._coverage_value_ns is not None:
+            self._coverage_value_ns += valid_ns
+        self._covered_ns += covered_ns
+        self._known_ns += covered_ns if conditional is None else conditional.condition_known_duration_ns
+        self._selected_ns += valid_ns if conditional is None else conditional.selected_duration_ns
+        self._selected_unknown_ns += (covered_ns - valid_ns if conditional is None else
+                                      conditional.selected_value_unknown_duration_ns)
+        if conditional is not None:
+            self._false_ns += conditional.false_duration_ns
+        self._quality |= quality
+
+    def consume_terms(self, areas, valid, covered_ns, valid_ns, quality):
+        """消费已校验、有界的实际时间面积块；此入口不接收文件部分和。
+
+        参数: 对应的面积/掩码tuple、非负覆盖/有效纳秒及QualityFlag。
+        返回: None。异常: 关闭或完成时ResultClosedError，结构或混用入口时ValueError；
+            原误差求和的类型、数值及IntegralStateLimitError继续传播；
+            数值前缀溢出保存在累计失败状态中，由finish返回失败结果。
+        调用方负责跨块时间连续性；禁止与点输入、条件或固定周期路径混用。
+        """
+        self._require_open()
+        if self._finished:
+            raise ResultClosedError('记录流积分已完成')
+        try:
+            if (self._rows or self._last_time is not None or self._conditioned
+                    or self._step_ns is not None or not isinstance(self._sum, ReferenceIntegralSum)):
+                raise ValueError('面积块仅用于无条件实际时间reference积分，不能混用点输入')
+            if (type(areas) is not tuple or type(valid) is not tuple or len(areas) != len(valid)
+                    or len(areas) > self._limit or any(type(v) is not bool for v in valid)
+                    or type(covered_ns) is not int or type(valid_ns) is not int
+                    or not 0 <= valid_ns <= covered_ns or not isinstance(quality, Q)):
+                raise ValueError('积分面积块的长度、覆盖或质量不合法')
+            self._accept_terms(areas, valid, covered_ns, valid_ns, quality)
+        except BaseException:
+            self._failed = True
+            raise
 
     def finish(self):
         """输入调用方确认结束后结算最后完整记录对，返回精简内部结果。

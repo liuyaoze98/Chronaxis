@@ -36,8 +36,12 @@
       ],
       "references": [
         {
+          "path": "../../Current/en/calculations.md#integrators",
+          "description": "Integrator selection and time-weight rules."
+        },
+        {
           "path": "../../Schema/analysis.schema.json#/properties/calculations",
-          "description": "Calculation fields and branch requirements."
+          "description": "Machine schema with Chinese descriptions; read the preceding English topic for explanations."
         }
       ]
     },
@@ -507,7 +511,7 @@
         },
         {
           "path": "../../Schema/analysis.schema.json#/properties/aggregations",
-          "description": "Complete schema subtree, including conditional constraints."
+          "description": "Machine schema with Chinese descriptions; read the preceding English topic for explanations."
         }
       ]
     },
@@ -550,7 +554,7 @@
         },
         {
           "path": "../../Schema/analysis.schema.json#/properties/message_calculations",
-          "description": "Complete schema subtree, including conditional constraints."
+          "description": "Machine schema with Chinese descriptions; read the preceding English topic for explanations."
         }
       ]
     },
@@ -558,8 +562,8 @@
       "id": "FAST_MESSAGE_ENERGY",
       "intent": "Accumulate energy per matched CAN message in one ASC or BLF",
       "example": "../../Current/examples/fast/analysis.yaml",
-      "requires": "Confirm units, frame_id, DBC, channel and any direction bucket. When converting power to energy, define the duration represented by each message; an existing energy contribution needs no extra time factor.",
-      "check": "Open this run manifest_path, then locate the CSV through outputs: 计算项=energy, 结果=800, 单位=J, 状态=完整, and empty 说明. Counts are in execution.calculation_counts. No target frames gives an empty result; valid targets with no selected direction give zero.",
+      "requires": "Confirm units, frame_id, DBC, channel, and whether only one direction should be accumulated (split_by_sign). When converting power to energy, define the duration represented by each message; an existing energy contribution needs no extra time factor.",
+      "check": "Open this run manifest_path, then locate the CSV through outputs: 计算项=energy, 结果=800, 单位=J, 状态=完整, and empty 说明. Counts are in execution.calculation_counts. No target frames gives an empty result; valid targets none of which are in the split_by_sign direction give zero.",
       "fields": [
         "sources",
         "signals",

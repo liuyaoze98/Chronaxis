@@ -23,8 +23,9 @@ Raises `PlanValidationError` for invalid path type, file read/encoding failures,
 Side effects: opens configuration/shared files, reads DBCs or enumerates directories as needed, and closes handles before normal or exceptional return. Does not create result files.
 
 ```python
+# Run in the directory containing the manual's home page; it contains examples directly.
 from chronaxis import load_analysis_plan
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+plan = load_analysis_plan("examples/analysis.yaml")
 ```
 
 ## Host-registered operations
@@ -33,4 +34,4 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/planning/plan.py:376`](../../../../src/chronaxis/planning/plan.py#L376) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/plan.py:376`](../../../../src/chronaxis/planning/plan.py#L376) — line number in the Chronaxis 0.1.0.dev5 source.

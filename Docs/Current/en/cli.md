@@ -1,15 +1,15 @@
 # Command-line reference
 
-Fast single-session commands `fast validate`, `fast explain` and `fast run` accept `--process-count` to override analysis `execution.process_count`. `fast batch --process-count` overrides its batch-root count. One fast session can contain multiple ASC/BLF volumes and publishes one summary. Workers read, decode and evaluate current-message contributions; the main process accumulates in order. See [fast configuration](fast-energy.md).
-
 <a id="命令行参考"></a>
 
 Use terminal commands to load and check a configuration, run an analysis, and publish results. Put the analysis definitions in the configuration file; put options such as an output directory or backend override after the appropriate command.
 
+Fast single-session commands `fast validate`, `fast explain` and `fast run` accept `--process-count` to override analysis `execution.process_count`. `fast batch --process-count` overrides its batch-root count. One fast session can contain multiple ASC/BLF volumes and publishes one summary. Workers read, decode and evaluate current-message contributions; the main process accumulates in order. See [fast configuration](fast-energy.md).
+
 <a id="按基础并行配置运行"></a>
 ## Run the basic parallel configuration
 
-Download the complete `examples` directory and open a terminal there. These steps inherit the continuous-volume example's explicit `execution.process_count: 4`:
+Open a terminal in the manual's [examples directory](installation.md#find-examples). These steps inherit the continuous-volume example's explicit `execution.process_count: 4`:
 
 ```text
 python -m chronaxis validate continuous-parallel.yaml
@@ -38,6 +38,7 @@ Append `--process-count 2` for a temporary override without editing the configur
 | `python -m chronaxis fast run PLAN` | Required `--output`; optional `--process-count` | Compute one session from its ASC/BLF volumes and publish a summary. |
 | `python -m chronaxis fast batch BATCH` | Required `--output`; optional `--total` and `--process-count` | Compute independent files. `--total` requests totals for comparable template calculations; see [fast batch](fast-energy.md). |
 | `python -m chronaxis guide` | Optional `--language zh/en`, `--output new.zip` | Print the existing README path; save a bilingual ZIP only if output is requested. |
+| `python -m chronaxis manual` | Optional `--language zh/en` | Print the bundled Markdown user manual home page path; writes no files. |
 
 Replace `PLAN` and `BATCH` with paths. An installed package also provides the `chronaxis` command. Success returns `0` and cancellation returns `130`. Failure codes `1` and `2` depend on the command and stage, as explained in [Exit codes and failure stages](#退出码与错误位置); “file error” alone does not determine the code. Use `python -m chronaxis --help` and each subcommand's `--help`. The full implementation is in the [CLI reference](../reference/chronaxis.cli.md) (Chinese implementation reference).
 
@@ -94,3 +95,5 @@ The run summary returns the actual manifest path; batch run returns the actual r
 ## AI guide
 
 `chronaxis guide` prints the absolute Chinese README path; `chronaxis guide --language en` selects English. Neither writes files. Optional `--output new-file.zip` saves a complete bilingual copy; its parent must exist and the target must be new. See [AI guide](ai-guide.md).
+
+`chronaxis manual` prints the absolute path of the bundled Markdown user manual's Chinese home page, `index.md`; `chronaxis manual --language en` selects the English home page. Neither writes files. The manual contains the Chinese and English chapters, public API pages and all examples; links to the internal module reference point to the same version's files on GitHub. A source or editable installation returns the home page under the repository's `Docs/Current`. If the installed manual is missing, the command reports a file operation failure with exit code 1.

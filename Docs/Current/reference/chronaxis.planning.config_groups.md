@@ -58,7 +58,7 @@ public_errors(function)
 
 不改变错误代码和原因，不读取或保存输入；结构阶段对旧名的拒绝保留旧名位置。
 
-源码：[`src/chronaxis/planning/config_groups.py:18`](../../../src/chronaxis/planning/config_groups.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/config_groups.py:18`](../../../src/chronaxis/planning/config_groups.py#L18)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-public_errors-checked"></a>
 ### `public_errors.checked`
@@ -66,7 +66,7 @@ public_errors(function)
 调用原解析器，仅在错误退出时修正已归组字段的路径。
 
 ```python
-public_errors.checked(config, *args, **kwargs)
+public_errors.checked(cls, config, *args, **kwargs)
 ```
 
 装饰器：`wraps(function)`。
@@ -75,11 +75,12 @@ public_errors.checked(config, *args, **kwargs)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
+|`cls`|type[[chronaxis.planning.plan.AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)]|是|无|位置或关键字。被包装的计划构建类，当前调用来自AnalysisPlan.from_dict；包装函数将该类原样传给原构建方法，不在这里实例化，也不是checked自身的隐式接收者。|
 |`config`|dict[str, object]|是|无|位置或关键字。调用方的公共配置；包装器只用它把内部错误路径对应回原声明位置。|
 |`args`|tuple[object, ...]|否|()|可变位置。原样传给被包装方法的位置实参；本包装器不解析或修改它们。|
 |`kwargs`|dict[str, object]|否|{}|可变关键字。原样传给被包装方法的关键字实参，例如base_dir；是否接受由原方法决定。|
 
-源码：[`src/chronaxis/planning/config_groups.py:24`](../../../src/chronaxis/planning/config_groups.py#L24)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/config_groups.py:24`](../../../src/chronaxis/planning/config_groups.py#L24)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_leaves"></a>
 ## `_leaves`
@@ -105,7 +106,7 @@ _leaves(signals, path='$.signals')
 
 错误数组/对象。
 
-源码：[`src/chronaxis/planning/config_groups.py:57`](../../../src/chronaxis/planning/config_groups.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/config_groups.py:57`](../../../src/chronaxis/planning/config_groups.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-normalize_configuration"></a>
 ## `normalize_configuration`
@@ -133,7 +134,7 @@ normalize_configuration(config)
 只接受当前拼写，旧扁平参数明确拒绝；内部parser/reader_options等仅供既有
 解析器消费，不作为第二套用户配置入口。调用应在预设展开之前。
 
-源码：[`src/chronaxis/planning/config_groups.py:69`](../../../src/chronaxis/planning/config_groups.py#L69)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/config_groups.py:69`](../../../src/chronaxis/planning/config_groups.py#L69)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-public_configuration"></a>
 ## `public_configuration`
@@ -161,4 +162,4 @@ public_configuration(config)
 不读取文件，不改变自由metadata或业务值；已使用新分组的内容原样保留。
 用于预设展开和resolve，把内部字段还原为当前公开配置结构。
 
-源码：[`src/chronaxis/planning/config_groups.py:180`](../../../src/chronaxis/planning/config_groups.py#L180)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/config_groups.py:180`](../../../src/chronaxis/planning/config_groups.py#L180)（行号对应 Chronaxis 0.1.0.dev5 源码）。

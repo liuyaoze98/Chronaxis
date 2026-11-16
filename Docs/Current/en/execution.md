@@ -6,7 +6,7 @@ The root `execution` object controls how one analysis runs: file workers, numeri
 
 ## Basic configuration: choose the process limit
 
-For ASC/BLF volumes from one experiment, start with a limit of four file workers. Ordinary-analysis workers read, parse and DBC-decode files; the main process preserves signal state, detects events and performs calculations. With the [high-performance integrator](fast-energy.md), workers also evaluate each message's contribution.
+For ASC/BLF volumes from one experiment, start with a limit of four file workers. Ordinary-analysis workers read, parse and DBC-decode files while the main process preserves continuous analysis state. For [eligible continuous-volume integrals](continuous-files.md#parallel-integrals), workers also evaluate expressions and calculate integral areas within each file; other ordinary calculations remain in the main process. With the [high-performance integrator](fast-energy.md), workers evaluate each message's contribution.
 
 Put this fragment at the root of a complete analysis configuration, aligned with `dataset` and `sources`. If `execution` already exists, add or replace only its `process_count` and retain the other settings. Do not duplicate the parent key.
 
@@ -55,7 +55,7 @@ The paths below are relative to `execution`, for example `execution.backend`. Th
 
 | Field | Type | Required | Default | Meaning and choices |
 |---|---|---|---|---|
-| process_count | integer | No | 1 | Positive reading/decoding worker limit for this analysis, excluding the main process and capped by file count. Choose for available CPU and memory; null and Boolean values are invalid. See [supported configurations](continuous-files.md). |
+| process_count | integer | No | 1 | Positive file-worker limit for this analysis, excluding the main process and capped by file count. Choose for available CPU and memory; null and Boolean values are invalid. See [supported reading, decoding and integration configurations](continuous-files.md). |
 | backend | string | No | `auto` | `auto` selects an implementation from the whole plan; `numpy` and `reference` fix the implementation. See the choices below. |
 | batch_rows | integer | No | 65536 | Maximum signal samples delivered in one batch; choose according to available memory and batch overhead. |
 | memory_budget_bytes | integer | No | 268435456 | Positive shared managed-memory limit, in bytes, for analysis state and file-worker buffers. |
@@ -76,15 +76,21 @@ A backend is a calculation implementation, not a server or separate service.
 | `numpy` | Evaluates built-in streaming expressions directly at each update; suitable batch calculations still use NumPy arrays, and extensions use their registered numpy implementation. | Fix NumPy for a comparison. |
 | `reference` | Uses an independent numeric implementation. | Recalculate the same input and configuration to investigate a result. |
 
-`auto` currently selects reference for actual-time session ZOH integrals of one signal from one signal CSV, or at most two signals sharing one CAN source and message selector. Every calculation must belong to this simple built-in arithmetic category and omit `condition`. Events, windows, temporal transforms, other statistics, lookups and host extensions use numpy. Selection inspects the plan, not the data; runtime errors are reported without retrying another implementation.
+`auto` selects the numerical implementation from the whole plan. It selects `reference` when the plan has at least one calculation, every calculation belongs to the verified streaming categories below, and the plan has no host extensions, temporal transforms, sequences, result aggregations, or per-message calculations. Rules, windows, and a calculation's `condition` do not by themselves prevent this selection. Plans containing calculations outside this set continue to use `numpy`. Explicit `reference` or `numpy` choices take priority. Selection happens before reading input, without trial runs or switching implementations after a failure.
 
-For the [minimal integral configuration](../examples/calculation-minimal.yaml), `explain.selected_backend` is `reference`. Copy the file and add only `condition: power > 0` to its existing energy calculation item. Run `python -m chronaxis explain CONFIG --format json` again: `selected_backend` becomes `numpy`, without declaring events or windows. Both plans are valid. This selects the ordinary runner's numerical backend; it does not switch to the independent fast entry point.
+| Category | Calculations |
+|---|---|
+| Integration, duration, and time-weighted mean | `integral`, `duration`, `time_weighted_mean` |
+| Extrema | `min_time`, `max_time`, `sample_minimum`, `sample_maximum` |
+| Counts and sample selection | `sample_count`, `point_event_count`, `activity_count`, `segment_count`, `select` |
+
+Sample means (`sample_mean`), variance, standard deviation, RMS, quantiles, and medians continue to select `numpy`.
+
+The [minimal integral configuration](../examples/calculation-minimal.yaml) has `explain.selected_backend: reference`. Adding `condition: power > 0` to its energy calculation still selects `reference`. In another copy of the original configuration, replace that calculation with `name: average_power`, `operation: sample_mean`, and `expr: power`: it selects `numpy` and infers W from the power signal. If you had separately specified the integral result unit J, remove that `unit` or change it to W. Use `python -m chronaxis explain CONFIG --format json` to inspect the selection and reason. This selects the ordinary runner's numerical backend; it does not switch to the independent fast entry point.
 
 Both numerical implementations use the same units, validity and missing-data rules. They need not take the same time, and NumPy is not guaranteed to be faster for every task. `AnalysisRunner(backend="reference")` or the single-run CLI option `--backend reference` overrides the plan for that run. The explain fields `requested_backend`, `selected_backend` and `backend_reason` show the request, static selection and reason. The manifest records the actual reference/numpy backend; auto is a selection policy, not a third numerical algorithm. A batch override of auto selects independently for each job. Both use the project's installed dependencies.
 
-With auto, a same-frame CAN integral uses the direct path when its binding is unambiguous and signal export, raw-frame export, tracing and integrity diagnostics are not requested. The rule applies to ASC, BLF, raw CAN CSV and continuous volumes. If the binding cannot establish eligibility, the general flow is selected before reading the first frame. Runtime failures still fail the task. Explicit reference/numpy uses the corresponding general flow.
-
-This remains actual-time integration: 4000W at 0s, 4800W at 0.12s, and observed end at 0.30s give 4000×0.12 + 4800×0.18 = 1344J while both values remain valid. It does not substitute a DBC period or change the [high-performance integrator](fast-energy.md), which sums each expression contribution.
+When certain conditions hold, the program also has file workers calculate the integral areas within each file. This optimization is chosen automatically; it cannot and need not be switched on, and it does not change what the integral means. See [Appendix: when the parallel integration path applies](#integral-path-conditions) at the end of this page if you are investigating performance.
 
 <a id="batch_rows输入批次大小"></a>
 <a id="batch_rows-输入批次大小"></a>
@@ -186,16 +192,10 @@ Enable message contributions separately with `outputs.contributions: full`. Put 
 
 [readability_examples.py](../examples/readability_examples.py) compares both backends, different `batch_rows`, and `report`/`strict` on the same five-row input, asserting event counts and energy. It also runs the expression examples and raises an error if a check fails.
 
-From the offline manual extraction root, which directly contains `examples`, run:
+Run it in the manual's [examples directory](installation.md#find-examples):
 
 ```powershell
-python -B examples/readability_examples.py
-```
-
-With a source checkout, run the following from its root containing `pyproject.toml`:
-
-```powershell
-python -B Docs/Current/examples/readability_examples.py
+python -B readability_examples.py
 ```
 
 It creates a new directory under the system temporary directory by default. `--output-root` selects an existing parent directory. Adapt synthetic thresholds to the actual equipment when writing your own analysis.
@@ -217,3 +217,33 @@ For an ordinary analysis:
 metadata:               # Optional descriptive metadata
   device_label: lab_pc  # Optional nonblank device label; defaults to pending without affecting calculations or exports
 ```
+
+<a id="integral-path-conditions"></a>
+
+## Appendix: when the parallel integration path applies
+
+This section explains when the parallel integration path is used. The program selects it automatically and users do not configure it; a correct result does not by itself show that the optimization was used.
+
+The numerical backend and the integration path are selected separately. After `auto` selects `reference`, direct integration still has narrower requirements: in addition to the plan restrictions above, every calculation must be a simple numeric integral over the session; all input signals must come from the same source and CAN message; the interval basis must be actual elapsed time (`actual`) with zero-order hold (`zoh`), without a separate timing driver, rules, windows, or a calculation `condition`.
+
+Bindings must also be unambiguous, with ordinary numeric signals that do not capture enum raw codes, and no signal export, raw-frame export, tracing, or integrity diagnostics requested. These conditions apply to ASC, BLF, raw CAN CSV, and continuous volumes. Fixed-period, DBC-period, or conditional integrals keep the general flow even when `reference` is selected. If the binding cannot establish eligibility, the general flow is retained before reading the first frame; runtime failures are reported. Explicit `reference` or `numpy` also uses its corresponding general flow.
+
+
+The supported expression forms are signal references, finite numeric constants, `+`, `-`, `*`, `/`, unary negation, `abs`, compatible unit conversion (`quantity` / `to_unit`), and `to_float64`. Every calculation must depend on at least one input signal; every node in a derived expression must meet the same restrictions. `clip`, `minimum`, `maximum`, `where`, `square`, `sqrt`, lookup and host-function calls are valid in their documented contexts but do not select this integration path. Signal types must be `int64`, `uint64` or `float64`, without captured enum codes. Source, channel, frame ID and frame-type facts must establish one common physical message; defaults already resolved from the DBC count as established facts, so users need not repeat optional locator fields.
+
+Using the same [two-volume configuration](../examples/continuous-parallel.yaml), change only `calculations[0].expr`:
+
+| Expression | Numerical backend | File workers calculate areas? | Result |
+|---|---|---|---|
+| `abs(power)` | `reference` | Yes, if the budget admits the path | 38 J |
+| `power * 2` | `reference` | Yes, if the budget admits the path | 76 J |
+| `clip(power, quantity(0,"W"), quantity(1000,"W"))` | `reference` | No; they still read and decode | 38 J |
+| `minimum(power, power)` | `reference` | No; they still read and decode | 38 J |
+
+A derived signal defined as `twice_power = power * 2` has the same expression eligibility. `explain.selected_backend` and `source_execution.read_process_limit` describe different choices; neither proves that workers calculated integral areas. A successful result alone does not prove this optimization was used.
+
+An eligible task also calculates integral areas in file workers when it has exactly one ASC/BLF source, at least two files, `file_merge: concatenate`, and `process_count` greater than `1`. Workers read, decode and evaluate expressions; the main process handles file boundaries and accumulates areas in their original order. This requires `auto`, without lookup declarations, non-integral calculations or exports. No extra switch is needed. Raw CAN CSV, `time_order`, single-file and single-process runs keep their existing paths.
+
+The parallel integration path checks its budget before reading the first frame. If it does not fit, the original reading and calculation path is used. If that path also does not fit, or a budget, data or process failure occurs after reading begins, execution stops and reports the error; it does not reread data with another algorithm. File workers share the current memory budget rather than each receiving another copy of it.
+
+This remains actual-time integration: 4000W at 0s, 4800W at 0.12s, and observed end at 0.30s give 4000×0.12 + 4800×0.18 = 1344J while both values remain valid. It does not substitute a DBC period or change the [high-performance integrator](fast-energy.md), which sums each expression contribution.

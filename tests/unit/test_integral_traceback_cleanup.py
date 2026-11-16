@@ -56,7 +56,13 @@ class IntegralTracebackCleanupTests(unittest.TestCase):
                         finally:
                             value = args = kwargs = None
                     with patch.object(np,'add',AddObserver(np.add,highs)), patch.object(np,'isfinite',finite):
-                        kernel.push_values(values,valid)
+                        # 原数组推进仍作为独立对照核，继续核对其真实临时数组的回溯释放。
+                        kernel._advance(values[0])
+                elif stage == 'scalar_advance':
+                    # 新推进在实际加法后的有限性判断处取消，不能把取消提前到输入校验。
+                    import chronaxis.core.integral_sum_numpy as numpy_module
+                    with patch.object(numpy_module, 'isfinite', side_effect=failure):
+                        kernel.push_values(values, valid)
                 else:
                     kernel.push_values(values,valid)
                     refs.append(weakref.ref(kernel._partials))
@@ -96,6 +102,17 @@ class IntegralTracebackCleanupTests(unittest.TestCase):
     def test_numpy_advance_releases_real_temporaries(self):
         """真实accumulate后取消不留临时/旧视图。参数: 无。返回: None。异常: 断言。"""
         guard={'caller':'retained'};self.exercise('advance');self.assertEqual(guard,{'caller':'retained'})
+    def test_numpy_scalar_advance_releases_inputs_and_partials(self):
+        """新标量推进取消保留原错，回溯不钉住误差列表或输入。参数/返回: 无。异常: 断言。"""
+        error = self.exercise('scalar_advance')
+        cursor = error.__traceback__
+        while cursor is not None:
+            frame = cursor.tb_frame
+            if frame.f_globals.get('__name__') == 'chronaxis.core.integral_sum_numpy':
+                self.assertFalse(any(isinstance(value, (NumpyIntegralSum, np.ndarray, list))
+                                     for value in frame.f_locals.values()))
+            cursor = cursor.tb_next
+
     def test_numpy_rounding_releases_real_temporaries(self):
         """真实舍入差列取消不留reverse视图。参数: 无。返回: None。异常: 断言。"""
         self.exercise('rounding')

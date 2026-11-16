@@ -54,7 +54,7 @@ RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: st
 |`analysis_outcome`|[AnalysisOutcome](../reference/chronaxis.results.analysis_outcome.md#api-AnalysisOutcome) &#124; None|否|None|同次执行累计的AnalysisOutcome或None：逐规则说明有事件、条件未成立、未达到时长、无观测或数据不足，并分别统计complete/partial/indeterminate指标行。None表示该路径未提供概况，不能当作无事件；completed只说明执行结束。无二次输入扫描或逐条追溯。|
 |`aggregation_definitions`|tuple[[AggregationPlan](../reference/chronaxis.planning.aggregations.md#api-AggregationPlan), ...]|否|()|本次运行使用的聚合定义及总体政策。非空时随清单序列化，省略时不增加该字段。|
 
-源码：[`src/chronaxis/results/manifest.py:29`](../../../src/chronaxis/results/manifest.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/manifest.py:29`](../../../src/chronaxis/results/manifest.py#L29)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-RunMetadata-estimated_bytes"></a>
 ### `RunMetadata.estimated_bytes`
@@ -82,7 +82,7 @@ RunMetadata.estimated_bytes() -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/manifest.py:205`](../../../src/chronaxis/results/manifest.py#L205)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/manifest.py:205`](../../../src/chronaxis/results/manifest.py#L205)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-RunMetadata-to_dict"></a>
 ### `RunMetadata.to_dict`
@@ -110,4 +110,4 @@ RunMetadata.to_dict() -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/manifest.py:216`](../../../src/chronaxis/results/manifest.py#L216)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/results/manifest.py:216`](../../../src/chronaxis/results/manifest.py#L216)（行号对应 Chronaxis 0.1.0.dev5 源码）。

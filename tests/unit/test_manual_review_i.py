@@ -125,7 +125,12 @@ class ManualReviewITests(unittest.TestCase):
                 self.assertEqual(card.headings, source.headings)
                 expected = [(language, code.replace("Docs/Current/examples/", "examples/")
                              .replace("从仓库根目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
-                             .replace("Run from the repository root", "Run from the AI guide root (the directory containing examples)"))
+                             .replace("Run from the repository root", "Run from the AI guide root (the directory containing examples)")
+                             .replace("在手册首页所在的目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
+                             .replace("Run in the directory containing the manual's home page", "Run from the AI guide root (the directory containing examples)")
+                             .replace("；examples 子目录与 index.html 同级。", "。")
+                             .replace("；该目录直接包含examples。", "。")
+                             .replace("; it contains examples directly.", "."))
                             for language, code in source.codes]
                 # 共享注册例按各语言README目录执行；只登记这项已确认的派生差异。
                 if name == "public-api/AnalysisRunner.md":

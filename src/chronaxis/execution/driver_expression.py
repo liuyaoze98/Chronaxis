@@ -138,7 +138,7 @@ class DriverExpression:
         try:
             if self._backend == 'reference':
                 value = expression_reference._evaluate(self._static.root, context, cache).value
-                names = (node.name for node in cache if node.operator == 'name')
+                names = (node.name for node in expression_reference.visited_nodes(cache) if node.operator == 'name')
             else:
                 value = self._point_program.evaluate(context, cache).value
                 names = self._point_program.used_names(cache)

@@ -24,7 +24,9 @@ Keep original field names, expression aliases and semantic identifiers separate.
 <a id="条件表达式"></a>
 ## Condition expressions
 
-`current > 5 and mode == 1` means current exceeds 5 A and mode equals 1. Define both names under `signals`; an unbound input column cannot be referenced directly.
+Define both names under `signals` first. If `current` is numeric with unit `A`, and `mode` is an `int64` state whose device-defined code 1 is the desired state, `current > 5 and mode == 1` means current exceeds 5 A and that integer state equals 1. The bare 5 uses the current signal's unit; to specify 5 A explicitly, use `quantity(5, "A")`.
+
+For `dtype: enum`, compare a declared label, for example `current > quantity(5, "A") and mode == "running"`. To compare its retained raw integer code, use `current > quantity(5, "A") and enum_code(mode) == 7`. In the [enum teaching example](../examples/signal-enum-minimal.yaml), this DBC maps 7 to `running`; neither 7 nor 1 is a universal running code. `mode == 1` is invalid for that enum binding. An `int64` state may be compared directly with its integer code. Use the actual device mapping and do not reference an unbound input column.
 
 The [expression guide](expressions.md) lists all supported operators and the functions available in each configuration version: unary signs, four arithmetic operations, six comparisons, `and/or/not`, chained comparisons, parentheses, constants, enums, and type/unit restrictions. This page explains how those values behave over time.
 
@@ -69,7 +71,7 @@ Sample means and time means use different weights. Ordinary integration and per-
 
 `partial_policy="report"` keeps the known part; `"strict"` withholds the number when required data is incomplete. `minimum_coverage` specifies the minimum coverage required by the user; it cannot fill missing data. See [execution settings](execution.md) for numeric comparisons. Read `value`, `unit`, `status`, `reason` and `quality` together.
 
-Ordinary scalar `integral`, `duration`, `min_time`, `max_time`, `time_weighted_mean`, `sample_minimum`, `sample_maximum`, `sample_mean`, and v4 sample counts, variance, standard deviation, RMS and sample quantiles return `coverage_status` when `minimum_coverage > 0`. `sufficient` means observation, valid-value and known-condition coverage all meet the threshold; `indeterminate` means insufficient or undetermined. This is not a numeric coverage ratio and does not turn sample statistics into time-weighted statistics. `select` details and per-message accumulation are not in this scalar group. Public summaries do not expose numeric `requested_coverage`, `value_coverage` or `condition_coverage`. See the [implementation summary reference (Chinese)](../reference/chronaxis.results.summary.md).
+When `minimum_coverage` is greater than 0, calculation rows also carry `coverage_status`, which reports whether the threshold was met; it is not a numeric coverage ratio. See [Results](results.md#coverage-status) for the calculations it applies to and its values.
 
 <a id="时间积分与逐消息累计的区别"></a>
 ## Time integration versus per-message accumulation

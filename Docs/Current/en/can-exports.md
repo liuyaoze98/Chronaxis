@@ -16,7 +16,7 @@
 <a id="原can报文导出"></a>
 ## Export original CAN frames
 
-With one DBC-configured CAN source, `source` can be omitted. Message IDs and fields must match the actual DBC, and the [export label requirement](exports.md) applies.
+With one DBC-configured CAN source, `source` can be omitted. Message IDs and fields must match the actual DBC. The device label is optional; see [Outputs](exports.md).
 
 Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `can_frames` child. Keep other output settings and root fields; do not paste a second `outputs` key.
 
@@ -125,10 +125,6 @@ If original time-of-day is already 14:05:40, do not add another 14 hours. Add th
 <a id="使用dbc周期的完整导出例"></a>
 ## Complete example using DBC periods
 
-Download [analysis.yaml](../examples/dbc-grid/analysis.yaml), [grid.asc](../examples/dbc-grid/grid.asc), and [grid.dbc](../examples/dbc-grid/grid.dbc) into one directory and run `chronaxis run analysis.yaml --output grid-result`.
+The complete example that exports both a signal CSV and reconstructed CAN frames with DBC periods (downloads, command and row-by-row results) is in [the same section of Signal exports](signal-exports.md#dbc-grid-example).
 
-The DBC gives Power a 1000 ms period and Voltage 500 ms. Inputs update at 0, 1, and 2 seconds. The signal CSV has one grid: `period.mode=dbc` with `driver=power` selects 1000 ms. Removing the driver is an error because two physical messages are candidates.
-
-CAN export uses `period: {mode: dbc}` without a driver, giving Power a 1-second grid and Voltage a 0.5-second grid. These choices are independent. The observation range is `[0,2)`; inspect data and manifest generation/skip counts together.
-
-The [signal CSV](../examples/dbc-grid/results/resampled.csv) has four rows: `power=10/20 W` and `voltage=20/30 V` at 0 and 1 seconds. The [reconstructed ASC](../examples/dbc-grid/results/frames.asc) has five frames: Power at 0 and 1 seconds; Voltage at 0, 0.5, and 1 seconds, with 20, 25, and 30 V. Voltage at 1.5 seconds needs the excluded 2-second endpoint, so is skipped instead of borrowing an out-of-range sample. The two row counts reflect their independent grids.
+CAN export uses each message's own DBC period, so `period` contains only `mode: dbc` without a driver: Power gets a 1-second grid and Voltage a 0.5-second grid. The [reconstructed ASC](../examples/dbc-grid/results/frames.asc) has five frames: Power at 0 and 1 seconds; Voltage at 0, 0.5, and 1 seconds, with 20, 25, and 30 V. Voltage at 1.5 seconds needs the excluded 2-second endpoint, so that point is skipped.

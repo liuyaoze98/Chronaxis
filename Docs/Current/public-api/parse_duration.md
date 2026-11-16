@@ -35,4 +35,4 @@ TypeError: 非文本。
 
 返回类型：[TimeConversion](TimeConversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:210`](../../../src/chronaxis/timebase/conversion.py#L210)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/timebase/conversion.py:210`](../../../src/chronaxis/timebase/conversion.py#L210)（行号对应 Chronaxis 0.1.0.dev5 源码）。

@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 基线8904c2f744951857659abd40aaa3535d57faf53c；device_label: home。
+> 对应 Chronaxis 0.1.0.dev5。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 
@@ -2601,7 +2601,7 @@
     "requested"
   ],
   "default": "requested",
-  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
+  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。仅can_blf读取路径接受显式字段。省略source_type或使用asc_or_blf时，纯BLF且无逐文件offsets可填写；纯ASC、混合ASC/BLF、纯BLF带逐文件offsets必须省略（省略仍按需解码）。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
 }
 ```
 
@@ -6511,7 +6511,7 @@
     "requested"
   ],
   "default": "requested",
-  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
+  "description": "CAN解码尝试范围。默认requested，只解码当前分析需要的报文/字段；all扩大尝试解码的范围。仅can_blf读取路径接受显式字段。省略source_type或使用asc_or_blf时，纯BLF且无逐文件offsets可填写；纯ASC、混合ASC/BLF、纯BLF带逐文件offsets必须省略（省略仍按需解码）。对纯BLF串行接续，strict/partial跳过远程帧和错误帧。all不保证每帧有DBC定义、解码成功或生成逐帧诊断；选择all本身不要求填写dataset.domain。文件并行和time_order只支持requested。"
 }
 ```
 

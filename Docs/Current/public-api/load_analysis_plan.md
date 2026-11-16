@@ -43,8 +43,9 @@ PlanValidationError: 路径类型错误、文件读取或编码错误、JSON/YAM
 ### 调用示例
 
 ```python
+# 在手册首页所在的目录运行；该目录直接包含examples。
 from chronaxis import load_analysis_plan
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+plan = load_analysis_plan("examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号对应 Chronaxis 0.1.0.dev5 源码）。

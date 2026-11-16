@@ -13,7 +13,7 @@ JSON Schema describes fields for editors and validators. The schema files are JS
 | Batch, `batch_version: 1` | [batch-v1.schema.json](../../Schema/batch-v1.schema.json) |
 | Shared `sources` / `signals` / `derived` definitions | [definitions.schema.json](../../Schema/definitions.schema.json) |
 
-Keep these three files in the same directory with their original names so their relative references work. The offline HTML package also includes all three for direct use.
+Keep these three files in the same directory with their original names so their relative references work. The offline HTML package also includes all three for direct use. After installing from PyPI or a wheel, the three files are already in the package: `Split-Path (python -m chronaxis guide)` shows the AI guide directory, and its `schemas` subdirectory contains them for direct reference in your editor.
 
 <a id="yaml编辑器关联"></a>
 ## Associate a YAML file with a schema

@@ -36,8 +36,12 @@
       ],
       "references": [
         {
+          "path": "../Current/calculations.md#integrators",
+          "description": "积分器选择与时间权重规则。"
+        },
+        {
           "path": "../Schema/analysis.schema.json#/properties/calculations",
-          "description": "计算项字段及各操作的组合要求。"
+          "description": "机器校验规范及组合约束；使用说明先读前面的专题。"
         }
       ]
     },
@@ -507,7 +511,7 @@
         },
         {
           "path": "../Schema/analysis.schema.json#/properties/aggregations",
-          "description": "完整规范子树，包括条件约束。"
+          "description": "机器校验规范及组合约束；使用说明先读前面的专题。"
         }
       ]
     },
@@ -550,7 +554,7 @@
         },
         {
           "path": "../Schema/analysis.schema.json#/properties/message_calculations",
-          "description": "完整规范子树，包括条件约束。"
+          "description": "机器校验规范及组合约束；使用说明先读前面的专题。"
         }
       ]
     },
@@ -558,8 +562,8 @@
       "id": "FAST_MESSAGE_ENERGY",
       "intent": "对一个 ASC/BLF 按当条报文的真实解码值和固定贡献时间累计能量",
       "example": "../Current/examples/fast/analysis.yaml",
-      "requires": "确认单位、frame_id、DBC、通道及需要的方向桶。由功率求能量时定义每条报文代表的时长；已经是能量贡献时不再乘时间。",
-      "check": "从本轮manifest_path打开清单，以outputs定位CSV：计算项=energy、结果=800、单位=J、状态=完整、说明为空。计数读取execution.calculation_counts。无目标帧时结果为空；有有效目标但方向桶未入选时为0。",
+      "requires": "确认单位、frame_id、DBC、通道，以及是否需要按方向只累计一组（split_by_sign）。由功率求能量时定义每条报文代表的时长；已经是能量贡献时不再乘时间。",
+      "check": "从本轮manifest_path打开清单，以outputs定位CSV：计算项=energy、结果=800、单位=J、状态=完整、说明为空。计数读取execution.calculation_counts。无目标帧时结果为空；有有效目标但都不在 split_by_sign 所选方向时为0。",
       "fields": [
         "sources",
         "signals",

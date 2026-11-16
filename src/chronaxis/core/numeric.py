@@ -33,7 +33,7 @@ from .validation import require_scalar
 from ..timebase.conversion import checked_add_ns
 
 # 重导出共用标量类，保持公开导入和进程序列化路径不变。
-from .scalar import INTEGER_BOUNDS, ScalarValue
+from .scalar import INTEGER_BOUNDS, ScalarValue, _scalar_from_validated_fields
 
 # 首版算术和比较白名单，DSL语法检查由EXPR承担。
 ARITHMETIC = frozenset({"add", "sub", "mul", "div"})
@@ -134,8 +134,8 @@ def to_float_reference(value: ScalarValue) -> ScalarValue:
         return ScalarValue(None, SignalDType.FLOAT64, False, value.quality)
     # 参考使用独立整数往返，不调用数组精度掩码。
     number, quality = _exact_float(value.value)
-    # 转换失败是样本质量，不是正常舍入结果。
-    return ScalarValue(number, SignalDType.FLOAT64, quality == QualityFlag.NONE, quality)
+    # 转换失败是样本质量，不是正常舍入结果。_exact_float已保证：NONE时为有限float，否则为None。
+    return _scalar_from_validated_fields(number, SignalDType.FLOAT64, quality == QualityFlag.NONE, quality)
 
 
 def binary_reference(operator: str, left: ScalarValue, right: ScalarValue, *, allow_float_literal: bool = False) -> ScalarValue:
@@ -187,8 +187,8 @@ def binary_reference(operator: str, left: ScalarValue, right: ScalarValue, *, al
     if operator in COMPARISONS:
         # 此处允许signed/unsigned Python整数精确比较。
         result = COMPARE_FUNCTIONS[operator](a, b)
-        # 正常比较结果是bool，不转Truth或吞UNKNOWN。
-        return ScalarValue(result, SignalDType.BOOL)
+        # 正常比较结果是bool，不转Truth或吞UNKNOWN。operator比较函数对原生数值/文本只返回bool。
+        return _scalar_from_validated_fields(result, SignalDType.BOOL) if type(result) is bool else ScalarValue(result, SignalDType.BOOL)
     # 0分母在真正除法之前拒绝。
     if operator == "div" and b == 0:
         # 包含0/0，不能生成正常Inf/NaN或0。
@@ -207,8 +207,8 @@ def binary_reference(operator: str, left: ScalarValue, right: ScalarValue, *, al
     elif not isfinite(result):
         # float输出非有限是NONFINITE，不正常归约。
         return ScalarValue(None, dtype, False, QualityFlag.NONFINITE)
-    # 正常结果保持输出dtype和NONE质量。
-    return ScalarValue(result, dtype)
+    # 正常结果保持输出dtype和NONE质量。整数已核定宽、float已核有限；float路径两侧均已转为float。
+    return _scalar_from_validated_fields(result, dtype)
 
 
 def unary_reference(operator: str, value: ScalarValue) -> ScalarValue:
@@ -236,8 +236,8 @@ def unary_reference(operator: str, value: ScalarValue) -> ScalarValue:
         if not lower <= result <= upper:
             # 明示原因，无正常值可计算。
             return ScalarValue(None, value.dtype, False, QualityFlag.OVERFLOW)
-    # 有限float取abs/neg仍有限，逻辑构造再次校验。
-    return ScalarValue(result, value.dtype)
+    # 有限float取abs/neg仍有限，整数已核定宽；输入已是同dtype的有效值。
+    return _scalar_from_validated_fields(result, value.dtype)
 
 
 def normalize_reference(definition: SignalDefinition, value, quality: QualityFlag = QualityFlag.NONE) -> ScalarValue:
@@ -347,8 +347,8 @@ def normalize_reference(definition: SignalDefinition, value, quality: QualityFla
     if definition.valid_range is not None and not definition.valid_range[0] <= result <= definition.valid_range[1]:
         # 不裁剪错误工程值冒充正常。
         return ScalarValue(value, definition.dtype, False, QualityFlag.OUT_OF_RANGE)
-    # 正常输出保持显式目标dtype。
-    return ScalarValue(result, definition.dtype)
+    # 正常输出保持显式目标dtype：整数目标已核整数及定宽，float目标已核有限float。
+    return _scalar_from_validated_fields(result, definition.dtype)
 
 
 def memory_series_reference(bindings: SignalBindings, name: str, *, capture_code=False) -> SignalSeries:

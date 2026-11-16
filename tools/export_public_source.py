@@ -23,7 +23,8 @@ EXCLUDED_TESTS = {
     'test_ten_file_energy_driver.py',
 }
 PUBLIC_TOOLS = {
-    'build_ai_guide.py', 'ai_field_views.py', 'english_docs.py', 'public_docs.py', 'doc_sources.py',
+    'build_ai_guide.py', 'build_user_manual.py', 'test_user_manual_build.py',
+    'ai_field_views.py', 'english_docs.py', 'public_docs.py', 'doc_sources.py',
     'build_m2_docs.py', 'doc_type_links.py', 'doc_public_api.py', 'verify_m2_docs.py',
     'render_m2_docs.mjs', 'render_current_docs.mjs', 'manual_search.js',
     'check_current_html.py', 'manual_markdown.mjs', 'test_manual_markdown.mjs', 'test_manual_search.mjs', 'package_current_docs.py',
@@ -38,6 +39,7 @@ PUBLIC_TOOLS = {
     'test_manual_j_api.py', 'test_manual_j_examples.py',
     'test_manual_followup_fields.py', 'test_manual_review_11_tasks.py',
     'check_manual_followup_api.py', 'test_manual_followup_api.py',
+    'test_manual_k_inputs.py', 'test_manual_k_execution.py', 'test_manual_k_api.py',
     'example_result_contracts.py', 'test_example_result_contracts.py', 'test_power_statistics_example.py',
 }
 
@@ -95,11 +97,14 @@ def export(destination, revision='HEAD'):
             if not item.is_dir() and included(item.filename):
                 files[item.filename] = archive.read(item)
     lock = json.loads(files['Docs/AI/inputs.lock.json'])
+    # AI指南与随包手册分别登记；旧版锁没有manual_inputs时视为空集合。
+    groups = [lock['inputs']] + ([lock['manual_inputs']] if 'manual_inputs' in lock else [])
     # 先核输入确属已审核版本；公开正文转换不能掩盖原始资料漂移。
-    for name, digest in lock['inputs'].items():
-        original = resource_bytes(name, files[name])
-        if sha256(original).hexdigest() != digest:
-            raise ValueError('提交中的指南输入与锁不符：'+name)
+    for group in groups:
+        for name, digest in group.items():
+            original = resource_bytes(name, files[name])
+            if sha256(original).hexdigest() != digest:
+                raise ValueError('提交中的指南或手册输入与锁不符：'+name)
     transformed = []
     for name, content in tuple(files.items()):
         if name.startswith(('Docs/Current/', 'Docs/AI/')) and name.endswith('.md'):
@@ -107,8 +112,9 @@ def export(destination, revision='HEAD'):
             if public != content:
                 files[name] = public
                 transformed.append(name)
-    for name in lock['inputs']:
-        lock['inputs'][name] = sha256(resource_bytes(name, files[name])).hexdigest()
+    for group in groups:
+        for name in group:
+            group[name] = sha256(resource_bytes(name, files[name])).hexdigest()
     # 白名单导出也保留结果原字节，并在写目录前核对随附摘要。
     validate_result_summaries({name.removeprefix('Docs/Current/'): content
                                for name, content in files.items()

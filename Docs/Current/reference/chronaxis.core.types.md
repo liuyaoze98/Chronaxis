@@ -18,6 +18,7 @@ Python布尔值。SignalDType声明值类型，TimeType区分相对坐标与UTC�
 |[`Truth.__bool__`](#api-Truth-__bool__)|阻止三个枚举成员被Python统一当作True。|
 |[`QualityFlag`](#api-QualityFlag)|用固定整数位保存样本无效或质量受限的原因。|
 |[`QualityFlag._missing_`](#api-QualityFlag-_missing_)|检查候选质量位值，再由标准库构造合法的位组合。|
+|[`_quality_or`](#api-_quality_or)|两个QualityFlag的并集直接查固定表；其他操作数仍走标准IntFlag路径及其STRICT检查。|
 |[`SignalDType`](#api-SignalDType)|声明信号值的逻辑类型，供模型和数值运算检查使用。|
 |[`TimeType`](#api-TimeType)|区分相对来源坐标和UTC绝对坐标，保留显式起点依据。|
 |[`SourceType`](#api-SourceType)|标明当前内存模型接受的数据来源种类。|
@@ -52,7 +53,7 @@ class Truth(Enum)
 |`FALSE`|枚举成员|类成员，不作为构造参数填写|'false'|已知且条件不成立。|
 |`UNKNOWN`|枚举成员|类成员，不作为构造参数填写|'unknown'|缺失、过期或无法有效求值。|
 
-源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:14`](../../../src/chronaxis/core/types.py#L14)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-Truth-__bool__"></a>
 ### `Truth.__bool__`
@@ -84,7 +85,7 @@ TypeError；三值逻辑尚未由普通Python bool表达。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:25`](../../../src/chronaxis/core/types.py#L25)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-QualityFlag"></a>
 ## `QualityFlag`
@@ -116,7 +117,7 @@ class QualityFlag(IntFlag)
 |`PRECISION_LOSS`|枚举成员|类成员，不作为构造参数填写|128|不能精确表示的数值转换。|
 |`DOMAIN_ERROR`|枚举成员|类成员，不作为构造参数填写|256|除零等值域错误。|
 
-源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:36`](../../../src/chronaxis/core/types.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-QualityFlag-_missing_"></a>
 ### `QualityFlag._missing_`
@@ -147,7 +148,34 @@ ValueError: 候选值为负数、包含未知位或不能构造为合法质量�
 
 - `ValueError`：quality mask必须非负。
 
-源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:56`](../../../src/chronaxis/core/types.py#L56)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-_quality_or"></a>
+## `_quality_or`
+
+两个QualityFlag的并集直接查固定表；其他操作数仍走标准IntFlag路径及其STRICT检查。
+
+```python
+_quality_or(self, other)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`self`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag)|是|无|位置或关键字。位或左操作数，是已经构造的合法QualityFlag成员。通过q1 &#124; q2使用时由Python绑定；若直接调用本模块函数，须显式传入self和other。|
+|`other`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag) &#124; int|是|无|位置或关键字。位或右操作数。QualityFlag走已验证成员的缓存表；整数沿标准IntFlag的STRICT构造检查，其他对象继续使用标准位运算协议的NotImplemented或异常行为。|
+
+### 返回说明
+
+与标准实现相同的QualityFlag对象（同一缓存成员），
+或标准运算协议的NotImplemented，交给其他操作数处理。
+
+### 异常说明
+
+非QualityFlag操作数沿用标准库的类型/越界行为。
+
+源码：[`src/chronaxis/core/types.py:83`](../../../src/chronaxis/core/types.py#L83)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SignalDType"></a>
 ## `SignalDType`
@@ -173,7 +201,7 @@ class SignalDType(Enum)
 |`BOOL`|枚举成员|类成员，不作为构造参数填写|'bool'|明确布尔值，不按任意数值的Python真值判断。|
 |`ENUM`|枚举成员|类成员，不作为构造参数填写|'enum'|显式枚举标签，不参与一般数值运算。|
 
-源码：[`src/chronaxis/core/types.py:82`](../../../src/chronaxis/core/types.py#L82)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:101`](../../../src/chronaxis/core/types.py#L101)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-TimeType"></a>
 ## `TimeType`
@@ -195,7 +223,7 @@ class TimeType(Enum)
 |`RELATIVE`|枚举成员|类成员，不作为构造参数填写|'relative'|需要来源声明origin。|
 |`ABSOLUTE`|枚举成员|类成员，不作为构造参数填写|'absolute'|已规范化UTC epoch纳秒。|
 
-源码：[`src/chronaxis/core/types.py:96`](../../../src/chronaxis/core/types.py#L96)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:115`](../../../src/chronaxis/core/types.py#L115)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-SourceType"></a>
 ## `SourceType`
@@ -217,4 +245,4 @@ class SourceType(Enum)
 |---|---|---|---|---|
 |`MEMORY`|枚举成员|类成员，不作为构造参数填写|'memory'|已声明纳秒的内存行，不执行旧读写或解码。|
 
-源码：[`src/chronaxis/core/types.py:106`](../../../src/chronaxis/core/types.py#L106)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/types.py:125`](../../../src/chronaxis/core/types.py#L125)（行号对应 Chronaxis 0.1.0.dev5 源码）。

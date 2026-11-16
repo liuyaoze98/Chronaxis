@@ -58,7 +58,7 @@ static_metadata_bytes(value, *, borrowed=())
 ResultFormatError为循环、未知结构或普通容器超过32层。
 表达式args用显式栈处理，不将合法表达式长度当成外部协议深度。
 
-源码：[`src/chronaxis/execution/static_metadata.py:18`](../../../src/chronaxis/execution/static_metadata.py#L18)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/static_metadata.py:18`](../../../src/chronaxis/execution/static_metadata.py#L18)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_static_metadata_cost"></a>
 ## `_static_metadata_cost`
@@ -84,4 +84,4 @@ _static_metadata_cost(value, seen)
 
 循环、深度或类型错误。集合只活在本次估算调用内。
 
-源码：[`src/chronaxis/execution/static_metadata.py:33`](../../../src/chronaxis/execution/static_metadata.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/static_metadata.py:33`](../../../src/chronaxis/execution/static_metadata.py#L33)（行号对应 Chronaxis 0.1.0.dev5 源码）。

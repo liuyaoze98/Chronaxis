@@ -122,15 +122,20 @@ class ManualInputContractTests(unittest.TestCase):
                     expected=min(count,requested) if merge=='time_order' or min(count,requested)>1 else 0
                     self.assertEqual(source_execution_facts(selected)[0]['read_process_limit'],expected)
 
-    def test_condition_changes_auto_selection(self):
-        """参数: 无。返回: None。异常: 条件积分选择不符时失败；不运行日志。"""
+    def test_condition_and_mean_follow_auto_categories(self):
+        """参数: 无。返回: None。异常: 条件积分或样本均值选择不符时失败；不运行日志。"""
         document=load_configuration(EXAMPLES/'calculation-minimal.yaml').data
         plain=AnalysisPlan.from_dict(document,base_dir=EXAMPLES)
         conditional=deepcopy(document)
         conditional['calculations'][0]['condition']='power > 0'
         selected=AnalysisPlan.from_dict(conditional,base_dir=EXAMPLES)
+        mean=deepcopy(document)
+        # 按手册替换整个计算项，不把积分的显式J单位带入平均功率。
+        mean['calculations'][0]=dict(name='average_power',operation='sample_mean',expr='power')
+        averaged=AnalysisPlan.from_dict(mean,base_dir=EXAMPLES)
         self.assertEqual(select_backend(plain).selected,'reference')
-        self.assertEqual(select_backend(selected).selected,'numpy')
+        self.assertEqual(select_backend(selected).selected,'reference')
+        self.assertEqual(select_backend(averaged).selected,'numpy')
 
     def test_memory_minimum_is_six_joules(self):
         """参数: 无。返回: None。异常: 2W一秒加4W一秒不是完整6J时失败。"""

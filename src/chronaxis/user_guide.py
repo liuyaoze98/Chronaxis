@@ -1,8 +1,8 @@
-"""定位可以直接阅读的AI指南，按显式请求另存独立ZIP。
+"""定位可以直接阅读的AI指南和用户手册，按显式请求另存AI指南ZIP。
 
 只处理公开使用说明、配置规范和合成样例，不读取用户业务输入。
-默认只检查入口并返回路径，不构建、解压或复制。源码使用Docs/AI，
-安装使用包内guide目录；显式导出才读取整套资料并写用户指定的新文件。
+默认只检查入口并返回路径，不构建、解压或复制。源码使用Docs/AI与Docs/Current，
+安装使用包内guide与manual目录；显式导出才读取整套AI资料并写用户指定的新文件。
 """
 from io import BytesIO
 import json
@@ -31,6 +31,29 @@ def guide_path(language="zh"):
     entry = root / ("en/README.md" if language == "en" else "README.md")
     if not entry.is_file():
         raise FileNotFoundError("用户指南入口缺失：" + str(entry))
+    return entry.resolve()
+
+
+def manual_path(language="zh"):
+    """定位随包Markdown用户手册的中英文首页，不写文件。
+
+    参数: language为zh或en，默认中文。返回: 首页index.md的绝对Path。
+    异常: 未知语言ValueError；手册缺失FileNotFoundError。只支持普通目录安装。
+    """
+    if language not in ("zh", "en"):
+        raise ValueError("手册语言应为zh或en")
+    package = Path(__file__).resolve().parent
+    installed = package / "manual"
+    # 安装包使用构建时写入的manual目录；源码/可编辑布局直接阅读Docs/Current原文。
+    if installed.is_dir():
+        root = installed
+    else:
+        root = package.parent.parent / "Docs/Current"
+        if not (root / "documentation.json").is_file():
+            raise FileNotFoundError("安装包缺少用户手册，请重新安装同版本的完整wheel")
+    entry = root / ("en/index.md" if language == "en" else "index.md")
+    if not entry.is_file():
+        raise FileNotFoundError("用户手册入口缺失：" + str(entry))
     return entry.resolve()
 
 

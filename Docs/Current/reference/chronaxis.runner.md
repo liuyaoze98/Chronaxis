@@ -43,7 +43,7 @@ AnalysisRunner(backend=None, *, extensions=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -75,7 +75,7 @@ TypeError：backend非文本且不是None，或extensions不是ExtensionRegistry
 - `ValueError`：`AnalysisRunner仅支持auto、reference与numpy后端`。
 - `TypeError`：`extensions需要宿主建立的ExtensionRegistry`。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -103,7 +103,7 @@ None/auto/reference/numpy。
 
 无。
 
-源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-_effective_plan"></a>
 ### `AnalysisRunner._effective_plan`
@@ -119,7 +119,7 @@ AnalysisRunner._effective_plan(plan, process_count=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。plan为已构建AnalysisPlan。|
-|`process_count`|int &#124; None|否|None|位置或关键字。本次读取与解码进程上限的可选覆盖；None沿用原计划，正原生整数构建新的执行视图，不修改原计划；布尔值、非正数及其他类型抛ValueError。|
+|`process_count`|int &#124; None|否|None|位置或关键字。本次文件工作进程上限的可选覆盖；None沿用原计划，正原生整数构建新的执行视图，不修改原计划；布尔值、非正数及其他类型抛ValueError。|
 
 #### 返回说明
 
@@ -133,7 +133,7 @@ TypeError为非计划/执行声明；不重新解析配置或复制原输入行�
 
 - `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。
 
-源码：[`src/chronaxis/runner.py:59`](../../../src/chronaxis/runner.py#L59)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:59`](../../../src/chronaxis/runner.py#L59)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -149,7 +149,7 @@ AnalysisRunner.validate(plan, *, process_count=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
-|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
+|`process_count`|int &#124; None|否|None|仅关键字。本次静态检查使用的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。只检查或解释计划，不启动工作进程；具体工作范围见[连续文件指南](../continuous-files.md#parallel-integrals)。|
 
 #### 返回说明
 
@@ -185,7 +185,7 @@ print(type(explanation).__name__)
 
 ```
 
-源码：[`src/chronaxis/runner.py:80`](../../../src/chronaxis/runner.py#L80)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:80`](../../../src/chronaxis/runner.py#L80)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -201,7 +201,7 @@ AnalysisRunner.explain(plan, *, process_count=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
-|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
+|`process_count`|int &#124; None|否|None|仅关键字。本次静态检查使用的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。只检查或解释计划，不启动工作进程；具体工作范围见[连续文件指南](../continuous-files.md#parallel-integrals)。|
 
 #### 返回说明
 
@@ -217,7 +217,7 @@ ValueError：process_count显式覆盖不是正原生int（含bool），或Runne
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:91`](../../../src/chronaxis/runner.py#L91)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:91`](../../../src/chronaxis/runner.py#L91)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -234,7 +234,7 @@ AnalysisRunner.run(plan, work_dir=None, *, process_count=None)
 |---|---|---|---|---|
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。提供已构建的AnalysisPlan：用load_analysis_plan("analysis.yaml")读取配置，或用AnalysisPlan.from_dict(config)解析Python字典；这里不接收文件名字符串。|
 |`work_dir`|str &#124; Path &#124; None|否|None|位置或关键字。本次运行独占的工作目录，用来保存中间文件。自行指定时要求尚不存在；不会覆盖旧目录。None让入口自动创建唯一目录。|
-|`process_count`|int &#124; None|否|None|仅关键字。控制本次读取和DBC解码的工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划。不能填bool、0或负数；见[连续文件指南](../continuous-files.md)。|
+|`process_count`|int &#124; None|否|None|仅关键字。控制本次运行的文件工作进程上限，不包含主进程。None沿用execution.process_count，正整数覆盖本次调用，不修改原计划；不能填bool、0或负数。工作进程负责读取和DBC解码，满足[连续积分条件](../continuous-files.md#parallel-integrals)时还计算文件内积分面积。|
 
 #### 返回说明
 
@@ -289,4 +289,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:103`](../../../src/chronaxis/runner.py#L103)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/runner.py:103`](../../../src/chronaxis/runner.py#L103)（行号对应 Chronaxis 0.1.0.dev5 源码）。

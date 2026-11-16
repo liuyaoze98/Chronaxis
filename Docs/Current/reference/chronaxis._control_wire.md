@@ -3,7 +3,7 @@
 内部有限控制消息；Connection 只收发 bytes，不使用隐含 pickle。
 
 CCP1 的固定头为版本、通道、命令和 uint64 总字节数，主体分片不超过 64KiB。
-普通CAN/fast由已有工作预算限定；独立batch沿用无全批RAM硬上限的边界。
+普通CAN、fast及并行积分控制消息由已有工作预算限定；独立batch沿用无全批RAM硬上限的边界。
 任务与固定结果逐片接收，不按声明总长预分配，也不截断合法身份。
 
 这是模块参考。日常调用先查[公开API索引](../api.md)；下划线对象和嵌套函数供维护者查阅。签名来自固定源码，公开类构造签名经实际Python接口核对。
@@ -57,7 +57,7 @@ class ControlProtocolError(ValueError)
 继承关系：ValueError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/_control_wire.py:29`](../../../src/chronaxis/_control_wire.py#L29)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:31`](../../../src/chronaxis/_control_wire.py#L31)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_pairs"></a>
 ## `_pairs`
@@ -82,7 +82,7 @@ dict。
 
 重复键时ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:33`](../../../src/chronaxis/_control_wire.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:35`](../../../src/chronaxis/_control_wire.py#L35)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_depth"></a>
 ## `_depth`
@@ -107,7 +107,7 @@ None，忽略字符串内的括号。
 
 超过320层或结构未闭合时ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:48`](../../../src/chronaxis/_control_wire.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:50`](../../../src/chronaxis/_control_wire.py#L50)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-encode_json"></a>
 ## `encode_json`
@@ -123,7 +123,7 @@ encode_json(value, maximum)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`value`|None &#124; bool &#124; int &#124; float &#124; str &#124; list &#124; dict[str, Any]|是|无|位置或关键字。已检查的原生JSON树；逐片编码，拒绝非有限数，不允许任意Python对象。|
-|`maximum`|int &#124; None|是|无|位置或关键字。本次JSON主体字节上限；CAN/fast取现有预算，batch固定大消息可为None，不表示零字节。|
+|`maximum`|int &#124; None|是|无|位置或关键字。本次JSON主体字节上限；CAN/fast/integral取现有预算，batch固定大消息可为None，不表示零字节。|
 
 ### 返回说明
 
@@ -133,7 +133,7 @@ bytearray。
 
 JSON类型、非有限数或超过额度。
 
-源码：[`src/chronaxis/_control_wire.py:79`](../../../src/chronaxis/_control_wire.py#L79)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:81`](../../../src/chronaxis/_control_wire.py#L81)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decode_json"></a>
 ## `decode_json`
@@ -158,7 +158,7 @@ dict/list/原生标量。
 
 重复键、非有限数、语法或深度错误。
 
-源码：[`src/chronaxis/_control_wire.py:96`](../../../src/chronaxis/_control_wire.py#L96)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:98`](../../../src/chronaxis/_control_wire.py#L98)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-decode_json-constant"></a>
 ### `decode_json.constant`
@@ -183,7 +183,7 @@ decode_json.constant(value)
 
 ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:104`](../../../src/chronaxis/_control_wire.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:106`](../../../src/chronaxis/_control_wire.py#L106)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_integer"></a>
 ## `_integer`
@@ -209,7 +209,7 @@ bool，不把bool当整数。
 
 无。
 
-源码：[`src/chronaxis/_control_wire.py:120`](../../../src/chronaxis/_control_wire.py#L120)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:122`](../../../src/chronaxis/_control_wire.py#L122)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_time"></a>
 ## `_time`
@@ -234,7 +234,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/_control_wire.py:130`](../../../src/chronaxis/_control_wire.py#L130)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:132`](../../../src/chronaxis/_control_wire.py#L132)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_check"></a>
 ## `_check`
@@ -249,7 +249,7 @@ _check(family, command, args)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`family`|str|是|无|位置或关键字。can、fast或batch之一，决定命令的基础参数形状。|
+|`family`|str|是|无|位置或关键字。can、fast、batch或integral之一，决定命令的基础参数形状。|
 |`command`|str|是|无|位置或关键字。本族已登记的命令名，需与消息头一致。|
 |`args`|tuple[Any, ...] &#124; list[Any]|是|无|位置或关键字。不含命令名的参数序列；数量、计数和基础类型不符时拒绝。|
 
@@ -261,7 +261,7 @@ None。
 
 数量或字段基本类型不符时ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:140`](../../../src/chronaxis/_control_wire.py#L140)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:142`](../../../src/chronaxis/_control_wire.py#L142)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_short"></a>
 ## `_short`
@@ -287,7 +287,7 @@ _short(value, maximum)
 
 输入不是文本时类型错误。
 
-源码：[`src/chronaxis/_control_wire.py:176`](../../../src/chronaxis/_control_wire.py#L176)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:189`](../../../src/chronaxis/_control_wire.py#L189)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_diagnostics"></a>
 ## `_diagnostics`
@@ -314,7 +314,7 @@ _diagnostics(family, command, args)
 
 诊断字段类型非法。
 
-源码：[`src/chronaxis/_control_wire.py:194`](../../../src/chronaxis/_control_wire.py#L194)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:207`](../../../src/chronaxis/_control_wire.py#L207)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel"></a>
 ## `ControlChannel`
@@ -322,7 +322,7 @@ _diagnostics(family, command, args)
 单个管道端的有限控制编码；不拥有额外句柄，close关闭实际Connection。
 
 parent表示父端，仅接受向worker派发已定义命令；worker只能回报已定义事实。
-max_bytes是CAN/fast已有预算。独立batch任务及固定结果总长没有原有硬上限；
+max_bytes是CAN、fast或并行积分的已有预算。独立batch任务及固定结果总长没有原有硬上限；
 每片仍至多64KiB，只随实际收到内容增长，不能把分片长度当作总RAM上限。
 
 ```python
@@ -330,7 +330,7 @@ ControlChannel(connection, family, *, parent, max_bytes=None)
 ```
 
 
-源码：[`src/chronaxis/_control_wire.py:214`](../../../src/chronaxis/_control_wire.py#L214)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:229`](../../../src/chronaxis/_control_wire.py#L229)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-__init__"></a>
 ### `ControlChannel.__init__`
@@ -346,9 +346,9 @@ ControlChannel.__init__(connection, family, *, parent, max_bytes=None)
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
 |`connection`|multiprocessing.connection.Connection|是|无|位置或关键字。已有控制管道端点；本包装不新建句柄，关闭时关闭这个实际Connection。|
-|`family`|str|是|无|位置或关键字。本连接的固定族：can、fast或batch；两端必须一致。|
+|`family`|str|是|无|位置或关键字。本连接的固定族：can、fast、batch或integral；两端必须一致。|
 |`parent`|bool|是|无|仅关键字。True表示调度父端，False表示工作端；据此限制发送和接收命令方向。|
-|`max_bytes`|int &#124; None|否|None|仅关键字。CAN/fast固定大消息可用的正数字节额度；batch大任务/结果允许None，分片64KiB不是总RAM限制。|
+|`max_bytes`|int &#124; None|否|None|仅关键字。CAN/fast/integral固定大消息可用的正数字节额度；batch大任务/结果允许None，分片64KiB不是总RAM限制。|
 
 #### 返回说明
 
@@ -358,7 +358,7 @@ ControlChannel.__init__(connection, family, *, parent, max_bytes=None)
 
 通道、方向或额度错误。
 
-源码：[`src/chronaxis/_control_wire.py:221`](../../../src/chronaxis/_control_wire.py#L221)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:236`](../../../src/chronaxis/_control_wire.py#L236)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-_limit"></a>
 ### `ControlChannel._limit`
@@ -378,13 +378,13 @@ ControlChannel._limit(operation, *, sending)
 
 #### 返回说明
 
-字节上限。
+int字节上限；batch固定大消息沿用None，不表示零字节。
 
 #### 异常说明
 
-batch固定大消息沿用None；CAN/fast未提供预算时ControlProtocolError。
+CAN、fast或并行积分大消息未提供预算时ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:236`](../../../src/chronaxis/_control_wire.py#L236)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:251`](../../../src/chronaxis/_control_wire.py#L251)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-_direction"></a>
 ### `ControlChannel._direction`
@@ -410,7 +410,7 @@ None。
 
 父子方向不符时ControlProtocolError。
 
-源码：[`src/chronaxis/_control_wire.py:253`](../../../src/chronaxis/_control_wire.py#L253)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:268`](../../../src/chronaxis/_control_wire.py#L268)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-send"></a>
 ### `ControlChannel.send`
@@ -435,7 +435,7 @@ None，返回前释放编码副本。
 
 字段、额度或实际管道写入错误。
 
-源码：[`src/chronaxis/_control_wire.py:264`](../../../src/chronaxis/_control_wire.py#L264)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:279`](../../../src/chronaxis/_control_wire.py#L279)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-recv"></a>
 ### `ControlChannel.recv`
@@ -461,7 +461,7 @@ ControlChannel.recv()
 
 版本、长度、字段、截断或管道错误。
 
-源码：[`src/chronaxis/_control_wire.py:298`](../../../src/chronaxis/_control_wire.py#L298)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:313`](../../../src/chronaxis/_control_wire.py#L313)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-__enter__"></a>
 ### `ControlChannel.__enter__`
@@ -487,7 +487,7 @@ ControlChannel.__enter__()
 
 无。
 
-源码：[`src/chronaxis/_control_wire.py:336`](../../../src/chronaxis/_control_wire.py#L336)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:351`](../../../src/chronaxis/_control_wire.py#L351)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-__exit__"></a>
 ### `ControlChannel.__exit__`
@@ -502,7 +502,7 @@ ControlChannel.__exit__(*args)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`args`|tuple|否|()|可变位置。args为上下文异常三元组。|
+|`args`|tuple[type[BaseException] &#124; None, BaseException &#124; None, TracebackType &#124; None]|否|()|可变位置。上下文管理器传入的异常类型、异常对象和traceback三项；正常离开时均为None，原样交给实际Connection.__exit__。|
 
 #### 返回说明
 
@@ -512,7 +512,7 @@ ControlChannel.__exit__(*args)
 
 真实关闭错误。
 
-源码：[`src/chronaxis/_control_wire.py:345`](../../../src/chronaxis/_control_wire.py#L345)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:360`](../../../src/chronaxis/_control_wire.py#L360)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-poll"></a>
 ### `ControlChannel.poll`
@@ -527,7 +527,7 @@ ControlChannel.poll(*args)
 
 |名称|数据类型|必填|省略时的值|用途、取值和效果|
 |---|---|---|---|---|
-|`args`|tuple|否|()|可变位置。args沿用Connection.poll的等待参数。|
+|`args`|tuple[int &#124; float &#124; None, ...]|否|()|可变位置。沿用Connection.poll的位置参数，省略时立即检查；最多一个以秒计的timeout，None表示等待直到可读。|
 
 #### 返回说明
 
@@ -537,7 +537,7 @@ bool。
 
 真实管道错误。
 
-源码：[`src/chronaxis/_control_wire.py:354`](../../../src/chronaxis/_control_wire.py#L354)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:369`](../../../src/chronaxis/_control_wire.py#L369)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-fileno"></a>
 ### `ControlChannel.fileno`
@@ -563,7 +563,7 @@ int，供multiprocessing.wait使用。
 
 已关闭等底层句柄错误。
 
-源码：[`src/chronaxis/_control_wire.py:363`](../../../src/chronaxis/_control_wire.py#L363)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:378`](../../../src/chronaxis/_control_wire.py#L378)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-closed"></a>
 ### `ControlChannel.closed`
@@ -591,7 +591,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/_control_wire.py:373`](../../../src/chronaxis/_control_wire.py#L373)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:388`](../../../src/chronaxis/_control_wire.py#L388)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ControlChannel-close"></a>
 ### `ControlChannel.close`
@@ -617,4 +617,4 @@ None。
 
 真实关闭错误。
 
-源码：[`src/chronaxis/_control_wire.py:382`](../../../src/chronaxis/_control_wire.py#L382)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/_control_wire.py:397`](../../../src/chronaxis/_control_wire.py#L397)（行号对应 Chronaxis 0.1.0.dev5 源码）。

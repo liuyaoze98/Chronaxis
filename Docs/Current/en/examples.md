@@ -10,7 +10,7 @@ Common results: [Energy and averages](example-results.md#analysis-yaml), [Events
 
 ## Choose the parallel execution mode first
 
-Basic single-source ASC/BLF configurations explicitly set `execution.process_count: 4`, allowing up to four workers to process files from one recording. The number of files caps the actual worker count. Omitting this field still defaults to one. After selecting a configuration, identify the file relationship below before replacing paths, DBC and business conditions.
+The examples' `execution.process_count: 4` takes effect only when one source has several files; see [execution settings](execution.md) for choosing the value. After selecting a configuration, identify the file relationship below before replacing paths, DBC and business conditions.
 
 | Input relationship | Where to set the count | Complete example and result |
 |---|---|---|
@@ -20,7 +20,7 @@ Basic single-source ASC/BLF configurations explicitly set `execution.process_cou
 | Independent experiments | Batch-root `process_count`; each child analysis uses one | [Independent batch](../examples/batch-extended.yaml): separate task results; use `chronaxis batch run` |
 | CSV, memory, or a joint analysis of multiple sources | Use one within the analysis; independent tasks may run through an outer batch | [CAN and CSV joint task](../examples/can-joint-analysis.yaml): 26 J |
 
-Single-file examples retain the same limit so paths can later select multiple files. One file is not split among workers, so a limit of four does not mean four workers actually run. See [continuous-file multiprocessing](continuous-files.md) and [batch tasks](batch.md).
+Single-file examples keep the same setting; it has no effect until `paths` selects several files.
 
 <a id="完整教学任务"></a>
 ## Complete teaching tasks
@@ -113,7 +113,7 @@ Run ordinary templates with `chronaxis run DIRECTORY/plan.yaml --output OUTPUT_D
 <a id="下载完整案例并运行"></a>
 ## Download and run complete cases
 
-The configurations and `data` files below are included in the offline manual. Run from the `examples` directory and reuse analysis output directories with timestamped filenames. Inputs are synthetic and do not establish thresholds for real equipment.
+The configurations and `data` files below are in the manual's [examples directory](installation.md#find-examples), included both with the installed package and in the offline manual. Run from the `examples` directory and reuse analysis output directories with timestamped filenames. Inputs are synthetic and do not establish thresholds for real equipment.
 
 <a id="can-joint-analysis"></a>
 <a id="can电压与csv电流联合分析"></a>
@@ -149,7 +149,7 @@ chronaxis run message-energy.yaml --output message-result
 <a id="信号250ms与can500ms两个导出网格"></a>
 ### A 250 ms signal grid and 500 ms CAN grid
 
-[dual-grid.yaml](../examples/dual-grid.yaml) uses the same joint.asc and joint.dbc, exporting voltage and reconstructed CAN frames. The analysis alias is `voltage`; the DBC field is `Voltage`. They are not interchangeable. The synthetic example records its origin with `metadata.device_label: home`; with your own data, omit it or provide your nonblank device label. See [Outputs](exports.md).
+[dual-grid.yaml](../examples/dual-grid.yaml) uses the same joint.asc and joint.dbc, exporting voltage and reconstructed CAN frames. The analysis alias is `voltage`; the DBC field is `Voltage`. They are not interchangeable. The synthetic example shows how to record a device with `metadata.device_label: lab-pc`; with your own data, omit it or provide your nonblank device label. See [Outputs](exports.md).
 
 ```powershell
 chronaxis run dual-grid.yaml --output grid-result

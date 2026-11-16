@@ -79,10 +79,10 @@ The ASC contains 10, 20, 40, 5 and 5 A at 0.00, 0.12, 0.30, 0.42 and 0.60 s. The
 
 ```powershell
 python -m chronaxis validate analysis.yaml
-python -m chronaxis run analysis.yaml --backend numpy --work-dir work-grid --output result-grid
+python -m chronaxis run analysis.yaml --output result-grid
 ```
 
-To compare the reference backend, use `--backend reference` with a separate work directory, such as `--work-dir work-grid-reference`. The output directory can be reused; each run creates timestamped results. The input alias `current` refers to Current in channel 1, standard frame 0x100. Each entry under `transforms` names a new series available to rule conditions, calculations or later transforms. This example uses `select` to expose its actual output timestamps.
+The output directory can be reused; each run creates timestamped results. The input alias `current` refers to Current in channel 1, standard frame 0x100. Each entry under `transforms` names a new series available to rule conditions, calculations or later transforms. This example uses `select` to expose its actual output timestamps.
 
 |Selection|Actual time|Expected value|Meaning|
 |---|---:|---:|---|
@@ -100,7 +100,7 @@ For actual time, set `intervals.default` to `{mode: actual}`. The mean at 0.20 s
 
 ## Choose the rate that answers your question
 
-- `adjacent_rate` emits at the right-hand real input update. `max_gap` and source `valid_for` refer to actual elapsed time. An expired or unknown interval breaks the pair. For independent clocks, suppose driver frames arrive at 0 and 0.12 s and current is 1 A at 0.03 s and 7 A at 0.09 s. With a fixed period of 0.1 s the two readings span 0.05 selected seconds. After receiving the 0.12 s driver, the row at **0.09 s** reports 120 A/s.
+- `adjacent_rate` emits at the right-hand real input update. `max_gap` and source `valid_for` refer to actual elapsed time. An expired or unknown interval breaks the pair. For independent clocks, suppose driver frames arrive at 0 and 0.12 s and current is 1 A at 0.03 s and 7 A at 0.09 s. With a fixed period of 0.1 s, the readings are 0.06 s apart, exactly half of the 0.12 s driver interval, so they span half a period: 0.1 × 0.5 = 0.05 selected seconds. After receiving the 0.12 s driver, the row at **0.09 s** reports (7 − 1) ÷ 0.05 = 120 A/s.
 - `window_rate` subtracts the held values at the two boundaries and divides by the selected window width. A real update at the right boundary supplies that boundary's value. Rolling means and integrals cover a half-open interval, so the update contributes no area to the preceding window.
 - `sample_fit_slope` fits equally weighted real input updates inside the window, including real samples at its boundaries. It needs at least two distinct positions. A clipped boundary adds no measurement. For 20°C at 0 s, 21°C at 1 s and 26°C at 3 s, the adjacent, three-second endpoint and fitted rates at 3 s are 2.5, 2 and approximately 2.071429 `delta_K/s` in actual mode. The [window-change event rule `window_delta`](rules.md#rule-window-delta) checks whether the difference between the window endpoints meets a threshold. It does not divide that difference by elapsed duration, unlike the rate operations described here.
 

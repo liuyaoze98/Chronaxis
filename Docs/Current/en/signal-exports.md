@@ -14,7 +14,7 @@
 <a id="原信号csv导出"></a>
 ## Export original signal updates
 
-The following fragment assumes `signals` already binds the numeric signal `voltage` and the [export label requirement](exports.md) is met. Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `signal_csv` child. Keep the other output settings and unshown root fields; do not paste a duplicate `outputs` key.
+The following fragment assumes `signals` already binds the numeric signal `voltage`. The device label is optional; see [Outputs](exports.md). Start from [dual-grid.yaml](../examples/dual-grid.yaml), find root `outputs`, and add or replace only its `signal_csv` child. Keep the other output settings and unshown root fields; do not paste a duplicate `outputs` key.
 
 ```yaml
 outputs:                # Additional result files to publish
@@ -80,6 +80,8 @@ With conflicting records for one signal at one time, `error` marks the point and
 To choose the last record by stable source sequence, explicitly set `signals[].same_time_policy` to `last_by_sequence`. This does not choose by numerical value or thread completion order. The resampled file's public header is `time_ns,signal,value,unit,status,reason,quality`; it does not include endpoint timestamps or source references.
 
 <a id="使用dbc周期的完整导出例"></a>
+<a id="dbc-grid-example"></a>
+
 ## Complete example using DBC periods
 
 Download [analysis.yaml](../examples/dbc-grid/analysis.yaml), [grid.asc](../examples/dbc-grid/grid.asc), and [grid.dbc](../examples/dbc-grid/grid.dbc) into one directory and run `chronaxis run analysis.yaml --output grid-result`.

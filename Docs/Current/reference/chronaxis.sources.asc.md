@@ -14,6 +14,7 @@
 |---|---|
 |[`ASCSpec`](#api-ASCSpec)|固定一次ASC读取的格式、编码、时间参考；不猜测本地时区。|
 |[`ASCSpec.__post_init__`](#api-ASCSpec-__post_init__)|检查配置字段的类型、取值及相互关系，不读取数据文件。|
+|[`_seconds_from_ns`](#api-_seconds_from_ns)|从整数纳秒得到精确Decimal秒，不受调用方Decimal精度或舍入模式影响。|
 |[`_date`](#api-_date)|解析ASC英文日期，不调用宿主时区。|
 |[`_unsigned`](#api-_unsigned)|严格解析无符号字段。|
 |[`_status_event`](#api-_status_event)|识别已知CAN控制器状态事件，验证格式后告知调用方不产生数据帧。|
@@ -25,9 +26,11 @@
 |[`ASCRead.__init__`](#api-ASCRead-__init__)|预约后打开一次。|
 |[`ASCRead.closed`](#api-ASCRead-closed)|提供真实关闭状态。|
 |[`ASCRead.last_exact_time`](#api-ASCRead-last_exact_time)|取得最近参与时间顺序检查的精确秒值，供下一连续文件接续比较。|
+|[`ASCRead._materialize_order`](#api-ASCRead-_materialize_order)|把快速路径的整数纳秒比较状态转成原Decimal秒视图。|
 |[`ASCRead.__iter__`](#api-ASCRead-__iter__)|返回本次读取。|
 |[`ASCRead._set_date`](#api-ASCRead-_set_date)|设置段基准。|
 |[`ASCRead._line`](#api-ASCRead-_line)|解释一行。|
+|[`ASCRead._fast_data_line`](#api-ASCRead-_fast_data_line)|解析hex/absolute头下的标准经典数据帧；结果与原_frame路径逐字段相同。|
 |[`ASCRead._check_order`](#api-ASCRead-_check_order)|拒绝所需时间序列回退，包括舍入后相同的亚纳秒回退。|
 |[`ASCRead.__next__`](#api-ASCRead-__next__)|读取到下一帧或EOF。|
 |[`ASCRead.close`](#api-ASCRead-close)|关闭自有文件再归还预算，可重试。|
@@ -39,12 +42,12 @@
 ```python
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, localcontext
+from decimal import Decimal, getcontext, localcontext
 from pathlib import Path
-from ..legacy.records import LegacyRawFrame
+from ..legacy.records import LegacyRawFrame, _raw_frame_from_validated_fields
 from ..results.budget import ResourceBudget, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
-from ..timebase.conversion import checked_add_ns, convert_time, require_int64_ns
-from .raw_can import CANTextError, RawCANRecord
+from ..timebase.conversion import INT64_MAX, INT64_MIN, checked_add_ns, convert_time, require_int64_ns
+from .raw_can import CANTextError, RawCANRecord, _raw_record_from_validated_fields
 ```
 
 </details>
@@ -69,7 +72,7 @@ class ASCSpec
 |`timezone_offset_minutes`|int &#124; None|否|None|epoch必填，避免依赖宿主时区。 None适用于不需要绝对epoch换算的相对时间；time_reference=epoch时必须填写。|
 |`offset_ns`|int|否|0|一次明确的int64平移，不更改原始时间文本。|
 
-源码：[`src/chronaxis/sources/asc.py:31`](../../../src/chronaxis/sources/asc.py#L31)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:36`](../../../src/chronaxis/sources/asc.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCSpec-__post_init__"></a>
 ### `ASCSpec.__post_init__`
@@ -103,7 +106,33 @@ ASCSpec.__post_init__()
 - `ValueError`：ASC时区偏移需-1439到1439整数分钟。
 - `ValueError`：ASC日历时间需要显式时区偏移。
 
-源码：[`src/chronaxis/sources/asc.py:41`](../../../src/chronaxis/sources/asc.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:46`](../../../src/chronaxis/sources/asc.py#L46)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-_seconds_from_ns"></a>
+## `_seconds_from_ns`
+
+从整数纳秒得到精确Decimal秒，不受调用方Decimal精度或舍入模式影响。
+
+```python
+_seconds_from_ns(value)
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`value`|int|是|无|位置或关键字。已经验证的int64整数纳秒；构造精确Decimal秒，避免受调用方Decimal精度和舍入模式影响。|
+
+### 返回说明
+
+精确Decimal秒。
+
+### 异常说明
+
+仅分配失败。
+字符串构造不做上下文舍入，避免首末时刻被截短后漏报跨文件或回退行的乱序。
+
+源码：[`src/chronaxis/sources/asc.py:66`](../../../src/chronaxis/sources/asc.py#L66)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_date"></a>
 ## `_date`
@@ -133,7 +162,7 @@ ValueError为月份或日期格式不支持。
 - `ValueError`：ASC日期格式或取值无效。
 - `ValueError`：ASC日期需要英文月份和明确年月日。
 
-源码：[`src/chronaxis/sources/asc.py:61`](../../../src/chronaxis/sources/asc.py#L61)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:75`](../../../src/chronaxis/sources/asc.py#L75)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_unsigned"></a>
 ## `_unsigned`
@@ -161,7 +190,7 @@ int。
 
 ValueError为符号、非法字符、空值或越界；拒绝下划线和隐式前缀。
 
-源码：[`src/chronaxis/sources/asc.py:81`](../../../src/chronaxis/sources/asc.py#L81)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:95`](../../../src/chronaxis/sources/asc.py#L95)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_status_event"></a>
 ## `_status_event`
@@ -188,7 +217,7 @@ ValueError为CAN事件的未知状态、通道、计数或残缺布局；不跳�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/sources/asc.py:96`](../../../src/chronaxis/sources/asc.py#L96)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:109`](../../../src/chronaxis/sources/asc.py#L109)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_fd_error_diagnostics"></a>
 ## `_fd_error_diagnostics`
@@ -216,7 +245,7 @@ ValueError为未知阶段、缺字段、无效数值、载荷数量不符或保�
 
 返回类型：int。
 
-源码：[`src/chronaxis/sources/asc.py:122`](../../../src/chronaxis/sources/asc.py#L122)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:135`](../../../src/chronaxis/sources/asc.py#L135)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_error_diagnostics"></a>
 ## `_error_diagnostics`
@@ -244,7 +273,7 @@ ValueError为未知/残缺诊断或无效数值。
 
 返回类型：int &#124; None。
 
-源码：[`src/chronaxis/sources/asc.py:161`](../../../src/chronaxis/sources/asc.py#L161)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:174`](../../../src/chronaxis/sources/asc.py#L174)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_frame"></a>
 ## `_frame`
@@ -284,7 +313,7 @@ ValueError为未知布局、身份或载荷错误；附加诊断由_error_diagno
 - `ValueError`：CAN FD载荷或标准附加字段数量错误。
 - `ValueError`：经典CAN类型需要d或r。
 
-源码：[`src/chronaxis/sources/asc.py:186`](../../../src/chronaxis/sources/asc.py#L186)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:199`](../../../src/chronaxis/sources/asc.py#L199)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_repository_frame"></a>
 ## `_repository_frame`
@@ -320,7 +349,7 @@ ValueError/IndexError为布局、统计身份或载荷错误。
 - `ValueError`：sclicer-asc-v1只接受明确的CAN FD数据行。
 - `ValueError`：Sclicer实际载荷与声明长度不一致。
 
-源码：[`src/chronaxis/sources/asc.py:272`](../../../src/chronaxis/sources/asc.py#L272)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:285`](../../../src/chronaxis/sources/asc.py#L285)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead"></a>
 ## `ASCRead`
@@ -332,7 +361,7 @@ ASCRead(spec, budget, *, check_cancel=None, retain_original=True, retain_source_
 ```
 
 
-源码：[`src/chronaxis/sources/asc.py:313`](../../../src/chronaxis/sources/asc.py#L313)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:326`](../../../src/chronaxis/sources/asc.py#L326)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-__init__"></a>
 ### `ASCRead.__init__`
@@ -368,7 +397,7 @@ ASCRead.__init__(spec, budget, *, check_cancel=None, retain_original=True, retai
 - `TypeError`：ASCRead需要ASCSpec和ResourceBudget。
 - `TypeError`：取消检查必须可调用。
 
-源码：[`src/chronaxis/sources/asc.py:316`](../../../src/chronaxis/sources/asc.py#L316)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:329`](../../../src/chronaxis/sources/asc.py#L329)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-closed"></a>
 ### `ASCRead.closed`
@@ -396,7 +425,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/sources/asc.py:354`](../../../src/chronaxis/sources/asc.py#L354)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:369`](../../../src/chronaxis/sources/asc.py#L369)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-last_exact_time"></a>
 ### `ASCRead.last_exact_time`
@@ -424,7 +453,33 @@ Decimal或None。含日期参考和文件offset；空文件保持前序比较点
 
 无。不向逐帧记录或输出增加另一套时间，关闭后仍可取得该比较状态。
 
-源码：[`src/chronaxis/sources/asc.py:360`](../../../src/chronaxis/sources/asc.py#L360)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:375`](../../../src/chronaxis/sources/asc.py#L375)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-ASCRead-_materialize_order"></a>
+### `ASCRead._materialize_order`
+
+把快速路径的整数纳秒比较状态转成原Decimal秒视图。
+
+```python
+ASCRead._materialize_order()
+```
+
+参数：无显式参数。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/sources/asc.py:384`](../../../src/chronaxis/sources/asc.py#L384)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-__iter__"></a>
 ### `ASCRead.__iter__`
@@ -450,7 +505,7 @@ ASCRead.__iter__()
 
 无；不启动第二次扫描。
 
-源码：[`src/chronaxis/sources/asc.py:368`](../../../src/chronaxis/sources/asc.py#L368)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:390`](../../../src/chronaxis/sources/asc.py#L390)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-_set_date"></a>
 ### `ASCRead._set_date`
@@ -476,7 +531,7 @@ ASCRead._set_date(value, trigger=False)
 
 时间越界。
 
-源码：[`src/chronaxis/sources/asc.py:373`](../../../src/chronaxis/sources/asc.py#L373)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:395`](../../../src/chronaxis/sources/asc.py#L395)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-_line"></a>
 ### `ASCRead._line`
@@ -511,7 +566,35 @@ RawCANRecord或元数据None。
 - `ValueError`：ASC进制仅接受在头部定义一次。
 - `ValueError`：ASC头需base hex/dec timestamps absolute/relative。
 
-源码：[`src/chronaxis/sources/asc.py:389`](../../../src/chronaxis/sources/asc.py#L389)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:411`](../../../src/chronaxis/sources/asc.py#L411)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-ASCRead-_fast_data_line"></a>
+### `ASCRead._fast_data_line`
+
+解析hex/absolute头下的标准经典数据帧；结果与原_frame路径逐字段相同。
+
+```python
+ASCRead._fast_data_line(line)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`line`|str|是|无|位置或关键字。已去首尾空白、以数字开头的ASC数据行；不完全满足快速解析条件时返回None，由原解析器处理并保留原错误。|
+
+#### 返回说明
+
+RawCANRecord，或None表示
+    本行不完全符合快速条件（统计尾、FD、错误/远程帧、多余字段、超过9位小数秒、
+    非两位十六进制载荷等），由原解析器处理并报告原错误。
+
+#### 异常说明
+
+ValueError仅为时间回退（与原路径相同的消息和检查时机）。
+条件: 时间≤9位小数时纳秒换算无舍入，量化标志为False；所有范围与原_unsigned一致。
+
+源码：[`src/chronaxis/sources/asc.py:473`](../../../src/chronaxis/sources/asc.py#L473)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-_check_order"></a>
 ### `ASCRead._check_order`
@@ -537,7 +620,7 @@ None。
 ValueError为回退。
 只保存最近参与检查的时刻；不排序、不钳平，也不改写返回报文。
 
-源码：[`src/chronaxis/sources/asc.py:446`](../../../src/chronaxis/sources/asc.py#L446)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:538`](../../../src/chronaxis/sources/asc.py#L538)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-__next__"></a>
 ### `ASCRead.__next__`
@@ -565,7 +648,7 @@ RawCANRecord。
 
 完成/失败后释放自有资源；已返回前缀不会重复。取消回调在每个物理行前检查。
 
-源码：[`src/chronaxis/sources/asc.py:464`](../../../src/chronaxis/sources/asc.py#L464)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:557`](../../../src/chronaxis/sources/asc.py#L557)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-close"></a>
 ### `ASCRead.close`
@@ -591,7 +674,7 @@ ASCRead.close()
 
 关闭或预算原错。
 
-源码：[`src/chronaxis/sources/asc.py:502`](../../../src/chronaxis/sources/asc.py#L502)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:595`](../../../src/chronaxis/sources/asc.py#L595)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-__enter__"></a>
 ### `ASCRead.__enter__`
@@ -617,7 +700,7 @@ ASCRead.__enter__()
 
 无。
 
-源码：[`src/chronaxis/sources/asc.py:515`](../../../src/chronaxis/sources/asc.py#L515)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:608`](../../../src/chronaxis/sources/asc.py#L608)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ASCRead-__exit__"></a>
 ### `ASCRead.__exit__`
@@ -644,4 +727,4 @@ False。
 
 无原错时的关闭失败。
 
-源码：[`src/chronaxis/sources/asc.py:520`](../../../src/chronaxis/sources/asc.py#L520)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/sources/asc.py:613`](../../../src/chronaxis/sources/asc.py#L613)（行号对应 Chronaxis 0.1.0.dev5 源码）。

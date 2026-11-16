@@ -38,9 +38,9 @@
 
 ## 先准备来源和信号
 
-保存[完整基础配置](examples/teaching-base.yaml)；它引用合成ASC报文和DBC，并声明下列信号；分析范围取全部实际观测。这里展示的是该文件根级signals的相关条目，用于解释后续引用；不需要再粘贴一遍。不同规则的小表是各自的概念对照，共享基础数据不保证产生每张小表的全部事件；有固定预期的完整任务使用各节专用配置。
+保存[完整基础配置](examples/teaching-base.yaml)；它引用合成ASC报文和DBC，分析范围取全部实际观测。下面摘录该文件中的信号定义，只用于说明后续引用，不需要再粘贴；文件只有一个CAN来源，所以各信号不必写source。frame_id和signal来自随附DBC，类型与单位自动读取；这里显式写20s有效期，是为了让稀疏的教学记录之间仍然有效，不代表实际设备的推荐设置。
 
-基础文件已有的信号定义摘录：用于阅读，不重复插入；完整基础文件只有一个CAN来源，无需逐项重复source。信号的frame_id和signal来自随附DBC；类型与单位自动读取。此处显式保留20s有效期，保证稀疏教学记录之间仍有效，不代表实际设备的推荐设置。
+下文各节的小表是概念对照，共用的基础数据不保证产生每张小表的全部事件；有固定预期的完整任务使用各节专用配置。
 
 ```yaml
 signals:                     # 定义公式使用的信号
@@ -354,7 +354,7 @@ rules:                             # 列出识别活动或瞬间变化的规则�
 
 活动已经开始后，开始信号缺失不会直接终止它；结束信号缺失会中断它，因为无法判断活动何时结束。`timeout`不填或为null表示没有超时上限；填写时必须大于0。
 
-完整例子得到`[0,2)`正常结束、`[4,9)`超时、`[11,14)`正常结束，三段信号均值分别10、52、110。见[可运行案例](examples.md)。
+完整例子得到`[0,2)`正常结束、`[4,9)`超时、`[11,14)`正常结束，三段信号均值分别10、52、110。见[start_end完整案例](examples.md#start-end-case)。
 
 <a id="rule-window-delta"></a>
 ## 滑动窗口变化量检测：window_delta
@@ -441,5 +441,3 @@ calculations:                      # 本例的统计结果
 多次报警的窗口是否合并，见[窗口配置](windows.md#window-fields)。请求与响应的配对属于另一种分析，见[配对规则](sequences.md)。
 
 底层类与函数参数见[stability](reference/chronaxis.core.stability.md)、[window_delta](reference/chronaxis.core.window_delta.md)、[规则解析](reference/chronaxis.planning.nodes.md)。
-
-完整输入和三次活动核对见[start_end完整案例](examples.md#start-end-case)。

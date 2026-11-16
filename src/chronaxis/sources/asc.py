@@ -10,18 +10,23 @@ relative是相邻事件时间差。relative输出以首段为零，epoch输出�
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, localcontext
+from decimal import Decimal, getcontext, localcontext
 import codecs
 from pathlib import Path
 import re
 
-from ..legacy.records import LegacyRawFrame
+from ..legacy.records import LegacyRawFrame, _raw_frame_from_validated_fields
 from ..results.budget import ResourceBudget, _reserve_owned_ram, _release_owned_ram, _cleanup_owner
-from ..timebase.conversion import checked_add_ns, convert_time, require_int64_ns
-from .raw_can import CANTextError, RawCANRecord
+from ..timebase.conversion import INT64_MAX, INT64_MIN, checked_add_ns, convert_time, require_int64_ns
+from .raw_can import CANTextError, RawCANRecord, _raw_record_from_validated_fields
 
 # 16Ki字符足以容纳64字节帧及标准附加字段；过长行显式失败而不无限读取。
 MAX_ASC_LINE_CHARS = 16384
+# 预编译与原逐次re.fullmatch相同的模式；只减少每次查缓存的开销，不改变接受的文本。
+_HEX_DIGITS = re.compile(r'[0-9a-fA-F]+')
+_DEC_DIGITS = re.compile(r'[0-9]+')
+_TIMESTAMP = re.compile(r'\d+(?:\.\d+)?')
+_DLC_TEXT = frozenset('012345678')
 DLC_LENGTHS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64)
 MONTHS = dict(zip(('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
                    'Oct', 'Nov', 'Dec'), range(1, 13)))
@@ -58,6 +63,15 @@ class ASCSpec:
         require_int64_ns(self.offset_ns)
 
 
+def _seconds_from_ns(value):
+    """从整数纳秒得到精确Decimal秒，不受调用方Decimal精度或舍入模式影响。
+
+    参数: value为已验证的int64纳秒。返回: 精确Decimal秒。异常: 仅分配失败。
+    字符串构造不做上下文舍入，避免首末时刻被截短后漏报跨文件或回退行的乱序。
+    """
+    return Decimal(str(value) + 'e-9')
+
+
 def _date(text):
     """解析ASC英文日期，不调用宿主时区。参数: text为去掉星期后的日期。
 
@@ -84,8 +98,7 @@ def _unsigned(text, base, maximum, label):
     返回: int。异常: ValueError为符号、非法字符、空值或越界；拒绝下划线和隐式前缀。
     """
     # int本身会接受正号/下划线；协议数值先限定字符，避免宽松解析隐藏坏行。
-    alphabet = r'[0-9a-fA-F]+' if base == 16 else r'[0-9]+'
-    if not re.fullmatch(alphabet, text):
+    if not (_HEX_DIGITS if base == 16 else _DEC_DIGITS).fullmatch(text):
         raise ValueError(label + '字符或进制错误')
     value = int(text, base)
     if value > maximum:
@@ -342,6 +355,8 @@ class ASCRead:
         self._base = self._mode = self._date_origin = self._header_date = None
         self._block_ns, self._elapsed = 0, Decimal(0)
         self._last_exact = previous_exact_time
+        # 快速路径记录的最近检查时刻（含offset的精确整数纳秒）；读取Decimal视图时再物化。
+        self._fast_last_ns = None
         self.first_exact_time = None  # 当前文件首个参与顺序检查的时刻，含无CAN帧的计时行。
         try:
             _reserve_owned_ram(self, MAX_ASC_LINE_CHARS * 64 + 8192, '_fixed_cost')
@@ -363,7 +378,14 @@ class ASCRead:
         参数: 无。返回: Decimal或None，已含日期参考和offset；空文件保留前序值。
         异常: 无。不向逐帧记录或输出增加另一套时间，关闭后仍可取得该比较状态。
         """
+        self._materialize_order()
         return self._last_exact
+
+    def _materialize_order(self):
+        """把快速路径的整数纳秒比较状态转成原Decimal秒视图。参数: 无。返回: None。异常: 无。"""
+        if self._fast_last_ns is not None:
+            self._last_exact = _seconds_from_ns(self._fast_last_ns)
+            self._fast_last_ns = None
 
     def __iter__(self):
         """返回本次读取。参数: 无。返回: self。异常: 无；不启动第二次扫描。
@@ -415,8 +437,13 @@ class ASCRead:
             raise ValueError('ASC数据前缺少明确base/timestamps头')
         if self.spec.time_reference == 'epoch' and self._header_date is None:
             raise ValueError('日历时间ASC缺少日期头')
+        # 常见经典数据行走等价快速路径；任何不完全符合的行返回None，继续原完整解析。
+        if self._base == 16 and self._mode == 'absolute' and line[0].isdigit():
+            record = self._fast_data_line(line)
+            if record is not None:
+                return record
         timestamp, *tokens = line.split()
-        if not re.fullmatch(r'\d+(?:\.\d+)?', timestamp):
+        if not _TIMESTAMP.fullmatch(timestamp):
             raise ValueError('ASC时间需要非负十进制秒')
         # relative先精确累加再舍入；逐条先舍入会把两次0.5ns都变成0，丢掉真实的1ns。
         with localcontext() as context:
@@ -443,12 +470,78 @@ class ASCRead:
                             timestamp if self._retain_original else None, self.spec.parser_version, code, converted.quantized,
                             converted.time_ns if self._retain_source_time else None)
 
+    def _fast_data_line(self, line):
+        """解析hex/absolute头下的标准经典数据帧；结果与原_frame路径逐字段相同。
+
+        参数: line为已去空白、以数字开头的数据行。返回: RawCANRecord，或None表示
+            本行不完全符合快速条件（统计尾、FD、错误/远程帧、多余字段、超过9位小数秒、
+            非两位十六进制载荷等），由原解析器处理并报告原错误。
+        异常: ValueError仅为时间回退（与原路径相同的消息和检查时机）。
+        条件: 时间≤9位小数时纳秒换算无舍入，量化标志为False；所有范围与原_unsigned一致。
+        """
+        # 原解析会遵守调用者的指数边界与钳位设置；非常规范围沿原路径报告原错误。
+        # 常规范围覆盖整个int64纳秒域，精度和舍入模式不应改变精确时间比较。
+        context = getcontext()
+        if context.Emax < 9 or context.Emin > -9 or context.clamp:
+            return None
+        tokens = line.split()
+        if len(tokens) < 6:
+            return None
+        stamp, channel, identifier, direction, kind, dlc_text = tokens[:6]
+        if (kind != 'd' or direction not in ('Rx', 'Tx') or len(dlc_text) != 1 or dlc_text not in _DLC_TEXT
+                or len(tokens) != 6 + int(dlc_text)):
+            return None
+        payload = tokens[6:]
+        if any(len(item) != 2 for item in payload):
+            return None
+        try:
+            # 两位一组拼接后fromhex只接受十六进制字符，等同逐字节[0-9a-fA-F]+且≤255。
+            data = bytes.fromhex(''.join(payload))
+        except ValueError:
+            return None
+        if not channel.isascii() or not channel.isdigit() or len(channel) > 5:
+            return None
+        channel_value = int(channel)
+        extended = identifier[-1:] in ('x', 'X')
+        identity = identifier[:-1] if extended else identifier
+        if channel_value == 0 or channel_value > 65536 or len(identity) > 8 or not _HEX_DIGITS.fullmatch(identity):
+            return None
+        arbitration = int(identity, 16)
+        if arbitration > (0x1fffffff if extended else 0x7ff):
+            return None
+        if not stamp.isascii() or not _TIMESTAMP.fullmatch(stamp):
+            return None
+        whole, _, fraction = stamp.partition('.')
+        if len(fraction) > 9 or len(whole) > 11:
+            return None
+        # 段起点 + 绝对秒；≤9位小数时与Decimal累加后最近偶数舍入的结果完全相同。
+        source_ns = self._block_ns + int(whole) * 1_000_000_000 + (int(fraction.ljust(9, '0')) if fraction else 0)
+        ns = source_ns + self.spec.offset_ns
+        if not (INT64_MIN <= source_ns <= INT64_MAX and INT64_MIN <= ns <= INT64_MAX):
+            return None
+        frame = _raw_frame_from_validated_fields(ns / 10**9, arbitration, extended, False, False, channel_value - 1,
+                                                 len(data), data, False, direction == 'Rx', False, False)
+        # 有效行的时间检查结果与原“先查时间再查载荷”相同；选择模式仍只检查所选帧。
+        if self._time_selector is None or self._time_selector(frame):
+            if self._fast_last_ns is not None:
+                if ns < self._fast_last_ns:
+                    raise ValueError('ASC来源时间回退')
+            elif self._last_exact is not None and _seconds_from_ns(ns) < self._last_exact:
+                raise ValueError('ASC来源时间回退')
+            if self.first_exact_time is None:
+                self.first_exact_time = _seconds_from_ns(ns)
+            self._last_exact, self._fast_last_ns = None, ns
+        return _raw_record_from_validated_fields(frame, ns, self.spec.path, self.line_number, self.count,
+            stamp if self._retain_original else None, self.spec.parser_version, len(data), False,
+            source_ns if self._retain_source_time else None)
+
     def _check_order(self, exact):
         """拒绝所需时间序列回退，包括舍入后相同的亚纳秒回退。
 
         参数: exact为已解析、尚未加offset的Decimal秒。返回: None。异常: ValueError为回退。
         只保存最近参与检查的时刻；不排序、不钳平，也不改写返回报文。
         """
+        self._materialize_order()
         # 每个文件可能使用不同显式偏移；比较状态必须与返回坐标使用相同原点。
         shifted = exact
         if self.spec.offset_ns:

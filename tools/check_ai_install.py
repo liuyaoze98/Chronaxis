@@ -499,6 +499,33 @@ print(len(rows))
         [python, '-X', 'utf8', '-B', direct / 'examples/readability_examples.py',
          '--output-root', user, '--device-label', device], user))
     assert summary['topic_examples']['status'] == 'passed'
+    # 随包Markdown手册：两种语言入口位于安装目录，清单与实际文件一致；
+    # 快速开始示例直接从手册目录运行，结果写到用户目录，阅读和运行都不改写手册。
+    manual_entry = Path(cli("manual-path", "manual").strip())
+    manual_root = manual_entry.parent
+    assert manual_root.is_relative_to(site) and manual_root.name == "manual" and manual_entry.name == "index.md"
+    assert Path(cli("manual-path-en", "manual", "--language", "en").strip()) == manual_root / "en/index.md"
+    manual_meta = json.loads((manual_root / "manifest.json").read_bytes())
+    assert manual_meta["package_version"] == summary["software_version"]
+
+    def manual_snapshot():
+        """返回手册文件摘要；pip安装时为示例脚本生成的__pycache__不属于手册内容。"""
+        return {p.relative_to(manual_root).as_posix(): sha256(p.read_bytes()).hexdigest()
+                for p in manual_root.rglob("*") if p.is_file() and "__pycache__" not in p.parts}
+
+    manual_files = manual_snapshot()
+    assert set(manual_files) == set(manual_meta["sha256"]) | {"manifest.json"}, "手册清单与安装文件不一致"
+    assert all(manual_files[name] == digest for name, digest in manual_meta["sha256"].items()), "手册文件摘要不符"
+    quick = user / "manual-quickstart"
+    cli("manual-quickstart", "run", str(manual_root / "examples/analysis.yaml"), "--output", str(quick), cwd=user)
+    table, = quick.glob("会话结果_*.csv")
+    with table.open(encoding="utf-8-sig", newline="") as stream:
+        row, = csv.DictReader(stream)
+    assert float(row["energy（J）"]) == 38 and row["energy：状态"] == "完整", row
+    assert manual_files == manual_snapshot(), "运行手册示例改写了安装资料"
+    summary["bundled_manual"] = dict(directory=str(manual_root), files=len(manual_files),
+                                     quickstart_table=str(table), quickstart_energy_j=38, status="完整")
+    save()
     # 测试驱动器从维护区复制，输入始终是已安装包和发布资料，不提供源码检出。
     verify = area/"verify"
     verify.mkdir()

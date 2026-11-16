@@ -54,7 +54,7 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 
 | 现象或错误 | 原因与检查 | 修正动作 |
 |---|---|---|
-| No module named chronaxis | 当前解释器未安装项目，或编辑安装目录已移动 | 使用安装时的Python，按[安装页](installation.md)重新安装当前源码目录。 |
+| No module named chronaxis | 当前使用的 Python 不是安装 Chronaxis 的那个，或源码可编辑安装的目录已移动 | 改用虚拟环境里的 Python（写法见[安装页](installation.md#run-without-activation)）；仍不行时按原安装方式重新安装。 |
 | 找不到numpy、ruamel.yaml或CAN模块 | 依赖装在其他环境，或安装时跳过了依赖 | 在运行任务的同一Python环境重新安装chronaxis；CAN依赖随正常安装提供。 |
 | PlanValidationError，路径如`$.signals[0].source` | 字段缺失、类型不符或引用名称不存在 | 按source/行列/字段路径检查；source应等于sources[].name，不填文件路径。 |
 | 重复键、未知字段或旧版本错误 | 配置结构不符合当前规则 | 合并重复映射，核对大小写与拼写；分析配置只接受整数4；旧配置须按当前字段和单位规则迁移，不能只改版本数字。见[配置版本](configuration.md)。 |
@@ -92,7 +92,7 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 | BudgetExceededError | 按异常资源项区分内存、结果缓冲或暂存磁盘；可减小batch_rows/result_buffer_rows，或在确认资源足够后调整对应配额。状态本身需要的内存未必随批次减小。 |
 | 输出路径不可用 | 已有目录可以复用；若该路径是文件、不可写或位于受保护位置，选择可写目录。程序用时间后缀避免覆盖旧文件。 |
 | 发布目录位于自有工作目录内 | 默认close会清理该工作目录；把正式输出放在工作目录外。 |
-| 平台能力不足导致运行或发布失败 | 查看原异常链。Linux 实际启动受管工作进程需要 pidfd 进程组信号；结果发布需要 `renameat2`、目标文件系统支持 `RENAME_NOREPLACE`，且移动在同一文件系统。普通/fast静态校验只对实际需要受管工作进程的路径检查当前能力，并把无法确认或不可用的原因放入warnings；独立批量在派发前发出Python告警。这些提示不改变配置有效性。发布的EINVAL也可能来自无效的源/目标组合或参数，不能仅凭此错误认定文件系统不支持。按[安装说明](installation.md)核对失败阶段和已验证环境；实际启动及发布仍会检查。 |
+| 平台能力不足导致运行或发布失败 | 查看原异常链，再对照[安装说明的Linux平台条件](installation.md#linux-platform)核对。静态校验遇到无法确认的能力时只给出warnings，不改变配置有效性；实际启动及发布时仍会检查。发布时的EINVAL也可能来自无效的路径组合，不能仅凭它认定文件系统不支持。 |
 | metadata.device_label校验失败 | 省略该字段即可使用pending；需要记录设备时填写非空文本，如lab-pc或试验台一号。空值、全空白及非字符串无效，见[导出说明](exports.md)。 |
 | 暂存格式损坏或读取OSError | 停止使用该结果，保留异常及必要现场，检查文件访问和磁盘；不要吞掉异常当作空表。 |
 | 批量返回报告但部分任务失败 | 查看CLI返回report路径中的每个任务的状态、错误与输出路径；修正失败项后独立重跑，同目录重跑会生成另一批时间文件名。 |

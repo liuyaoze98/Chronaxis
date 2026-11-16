@@ -60,3 +60,25 @@ class RawCANRecord:
             raise ValueError('文本CAN记录需要时间原文、版本和量化标志')
         if self.dlc_code is not None and (type(self.dlc_code) is not int or not 0 <= self.dlc_code <= 15):
             raise ValueError('DLC编码需0到15或None')
+
+
+def _raw_record_from_validated_fields(frame, time_ns, path, line_number, sequence, raw_time, parser_version,
+                                      dlc_code, time_quantized=False, source_time_ns=None):
+    """供已核验字段的文本读取器构造记录，不重复__post_init__检查。
+
+    参数: 与RawCANRecord字段相同；调用方须已证明frame为LegacyRawFrame、时间在int64内、
+        行号/序号/DLC编码合法。返回: 冻结RawCANRecord。异常: 仅分配错误。
+    """
+    record = object.__new__(RawCANRecord)
+    setter = object.__setattr__
+    setter(record, 'frame', frame)
+    setter(record, 'time_ns', time_ns)
+    setter(record, 'path', path)
+    setter(record, 'line_number', line_number)
+    setter(record, 'sequence', sequence)
+    setter(record, 'raw_time', raw_time)
+    setter(record, 'parser_version', parser_version)
+    setter(record, 'dlc_code', dlc_code)
+    setter(record, 'time_quantized', time_quantized)
+    setter(record, 'source_time_ns', source_time_ns)
+    return record

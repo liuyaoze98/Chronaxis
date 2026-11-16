@@ -23,4 +23,4 @@ No side effects: the Python-integer reference calls no NumPy kernel and neither 
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:344`](../../../../src/chronaxis/timebase/conversion.py#L344) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/timebase/conversion.py:344`](../../../../src/chronaxis/timebase/conversion.py#L344) — line number in the Chronaxis 0.1.0.dev5 source.

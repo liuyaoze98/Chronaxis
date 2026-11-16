@@ -10,7 +10,7 @@ JSON Schema是供编辑器与校验器读取的字段规范。规范文件用JSO
 | 批量batch_version: 1 | [batch-v1.schema.json](../Schema/batch-v1.schema.json) |
 | sources/signals/derived公共定义 | [definitions.schema.json](../Schema/definitions.schema.json) |
 
-将这三份文件保存在同一目录，保持文件名，以便规范之间的相对引用工作。离线HTML包也包含这三份文件，可直接使用。
+将这三份文件保存在同一目录，保持文件名，以便规范之间的相对引用工作。离线HTML包也包含这三份文件，可直接使用。从PyPI或wheel安装后，三份文件已在安装包中：`Split-Path (python -m chronaxis guide)` 显示AI指南所在目录，其下的 `schemas` 子目录就是它们，可直接在编辑器中引用。
 
 ## YAML编辑器关联
 

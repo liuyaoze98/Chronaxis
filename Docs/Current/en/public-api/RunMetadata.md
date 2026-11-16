@@ -108,6 +108,6 @@ Return type: dict。
 
 ## Source locations
 
-- [`src/chronaxis/results/manifest.py:29`](../../../../src/chronaxis/results/manifest.py#L29) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/results/manifest.py:205`](../../../../src/chronaxis/results/manifest.py#L205) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/results/manifest.py:216`](../../../../src/chronaxis/results/manifest.py#L216) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/results/manifest.py:29`](../../../../src/chronaxis/results/manifest.py#L29) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/results/manifest.py:205`](../../../../src/chronaxis/results/manifest.py#L205) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/results/manifest.py:216`](../../../../src/chronaxis/results/manifest.py#L216) — line number in the Chronaxis 0.1.0.dev5 source.

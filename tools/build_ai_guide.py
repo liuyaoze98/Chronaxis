@@ -51,6 +51,11 @@ def public_card(page, *, language="", api_names=()):
     body = body.replace("Docs/Current/examples/", "examples/")
     body = body.replace("从仓库根目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
     body = body.replace("Run from the repository root", "Run from the AI guide root (the directory containing examples)")
+    body = body.replace("在手册首页所在的目录运行", "从AI指南根目录运行（该目录包含examples子目录）")
+    body = body.replace("Run in the directory containing the manual's home page", "Run from the AI guide root (the directory containing examples)")
+    body = body.replace("；examples 子目录与 index.html 同级。", "。")
+    body = body.replace("；该目录直接包含examples。", "。")
+    body = body.replace("; it contains examples directly.", ".")
     # 共享注册实例例从各语言README目录执行；路径转换与代码中的目录说明一起派生。
     if language:
         body = body.replace('# Run from the manual root (the directory containing examples).',
@@ -67,6 +72,9 @@ def public_card(page, *, language="", api_names=()):
         """改写随包链接。参数: Markdown匹配。返回: 链接或类型名称。异常: 无；不读写文件。"""
         label, target = match.groups()
         root = "../../" if language else "../"
+        if target.partition('#')[0] == "../execution.md":
+            fragment = '#' + target.partition('#')[2] if '#' in target else ''
+            return f"[{label}](../topics/execution.md{fragment})"
         if target == "../host-extensions.md":
             config_label = "configuration" if language else "配置"
             return (f"[{label}]({root}examples/temporal/host_extensions.py) "
@@ -93,6 +101,8 @@ def add_english(files, sources, meta):
             ("../../Current/en/fast-energy.md", "topics/fast-energy.md"),
             ("../../Current/en/aggregations.md", "topics/aggregations.md"),
             ("../../Current/en/message-calculations.md", "topics/message-calculations.md"),
+            ("../../Current/en/execution.md", "topics/execution.md"),
+            ("../../Current/en/calculations.md#integrators", "topics/integrators.md"),
             ("../../Current/examples/", "../examples/"),
             ("../../Current/documentation.json", "../manifest.json"),
             ("../../Current/en/public-api.json", "api/index.json"),
@@ -121,6 +131,8 @@ def add_english(files, sources, meta):
         if name in {"load_analysis_plan", "validate_analysis_plan", "explain_analysis_plan"}:
             card = card.replace('load_analysis_plan("examples/analysis.yaml")',
                                 'load_analysis_plan("../examples/analysis.yaml")')
+            card = card.replace('Run from the AI guide root (the directory containing examples)',
+                                'Run from the English AI README directory (en)')
         module, symbol = item.get("import_module", "chronaxis"), item.get("import_name", name)
         files[f"en/api/{name}.md"] = (f"# {name}\n\nImport: `from {module} import {symbol}`\n\n{card}\n").encode("utf8")
         api.append(dict(name=name, import_module=module, import_name=symbol, group=item["group"], signature=item["signature"], file=f"api/{name}.md"))
@@ -188,9 +200,21 @@ def add_task_topics(files, sources):
             "intervals.md": root + "schemas/analysis.schema.json#/properties/intervals",
             "calculations.md#integrators": "integrators.md",
             "calculations.md#v4-power-statistics": "power-statistics.md",
-            "execution.md": root + "schemas/analysis.schema.json#/properties/execution",
+            "execution.md": "execution.md",
+            "execution.md#integral-path-conditions": "execution.md#integral-path-conditions",
+            "message-calculations.md#split-by-sign": "message-calculations.md#split-by-sign",
+            "continuous-files.md#parallel-integrals": "continuous-files.md#parallel-integrals",
             "configuration-language.md": "#yaml-values",
+            "quickstart.md": "../workflow.md",
         }
+        if en:
+            # 人读解释采用同语言字段卡；原始Schema及其机器定位保持不变。
+            destinations.update({
+                "inputs.md": "source-paths-and-time.md",
+                "inputs.md#can-field": "can-bindings.md",
+                "dataset.md": "../fields/analysis/dataset-all-1.json",
+                "intervals.md": "../fields/analysis/intervals-all-1.json",
+            })
         pages = {name: reading_text(sources[f"Docs/Current/{language}{name}.md"].decode("utf8"))
                  for name in ("aggregations", "message-calculations", "expressions", "continuous-files")}
         # 原标签承诺的内容必须随包提供：结果链接不能仅跳到配置，选型不能仅跳到API。
@@ -204,6 +228,24 @@ def add_task_topics(files, sources):
         for name, source, heading in sections:
             page = reading_text(sources[f"Docs/Current/{language}{source}.md"].decode("utf8"))
             pages[name] = reading_section(page, heading)
+        # 完整保留执行条件和结果策略，而不是把解释性的跳转降成Schema字段表。
+        execution = reading_text(sources[f"Docs/Current/{language}execution.md"].decode("utf8"))
+        execution_headings = (
+            "## backend: calculation implementation" if en else "## backend：计算实现",
+            "## partial_policy: incomplete results" if en else "## partial_policy：部分结果处理",
+        )
+        # 并行积分路径的条件在执行设置页末附录；随专题一并提供，并保留原锚点供链接跳转。
+        appendix = ("## Appendix: when the parallel integration path applies" if en
+                    else "## 附录：并行积分路径何时生效")
+        pages["execution"] = ("# Calculation implementation and result policies\n\n" if en else "# 计算实现与结果策略\n\n") + '\n'.join(
+            reading_section(execution, heading) for heading in execution_headings) + (
+            '\n<a id="integral-path-conditions"></a>\n\n' + reading_section(execution, appendix))
+        if en:
+            # 分片卡不含完整来源时间或CAN定位规则；直接复用原教程必要小节。
+            inputs = reading_text(sources["Docs/Current/en/inputs.md"].decode("utf8"))
+            pages["source-paths-and-time"] = reading_section(inputs, "## Directories and continuous files")
+            pages["can-bindings"] = reading_section(inputs, "### signals[].field: select a CAN signal")
+            destinations["batch.md"] = "../api/BatchPlan.md"
         fast = reading_text(sources[f"Docs/Current/{language}fast-energy.md"].decode("utf8"))
         # 先保留完整声明，再介绍替换片段和资源；拒绝表中的“上述额度”依赖这些内容。
         headings = (
@@ -410,6 +452,8 @@ def build_files(*, verify_runtime=True):
                 ("../Current/fast-energy.md", "topics/fast-energy.md"),
                 ("../Current/aggregations.md", "topics/aggregations.md"),
                 ("../Current/message-calculations.md", "topics/message-calculations.md"),
+                ("../Current/execution.md", "topics/execution.md"),
+                ("../Current/calculations.md#integrators", "topics/integrators.md"),
                 ("../Current/examples/", "examples/"),
                 ("../Current/documentation.json", "manifest.json"),
                 ("../Current/public-api.json", "api/index.json"),

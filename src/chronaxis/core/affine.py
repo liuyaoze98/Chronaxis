@@ -11,6 +11,7 @@
 from math import isfinite
 
 from .numeric import INTEGER_BOUNDS, ScalarValue, _exact_float
+from .scalar import _scalar_from_validated_fields
 from .types import QualityFlag, SignalDType
 
 
@@ -62,7 +63,8 @@ def affine_reference(value: ScalarValue, scale: int | float, offset: int | float
         lower, upper = INTEGER_BOUNDS[dtype]
         if not lower <= result <= upper:
             return ScalarValue(None, dtype, False, QualityFlag.OVERFLOW)
-        return ScalarValue(result, dtype)
+        # _validate_affine已要求整数目标只接整数输入与系数，结果是已核定宽的int。
+        return _scalar_from_validated_fields(result, dtype)
     # 三个操作数分别检查精度；整数2**53+1不能因换单位而默默舍入。
     number, number_quality = _exact_float(value.value)
     factor, factor_quality = _exact_float(scale)
@@ -76,4 +78,5 @@ def affine_reference(value: ScalarValue, scale: int | float, offset: int | float
         return ScalarValue(None, dtype, False, QualityFlag.NONFINITE)
     if shift == 0 and result == 0 and number != 0 and factor != 0:
         return ScalarValue(None, dtype, False, QualityFlag.PRECISION_LOSS)
-    return ScalarValue(result, dtype)
+    # 三个操作数均已转为有限float，结果已核有限。
+    return _scalar_from_validated_fields(result, dtype)

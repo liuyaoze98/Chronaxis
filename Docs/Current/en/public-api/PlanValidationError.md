@@ -94,9 +94,9 @@ Construct an aggregate error from a nonempty sequence of individual errors and o
 
 ## Source locations
 
-- [`src/chronaxis/planning/checks.py:26`](../../../../src/chronaxis/planning/checks.py#L26) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/checks.py:32`](../../../../src/chronaxis/planning/checks.py#L32) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/checks.py:58`](../../../../src/chronaxis/planning/checks.py#L58) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/checks.py:78`](../../../../src/chronaxis/planning/checks.py#L78) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/checks.py:86`](../../../../src/chronaxis/planning/checks.py#L86) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/checks.py:91`](../../../../src/chronaxis/planning/checks.py#L91) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/checks.py:26`](../../../../src/chronaxis/planning/checks.py#L26) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/checks.py:32`](../../../../src/chronaxis/planning/checks.py#L32) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/checks.py:58`](../../../../src/chronaxis/planning/checks.py#L58) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/checks.py:78`](../../../../src/chronaxis/planning/checks.py#L78) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/checks.py:86`](../../../../src/chronaxis/planning/checks.py#L86) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/checks.py:91`](../../../../src/chronaxis/planning/checks.py#L91) — line number in the Chronaxis 0.1.0.dev5 source.

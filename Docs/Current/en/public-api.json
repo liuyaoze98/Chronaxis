@@ -1,6 +1,6 @@
 {
-  "device_label": "home",
-  "updated_at": "2026-11-14T02:16:30+08:00",
+  "device_label": "school",
+  "updated_at": "2026-11-15T03:13:39+08:00",
   "objects": [
     {
       "name": "TimeConversion",
@@ -1839,6 +1839,6 @@
     "unchanged": true,
     "note": "另3个继承内建异常类没有inspect.signature，沿用异常类入口，不捏造签名。"
   },
-  "baseline": "8904c2f744951857659abd40aaa3535d57faf53c",
+  "baseline": "d7ea8729e5ee7a38ebb4d68b91429843e2156fc9",
   "language": "en"
 }

@@ -29,4 +29,4 @@ plan = load_batch_plan("batch.yaml")
 
 ## Source locations
 
-- [`src/chronaxis/batch/config.py:14`](../../../../src/chronaxis/batch/config.py#L14) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/batch/config.py:14`](../../../../src/chronaxis/batch/config.py#L14) — line number in the Chronaxis 0.1.0.dev5 source.

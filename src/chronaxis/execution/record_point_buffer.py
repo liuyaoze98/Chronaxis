@@ -76,6 +76,30 @@ class RecordPointBuffer:
         finally:
             rows = item = value = conditions = condition = condition_valid_until_ns = None
 
+    def _append_validated(self, time, value, deadline):
+        """内部可信入口：追加一个无条件驱动点，等价于consume(((time, value, deadline),))。
+
+        参数: time为int64纳秒；value为本统计dtype的ScalarValue；deadline为None或int64。
+            调用方（同帧直接积分）已在构造时核对dtype，并由读取协议保证时间为原生int64。
+        返回: None。异常: 时间非递增、预算/取消；任何错误后与consume相同地标记失败。
+        """
+        if self._closed or self._closing or self._failed:
+            raise ResultClosedError('记录流统计已关闭、失败或正在清理')
+        if self._finished:
+            raise ResultClosedError('记录流统计已结束，不能继续追加')
+        try:
+            if self._conditioned:
+                raise ValueError('无条件统计不能隐式接入条件')
+            if self._last_time is not None and time <= self._last_time:
+                raise ValueError('驱动点必须严格递增；同刻更新应先按既有政策归组')
+            self._rows.append((time, value, deadline, None, None))
+            self._last_time = time
+            if len(self._rows) == self._limit + 1:
+                self._flush()
+        except BaseException:
+            self._failed = True
+            raise
+
     def expire_at(self, time_ns, *, condition=False):
         """依赖中途失效时截断最后待结算驱动点，不新增驱动点或补计周期。
 

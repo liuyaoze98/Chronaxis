@@ -85,7 +85,7 @@ _with_position(record, input_index, sequence)
 临时键集合至多4096项，按512+192*4096字节小于1MiB；它在已有8MiB
 接收/归并空间中、6MiB模型上界以外的2MiB余量内，用完即释放，不跨记录缓存。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:26`](../../../src/chronaxis/execution/parallel_can_decode.py#L26)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:26`](../../../src/chronaxis/execution/parallel_can_decode.py#L26)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead"></a>
 ## `ParallelCANDecodeRead`
@@ -100,7 +100,7 @@ ParallelCANDecodeRead(spec, budget, signals, *, process_count, work_dir, emit_fr
 ```
 
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:50`](../../../src/chronaxis/execution/parallel_can_decode.py#L50)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:50`](../../../src/chronaxis/execution/parallel_can_decode.py#L50)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-__init__"></a>
 ### `ParallelCANDecodeRead.__init__`
@@ -131,7 +131,7 @@ owner。
 
 类型/预算。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:57`](../../../src/chronaxis/execution/parallel_can_decode.py#L57)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:57`](../../../src/chronaxis/execution/parallel_can_decode.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-closed"></a>
 ### `ParallelCANDecodeRead.closed`
@@ -159,7 +159,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:94`](../../../src/chronaxis/execution/parallel_can_decode.py#L94)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:94`](../../../src/chronaxis/execution/parallel_can_decode.py#L94)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-exhausted"></a>
 ### `ParallelCANDecodeRead.exhausted`
@@ -187,7 +187,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:99`](../../../src/chronaxis/execution/parallel_can_decode.py#L99)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:99`](../../../src/chronaxis/execution/parallel_can_decode.py#L99)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-metadata"></a>
 ### `ParallelCANDecodeRead.metadata`
@@ -215,7 +215,7 @@ ParallelCANDecodeRead.metadata
 
 未开始时拒绝。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:104`](../../../src/chronaxis/execution/parallel_can_decode.py#L104)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:104`](../../../src/chronaxis/execution/parallel_can_decode.py#L104)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_receive"></a>
 ### `ParallelCANDecodeRead._receive`
@@ -240,7 +240,7 @@ tuple。
 
 子错误/崩溃/取消。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:110`](../../../src/chronaxis/execution/parallel_can_decode.py#L110)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:110`](../../../src/chronaxis/execution/parallel_can_decode.py#L110)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_bytes"></a>
 ### `ParallelCANDecodeRead._bytes`
@@ -266,7 +266,7 @@ bytes。
 
 断连/协议错。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:139`](../../../src/chronaxis/execution/parallel_can_decode.py#L139)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:139`](../../../src/chronaxis/execution/parallel_can_decode.py#L139)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_assign"></a>
 ### `ParallelCANDecodeRead._assign`
@@ -292,7 +292,7 @@ None。
 
 读取或声明不符。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:153`](../../../src/chronaxis/execution/parallel_can_decode.py#L153)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:153`](../../../src/chronaxis/execution/parallel_can_decode.py#L153)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_accept_metadata"></a>
 ### `ParallelCANDecodeRead._accept_metadata`
@@ -317,7 +317,7 @@ None，首份冻结事实保留到close，后续只比较后释放。
 
 包错误、事实不同、预算或取消；退款失败附注保原错及可重试拥有者。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:167`](../../../src/chronaxis/execution/parallel_can_decode.py#L167)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:167`](../../../src/chronaxis/execution/parallel_can_decode.py#L167)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_accept_metadata-reserve_model"></a>
 ### `ParallelCANDecodeRead._accept_metadata.reserve_model`
@@ -342,7 +342,7 @@ None。
 
 原预算错误。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:177`](../../../src/chronaxis/execution/parallel_can_decode.py#L177)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:177`](../../../src/chronaxis/execution/parallel_can_decode.py#L177)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-prepare_metadata"></a>
 ### `ParallelCANDecodeRead.prepare_metadata`
@@ -368,7 +368,7 @@ ParallelCANDecodeRead.prepare_metadata()
 
 启动/预算/元数据错。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:215`](../../../src/chronaxis/execution/parallel_can_decode.py#L215)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:215`](../../../src/chronaxis/execution/parallel_can_decode.py#L215)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_block"></a>
 ### `ParallelCANDecodeRead._block`
@@ -393,7 +393,7 @@ ParallelCANDecodeRead._block(index)
 
 协议/读取错误。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:269`](../../../src/chronaxis/execution/parallel_can_decode.py#L269)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:269`](../../../src/chronaxis/execution/parallel_can_decode.py#L269)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_record_identity"></a>
 ### `ParallelCANDecodeRead._record_identity`
@@ -419,7 +419,7 @@ None。
 
 来源、原文件或序号不同步时SourceReadError。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:303`](../../../src/chronaxis/execution/parallel_can_decode.py#L303)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:303`](../../../src/chronaxis/execution/parallel_can_decode.py#L303)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_next_task"></a>
 ### `ParallelCANDecodeRead._next_task`
@@ -444,7 +444,7 @@ None。
 
 初始化错。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:315`](../../../src/chronaxis/execution/parallel_can_decode.py#L315)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:315`](../../../src/chronaxis/execution/parallel_can_decode.py#L315)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_stop_workers"></a>
 ### `ParallelCANDecodeRead._stop_workers`
@@ -469,7 +469,7 @@ None。
 
 真实关闭失败保留槽。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:323`](../../../src/chronaxis/execution/parallel_can_decode.py#L323)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:323`](../../../src/chronaxis/execution/parallel_can_decode.py#L323)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_prepare_sorted"></a>
 ### `ParallelCANDecodeRead._prepare_sorted`
@@ -495,7 +495,7 @@ None。
 
 配额/IO/原输入错误。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:367`](../../../src/chronaxis/execution/parallel_can_decode.py#L367)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:367`](../../../src/chronaxis/execution/parallel_can_decode.py#L367)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-_push"></a>
 ### `ParallelCANDecodeRead._push`
@@ -520,7 +520,7 @@ None。
 
 暂存截断。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:414`](../../../src/chronaxis/execution/parallel_can_decode.py#L414)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:414`](../../../src/chronaxis/execution/parallel_can_decode.py#L414)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-__iter__"></a>
 ### `ParallelCANDecodeRead.__iter__`
@@ -546,7 +546,7 @@ self。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:451`](../../../src/chronaxis/execution/parallel_can_decode.py#L451)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:451`](../../../src/chronaxis/execution/parallel_can_decode.py#L451)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-__next__"></a>
 ### `ParallelCANDecodeRead.__next__`
@@ -572,7 +572,7 @@ DecodedCANRecord。
 
 EOF或读取/预算错。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:455`](../../../src/chronaxis/execution/parallel_can_decode.py#L455)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:455`](../../../src/chronaxis/execution/parallel_can_decode.py#L455)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-ParallelCANDecodeRead-close"></a>
 ### `ParallelCANDecodeRead.close`
@@ -598,4 +598,4 @@ None。
 
 清理失败可重试。
 
-源码：[`src/chronaxis/execution/parallel_can_decode.py:505`](../../../src/chronaxis/execution/parallel_can_decode.py#L505)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/parallel_can_decode.py:505`](../../../src/chronaxis/execution/parallel_can_decode.py#L505)（行号对应 Chronaxis 0.1.0.dev5 源码）。

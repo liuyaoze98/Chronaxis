@@ -4,23 +4,19 @@
 
 Public entry points are in `chronaxis`. Use `load_analysis_plan` for a configuration file or `AnalysisPlan.from_dict` for a programmatically constructed configuration. `AnalysisRunner` executes it; `AnalysisResult` reads and publishes the output. Complete [installation](installation.md) before running the following examples.
 
-Basic single-source ASC/BLF configurations set `execution.process_count: 4`; the `run(plan)` call below inherits it. To override it for one call, use `AnalysisRunner().run(plan, process_count=4)`. The instance's `validate` and `explain` methods accept the same keyword-only parameter. `None` inherits the setting without changing the plan; a positive integer sets the limit for this call. CSV, memory, and multi-source analyses use one worker setting; independent batch tasks configure parallelism at the outer level. See [continuous-file multiprocessing](continuous-files.md) for the supported scope.
+The `run(plan)` call below inherits the configuration's `execution.process_count`. To change it for one run only, write `AnalysisRunner().run(plan, process_count=2)`; the configuration is not modified. See [execution settings](execution.md) for the rules.
 
-
-## Reading parameter tables
-
-Reference tables distinguish actual Python names, types, required arguments, defaults, and purposes. `None` means an optional object is not supplied; it does not mean zero, an empty string, or an empty list. A vertical bar in a type denotes alternatives. A `tuple` is an ordered, immutable sequence. Class fields describe stored state; constructor arguments follow the actual signature. Generated standard methods and third-party interfaces identify their origins separately.
 
 <a id="加载检查和执行"></a>
 ## Load, check, and execute
 
-Save this complete example as a `.py` file and run it from the repository root. Keep the `if __name__ == "__main__":` guard so Windows worker startup does not rerun the main program. In an offline examples directory, run [api_example.py](../examples/api_example.py), which defaults to the adjacent `analysis.yaml` and also accepts a custom configuration path.
+Save this complete example as a `.py` file in the manual's [examples directory](installation.md#find-examples) and run it there. Keep the `if __name__ == "__main__":` guard so Windows worker startup does not rerun the main program. You can also run [api_example.py](../examples/api_example.py) in that directory; it defaults to the adjacent `analysis.yaml` and also accepts a custom configuration path.
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan
 
 def main():
-    plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+    plan = load_analysis_plan("analysis.yaml")
     report = validate_analysis_plan(plan)
     if not report.valid or not report.execution_ready:
         raise RuntimeError(report)
@@ -39,7 +35,7 @@ if __name__ == "__main__":
     main()
 ```
 
-The configuration permits up to four workers, but this example has one ASC and default concatenation, so it reads in the current process; `explain` reports `read_process_limit: 0`. To run two parts of the same data, load `Docs/Current/examples/input-can-directory.yaml` instead: `read_process_limit` becomes 2 and the calculation results remain the same. This is a plan limit, not a measured PID count. The synthetic example produces the following terminal output. Each row gives the calculation name, value, unit and status.
+The configuration permits up to four workers, but this example has one ASC and default concatenation, so it reads in the current process; `explain` reports `read_process_limit: 0`. To run two parts of the same data, load `input-can-directory.yaml` instead: `read_process_limit` becomes 2 and the calculation results remain the same. This is a plan limit, not a measured PID count. The synthetic example produces the following terminal output. Each row gives the calculation name, value, unit and status.
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -52,7 +48,9 @@ Power values of 2, 4, 8 and 10 W last 1, 2, 1 and 2 seconds, respectively. The i
 
 `validate_analysis_plan` returns a static `ValidationReport`. `valid` reports declaration validity; `execution_ready` reports whether the execution path supports the plan. `explain_analysis_plan` returns an `ExplainReport` containing dependencies and backend decisions. Static checks on a loaded plan do not read business records. DBC metadata read during loading is not proof that actual data is valid. Neither valid nor execution_ready certifies whole-file contents: malformed records, backwards timestamps, runtime permissions or insufficient resources may be discovered only by run.
 
-`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's setting. Omitting backend in the configuration selects auto, which chooses reference or numpy from the whole plan. Reference uses the independent numerical implementation; NumPy uses point or array execution as appropriate. Explicit auto, reference or numpy overrides that run. See [execution settings](execution.md) for the selection scope. `run(plan, work_dir=None, *, process_count=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
+`AnalysisRunner(backend=None, *, extensions=None)` uses the plan's setting. Omitting backend in the configuration selects auto, which chooses reference or numpy from the whole plan. Reference uses the independent numerical implementation; NumPy uses point or array execution as appropriate. Explicit auto, reference or numpy overrides that run. See [execution settings](execution.md) for the selection scope.
+
+`run(plan, work_dir=None, *, process_count=None)` executes and returns an `AnalysisResult`. Without `work_dir`, it allocates independent temporary storage; an explicit working directory must be new. Results are not published automatically: call `write` with an output directory, which may already exist. Each publication uses timestamped filenames.
 
 Omit extensions for built-in operations. A Python host that registers custom functions or rolling operators must pass the same extension registry when loading the plan and constructing AnalysisRunner. See [Custom analysis operators](host-extensions.md). An asterisk in a signature marks the following arguments as keyword-only.
 
@@ -79,6 +77,11 @@ Close a cursor whether you exhaust it or stop early. Manage the result with `wit
 
 See the [Python API index](api.md) for precise signatures. The [developer reference](../reference/index.md) describes internal modules and private implementations in Chinese.
 
+<a id="api-table-reading"></a>
+<a id="如何读参数表"></a>
+
+**Reading the parameter tables on entry-point pages.** Reference tables distinguish actual Python names, types, required arguments, defaults, and purposes. `None` means an optional object is not supplied; it does not mean zero, an empty string, or an empty list. A vertical bar in a type denotes alternatives. A `tuple` is an ordered, immutable sequence. Class fields describe stored state; constructor arguments follow the actual signature. Generated standard methods and third-party interfaces identify their origins separately.
+
 <a id="在程序中构建配置"></a>
 ## Build configuration in a program
 
@@ -89,11 +92,28 @@ import json
 from pathlib import Path
 from chronaxis import AnalysisPlan, explain_analysis_plan
 
-directory = Path("Docs/Current/examples")
+directory = Path(".")  # Run in the manual's examples directory
 config = json.loads((directory / "analysis.json").read_text(encoding="utf-8"))
 plan = AnalysisPlan.from_dict(config, base_dir=directory)
-print(explain_analysis_plan(plan))
+report = explain_analysis_plan(plan)
+print(report.validation.valid, report.selected_backend)
+for node in report.nodes:
+    print(node.node_id, node.node_type, node.unit)
+for source in report.source_execution:
+    print(source["source"], source["file_count"], source["read_process_limit"])
 ```
+
+Actual output:
+
+```text
+True numpy
+energy calculation:integral J
+sample_average calculation:sample_mean W
+time_average calculation:time_weighted_mean W
+source_1 1 0
+```
+
+The first line shows that the declarations are valid and the numpy backend will be used. The next three lines list the calculations and their result units. The last line shows that `source_1` has one file and a reading-worker limit of 0, so it is read in the current process. `report.validation.warnings` lists notices worth reading, for example that validity periods will be three times the DBC cycle time. See [explain_analysis_plan](public-api/explain_analysis_plan.md) for every ExplainReport field.
 
 <a id="异常与资源所有权"></a>
 ## Exceptions and resource ownership
@@ -118,10 +138,12 @@ If cleanup fails, retain the original exception and the result object. For an or
 from chronaxis import parse_duration, checked_add_ns, convert_time
 
 duration_ns = parse_duration("500ms").time_ns  # Integer nanoseconds in the conversion result
-end_ns = checked_add_ns(1_000_000_000, duration_ns)
-converted = convert_time(1.5, "s")
-print(duration_ns, end_ns, converted)
+end_ns = checked_add_ns(1_000_000_000, duration_ns)  # 1 s + 0.5 s; raises if the integer range is exceeded
+converted = convert_time(1.5, "s")  # Returns a TimeConversion object
+print(duration_ns, end_ns, converted.time_ns, converted.precision_limited)
 ```
+
+The output is `500000000 1500000000 1500000000 True`. The first three values are integer nanoseconds; `time_ns` is the converted value. `precision_limited` is True because the input is a Python float, so the program cannot know its exact value before it became a float. For an exact conversion pass text, for example `convert_time("1.5", "s")`, which gives False. See [TimeConversion](public-api/TimeConversion.md) for the other fields.
 
 Usually, use configuration `presets`; see [business presets](presets.md) for role and parameter examples. To compose them in Python, build `PresetSpec` and `SignalDefinition` objects, check roles with `resolve_preset_roles`, and obtain a `PlanFragment` with `build_preset`. The fragment must be merged into a complete `AnalysisPlan` before execution. [Batch tasks](batch.md) includes complete loading, execution, and report-cleanup code.
 
@@ -150,54 +172,69 @@ from chronaxis.core.types import SignalDType
 def run(output):
     """Return calculation rows; propagate role, plan, and execution errors and close results."""
     # Typed validity uses integer nanoseconds; the definition contains no samples.
-    temperature=SignalDefinition(name='temperature',source='table',field='temperature',
-        dtype=SignalDType.FLOAT64,unit='degC',valid_for_ns=10_000_000_000)
-    signals=(temperature,)
-    spec=PresetSpec.from_dict(dict(name='heat',preset_type='threshold_excursion',version='1',
-        role_bindings={'signal':'temperature'},parameters={'unit':'degC','enter_threshold':80,'exit_threshold':75}))
-    roles=resolve_preset_roles(spec,signals)
-    assert roles[0].definition is temperature and roles[0].resolution=='explicit'
-    fragment=build_preset(spec,signals)  # Also checks roles; returns a PlanFragment.
-    nodes=fragment.to_dict()            # Nodes only; no sources, signals, or results.
-    raw=dict(config_version=4,dataset=dict(name='preset_api'),
+    temperature = SignalDefinition(
+        name='temperature', source='table', field='temperature',
+        dtype=SignalDType.FLOAT64, unit='degC', valid_for_ns=10_000_000_000)
+    signals = (temperature,)
+    spec = PresetSpec.from_dict(dict(
+        name='heat', preset_type='threshold_excursion', version='1',
+        role_bindings={'signal': 'temperature'},
+        parameters={'unit': 'degC', 'enter_threshold': 80, 'exit_threshold': 75}))
+
+    roles = resolve_preset_roles(spec, signals)
+    assert roles[0].definition is temperature and roles[0].resolution == 'explicit'
+    fragment = build_preset(spec, signals)  # Also checks roles; returns a PlanFragment.
+    nodes = fragment.to_dict()              # Nodes only; no sources, signals, or results.
+
+    # The in-memory source is analyzed in the current process.
+    samples = ((0, 85), (3, 77), (9, 75), (10, 75))  # (time in s, temperature in degC)
+    raw = dict(
+        config_version=4,
+        dataset=dict(name='preset_api'),
         execution=dict(process_count=1),
-        sources=[dict(name='table',source_type='memory',
-            rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
-        signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])
+        sources=[dict(name='table', source_type='memory',
+                      rows=[dict(time=f'{t}s', values={'temperature': v}) for t, v in samples])],
+        signals=[dict(name=s.name, source=s.source, field=s.field, dtype=s.dtype.value,
+                      unit=s.unit, valid_for=f'{s.valid_for_ns}ns') for s in signals])
     # This base has no node lists yet. Existing lists must instead be merged individually.
     # Do not also add spec to raw['presets'], which would expand the same preset twice.
     raw.update(nodes)
-    plan=AnalysisPlan.from_dict(raw)
-    with AnalysisRunner().run(plan,work_dir=output/'work') as result:
-        rows=list(result.iter_calculations())
-        assert len(rows)==1 and rows[0].value==9.0 and rows[0].unit=='s'
-        result.write(output/'published')
+
+    plan = AnalysisPlan.from_dict(raw)
+    with AnalysisRunner().run(plan, work_dir=output / 'work') as result:
+        rows = list(result.iter_calculations())
+        assert len(rows) == 1 and rows[0].value == 9.0 and rows[0].unit == 's'
+        result.write(output / 'published')
         return rows
 
 
 def main():
     """Read a CLI result directory; propagate validation, execution, and I/O errors."""
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,required=True)
-    output=parser.parse_args().output;output.mkdir(parents=True,exist_ok=False)
-    for row in run(output):print(row.calculation_id,row.value,row.unit,row.status)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, required=True)
+    output = parser.parse_args().output
+    output.mkdir(parents=True, exist_ok=False)  # Must be new; never overwrites earlier results
+    for row in run(output):
+        print(row.calculation_id, row.value, row.unit, row.status)
 
 
-if __name__=='__main__':main()
+if __name__ == '__main__':
+    main()
 ```
 
 When merging into an existing plan, merge `derived` by name and append each node list, then let `AnalysisPlan` check names and references. Do not use `update` to overwrite existing business lists. This example uses it because the base has no such nodes. See the [public API](api.md) for complete signatures and parameters.
 
 ## Python example: result aggregation
 
-Run this code from the repository root. The plan first measures mean power during each load. `AnalysisResult.iter_aggregations()` then reads P95 across the load means, one row per group. Publishing to CSV is optional. [Power test and downloadable inputs](calculations.md#v4-power-statistics)
+The plan first measures mean power during each load. `AnalysisResult.iter_aggregations()` then reads P95 across the load means, one row per group. Publishing to CSV is optional. The configuration and input data are described in [Power test and downloadable inputs](calculations.md#v4-power-statistics).
 
-Save the code as a .py file and run it from the repository root. The main guard prevents Windows reader processes from running the script again. The first example prints load_mean_p95 19.5 W complete 2 2. The two activity means are 10 W and 20 W, whose linear-interpolated P95 is 19.5 W.
+Save the code as a .py file in the manual's [examples directory](installation.md#find-examples) and run it there. The main guard prevents Windows reader processes from running the script again. When run, it prints load_mean_p95 19.5 W complete 2 2. The two activity means are 10 W and 20 W, whose linear-interpolated P95 is 19.5 W.
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan
 
 def main():
-    plan = load_analysis_plan("Docs/Current/examples/power-statistics.yaml")
+    plan = load_analysis_plan("power-statistics.yaml")
     with AnalysisRunner().run(plan) as result:
         for row in result.iter_aggregations():
             print(row.aggregation_id, row.value, row.unit, row.status,
@@ -207,6 +244,3 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
-<a id="api-table-reading"></a>
-<a id="如何读参数表"></a>

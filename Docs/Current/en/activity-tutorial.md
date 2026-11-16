@@ -76,20 +76,20 @@ calculations:                      # Requested statistics or selected rows
 <a id="运行并核对"></a>
 ## 4. Run and check
 
-From the repository root, run the following commands. In the offline examples directory, use `activity.yaml` as the configuration path. The output directory can be reused; every publication adds a timestamp to its filenames.
+Run the following commands in the manual's [examples directory](installation.md#find-examples). The output directory can be reused; every publication adds a timestamp to its filenames.
 
 ```powershell
-chronaxis validate Docs/Current/examples/activity.yaml
-chronaxis run Docs/Current/examples/activity.yaml --output activity-result
+chronaxis validate activity.yaml
+chronaxis run activity.yaml --output activity-result
 ```
 
 | File | Expected result |
 |---|---|
 | `事件结果.csv` (event results) | `hot` starts at 1 s, is confirmed at 3 s, and ends at 6 s; `event_energy（J）` is 50 with status `完整` (complete). |
-| `窗口结果.csv` (window results) | `hot_context` covers `[0, 7)`, refers to interval 1, and has `context_energy（J）` of 70 with status `完整`. |
+| `窗口结果.csv` (window results) | `hot_context` covers `[0, 7)`, has 1 in its `父事件区间` (parent event interval) column, meaning the first interval in the event results, and has `context_energy（J）` of 70 with status `完整`. |
 
 The activity lasts 5 seconds, so its energy is `10 W × 5 s = 50 J`. The window lasts 7 seconds and contains `70 J`.
 
-Changing only `selection_origin` to `confirmed` selects the activity from its confirmation time: `[3, 6)`, giving 30 J. The surrounding window still covers `[0, 7)` and gives 70 J.
+Adding `selection_origin: confirmed` to the `hot` rule (in that item of the `rules` list, at the same level as `minimum_duration`) selects the activity from its confirmation time: `[3, 6)`, giving 30 J. The surrounding window still covers `[0, 7)` and gives 70 J.
 
 If a calculation is partial, check the observed range and signal validity periods using the [execution guide](execution.md). Increasing `pre` or `post` does not create observations outside the input data.

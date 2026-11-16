@@ -35,7 +35,7 @@ message_calculations:     # Evaluate and accumulate each target message
     unit: J               # Contribution and total unit
 ```
 
-Two simultaneous 4000 W messages contribute 400 J each; a third missing-value message is skipped as `missing_input`. Non-target IDs are not attempts. The total is 800 J from 3 attempts, 2 contributions and 1 skip. This period is explicit and fixed; it is neither inferred from nor multiplied by actual inter-message time.
+Two simultaneous 4000 W messages contribute 400 J each; a third missing-value message is skipped as `missing_input`. Non-target IDs are not attempts. The total is 800 J. The detailed rows (contributions: full) show 3 attempts, 2 contributions and 1 skip; public summary results do not provide these counts. This period is explicit and fixed; it is neither inferred from nor multiplied by actual inter-message time.
 
 <a id="message_calculations每一项的全部字段"></a>
 <a id="message-fields"></a>
@@ -72,6 +72,8 @@ Each `parameters.<name>` requires both fields, without defaults:
 | value | Number | Finite float64-compatible constant, such as 0.1 for a period; not bool, string, NaN or Infinity. Obtain it from protocol or business requirements. |
 | unit | String | Actual unit, e.g. s for period or `1` for a dimensionless factor; not a descriptive comment. |
 
+<a id="split-by-sign"></a>
+
 `split_by_sign` requires signal and bucket; value_policy defaults to raw_decoded-v1:
 
 | Field | Type | Meaning |
@@ -85,7 +87,7 @@ The direction signal selects the group; the expression determines the amount. A 
 <a id="汇总与贡献明细"></a>
 ## Totals and contribution details
 
-Use `outputs.contributions: none` when only totals are needed. Public calculation results retain value, unit, status, reason, quality and calculation identity, without attempt/skip counts or per-reason counts. Choose full and read contributions when individual contributions and skips are needed. Diagnostics separately controls detailed input/configuration information.
+When only totals are needed, keep the default (`outputs.contributions` defaults to `none`). Public calculation results retain value, unit, status, reason, quality and calculation identity, without attempt/skip counts or per-reason counts. Choose full and read contributions when individual contributions and skips are needed. Diagnostics separately controls detailed input/configuration information.
 
 Omitting [`dataset.domain`](dataset.md) accumulates all files from the referenced CAN source. Keep the required `dataset` object and its `name` field. Default `reader.input_check: auto` does not create a time range solely for this time-independent task. When `dataset.domain` is specified, its start and end times filter the messages.
 

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 from runpy import run_path
 import subprocess
+import tomllib
 
 
 class DocSources:
@@ -48,6 +49,13 @@ class DocSources:
             return data.decode('utf-8-sig')
         return subprocess.check_output(
             ['git', 'show', self.baseline+':'+relative], cwd=self.root).decode('utf-8-sig')
+
+    def version(self):
+        """返回同一来源中 pyproject.toml 记录的产品版本号，供公开页面说明源码行号属于哪个版本。
+
+        参数: 无。返回: 版本字符串，例如 0.1.0.dev5。异常: 文件缺失或 TOML 格式错误时传播。
+        """
+        return tomllib.loads(self.text('pyproject.toml'))['project']['version']
 
     def revision(self):
         """返回来源标识；公开导出树不要求私有Git提交存在。"""

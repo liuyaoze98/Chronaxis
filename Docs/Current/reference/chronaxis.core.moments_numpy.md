@@ -40,7 +40,7 @@ NumpyMoments(operation)
 ```
 
 
-源码：[`src/chronaxis/core/moments_numpy.py:13`](../../../src/chronaxis/core/moments_numpy.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/moments_numpy.py:13`](../../../src/chronaxis/core/moments_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-NumpyMoments-__init__"></a>
 ### `NumpyMoments.__init__`
@@ -65,7 +65,7 @@ NumpyMoments.__init__(operation)
 
 调用侧校验操作。
 
-源码：[`src/chronaxis/core/moments_numpy.py:16`](../../../src/chronaxis/core/moments_numpy.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/moments_numpy.py:16`](../../../src/chronaxis/core/moments_numpy.py#L16)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-NumpyMoments-push"></a>
 ### `NumpyMoments.push`
@@ -91,7 +91,7 @@ NumpyMoments.push(values, weights=None)
 
 非法权重。
 
-源码：[`src/chronaxis/core/moments_numpy.py:22`](../../../src/chronaxis/core/moments_numpy.py#L22)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/moments_numpy.py:22`](../../../src/chronaxis/core/moments_numpy.py#L22)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-NumpyMoments-finish"></a>
 ### `NumpyMoments.finish`
@@ -117,4 +117,4 @@ NumpyMoments.finish(ddof, factor)
 
 配置错误。
 
-源码：[`src/chronaxis/core/moments_numpy.py:71`](../../../src/chronaxis/core/moments_numpy.py#L71)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/moments_numpy.py:71`](../../../src/chronaxis/core/moments_numpy.py#L71)（行号对应 Chronaxis 0.1.0.dev5 源码）。

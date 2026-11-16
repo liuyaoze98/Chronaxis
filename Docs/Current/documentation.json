@@ -1,7 +1,7 @@
 {
   "edition": "Current",
-  "baseline": "8904c2f744951857659abd40aaa3535d57faf53c",
-  "updated_at": "2026-11-14T02:16:30+08:00",
-  "device_label": "home",
-  "task": "RELEASE-DEV4-01"
+  "baseline": "d7ea8729e5ee7a38ebb4d68b91429843e2156fc9",
+  "updated_at": "2026-11-15T03:13:39+08:00",
+  "device_label": "school",
+  "task": "PKG-MANUAL-01"
 }

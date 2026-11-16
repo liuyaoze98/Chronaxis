@@ -64,7 +64,7 @@ _send(connection, packet)
 
 原wire类型/限额或管道错误；不重试导致重复ITEM。
 
-源码：[`src/chronaxis/legacy/worker.py:16`](../../../src/chronaxis/legacy/worker.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:16`](../../../src/chronaxis/legacy/worker.py#L16)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_receive"></a>
 ## `_receive`
@@ -89,7 +89,7 @@ _receive(connection)
 
 EOFError/OSError/协议错误传播，不把断管当正常来源EOF。
 
-源码：[`src/chronaxis/legacy/worker.py:25`](../../../src/chronaxis/legacy/worker.py#L25)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:25`](../../../src/chronaxis/legacy/worker.py#L25)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_exact"></a>
 ## `_exact`
@@ -119,7 +119,7 @@ ValueError为字段缺失或多余。
 
 - `ValueError`：旧CAN控制包字段缺失或多余。
 
-源码：[`src/chronaxis/legacy/worker.py:34`](../../../src/chronaxis/legacy/worker.py#L34)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:34`](../../../src/chronaxis/legacy/worker.py#L34)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_request"></a>
 ## `_request`
@@ -150,7 +150,7 @@ LegacyCANRequest。
 - `TypeError`：旧CAN INIT需要文本路径与fields数组。
 - `ValueError`：首版旧CAN仅支持单个现有BLF文件。
 
-源码：[`src/chronaxis/legacy/worker.py:44`](../../../src/chronaxis/legacy/worker.py#L44)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:44`](../../../src/chronaxis/legacy/worker.py#L44)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_load_can_runtime"></a>
 ## `_load_can_runtime`
@@ -177,7 +177,7 @@ python-can与cantools模块。
 保留缺失依赖的可执行提示。
 不读取来源、DBC或原项目文件，不安装同名vendor模块。
 
-源码：[`src/chronaxis/legacy/worker.py:65`](../../../src/chronaxis/legacy/worker.py#L65)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:65`](../../../src/chronaxis/legacy/worker.py#L65)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_iter_blf"></a>
 ## `_iter_blf`
@@ -203,7 +203,7 @@ can.Message生成器。
 真实读取/关闭错误。
 创建生成器不打开文件；第一次next才调用BLFRead，STOP或EOF关闭同一owner。
 
-源码：[`src/chronaxis/legacy/worker.py:75`](../../../src/chronaxis/legacy/worker.py#L75)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:75`](../../../src/chronaxis/legacy/worker.py#L75)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_field_metadata"></a>
 ## `_field_metadata`
@@ -237,7 +237,7 @@ ValueError为ID/消息/帧型/信号歧义或不符，TypeError为单位不受�
 - `ValueError`：原DBC消息名称或标准/FD帧型与定位不同。
 - `TypeError`：原DBC公开unit需要文本或None。
 
-源码：[`src/chronaxis/legacy/worker.py:102`](../../../src/chronaxis/legacy/worker.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:102`](../../../src/chronaxis/legacy/worker.py#L102)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_frame"></a>
 ## `_frame`
@@ -266,7 +266,7 @@ LegacyRawFrame。
 
 - `ValueError`：原报文data超过64字节，不能先复制再拒绝。
 
-源码：[`src/chronaxis/legacy/worker.py:154`](../../../src/chronaxis/legacy/worker.py#L154)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:154`](../../../src/chronaxis/legacy/worker.py#L154)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_argument_text"></a>
 ## `_argument_text`
@@ -292,7 +292,7 @@ _argument_text(value, limit)
 
 无主动异常；未知对象仅标明类型，不调用其自定义字符串方法。
 
-源码：[`src/chronaxis/legacy/worker.py:169`](../../../src/chronaxis/legacy/worker.py#L169)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:169`](../../../src/chronaxis/legacy/worker.py#L169)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_error_packet"></a>
 ## `_error_packet`
@@ -320,7 +320,7 @@ _error_packet(exc, phase, request_id)
 
 标准库字段访问/编码错误传播；调用方仍须确定退出，不伪报正常EOF。
 
-源码：[`src/chronaxis/legacy/worker.py:184`](../../../src/chronaxis/legacy/worker.py#L184)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:184`](../../../src/chronaxis/legacy/worker.py#L184)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_report_error"></a>
 ## `_report_error`
@@ -348,7 +348,7 @@ _report_error(connection, exc, phase, request_id)
 
 不传播附加报告错误；原失败仍由worker最终非零退出表达。
 
-源码：[`src/chronaxis/legacy/worker.py:227`](../../../src/chronaxis/legacy/worker.py#L227)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:227`](../../../src/chronaxis/legacy/worker.py#L227)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -383,4 +383,4 @@ worker_main(connection)
 
 本child内一次DBC加载、一次iter_frames、每许可一次next/parse；不额外扫描。
 
-源码：[`src/chronaxis/legacy/worker.py:239`](../../../src/chronaxis/legacy/worker.py#L239)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/legacy/worker.py:239`](../../../src/chronaxis/legacy/worker.py#L239)（行号对应 Chronaxis 0.1.0.dev5 源码）。

@@ -3,7 +3,7 @@
 
 You can analyze CAN logs without first converting them to CSV or writing a Python entry function. Complete [installation](installation.md), then run this small, synthetic CAN example.
 
-The basic configuration retains `execution.process_count: 4` as the limit for later multi-volume inputs. This first example reads one ASC file in the default file order, within the current process. The directory example then demonstrates two continuous parts read in parallel. See [execution settings](execution.md) for field meanings and resource choices.
+The configuration's `execution.process_count: 4` is the parallel limit for reading several volumes; this example has one file and runs in the current process. See [execution settings](execution.md) for choosing the value.
 
 <a id="准备日志和dbc"></a>
 ## 1. Prepare the log and DBC
@@ -18,7 +18,7 @@ Use [quickstart.asc](../examples/data/can/quickstart.asc) and [teaching.dbc](../
 | 4 | 0x100 | 10 |
 | 6 | 0x7FE | Unrelated message; establishes the end of observation |
 
-The final record is not a power sample. With zero-order hold, each power value applies until the next update, within its validity period. This example integrates over `[0, 6)`. Unequal sample spacing means the sample mean and time-weighted mean are different.
+The final record is not a power sample. With zero-order hold, each power value applies until the next update, within its validity period. This example integrates from 0 s up to 6 s, written `[0, 6)`: the square bracket includes 0 s and the parenthesis excludes 6 s. Unequal sample spacing means the sample mean and time-weighted mean are different.
 
 <a id="保存配置并运行"></a>
 ## 2. Save the configuration and run it
@@ -54,21 +54,21 @@ execution:                          # Control how this analysis runs
   process_count: 4                  # At most four file-reading workers, capped by the number of files
 ```
 
-The configuration names the analysis, selects the log, DBC, signal and three calculations, and sets the file-reading worker limit. Four is the recommended starting value used by this example; omitting the field still defaults to one. Choose another positive integer to suit available resources. There is no need to specify `session`, `entity`, `source_type`, `time_type`, a reference to the only source, or the default session scope. Signal type and unit come from the DBC; a unique channel is selected automatically. Omitting `domain` uses the observed range.
+The configuration names the analysis, selects the log, DBC, signal and three calculations, and sets the file-reading worker limit. The remaining fields have defaults and are not needed here; see the [configuration reference](configuration-reference.md) when you need them. Signal type and unit come from the DBC; a unique channel is selected automatically. Omitting `domain` uses the observed range.
 
-From the examples directory, run:
+Open a terminal in the manual's [examples directory](installation.md#find-examples) and run:
 
 ```powershell
 chronaxis validate analysis.yaml
 chronaxis run analysis.yaml --output new-result
 ```
 
-The output directory can be reused; each publication uses timestamped filenames. `validate` checks the declarations and required DBC metadata; `run` reads the actual messages and produces results. If the virtual environment is not activated, invoke its Python executable with `-m chronaxis`.
+The output directory can be reused; each publication uses timestamped filenames. `validate` checks the declarations and required DBC metadata; `run` reads the actual messages and produces results. If the virtual environment is not activated, replace `chronaxis` with its full path in the environment, for example `D:\work\.venv\Scripts\chronaxis`; see [Installation](installation.md#run-without-activation).
 
 <a id="核对结果"></a>
 ## 3. Check the results
 
-Open `new-result/会话结果_<timestamp>.csv` (session results). The [example output](example-results.md#analysis-yaml) explains the columns.
+When `run` finishes, the terminal lists the published files under `result_files`. Open `会话结果_<run timestamp>.csv` (session results) in `new-result`. The [example output](example-results.md#analysis-yaml) explains the columns.
 
 | Calculation | Expected value | Meaning |
 |---|---|---|
@@ -76,7 +76,7 @@ Open `new-result/会话结果_<timestamp>.csv` (session results). The [example o
 | `sample_average` | 6 W | `(2 + 4 + 8 + 10) / 4` |
 | `time_average` | 6.333333333333333 W | `38 / 6` |
 
-All three values appear in one row, each with status `完整` (complete) and no reason text. Dataset, entity, and session names inherit `energy`; this identity is saved once in the manifest. For programmatic reading, see [Python API usage](api-usage.md).
+All three values appear in one row. The three status columns, such as `energy：状态`, show `完整` (complete), and the matching `：说明` (note) columns are empty. Dataset, entity, and session names inherit `energy`; this identity is saved once in the manifest. For programmatic reading, see [Python API usage](api-usage.md).
 
 <a id="直接试用目录和blf"></a>
 ## 4. Try directory input and BLF
@@ -103,7 +103,7 @@ chronaxis run can-demo/blf.yaml --output blf-result
 2. Set `dbc_by_channel` to your DBC files. User-facing channel numbers start at 1.
 3. Select `frame_id` and `signal` from the DBC. A message name is unnecessary. IDs accept `0x` hexadecimal, `0b` binary, and unprefixed decimal notation.
 4. Set `dataset.name`. Add a `domain` only to analyze a restricted time range, and add other features when the task needs them.
-5. Keep `execution.process_count: 4` as a starting point for multiple files. Increasing this number does not split a single file among workers. See [continuous-file multiprocessing](continuous-files.md) for ordering and resource rules.
+5. You can keep `execution.process_count: 4`; it takes effect only when several files are read. See [continuous-file multiprocessing](continuous-files.md).
 
 When `valid_for` is omitted, the validity period is three times the signal period obtained from the DBC. If no period is available, supply `period` or `valid_for`. Use actual signal definitions to determine units and current direction; names alone cannot establish them.
 

@@ -1,6 +1,6 @@
 # `chronaxis.cli`
 
-提供当前配置检查、分析发布、独立批量和高性能积分器入口。
+提供当前配置检查、分析发布、独立批量、高性能积分器及指南/手册定位入口。
 
 参数为命令行选项；按命令延迟导入实现，帮助只依赖标准库。
 检查按需读取配置和DBC元数据，运行命令才扫描业务输入并发布结果。
@@ -53,7 +53,7 @@ ArgumentParser，不读取任何配置或来源。
 
 返回类型：argparse.ArgumentParser。
 
-源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-main"></a>
 ## `main`
@@ -85,4 +85,4 @@ argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程�
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:85`](../../../src/chronaxis/cli.py#L85)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/cli.py:87`](../../../src/chronaxis/cli.py#L87)（行号对应 Chronaxis 0.1.0.dev5 源码）。

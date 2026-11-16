@@ -1,6 +1,6 @@
 {
-  "baseline": "8904c2f744951857659abd40aaa3535d57faf53c",
-  "device_label": "home",
+  "baseline": "d7ea8729e5ee7a38ebb4d68b91429843e2156fc9",
+  "device_label": "school",
   "modules": [
     {
       "module": "chronaxis",
@@ -114,7 +114,7 @@
     {
       "module": "chronaxis._control_models",
       "path": "src/chronaxis/_control_models.py",
-      "sha256": "7e44d3e14931c992c5fbb4c85cfb7404566a62067512d8bf0954f26951c49eeb",
+      "sha256": "04f4e2faceac28580877cb07032eb4c333d637e30a859a5ff16727fdc52273fa",
       "exports": [],
       "objects": [
         {
@@ -414,7 +414,7 @@
         {
           "name": "restore_message",
           "kind": "function",
-          "line": 356,
+          "line": 360,
           "summary": "恢复固定命令参数。",
           "parameters": [
             {
@@ -441,7 +441,7 @@
         {
           "name": "_object",
           "kind": "function",
-          "line": 400,
+          "line": 412,
           "summary": "核对有限对象字段。",
           "parameters": [
             {
@@ -468,7 +468,7 @@
         {
           "name": "_program",
           "kind": "function",
-          "line": 411,
+          "line": 423,
           "summary": "核对已有数值指令形状。",
           "parameters": [
             {
@@ -489,7 +489,7 @@
         {
           "name": "check_fast_spec",
           "kind": "function",
-          "line": 443,
+          "line": 455,
           "summary": "核对有限fast文件声明。",
           "parameters": [
             {
@@ -504,7 +504,7 @@
         {
           "name": "_check_fast_rows",
           "kind": "function",
-          "line": 480,
+          "line": 492,
           "summary": "检查快速批量总量所用的固定五字段结果。",
           "parameters": [
             {
@@ -519,7 +519,7 @@
         {
           "name": "check_message_fields",
           "kind": "function",
-          "line": 503,
+          "line": 515,
           "summary": "核对大消息的固定字段。",
           "parameters": [
             {
@@ -549,13 +549,13 @@
     {
       "module": "chronaxis._control_wire",
       "path": "src/chronaxis/_control_wire.py",
-      "sha256": "09cc2a58d9d0b639004f7d003c5e5332531c1e84d671951d8c1aa90c7af24e34",
+      "sha256": "088ab3d501af3f7736f71e3c41cb94244ab6ffcb8fd989ec5f9424183a418f2c",
       "exports": [],
       "objects": [
         {
           "name": "ControlProtocolError",
           "kind": "class",
-          "line": 29,
+          "line": 31,
           "summary": "内部协议版本、长度、命令或固定字段错误。",
           "fields": [],
           "bases": [
@@ -565,7 +565,7 @@
         {
           "name": "_pairs",
           "kind": "function",
-          "line": 33,
+          "line": 35,
           "summary": "建立不重复的JSON对象。",
           "parameters": [
             {
@@ -580,7 +580,7 @@
         {
           "name": "_depth",
           "kind": "function",
-          "line": 48,
+          "line": 50,
           "summary": "在解析前核JSON容器深度。",
           "parameters": [
             {
@@ -595,7 +595,7 @@
         {
           "name": "encode_json",
           "kind": "function",
-          "line": 79,
+          "line": 81,
           "summary": "逐片编码有限JSON结构。",
           "parameters": [
             {
@@ -616,7 +616,7 @@
         {
           "name": "decode_json",
           "kind": "function",
-          "line": 96,
+          "line": 98,
           "summary": "解码有限JSON为原生值。",
           "parameters": [
             {
@@ -631,7 +631,7 @@
         {
           "name": "decode_json.constant",
           "kind": "function",
-          "line": 104,
+          "line": 106,
           "summary": "拒绝JSON宽松常量。",
           "parameters": [
             {
@@ -646,7 +646,7 @@
         {
           "name": "_integer",
           "kind": "function",
-          "line": 120,
+          "line": 122,
           "summary": "判断原生整数下界。",
           "parameters": [
             {
@@ -667,7 +667,7 @@
         {
           "name": "_time",
           "kind": "function",
-          "line": 130,
+          "line": 132,
           "summary": "判断有限非负计时。",
           "parameters": [
             {
@@ -682,7 +682,7 @@
         {
           "name": "_check",
           "kind": "function",
-          "line": 140,
+          "line": 142,
           "summary": "核控制命令基础形状。",
           "parameters": [
             {
@@ -709,7 +709,7 @@
         {
           "name": "_short",
           "kind": "function",
-          "line": 176,
+          "line": 189,
           "summary": "按JSON转义后的字节数截短诊断。",
           "parameters": [
             {
@@ -730,7 +730,7 @@
         {
           "name": "_diagnostics",
           "kind": "function",
-          "line": 194,
+          "line": 207,
           "summary": "限制仅供展示的错误信息。",
           "parameters": [
             {
@@ -757,7 +757,7 @@
         {
           "name": "ControlChannel",
           "kind": "class",
-          "line": 214,
+          "line": 229,
           "summary": "单个管道端的有限控制编码；不拥有额外句柄，close关闭实际Connection。",
           "fields": [],
           "bases": []
@@ -765,7 +765,7 @@
         {
           "name": "ControlChannel.__init__",
           "kind": "function",
-          "line": 221,
+          "line": 236,
           "summary": "绑定一个已有控制端点。",
           "parameters": [
             {
@@ -804,7 +804,7 @@
         {
           "name": "ControlChannel._limit",
           "kind": "function",
-          "line": 236,
+          "line": 251,
           "summary": "取得当前消息可用额度。",
           "parameters": [
             {
@@ -831,7 +831,7 @@
         {
           "name": "ControlChannel._direction",
           "kind": "function",
-          "line": 253,
+          "line": 268,
           "summary": "核发送者是否有权发此命令。",
           "parameters": [
             {
@@ -858,7 +858,7 @@
         {
           "name": "ControlChannel.send",
           "kind": "function",
-          "line": 264,
+          "line": 279,
           "summary": "发送一条固定命令。",
           "parameters": [
             {
@@ -879,7 +879,7 @@
         {
           "name": "ControlChannel.recv",
           "kind": "function",
-          "line": 298,
+          "line": 313,
           "summary": "接收一条固定消息。",
           "parameters": [
             {
@@ -894,7 +894,7 @@
         {
           "name": "ControlChannel.__enter__",
           "kind": "function",
-          "line": 336,
+          "line": 351,
           "summary": "保持原管道上下文用法。",
           "parameters": [
             {
@@ -909,7 +909,7 @@
         {
           "name": "ControlChannel.__exit__",
           "kind": "function",
-          "line": 345,
+          "line": 360,
           "summary": "按原管道上下文关闭。",
           "parameters": [
             {
@@ -930,7 +930,7 @@
         {
           "name": "ControlChannel.poll",
           "kind": "function",
-          "line": 354,
+          "line": 369,
           "summary": "查询实际管道是否可读。",
           "parameters": [
             {
@@ -951,7 +951,7 @@
         {
           "name": "ControlChannel.fileno",
           "kind": "function",
-          "line": 363,
+          "line": 378,
           "summary": "返回同一实际管道句柄。",
           "parameters": [
             {
@@ -966,7 +966,7 @@
         {
           "name": "ControlChannel.closed",
           "kind": "function",
-          "line": 373,
+          "line": 388,
           "summary": "报告实际管道关闭状态。",
           "parameters": [
             {
@@ -983,7 +983,7 @@
         {
           "name": "ControlChannel.close",
           "kind": "function",
-          "line": 382,
+          "line": 397,
           "summary": "关闭本端实际管道。",
           "parameters": [
             {
@@ -2681,7 +2681,7 @@
     {
       "module": "chronaxis.cli",
       "path": "src/chronaxis/cli.py",
-      "sha256": "092e02ae12baf73fce6efd0e4a2e10936657233706f01e35697c86efea0bfe5a",
+      "sha256": "f87c939439b6a810e6dc13672e56120988e4cd97542bd516254dbc1c2ddceb3c",
       "exports": [],
       "objects": [
         {
@@ -2695,7 +2695,7 @@
         {
           "name": "main",
           "kind": "function",
-          "line": 85,
+          "line": 87,
           "summary": "执行共享CLI并给出固定退出码，完整事实保在报告和原异常中。",
           "parameters": [
             {
@@ -4466,13 +4466,13 @@
     {
       "module": "chronaxis.core.affine",
       "path": "src/chronaxis/core/affine.py",
-      "sha256": "5d50c730da4c6475bbbae210bb55db44d1fcc5814a7f696b9310d4b3b060c67b",
+      "sha256": "493ab1bf8bc18d5b23b89b3503debd064c3d5f82f18bfe502e38deb661c5f861",
       "exports": [],
       "objects": [
         {
           "name": "_validate_affine",
           "kind": "function",
-          "line": 17,
+          "line": 18,
           "summary": "检查编译器传入的仿射转换结构，数值合法性仍逐样本处理。",
           "parameters": [
             {
@@ -4505,7 +4505,7 @@
         {
           "name": "affine_reference",
           "kind": "function",
-          "line": 40,
+          "line": 41,
           "summary": "按value*scale+offset完成标量单位转换，并保留精度及有效性。",
           "parameters": [
             {
@@ -9704,7 +9704,7 @@
     {
       "module": "chronaxis.core.expression_reference",
       "path": "src/chronaxis/core/expression_reference.py",
-      "sha256": "e162b7a86e5fdb7418517ccbacaa84847d744ccad492b5ed1eca1764f88a183f",
+      "sha256": "ee7d153858cf367338c7d6ea9cd5f360f18789171ae426e28b76997489ced975",
       "exports": [],
       "objects": [
         {
@@ -9777,9 +9777,39 @@
           "decorators": []
         },
         {
-          "name": "_evaluate",
+          "name": "visited_nodes",
           "kind": "function",
           "line": 125,
+          "summary": "返回本次求值实际访问过的节点。",
+          "parameters": [
+            {
+              "name": "cache",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_cache_key",
+          "kind": "function",
+          "line": 130,
+          "summary": "选择本次求值的节点缓存键，保留宿主函数的结构复用规则。",
+          "parameters": [
+            {
+              "name": "node",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_evaluate",
+          "kind": "function",
+          "line": 141,
           "summary": "用独立参考数值解释单个冻结节点及局部公共子树。",
           "parameters": [
             {
@@ -9806,7 +9836,7 @@
         {
           "name": "evaluate_reference",
           "kind": "function",
-          "line": 229,
+          "line": 248,
           "summary": "检查当前标量输入后，对表达式进行一次独立参考求值。",
           "parameters": [
             {
@@ -9833,7 +9863,7 @@
         {
           "name": "evaluate_memory_reference",
           "kind": "function",
-          "line": 263,
+          "line": 282,
           "summary": "从已有内存行取得信号，在指定纳秒坐标逐点计算表达式。",
           "parameters": [
             {
@@ -10558,13 +10588,13 @@
     {
       "module": "chronaxis.core.integral_sum_numpy",
       "path": "src/chronaxis/core/integral_sum_numpy.py",
-      "sha256": "1dae597ebd6221237a6de344b5ec483e82411b9f6dd3e74312f5ad61bab6ccb4",
+      "sha256": "0d225f0003a2498f7c7c6331912fa177aa8d3df9ffb7cad643c92a1ea173ab5c",
       "exports": [],
       "objects": [
         {
           "name": "NumpyIntegralSum",
           "kind": "class",
-          "line": 21,
+          "line": 23,
           "summary": "保存有限 float64 误差项和有效项计数，保持跨块原序及持久溢出状态。",
           "fields": [],
           "bases": []
@@ -10572,7 +10602,7 @@
         {
           "name": "NumpyIntegralSum.__init__",
           "kind": "function",
-          "line": 28,
+          "line": 30,
           "summary": "建立独立的空数组误差状态。",
           "parameters": [
             {
@@ -10593,7 +10623,7 @@
         {
           "name": "NumpyIntegralSum.valid_term_count",
           "kind": "function",
-          "line": 42,
+          "line": 44,
           "summary": "返回已经处理的有效面积项数；即使累计中途溢出，导致溢出的项及后续有效项仍计数。",
           "parameters": [
             {
@@ -10610,7 +10640,7 @@
         {
           "name": "NumpyIntegralSum.calculation_failed",
           "kind": "function",
-          "line": 51,
+          "line": 53,
           "summary": "返回累计是否已经发生数值计算失败，例如累加结果变成无穷大。True表示本次累计不能作为正常积分值，即使后续又读到了有效数据也不能当先前错误没发生。",
           "parameters": [
             {
@@ -10627,7 +10657,7 @@
         {
           "name": "NumpyIntegralSum.partial_count",
           "kind": "function",
-          "line": 60,
+          "line": 62,
           "summary": "读取当前持有的非零误差项数，不暴露可修改的数组。",
           "parameters": [
             {
@@ -10644,7 +10674,7 @@
         {
           "name": "NumpyIntegralSum.push",
           "kind": "function",
-          "line": 68,
+          "line": 70,
           "summary": "按原顺序逐项累加当前块中的有效面积，不先把整块相加成一个数。",
           "parameters": [
             {
@@ -10665,7 +10695,7 @@
         {
           "name": "NumpyIntegralSum.push_values",
           "kind": "function",
-          "line": 86,
+          "line": 88,
           "summary": "直接累加给定的浮点数序列，不要求调用方先构造积分面积对象。",
           "parameters": [
             {
@@ -10690,9 +10720,36 @@
           "decorators": []
         },
         {
+          "name": "NumpyIntegralSum._push_scalar",
+          "kind": "function",
+          "line": 118,
+          "summary": "按原序推进面积，每个完整候选分配成功后才安装状态。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "values",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "indices",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "NumpyIntegralSum._advance",
           "kind": "function",
-          "line": 125,
+          "line": 167,
           "summary": "生成一项的独立误差候选，不提前改写当前状态。",
           "parameters": [
             {
@@ -10713,7 +10770,7 @@
         {
           "name": "NumpyIntegralSum.finish",
           "kind": "function",
-          "line": 161,
+          "line": 203,
           "summary": "正确舍入当前误差状态，再做一次输出单位换算，返回独立快照。",
           "parameters": [
             {
@@ -10740,7 +10797,7 @@
         {
           "name": "NumpyIntegralSum._rounded",
           "kind": "function",
-          "line": 190,
+          "line": 232,
           "summary": "从最大误差项向小项求和，在首个舍入误差处完成半偶修正。",
           "parameters": [
             {
@@ -13074,7 +13131,7 @@
     {
       "module": "chronaxis.core.numeric",
       "path": "src/chronaxis/core/numeric.py",
-      "sha256": "c1025d5bb55dceb63898128cb20ae62da91f9a04c96a8702630743c746a47a89",
+      "sha256": "a6fbf32e3ccabe006f77a8162e693bc04ba1fa78e8c8b067781c498ef70d46c7",
       "exports": [],
       "objects": [
         {
@@ -19134,7 +19191,7 @@
     {
       "module": "chronaxis.core.types",
       "path": "src/chronaxis/core/types.py",
-      "sha256": "868b91d4aa8ed6d59eb80635ce7cf4d0c752dc1df65eea3080252943b496181e",
+      "sha256": "c0c95d8e5e93874a158dce3769cc50232883dad1c45b21322a195f8b9483b420",
       "exports": [],
       "objects": [
         {
@@ -19276,9 +19333,30 @@
           ]
         },
         {
+          "name": "_quality_or",
+          "kind": "function",
+          "line": 83,
+          "summary": "两个QualityFlag的并集直接查固定表；其他操作数仍走标准IntFlag路径及其STRICT检查。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "other",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "SignalDType",
           "kind": "class",
-          "line": 82,
+          "line": 101,
           "summary": "声明信号值的逻辑类型，供模型和数值运算检查使用。",
           "fields": [
             {
@@ -19319,7 +19397,7 @@
         {
           "name": "TimeType",
           "kind": "class",
-          "line": 96,
+          "line": 115,
           "summary": "区分相对来源坐标和UTC绝对坐标，保留显式起点依据。",
           "fields": [
             {
@@ -19342,7 +19420,7 @@
         {
           "name": "SourceType",
           "kind": "class",
-          "line": 106,
+          "line": 125,
           "summary": "标明当前内存模型接受的数据来源种类。",
           "fields": [
             {
@@ -25319,7 +25397,7 @@
     {
       "module": "chronaxis.execution.driver_expression",
       "path": "src/chronaxis/execution/driver_expression.py",
-      "sha256": "728b01f6132c986d2595943a523360adfa454125e9e6a30bc7343af5b39b94f1",
+      "sha256": "6548fe79022a63a9a8c4d199d9a0d75a5a1f395bc0d476dcf317d63605213a62",
       "exports": [],
       "objects": [
         {
@@ -25655,6 +25733,894 @@
           "kind": "function",
           "line": 371,
           "summary": "释放自有树/费用，借用state保持原所有者负责。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.file_integral_terms",
+      "path": "src/chronaxis/execution/file_integral_terms.py",
+      "sha256": "94a79682161a1bf0f052c1448f2fa7ea2950f9ad340f533c5ee177f51b71f46c",
+      "exports": [],
+      "objects": [
+        {
+          "name": "SameTimeGroupSummary",
+          "kind": "class",
+          "line": 24,
+          "summary": "保留解决跨文件同一时刻选择所需的首末值及最早冲突位置，大小不随组帧数增长。",
+          "fields": [
+            {
+              "name": "time_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "同刻组实际时间，不创建第二套计算时钟。"
+            },
+            {
+              "name": "first_sequence",
+              "type": "int",
+              "default": "必填",
+              "description": "文件内首条原帧序号；父进程加之前文件的全部原帧数。"
+            },
+            {
+              "name": "last_sequence",
+              "type": "int",
+              "default": "必填",
+              "description": "本组最后原帧序号，供last_by_sequence使用。"
+            },
+            {
+              "name": "count",
+              "type": "int",
+              "default": "必填",
+              "description": "组内匹配帧数，不保存逐帧序号列表。"
+            },
+            {
+              "name": "first_values",
+              "type": "tuple[ScalarValue, ...]",
+              "default": "必填",
+              "description": "按冻结定义顺序，供跨文件error政策比较。"
+            },
+            {
+              "name": "last_values",
+              "type": "tuple[ScalarValue, ...]",
+              "default": "必填",
+              "description": "同顺序最终值；无效本条也覆盖上一条。"
+            },
+            {
+              "name": "first_conflicts",
+              "type": "tuple[int | None, ...]",
+              "default": "必填",
+              "description": "每个error信号首次冲突的局部序号，None表示未见冲突。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "FileIntegralHead",
+          "kind": "class",
+          "line": 37,
+          "summary": "文件首个目标同一时刻组及下一组时间；首个出区间始终由父进程计算。",
+          "fields": [
+            {
+              "name": "group",
+              "type": "SameTimeGroupSummary",
+              "default": "必填",
+              "description": "仅首组可能受前文件的同刻值影响。"
+            },
+            {
+              "name": "next_time_ns",
+              "type": "int | None",
+              "default": "必填",
+              "description": "下一目标组的实际时间；单组或错误排空时尚未知。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "IntegralColumnTerms",
+          "kind": "class",
+          "line": 45,
+          "summary": "一个计算项的原序面积、有效掩码和覆盖事实，不含局部和。",
+          "fields": [
+            {
+              "name": "areas",
+              "type": "tuple[float, ...]",
+              "default": "必填",
+              "description": "原序float64面积，尚未换算最终单位或求和。"
+            },
+            {
+              "name": "valid",
+              "type": "tuple[bool, ...]",
+              "default": "必填",
+              "description": "无效槽中的0不能作为有效零参与求和。"
+            },
+            {
+              "name": "covered_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "该块与请求范围相交的实际覆盖长度。"
+            },
+            {
+              "name": "valid_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "上述覆盖内具备有效数值的长度。"
+            },
+            {
+              "name": "quality",
+              "type": "QualityFlag",
+              "default": "必填",
+              "description": "原面积核已确认的质量位。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "IntegralTermsChunk",
+          "kind": "class",
+          "line": 56,
+          "summary": "排除首组出区间后的有限内部区间块；列顺序与冻结计算项一致。",
+          "fields": [
+            {
+              "name": "left_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "本块第一个点时间，和前块右端一致。"
+            },
+            {
+              "name": "right_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "本块最后一个点时间，不另计尾面积。"
+            },
+            {
+              "name": "columns",
+              "type": "tuple[IntegralColumnTerms, ...]",
+              "default": "必填",
+              "description": "固定计算项顺序的各原序列。"
+            },
+            {
+              "name": "right_closed",
+              "type": "bool",
+              "default": "True",
+              "description": "True表示右端同刻组已关闭；False表示仍需等待跨文件同刻合并。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "FileIntegralTail",
+          "kind": "class",
+          "line": 66,
+          "summary": "文件末组；same_as_head表示单组文件，不重复传其组值。",
+          "fields": [
+            {
+              "name": "group",
+              "type": "SameTimeGroupSummary | None",
+              "default": "必填",
+              "description": "多组文件的末组；无目标或单组时None。"
+            },
+            {
+              "name": "same_as_head",
+              "type": "bool",
+              "default": "必填",
+              "description": "单组文件与head共享，不再复制首末值。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "FileIntegralFrontier",
+          "kind": "class",
+          "line": 74,
+          "summary": "异常排空时确认一个已经关闭的右端组；没有可另行组成面积块的区间。",
+          "fields": [
+            {
+              "name": "time_ns",
+              "type": "int",
+              "default": "必填",
+              "description": "已闭内部点，与父进程正在等待的面积右端一致。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "_conflict",
+          "kind": "function",
+          "line": 80,
+          "summary": "按原帧位置和声明顺序抛出最早同一时刻冲突。",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_offset_group",
+          "kind": "function",
+          "line": 90,
+          "summary": "将局部原帧序号提升到连续来源全局序号。",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "offset",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_merge_group",
+          "kind": "function",
+          "line": 102,
+          "summary": "有界合并跨文件同一时刻组；不会为相等组保留逐帧序号集合。",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "right",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_columns",
+          "kind": "function",
+          "line": 122,
+          "summary": "调用现役参考面积核，不先累计、不改变乘除顺序。",
+          "parameters": [
+            {
+              "name": "points",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "file_terms_minimum_cost",
+          "kind": "function",
+          "line": 145,
+          "summary": "计算文件面积状态不依赖DBC的必要费用下界。",
+          "parameters": [
+            {
+              "name": "calculation_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "int",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "parent_terms_minimum_cost",
+          "kind": "function",
+          "line": 160,
+          "summary": "计算父边界状态不依赖DBC的必要费用下界。",
+          "parameters": [
+            {
+              "name": "calculation_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "int",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "file_terms_cost",
+          "kind": "function",
+          "line": 175,
+          "summary": "报告文件面积owner及其求值器的实际固定预约费用。",
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "parent_terms_cost",
+          "kind": "function",
+          "line": 188,
+          "summary": "报告父边界owner及求值器固定费用，覆盖全局余量、一个通信块和切片副本。",
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms",
+          "kind": "class",
+          "line": 201,
+          "summary": "文件工作进程的有界归组及面积生产器，不拥有求和状态。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "FileIntegralTerms.__init__",
+          "kind": "function",
+          "line": 204,
+          "summary": "安装已验证任务及投影，首条原帧尚未读取。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms.compatibility_fields",
+          "kind": "function",
+          "line": 255,
+          "summary": "借用同次投影的FD兼容提示。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "FileIntegralTerms._require_open",
+          "kind": "function",
+          "line": 263,
+          "summary": "拒绝失败、完成或关闭后的推进。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms._flush_points",
+          "kind": "function",
+          "line": 268,
+          "summary": "将完整内部区间交付为一个有限块，留下共享末点。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "right_closed",
+              "type": "",
+              "default": "True",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms._append_group",
+          "kind": "function",
+          "line": 282,
+          "summary": "保存一组必要求值点，并在区间数达到上限时交付块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "group",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "check_conflict",
+              "type": "",
+              "default": "True",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "right_closed",
+              "type": "",
+              "default": "True",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms.feed",
+          "kind": "function",
+          "line": 295,
+          "summary": "消费读取器的一条已解码记录，必要时返回首组或一个内部面积块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "record",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms.finish",
+          "kind": "function",
+          "line": 343,
+          "summary": "完成有限数值缓冲；读取器EOF和关闭成功由传输层单独证明。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms.drain_prefix_on_error",
+          "kind": "function",
+          "line": 372,
+          "summary": "读取或求值失败后交付此前真正关闭的有限组，不假设当前组已经结束。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "FileIntegralTerms.close",
+          "kind": "function",
+          "line": 393,
+          "summary": "断开缓冲和投影引用并退还本owner费用。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms",
+          "kind": "class",
+          "line": 407,
+          "summary": "按文件顺序修复同一时刻及边界，并将原序面积交给父进程唯一积分器。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "ParentIntegralTerms.__init__",
+          "kind": "function",
+          "line": 410,
+          "summary": "建立有界边界状态，借用外部积分器。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "calculations",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms._require_open",
+          "kind": "function",
+          "line": 460,
+          "summary": "失败或结束后仅允许关闭。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms.begin_file",
+          "kind": "function",
+          "line": 465,
+          "summary": "切换到下一个已按顺序交付的文件。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "sequence_offset",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms._drain",
+          "kind": "function",
+          "line": 473,
+          "summary": "按原全局批界依次推进各指标，不提前累计尚未关闭的右端组。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "final",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms._mark_closed",
+          "kind": "function",
+          "line": 488,
+          "summary": "确认待定右端同一时刻组关闭后允许满批归约。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms._accept",
+          "kind": "function",
+          "line": 493,
+          "summary": "保存一块原序面积并累计已经收到的覆盖事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "columns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "right_closed",
+              "type": "",
+              "default": "True",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms._boundary",
+          "kind": "function",
+          "line": 511,
+          "summary": "使用现役面积核计算一条跨文件或首组出区间。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "group",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "right",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms.consume",
+          "kind": "function",
+          "line": 519,
+          "summary": "接收当前文件的首组、面积块或末组；文件顺序由池保证。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "event",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms.finish",
+          "kind": "function",
+          "line": 578,
+          "summary": "读取池已证明全部EOF后，仅补到实际观测末端。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "observed_end",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParentIntegralTerms.close",
+          "kind": "function",
+          "line": 600,
+          "summary": "释放自有边界状态，外部积分器由父会话关闭。",
           "parameters": [
             {
               "name": "self",
@@ -26498,6 +27464,698 @@
           "parameters": [
             {
               "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.integral_blocks",
+      "path": "src/chronaxis/execution/integral_blocks.py",
+      "sha256": "8e2ad122aa806003c90f633045bcef672d911ce6cb80ed6429d061797ead3d50",
+      "exports": [],
+      "objects": [
+        {
+          "name": "_timebase",
+          "kind": "function",
+          "line": 29,
+          "summary": "展开固定时基。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_restore_timebase",
+          "kind": "function",
+          "line": 34,
+          "summary": "恢复固定时基。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_interval",
+          "kind": "function",
+          "line": 43,
+          "summary": "展开可空请求范围。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_restore_interval",
+          "kind": "function",
+          "line": 48,
+          "summary": "恢复可空范围。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "pack_task",
+          "kind": "function",
+          "line": 56,
+          "summary": "展开已验证数值任务，不读取文件。",
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "check_task",
+          "kind": "function",
+          "line": 90,
+          "summary": "核冻结任务外形及数量，拒绝额外指令。",
+          "parameters": [
+            {
+              "name": "task",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "restore_task",
+          "kind": "function",
+          "line": 115,
+          "summary": "仅通过明确构造器重建数值任务，并核原声明身份。",
+          "parameters": [
+            {
+              "name": "task",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "IntegralPacket",
+          "kind": "class",
+          "line": 152,
+          "summary": "一个已核验数据块；eof标明数据终点，完整资源释放另等finished控制确认。",
+          "fields": [
+            {
+              "name": "file_index",
+              "type": "int",
+              "default": "必填",
+              "description": "原来源声明中的零起文件序号，不按worker完成先后重排。"
+            },
+            {
+              "name": "number",
+              "type": "int",
+              "default": "必填",
+              "description": "当前文件从0递增的块序号。"
+            },
+            {
+              "name": "events",
+              "type": "tuple",
+              "default": "必填",
+              "description": "固定首组、面积列、末组或异常前缀边界事件。"
+            },
+            {
+              "name": "eof",
+              "type": "bool",
+              "default": "必填",
+              "description": "原帧读尽且读取器/数值owner已关闭；块工作区仍待发送完成后释放。"
+            },
+            {
+              "name": "facts",
+              "type": "dict",
+              "default": "必填",
+              "description": "同次原帧计数、实际首末范围、精确顺序时间及必要帧型提示。"
+            }
+          ],
+          "bases": []
+        },
+        {
+          "name": "IntegralBlockError",
+          "kind": "class",
+          "line": 161,
+          "summary": "面积块格式、长度或展开量不满足固定协议。",
+          "fields": [],
+          "bases": [
+            "ValueError"
+          ]
+        },
+        {
+          "name": "event_cost",
+          "kind": "function",
+          "line": 165,
+          "summary": "按固定字段计算事件的保守传输/展开上界，不遍历每个面积值。",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_group_cost",
+          "kind": "function",
+          "line": 183,
+          "summary": "按最大整数编码估算首尾边界。",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_compatibility_cost",
+          "kind": "function",
+          "line": 192,
+          "summary": "按UTF-8长度估算兼容提示图。",
+          "parameters": [
+            {
+              "name": "names",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "facts_cost",
+          "kind": "function",
+          "line": 203,
+          "summary": "估算固定事实的传输和展开，复用每批未变化的兼容字段图费用。",
+          "parameters": [
+            {
+              "name": "facts",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "cache",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "boundary_supported",
+          "kind": "function",
+          "line": 222,
+          "summary": "判断声明的单个首尾边界及全部兼容提示能否进入既有有界包。",
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer",
+          "kind": "class",
+          "line": 236,
+          "summary": "在512KiB包长内构造固定字段；body只持有当前包的bytearray正文。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "_Writer.__init__",
+          "kind": "function",
+          "line": 238,
+          "summary": "初始化有限字节区。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer.add",
+          "kind": "function",
+          "line": 241,
+          "summary": "追加片段前核上限。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer.byte",
+          "kind": "function",
+          "line": 245,
+          "summary": "写uint8。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer.count",
+          "kind": "function",
+          "line": 248,
+          "summary": "写uint32数量。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer.integer",
+          "kind": "function",
+          "line": 251,
+          "summary": "无损写有界整数。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Writer.decimal",
+          "kind": "function",
+          "line": 258,
+          "summary": "写精确时间元组。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader",
+          "kind": "class",
+          "line": 267,
+          "summary": "先检查数量再分配模型；data为借用包，position为字节游标，expansion为累计展开字节数。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "_Reader.__init__",
+          "kind": "function",
+          "line": 269,
+          "summary": "核包头。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "packet",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.take",
+          "kind": "function",
+          "line": 275,
+          "summary": "读取有限片段。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "size",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.charge",
+          "kind": "function",
+          "line": 279,
+          "summary": "核模型展开费用。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "size",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.byte",
+          "kind": "function",
+          "line": 283,
+          "summary": "读取uint8。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.boolean",
+          "kind": "function",
+          "line": 286,
+          "summary": "读取精确bool。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.count",
+          "kind": "function",
+          "line": 291,
+          "summary": "读取受限数量。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "maximum",
+              "type": "",
+              "default": "4096",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.integer",
+          "kind": "function",
+          "line": 296,
+          "summary": "恢复整数或None。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_Reader.decimal",
+          "kind": "function",
+          "line": 304,
+          "summary": "恢复精确时间。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_write_scalar",
+          "kind": "function",
+          "line": 315,
+          "summary": "写规范数值。",
+          "parameters": [
+            {
+              "name": "writer",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_read_scalar",
+          "kind": "function",
+          "line": 326,
+          "summary": "恢复规范数值。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_write_group",
+          "kind": "function",
+          "line": 339,
+          "summary": "写同一时刻边界摘要。",
+          "parameters": [
+            {
+              "name": "writer",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "group",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_read_group",
+          "kind": "function",
+          "line": 348,
+          "summary": "恢复同一时刻边界摘要。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "encode_packet",
+          "kind": "function",
+          "line": 358,
+          "summary": "编码一个面积事件块，不改变浮点位型或事件顺序。",
+          "parameters": [
+            {
+              "name": "file_index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "events",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "eof",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "facts",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "decode_packet",
+          "kind": "function",
+          "line": 395,
+          "summary": "恢复一个固定事件块，并核完整消费与有界模型。",
+          "parameters": [
+            {
+              "name": "packet",
               "type": "",
               "default": "必填",
               "kind": "位置或关键字"
@@ -27468,6 +29126,1109 @@
           "kind": "function",
           "line": 72,
           "summary": "等待文件/读取许可并发送有界结果。",
+          "parameters": [
+            {
+              "name": "control",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "data",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.parallel_integral_pool",
+      "path": "src/chronaxis/execution/parallel_integral_pool.py",
+      "sha256": "f34bb81cc9483ef309b48ddcd117156d459b44e8f837bf1148b1278ca9296ac7",
+      "exports": [],
+      "objects": [
+        {
+          "name": "_configuration_rows",
+          "kind": "function",
+          "line": 24,
+          "summary": "取得实际工作块行数。",
+          "parameters": [
+            {
+              "name": "batch_intervals",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "calculation_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_task_bytes",
+          "kind": "function",
+          "line": 33,
+          "summary": "估算本模块已生成JSON树的实际容器费用。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_startup_costs",
+          "kind": "function",
+          "line": 46,
+          "summary": "只读估算基础工作槽，不打开原报文。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "signals",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "options",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool",
+          "kind": "class",
+          "line": 61,
+          "summary": "持有一个连续来源的工作槽及有界待交付状态，不累计数值总量。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "ParallelIntegralPool.__init__",
+          "kind": "function",
+          "line": 64,
+          "summary": "登记来源并预约固定声明空间，不读原文件。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "signals",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "options",
+              "type": "",
+              "default": "{}",
+              "kind": "可变关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.startup_cost",
+          "kind": "function",
+          "line": 97,
+          "summary": "查询构造和启动全部槽的额外费用，供首帧前选择路径。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "signals",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "options",
+              "type": "",
+              "default": "{}",
+              "kind": "可变关键字"
+            }
+          ],
+          "decorators": [
+            "staticmethod"
+          ]
+        },
+        {
+          "name": "ParallelIntegralPool.configuration_minimum_cost",
+          "kind": "function",
+          "line": 112,
+          "summary": "查询全部工作槽数值任务的必要费用下界，用于创建进程前排除必然不足的预算。",
+          "parameters": [
+            {
+              "name": "calculation_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "process_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "file_count",
+              "type": "int",
+              "default": "必填",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "int",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": [
+            "staticmethod"
+          ]
+        },
+        {
+          "name": "ParallelIntegralPool.closed",
+          "kind": "function",
+          "line": 129,
+          "summary": "返回实际关闭事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "ParallelIntegralPool.metadata",
+          "kind": "function",
+          "line": 134,
+          "summary": "返回首文件DBC事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "ParallelIntegralPool._dispatch",
+          "kind": "function",
+          "line": 139,
+          "summary": "给空槽派发下一文件，不等待其初始化。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._start",
+          "kind": "function",
+          "line": 146,
+          "summary": "创建有界槽并按文件序派发。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._bytes",
+          "kind": "function",
+          "line": 179,
+          "summary": "接收已预付的一个包。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "size",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._configure_slot",
+          "kind": "function",
+          "line": 189,
+          "summary": "仅在READY后安装数值任务并许可首块。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._request",
+          "kind": "function",
+          "line": 199,
+          "summary": "授予单块额度，不允许同时保留待交付包和另一个在途包。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._poll_controls",
+          "kind": "function",
+          "line": 205,
+          "summary": "缓存各文件控制消息，数据错误不抢先抛给用户。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._wait",
+          "kind": "function",
+          "line": 245,
+          "summary": "等待当前文件状态，并接收其他工作槽的有限通知。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "metadata",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "finished",
+              "type": "",
+              "default": "False",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._raise_file",
+          "kind": "function",
+          "line": 261,
+          "summary": "按固定阶段保留异常类型，不按远端字符串导入任意类。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._accept_metadata",
+          "kind": "function",
+          "line": 278,
+          "summary": "按文件序核共同DBC事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "slot",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._accept_metadata.reserve_model",
+          "kind": "function",
+          "line": 281,
+          "summary": "先预约正在展开的两份元数据图。",
+          "parameters": [
+            {
+              "name": "size",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.prepare_metadata",
+          "kind": "function",
+          "line": 296,
+          "summary": "准备首文件元数据，不读取任何原帧。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._configuration",
+          "kind": "function",
+          "line": 306,
+          "summary": "构造固定任务并计算配置实际需要的额外预约费用。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.configuration_cost",
+          "kind": "function",
+          "line": 326,
+          "summary": "查询configure还将预约的总费用，供首帧前预算准入。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.configure",
+          "kind": "function",
+          "line": 335,
+          "summary": "安装实际有效期与表达式，之后才允许读取。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "specs",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "domain",
+              "type": "",
+              "default": "None",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool._accept_facts",
+          "kind": "function",
+          "line": 356,
+          "summary": "按消费顺序更新同次读取得到的事实。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "facts",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.iter_file",
+          "kind": "function",
+          "line": 377,
+          "summary": "按配置文件序交付固定事件；未来文件错误在轮到时才抛。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "index",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralPool.close",
+          "kind": "function",
+          "line": 420,
+          "summary": "关闭进程、管道和费用；失败保留真实owner以便重试。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.parallel_integral_session",
+      "path": "src/chronaxis/execution/parallel_integral_session.py",
+      "sha256": "5858c175fab29b59af15270bd23467e8a543976d7bfcde0781d18659dc77b6ac",
+      "exports": [],
+      "objects": [
+        {
+          "name": "parallel_integral_inputs",
+          "kind": "function",
+          "line": 32,
+          "summary": "判断已经选择后端的计划能否使用连续多文件面积生成。",
+          "parameters": [
+            {
+              "name": "plan",
+              "type": "AnalysisPlan",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "parallel_integral_source",
+          "kind": "function",
+          "line": 65,
+          "summary": "取得普通并行 CAN 读取使用的来源与选中字段政策。",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "SourcePlan",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "tuple[SignalDefinition, ...]",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "requirement",
+              "type": "SourceInputRequirements",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession",
+          "kind": "class",
+          "line": 103,
+          "summary": "拥有一次面积并行任务和父累计状态，最终结果沿原会话发布。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "ParallelIntegralSession.fixed_cost",
+          "kind": "function",
+          "line": 112,
+          "summary": "查询会话声明费，供构造及首帧前准入共用。",
+          "parameters": [
+            {
+              "name": "plan",
+              "type": "AnalysisPlan",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "staticmethod"
+          ]
+        },
+        {
+          "name": "ParallelIntegralSession.__init__",
+          "kind": "function",
+          "line": 123,
+          "summary": "登记自有资源槽并预付有限声明空间。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "plan",
+              "type": "AnalysisPlan",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "ResourceBudget",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "requirements",
+              "type": "InputRequirements",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession._new",
+          "kind": "function",
+          "line": 153,
+          "summary": "接管构造未返回的资源。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "factory",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "recovery",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "args",
+              "type": "",
+              "default": "()",
+              "kind": "可变位置"
+            },
+            {
+              "name": "kwargs",
+              "type": "",
+              "default": "{}",
+              "kind": "可变关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession.prepare",
+          "kind": "function",
+          "line": 161,
+          "summary": "读取同次 DBC 元数据并建立父累计器，在首帧前决定是否适用。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession._update_bounds",
+          "kind": "function",
+          "line": 233,
+          "summary": "同步已消费输入的实际范围。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession.execute",
+          "kind": "function",
+          "line": 244,
+          "summary": "按文件顺序消费面积及边界，全部 EOF 后交付最终结果。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession._retain_notices",
+          "kind": "function",
+          "line": 282,
+          "summary": "保留本次实际帧型兼容提示。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ParallelIntegralSession.close",
+          "kind": "function",
+          "line": 307,
+          "summary": "关闭真实资源后逐项退款，失败保留所有权供重试。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        }
+      ],
+      "lambdas": []
+    },
+    {
+      "module": "chronaxis.execution.parallel_integral_worker",
+      "path": "src/chronaxis/execution/parallel_integral_worker.py",
+      "sha256": "96eb419c5fcbb9ee06006adae74a3b7599ea2f3af2feb23a160af75571e72c7f",
+      "exports": [],
+      "objects": [
+        {
+          "name": "_facts",
+          "kind": "function",
+          "line": 22,
+          "summary": "摘取同次文件事实。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "terms",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "compatibility",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_error_text",
+          "kind": "function",
+          "line": 39,
+          "summary": "保留原错误及有限清理说明。",
+          "parameters": [
+            {
+              "name": "error",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_close_file",
+          "kind": "function",
+          "line": 45,
+          "summary": "关闭数值和读取资源，保留首个错误。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "terms",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "primary",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "read_events",
+          "kind": "function",
+          "line": 62,
+          "summary": "读取一批原记录，返回已形成事件及真实EOF或原错误。",
+          "parameters": [
+            {
+              "name": "reader",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "terms",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "compatibility",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "read_events.append",
+          "kind": "function",
+          "line": 73,
+          "summary": "只为实际事件保存同次事实。",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "take_events",
+          "kind": "function",
+          "line": 108,
+          "summary": "从已形成前缀中取得一份有界多事件包，不触发下一次读取。",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "last_facts",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "worker_main",
+          "kind": "function",
+          "line": 133,
+          "summary": "处理固定文件、配置及next命令，不创建子工作进程。",
           "parameters": [
             {
               "name": "control",
@@ -28788,7 +31549,7 @@
     {
       "module": "chronaxis.execution.record_integral",
       "path": "src/chronaxis/execution/record_integral.py",
-      "sha256": "ef10c53c12a67278d85f12cdf53e674d38aee15fd473ffc217d6ec9826428863",
+      "sha256": "380962242a6bef1c4af0a5cf7701ba46ef1dfaf3806caaf65adb863f7b160804",
       "exports": [],
       "objects": [
         {
@@ -28837,9 +31598,42 @@
           "bases": []
         },
         {
+          "name": "record_integral_cost",
+          "kind": "function",
+          "line": 44,
+          "summary": "计算现役积分器实际固定预约费用，供首帧前选择与构造共用。",
+          "parameters": [
+            {
+              "name": "spec",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "input_unit",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "batch_intervals",
+              "type": "",
+              "default": "64",
+              "kind": "仅关键字"
+            },
+            {
+              "name": "partial_limit",
+              "type": "",
+              "default": "4096",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "RecordIntegral",
           "kind": "class",
-          "line": 44,
+          "line": 58,
           "summary": "拥有有限驱动点缓冲和累计状态；失败后只能关闭，完成后只读结果。",
           "fields": [],
           "bases": [
@@ -28849,7 +31643,7 @@
         {
           "name": "RecordIntegral.__init__",
           "kind": "function",
-          "line": 51,
+          "line": 65,
           "summary": "预付有界状态及点缓冲，数值临时数组在每次归约前另预约。",
           "parameters": [
             {
@@ -28918,7 +31712,7 @@
         {
           "name": "RecordIntegral._flush",
           "kind": "function",
-          "line": 100,
+          "line": 114,
           "summary": "消费当前完整记录对并留下一个共享端点，首条/末条不凭空增加周期。",
           "parameters": [
             {
@@ -28931,9 +31725,105 @@
           "decorators": []
         },
         {
+          "name": "RecordIntegral._accept_terms",
+          "kind": "function",
+          "line": 164,
+          "summary": "按原序消费面积及覆盖事实，行缓冲与并行块共用同一累计逻辑。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "areas",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "valid",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "covered_ns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "valid_ns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "quality",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "conditional",
+              "type": "",
+              "default": "None",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "RecordIntegral.consume_terms",
+          "kind": "function",
+          "line": 183,
+          "summary": "消费已校验、有界的实际时间面积块；此入口不接收文件部分和。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "areas",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "valid",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "covered_ns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "valid_ns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "quality",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "RecordIntegral.finish",
           "kind": "function",
-          "line": 159,
+          "line": 209,
           "summary": "输入调用方确认结束后结算最后完整记录对，返回精简内部结果。",
           "parameters": [
             {
@@ -28948,7 +31838,7 @@
         {
           "name": "RecordIntegral.closed",
           "kind": "function",
-          "line": 188,
+          "line": 238,
           "summary": "读取自有费用完全释放状态。",
           "parameters": [
             {
@@ -28965,7 +31855,7 @@
         {
           "name": "RecordIntegral.close",
           "kind": "function",
-          "line": 192,
+          "line": 242,
           "summary": "释放自有缓冲/数值状态及费用，不操作外部输入和目录。",
           "parameters": [
             {
@@ -29019,7 +31909,7 @@
     {
       "module": "chronaxis.execution.record_point_buffer",
       "path": "src/chronaxis/execution/record_point_buffer.py",
-      "sha256": "ae525d30aa247f49d5b6515f97eb40aa9048ae32e5632999031d0086129ac776",
+      "sha256": "d1378986bd96970c77ecbf7637b63c987e0f49fd3c774e971640ccb35cd659ee",
       "exports": [],
       "objects": [
         {
@@ -29085,9 +31975,42 @@
           "decorators": []
         },
         {
-          "name": "RecordPointBuffer.expire_at",
+          "name": "RecordPointBuffer._append_validated",
           "kind": "function",
           "line": 79,
+          "summary": "内部可信入口：追加一个无条件驱动点，等价于consume(((time, value, deadline),))。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "time",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "deadline",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "RecordPointBuffer.expire_at",
+          "kind": "function",
+          "line": 103,
           "summary": "依赖中途失效时截断最后待结算驱动点，不新增驱动点或补计周期。",
           "parameters": [
             {
@@ -30579,7 +33502,7 @@
     {
       "module": "chronaxis.execution.record_session_calculations",
       "path": "src/chronaxis/execution/record_session_calculations.py",
-      "sha256": "6af01486453cc6474c2542adb99d25037b1d6bad6c96df232878a378032dc8a6",
+      "sha256": "24e5eb700dad9e2179875042b0619b78ea9acef7c5daa88d8f90b333a6282d1f",
       "exports": [],
       "objects": [
         {
@@ -30846,9 +33769,30 @@
           "decorators": []
         },
         {
+          "name": "RecordSessionCalculations._execute_parallel_integrals",
+          "kind": "function",
+          "line": 247,
+          "summary": "为适用的自动后端任务执行文件内面积并行。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "requests",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "RecordSessionCalculations._prepare_requests",
           "kind": "function",
-          "line": 245,
+          "line": 275,
           "summary": "从已验证计划取得请求和间隔选择；只为实际输出建立汇总状态。",
           "parameters": [
             {
@@ -30869,7 +33813,7 @@
         {
           "name": "RecordSessionCalculations._prepare_input_state",
           "kind": "function",
-          "line": 274,
+          "line": 304,
           "summary": "按共用需求打开来源并建立最新信号状态，不提前读完文件。",
           "parameters": [
             {
@@ -30890,7 +33834,7 @@
         {
           "name": "RecordSessionCalculations._prepare_operators",
           "kind": "function",
-          "line": 377,
+          "line": 407,
           "summary": "依次建立实际请求的计算、事件、窗口和序列算子。",
           "parameters": [
             {
@@ -30935,7 +33879,7 @@
         {
           "name": "RecordSessionCalculations._complete_results",
           "kind": "function",
-          "line": 503,
+          "line": 533,
           "summary": "输入真正EOF后完成尾部、统计和结果汇总，不发布未完成前缀。",
           "parameters": [
             {
@@ -30962,7 +33906,7 @@
         {
           "name": "RecordSessionCalculations._append_aggregate_input",
           "kind": "function",
-          "line": 551,
+          "line": 581,
           "summary": "从同一源行同时得到公开记录和聚合输入，不复制或重扫源表。",
           "parameters": [
             {
@@ -30983,7 +33927,7 @@
         {
           "name": "RecordSessionCalculations._finish_actual_tails",
           "kind": "function",
-          "line": 559,
+          "line": 589,
           "summary": "以实际来源EOF结算连续计算和样本统计，固定周期不凭空加报文。",
           "parameters": [
             {
@@ -30998,7 +33942,7 @@
         {
           "name": "RecordSessionCalculations._consume_constants",
           "kind": "function",
-          "line": 598,
+          "line": 628,
           "summary": "常量只需真实首末范围，EOF后复用相同统计核，不创建假信号或逐行值。",
           "parameters": [
             {
@@ -31013,7 +33957,7 @@
         {
           "name": "RecordSessionCalculations._emit_event",
           "kind": "function",
-          "line": 621,
+          "line": 651,
           "summary": "将必要事件字段直接写一次最终结果仓。",
           "parameters": [
             {
@@ -31034,7 +33978,7 @@
         {
           "name": "RecordSessionCalculations._emit_event_duration",
           "kind": "function",
-          "line": 636,
+          "line": 666,
           "summary": "把每段事件指标直接写最终指标表。",
           "parameters": [
             {
@@ -31067,7 +34011,7 @@
         {
           "name": "RecordSessionCalculations._emit_segment",
           "kind": "function",
-          "line": 650,
+          "line": 680,
           "summary": "只写实际片段与父关联，后续指标借用同一片段。",
           "parameters": [
             {
@@ -31088,7 +34032,7 @@
         {
           "name": "RecordSessionCalculations._count_outcome",
           "kind": "function",
-          "line": 666,
+          "line": 696,
           "summary": "随已写出的指标计数。",
           "parameters": [
             {
@@ -31115,7 +34059,7 @@
         {
           "name": "RecordSessionCalculations.analysis_outcome",
           "kind": "function",
-          "line": 672,
+          "line": 702,
           "summary": "取得同次规则和指标概况。",
           "parameters": [
             {
@@ -31130,7 +34074,7 @@
         {
           "name": "RecordSessionCalculations.threshold_summaries",
           "kind": "function",
-          "line": 677,
+          "line": 707,
           "summary": "生成明确预设请求的有限汇总，不复制状态轨迹。",
           "parameters": [
             {
@@ -31145,7 +34089,7 @@
         {
           "name": "RecordSessionCalculations._emit_sequence",
           "kind": "function",
-          "line": 690,
+          "line": 720,
           "summary": "只写最终配对结论，不复制事件全文。",
           "parameters": [
             {
@@ -31166,7 +34110,7 @@
         {
           "name": "RecordSessionCalculations._consume_message",
           "kind": "function",
-          "line": 702,
+          "line": 732,
           "summary": "按原序收集有限目标批，供同来源各累计器共用。",
           "parameters": [
             {
@@ -31187,7 +34131,7 @@
         {
           "name": "RecordSessionCalculations._flush_messages",
           "kind": "function",
-          "line": 743,
+          "line": 773,
           "summary": "共享当前目标批完成各汇总计算，不创建历史或逐次输出。",
           "parameters": [
             {
@@ -31202,7 +34146,7 @@
         {
           "name": "RecordSessionCalculations._consume_direct_update",
           "kind": "function",
-          "line": 771,
+          "line": 801,
           "summary": "向已完成首帧前检查的同帧owner交付更新。",
           "parameters": [
             {
@@ -31223,7 +34167,7 @@
         {
           "name": "RecordSessionCalculations._before_direct_group",
           "kind": "function",
-          "line": 775,
+          "line": 805,
           "summary": "结算前更新省略domain的实际范围；显式裁剪不额外查询。",
           "parameters": [
             {
@@ -31238,7 +34182,7 @@
         {
           "name": "RecordSessionCalculations._advance_observed_domain",
           "kind": "function",
-          "line": 783,
+          "line": 813,
           "summary": "用已付费游标的真实首末更新在线范围，不读取更多输入或保存时间序列。",
           "parameters": [
             {
@@ -31253,7 +34197,7 @@
         {
           "name": "RecordSessionCalculations._merge_sources",
           "kind": "function",
-          "line": 815,
+          "line": 845,
           "summary": "每来源只取已付费前瞻，收齐同一时刻更新再求值。",
           "parameters": [
             {
@@ -31268,7 +34212,7 @@
         {
           "name": "RecordSessionCalculations._close_slot",
           "kind": "function",
-          "line": 877,
+          "line": 907,
           "summary": "关闭成功才解除责任。",
           "parameters": [
             {
@@ -31289,7 +34233,7 @@
         {
           "name": "RecordSessionCalculations._require_closed",
           "kind": "function",
-          "line": 886,
+          "line": 916,
           "summary": "核实子资源真实关闭再撤槽。",
           "parameters": [
             {
@@ -31306,7 +34250,7 @@
         {
           "name": "RecordSessionCalculations.close",
           "kind": "function",
-          "line": 891,
+          "line": 921,
           "summary": "反向释放自有资源，保留失败槽供父会话重试。",
           "parameters": [
             {
@@ -33531,13 +36475,13 @@
     {
       "module": "chronaxis.execution.same_frame_integrals",
       "path": "src/chronaxis/execution/same_frame_integrals.py",
-      "sha256": "3c38c5ababf555eb940aa55547f396411bd2ac3cf513e1fcc8b07bd6a3376a6c",
+      "sha256": "68997afb4e663bc7d2b1e69686862bb2be1fb901237ed5719bb6d7d3cecaac25",
       "exports": [],
       "objects": [
         {
           "name": "direct_integral_inputs",
           "kind": "function",
-          "line": 35,
+          "line": 37,
           "summary": "检查直接积分的完整静态边界，不读取DBC或数据。",
           "parameters": [
             {
@@ -33552,7 +36496,7 @@
         {
           "name": "SameFrameBinding",
           "kind": "class",
-          "line": 70,
+          "line": 72,
           "summary": "保存同次DBC证明的共同定位；fd可为None，真实歧义继续由原投影器检查。",
           "fields": [
             {
@@ -33597,7 +36541,7 @@
         {
           "name": "SameFrameBinding.matches",
           "kind": "function",
-          "line": 80,
+          "line": 82,
           "summary": "匹配已投影更新。",
           "parameters": [
             {
@@ -33618,7 +36562,7 @@
         {
           "name": "same_frame_binding",
           "kind": "function",
-          "line": 89,
+          "line": 91,
           "summary": "复用同次DBC字段事实证明唯一共同绑定，不加载文件。",
           "parameters": [
             {
@@ -33637,9 +36581,187 @@
           "decorators": []
         },
         {
+          "name": "_NotCompilable",
+          "kind": "class",
+          "line": 129,
+          "summary": "静态表达式或信号声明不在浮点快速子集内；调用方保留原通用求值。",
+          "fields": [],
+          "bases": [
+            "Exception"
+          ]
+        },
+        {
+          "name": "_has_shared_composite_nodes",
+          "kind": "function",
+          "line": 138,
+          "summary": "检查闭包递归是否会重复展开同一个复合节点。",
+          "parameters": [
+            {
+              "name": "roots",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_compile_float_program",
+          "kind": "function",
+          "line": 158,
+          "summary": "把全FLOAT64的简单表达式编译为闭包，逐项复刻参考核的数值与质量规则。",
+          "parameters": [
+            {
+              "name": "node",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_compile_float_program.binary",
+          "kind": "function",
+          "line": 183,
+          "summary": "计算两侧并合并质量。",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "left",
+              "type": "",
+              "default": "left",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "right",
+              "type": "",
+              "default": "right",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "op",
+              "type": "",
+              "default": "op",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_compile_float_program.unary",
+          "kind": "function",
+          "line": 212,
+          "summary": "取负值或绝对值。",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "child",
+              "type": "",
+              "default": "child",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "negate",
+              "type": "",
+              "default": "negate",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_compile_float_program.affine",
+          "kind": "function",
+          "line": 230,
+          "summary": "执行已编译单位换算。",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "child",
+              "type": "",
+              "default": "child",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "factor",
+              "type": "",
+              "default": "factor",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "shift",
+              "type": "",
+              "default": "shift",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_float_normalizer",
+          "kind": "function",
+          "line": 248,
+          "summary": "FLOAT64信号的快速归一化：普通有限数直接按原顺序计算value*scale+offset。",
+          "parameters": [
+            {
+              "name": "definition",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_float_normalizer.slow",
+          "kind": "function",
+          "line": 261,
+          "summary": "复用参考归一化。",
+          "parameters": [
+            {
+              "name": "raw",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_float_normalizer.normalize",
+          "kind": "function",
+          "line": 272,
+          "summary": "直接换算有限原数值，其他输入交参考核。",
+          "parameters": [
+            {
+              "name": "raw",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "_same_value",
           "kind": "function",
-          "line": 127,
+          "line": 295,
           "summary": "沿用同一时刻事实比较。",
           "parameters": [
             {
@@ -33658,9 +36780,191 @@
           "decorators": []
         },
         {
+          "name": "_reference_group_values",
+          "kind": "function",
+          "line": 302,
+          "summary": "共用标量表达式及真实TTL求值，既有单进程与文件工作进程使用相同算法。",
+          "parameters": [
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "time",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "same_frame_evaluator_cost",
+          "kind": "function",
+          "line": 322,
+          "summary": "计算求值器实际预约费用，供首帧前预算选择与构造共用。",
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SameFrameEvaluator",
+          "kind": "class",
+          "line": 333,
+          "summary": "共享归一化、表达式和TTL的有限求值器，不归组、不累计面积。",
+          "fields": [],
+          "bases": []
+        },
+        {
+          "name": "SameFrameEvaluator.__init__",
+          "kind": "function",
+          "line": 336,
+          "summary": "验证实际定义与已冻结表达式并预约静态及求值空间。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "budget",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "definitions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "expressions",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "binding",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "session_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "derived",
+              "type": "",
+              "default": "()",
+              "kind": "仅关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SameFrameEvaluator.normalize",
+          "kind": "function",
+          "line": 396,
+          "summary": "归一化一条已投影报文，保留原质量规则。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "values",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SameFrameEvaluator.evaluate",
+          "kind": "function",
+          "line": 420,
+          "summary": "对一个已解决同一时刻选择的组求值。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "time",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "values",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SameFrameEvaluator.close",
+          "kind": "function",
+          "line": 445,
+          "summary": "先解除闭包和声明引用再退款。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "SameFrameIntegrals",
           "kind": "class",
-          "line": 134,
+          "line": 455,
           "summary": "拥有同一时刻选择和表达式上下文；借用积分器，关闭时不代替父会话关闭它们。",
           "fields": [],
           "bases": []
@@ -33668,7 +36972,7 @@
         {
           "name": "SameFrameIntegrals.__init__",
           "kind": "function",
-          "line": 137,
+          "line": 458,
           "summary": "检查静态表达式与实定义，预付有界状态，不读取输入。",
           "parameters": [
             {
@@ -33731,7 +37035,7 @@
         {
           "name": "SameFrameIntegrals._require_open",
           "kind": "function",
-          "line": 207,
+          "line": 547,
           "summary": "失败后仅允许关闭。",
           "parameters": [
             {
@@ -33746,7 +37050,7 @@
         {
           "name": "SameFrameIntegrals.consume",
           "kind": "function",
-          "line": 212,
+          "line": 552,
           "summary": "接收一条已投影报文，完整同一时刻组才推进积分。",
           "parameters": [
             {
@@ -33765,10 +37069,46 @@
           "decorators": []
         },
         {
+          "name": "SameFrameIntegrals._consume_fast",
+          "kind": "function",
+          "line": 606,
+          "summary": "浮点快速路径逐帧接收；检查、同一时刻选择和冲突规则与consume相同。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "update",
+              "type": "LegacyDecodedUpdate",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "SameFrameIntegrals._flush_fast",
+          "kind": "function",
+          "line": 658,
+          "summary": "提交完整同一时刻组，取最早有效截止并追加到借用积分器。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "SameFrameIntegrals._flush",
           "kind": "function",
-          "line": 264,
-          "summary": "提交完整同一时刻值，复用原表达式核及积分器。",
+          "line": 689,
+          "summary": "按已选求值路径提交完整同一时刻值并复用积分器。",
           "parameters": [
             {
               "name": "self",
@@ -33782,7 +37122,7 @@
         {
           "name": "SameFrameIntegrals.finish",
           "kind": "function",
-          "line": 301,
+          "line": 728,
           "summary": "在原读取器确认EOF并关闭后，补算到来源真实末端的保持尾段。",
           "parameters": [
             {
@@ -33803,7 +37143,7 @@
         {
           "name": "SameFrameIntegrals.close",
           "kind": "function",
-          "line": 325,
+          "line": 752,
           "summary": "释放自有上下文及费用，借用积分器由父会话关闭。",
           "parameters": [
             {
@@ -33816,7 +37156,32 @@
           "decorators": []
         }
       ],
-      "lambdas": []
+      "lambdas": [
+        {
+          "line": 174,
+          "parameters": [
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "expression": "lambda context: pair"
+        },
+        {
+          "line": 179,
+          "parameters": [
+            {
+              "name": "context",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "expression": "lambda context: context[name]"
+        }
+      ]
     },
     {
       "module": "chronaxis.execution.signal_validity",
@@ -42670,7 +46035,7 @@
     {
       "module": "chronaxis.legacy.records",
       "path": "src/chronaxis/legacy/records.py",
-      "sha256": "75c3328144e9db24a6d3ecc7fbec4df4e1efb335ab02fa5b8befc144606d13ff",
+      "sha256": "4fb1b8efd95517c2cc9154618796be06ccfb6091282547b3d70e6ff3753fae63",
       "exports": [],
       "objects": [
         {
@@ -42893,9 +46258,90 @@
           "decorators": []
         },
         {
+          "name": "_raw_frame_from_validated_fields",
+          "kind": "function",
+          "line": 200,
+          "summary": "供已逐字段核验的读取器构造原帧快照，不重复__post_init__检查。",
+          "parameters": [
+            {
+              "name": "timestamp",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "arbitration_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "is_extended_id",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "is_remote_frame",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "is_error_frame",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "channel",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "dlc",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "data",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "is_fd",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "is_rx",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "bitrate_switch",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "error_state_indicator",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "LegacyDecodedFrame",
           "kind": "class",
-          "line": 201,
+          "line": 226,
           "summary": "保存一次原yield和一次parse的结果，values独立只读且保留非有限诊断值。",
           "fields": [
             {
@@ -42922,7 +46368,7 @@
         {
           "name": "LegacyDecodedFrame.__post_init__",
           "kind": "function",
-          "line": 208,
+          "line": 233,
           "summary": "冻结原数值映射，不把缺键或非有限浮点替换为零。",
           "parameters": [
             {
@@ -42937,7 +46383,7 @@
         {
           "name": "StoredRawFrame",
           "kind": "class",
-          "line": 232,
+          "line": 257,
           "summary": "为首次读取保存原frame与分析坐标，供后续导出从新暂存回读。",
           "fields": [
             {
@@ -42964,7 +46410,7 @@
         {
           "name": "StoredRawFrame.__post_init__",
           "kind": "function",
-          "line": 239,
+          "line": 264,
           "summary": "检查原序号和新分析坐标，拒绝越界或替代模型。",
           "parameters": [
             {
@@ -42979,7 +46425,7 @@
         {
           "name": "LegacyCANField",
           "kind": "class",
-          "line": 251,
+          "line": 276,
           "summary": "按通道、ID和信号定位；可选帧类型由运行时实际记录消除歧义。",
           "fields": [
             {
@@ -43018,7 +46464,7 @@
         {
           "name": "LegacyCANField.__post_init__",
           "kind": "function",
-          "line": 260,
+          "line": 285,
           "summary": "校验定位形状，实际唯一性由worker同次公开DBC元数据核实。",
           "parameters": [
             {
@@ -43033,7 +46479,7 @@
         {
           "name": "LegacyCANField.key",
           "kind": "function",
-          "line": 274,
+          "line": 299,
           "summary": "提供稳定原定位键，供新绑定层引用；不改signal名称。",
           "parameters": [
             {
@@ -43050,7 +46496,7 @@
         {
           "name": "LegacyCANRequest",
           "kind": "class",
-          "line": 283,
+          "line": 308,
           "summary": "声明单BLF、单DBC和有限原定位；构造只校验模型，不访问文件。",
           "fields": [
             {
@@ -43077,7 +46523,7 @@
         {
           "name": "LegacyCANRequest.__post_init__",
           "kind": "function",
-          "line": 290,
+          "line": 315,
           "summary": "拒绝替代路径/定位及重复完整定位，保留原tuple顺序。",
           "parameters": [
             {
@@ -43092,7 +46538,7 @@
         {
           "name": "LegacyCANRequest.profile",
           "kind": "function",
-          "line": 316,
+          "line": 341,
           "summary": "读取唯一受支持profile。",
           "parameters": [
             {
@@ -43109,7 +46555,7 @@
         {
           "name": "frame_to_dict",
           "kind": "function",
-          "line": 322,
+          "line": 347,
           "summary": "将原frame编码为固定JSON字段，data_hex不丢失任一字节。",
           "parameters": [
             {
@@ -43124,7 +46570,7 @@
         {
           "name": "frame_from_dict",
           "kind": "function",
-          "line": 332,
+          "line": 357,
           "summary": "只从固定字段重建原frame，不加载任意类或调用CAN构造器。",
           "parameters": [
             {
@@ -43139,7 +46585,7 @@
         {
           "name": "_value_to_wire",
           "kind": "function",
-          "line": 345,
+          "line": 370,
           "summary": "给非有限原解码float明确标签，有限数字和bool保原类型。",
           "parameters": [
             {
@@ -43154,7 +46600,7 @@
         {
           "name": "_value_from_wire",
           "kind": "function",
-          "line": 358,
+          "line": 383,
           "summary": "恢复固定非有限标签，拒绝裸NaN和任意标签对象。",
           "parameters": [
             {
@@ -43169,7 +46615,7 @@
         {
           "name": "decoded_to_dict",
           "kind": "function",
-          "line": 374,
+          "line": 399,
           "summary": "编码一次原yield的完整解码记录，不投影或过滤返回键。",
           "parameters": [
             {
@@ -43184,7 +46630,7 @@
         {
           "name": "decoded_from_dict",
           "kind": "function",
-          "line": 386,
+          "line": 411,
           "summary": "重建单次原返回，空dict与非有限诊断均保持，不猜解码失败原因。",
           "parameters": [
             {
@@ -43199,7 +46645,7 @@
         {
           "name": "_decoded_from_checked_dict",
           "kind": "function",
-          "line": 401,
+          "line": 426,
           "summary": "在同次严格JSON解包后重建原记录，原值只检查一次后冻结自有字典。",
           "parameters": [
             {
@@ -43214,7 +46660,7 @@
         {
           "name": "_try_decoded_small_packet",
           "kind": "function",
-          "line": 459,
+          "line": 484,
           "summary": "解析并证明常见完整decoded小包合法，不能证明时返回None交回原入口。",
           "parameters": [
             {
@@ -43229,7 +46675,7 @@
         {
           "name": "_decoded_from_packet",
           "kind": "function",
-          "line": 509,
+          "line": 534,
           "summary": "在同次专用decoded包解析中复用小包证明，保原完整入口的输出及错误顺序。",
           "parameters": [
             {
@@ -43244,7 +46690,7 @@
         {
           "name": "field_to_dict",
           "kind": "function",
-          "line": 531,
+          "line": 556,
           "summary": "按唯一定位合同输出原字段，不带样本或隐式别名。",
           "parameters": [
             {
@@ -43259,7 +46705,7 @@
         {
           "name": "field_from_dict",
           "kind": "function",
-          "line": 541,
+          "line": 566,
           "summary": "只构建固定定位模型，不接受多余元数据或对象标签。",
           "parameters": [
             {
@@ -43274,7 +46720,7 @@
         {
           "name": "_scalar_size",
           "kind": "function",
-          "line": 558,
+          "line": 583,
           "summary": "计算原生JSON标量字节，普通标量直接计数，复杂文本仍交原JSON编码器。",
           "parameters": [
             {
@@ -43295,7 +46741,7 @@
         {
           "name": "_decoded_entry_size",
           "kind": "function",
-          "line": 595,
+          "line": 620,
           "summary": "在插入新values字典前核单项完整wire成本，保0/False和非有限原值。",
           "parameters": [
             {
@@ -43322,7 +46768,7 @@
         {
           "name": "_decoded_values_size",
           "kind": "function",
-          "line": 606,
+          "line": 631,
           "summary": "不复制Mapping先预检全部解码值，累计成本限制无界或动态items前缀。",
           "parameters": [
             {
@@ -43343,7 +46789,7 @@
         {
           "name": "_wire_tree",
           "kind": "function",
-          "line": 621,
+          "line": 646,
           "summary": "在JSON复制前累计精确包大小，嵌套子树共享剩余额度而非各自重置上限。",
           "parameters": [
             {
@@ -43370,7 +46816,7 @@
         {
           "name": "encode_packet",
           "kind": "function",
-          "line": 658,
+          "line": 683,
           "summary": "编码最大65536字节的单个JSON对象包，不带换行或pickle。",
           "parameters": [
             {
@@ -43385,7 +46831,7 @@
         {
           "name": "_unique_object",
           "kind": "function",
-          "line": 676,
+          "line": 701,
           "summary": "拒绝重复JSON键，防止后值覆盖已核过的协议字段。",
           "parameters": [
             {
@@ -43400,7 +46846,7 @@
         {
           "name": "_reject_constant",
           "kind": "function",
-          "line": 689,
+          "line": 714,
           "summary": "拒绝NaN/Infinity非标准JSON常量。",
           "parameters": [
             {
@@ -43415,7 +46861,7 @@
         {
           "name": "decode_packet",
           "kind": "function",
-          "line": 697,
+          "line": 722,
           "summary": "从有界JSON bytes校验包形状，不反序列化任意Python对象。",
           "parameters": [
             {
@@ -44810,13 +48256,13 @@
     {
       "module": "chronaxis.planning.backend_selection",
       "path": "src/chronaxis/planning/backend_selection.py",
-      "sha256": "972cbbea1959388addf057f5390146cee0bed45dd85999923e4e00a48a632e12",
+      "sha256": "955908ab258742a44af110b69d67dd5063a36896b26e693e57dba05b70cb5bb4",
       "exports": [],
       "objects": [
         {
           "name": "BackendSelection",
           "kind": "class",
-          "line": 24,
+          "line": 34,
           "summary": "保存一次静态选择：请求值、实际后端及可读原因，不代表已运行。",
           "fields": [
             {
@@ -44843,7 +48289,7 @@
         {
           "name": "simple_numeric_expression",
           "kind": "function",
-          "line": 32,
+          "line": 42,
           "summary": "检查首批实测的简单数值表达式。",
           "parameters": [
             {
@@ -44858,7 +48304,7 @@
         {
           "name": "select_backend",
           "kind": "function",
-          "line": 51,
+          "line": 61,
           "summary": "为整个计划选择一次后端。",
           "parameters": [
             {
@@ -44871,9 +48317,30 @@
           "decorators": []
         },
         {
+          "name": "_streaming_selection",
+          "kind": "function",
+          "line": 108,
+          "summary": "按已验证的算子范围为普通流式计划选择 reference，其余保留 NumPy。",
+          "parameters": [
+            {
+              "name": "plan",
+              "type": "AnalysisPlan",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "conservative",
+              "type": "BackendSelection",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "execution_plan",
           "kind": "function",
-          "line": 95,
+          "line": 119,
           "summary": "取得实际执行视图。",
           "parameters": [
             {
@@ -47990,7 +51457,7 @@
           "name": "ExecutionPlan",
           "kind": "class",
           "line": 338,
-          "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、数据不全时的处理方式及文件读取/解码进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。",
+          "summary": "本次分析的执行选项：计算实现、共享受管理内存、输入和结果批量、暂存磁盘、数据不全时的处理方式及文件工作进程上限。进程数不选择输入或改变文件归并方式；见[运行设置](../execution.md)。",
           "fields": [
             {
               "name": "backend",
@@ -58840,13 +62307,13 @@
     {
       "module": "chronaxis.sources.asc",
       "path": "src/chronaxis/sources/asc.py",
-      "sha256": "6d140055016b317b7c353145a8f2c9b271343fec05c5c5234f0c68ef451d3561",
+      "sha256": "6dc9b29456ccc097ff037d8fba3547fb3fecb90b6afc07f75d344ef25cace5c0",
       "exports": [],
       "objects": [
         {
           "name": "ASCSpec",
           "kind": "class",
-          "line": 31,
+          "line": 36,
           "summary": "固定一次ASC读取的格式、编码、时间参考；不猜测本地时区。",
           "fields": [
             {
@@ -58891,7 +62358,7 @@
         {
           "name": "ASCSpec.__post_init__",
           "kind": "function",
-          "line": 41,
+          "line": 46,
           "summary": "检查配置字段的类型、取值及相互关系，不读取数据文件。",
           "parameters": [
             {
@@ -58904,9 +62371,24 @@
           "decorators": []
         },
         {
+          "name": "_seconds_from_ns",
+          "kind": "function",
+          "line": 66,
+          "summary": "从整数纳秒得到精确Decimal秒，不受调用方Decimal精度或舍入模式影响。",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "_date",
           "kind": "function",
-          "line": 61,
+          "line": 75,
           "summary": "解析ASC英文日期，不调用宿主时区。",
           "parameters": [
             {
@@ -58921,7 +62403,7 @@
         {
           "name": "_unsigned",
           "kind": "function",
-          "line": 81,
+          "line": 95,
           "summary": "严格解析无符号字段。",
           "parameters": [
             {
@@ -58954,7 +62436,7 @@
         {
           "name": "_status_event",
           "kind": "function",
-          "line": 96,
+          "line": 109,
           "summary": "识别已知CAN控制器状态事件，验证格式后告知调用方不产生数据帧。",
           "parameters": [
             {
@@ -58969,7 +62451,7 @@
         {
           "name": "_fd_error_diagnostics",
           "kind": "function",
-          "line": 122,
+          "line": 135,
           "summary": "检查Vector CAN FD错误帧的结构，返回描述实际帧类型的扩展标志。",
           "parameters": [
             {
@@ -58984,7 +62466,7 @@
         {
           "name": "_error_diagnostics",
           "kind": "function",
-          "line": 161,
+          "line": 174,
           "summary": "验证错误帧的已知诊断尾，不将可能受损的诊断ID或DLC当成正常帧字段。",
           "parameters": [
             {
@@ -59005,7 +62487,7 @@
         {
           "name": "_frame",
           "kind": "function",
-          "line": 186,
+          "line": 199,
           "summary": "解析标准数据部分，精确检查长度。",
           "parameters": [
             {
@@ -59032,7 +62514,7 @@
         {
           "name": "_repository_frame",
           "kind": "function",
-          "line": 272,
+          "line": 285,
           "summary": "同次解析标准统计尾或显式Sclicer布局，再复用标准字段检查。",
           "parameters": [
             {
@@ -59065,7 +62547,7 @@
         {
           "name": "ASCRead",
           "kind": "class",
-          "line": 313,
+          "line": 326,
           "summary": "拥有单个文件及固定行缓冲预算；完成、错误和取消均关闭，禁止中途重读。",
           "fields": [],
           "bases": []
@@ -59073,7 +62555,7 @@
         {
           "name": "ASCRead.__init__",
           "kind": "function",
-          "line": 316,
+          "line": 329,
           "summary": "预约后打开一次。",
           "parameters": [
             {
@@ -59130,7 +62612,7 @@
         {
           "name": "ASCRead.closed",
           "kind": "function",
-          "line": 354,
+          "line": 369,
           "summary": "提供真实关闭状态。",
           "parameters": [
             {
@@ -59147,7 +62629,7 @@
         {
           "name": "ASCRead.last_exact_time",
           "kind": "function",
-          "line": 360,
+          "line": 375,
           "summary": "取得最近参与时间顺序检查的精确秒值，供下一连续文件接续比较。",
           "parameters": [
             {
@@ -59162,9 +62644,24 @@
           ]
         },
         {
+          "name": "ASCRead._materialize_order",
+          "kind": "function",
+          "line": 384,
+          "summary": "把快速路径的整数纳秒比较状态转成原Decimal秒视图。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "ASCRead.__iter__",
           "kind": "function",
-          "line": 368,
+          "line": 390,
           "summary": "返回本次读取。",
           "parameters": [
             {
@@ -59179,7 +62676,7 @@
         {
           "name": "ASCRead._set_date",
           "kind": "function",
-          "line": 373,
+          "line": 395,
           "summary": "设置段基准。",
           "parameters": [
             {
@@ -59206,8 +62703,29 @@
         {
           "name": "ASCRead._line",
           "kind": "function",
-          "line": 389,
+          "line": 411,
           "summary": "解释一行。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "line",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "ASCRead._fast_data_line",
+          "kind": "function",
+          "line": 473,
+          "summary": "解析hex/absolute头下的标准经典数据帧；结果与原_frame路径逐字段相同。",
           "parameters": [
             {
               "name": "self",
@@ -59227,7 +62745,7 @@
         {
           "name": "ASCRead._check_order",
           "kind": "function",
-          "line": 446,
+          "line": 538,
           "summary": "拒绝所需时间序列回退，包括舍入后相同的亚纳秒回退。",
           "parameters": [
             {
@@ -59248,7 +62766,7 @@
         {
           "name": "ASCRead.__next__",
           "kind": "function",
-          "line": 464,
+          "line": 557,
           "summary": "读取到下一帧或EOF。",
           "parameters": [
             {
@@ -59263,7 +62781,7 @@
         {
           "name": "ASCRead.close",
           "kind": "function",
-          "line": 502,
+          "line": 595,
           "summary": "关闭自有文件再归还预算，可重试。",
           "parameters": [
             {
@@ -59278,7 +62796,7 @@
         {
           "name": "ASCRead.__enter__",
           "kind": "function",
-          "line": 515,
+          "line": 608,
           "summary": "支持显式读取上下文。",
           "parameters": [
             {
@@ -59293,7 +62811,7 @@
         {
           "name": "ASCRead.__exit__",
           "kind": "function",
-          "line": 520,
+          "line": 613,
           "summary": "保留原错并收尾。",
           "parameters": [
             {
@@ -61273,7 +64791,7 @@
     {
       "module": "chronaxis.sources.raw_can",
       "path": "src/chronaxis/sources/raw_can.py",
-      "sha256": "01de10a208cfcd923782ecb87b2e0e17cb5196d06300210759f80aadd1d13e58",
+      "sha256": "5f513c0873e619ff97c838f68894ea34ae1a59ce06b1f383783f03bdda7c3f7b",
       "exports": [],
       "objects": [
         {
@@ -61398,6 +64916,75 @@
               "name": "self",
               "type": "",
               "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_raw_record_from_validated_fields",
+          "kind": "function",
+          "line": 65,
+          "summary": "供已核验字段的文本读取器构造记录，不重复__post_init__检查。",
+          "parameters": [
+            {
+              "name": "frame",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "time_ns",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "path",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "line_number",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "sequence",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "raw_time",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "parser_version",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "dlc_code",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "time_quantized",
+              "type": "",
+              "default": "False",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "source_time_ns",
+              "type": "",
+              "default": "None",
               "kind": "位置或关键字"
             }
           ],
@@ -63724,7 +67311,7 @@
     {
       "module": "chronaxis.user_guide",
       "path": "src/chronaxis/user_guide.py",
-      "sha256": "f2f8d4dc241e05df401ff015736c4752266a9b4d2034f27fda8b99d41f44334c",
+      "sha256": "0579e3dc0ce84f17076194e522d163cb798f9ecc7eeabd3e392cb10e6e6ceafc",
       "exports": [],
       "objects": [
         {
@@ -63743,9 +67330,24 @@
           "decorators": []
         },
         {
-          "name": "_installed_archive",
+          "name": "manual_path",
           "kind": "function",
           "line": 37,
+          "summary": "定位随包Markdown用户手册的中英文首页，不写文件。",
+          "parameters": [
+            {
+              "name": "language",
+              "type": "",
+              "default": "'zh'",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "_installed_archive",
+          "kind": "function",
+          "line": 60,
           "summary": "按发行清单打包，忽略阅读后产生的缓存或结果。",
           "parameters": [
             {
@@ -63760,7 +67362,7 @@
         {
           "name": "export_guide",
           "kind": "function",
-          "line": 56,
+          "line": 79,
           "summary": "把当前安装包提供的AI使用指南导出为用户指定的新ZIP文件。",
           "parameters": [
             {
@@ -63775,5 +67377,6 @@
       ],
       "lambdas": []
     }
-  ]
+  ],
+  "version": "0.1.0.dev5"
 }

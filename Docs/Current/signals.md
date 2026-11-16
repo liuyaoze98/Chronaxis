@@ -27,10 +27,10 @@ sources:                              # 列出输入来源；每项规定数据�
     dbc_by_channel:                   # 为每个CAN通道指定解码用DBC文件；键是通道编号的字符串
       '1': data/can/teaching.dbc      # 为这个通道指定DBC文件；路径相对当前配置文件，通道键须为字符串
 signals:                              # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
+  - name: current                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                            # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
       frame_id: '0x101'               # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
       signal: Current_mA              # 填写DBC中的信号名称，大小写须一致
-    name: current                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
     valid_for: 200ms                  # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
 calculations:                         # 列出希望获得的统计或积分结果，每项独立选择范围和算法
   - name: maximum_current             # 为这项计算结果取唯一名称；结果表用它区分计算项
@@ -83,7 +83,7 @@ calculations:                  # 列出本例需要的计算结果
 | `name` | 字符串，必填 | 命名分析信号，供表达式和计算引用。自行取计划内唯一标识，例如`current`；用非保留的英文字母/下划线开头名称，不能含空格。 |
 | `source` | 字符串，唯一来源时可省略 | 选择该信号从哪个来源读取。填本文件已定义的`sources[].name`，如`meter`；不是CSV路径。 |
 | `field` | 字符串或映射，必填 | 定位来源中的原字段。CSV填表头原文`Current_mA`，内存填`rows[].values`中的键；CAN按DBC填通道、报文ID和信号名，见[定位字段](inputs.md#can-field)。大小写必须对应。 |
-| `dtype` | 字符串，CAN可省略 | 选择分析值类型。`float64`：有限小数；`int64`：-2^63至2^63-1整数；`uint64`：0至2^64-1整数；`bool`：true/false；`enum`：状态名称文本。依据数据含义选；CAN省略且未提供choices时按DBC物理值范围推导数值类型；显式choices的目标全部为布尔/字符串时可推导bool/enum。仅DBC有枚举表不会自动改成enum，仍可直接写state == 1。CSV/内存需要明确类型。 |
+| `dtype` | 字符串，CAN可省略 | 选择分析值类型。`float64`：有限小数；`int64`：-2^63至2^63-1整数；`uint64`：0至2^64-1整数；`bool`：true/false；`enum`：状态名称文本。依据数据含义选；CSV/内存需要明确类型；CAN省略时的推导规则见表后[细则](#dtype-choices-rules)。 |
 | `unit` | 非空字符串，CAN可省略 | 选择分析值的目标单位，如`A`、`V`，无量纲写`"1"`。CAN省略时采用DBC单位；DBC未给单位则用unknown，bool/enum用"1"。版本4在未填scale和offset时自动换算已知兼容单位。 |
 | `valid_for` | 正时长，可省略 | 限制一次有效更新可被后续时刻沿用多久。依据采样周期和允许的陈旧时间填`200ms`等；0ms、负数、null或无限不合法。省略取period或DBC报文周期的3倍，取不到所需周期时报配置错误。详见本页时间例。 |
 | `period` | 正时长，可省略 | 声明本信号正常更新周期，供省略valid_for时计算默认有效期。查采集设置或设备报文规范，如`100ms`；优先于DBC报文周期，不按相邻记录猜测。省略可用DBC周期，0/null不合法。它不会创建新样本。 |
@@ -92,7 +92,7 @@ calculations:                  # 列出本例需要的计算结果
 | `conversion.scale` | 有限数，可省略 | 公式为输入值×scale+offset。版本4未填两个系数时自动推导，例如mA→A取0.001；否则省略scale取1。显式系数须符合已知单位关系。bool/enum只允许1，true/false不能作数值系数。 |
 | `conversion.offset` | 有限数，可省略 | 乘法之后的加数，单位为目标unit。版本4未填两个系数时自动推导，例如degC→K取273.15；否则省略offset取0。显式系数须符合已知单位关系。bool/enum的offset必须为0。不是时间偏移，true/false无效。 |
 | `code_dtype` | 字符串，可省略；仅版本4的enum | 供enum_code读取原始整数编码，选int64或uint64。CAN无缩放整数信号可从DBC推导；其他来源无法确定时须显式声明。只按状态文字比较时可省略。选择须与实际编码类型和范围一致。 |
-| `choices` | 二元列表的列表；CAN的enum可从DBC读取，其余默认[] | 把输入代码转换为分析中的真假值或状态名称。每项写`[输入代码, 分析值]`，代码查设备编码表；bool如`[[0,false],[1,true]]`，enum如`[[0,idle],[7,running]]`。代码允许整数/布尔/字符串，类型必须匹配；bool目标只能true/false，enum目标必须非空文本。CAN选择enum且未填choices时读取DBC枚举表；没有枚举表或需要自定义标签时可手填choices；若DBC解码值为float（包括0.5或1.0），不能用choices匹配，须保留数值dtype并使用数值条件。不得截断为整数或重复执行DBC缩放。CSV/内存enum需手填；bool省略时只接受原生布尔。数值信号不使用此字段。见完整编码例。 |
+| `choices` | 二元列表的列表；CAN的enum可从DBC读取，其余默认[] | 把输入代码转换为分析中的真假值或状态名称。每项写`[输入代码, 分析值]`，代码查设备编码表；bool如`[[0,false],[1,true]]`，enum如`[[0,idle],[7,running]]`。数值信号不使用此字段。类型匹配和DBC读取规则见表后[细则](#dtype-choices-rules)。 |
 | `valid_range` | 两个数的列表，可省略 | 限制换算后数值的允许上下界，含两端。按传感器量程或分析要求填，例如安培范围`[-100,100]`；下限不得大于上限。101A记OUT_OF_RANGE，既不裁剪成100也不补0。省略时不额外限制该物理范围，类型、缺失等检查仍执行。[]/null非法，bool/enum不适用。 |
 | `invalid_values` | 标量列表，默认[] | 列出表示无效的输入值，在额外换算前按类型和值排除。查设备无效码，并确认CSV解析或DBC解码得到的值；例如输入整数65535填`[65535]`，不能填换算后65.535。省略或[]不增加这项排除；null不能代替列表。详见原值类型表。 |
 | `sample_policy` | 字符串，默认backward_hold | 选择两次更新之间如何取得信号值。目前仅支持`backward_hold`：在有效期内沿用最近一次更新；不做线性插值。通常省略。 |
@@ -104,18 +104,28 @@ calculations:                  # 列出本例需要的计算结果
 | `measurement_location` | 非空字符串或null，默认null | 记录实际测量位置。查接线/传感器说明；电池包端填`pack_terminal`。普通信号可省略或填项目约定位置文本；充电预设的电流、电压角色必须为pack_terminal，包括显式角色绑定。不会由信号名称推断或改变测点。 |
 | `metadata` | 映射，默认{} | 保存本信号自定义说明，例如`{sensor_serial: S001}`；键和值由项目记录规则决定。省略/{}无附加说明，不能放入这里来启用换算或质量功能。 |
 
+<a id="dtype-choices-rules"></a>
+
+**dtype 与 choices 细则。**
+
+- CAN省略dtype且未提供choices时，按DBC物理值范围推导数值类型；显式choices的目标全部为布尔/字符串时可推导bool/enum。仅DBC有枚举表不会自动改成enum，仍可直接写state == 1。
+- choices的代码允许整数/布尔/字符串，类型必须匹配；bool目标只能true/false，enum目标必须非空文本。
+- CAN选择enum且未填choices时读取DBC枚举表；没有枚举表或需要自定义标签时可手填choices。
+- 若DBC解码值为float（包括0.5或1.0），不能用choices匹配，须保留数值dtype并使用数值条件。不得截断为整数或重复执行DBC缩放。
+- CSV/内存的enum需手填choices；bool省略choices时只接受原生布尔。完整写法见本页编码例。
+
 例如同一信号在第1秒收到两条10 A更新，类型和质量相同，普通分析合并为一个更新；收到10 A和20 A时，默认error报错，last_by_sequence采用来源序号较大的值，不按工作进程到达顺序选择。同一别名重复使用同一来源序号仍是错误。此规则用于普通信号更新；逐消息累计保留每条报文的贡献，不因数值相同而去重。
 
 下面两段分别追加到已有的一个`signals`列表项中，不是完整信号配置。第一段用于记录项目自定含义；第二段用于按预设角色查找，仍须按[角色表](presets.md#preset-role-requirements)提供正确单位、方向和测量位置。
 
 ```yaml
 semantic_id: example.power       # 本项目对功率信号的业务命名
-semantic_contract_version: "2"  # 上述业务定义的项目自定版本
+semantic_contract_version: "2"   # 上述业务定义的项目自定版本
 ```
 
 ```yaml
 semantic_id: battery.current     # 预设角色表约定的电流含义
-semantic_contract_version: "1"  # 当前预设自动查找要求的业务版本
+semantic_contract_version: "1"   # 当前预设自动查找要求的业务版本
 ```
 
 只填`semantic_contract_version: "2"`而没有`semantic_id`会在配置加载时报错；单独填写`semantic_id`可以记录业务含义，但不等于满足预设自动查找要求。
@@ -206,27 +216,27 @@ CSV先按reader.missing_values匹配缺失标记，再解析布尔；例如NA在
 
 ```yaml
 signals:                                      # 把输入字段定义为有名称、类型、单位和有效期的分析信号
-  - choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
-      - [0, false]
-      - [1, true]
+  - name: enabled                             # 给分析信号取名称；后续表达式和计算通过此名称引用它
     field:                                    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
       frame_id: '0x102'                       # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
       signal: Enabled                         # 填写DBC中的信号名称，大小写须一致
-    name: enabled                             # 给分析信号取名称；后续表达式和计算通过此名称引用它
     valid_for: 200ms                          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
-  - choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
-      - [0, idle]
-      - [7, running]
+    choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+      - [0, false]
+      - [1, true]
+  - name: mode                                # 给分析信号取名称；后续表达式和计算通过此名称引用它
     field:                                    # 指定来源中的原始字段；CSV填表头，CAN填写通道/报文ID/DBC信号名
       frame_id: '0x103'                       # 选择包含信号的报文ID；从对应DBC取得，可写整数或支持的进制文本
       signal: ModeCode                        # 填写DBC中的信号名称，大小写须一致
-    name: mode                                # 给分析信号取名称；后续表达式和计算通过此名称引用它
-    valid_for: 200ms                          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
     dtype: enum                               # 选择分析值类型；float64小数、int64有符号整数、uint64非负整数、bool真假、enum状态名称
+    valid_for: 200ms                          # 设置一次有效更新最多沿用多久；依据采样周期和允许数据陈旧程度填写
+    choices:                                  # 把输入状态代码转成分析值；每项是[输入代码,结果值]，代码查设备规范
+      - [0, idle]
+      - [7, running]
 rules:                                        # 列出识别活动或瞬间变化的规则；每项产生有独立ID的事件
-  - condition: enabled and mode == "running"  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
-    name: enabled_running                     # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
+  - name: enabled_running                     # 为规则取唯一名称；窗口rule和计算scope通过此名选择它的事件
     rule_type: rising_edge                    # 选择活动或变化识别算法；本例condition由false变为true时产生瞬时事件
+    condition: enabled and mode == "running"  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
 ```
 
 每项`choices`只有左右两个值：左边是输入代码，右边是分析值。`[7,running]`不表示从第7列读取；列由field选择。bool映射右边必须是YAML真假值，不能写字符串`"true"`；enum右边必须是非空文本。未列入映射的可解析代码成为无效更新，旧状态不再沿用。
@@ -274,14 +284,16 @@ missing_values匹配CSV原始单元格文字，invalid_values匹配解析后的�
 | 输入情况 | 运行行为 | 应采取的动作 |
 |---|---|---|
 | 已声明为缺失文本的NA | 产生无效更新，旧值被替换；分析可继续，结果标记缺失 | 核对缺失时段及结果完整性 |
-| 未声明为缺失的非法数字bad | CSV读取失败，公开运行抛AnalysisError，cause中保留SourceReadError、ValueError以及底层十进制解析异常 | 修正单元格，或确认其含义后声明为missing_values |
+| 未声明为缺失的非法数字bad | CSV读取失败，公开运行抛AnalysisError，原始错误原因保留在异常中 | 修正单元格，或确认其含义后声明为missing_values |
 | 转换后的数值超出valid_range | 产生OUT_OF_RANGE无效更新；不截成边界数，也不补0 | 核对原数据、单位和真实业务范围 |
 
 配置声明错误由PlanValidationError指出字段位置；已进入信号归一化阶段的无效值通过结果status/reason/quality呈现。不能将任意读取错误都解释为UNKNOWN并继续。处理步骤见[排错](troubleshooting.md)，状态含义见[结果](results.md)。
 
 ## valid_for：最近值可以沿用多久
 
-不填写`valid_for`时，程序使用当前信号周期的3倍：先取该信号的`period`，没有填写时再从DBC读取所属报文周期。没有DBC的已解码CSV或内存信号可填写`period`。需要沿用历史样本、但不能取得周期时，会要求补充`period`或`valid_for`，不按相邻记录的间隔猜测周期。普通入口`chronaxis run`及`AnalysisRunner.run`在启动时补齐已使用信号的有效期；即使只做逐消息计算，也须提供可用的`period`、`valid_for`或DBC报文周期。[高性能积分器](fast-energy.md)的`fast run`只读取当条报文，不保持前值，无需为此填写信号周期或有效期。公式中的自定义时间参数（如`parameters.frame_duration`）不会自动填入信号`period`。
+不填写`valid_for`时，程序使用当前信号周期的3倍：先取该信号的`period`，没有填写时再从DBC读取所属报文周期。没有DBC的已解码CSV或内存信号可填写`period`。需要沿用历史样本、但不能取得周期时，会要求补充`period`或`valid_for`，不按相邻记录的间隔猜测周期。
+
+普通入口`chronaxis run`及`AnalysisRunner.run`在启动时补齐已使用信号的有效期；即使只做逐消息计算，也须提供可用的`period`、`valid_for`或DBC报文周期。[高性能积分器](fast-energy.md)的`fast run`只读取当条报文，不保持前值，无需为此填写信号周期或有效期。公式中的自定义时间参数（如`parameters.frame_duration`）不会自动填入信号`period`。
 
 例如电压周期100ms，默认有效期300ms；电流周期10ms，默认有效期30ms。各信号独立确定，不把计算驱动信号的周期套给其他信号。`valid_for: 500ms`会覆盖这项默认值。到期判断始终使用报文实际时间：电压在1秒更新，300ms有效期意味着1.3秒起旧电压不可用，不会因为固定周期计数较慢而继续使用。
 

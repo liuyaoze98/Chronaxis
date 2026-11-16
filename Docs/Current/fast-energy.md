@@ -4,18 +4,15 @@
 
 `frame_duration` 是示例自行定义的参数名，不是必填参数。运行器不会自动乘以相邻报文的实际时间间隔；需要由实际经过的时间确定积分量时，使用[时间积分](calculations.md#integrators)。
 
-如果设备每记录一条功率报文就代表 0.1 秒，可以用 fast 把每条的「功率 × 0.1 秒」相加。同一次记录的多个分卷使用下面的单会话配置；多个独立试验使用fast batch。需要跨帧保持、事件或实际时间积分时使用通用分析入口。基础配置显式填写 `execution.process_count: 4`，最多使用4个文件工作进程读取、解码并计算单条报文贡献，再由主进程按规定顺序累计。进程数是上限：两个文件最多用两个，只有一个文件时在当前进程执行。省略该字段仍默认1。
+如果设备每记录一条功率报文就代表 0.1 秒，可以用 fast 把每条的「功率 × 0.1 秒」相加。同一次记录的多个分卷使用下面的单会话配置；多个独立试验使用fast batch。需要跨帧保持、事件或实际时间积分时使用通用分析入口。基础配置写有 `execution.process_count: 4`：有多个分卷时由工作进程并行读取并计算单条报文贡献，再由主进程按顺序累计；取值见下文的 execution 字段表。
 
 可直接打开下面的[完整单文件示例](examples/fast/analysis.yaml)。另有[BLF 版本](examples/fast/analysis-blf.yaml)、[批量配置](examples/fast/batch.yaml)、[DBC](examples/fast/data/power.dbc) 和三份输入（[第一份 ASC](examples/fast/data/run2.asc)、[第二份 ASC](examples/fast/data/run10.asc)、[BLF](examples/fast/data/single.blf)）。
 
 ## 安装与运行
 
-使用 Chronaxis 0.1.0.dev4 的本地 wheel，填写下方文件的实际路径。首次安装需要可取得项目依赖；同版源码安装方法见[安装说明](installation.md)。激活后切换到上面下载的分析配置所在目录，保持 data 子目录结构。
+先按[安装说明](installation.md)安装 Chronaxis 0.1.0.dev5，推荐 `pip install "chronaxis==0.1.0.dev5"`。然后进入[手册的 examples 目录](installation.md#find-examples)下的 `fast` 子目录，保持其中 data 子目录结构。下面的命令假定已激活虚拟环境；未激活时把 `python` 换成虚拟环境中的 `python.exe` 完整路径，见[安装页](installation.md#run-without-activation)。
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install ".\chronaxis-0.1.0.dev4-py3-none-any.whl"
-.\.venv\Scripts\Activate.ps1
 python -m chronaxis fast --help
 ```
 
@@ -92,6 +89,8 @@ execution:                 # 设置本次fast会话的文件工作进程上限
 
 fast只接受表中三个 `execution` 字段。普通分析的 `backend`、`batch_rows` 等策略不适用于fast，显式填写会报错。改变进程数不会改变文件组织方式；需要时间归并时仍应明确填写 `file_merge: time_order`。
 
+**方向桶。** 本页说的“方向桶”，是按一个方向信号的正负把报文分成两组，只累计其中一组，例如只累计电流为正的报文。它由计算项中的 `split_by_sign` 字段开启，写法见[逐报文计算的 split_by_sign](message-calculations.md#split-by-sign)。不填写 `split_by_sign` 时不按方向筛选，下文与方向有关的计数和状态都不会出现。
+
 “暂存”是把已经算出、尚未轮到累计的报文贡献写入本次专用临时文件，之后由主进程读取；它不复制原始日志。内存预算约束程序登记的缓冲和状态估算，Python解释器、第三方库等仍会占用额外内存，因此不能把256MiB预算理解为整个任务最多占256MiB。
 
 `concatenate` 的后续分卷预读空间不足时会暂停，轮到该文件后继续直接消费，可能降低速度。`time_order` 多文件任务需要先完成贡献暂存，配额不足会失败。实际写盘失败、损坏或缺失贡献块会使整个会话失败。各文件仍须满足其格式原有校验；拼接模式不能用来修复错误输入。
@@ -103,7 +102,13 @@ python -m chronaxis fast run session.yaml --output result-session --process-coun
 python -m chronaxis fast run session-time-order.yaml --output result-time-order
 ```
 
-`explain` 的 `worker_process_limit` 是静态上限，不是实际启动数；单进程内联时为0。完成清单的 `inputs` 列出全部文件，`execution.worker_pids` 给出实际工作进程，`execution.calculation_counts` 按计算项列出目标、范围内有效和方向入选数，Python 可读 `manifest["execution"]["calculation_counts"]`。默认 CSV 按「计算项、结果、单位、状态、说明」读取；只有显式选择 `outputs.tables: csv` 或 `jsonl` 交换格式时，才使用 `name/value/unit/status/reason` 字段。“完整”表示所选记录处理完成，不证明物理采集从未漏帧。
+运行前后可以在这些位置核对执行情况：
+
+- `explain` 输出的 `worker_process_limit` 是计划的工作进程上限，不是实际启动数；单进程内联时为0。
+- 完成清单的 `inputs` 列出全部文件，`execution.worker_pids` 给出实际启动的工作进程。
+- 完成清单的 `execution.calculation_counts` 按计算项列出目标报文数、范围内有效数和方向桶入选数；Python 中读取 `manifest["execution"]["calculation_counts"]`。
+- 默认 CSV 按「计算项、结果、单位、状态、说明」五列读取；只有显式选择 `outputs.tables: csv` 或 `jsonl` 交换格式时，列名才是 `name/value/unit/status/reason`。
+- 状态“完整”表示所选记录都处理完成，不证明物理采集从未漏帧。
 
 |某项计算在整个会话中的情况|结果含义|
 |---|---|
@@ -137,7 +142,7 @@ process_count: 4               # 最多4个独立任务并行；两个输入最�
 
 |任务需要什么|如何选择|
 |---|---|
-|单通道、同一 ID 的数值公式|用 fast 计算常量、四则运算和 abs。电流方向决定是否累计时使用正负分桶。|
+|单通道、同一 ID 的数值公式|用 fast 计算常量、四则运算和 abs。只累计某一方向（例如电流为正）的报文时，在计算项中填写 `split_by_sign`。|
 |DBC 枚举标签、复用或容器报文、沿用另一个 ID 的信号，或事件窗口|按通用入口支持范围配置，或调整输入格式。fast 在打开日志前指出不支持的绑定。|
 |受管理资源额度或完整贡献明细|fast流式读取，支持上述内存/暂存额度；完整贡献明细使用通用分析。两者的受管理预算均不等于整个进程树RSS硬上限。|
 |缺观测或坏数据|没有目标帧时得到 null。相关报文解码或数值计算失败会使该文件失败；批量默认继续处理其他独立文件，各文件状态见批量报告的 jobs。|
@@ -187,5 +192,3 @@ if __name__ == "__main__":
 `run` 的读取、计算或取消异常保留原类型。若会话清理没有完成，可从所捕异常读取 `getattr(exc, "fast_session_cleanup_owner", None)`，排除资源故障后调用该对象的 `close()`；不需要分别关闭它管理的各个子对象。恢复不会重新计算，也不会发布部分成功总量。该属性不保证存在，存在也可能指向后来已关闭的对象。批量恢复及工作进程构造期间的取消处理见[批量任务](batch.md)。
 
 完整定义：[run](public-api/fast.run.md)、[run_batch](public-api/fast.batch.run_batch.md)。
-
-维护者 liuyaoze。

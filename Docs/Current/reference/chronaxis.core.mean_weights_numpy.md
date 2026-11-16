@@ -47,4 +47,4 @@ normalized_mean_terms(values, weights, denominator)
 
 结构或分配错误传播；非有限和非零下溢记质量，不修补结果。
 
-源码：[`src/chronaxis/core/mean_weights_numpy.py:7`](../../../src/chronaxis/core/mean_weights_numpy.py#L7)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/mean_weights_numpy.py:7`](../../../src/chronaxis/core/mean_weights_numpy.py#L7)（行号对应 Chronaxis 0.1.0.dev5 源码）。

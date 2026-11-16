@@ -19,7 +19,7 @@ Installation may contact package registries; rendering and reading do not requir
 
 The source `requirements/` directory contains four complete Windows `pip freeze --all` snapshots for Python 3.12 and 3.13 lower/upper combinations. Install with the matching constraints and record the interpreter, dependency versions and actual test group result. An environment snapshot is not a passing test report. Runtime version ranges live in `pyproject.toml`; `.[test]` does not override them with a narrower jsonschema pin. Keep the existing CI environment below distinct from additional compatibility runs.
 
-<a id="从公开源码重建"></a>
+<a id="持续测试与发布前检查"></a>
 ## Continuous tests and pre-release checks
 
 `.github/workflows/verify.yml` runs on push, pull_request, or manual dispatch with Windows 2022 and Python 3.12.4. Its four groups cover core/configuration, input/execution/export, bilingual documentation with an actual HTML build, and a wheel built from sdist followed by bundled tasks outside the checkout. The workflow has read-only permissions and does not publish to PyPI or deploy the site. Both publishing workflows remain manual.
@@ -34,6 +34,7 @@ python -X utf8 -B tools/run_ci_tests.py --group core --report work/ci/core.json
 
 Beyond grouped tests, docs and install must complete the workflow's HTML, AI ZIP, sdist/wheel, and isolated installation checks. Before release, verify all four groups and installation artifacts for the same candidate source. Fix failures and record unexecuted or environment-skipped checks explicitly. Local success is not evidence of a cloud CI run, and a test report does not itself authorize publication.
 
+<a id="从公开源码重建"></a>
 ## Rebuild from public source
 
 Public source exports do not include internal development Git history. To use their release lock manifest, explicitly set this variable before building:
@@ -85,6 +86,8 @@ Run `python -B tools/english_docs.py --references-only` to regenerate the Englis
 ## Directly readable guide delivery
 
 `build_ai_guide.build_files()` assembles the same reviewed files for every channel. Wheel builds install them under `chronaxis/guide`; HTML includes them under `ai-guide`. `python -m chronaxis guide` only locates the README, with `--language en` selecting English. Editable installs read `Docs/AI` directly. ZIP is an optional separate copy, generated from the same files.
+
+`tools/build_user_manual.py` takes the Chinese and English chapters, public API pages and all examples from the same `inputs.lock.json`, and wheel builds install them under `chronaxis/manual`. Revision histories are removed. Links inside the bundle stay relative, AI guide links point to the bundled `guide`, and links to the internal module reference, source code, schemas and release notes point to the same files in the Repository at tag `v<version>`. The build then checks every relative link and fails if any cannot be resolved or points outside the public source. `python -m chronaxis manual` only locates the home page; editable installs return `Docs/Current/index.md`. `lock_ai_inputs.py` registers the manual files under the lock's `manual_inputs`, separate from the AI guide's `inputs` so the AI guide's file set does not grow, and writes them to MANIFEST; relock after adding or removing manual pages or examples.
 
 Verify installed and HTML directories, relative links, both languages, and optional ZIP content together. Run examples with inputs in the installed guide and outputs in an external working directory, then check that installed files are unchanged. Verify missing resources and overwrite protection. Existing ZIP-only checks cannot establish direct readability.
 

@@ -136,14 +136,17 @@ class SameFrameIntegralTests(unittest.TestCase):
             self.assertTrue(result.quality & reason)
             self.close_zero(owner, integral, budget)
         owner, integral, budget = self.owners()
+        # 浮点直接路径预留首个同刻槽；第二帧才产生此次要核对的逐帧预约。
+        owner.consume(self.update(0, 0))
         original = budget.reserve_ram
         def cancelled(amount):
             """账本成功后模拟取消，检验owner登记。参数: bytes。返回: 无。异常: KeyboardInterrupt。"""
             original(amount)
             raise KeyboardInterrupt('cancel after reservation')
-        with patch.object(budget, 'reserve_ram', side_effect=cancelled):
+        with patch.object(budget, 'reserve_ram', side_effect=cancelled) as reservation:
             with self.assertRaises(KeyboardInterrupt):
-                owner.consume(self.update(0, 0))
+                owner.consume(self.update(0, 1))
+            reservation.assert_called_once()
         self.close_zero(owner, integral, budget)
 
     def test_binding_proof_rejects_ambiguity_without_reading(self):

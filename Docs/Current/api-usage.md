@@ -2,22 +2,18 @@
 
 公开入口位于`chronaxis`包。文件配置使用load_analysis_plan；程序生成配置使用AnalysisPlan.from_dict；AnalysisRunner执行，AnalysisResult读取和发布。先完成[安装](installation.md)，再按下面的完整流程运行。
 
-单一ASC/BLF来源的基础配置设置`execution.process_count: 4`，下面的`run(plan)`直接沿用它。要在一次调用中覆盖配置，使用`AnalysisRunner().run(plan, process_count=4)`；同一实例的`validate`和`explain`也接受这个仅关键字参数。`None`沿用配置且不修改原计划，正整数设置本次上限。CSV、内存和多来源联合分析保持1，独立批量任务在外层设置并行。完整范围见[连续记录多进程](continuous-files.md)。
+下面的`run(plan)`沿用配置中的`execution.process_count`；只想改变本次运行时，写`AnalysisRunner().run(plan, process_count=2)`，不修改配置。取值规则见[执行设置](execution.md)。
 
-
-## 如何读参数表
-
-参考表把真实Python名称、类型、是否必填、缺省值和用途分别列出。None表示不提供某个可选对象，不等于0、空字符串或空列表。类型中的竖线表示可选类型；tuple表示固定顺序的不可变序列。类的字段描述保存的状态；构造参数仍以实际签名为准。自动生成的标准方法和第三方库接口单独标注其来源。
 
 ## 加载、检查和执行
 
-把下面的完整代码保存成`.py`文件，从源码仓库根目录运行；保留`if __name__ == "__main__":`入口保护，避免Windows启动工作进程时重复运行主程序。离线示例目录可直接运行[api_example.py](examples/api_example.py)，后者默认读取同目录analysis.yaml，也接受自定义配置路径。
+把下面的完整代码保存成`.py`文件，放到[手册的 examples 目录](installation.md#find-examples)中运行；保留`if __name__ == "__main__":`入口保护，避免Windows启动工作进程时重复运行主程序。也可以直接运行该目录中的[api_example.py](examples/api_example.py)，它默认读取同目录analysis.yaml，也接受自定义配置路径。
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan, validate_analysis_plan
 
 def main():
-    plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+    plan = load_analysis_plan("analysis.yaml")
     report = validate_analysis_plan(plan)
     if not report.valid or not report.execution_ready:
         raise RuntimeError(report)
@@ -36,7 +32,7 @@ if __name__ == "__main__":
     main()
 ```
 
-配置中的进程上限为4，但本例只有一个ASC文件且采用默认接续方式，在当前进程读取；`explain`中的`read_process_limit`为0。若要运行两卷的同一组数据，把加载路径换成`Docs/Current/examples/input-can-directory.yaml`；此时`read_process_limit`为2，计算结果相同；这是计划上限，不是已观测到的PID数量。该合成示例的终端输出如下，每行依次为计算名称、数值、单位和状态。
+配置中的进程上限为4，但本例只有一个ASC文件且采用默认接续方式，在当前进程读取；`explain`中的`read_process_limit`为0。若要运行两卷的同一组数据，把加载路径换成`input-can-directory.yaml`；此时`read_process_limit`为2，计算结果相同；这是计划上限，不是已观测到的PID数量。该合成示例的终端输出如下，每行依次为计算名称、数值、单位和状态。
 ```text
 energy 38.0 J complete
 sample_average 6.0 W complete
@@ -49,7 +45,9 @@ load_analysis_plan读取主配置及明确的一层公共定义，相对路径�
 
 validate_analysis_plan返回静态ValidationReport；valid表示声明检查是否通过，execution_ready表示当前执行路径是否支持。explain_analysis_plan返回依赖和后端等ExplainReport。对已加载计划的静态检查不会读取业务数据；加载计划时，缺省CAN元数据可能需要读取DBC，仍不能证明真实数据有效。valid和execution_ready都不是全文件数据验收；坏行、实际时间回退、运行时权限或资源不足可能在run时才被发现。
 
-AnalysisRunner(backend=None, *, extensions=None)沿用计划设置；配置省略backend时使用auto，按整个计划选择reference或numpy。reference使用独立参考数值实现；numpy按计算路径采用逐点或数组计算。显式传入auto、reference或numpy会覆盖本次执行设置；选择范围见[执行设置](execution.md)。`run(plan, work_dir=None, *, process_count=None)`执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
+AnalysisRunner(backend=None, *, extensions=None)沿用计划设置；配置省略backend时使用auto，按整个计划选择reference或numpy。reference使用独立参考数值实现；numpy按计算路径采用逐点或数组计算。显式传入auto、reference或numpy会覆盖本次执行设置；选择范围见[执行设置](execution.md)。
+
+`run(plan, work_dir=None, *, process_count=None)`执行分析并返回AnalysisResult；work_dir省略时分配独立暂存，显式指定时必须是新目录。结果不自动发布，调用write把数据写到结果目录；目录可重复使用，每次文件有独立时间后缀。
 
 extensions 默认省略。只有 Python 宿主程序自行注册函数或滚动算子时，才在加载计划和创建 AnalysisRunner 时传入同一扩展注册对象，完整例子见[宿主扩展](host-extensions.md)。签名中的 * 表示其后的参数必须按名字填写。
 
@@ -74,6 +72,11 @@ iter_events、iter_segments、iter_sequences、iter_calculations、iter_selectio
 
 主要公开入口见[Python API索引](api.md)，精确签名与说明链接到对应定义。内部模块及私有实现另见[开发参考](reference/index.md)。
 
+<a id="api-table-reading"></a>
+<a id="如何读参数表"></a>
+
+**怎样读各入口页的参数表。** 参数表把真实Python名称、类型、是否必填、缺省值和用途分别列出。None表示不提供某个可选对象，不等于0、空字符串或空列表。类型中的竖线表示可选类型；tuple表示固定顺序的不可变序列。类的字段描述保存的状态；构造参数仍以实际签名为准。自动生成的标准方法和第三方库接口单独标注其来源。
+
 ## 在程序中构建配置
 
 下面是完整调用示例，复用随手册提供的JSON对照文件构造Python字典。base_dir决定字典中相对输入路径的起点；该入口不读取imports，公共定义请使用文件加载入口。
@@ -83,11 +86,28 @@ import json
 from pathlib import Path
 from chronaxis import AnalysisPlan, explain_analysis_plan
 
-directory = Path("Docs/Current/examples")
+directory = Path(".")  # 在手册的 examples 目录运行
 config = json.loads((directory / "analysis.json").read_text(encoding="utf-8"))
 plan = AnalysisPlan.from_dict(config, base_dir=directory)
-print(explain_analysis_plan(plan))
+report = explain_analysis_plan(plan)
+print(report.validation.valid, report.selected_backend)
+for node in report.nodes:
+    print(node.node_id, node.node_type, node.unit)
+for source in report.source_execution:
+    print(source["source"], source["file_count"], source["read_process_limit"])
 ```
+
+实际输出：
+
+```text
+True numpy
+energy calculation:integral J
+sample_average calculation:sample_mean W
+time_average calculation:time_weighted_mean W
+source_1 1 0
+```
+
+第一行表示声明检查通过、本次将使用 numpy 后端；中间三行是要计算的三项及其结果单位；最后一行表示来源 source_1 有1个文件，读取工作进程上限为0，即在当前进程读取。`report.validation.warnings` 还列出需要留意的提示，例如有效期将取 DBC 周期的3倍。ExplainReport 的全部字段见[explain_analysis_plan](public-api/explain_analysis_plan.md)。
 
 ## 异常与资源所有权
 
@@ -110,10 +130,12 @@ print(explain_analysis_plan(plan))
 from chronaxis import parse_duration, checked_add_ns, convert_time
 
 duration_ns = parse_duration("500ms").time_ns  # 取转换结果中的整数纳秒
-end_ns = checked_add_ns(1_000_000_000, duration_ns)
-converted = convert_time(1.5, "s")
-print(duration_ns, end_ns, converted)
+end_ns = checked_add_ns(1_000_000_000, duration_ns)  # 1秒加0.5秒，结果超出整数范围时报错
+converted = convert_time(1.5, "s")  # 返回TimeConversion对象
+print(duration_ns, end_ns, converted.time_ns, converted.precision_limited)
 ```
+
+实际输出为`500000000 1500000000 1500000000 True`。前三个数都是整数纳秒；`time_ns`是换算结果。`precision_limited`为True，表示输入是Python浮点数，程序无法知道它在变成浮点数之前的精确值；需要精确换算时传入文本，例如`convert_time("1.5", "s")`，此时为False。其他字段见[TimeConversion](public-api/TimeConversion.md)。
 
 预设通常通过配置`presets`使用，完整角色和参数示例见[业务预设](presets.md)。若在Python中组合预设，先构建PresetSpec和SignalDefinition，再调用resolve_preset_roles检查角色，build_preset取得PlanFragment；它只是配置片段，仍须合入完整AnalysisPlan才可运行。批量加载、运行和关闭报告的完整代码见[批量任务](batch.md)。
 
@@ -129,7 +151,7 @@ SignalDefinition从chronaxis.core.binding导入；它没有根包同名导出。
 这个接口示例直接提供内存记录，因此显式使用`process_count: 1`。处理自己的ASC/BLF分卷时，使用上方文件加载例及其`execution.process_count: 4`配置。
 
 ```python
-"""从类型化信号到预设片段，再执行完整分析。参数: --output结果目录。返回: 报警时长。"""
+"""从类型化信号到预设片段，再执行完整分析。参数: --output新目录。返回: 报警时长。"""
 from pathlib import Path
 import argparse
 from chronaxis import (PresetSpec, resolve_preset_roles,
@@ -139,56 +161,71 @@ from chronaxis.core.types import SignalDType
 
 
 def run(output):
-    """参数: 结果输出目录。返回: 生成的计算行。异常: 角色/计划/执行错误；关闭结果。"""
+    """参数: 新输出目录。返回: 生成的计算行。异常: 角色/计划/执行错误；关闭结果。"""
     # 类型化对象中的有效期使用整数纳秒；它不包含任何输入样本。
-    temperature=SignalDefinition(name='temperature',source='table',field='temperature',
-        dtype=SignalDType.FLOAT64,unit='degC',valid_for_ns=10_000_000_000)
-    signals=(temperature,)
-    spec=PresetSpec.from_dict(dict(name='heat',preset_type='threshold_excursion',version='1',
-        role_bindings={'signal':'temperature'},parameters={'unit':'degC','enter_threshold':80,'exit_threshold':75}))
-    roles=resolve_preset_roles(spec,signals)
-    assert roles[0].definition is temperature and roles[0].resolution=='explicit'
-    fragment=build_preset(spec,signals)  # 返回PlanFragment；此函数也会自行检查角色。
-    nodes=fragment.to_dict()            # 仅节点声明，不包含sources、signals或运行结果。
-    raw=dict(config_version=4,dataset=dict(name='preset_api'),
+    temperature = SignalDefinition(
+        name='temperature', source='table', field='temperature',
+        dtype=SignalDType.FLOAT64, unit='degC', valid_for_ns=10_000_000_000)
+    signals = (temperature,)
+    spec = PresetSpec.from_dict(dict(
+        name='heat', preset_type='threshold_excursion', version='1',
+        role_bindings={'signal': 'temperature'},
+        parameters={'unit': 'degC', 'enter_threshold': 80, 'exit_threshold': 75}))
+
+    roles = resolve_preset_roles(spec, signals)
+    assert roles[0].definition is temperature and roles[0].resolution == 'explicit'
+    fragment = build_preset(spec, signals)  # 返回PlanFragment；此函数也会自行检查角色。
+    nodes = fragment.to_dict()              # 仅节点声明，不包含sources、signals或运行结果。
+
+    # 内存来源由当前进程直接分析；文件多进程示例见quickstart.md。
+    samples = ((0, 85), (3, 77), (9, 75), (10, 75))  # （时间秒，温度℃）
+    raw = dict(
+        config_version=4,
+        dataset=dict(name='preset_api'),
         execution=dict(process_count=1),
-        sources=[dict(name='table',source_type='memory',
-            rows=[dict(time=f'{t}s',values={'temperature':v}) for t,v in ((0,85),(3,77),(9,75),(10,75))])],
-        signals=[dict(name=s.name,source=s.source,field=s.field,dtype=s.dtype.value,unit=s.unit,valid_for=f'{s.valid_for_ns}ns') for s in signals])
+        sources=[dict(name='table', source_type='memory',
+                      rows=[dict(time=f'{t}s', values={'temperature': v}) for t, v in samples])],
+        signals=[dict(name=s.name, source=s.source, field=s.field, dtype=s.dtype.value,
+                      unit=s.unit, valid_for=f'{s.valid_for_ns}ns') for s in signals])
     # 本例基础计划还没有同类节点，故可update。已有节点时须逐列表合并并检查ID冲突。
     # 不再同时把spec加入raw['presets']，否则同一预设会展开两遍。
     raw.update(nodes)
-    plan=AnalysisPlan.from_dict(raw)
-    with AnalysisRunner().run(plan,work_dir=output/'work') as result:
-        rows=list(result.iter_calculations())
-        assert len(rows)==1 and rows[0].value==9.0 and rows[0].unit=='s'
-        result.write(output/'published')
+
+    plan = AnalysisPlan.from_dict(raw)
+    with AnalysisRunner().run(plan, work_dir=output / 'work') as result:
+        rows = list(result.iter_calculations())
+        assert len(rows) == 1 and rows[0].value == 9.0 and rows[0].unit == 's'
+        result.write(output / 'published')
         return rows
 
 
 def main():
-    """参数: CLI结果目录。返回: None。异常: 原校验/执行/I/O错误。"""
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,required=True)
-    output=parser.parse_args().output;output.mkdir(parents=True,exist_ok=False)
-    for row in run(output):print(row.calculation_id,row.value,row.unit,row.status)
+    """参数: CLI新目录。返回: None。异常: 原校验/执行/I/O错误。"""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, required=True)
+    output = parser.parse_args().output
+    output.mkdir(parents=True, exist_ok=False)  # 新目录；已存在时报错，不覆盖旧结果
+    for row in run(output):
+        print(row.calculation_id, row.value, row.unit, row.status)
 
 
-if __name__=='__main__':main()
+if __name__ == '__main__':
+    main()
 ```
 
 已有计划中合并时，derived按名称合并、各节点列表逐项追加，再交AnalysisPlan校验重名与引用；不要用update覆盖已有业务列表。本例基础计划没有这些节点，因此显式使用update。各函数的完整签名及参数见[公开API](api.md)。
 
 ## 结果聚合的Python调用示例
 
-在仓库根目录运行以下代码。每次加载先在事件范围内计算均值，再用 `AnalysisResult.iter_aggregations()` 逐组读取 P95。发布 CSV 是可选步骤。[功率试验与输入下载](calculations.md#v4-power-statistics)
+下面的代码先在每次加载的事件范围内计算均值，再用 `AnalysisResult.iter_aggregations()` 逐组读取 P95；发布 CSV 是可选步骤。所用配置和输入数据的说明见[功率试验与输入下载](calculations.md#v4-power-statistics)。
 
-将代码保存成 .py 文件，从仓库根目录运行。main 入口保护可避免 Windows 启动读取进程时重复执行脚本。首个示例打印 load_mean_p95 19.5 W complete 2 2，表示两次活动的均值为 10 W 和 20 W，采用线性分位数算法得到 P95 为 19.5 W。
+将代码保存成 .py 文件，放到[手册的 examples 目录](installation.md#find-examples)中运行。main 入口保护可避免 Windows 启动读取进程时重复执行脚本。运行后打印 load_mean_p95 19.5 W complete 2 2，表示两次活动的均值为 10 W 和 20 W，采用线性分位数算法得到 P95 为 19.5 W。
 
 ```python
 from chronaxis import AnalysisRunner, load_analysis_plan
 
 def main():
-    plan = load_analysis_plan("Docs/Current/examples/power-statistics.yaml")
+    plan = load_analysis_plan("power-statistics.yaml")
     with AnalysisRunner().run(plan) as result:
         for row in result.iter_aggregations():
             print(row.aggregation_id, row.value, row.unit, row.status,
@@ -198,5 +235,3 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
-<a id="api-table-reading"></a>

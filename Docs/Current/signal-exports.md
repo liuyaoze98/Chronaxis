@@ -10,7 +10,7 @@
 
 ## 原信号CSV导出
 
-下段是根级outputs片段，前提是signals已绑定数值信号voltage，并满足[导出标签限制](exports.md)。若已有outputs，把signal_csv合入同一映射，不能重复outputs键。
+下段是根级outputs片段，前提是signals已绑定数值信号voltage；设备标签可以省略，见[输出配置](exports.md)。若已有outputs，把signal_csv合入同一映射，不能重复outputs键。
 
 应用位置：以[dual-grid.yaml](examples/dual-grid.yaml)为基础，找到根级outputs，仅加入或替换其中的`signal_csv`子项，保留outputs下其他子项；代码中的outputs只表示位置，不重复粘贴父键。保留未展示的其他根字段，不再添加第二个同名父键。
 
@@ -40,7 +40,7 @@ outputs:                     # 选择额外导出的数据及格式；默认结�
 
 |signal_csv字段|数据类型|必填|默认值|含义与填写方法|
 |---|---|---|---|---|
-|signals|字符串数组|是|无|选择导出哪些原信号；从signals[].name取得。1～4096个不重复的原信号别名，例如 `["voltage","current"]`；来自signals，不直接选择derived派生信号。|
+|signals|字符串数组|是|无|选择导出哪些原信号：1～4096个不重复的signals[].name，例如 `["voltage","current"]`；不直接选择derived派生信号。|
 |scope|字符串或对象|否|`session`|选择要导出的时间范围。整会话用session；单窗口用`{window: context}`。窗口名称来自windows[].name，见[共同范围](exports.md#export-scope)。|
 |resampling|对象或null|否|`null`|控制是否另排等间隔时间点并估计连续信号值。null或省略表示保留原记录；填写对象则开启下方等间隔导出。|
 
@@ -52,10 +52,10 @@ outputs:                     # 选择额外导出的数据及格式；默认结�
 
 |signal_csv.resampling字段|数据类型|必填|默认值|含义与例子|
 |---|---|---|---|---|
-|continuous|字符串数组|是|无|指定允许插值的信号；按物理上是否可以线性估计选择，不仅看数据是否为数字。本次可插值的原信号别名，须是signals的非空子集，且不重复。填 `["voltage"]` 表示电压可按两端记录作直线估计。|
-|period|正时长字符串或映射|是|无|规定网格点间隔；按输出采样需求填写固定时长，或选择DBC周期。固定周期例如`250ms`；读取DBC周期时填写`{mode: dbc}`，可加driver指定continuous中的驱动信号。驱动信号须能定位到具有有效周期的DBC报文。|
-|start|时间字符串|否|`"0s"`|设置网格对齐的参考时刻；根据需要对齐的统一起点填写。等间隔时间的参考起点。例如start=50ms、period=100ms，位置是50、150、250ms等；不随文件或分批重新计时。|
-|max_gap|时长字符串|是|无|限制插值可跨越的实际记录间隔；按可接受缺测长度填写。大于0；用于插值的前后两条实际记录最多能相隔多久。例如2秒时，两端相隔2秒可以估计，相隔3秒则留空。|
+|continuous|字符串数组|是|无|指定允许插值的信号，须是signals的非空、不重复子集；按物理上是否可以线性估计选择，不仅看数据是否为数字。填 `["voltage"]` 表示电压可按两端记录作直线估计。|
+|period|正时长字符串或映射|是|无|规定网格点间隔：按输出采样需求填写固定周期，例如`250ms`；读取DBC周期时填写`{mode: dbc}`，可加driver指定continuous中的驱动信号。驱动信号须能定位到具有有效周期的DBC报文。|
+|start|时间字符串|否|`"0s"`|设置等间隔网格对齐的参考时刻。例如start=50ms、period=100ms，位置是50、150、250ms等；不随文件或分批重新计时。|
+|max_gap|时长字符串|是|无|用于插值的前后两条实际记录最多能相隔多久，大于0，按可接受缺测长度填写。例如2秒时，两端相隔2秒可以估计，相隔3秒则留空。|
 
 `period`若采用映射，字段填写如下。它和根级intervals独立，不能互相替代。
 
@@ -75,6 +75,8 @@ outputs:                     # 选择额外导出的数据及格式；默认结�
 例如每100ms导出一次，只有第10ms和第120ms的有效记录，那么第100ms的值可以估算，第0ms缺少前端记录则不能估算。
 
 同一信号同一时刻存在不同的记录时：若仅用于信号导出网格，error策略将冲突点及受影响的插值标记为missing，reason为same_time_conflict；若同一信号还参与普通计算或规则，分析状态在error策略下拒绝冲突并使任务失败。本页dual-grid.yaml还对voltage积分，因此属于后一种情形。显式选择 `same_time_policy="last_by_sequence"` 才按稳定来源序号选择最后一条，不按数值大小或线程处理先后选择。该选项填写在`signals[].same_time_policy`。公开重采样文件的表头是`time_ns,signal,value,unit,status,reason,quality`；不输出左右端点时间或来源引用。
+
+<a id="dbc-grid-example"></a>
 
 ## 使用DBC周期的完整导出例
 

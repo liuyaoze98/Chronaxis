@@ -331,12 +331,16 @@ def restore_result(value):
 def pack_message(family, message):
     """展开固定控制命令的参数。
 
-    参数: family为can/fast/batch，message为现有命令tuple。
+    参数: family为can、fast、batch或integral，message为对应固定命令tuple。
     返回: JSON原生参数列表。
     异常: 未支持对象或固定模型错误。
     """
     operation, *arguments = message
-    if family == 'can' and operation == 'file':
+    if family == 'integral' and operation == 'file':
+        index, source, signals, options, limit, context = arguments
+        arguments = [index,pack_source(source),[pack_signal(item) for item in signals],
+                     pack_options(options),limit,pack_frame_context(context)]
+    elif family == 'can' and operation == 'file':
         source, signals, options, limit, context = arguments
         arguments = [pack_source(source),[pack_signal(item) for item in signals],
                      pack_options(options),limit,pack_frame_context(context)]
@@ -362,7 +366,15 @@ def restore_message(family, operation, arguments):
     """
     if type(arguments) is not list:
         raise ValueError('控制消息参数需要列表')
-    if family == 'can' and operation == 'file':
+    if family == 'integral' and operation == 'file':
+        if len(arguments)!=6 or type(arguments[0]) is not int or arguments[0]<0:
+            raise ValueError('并行积分文件命令参数非法')
+        index, source, signals, options, limit, context = arguments
+        if type(signals) is not list or len(signals)>4096 or type(limit) is not int or limit<=0:
+            raise ValueError('并行积分声明数量或预算非法')
+        arguments = [index,restore_source(source),tuple(restore_signal(item) for item in signals),
+                     restore_options(options),limit,restore_frame_context(context)]
+    elif family == 'can' and operation == 'file':
         if len(arguments) != 5:
             raise ValueError('CAN文件命令参数数量不符')
         source, signals, options, limit, context = arguments
@@ -507,7 +519,10 @@ def check_message_fields(family, operation, arguments):
     返回: None，用户config仍交原AnalysisPlan验证。
     异常: 固定字段、计数、结果状态或指令错误。
     """
-    if family=='fast' and operation in ('file','program_file'):
+    if family=='integral' and operation=='configure':
+        from .execution.integral_blocks import check_task
+        check_task(arguments[1])
+    elif family=='fast' and operation in ('file','program_file'):
         check_fast_spec(arguments[1])
     elif family=='fast' and operation=='eof':
         facts,clocks=arguments[2],arguments[3]

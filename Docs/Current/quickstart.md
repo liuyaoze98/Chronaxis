@@ -2,7 +2,7 @@
 
 本例直接读取CAN日志，用DBC取出功率并计算能量、样本均值和时间加权均值。无须先转CSV，也无须写Python入口。先完成[安装](installation.md)，再按以下步骤运行。随附报文是合成教学数据，不代表真实设备。
 
-基础配置保留 `execution.process_count: 4`，为后续多个分卷设置并行上限。本例先读一个 ASC 文件，使用默认按文件顺序处理，在当前进程完成；下文再用两个连续分卷演示并行读取。字段含义和资源选择见[执行设置](execution.md)。
+配置中的 `execution.process_count: 4` 是读取多个分卷时的并行上限；本例只有一个文件，在当前进程完成。取值方法见[执行设置](execution.md)。
 
 ## 准备日志和DBC
 
@@ -16,7 +16,7 @@
 |4秒|0x100|Power=10W|
 |6秒|0x7FE|另一条报文，只确定日志观测到6秒|
 
-末条不是新的功率样本。程序用前值保持计算[0,6)秒，默认按实际时间间隔积分。采样时间不等距，因此样本均值和时间加权均值不同。
+末条不是新的功率样本。程序用前值保持计算0秒到6秒的数据，手册记作[0,6)：方括号表示包含0秒，圆括号表示不包含6秒。默认按实际时间间隔积分。采样时间不等距，因此样本均值和时间加权均值不同。
 
 ## 保存配置并运行
 
@@ -51,20 +51,20 @@ execution:                          # 控制本次分析怎样运行
   process_count: 4                  # 最多4个文件读取工作进程；实际不超过输入文件数
 ```
 
-这份配置给数据集取名，选择日志、DBC、所需信号和三项计算，并明确文件读取的进程上限。`4`是本例推荐的起步设置，程序省略此字段时仍使用`1`；可以按机器可用资源调整为其他正整数。无需另填session、entity、source_type、time_type、唯一来源引用或scope。类型和单位由DBC取得；单一DBC通道可自动选择。未写domain表示分析实际输入范围。
+这份配置给数据集取名，选择日志、DBC、所需信号和三项计算，并设置文件读取的进程上限。其余字段都有默认值，本例不需要填写，需要时再查[字段参考](configuration-reference.md)。类型和单位由DBC取得；单一DBC通道可自动选择。未写domain表示分析实际输入范围。
 
-在examples目录打开终端，执行：
+在[手册的 examples 目录](installation.md#find-examples)打开终端，执行：
 
 ```powershell
 chronaxis validate analysis.yaml
 chronaxis run analysis.yaml --output new-result
 ```
 
-结果目录可以重复使用，每次输出增加时间后缀。validate检查配置并在需要时读取DBC定义；run才读业务日志、计算并发布结果。虚拟环境未激活时，可使用安装页中的`python -m chronaxis`入口。
+结果目录可以重复使用，每次输出增加时间后缀。validate检查配置并在需要时读取DBC定义；run才读业务日志、计算并发布结果。虚拟环境未激活时，把`chronaxis`换成虚拟环境中的完整路径，例如`D:\work\.venv\Scripts\chronaxis`，写法见[安装页](installation.md#run-without-activation)。
 
 ## 核对结果
 
-从本轮清单找到 `new-result/会话结果_<timestamp>.csv`。也可以直接看随册保存的[本例实际运行结果与逐列解释](example-results.md#analysis-yaml)，不必先安装程序才能知道输出长什么样。三项结果应为：
+run 结束时终端会列出本次生成的结果文件（`result_files`），在 `new-result` 目录中打开其中的 `会话结果_<运行时间>.csv`。也可以直接看随册保存的[本例实际运行结果与逐列解释](example-results.md#analysis-yaml)，不必先安装程序才能知道输出长什么样。三项结果应为：
 
 |计算名|手工计算|结果|
 |---|---|---|
@@ -72,7 +72,7 @@ chronaxis run analysis.yaml --output new-result
 |sample_average|(2+4+8+10)÷4|6W|
 |time_average|38÷6|6.333333333333333W|
 
-三项分别显示“完整”，说明为空；同一行可读到三项数值。共同的数据集、对象和会话名称沿用dataset.name的energy，只在清单保存，不要求另填。可通过[Python API](api-usage.md)读取同样结果。
+`energy：状态`等三个状态列都是“完整”，对应的`：说明`列为空；同一行可读到三项数值。共同的数据集、对象和会话名称沿用dataset.name的energy，只在清单保存，不要求另填。可通过[Python API](api-usage.md)读取同样结果。
 
 ## 直接试用目录和BLF
 
@@ -97,7 +97,7 @@ chronaxis run can-demo/blf.yaml --output blf-result
 2. 把dbc_by_channel中的路径改为自己的DBC，键按实际公共通道号填写。ASC文字通道1在配置中填写1。
 3. 把field.frame_id和field.signal改为DBC中的报文ID及信号名。ID可写0x十六进制、0b二进制或无前缀十进制；不需要报文名称。
 4. dataset.name用于给本次分析取名。只分析某段时间时才增加domain；需要窗口、条件或更多计算时再添加对应功能。
-5. 保留`execution.process_count: 4`作为多文件分析的起点；若只读一个文件，增大这个数字不会把该文件拆给多个进程。更多文件顺序和资源说明见[连续记录多进程](continuous-files.md)。
+5. `execution.process_count: 4`可以保留；它只在读取多个文件时起作用，见[连续记录多进程](continuous-files.md)。
 
 DBC包含报文周期时，省略valid_for默认使用该周期的3倍；DBC没有周期时，再提供period或明确valid_for。单位或方向需要换算时，应按实际定义配置，不能凭信号名称猜测。
 

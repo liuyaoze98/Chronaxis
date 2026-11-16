@@ -57,5 +57,5 @@ print(spec.id, spec.preset_type)
 
 ## Source locations
 
-- [`src/chronaxis/planning/preset_models.py:52`](../../../../src/chronaxis/planning/preset_models.py#L52) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
-- [`src/chronaxis/planning/preset_models.py:90`](../../../../src/chronaxis/planning/preset_models.py#L90) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/preset_models.py:52`](../../../../src/chronaxis/planning/preset_models.py#L52) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/preset_models.py:90`](../../../../src/chronaxis/planning/preset_models.py#L90) — line number in the Chronaxis 0.1.0.dev5 source.

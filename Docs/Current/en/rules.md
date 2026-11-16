@@ -348,7 +348,7 @@ Start signals arriving during an activity are not queued. After it ends, a fresh
 
 Once active, missing start data does not directly terminate the activity. Missing end data interrupts it because its end can no longer be determined. A supplied timeout must be positive.
 
-The [runnable example](examples.md#start-end-case) produces normal [0,2), timed-out [4,9), and normal [11,14) activities, with respective signal means 10, 52, and 110. Legacy Sclicer's `start_end` has a different meaning; read [per-message calculations](message-calculations.md) before conversion.
+The [runnable example](examples.md#start-end-case) produces normal [0,2), timed-out [4,9), and normal [11,14) activities, with respective signal means 10, 52, and 110. Configurations from older tools may use `start_end` with a different meaning; read [per-message calculations](message-calculations.md) before converting them.
 
 <a id="rule-window-delta"></a>
 <a id="滑动窗口变化量检测-window_delta"></a>

@@ -23,7 +23,7 @@ dataset:        # Analysis identity and optional input range
   name: energy  # Name used to identify and reference this object
   domain:       # Requested analysis start and end
     start: 2s   # Inclusive start of the analysis range
-    end: 5s     # End of the analysis range
+    end: 5s     # End of the analysis range; excluded from the duration
 ```
 
 The following inline mapping means exactly the same thing. The braces group the two child fields; the comma separates them.
@@ -31,7 +31,7 @@ The following inline mapping means exactly the same thing. The braces group the 
 ```yaml
 dataset:                        # Analysis identity and optional input range
   name: energy                  # Name used to identify and reference this object
-  domain: {start: 2s, end: 5s}  # Requested analysis start and end; Inclusive start of the analysis range; End of the analysis range
+  domain: {start: 2s, end: 5s}  # start: inclusive start; end: excluded end; same as the multi-line form above
 ```
 
 With the ASC teaching input, this range gives **22 J**. See [Analyze only 2–5 seconds](dataset.md#只分析2到5秒) for the input, command, and calculation.

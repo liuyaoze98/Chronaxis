@@ -18,6 +18,7 @@
 |[`RecordPointBuffer`](#api-RecordPointBuffer)|复用一份有限点缓冲，子类初始化字段并拥有数值状态及关闭过程。|
 |[`RecordPointBuffer._require_open`](#api-RecordPointBuffer-_require_open)|失败/清理/关闭后拒绝读取与推进。|
 |[`RecordPointBuffer.consume`](#api-RecordPointBuffer-consume)|接收已按所选驱动求值的有限点，不先截掉窗口两侧记录。|
+|[`RecordPointBuffer._append_validated`](#api-RecordPointBuffer-_append_validated)|内部可信入口：追加一个无条件驱动点，等价于consume(((time, value, deadline),))。|
 |[`RecordPointBuffer.expire_at`](#api-RecordPointBuffer-expire_at)|依赖中途失效时截断最后待结算驱动点，不新增驱动点或补计周期。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -41,7 +42,7 @@ class RecordPointBuffer
 ```
 
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:13`](../../../src/chronaxis/execution/record_point_buffer.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-RecordPointBuffer-_require_open"></a>
 ### `RecordPointBuffer._require_open`
@@ -67,7 +68,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:16`](../../../src/chronaxis/execution/record_point_buffer.py#L16)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-RecordPointBuffer-consume"></a>
 ### `RecordPointBuffer.consume`
@@ -99,7 +100,34 @@ None。
 
 上游处理同一时刻、条件及TTL；无效值必须传入，不能跳过后连接有效值。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:21`](../../../src/chronaxis/execution/record_point_buffer.py#L21)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+
+<a id="api-RecordPointBuffer-_append_validated"></a>
+### `RecordPointBuffer._append_validated`
+
+内部可信入口：追加一个无条件驱动点，等价于consume(((time, value, deadline),))。
+
+```python
+RecordPointBuffer._append_validated(time, value, deadline)
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`time`|int|是|无|位置或关键字。已经由读取协议核验的原生int、int64范围纳秒；必须比上次驱动点严格递增，同一时刻记录应先按既有规则归组。|
+|`value`|[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)|是|无|位置或关键字。本统计dtype对应的ScalarValue，数值、有效性与质量已在上游构造；仅供无条件驱动点入口使用。|
+|`deadline`|int &#124; None|是|无|位置或关键字。可选的int64纳秒有效截止；None表示没有单独的截止时刻。与(time, value)一同进入现有缓冲，不额外生成驱动点。|
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+时间非递增、预算/取消；任何错误后与consume相同地标记失败。
+
+源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-RecordPointBuffer-expire_at"></a>
 ### `RecordPointBuffer.expire_at`
@@ -125,4 +153,4 @@ None。
 
 非法/回退时间或对象关闭失败；调用方必须在下一驱动点进入前通知。
 
-源码：[`src/chronaxis/execution/record_point_buffer.py:79`](../../../src/chronaxis/execution/record_point_buffer.py#L79)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/execution/record_point_buffer.py:103`](../../../src/chronaxis/execution/record_point_buffer.py#L103)（行号对应 Chronaxis 0.1.0.dev5 源码）。

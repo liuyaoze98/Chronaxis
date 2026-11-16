@@ -48,7 +48,7 @@ BLF、ASC和原始报文CSV的报文导出均配置在`outputs.can_frames`中，
 
 ## 输出文件位置
 
-直接调用Python的export_signal_csv或export_can_frames时，返回ExportManifest，包含output_dir、manifest_path和output_files。目录可复用，实际文件带时间后缀；使用返回属性，不再把返回对象当Path。普通配置导出由运行清单的exports记录定位。
+普通使用通过配置的outputs请求导出，导出文件由运行清单的exports记录定位。`chronaxis.results.signal_exports.export_signal_csv`和`chronaxis.results.frame_exports.export_can_frames`是供程序内部使用的低层函数，不在chronaxis根包的公开接口中；它们返回ExportManifest，包含output_dir、manifest_path和output_files，目录可复用，实际文件带时间后缀。
 
 调用run时先在工作目录准备导出文件；调用 `result.write()` 后，它们才与分析表一起出现在指定的最终输出目录。
 

@@ -24,11 +24,12 @@ Processing expands derived, rule, window, and calculation dependencies, includin
 No execution/data-reading side effects and no measurement of peak memory.
 
 ```python
+# Run in the directory containing the manual's home page; it contains examples directly.
 from chronaxis import load_analysis_plan, explain_analysis_plan
-plan = load_analysis_plan("Docs/Current/examples/analysis.yaml")
+plan = load_analysis_plan("examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:443`](../../../../src/chronaxis/planning/reports.py#L443) — line at `8904c2f744951857659abd40aaa3535d57faf53c`.
+- [`src/chronaxis/planning/reports.py:443`](../../../../src/chronaxis/planning/reports.py#L443) — line number in the Chronaxis 0.1.0.dev5 source.

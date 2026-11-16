@@ -49,6 +49,9 @@ def public_page(item, record, content, routes, anchor):
         key=anchor(name)
         if key not in sections:raise ValueError('公开对象没有参考正文：'+item['name']+'.'+name)
         out.append(re.sub(r'\]\(([^)]+)\)',rewrite,sections[key]))
+        # 共享空注册表示例仅演示身份传递；就近提供真正注册算子的宿主教程。
+        if item['name'] == 'AnalysisRunner' and name == 'AnalysisRunner.validate':
+            out.append('\n本例只演示共享注册实例。需要定义并运行自己的算子时，见[完整宿主示例](../host-extensions.md)。\n\n')
     return ''.join(out)
 
 

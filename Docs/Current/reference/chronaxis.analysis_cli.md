@@ -64,7 +64,7 @@ validation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:23`](../../../src/chronaxis/analysis_cli.py#L23)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-explanation_json"></a>
 ## `explanation_json`
@@ -91,7 +91,7 @@ explanation_json(report) -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:35`](../../../src/chronaxis/analysis_cli.py#L35)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-run_static"></a>
 ## `run_static`
@@ -122,7 +122,7 @@ run_static(arguments) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:70`](../../../src/chronaxis/analysis_cli.py#L70)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:70`](../../../src/chronaxis/analysis_cli.py#L70)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_new_output"></a>
 ## `_new_output`
@@ -153,7 +153,7 @@ FileExistsError或原lstat错误为文件失败；PlanValidationError为工作�
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/analysis_cli.py:100`](../../../src/chronaxis/analysis_cli.py#L100)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:100`](../../../src/chronaxis/analysis_cli.py#L100)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_cause_chain"></a>
 ## `_cause_chain`
@@ -180,7 +180,7 @@ _cause_chain(error) -> tuple
 
 返回类型：tuple。
 
-源码：[`src/chronaxis/analysis_cli.py:129`](../../../src/chronaxis/analysis_cli.py#L129)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:129`](../../../src/chronaxis/analysis_cli.py#L129)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-run_analysis"></a>
 ## `run_analysis`
@@ -212,4 +212,4 @@ AnalysisRunner建立专用暂存并读来源，write在输出根新增本次文�
 
 返回类型：int。
 
-源码：[`src/chronaxis/analysis_cli.py:145`](../../../src/chronaxis/analysis_cli.py#L145)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/analysis_cli.py:145`](../../../src/chronaxis/analysis_cli.py#L145)（行号对应 Chronaxis 0.1.0.dev5 源码）。

@@ -10,7 +10,6 @@ Run commands from the shared `examples` directory; output directories can be reu
 
 Each `result-summary.json` extracts status, table counts, applicable analysis outcomes, and threshold-preset summaries from the actual run manifest. A full run also creates `run_manifest_<timestamp>.json`. Teaching snapshots use stable download names with the generated time suffix removed; new runs still create timestamped filenames. Teaching outputs omit random run IDs, absolute paths, and resource peaks. Small contribution, trace, or export files are retained only in examples that explicitly request them.
 
-The download inventory records one digest per file. For YAML/JSON configurations, parse the configuration with the safe YAML loader, serialize the resulting object as UTF-8 JSON with sorted keys, no extra whitespace, unescaped Unicode and no non-finite numbers, then calculate SHA-256. Comments, indentation and line endings do not change this semantic digest. For other inputs and result files, calculate SHA-256 directly from the delivered file bytes, preserving line endings. The exact rules are also declared in `examples/results/index.json` under `input_digest_policy`.
 
 
 The result tables below retain the software's actual Chinese headers and values. Key translations: `区间` = interval; `规则` = rule; `开始时间（s）` / `确认时间（s）` / `结束时间（s）` = start / confirmation / end in seconds; `窗口编号` / `窗口` / `父事件区间` = window number / window name / parent event intervals; `状态` = status; `说明` = explanation; `正常结束` = ended normally; `完整` = complete; `部分有效` = partial; `无法确定` = indeterminate; `超时结束` = ended by timeout; `数据中断` = data interruption; `观测结束，活动尚未确认结束` = observation ended before activity end was confirmed. A metric's `：状态` and `：说明` columns describe that metric alone. `—` displays an empty cell. See [Understanding results](results.md) for all status and quality meanings.
@@ -440,7 +439,7 @@ The table has 12 rows; the first 8 are shown here. Download the file for every r
 
 [Export manifest exports/export-00000001/manifest.json](../examples/results/dual-grid-yaml/exports/export-00000001/manifest.json): frames=5, generated=5, passthrough=0, skipped_grid_points=1.
 
-[Download exports.jsonl](../examples/results/dual-grid-yaml/exports.jsonl) (518 bytes).
+[Download exports.jsonl](../examples/results/dual-grid-yaml/exports.jsonl) (522 bytes).
 
 **Session results: [Download full 会话结果.csv](../examples/results/dual-grid-yaml/会话结果.csv) (1 rows)**
 
@@ -584,7 +583,7 @@ Why these results: Voltage exceeds 5 V over [1,2). The active window exports one
 
 [Export manifest exports/export-00000001/manifest.json](../examples/results/export-can-all-windows-yaml/exports/export-00000001/manifest.json): frames=2, generated=0, passthrough=2, skipped_grid_points=0.
 
-[Download exports.jsonl](../examples/results/export-can-all-windows-yaml/exports.jsonl) (648 bytes).
+[Download exports.jsonl](../examples/results/export-can-all-windows-yaml/exports.jsonl) (652 bytes).
 
 **Event results: [Download full 事件结果.csv](../examples/results/export-can-all-windows-yaml/事件结果.csv) (1 rows)**
 
@@ -625,7 +624,7 @@ Why these results: The voltage integral remains 13 V·s. The 500 ms grid produce
 
 [Export manifest exports/export-00000000/manifest.json](../examples/results/export-can-grid-yaml/exports/export-00000000/manifest.json): frames=5, generated=5, passthrough=0, skipped_grid_points=1.
 
-[Download exports.jsonl](../examples/results/export-can-grid-yaml/exports.jsonl) (258 bytes).
+[Download exports.jsonl](../examples/results/export-can-grid-yaml/exports.jsonl) (260 bytes).
 
 **Session results: [Download full 会话结果.csv](../examples/results/export-can-grid-yaml/会话结果.csv) (1 rows)**
 
@@ -653,7 +652,7 @@ Why these results: The voltage integral is 3+7+3 = 13 V·s. Export contains thre
 
 [Export manifest exports/export-00000000/manifest.json](../examples/results/export-can-minimal-yaml/exports/export-00000000/manifest.json): frames=3, generated=0, passthrough=3, skipped_grid_points=0.
 
-[Download exports.jsonl](../examples/results/export-can-minimal-yaml/exports.jsonl) (257 bytes).
+[Download exports.jsonl](../examples/results/export-can-minimal-yaml/exports.jsonl) (259 bytes).
 
 **Session results: [Download full 会话结果.csv](../examples/results/export-can-minimal-yaml/会话结果.csv) (1 rows)**
 
@@ -694,7 +693,7 @@ Why these results: The integral remains 38 J. The 500 ms grid has 12 rows: four 
 
 The table has 12 rows; the first 8 are shown here. Download the file for every row.
 
-[Download exports.jsonl](../examples/results/export-signal-grid-yaml/exports.jsonl) (260 bytes).
+[Download exports.jsonl](../examples/results/export-signal-grid-yaml/exports.jsonl) (262 bytes).
 
 **Session results: [Download full 会话结果.csv](../examples/results/export-signal-grid-yaml/会话结果.csv) (1 rows)**
 
@@ -729,7 +728,7 @@ Why these results: The integral remains 38 J. original.csv retains the four powe
 | 3000000000 | power | 8.0 | W | 0 |
 | 4000000000 | power | 10.0 | W | 0 |
 
-[Download exports.jsonl](../examples/results/export-signal-minimal-yaml/exports.jsonl) (259 bytes).
+[Download exports.jsonl](../examples/results/export-signal-minimal-yaml/exports.jsonl) (261 bytes).
 
 **Session results: [Download full 会话结果.csv](../examples/results/export-signal-minimal-yaml/会话结果.csv) (1 rows)**
 
@@ -2201,4 +2200,6 @@ python tools/build_example_results.py --check
 
 Generation first runs independent mathematical assertions for 74 YAML configurations, then two JSON configurations and explicit expectations in the existing rule, time, window, and related scripts. Explanations are maintained separately, not reverse-engineered from observed output. `--check` compares parsed configuration values and input/result digests: comments and indentation do not affect the configuration digest, while inputs/results are checked byte-for-byte. This establishes file consistency, not a new execution.
 
-Supply `--device-label home` or `--device-label work` according to the actual device. If omitted, the generator reads CHRONAXIS_DEVICE_LABEL, using pending if unknown. This labels newly generated results without changing the teaching inputs' origin.
+The download inventory records one digest per file. For YAML/JSON configurations, parse the configuration with the safe YAML loader, serialize the resulting object as UTF-8 JSON with sorted keys, no extra whitespace, unescaped Unicode and no non-finite numbers, then calculate SHA-256. Comments, indentation and line endings do not change this semantic digest. For other inputs and result files, calculate SHA-256 directly from the delivered file bytes, preserving line endings. The exact rules are also declared in `examples/results/index.json` under `input_digest_policy`.
+
+Supply `--device-label` according to the actual device (see the tool's `--help` for allowed values). If omitted, the generator reads CHRONAXIS_DEVICE_LABEL, using pending if unknown. This labels newly generated results without changing the teaching inputs' origin.

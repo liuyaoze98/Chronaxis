@@ -6,7 +6,7 @@ Chronaxis analyzes time-series data from multiple sources. Bind input columns or
 
 Basic ASC/BLF examples include parallel settings. Start with the quick start, then choose [continuous volumes from one recording](continuous-files.md) or [independent batch trials](batch.md). See [execution settings](execution.md) for the fields and resource choices.
 
-This manual covers analysis configuration version 4 and its public interfaces. Use `config_version: 4` for new analyses. See [configuration syntax](configuration-language.md) for writing an analysis. [Install](installation.md) from a local wheel or source, then check the [supported features](status.md). The HTML manual includes offline navigation and search. The AI bundle's `manifest.json` records its documentation revision and product baseline.
+This manual covers analysis configuration version 4 and its public interfaces. Use `config_version: 4` for new analyses. See [configuration syntax](configuration-language.md) for writing an analysis. [Install](installation.md) from PyPI (recommended), or from the matching wheel or source tree. The installed package includes this manual in Markdown; `chronaxis manual --language en` prints the path of its home page. After installation, check the [supported features](status.md). The HTML manual includes offline navigation and search.
 
 <a id="配置使用者的阅读路线"></a>
 ## Reading path for configuration users

@@ -4,7 +4,7 @@
 
 ## 按基础并行配置运行
 
-下载手册的完整 `examples` 目录，在该目录打开终端。下面三步使用连续分卷示例中明确设置的 `execution.process_count: 4`：
+进入[手册的 examples 目录](installation.md#find-examples)，在该目录打开终端。下面三步使用连续分卷示例中明确设置的 `execution.process_count: 4`：
 
 ```text
 python -m chronaxis validate continuous-parallel.yaml
@@ -32,8 +32,9 @@ python -m chronaxis run continuous-parallel.yaml --output result-continuous
 |`python -m chronaxis fast run PLAN`|必填 `--output`，可选 `--process-count`|将同一来源的ASC/BLF分卷作为一个会话计算并发布汇总|
 |`python -m chronaxis fast batch BATCH`|必填 `--output`，可选 `--total`、`--process-count`|处理独立文件；`--total` 请求同一模板中可比计算项的总量，见[fast 批量](fast-energy.md)|
 |`python -m chronaxis guide`|可选 `--language zh/en`、`--output 新文件.zip`|显示现有 README 路径；指定 output 时另存双语 ZIP|
+|`python -m chronaxis manual`|可选 `--language zh/en`|显示随包 Markdown 用户手册首页路径；不写文件|
 
-`PLAN`与`BATCH`换成文件路径。安装源码包后也可直接用`chronaxis`命令。成功返回0，取消返回130；失败时的1和2按下面的[退出码与错误位置](#退出码与错误位置)区分，不能仅凭“文件错误”判断。帮助见`python -m chronaxis --help`及各子命令`--help`。完整参数与实现见[cli](reference/chronaxis.cli.md)。
+`PLAN`与`BATCH`换成文件路径。任何方式安装后都可直接用`chronaxis`命令。成功返回0，取消返回130；失败时的1和2按下面的[退出码与错误位置](#退出码与错误位置)区分，不能仅凭“文件错误”判断。帮助见`python -m chronaxis --help`及各子命令`--help`。完整参数与实现见[cli](reference/chronaxis.cli.md)。
 
 普通run、validate、explain支持`--process-count`，覆盖本次文件读取/解码进程上限；batch run的同名参数控制独立分析任务数。连续分卷用法见[连续多进程读取](continuous-files.md)。
 
@@ -87,3 +88,5 @@ run的完成摘要返回本次manifest路径，batch run返回本次report路径
 ## AI指南
 
 `chronaxis guide`显示中文README的绝对路径，`chronaxis guide --language en`显示英文入口；两者不写文件。可选`--output 新文件.zip`另存完整双语副本，父目录须存在且不能覆盖现有文件。详情见[AI指南](ai-guide.md)。
+
+`chronaxis manual`显示随包 Markdown 用户手册中文首页 `index.md` 的绝对路径，`chronaxis manual --language en`显示英文首页；两者不写文件。手册包含中英文章节、公开 API 说明和全部示例，内部模块参考链接到 GitHub 上同版本的文件。源码或可编辑安装时返回仓库 `Docs/Current` 下的首页。安装目录缺少手册时报告文件操作失败，退出码为1。

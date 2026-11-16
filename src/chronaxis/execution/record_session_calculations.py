@@ -227,6 +227,8 @@ class RecordSessionCalculations:
         session_values = choices = definitions = source_cursors = state = None
         try:
             session_values, choices = self._prepare_requests(spool)
+            if self._execute_parallel_integrals(session_values):
+                return
             definitions, source_cursors, state = self._prepare_input_state(choices)
             self._prepare_operators(session_values, choices, definitions, source_cursors, state)
             self._merge_sources()
@@ -241,6 +243,34 @@ class RecordSessionCalculations:
             # 只解除编排帧对已交付声明和资源的借用，不关闭调用方结果仓。
             session_values = choices = definitions = source_cursors = state = spool = None
             self._spool = self._append_result = None
+
+    def _execute_parallel_integrals(self, requests):
+        """为适用的自动后端任务执行文件内面积并行。
+
+        参数: requests 为原会话计算项。返回: True 表示已经写入完整结果；
+            False 表示静态条件、绑定或预算不适用，输入尚未消费，继续既有路径。
+        异常: 已选路径的读取、累计和资源错误直接传播，不重扫或改用另一后端。
+        """
+        if not self._direct_requested:
+            return False
+        from .parallel_integral_session import parallel_integral_inputs, ParallelIntegralSession
+        if parallel_integral_inputs(self._plan) is None:
+            return False
+        if (self._budget.ram_bytes + ParallelIntegralSession.fixed_cost(self._plan)
+                > self._budget.memory_budget_bytes):
+            return False
+        owner = self._new(ParallelIntegralSession, 'parallel_integral_session_cleanup_owner',
+                          self._plan, self._budget, self._requirements)
+        # 与普通来源一样立即登记到资源树，准备中失败也能由父会话关闭。
+        self._cursors.append(owner)
+        if not owner.prepare():
+            owner.close()
+            self._require_closed(owner)
+            self._cursors.pop()
+            return False
+        for request, result in zip(requests, owner.execute()):
+            self._emit_event_duration(request, None, result)
+        return True
 
     def _prepare_requests(self, spool):
         """从已验证计划取得请求和间隔选择；只为实际输出建立汇总状态。

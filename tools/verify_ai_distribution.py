@@ -67,6 +67,13 @@ def verify(directory, public_source=None):
                                          cwd=directory,env=clean,text=True).strip())
     if not entry.is_file() or not entry.is_relative_to(target):
         raise AssertionError("安装后默认指南路径不可直接阅读")
+    # 随包手册首页也必须位于新安装目录，英文首页同级en下，清单版本与wheel一致。
+    manual = Path(subprocess.check_output([sys.executable,"-B","-m","chronaxis","manual"],
+                                          cwd=directory,env=clean,text=True).strip())
+    if not manual.is_file() or not manual.is_relative_to(target) or not (manual.parent/"en/index.md").is_file():
+        raise AssertionError("安装后用户手册首页不可直接阅读")
+    if json.loads((manual.parent/"manifest.json").read_bytes())["package_version"] not in wheel.name:
+        raise ValueError("随包手册版本与安装包不符")
     run([sys.executable,"-B","-m","chronaxis","guide","--output",str(exported)], directory, clean)
     duplicate = subprocess.run([sys.executable,"-B","-m","chronaxis","guide","--output",str(exported)],
                                cwd=directory,env=clean,capture_output=True)

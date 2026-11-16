@@ -1,26 +1,8 @@
 # 先决定什么能算，再生成配置
 
-## 计算实现的选择
+## 生成配置前先核实
 
-普通分析省略`execution.backend`时使用`auto`：按整份计划选择reference或numpy，不预读、试跑或遇错换路。首批reference类别是单来源单信号CSV的实际时间会话ZOH积分，或同一CAN报文定位至多两路信号的同类简单积分；存在其他统计、规则、窗口、时序、查表或宿主扩展时选numpy。显式reference/numpy优先于自动选择；批量auto按子任务分别选择。`explain`同时报告requested_backend、selected_backend和backend_reason，运行清单backend只记录实际数值实现。内建流式表达式直接处理当前时刻的规范数值，适合批量处理的计算仍使用数组；不要把该选项解释为每个步骤都向量化。`reference`保留独立数值实现，用同一输入核对结果。宿主扩展继续调用所选后端的接口。后端不改变时间、有效期、缺失数据或输出范围，也不保证某一后端对所有任务都更快。auto选中的同帧CAN实际积分在绑定明确且未请求信号/原帧导出、trace或integrity时使用直接路径；不能证明适用时首帧前保留通用流程，错误不重读。三种原始报文格式与连续分卷保持相同时间和有效期规则。详见[执行字段规范](../Schema/analysis.schema.json#/properties/execution)。
-
-## 输出目录与设备标签
-
-生成分析或信号/CAN导出配置时，不要求用户提供设备标签。`metadata.device_label`可省略，默认为`pending`；用户需要记录时，使用其提供的非空文本，例如`lab-pc`或`试验台一号`，不猜成`home`或`work`。明确填写空值、全空白或非字符串属于配置错误。已有结果目录可以复用，原文件保留；显式工作目录仍须新建。输入与输出目录由用户指定，不按目录名称施加额外限制。
-
-## 同刻更新与结果比较
-
-普通信号的相同值、类型、有效性、质量和枚举原码可以合并；有冲突时默认same_time_policy: error拒绝，last_by_sequence选择最大来源序号，不按进程到达顺序。逐消息累计仍保留每条消息贡献。显式路径条目保持顺序，目录/通配符只在各自条目内自然排序。validate不扫描业务记录；通过不保证实际坏行、时间顺序或资源问题不会在run出现。跨运行按业务对象、实际时间和父关联比较结果，并保留重复项数量，不能按写入sequence充当稳定业务ID。单位显示可用W/s、1/W和1/J；mA尺度、温度角色和N*m量种保持，不能只改单位标签代替换算。
-
-## 同一会话的连续分卷
-
-同一次充电的多个ASC/BLF放在同一sources来源，使用execution.process_count正整数设置文件读取/解码上限，默认1。普通run/validate/explain的--process-count及AnalysisRunner同名仅关键字参数可覆盖；主进程连续处理事件/TTL/积分。file_merge: concatenate按文件顺序接续；time_order在各文件内部所需时间有序且时钟可比较时稳定归并，不平移、不去重。不要拆成多个batch jobs再相加。当前仅一个ASC/BLF来源、requested解码；批量worker内不嵌套文件池。默认1加concatenate时ASC/BLF在当前进程读取解码；time_order即使上限为1也使用文件工作进程。time_order使用本次受配额暂存；资源共用，不保证进程越多越快。参见[完整可运行指南](../Current/continuous-files.md)。
-
-## 统计：功率波动与结果总体
-
-先确认问题中的“一次”指报文、有效保持时长、活动、最终片段，还是已算出的一行结果。样本用真实有效更新，时间方法用条件已知为真的有效时长。样本方差或标准差可取 `ddof: 0` 或 1，时间版本只取 0，RMS 省略 `ddof`。对象计数以具名规则或窗口为准。完整且确定为空可以计 0，未观测需保留状态。分位数需要 `q`，中位数省略，内部概率的精确排序使用本次内存预算。
-
-功率试验五条读数的 P95 是 18 W；两个活动均值 [10,20] W 的 P95 是 19.5 W。用户问“每次加载”时选择活动范围的指标，再用 `aggregations` 引用该计算的 `value`。成功响应延迟选具名 `sequence` 的 `delay_ns`。按组报告候选、参与、定义排除、质量排除、部分值及总体发现状态。默认排除部分指标，只有用户的总体定义要求纳入时才设置 `include_partial: true`。任务索引 ID 为 `POWER_STATISTICS`。[可运行的 ASC/DBC 案例](../Current/examples/power-statistics.yaml)
+生成配置前，按下表逐项向用户核实；缺少的事实列为待确认，不要自行假定。
 
 |任务|必须核实|判断方法|
 |---|---|---|
@@ -33,6 +15,63 @@
 |事件与片段|两段真实活动可合并为一个片段，间隙不因此成为活动|同一运行的segments.parent_event_ids可对应多个events.event_id。计算按scope和parent_id关联，不能按行号或只按规则名称拼接。|
 |时序与输出|批大小仅影响执行分块；未知响应与可判定超时不同。实际时间积分与逐消息累计不同。|核对explain中的依赖、间隔、输出单位和实际请求范围。coverage_status仅在相应结果类型和门槛时出现，不是数值覆盖率；不要虚构coverage。|
 |业务预设|例如充电的mode/current及请求能量时的voltage；电流方向、单位和位置须满足预设契约|缺项或两个合格候选不自动选第一项；显式角色绑定仍须通过契约。范例的工程阈值和编码不能套给另一车型。|
+
+
+## 输出目录与设备标签
+
+生成分析或信号/CAN导出配置时，不要求用户提供设备标签。`metadata.device_label`可省略，默认为`pending`；用户需要记录时，使用其提供的非空文本，例如`lab-pc`或`试验台一号`，不猜成`home`或`work`。明确填写空值、全空白或非字符串属于配置错误。已有结果目录可以复用，原文件保留；显式工作目录仍须新建。输入与输出目录由用户指定，不按目录名称施加额外限制。
+
+## 同刻更新与结果比较
+
+- 同一时刻的更新：普通信号的相同值、类型、有效性、质量和枚举原码可以合并；有冲突时默认same_time_policy: error拒绝，last_by_sequence选择最大来源序号，不按进程到达顺序。逐消息累计仍保留每条消息贡献。
+- 路径顺序：显式路径条目保持顺序，目录/通配符只在各自条目内自然排序。
+- validate的范围：validate不扫描业务记录；通过不保证实际坏行、时间顺序或资源问题不会在run出现。
+- 跨运行比较：按业务对象、实际时间和父关联比较结果，并保留重复项数量，不能按写入sequence充当稳定业务ID。
+- 单位显示：可用W/s、1/W和1/J；mA尺度、温度角色和N*m量种保持，不能只改单位标签代替换算。
+
+## 同一会话的连续分卷
+
+同一次充电的多个ASC/BLF放在同一sources来源，不要拆成多个batch jobs再相加。参见[完整可运行指南](../Current/continuous-files.md)。
+
+- 进程数：execution.process_count为正整数，设置文件工作进程上限，默认1，基础示例保留4。普通run/validate/explain的--process-count及AnalysisRunner同名仅关键字参数可覆盖。主进程保留跨文件分析状态，适用的积分可以按[计算实现的选择](#backend-choice)中的条件并行计算。
+- 文件接续：file_merge: concatenate按文件顺序接续；time_order在各文件内部所需时间有序且时钟可比较时稳定归并，不平移、不去重。
+- 当前范围：仅一个ASC/BLF来源、requested解码；批量worker内不嵌套文件池。
+- 默认行为：默认1加concatenate时ASC/BLF在当前进程读取解码；time_order即使上限为1也使用文件工作进程，并使用本次受配额暂存。资源共用，不保证进程越多越快。
+
+## 统计：功率波动与结果总体
+
+先确认问题中的“一次”指报文、有效保持时长、活动、最终片段，还是已算出的一行结果。样本用真实有效更新，时间方法用条件已知为真的有效时长。样本方差或标准差可取 `ddof: 0` 或 1，时间版本只取 0，RMS 省略 `ddof`。对象计数以具名规则或窗口为准。完整且确定为空可以计 0，未观测需保留状态。分位数需要 `q`，中位数省略，内部概率的精确排序使用本次内存预算。
+
+功率试验五条读数的 P95 是 18 W；两个活动均值 [10,20] W 的 P95 是 19.5 W。用户问“每次加载”时选择活动范围的指标，再用 `aggregations` 引用该计算的 `value`。成功响应延迟选具名 `sequence` 的 `delay_ns`。按组报告候选、参与、定义排除、质量排除、部分值及总体发现状态。默认排除部分指标，只有用户的总体定义要求纳入时才设置 `include_partial: true`。任务索引 ID 为 `POWER_STATISTICS`。[可运行的 ASC/DBC 案例](../Current/examples/power-statistics.yaml)
+<a id="backend-choice"></a>
+
+## 计算实现的选择
+
+生成配置时通常省略`execution.backend`，不必阅读本节；用户问到计算实现、性能或两种实现的结果差异时再参考。
+
+普通分析省略`execution.backend`时使用`auto`。
+
+`auto`按整份计划选择计算实现。计划至少包含一项计算，所有计算项都属于下表的已验证流式类别，且没有宿主扩展、时序变换、序列、结果聚合或逐消息计算时，选择`reference`。规则、窗口和计算项的`condition`本身不会阻止这一选择。包含集合外计算项的计划继续使用`numpy`；显式指定`reference`或`numpy`时按指定值执行。选择在读取数据前完成，不通过试跑决定，也不在运行失败后切换实现。
+
+|类别|计算项|
+|---|---|
+|积分、时长与加权均值|`integral`、`duration`、`time_weighted_mean`|
+|极值|`min_time`、`max_time`、`sample_minimum`、`sample_maximum`|
+|计数与样本选择|`sample_count`、`point_event_count`、`activity_count`、`segment_count`、`select`|
+
+样本均值（`sample_mean`）、方差、标准差、均方根（RMS）、分位数和中位数等计算继续选择`numpy`。
+
+批量auto按子任务分别选择。`explain`同时报告requested_backend、selected_backend和backend_reason，运行清单backend只记录实际数值实现。内建流式表达式直接处理当前时刻的规范数值，适合批量处理的计算仍使用数组；不要把该选项解释为每个步骤都向量化。`reference`保留独立数值实现，用同一输入核对结果。宿主扩展继续调用所选后端的接口。后端不改变时间、有效期、缺失数据或输出范围。
+
+程序分别选择数值后端和积分路径。`auto`选中`reference`后，直接积分仍须满足更小的范围：在上面的计划限制下，全部计算都是会话范围的简单数值积分；参与信号来自同一来源的同一CAN报文；使用实际帧间隔（`actual`）及零阶保持（`zoh`），未另指定计时驱动，也没有规则、窗口或计算条件`condition`。
+
+此外，信号绑定必须明确，信号是未提取枚举原码的普通数值，且未请求信号导出、原帧导出、追溯或完整性诊断。ASC、BLF、原始报文CSV及连续分卷共用这些条件。固定周期、DBC周期或含条件的积分即使选中`reference`，也沿用通用计算流程。绑定不能证明适用时，在读取首帧前保留通用流程；运行失败直接报告。显式`reference`或`numpy`也使用对应的通用流程。
+
+在上述直接积分条件内，若只有一个 ASC／BLF 来源、至少两个连续文件，采用 `file_merge: concatenate`、`process_count > 1`，且未声明查表或请求会话积分之外的工作，`auto`还会把表达式求值和文件内积分面积交给文件工作进程。主进程处理跨文件状态并按原序累计，仍是一份连续会话结果。可引用同帧数值信号的简单派生表达式；没有新的必填开关。单文件、单进程、`time_order`、原始报文CSV及不满足上述条件的任务保留原路径，不能据此把高级分析改写成简单积分。
+
+并行积分的预算选择发生在读取首帧前，不合适时沿用原来的读取和计算方式。原路径也放不下或运行中超限时仍报错，不重扫输入，不丢数据。各工作进程共用受管理预算，不按进程数保证提速。
+
+完整的表达式和绑定限制见[积分路径条件](../Current/execution.md#integral-path-conditions)；机器校验字段见[执行Schema](../Schema/analysis.schema.json#/properties/execution)。
 
 ## 从报告定位错误
 
@@ -83,7 +122,10 @@ ASC默认可读取严格匹配的`Length = … BitCount = … ID = …`统计尾
 
 ## 独立批量的进程数
 
-批量文件根级process_count控制分析工作进程上限，正整数，默认1，不含调度主进程和按需导出的工作进程。ASC/BLF接续读取在分析工作进程内执行，不再额外创建纯BLF读取子进程。run_batch(plan, output, process_count=4)和CLI --process-count 4可覆盖计划；None仅在API表示沿用计划。配置不接受null或布尔值。Python脚本需在if __name__ == "__main__":保护内调用。普通AnalysisRunner另有读取/解码进程上限，配置为execution.process_count；同一会话连续paths保持一个分析状态，不拆成独立任务。
+- 上限：批量文件根级process_count控制分析工作进程上限，正整数，默认1，不含调度主进程和按需导出的工作进程。配置不接受null或布尔值。
+- 读取：ASC/BLF接续读取在分析工作进程内执行，不再额外创建纯BLF读取子进程。
+- 覆盖：run_batch(plan, output, process_count=4)和CLI --process-count 4可覆盖计划；None仅在API表示沿用计划。Python脚本需在if __name__ == "__main__":保护内调用。
+- 区别：普通AnalysisRunner另有读取/解码进程上限，配置为execution.process_count；同一会话连续paths保持一个分析状态，不拆成独立任务。
 
 每任务独立预算和输出，取消只阻止未启动任务。在途任务完成关闭；report.close()可重试远程清理。不要把未启动项或进程崩溃当成成功。旧workers/max_workers/--workers不再接受。
 

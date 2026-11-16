@@ -79,9 +79,10 @@ class AutoBackendTests(unittest.TestCase):
         self.assertEqual((plan.identity, plan.execution, plan.raw_config, plan.bindings), original)
 
     def test_unknown_categories_remain_numpy_and_invalid_choice_is_diagnostic(self):
-        """宽表和未测统计保持 NumPy，未知 typed 后端不能借 auto 通过。"""
+        """已验证的宽表积分类别选 reference，未纳入统计与非法后端仍保留原边界。"""
         wide = AnalysisPlan.from_dict(configuration('wide-auto.csv', wide=True))
-        self.assertEqual(select_backend(wide).selected, 'numpy')
+        self.assertEqual(select_backend(wide).selected, 'reference')
+        self.assertIn('已验证的流式类别', select_backend(wide).reason)
         raw = configuration('statistics-auto.csv')
         raw['calculations'].append(dict(name='spread', operation='sample_variance', expr='p'))
         self.assertEqual(select_backend(AnalysisPlan.from_dict(raw)).selected, 'numpy')

@@ -24,7 +24,7 @@ def _reject_misplaced_history(text):
             continue
         if fence is None and re.match(
             r"^\s*(?:[-*]\s+)?\d{4}-\d{2}-\d{2}T\S+\s*\|\s*"
-            r"[A-Z][A-Z0-9/-]*\s*\|\s*\[(?:home|work|pending)\]", line
+            r"[A-Z][A-Z0-9/-]*\s*\|\s*\[(?:home|work|school|pending)\]", line
         ):
             raise ValueError(f"正文第{number}行含开发履历；请移入末尾履历章节")
 

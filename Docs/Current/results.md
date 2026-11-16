@@ -4,6 +4,8 @@
 
 普通配置不用填写outputs。运行后先打开中文命名的CSV：同一事件或窗口的计算结果已经放在同一行，不必手动关联ID，也不用把纳秒换算成秒。文件是UTF-8带BOM编码，方便Windows表格软件识别中文；原始数值没有为了显示而舍入。
 
+想先看输出长什么样，请打开[示例运行结果与解析](example-results.md)：每个完整配置都能找到运行命令、实际结果表和数值解释。本页用于查字段含义，配置文件和运行后的结果文件是两种不同结构。
+
 例如[连续条件能量示例](conditional-energy.md)只产生一段合格区间：
 
 | 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
@@ -48,15 +50,11 @@ outputs:       # 只在程序需要原交换字段时增加这段
   tables: csv  # 保留原平坦表、字段名和整数纳秒
 ```
 
-可选值只有readable_csv、csv、jsonl。csv使用events.csv、calculations.csv等原表；jsonl使用对应逐行JSON（包含row_schema_version和row）。选择一种只输出一套结果，不同时生成可读和交换副本。Python的iter_events、iter_calculations等始终返回原类型化行，不受输出格式影响；低层AnalysisResult构造器仍保留csv默认，AnalysisRunner跟随计划默认readable_csv。
+可选值只有readable_csv、csv、jsonl。csv使用events.csv、calculations.csv等原表；jsonl使用对应逐行JSON（包含row_schema_version和row）。选择一种只输出一套结果，不同时生成可读和交换副本。Python的iter_events、iter_calculations等始终返回原类型化行，不受输出格式影响。
 
-可读导出只读已计算结果，不重读原始日志。事件与指标的排序不同，需要临时关联索引；该索引受内存/磁盘预算约束并在发布前删除。它会增加少量导出时间；大量结果需要以具体规模实测。只有逐条明细时直接写出，不创建关联索引。
+可读表由已计算的结果整理而成，不重读原始日志；整理会多花少量导出时间，结果很多时请按实际规模估计。
 
 以下字段说明用于显式csv/jsonl与类型化API；普通可读表用上面的中文列。
-
-想先看输出长什么样，请打开[示例运行结果与解析](example-results.md)：每个完整配置都能找到运行命令、实际结果表和数值解释。本页用于查字段含义，配置文件和运行后的结果文件是两种不同结构。
-
-
 
 普通计算的一行直接包含calculation_id、operation、scope、value、unit、status、reason和quality，以及数据集、实体、会话、父事件/片段和序号。可直接通过row.value等属性读取，完整字段见下表关联的结果模型。
 
@@ -71,6 +69,8 @@ outputs:       # 只在程序需要原交换字段时增加这段
 | selections / iter_selections | select明确选择的样本时刻、值、类型、单位和有效状态 |
 | input_trace / iter_input_trace | 明确请求详细追溯时的输入位置和记录种类 |
 | contributions / iter_contributions | outputs.contributions=full时的逐消息贡献与跳过原因 |
+
+<a id="coverage-status"></a>
 
 计算行按实际操作返回SummaryCalculationRow或带coverage_status的SummaryCoverageCalculationRow；普通信号计算integral、duration、min_time、max_time、time_weighted_mean、sample_minimum、sample_maximum和sample_mean，以及 v4 的样本计数、方差、标准差、RMS 和样本分位数，在 minimum_coverage 大于 0 时返回 coverage_status。sufficient表示所需的观测、值有效性和条件已知范围均达到门槛；indeterminate表示不足或无法确定。这个字段不是数值覆盖率，也不会把样本统计改成时间加权统计。select明细和逐消息累计不属于这组标量结果。显式填0与省略不会因此增加coverage_status。各类完整字段均列在[摘要行模型](reference/chronaxis.results.summary.md)。公开表的相同字段在CSV和JSONL中表示同一事实。
 
@@ -104,7 +104,23 @@ value为空时要结合status、reason和quality看原因。无效更新覆盖�
 
 ### 用实际输出理解partial
 
-在[入门配置](examples/analysis.yaml)中，为power显式设置valid_for: 1s，覆盖DBC周期1s所推导的默认有效期3s，并在energy计算项设置partial_policy。其他输入和[0,6)秒分析范围保持相同。[2,3)和[5,6)内旧功率已到期，又没有新值，因此只有4秒能计算能量：2W×1s＋4W×1s＋8W×1s＋10W×1s＝24J。
+在[入门配置](examples/analysis.yaml)中，为power显式设置valid_for: 1s，覆盖DBC周期1s所推导的默认有效期3s，并在energy计算项设置partial_policy。需要新增的两行如下（标“新增”的行），其他内容和[0,6)秒分析范围保持不变：
+
+```yaml
+signals:                            # 把输入字段定义为有名称、类型、单位和有效期的分析信号
+  - name: power                     # 给分析信号取名称；后续表达式和计算通过此名称引用它
+    field:                          # 指定来源中的原始字段；CAN填写报文ID和DBC信号名
+      frame_id: '0x100'             # 选择包含信号的报文ID
+      signal: Power                 # 填写DBC中的信号名称，大小写须一致
+    valid_for: 1s                   # 新增：每个功率值只在1秒内有效
+calculations:                       # 列出希望获得的统计或积分结果
+  - name: energy                    # 为这项计算结果取唯一名称
+    partial_policy: report          # 新增：数据不完整时保留已知部分；改为strict得到下表第二行
+    operation: integral             # 将有效数值乘持续时间后累计
+    expr: power                     # 引用前面已定义的信号
+```
+
+`sample_average`、`time_average` 两项和 `execution` 不变，片段中省略。[2,3)和[5,6)内旧功率已到期，又没有新值，因此只有4秒能计算能量：2W×1s＋4W×1s＋8W×1s＋10W×1s＝24J。
 
 | energy的partial_policy | value | status | reason | 如何使用结果 |
 |---|---|---|---|---|
@@ -147,9 +163,7 @@ print(names)             # ['MISSING', 'STALE']
 
 可运行对照：[quality.yaml](examples/quality.yaml)读取合成[quality.asc](examples/data/can/quality.asc)与[teaching.dbc](examples/data/can/teaching.dbc)。0秒Power为10W，1秒解码值为-1e100，2秒恢复为10W，4秒收到不含Power的报文并结束观测。配置明确将-1e100列入invalid_values，并选择valid_for: 1s。
 
-只有[0,1)及[2,3)有有效功率，因此energy=20J、status=partial、reason=partial_coverage。当前CAN例的quality=18，即OUT_OF_RANGE（16）加STALE（2）：[1,2)命中无效码，替换此前有效值；[3,4)功率已过期。程序没有补0或继续沿用无效值。运行`chronaxis run quality.yaml --output quality-result`核对。
-
-本例1秒时出现显式无效码，产生OUT_OF_RANGE（16）；2秒恢复的10W在3秒到期，产生STALE（2）。只有[0,1)和[2,3)可积分，共20J，status为partial，quality=16+2=18。上面的quality=3是质量位读法示意，不是本例输出。
+只有[0,1)及[2,3)有有效功率，因此energy=20J、status=partial、reason=partial_coverage。quality=18，即OUT_OF_RANGE（16）加STALE（2）：1秒的显式无效码替换了此前的有效值，产生OUT_OF_RANGE；2秒恢复的10W在3秒到期，产生STALE。程序没有补0或继续沿用无效值。在examples目录运行`chronaxis run quality.yaml --output quality-result`核对。上面的quality=3是质量位读法示意，不是本例输出。
 
 <a id="result-status"></a>
 ## 各种结果的状态字段
@@ -224,18 +238,11 @@ for row in result.iter_calculations():
 信号CSV与CAN报文导出由outputs单独请求，实际索引路径和导出目录分别由本次 manifest 的 `exports.index_file`、`exports.directory` 给出；它们带本次运行的时间后缀。原值和插值后的估计值有各自文件；CAN原帧与重建帧不混称原始输入。导出网格不改变分析积分间隔，见[导出](exports.md)。
 
 <a id="metadata-output"></a>
-## 运行清单的摘要与详细字段
+## 运行清单里有什么
 
-RunMetadata保存运行信息，to_dict()决定哪些字段写入JSON。省略software_version时，每次构造RunMetadata才读取当前这份源码或安装包的发行版本；已经创建的对象和显式传入的历史版本不随之改写。这不表示已加载的Python代码会自动更新。默认detailed_diagnostics=False输出run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、worker_config、retain_work和detailed_diagnostics；输入身份、会话边界、限制等仅在满足对应条件时补充。开启trace/integrity还会输出相应诊断信息。
+运行清单记录本次运行的基本信息：run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、worker_config、retain_work和detailed_diagnostics，以及本次实际写出的结果文件。输入身份、会话边界、限制等只在实际适用时出现；在diagnostics中开启trace或integrity时，还会写入相应的诊断信息，见[执行设置](execution.md)。
 
-| 模型状态 | 默认摘要模式 | detailed_diagnostics=True |
-|---|---|---|
-| signal_bindings含一条信号定义 | 字典中没有signal_bindings键 | 字典展开该信号定义 |
-| 存有preset_bindings或CAN来源详情 | 不因非空自动输出 | 按详细序列化分支输出，空可选项仍可能省略 |
-
-因此不能用某个详细键缺失推断模型从未持有该信息。普通读取清单时先确认输出模式，再查看键是否存在；不要为读取不存在的明细盲目索引字典。当前AnalysisRunner生成摘要模式元数据；配置diagnostics只接受trace、integrity、retain_work，不存在detailed或detailed_diagnostics配置开关。上表说明RunMetadata模型的序列化分支，不代表公开运行会填充所有模型字段。可用诊断设置见[执行设置](execution.md)。
-
-当前公开Runner的metadata.can_sources和metadata.text_can_sources均为空元组。这两个字段用于接收调用方明确提供的来源明细，不能根据字段名假定运行后一定有值。需要核对实际输入诊断时，使用当前支持的diagnostics配置和对应结果，见[运行参数](execution.md)；仅将元数据转换为详细模式不会补出缺失明细。
+普通运行不需要为清单做任何设置。读取清单时，先确认某个键存在再使用，不要假定所有可选字段都有值。字段的完整定义见[RunMetadata](public-api/RunMetadata.md)。
 
 ## 为什么运行成功却没有事件
 

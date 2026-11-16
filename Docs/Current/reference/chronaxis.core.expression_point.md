@@ -66,7 +66,7 @@ NumericArray。
 
 原列模型错误。
 
-源码：[`src/chronaxis/core/expression_point.py:21`](../../../src/chronaxis/core/expression_point.py#L21)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:21`](../../../src/chronaxis/core/expression_point.py#L21)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-_scalar"></a>
 ## `_scalar`
@@ -91,7 +91,7 @@ ScalarValue。
 
 原模型错误。
 
-源码：[`src/chronaxis/core/expression_point.py:33`](../../../src/chronaxis/core/expression_point.py#L33)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:33`](../../../src/chronaxis/core/expression_point.py#L33)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram"></a>
 ## `PointProgram`
@@ -106,7 +106,7 @@ PointProgram(root)
 ```
 
 
-源码：[`src/chronaxis/core/expression_point.py:41`](../../../src/chronaxis/core/expression_point.py#L41)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:41`](../../../src/chronaxis/core/expression_point.py#L41)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-__init__"></a>
 ### `PointProgram.__init__`
@@ -131,7 +131,7 @@ PointProgram.__init__(root)
 
 内部未支持节点、结构或分配错误；不执行任何宿主回调。
 
-源码：[`src/chronaxis/core/expression_point.py:48`](../../../src/chronaxis/core/expression_point.py#L48)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:48`](../../../src/chronaxis/core/expression_point.py#L48)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-used_names"></a>
 ### `PointProgram.used_names`
@@ -156,7 +156,7 @@ PointProgram.used_names(cache)
 
 非法缓存键。
 
-源码：[`src/chronaxis/core/expression_point.py:92`](../../../src/chronaxis/core/expression_point.py#L92)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:92`](../../../src/chronaxis/core/expression_point.py#L92)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-evaluate"></a>
 ### `PointProgram.evaluate`
@@ -182,7 +182,7 @@ Evaluation。
 
 计算/宿主错误。
 
-源码：[`src/chronaxis/core/expression_point.py:98`](../../../src/chronaxis/core/expression_point.py#L98)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:98`](../../../src/chronaxis/core/expression_point.py#L98)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-_evaluate"></a>
 ### `PointProgram._evaluate`
@@ -209,7 +209,7 @@ Evaluation。
 
 内部节点/输入合同错误及宿主发生异常时直接交给调用者处理。
 
-源码：[`src/chronaxis/core/expression_point.py:102`](../../../src/chronaxis/core/expression_point.py#L102)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:102`](../../../src/chronaxis/core/expression_point.py#L102)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-updates"></a>
 ### `PointProgram.updates`
@@ -237,7 +237,7 @@ bool。
 
 条件求值或内部节点错误。
 
-源码：[`src/chronaxis/core/expression_point.py:179`](../../../src/chronaxis/core/expression_point.py#L179)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:179`](../../../src/chronaxis/core/expression_point.py#L179)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-updates-changed"></a>
 ### `PointProgram.updates.changed`
@@ -262,7 +262,7 @@ bool。
 
 原条件求值错误。
 
-源码：[`src/chronaxis/core/expression_point.py:187`](../../../src/chronaxis/core/expression_point.py#L187)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:187`](../../../src/chronaxis/core/expression_point.py#L187)（行号对应 Chronaxis 0.1.0.dev5 源码）。
 
 <a id="api-PointProgram-active"></a>
 ### `PointProgram.active`
@@ -289,4 +289,4 @@ bool。
 
 条件错误。
 
-源码：[`src/chronaxis/core/expression_point.py:214`](../../../src/chronaxis/core/expression_point.py#L214)（行号属于 `8904c2f744951857659abd40aaa3535d57faf53c`）。
+源码：[`src/chronaxis/core/expression_point.py:214`](../../../src/chronaxis/core/expression_point.py#L214)（行号对应 Chronaxis 0.1.0.dev5 源码）。
