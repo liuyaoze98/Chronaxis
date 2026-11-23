@@ -42,8 +42,10 @@ class ConfigurationEntrypointTests(unittest.TestCase):
 
     def command(self,*arguments):
         """从不同cwd实际运行模块CLI。参数: 命令参数。返回: CompletedProcess。异常: 超时/IO。"""
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         return subprocess.run([sys.executable,'-B','-m','chronaxis',*map(str,arguments)],cwd=self.root,
-            env=dict(os.environ,CHRONAXIS_DEVICE_LABEL='home'),capture_output=True,text=True,encoding='utf-8',timeout=60)
+            env=dict(os.environ,CHRONAXIS_DEVICE_LABEL='home',PYTHONIOENCODING='utf-8'),capture_output=True,text=True,
+            encoding='utf-8',timeout=60)
 
     def test_public_analysis_api_and_cli_have_equal_current_results(self):
         """两格式同一静态计划，实际积分6J；CLI validate/explain/run都从文件父目录定位CSV。参数: 无。返回: None。异常: 断言。"""

@@ -20,11 +20,11 @@ The source tree's `requirements/` directory records four Windows x86_64 dependen
 <a id="从-pypi-安装"></a>
 ## Install from PyPI
 
-This manual covers development preview `0.1.0.dev5`. Select the version explicitly so that its configuration instructions match the installed package:
+This manual covers development preview `0.1.0.dev6`. Select the version explicitly so that its configuration instructions match the installed package:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev5"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\python.exe -m chronaxis guide --language en
 .\.venv\Scripts\python.exe -m chronaxis manual --language en
@@ -35,11 +35,11 @@ Installation obtains the runtime dependencies automatically. The package include
 <a id="使用本地安装包"></a>
 ## Install a local wheel
 
-This manual covers 0.1.0.dev5. Obtain the matching wheel, create an isolated environment in Windows PowerShell, and substitute its actual path below. Installation includes dependencies for signal tables, CAN logs and DBC decoding. Prepare dependency packages in advance for offline installation.
+This manual covers 0.1.0.dev6. Obtain the matching wheel, create an isolated environment in Windows PowerShell, and substitute its actual path below. Installation includes dependencies for signal tables, CAN logs and DBC decoding. Prepare dependency packages in advance for offline installation.
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev5-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev6-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m chronaxis guide --language en
 .\.venv\Scripts\python.exe -m chronaxis manual --language en
 ```
@@ -51,7 +51,7 @@ The wheel also includes the Markdown user manual and the AI guide. Open the file
 <a id="创建独立环境"></a>
 ## Install from the matching source tree
 
-Obtain the 0.1.0.dev5 source tree, then run these Windows PowerShell commands from its root containing `pyproject.toml`. Explicitly using the virtual environment's Python avoids relying on terminal activation or changing script execution policy.
+Obtain the 0.1.0.dev6 source tree, then run these Windows PowerShell commands from its root containing `pyproject.toml`. Explicitly using the virtual environment's Python avoids relying on terminal activation or changing script execution policy.
 
 ```powershell
 py -3.12 -m venv .venv
@@ -122,7 +122,7 @@ You can copy the offline HTML manual's complete `examples` directory elsewhere. 
 | `py` or the example Python 3.12 is unavailable | Install Python 3.12 or 3.13. For 3.13 use `py -3.13`, or specify that interpreter by its full path. |
 | pip cannot obtain dependencies | Check the index/network or provide local packages matching `pyproject.toml`. A failed download is not a completed installation. |
 | `No module named chronaxis` | The Python you are using is not the one Chronaxis was installed into. Use `.\.venv\Scripts\python.exe`, or one of the forms [above](#run-without-activation). For an editable source installation, also check that the source directory has not moved. |
-| `dependency_missing` or a missing CAN reader/decoder dependency | Reinstall in the same Python environment used for analysis: `pip install "chronaxis==0.1.0.dev5"` for a PyPI installation, the same wheel for a wheel installation, or `pip install -e "."` for a source installation. No signal, channel or DBC change is needed. |
+| `dependency_missing` or a missing CAN reader/decoder dependency | Reinstall in the same Python environment used for analysis: `pip install "chronaxis==0.1.0.dev6"` for a PyPI installation, the same wheel for a wheel installation, or `pip install -e "."` for a source installation. No signal, channel or DBC change is needed. |
 | Validation succeeds but results cannot be written | Read the original exception chain and platform requirements. Static validation does not publish results. |
 
 See [troubleshooting](troubleshooting.md) for other failures. Use `pyproject.toml` as the dependency/version specification for source installation.

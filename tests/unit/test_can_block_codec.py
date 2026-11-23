@@ -6,7 +6,7 @@ from pathlib import Path
 import struct
 import unittest
 
-from chronaxis.execution.can_block_codec import encode_block, decode_block, CANBlockError, LIMIT
+from chronaxis.execution.can_block_codec import encode_block, decode_block, decode_block_prefix, CANBlockError, LIMIT
 from chronaxis.legacy.records import LegacyRawFrame, LegacyCANField
 from chronaxis.sources.raw_can import RawCANRecord
 from chronaxis.sources.blf import _UntimedBLFRecord
@@ -172,6 +172,31 @@ class CANBlockCodecTests(unittest.TestCase):
             mutated = packet[:8] + struct.pack('!I', count) + packet[12:]
             with self.assertRaises(CANBlockError):
                 decode_block(mutated)
+
+    def test_prefix_reads_number_eof_and_facts_without_records(self):
+        """BUG-P5-004：前缀解码得到与完整解码相同的块号、EOF和事实；记录区损坏时前缀仍可读，完整解码报错；
+        截断在事实之前时前缀同样报错。
+
+        参数: 无。
+        返回: None。
+        异常: 断言失败或被测接口意外错误。
+        """
+        packet = encode_block(5, [record(), record(7)], True, facts())
+        number, records, eof, full = decode_block(packet)
+        self.assertEqual(decode_block_prefix(packet), (number, eof, full))
+        self.assertEqual((number, eof, len(records)), (5, True, 2))
+        # 记录区从末尾开始损坏：截掉最后一个字节并同步改写声明长度，事实之前的内容不变。
+        broken = packet[:4] + struct.pack('!I', len(packet) - 9) + packet[8:-1]
+        with self.assertRaises((CANBlockError, ValueError)):
+            decode_block(broken)
+        self.assertEqual(decode_block_prefix(broken), (5, True, full))
+        empty = encode_block(0, [], False, facts())
+        self.assertEqual(decode_block_prefix(empty[:4] + struct.pack('!I', len(empty) - 12) + empty[8:-4]),
+                         (0, False, facts()))
+        # 空块最后4字节是记录条数，事实在它之前；截断落在事实之前（含事实内部）时前缀必须报错。
+        for end in range(len(empty) - 4):
+            with self.subTest(end=end), self.assertRaises((CANBlockError, ValueError)):
+                decode_block_prefix(empty[:4] + struct.pack('!I', max(0, end - 8)) + empty[8:end])
 
     def test_row_and_byte_limits(self):
         """核64条及512KiB原边界仍有效。

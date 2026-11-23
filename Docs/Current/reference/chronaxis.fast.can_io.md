@@ -47,7 +47,7 @@ class _Group
 |`message`|cantools.database.can.Message|是|无|此组按实际帧型选用的 DBC 报文定义。|
 |`entries`|list[tuple]|否|[]|该报文上的指标名、独立累计器及可选的已观测身份集合。|
 
-源码：[`src/chronaxis/fast/can_io.py:18`](../../../src/chronaxis/fast/can_io.py#L18)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/can_io.py:18`](../../../src/chronaxis/fast/can_io.py#L18)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_prepare"></a>
 ## `_prepare`
@@ -69,7 +69,7 @@ _prepare(spec, db, *, _programs_checked=False)
 |`db`|cantools.database.Database|是|无|位置或关键字。已读入的 DBC，供按 ID、信号和帧型定位报文。|
 |`_programs_checked`|bool|否|False|仅关键字。仅由内部调用传入的公式已检查标志；默认 False，普通入口仍核对原始公式和指令，不读取配置中的同名值。|
 
-源码：[`src/chronaxis/fast/can_io.py:28`](../../../src/chronaxis/fast/can_io.py#L28)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/can_io.py:28`](../../../src/chronaxis/fast/can_io.py#L28)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-run_one"></a>
 ## `run_one`
@@ -96,4 +96,4 @@ run_one(spec, database=None, *, cancel_event=None)
 
 读取/解码/数值/取消错误。
 
-源码：[`src/chronaxis/fast/can_io.py:76`](../../../src/chronaxis/fast/can_io.py#L76)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/can_io.py:76`](../../../src/chronaxis/fast/can_io.py#L76)（行号对应 Chronaxis 0.1.0.dev6 源码）。

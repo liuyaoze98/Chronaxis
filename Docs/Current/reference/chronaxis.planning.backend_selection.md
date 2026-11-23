@@ -50,7 +50,7 @@ class BackendSelection
 |`selected`|str|是|无|reference/numpy；非法 带有明确类型的 声明为 unavailable。|
 |`reason`|str|是|无|解释选择依据，不承诺具体提速比例。|
 
-源码：[`src/chronaxis/planning/backend_selection.py:34`](../../../src/chronaxis/planning/backend_selection.py#L34)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/backend_selection.py:34`](../../../src/chronaxis/planning/backend_selection.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-simple_numeric_expression"></a>
 ## `simple_numeric_expression`
@@ -79,7 +79,7 @@ bool。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/backend_selection.py:42`](../../../src/chronaxis/planning/backend_selection.py#L42)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/backend_selection.py:42`](../../../src/chronaxis/planning/backend_selection.py#L42)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-select_backend"></a>
 ## `select_backend`
@@ -107,7 +107,7 @@ BackendSelection。
 
 返回类型：[BackendSelection](chronaxis.planning.backend_selection.md#api-BackendSelection)。
 
-源码：[`src/chronaxis/planning/backend_selection.py:61`](../../../src/chronaxis/planning/backend_selection.py#L61)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/backend_selection.py:61`](../../../src/chronaxis/planning/backend_selection.py#L61)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_streaming_selection"></a>
 ## `_streaming_selection`
@@ -135,7 +135,7 @@ BackendSelection。
 
 返回类型：[BackendSelection](chronaxis.planning.backend_selection.md#api-BackendSelection)。
 
-源码：[`src/chronaxis/planning/backend_selection.py:108`](../../../src/chronaxis/planning/backend_selection.py#L108)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/backend_selection.py:108`](../../../src/chronaxis/planning/backend_selection.py#L108)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-execution_plan"></a>
 ## `execution_plan`
@@ -162,4 +162,4 @@ execution_plan(plan: AnalysisPlan) -> AnalysisPlan
 
 返回类型：[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)。
 
-源码：[`src/chronaxis/planning/backend_selection.py:119`](../../../src/chronaxis/planning/backend_selection.py#L119)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/backend_selection.py:119`](../../../src/chronaxis/planning/backend_selection.py#L119)（行号对应 Chronaxis 0.1.0.dev6 源码）。

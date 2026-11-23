@@ -1,6 +1,7 @@
 """把连续文件的内部面积生成交给工作进程，保留主会话的原序积分结果。
 
-本模块只服务于已确认的同帧、实际间隔、ZOH 会话积分。读取配置沿用普通
+本模块只服务于已确认的同帧、ZOH 会话积分，全部积分项共用实际间隔、同一个
+固定间隔或DBC周期；DBC周期取同次DBC核实的驱动报文周期。读取配置沿用普通
 CAN 并行路径；未满足静态条件时不创建资源。工作进程不发布结果，主进程
 负责跨文件状态和最终累计，所有自有进程及预算由本次会话关闭。
 """
@@ -63,17 +64,24 @@ def parallel_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...]
 
 
 def parallel_integral_source(source: SourcePlan, definitions: tuple[SignalDefinition, ...],
-                             requirement: SourceInputRequirements) -> tuple[CANTextSpec, dict]:
+                             requirement: SourceInputRequirements,
+                             intervals: tuple = ()) -> tuple[CANTextSpec, dict]:
     """取得普通并行 CAN 读取使用的来源与选中字段政策。
 
-    参数: source 为唯一来源，definitions 为实际依赖，requirement 为共用需求分析结果。
+    参数: source 为唯一来源，definitions 为实际依赖，requirement 为共用需求分析结果；
+        intervals 为计划已解析的 (消费者, IntervalChoice) tuple，默认空，用于请求DBC驱动周期。
     返回: (CANTextSpec, options)，直接供现有 CANTextDecodeRead 使用。
     异常: 内部来源或字段结构错误；不加载 DBC，不读取文件。
     此函数限无导出、无追溯的直接积分子集；选中时间检查与全来源观测仍分开。
+    周期请求与普通记录游标相同：先按间隔声明顺序列DBC驱动字段，再列未填有效期的字段，
+    使缺少DBC周期时由同一检查报告同一字段。
     """
     fields = tuple(can_field_from_key(item.field) for item in definitions)
-    cycles = tuple(dict.fromkeys(field for item, field in zip(definitions, fields)
-                                if item.valid_for_ns is None))
+    selected = {item.name: field for item, field in zip(definitions, fields)}
+    drivers = tuple(selected[choice.driver] for _, choice in intervals
+                    if choice.mode == 'dbc' and choice.driver in selected)
+    cycles = tuple(dict.fromkeys((*drivers, *(field for item, field in zip(definitions, fields)
+                                             if item.valid_for_ns is None))))
     options = dict(classify_unselected=False, cycle_fields=cycles, integrity=False,
                    trace=False, retain_source_time=False,
                    emit_frame_ids=requirement.decode_frame_ids)
@@ -168,7 +176,7 @@ class ParallelIntegralSession:
         if self._closed or self._prepared:
             raise ResultClosedError('并行积分准备只能执行一次')
         from .parallel_integral_pool import ParallelIntegralPool
-        from .same_frame_integrals import same_frame_binding
+        from .same_frame_integrals import same_frame_binding, direct_integral_interval, dbc_driver_cycle
         from .signal_validity import resolve_signal_validity
         from .file_integral_terms import ParentIntegralTerms, parent_terms_cost, parent_terms_minimum_cost
         from .record_integral import RecordIntegral, record_integral_cost
@@ -176,7 +184,8 @@ class ParallelIntegralSession:
         plan = self._plan
         source = plan.sources[0]
         config, options = parallel_integral_source(source, self._definitions,
-                                                   self._requirements.for_source(source.name))
+                                                   self._requirements.for_source(source.name),
+                                                   plan.intervals.resolved)
         specs = tuple(CalculationDefinition(request.calculation_id, request.operation,
                       plan.dataset.domain or Interval(0, 0), request.partial_policy,
                       request.unit, minimum_coverage=request.minimum_coverage,
@@ -185,6 +194,8 @@ class ParallelIntegralSession:
         expressions = tuple(request.signal for request in plan.calculations)
         derived = tuple(item.definition for item in plan.derived)
         batch = min(plan.execution.batch_rows, 4096)
+        # 选择条件已保证全部积分项共用一种间隔；DBC周期的纳秒要等同次DBC事实到达后再取。
+        mode, step = direct_integral_interval(plan)
         integral_cost = sum(record_integral_cost(spec, expression.root.unit, batch_intervals=batch)
                             for spec, expression in zip(specs, expressions))
         headroom = 3 * BLOCK_RAM + 8192
@@ -208,9 +219,15 @@ class ParallelIntegralSession:
         if binding is None:
             # 尚未授予读取额度；此处只表示静态候选不适用，输入从未被消费。
             return False
+        if mode == 'dbc':
+            # 与普通路径相同取驱动报文的同次DBC周期；取不到唯一值时首帧前沿用普通路径，
+            # 由普通路径按原规则计算或报告错误，不在这里猜周期。
+            step = dbc_driver_cycle(plan, self.metadata['fields'])
+            if step is None:
+                return False
         additional = self._pool.configuration_cost(self._definitions, expressions, specs,
             binding, plan.dataset.session_id, derived=derived, domain=plan.dataset.domain,
-            batch_intervals=batch)
+            batch_intervals=batch, step_ns=step)
         additional += parent_terms_cost(self._definitions, expressions, derived, batch_intervals=batch)
         additional += integral_cost
         # 保留已知的块展开及最终提示空间；运行中超限仍按原错退出，绝不重扫。
@@ -219,14 +236,14 @@ class ParallelIntegralSession:
             return False
         for spec, expression in zip(specs, expressions):
             self._calculations.append(self._new(RecordIntegral, 'record_integral_cleanup_owner',
-                self._budget, spec, expression.root.unit, expression.root.dtype, None,
+                self._budget, spec, expression.root.unit, expression.root.dtype, step,
                 backend='reference', batch_intervals=min(plan.execution.batch_rows, 4096)))
         self._parent = self._new(ParentIntegralTerms, 'parent_integral_terms_cleanup_owner',
             self._budget, self._definitions, expressions, tuple(self._calculations), binding,
             plan.dataset.session_id, derived=derived, domain=plan.dataset.domain)
         self._pool.configure(self._definitions, expressions, specs, binding,
                              plan.dataset.session_id, derived=derived, domain=plan.dataset.domain,
-                             batch_intervals=min(plan.execution.batch_rows, 4096))
+                             batch_intervals=min(plan.execution.batch_rows, 4096), step_ns=step)
         self._prepared = True
         return True
 
@@ -252,11 +269,21 @@ class ParallelIntegralSession:
         self._started = True
         cpu = process_time()
         sequence_offset = 0
+        from .file_integral_terms import FileIntegralHead
+        seen = None
         try:
             for index in range(len(self._pool.spec.inputs)):
                 self._parent.begin_file(sequence_offset)
                 for event in self._pool.iter_file(index):
                     self._update_bounds()
+                    if type(event) is FileIntegralHead:
+                        # BUG-P5-005：原路径由一个投影跨全部文件记住已见帧型，在后一文件首帧发现不同即报错；
+                        # 这里在消费每个文件首组之前按文件顺序核对，先于该组的同刻合并，错误文字相同。
+                        identity = self._pool.file_facts[index]['frame_identity']
+                        if identity is not None and seen is not None and identity != seen:
+                            missing = 'is_extended' if seen[0] != identity[0] else 'is_fd'
+                            raise ValueError('同一报文绑定匹配多种实际帧，请补充 ' + missing)
+                        seen = seen or identity
                     started = perf_counter()
                     self._parent.consume(event)
                     self.timings['parent_boundary_reduce_seconds'] += perf_counter() - started

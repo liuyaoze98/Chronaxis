@@ -39,7 +39,7 @@ seconds(value)
 
 TypeError为非整数输入；不接受bool或浮点纳秒。
 
-源码：[`src/chronaxis/results/readable_format.py:38`](../../../src/chronaxis/results/readable_format.py#L38)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable_format.py:38`](../../../src/chronaxis/results/readable_format.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-quality_text"></a>
 ## `quality_text`
@@ -64,7 +64,7 @@ quality_text(value)
 
 类型错误传播；未知位明确保留提示，不能静默丢失。
 
-源码：[`src/chronaxis/results/readable_format.py:54`](../../../src/chronaxis/results/readable_format.py#L54)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable_format.py:54`](../../../src/chronaxis/results/readable_format.py#L54)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-explanation"></a>
 ## `explanation`
@@ -89,7 +89,7 @@ explanation(row)
 
 缺失字段错误传播。
 
-源码：[`src/chronaxis/results/readable_format.py:67`](../../../src/chronaxis/results/readable_format.py#L67)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable_format.py:67`](../../../src/chronaxis/results/readable_format.py#L67)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-outcome_messages"></a>
 ## `outcome_messages`
@@ -114,4 +114,4 @@ outcome_messages(outcome)
 
 无；有未知与已有完整事件可以同时出现。
 
-源码：[`src/chronaxis/results/readable_format.py:79`](../../../src/chronaxis/results/readable_format.py#L79)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable_format.py:79`](../../../src/chronaxis/results/readable_format.py#L79)（行号对应 Chronaxis 0.1.0.dev6 源码）。

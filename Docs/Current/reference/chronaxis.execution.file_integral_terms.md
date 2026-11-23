@@ -32,6 +32,7 @@
 |[`FileIntegralTerms`](#api-FileIntegralTerms)|文件工作进程的有界归组及面积生产器，不拥有求和状态。|
 |[`FileIntegralTerms.__init__`](#api-FileIntegralTerms-__init__)|安装已验证任务及投影，首条原帧尚未读取。|
 |[`FileIntegralTerms.compatibility_fields`](#api-FileIntegralTerms-compatibility_fields)|借用同次投影的FD兼容提示。|
+|[`FileIntegralTerms.frame_identity`](#api-FileIntegralTerms-frame_identity)|返回本文件目标帧实际的（扩展帧, FD），供父进程跨文件核对帧型（BUG-P5-005）。|
 |[`FileIntegralTerms._require_open`](#api-FileIntegralTerms-_require_open)|拒绝失败、完成或关闭后的推进。|
 |[`FileIntegralTerms._flush_points`](#api-FileIntegralTerms-_flush_points)|将完整内部区间交付为一个有限块，留下共享末点。|
 |[`FileIntegralTerms._append_group`](#api-FileIntegralTerms-_append_group)|保存一组必要求值点，并在区间数达到上限时交付块。|
@@ -48,7 +49,7 @@
 |[`ParentIntegralTerms._accept`](#api-ParentIntegralTerms-_accept)|保存一块原序面积并累计已经收到的覆盖事实。|
 |[`ParentIntegralTerms._boundary`](#api-ParentIntegralTerms-_boundary)|使用现役面积核计算一条跨文件或首组出区间。|
 |[`ParentIntegralTerms.consume`](#api-ParentIntegralTerms-consume)|接收当前文件的首组、面积块或末组；文件顺序由池保证。|
-|[`ParentIntegralTerms.finish`](#api-ParentIntegralTerms-finish)|读取池已证明全部EOF后，仅补到实际观测末端。|
+|[`ParentIntegralTerms.finish`](#api-ParentIntegralTerms-finish)|读取池已证明全部EOF后，实际间隔仅补到实际观测末端。|
 |[`ParentIntegralTerms.close`](#api-ParentIntegralTerms-close)|释放自有边界状态，外部积分器由父会话关闭。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -91,7 +92,7 @@ class SameTimeGroupSummary
 |`last_values`|tuple[[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue), ...]|是|无|同顺序最终值；无效本条也覆盖上一条。|
 |`first_conflicts`|tuple[int &#124; None, ...]|是|无|每个error信号首次冲突的局部序号，None表示未见冲突。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:24`](../../../src/chronaxis/execution/file_integral_terms.py#L24)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:24`](../../../src/chronaxis/execution/file_integral_terms.py#L24)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralHead"></a>
 ## `FileIntegralHead`
@@ -109,7 +110,7 @@ class FileIntegralHead
 |`group`|[SameTimeGroupSummary](chronaxis.execution.file_integral_terms.md#api-SameTimeGroupSummary)|是|无|仅首组可能受前文件的同一时刻值影响。|
 |`next_time_ns`|int &#124; None|是|无|下一目标组的实际时间；单组或错误排空时尚未知。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:37`](../../../src/chronaxis/execution/file_integral_terms.py#L37)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:37`](../../../src/chronaxis/execution/file_integral_terms.py#L37)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-IntegralColumnTerms"></a>
 ## `IntegralColumnTerms`
@@ -130,7 +131,7 @@ class IntegralColumnTerms
 |`valid_ns`|int|是|无|上述覆盖内具备有效数值的长度。|
 |`quality`|[QualityFlag](chronaxis.core.types.md#api-QualityFlag)|是|无|原面积核已确认的质量位。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:45`](../../../src/chronaxis/execution/file_integral_terms.py#L45)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:45`](../../../src/chronaxis/execution/file_integral_terms.py#L45)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-IntegralTermsChunk"></a>
 ## `IntegralTermsChunk`
@@ -150,7 +151,7 @@ class IntegralTermsChunk
 |`columns`|tuple[[IntegralColumnTerms](chronaxis.execution.file_integral_terms.md#api-IntegralColumnTerms), ...]|是|无|固定计算项顺序的各原序列。|
 |`right_closed`|bool|否|True|True表示右端同一时刻组已关闭；False表示仍需等待跨文件同一时刻合并。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:56`](../../../src/chronaxis/execution/file_integral_terms.py#L56)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:56`](../../../src/chronaxis/execution/file_integral_terms.py#L56)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTail"></a>
 ## `FileIntegralTail`
@@ -168,7 +169,7 @@ class FileIntegralTail
 |`group`|[SameTimeGroupSummary](chronaxis.execution.file_integral_terms.md#api-SameTimeGroupSummary) &#124; None|是|无|多组文件的末组；无目标或单组时None。|
 |`same_as_head`|bool|是|无|单组文件与head共享，不再复制首末值。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:66`](../../../src/chronaxis/execution/file_integral_terms.py#L66)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:66`](../../../src/chronaxis/execution/file_integral_terms.py#L66)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralFrontier"></a>
 ## `FileIntegralFrontier`
@@ -185,7 +186,7 @@ class FileIntegralFrontier
 |---|---|---|---|---|
 |`time_ns`|int|是|无|已闭内部点，与父进程正在等待的面积右端一致。|
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:74`](../../../src/chronaxis/execution/file_integral_terms.py#L74)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:74`](../../../src/chronaxis/execution/file_integral_terms.py#L74)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_conflict"></a>
 ## `_conflict`
@@ -211,7 +212,7 @@ None。
 
 ValueError。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:80`](../../../src/chronaxis/execution/file_integral_terms.py#L80)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:80`](../../../src/chronaxis/execution/file_integral_terms.py#L80)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_offset_group"></a>
 ## `_offset_group`
@@ -237,7 +238,7 @@ SameTimeGroupSummary，仅平移原帧序号，时间和值保持不变。
 
 内部字段不符合模型时传播TypeError或AttributeError。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:90`](../../../src/chronaxis/execution/file_integral_terms.py#L90)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:90`](../../../src/chronaxis/execution/file_integral_terms.py#L90)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_merge_group"></a>
 ## `_merge_group`
@@ -264,7 +265,7 @@ SameTimeGroupSummary，保留首值、最终值和最早冲突位置；不保存
 
 非同一时刻或原序号倒退时ValueError；业务冲突先记录到摘要，由调用方按序抛出。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:102`](../../../src/chronaxis/execution/file_integral_terms.py#L102)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:102`](../../../src/chronaxis/execution/file_integral_terms.py#L102)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_columns"></a>
 ## `_columns`
@@ -272,7 +273,7 @@ SameTimeGroupSummary，保留首值、最终值和最早冲突位置；不保存
 调用现役参考面积核，不先累计、不改变乘除顺序。
 
 ```python
-_columns(points, expressions, specs, domain)
+_columns(points, expressions, specs, domain, step_ns=None)
 ```
 
 ### 参数
@@ -283,6 +284,7 @@ _columns(points, expressions, specs, domain)
 |`expressions`|tuple[StaticExpression, ...]|是|无|位置或关键字。已验证的简单数值表达式，与积分计算项顺序一致。|
 |`specs`|tuple[CalculationDefinition, ...]|是|无|位置或关键字。与表达式逐项对应的会话积分请求，保留请求单位及完整性规则。|
 |`domain`|[Interval](chronaxis.core.models.md#api-Interval) &#124; None|是|无|位置或关键字。实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。|
+|`step_ns`|int &#124; None|否|None|位置或关键字。与父积分器相同的间隔：None为实际间隔；正整数为固定间隔纳秒，面积=左值×间隔×实际交集÷实际跨度。|
 
 ### 返回说明
 
@@ -291,8 +293,10 @@ tuple[IntegralColumnTerms, ...]，按计算项顺序保留面积、掩码和覆�
 ### 异常说明
 
 原面积核的类型、时间及数值结构错误原样传播。
+固定间隔时每对相邻点的面积为左值×间隔×实际交集÷实际跨度，交集仍按实际时间
+和有效期截止裁剪；覆盖时长和有效时长继续报告实际纳秒，不换成间隔。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:122`](../../../src/chronaxis/execution/file_integral_terms.py#L122)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:122`](../../../src/chronaxis/execution/file_integral_terms.py#L122)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-file_terms_minimum_cost"></a>
 ## `file_terms_minimum_cost`
@@ -320,7 +324,7 @@ int，文件面积固定状态、批容量和求值器固定费的必要字节�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:145`](../../../src/chronaxis/execution/file_integral_terms.py#L145)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:149`](../../../src/chronaxis/execution/file_integral_terms.py#L149)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-parent_terms_minimum_cost"></a>
 ## `parent_terms_minimum_cost`
@@ -348,7 +352,7 @@ int，父边界固定状态、全局余量及求值器固定费的必要字节�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:160`](../../../src/chronaxis/execution/file_integral_terms.py#L160)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:164`](../../../src/chronaxis/execution/file_integral_terms.py#L164)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-file_terms_cost"></a>
 ## `file_terms_cost`
@@ -378,7 +382,7 @@ int，文件面积状态与求值器的保守预约字节数；不含读取器�
 批上限非法时ValueError；静态模型原错传播。
 调用方另计读取器、通信包和任务重建；此函数不为它们重复占用预算。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:175`](../../../src/chronaxis/execution/file_integral_terms.py#L175)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:179`](../../../src/chronaxis/execution/file_integral_terms.py#L179)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-parent_terms_cost"></a>
 ## `parent_terms_cost`
@@ -407,7 +411,7 @@ int，父边界状态与求值器的保守预约字节数；借用的RecordInteg
 批上限非法时ValueError；静态模型原错传播。
 不包含借用的RecordIntegral，其预算仍由父会话独立申请。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:188`](../../../src/chronaxis/execution/file_integral_terms.py#L188)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:192`](../../../src/chronaxis/execution/file_integral_terms.py#L192)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms"></a>
 ## `FileIntegralTerms`
@@ -415,11 +419,11 @@ int，父边界状态与求值器的保守预约字节数；借用的RecordInteg
 文件工作进程的有界归组及面积生产器，不拥有求和状态。
 
 ```python
-FileIntegralTerms(budget, definitions, expressions, specs, binding, session_id, *, derived=(), batch_intervals=64, domain=None)
+FileIntegralTerms(budget, definitions, expressions, specs, binding, session_id, *, derived=(), batch_intervals=64, domain=None, step_ns=None)
 ```
 
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:201`](../../../src/chronaxis/execution/file_integral_terms.py#L201)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:205`](../../../src/chronaxis/execution/file_integral_terms.py#L205)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-__init__"></a>
 ### `FileIntegralTerms.__init__`
@@ -427,7 +431,7 @@ FileIntegralTerms(budget, definitions, expressions, specs, binding, session_id, 
 安装已验证任务及投影，首条原帧尚未读取。
 
 ```python
-FileIntegralTerms.__init__(budget, definitions, expressions, specs, binding, session_id, *, derived=(), batch_intervals=64, domain=None)
+FileIntegralTerms.__init__(budget, definitions, expressions, specs, binding, session_id, *, derived=(), batch_intervals=64, domain=None, step_ns=None)
 ```
 
 #### 参数
@@ -443,6 +447,7 @@ FileIntegralTerms.__init__(budget, definitions, expressions, specs, binding, ses
 |`derived`|tuple[DerivedDefinition, ...]|否|()|仅关键字。原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。|
 |`batch_intervals`|int|否|64|仅关键字。每批区间数上限，默认64，允许1至4096的原生整数；与报文采样周期无关。|
 |`domain`|[Interval](chronaxis.core.models.md#api-Interval) &#124; None|否|None|仅关键字。实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。|
+|`step_ns`|int &#124; None|否|None|仅关键字。父进程任务传入的共用间隔；None为实际间隔，否则为int64范围内正整数纳秒，构造时校验。|
 
 #### 返回说明
 
@@ -450,10 +455,10 @@ None，构造新的文件面积owner，不读取原帧。
 
 #### 异常说明
 
-非法声明或批上限时ValueError，范围类型错误时TypeError，预算不足时BudgetExceededError；
+非法声明、批上限或间隔时ValueError，范围类型错误时TypeError，预算不足时BudgetExceededError；
     原求值器异常继续传播，构造清理失败附file_integral_terms_cleanup_owner。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:204`](../../../src/chronaxis/execution/file_integral_terms.py#L204)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:208`](../../../src/chronaxis/execution/file_integral_terms.py#L208)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-compatibility_fields"></a>
 ### `FileIntegralTerms.compatibility_fields`
@@ -481,7 +486,35 @@ CANField到实际扩展帧标志bool的映射；投影释放后返回空dict。
 
 无；调用方不能修改借用的映射。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:255`](../../../src/chronaxis/execution/file_integral_terms.py#L255)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:263`](../../../src/chronaxis/execution/file_integral_terms.py#L263)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
+<a id="api-FileIntegralTerms-frame_identity"></a>
+### `FileIntegralTerms.frame_identity`
+
+返回本文件目标帧实际的（扩展帧, FD），供父进程跨文件核对帧型（BUG-P5-005）。
+
+```python
+FileIntegralTerms.frame_identity
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+两个bool的tuple；尚无目标帧或投影已释放时None。
+
+#### 异常说明
+
+无。同一文件内帧型不一致时读取器或投影已经报错，所以记录到的帧型唯一。
+
+源码：[`src/chronaxis/execution/file_integral_terms.py:272`](../../../src/chronaxis/execution/file_integral_terms.py#L272)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-_require_open"></a>
 ### `FileIntegralTerms._require_open`
@@ -507,7 +540,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:263`](../../../src/chronaxis/execution/file_integral_terms.py#L263)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:282`](../../../src/chronaxis/execution/file_integral_terms.py#L282)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-_flush_points"></a>
 ### `FileIntegralTerms._flush_points`
@@ -532,7 +565,7 @@ IntegralTermsChunk；不足两个点时返回None。
 
 原面积核的类型、时间及数值结构错误原样传播。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:268`](../../../src/chronaxis/execution/file_integral_terms.py#L268)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:287`](../../../src/chronaxis/execution/file_integral_terms.py#L287)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-_append_group"></a>
 ### `FileIntegralTerms._append_group`
@@ -559,7 +592,7 @@ IntegralTermsChunk；尚未达到块上限时返回None。
 
 同一时刻冲突时ValueError；原求值器和面积核异常继续传播。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:282`](../../../src/chronaxis/execution/file_integral_terms.py#L282)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:302`](../../../src/chronaxis/execution/file_integral_terms.py#L302)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-feed"></a>
 ### `FileIntegralTerms.feed`
@@ -585,7 +618,7 @@ tuple[FileIntegralHead | IntegralTermsChunk, ...]；没有新边界或完整块�
 原投影、原序、归一化或面积错误。
 无关帧只在读取层参与观测事实；这里不缓存其载荷或重复解码。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:295`](../../../src/chronaxis/execution/file_integral_terms.py#L295)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:315`](../../../src/chronaxis/execution/file_integral_terms.py#L315)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-finish"></a>
 ### `FileIntegralTerms.finish`
@@ -611,7 +644,7 @@ FileIntegralTerms.finish()
 
 已关闭、失败或完成时ResultClosedError；原数值异常继续传播，失败后只能关闭。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:343`](../../../src/chronaxis/execution/file_integral_terms.py#L343)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:363`](../../../src/chronaxis/execution/file_integral_terms.py#L363)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-drain_prefix_on_error"></a>
 ### `FileIntegralTerms.drain_prefix_on_error`
@@ -639,7 +672,7 @@ FileIntegralTerms.drain_prefix_on_error()
 已关闭时ResultClosedError；原数值异常继续传播。
 首组摘要也携带已看到的冲突位置，父进程可先判定更早的跨文件冲突。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:372`](../../../src/chronaxis/execution/file_integral_terms.py#L372)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:392`](../../../src/chronaxis/execution/file_integral_terms.py#L392)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-FileIntegralTerms-close"></a>
 ### `FileIntegralTerms.close`
@@ -665,7 +698,7 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:393`](../../../src/chronaxis/execution/file_integral_terms.py#L393)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:413`](../../../src/chronaxis/execution/file_integral_terms.py#L413)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms"></a>
 ## `ParentIntegralTerms`
@@ -677,7 +710,7 @@ ParentIntegralTerms(budget, definitions, expressions, calculations, binding, ses
 ```
 
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:407`](../../../src/chronaxis/execution/file_integral_terms.py#L407)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:427`](../../../src/chronaxis/execution/file_integral_terms.py#L427)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-__init__"></a>
 ### `ParentIntegralTerms.__init__`
@@ -707,10 +740,11 @@ None，构造新的父边界owner，借用外部积分器。
 
 #### 异常说明
 
-声明、范围或积分器不一致时ValueError，预算不足时BudgetExceededError；
+声明、范围、积分器或间隔不一致时ValueError，预算不足时BudgetExceededError；
     原求值器异常继续传播，构造清理失败附parent_integral_terms_cleanup_owner。
+积分器共用的间隔（实际或同一固定间隔）同时用于跨文件边界面积和末端处理。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:410`](../../../src/chronaxis/execution/file_integral_terms.py#L410)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:430`](../../../src/chronaxis/execution/file_integral_terms.py#L430)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-_require_open"></a>
 ### `ParentIntegralTerms._require_open`
@@ -736,7 +770,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:460`](../../../src/chronaxis/execution/file_integral_terms.py#L460)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:487`](../../../src/chronaxis/execution/file_integral_terms.py#L487)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-begin_file"></a>
 ### `ParentIntegralTerms.begin_file`
@@ -761,7 +795,7 @@ None。
 
 状态/偏移错。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:465`](../../../src/chronaxis/execution/file_integral_terms.py#L465)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:492`](../../../src/chronaxis/execution/file_integral_terms.py#L492)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-_drain"></a>
 ### `ParentIntegralTerms._drain`
@@ -786,7 +820,7 @@ None。
 
 原累计容量/状态错误。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:473`](../../../src/chronaxis/execution/file_integral_terms.py#L473)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:500`](../../../src/chronaxis/execution/file_integral_terms.py#L500)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-_mark_closed"></a>
 ### `ParentIntegralTerms._mark_closed`
@@ -812,7 +846,7 @@ None。
 
 原累计错误。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:488`](../../../src/chronaxis/execution/file_integral_terms.py#L488)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:516`](../../../src/chronaxis/execution/file_integral_terms.py#L516)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-_accept"></a>
 ### `ParentIntegralTerms._accept`
@@ -838,7 +872,7 @@ None。
 
 原结构/累计错。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:493`](../../../src/chronaxis/execution/file_integral_terms.py#L493)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:521`](../../../src/chronaxis/execution/file_integral_terms.py#L521)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-_boundary"></a>
 ### `ParentIntegralTerms._boundary`
@@ -864,7 +898,7 @@ None。
 
 原计算错。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:511`](../../../src/chronaxis/execution/file_integral_terms.py#L511)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:540`](../../../src/chronaxis/execution/file_integral_terms.py#L540)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-consume"></a>
 ### `ParentIntegralTerms.consume`
@@ -889,12 +923,12 @@ None。
 
 同一时刻冲突、时间/消息次序或原累计错误。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:519`](../../../src/chronaxis/execution/file_integral_terms.py#L519)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:549`](../../../src/chronaxis/execution/file_integral_terms.py#L549)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-finish"></a>
 ### `ParentIntegralTerms.finish`
 
-读取池已证明全部EOF后，仅补到实际观测末端。
+读取池已证明全部EOF后，实际间隔仅补到实际观测末端。
 
 ```python
 ParentIntegralTerms.finish(observed_end)
@@ -913,8 +947,10 @@ None。
 #### 异常说明
 
 未完成文件、时间倒退或原累计错误。
+固定间隔只在相邻两次驱动更新之间计面积；最后一组之后没有下一次更新，
+因此不补尾段，与通用路径一致。观测末端仍须不早于最后一组。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:578`](../../../src/chronaxis/execution/file_integral_terms.py#L578)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:608`](../../../src/chronaxis/execution/file_integral_terms.py#L608)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParentIntegralTerms-close"></a>
 ### `ParentIntegralTerms.close`
@@ -940,4 +976,4 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/file_integral_terms.py:600`](../../../src/chronaxis/execution/file_integral_terms.py#L600)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/file_integral_terms.py:632`](../../../src/chronaxis/execution/file_integral_terms.py#L632)（行号对应 Chronaxis 0.1.0.dev6 源码）。

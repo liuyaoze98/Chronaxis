@@ -38,7 +38,7 @@ validate_decode_policy(value)
 
 ValueError。
 
-源码：[`src/chronaxis/legacy/decode_policy.py:7`](../../../src/chronaxis/legacy/decode_policy.py#L7)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/decode_policy.py:7`](../../../src/chronaxis/legacy/decode_policy.py#L7)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-check_decode_length"></a>
 ## `check_decode_length`
@@ -65,7 +65,7 @@ None；partial仅允许载荷短于DBC，不能掩盖DLC与实际字节不一致
 
 ValueError表示结构或所选长度政策不符；属性访问错误原样传播。
 
-源码：[`src/chronaxis/legacy/decode_policy.py:15`](../../../src/chronaxis/legacy/decode_policy.py#L15)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/decode_policy.py:15`](../../../src/chronaxis/legacy/decode_policy.py#L15)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-decode_serial_frame"></a>
 ## `decode_serial_frame`
@@ -94,4 +94,4 @@ decode_serial_frame(database, frame, message, duplicate_ids)
 唯一ID捕获普通Exception；多定义仅捕获DecodeError，其他错误原样传播。
     这一区别只用于明确的串行兼容入口，普通并行和文本入口不自动套用。
 
-源码：[`src/chronaxis/legacy/decode_policy.py:30`](../../../src/chronaxis/legacy/decode_policy.py#L30)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/decode_policy.py:30`](../../../src/chronaxis/legacy/decode_policy.py#L30)（行号对应 Chronaxis 0.1.0.dev6 源码）。

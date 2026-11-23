@@ -37,4 +37,4 @@ cantools.database.load 返回的数据库；保留 frame_id_mask=None、prune_ch
 
 文件打开、格式识别、解析及关闭错误原样传播。不会读取缓存环境变量、进入 diskcache、修改进程环境或保存数据库副本；调用方负责数据库复用和输入身份检查。
 
-源码：[`src/chronaxis/dbc_loading.py:10`](../../../src/chronaxis/dbc_loading.py#L10)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/dbc_loading.py:10`](../../../src/chronaxis/dbc_loading.py#L10)（行号对应 Chronaxis 0.1.0.dev6 源码）。

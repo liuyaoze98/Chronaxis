@@ -52,4 +52,4 @@ plan = load_analysis_plan("examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
-源码：[`src/chronaxis/planning/reports.py:443`](../../../src/chronaxis/planning/reports.py#L443)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:443`](../../../src/chronaxis/planning/reports.py#L443)（行号对应 Chronaxis 0.1.0.dev6 源码）。

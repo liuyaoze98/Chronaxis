@@ -53,7 +53,7 @@ registered_entry(connection, token, target, args)
 
 握手、管道或原入口错误；未收到GO时不执行业务。
 
-源码：[`src/chronaxis/_process_start.py:11`](../../../src/chronaxis/_process_start.py#L11)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:11`](../../../src/chronaxis/_process_start.py#L11)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate"></a>
 ## `StartupGate`
@@ -65,7 +65,7 @@ StartupGate(context)
 ```
 
 
-源码：[`src/chronaxis/_process_start.py:41`](../../../src/chronaxis/_process_start.py#L41)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:41`](../../../src/chronaxis/_process_start.py#L41)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate-__init__"></a>
 ### `StartupGate.__init__`
@@ -90,7 +90,7 @@ StartupGate.__init__(context)
 
 创建错误原样传播；未关闭端点通过process_start_cleanup_owner保留。
 
-源码：[`src/chronaxis/_process_start.py:44`](../../../src/chronaxis/_process_start.py#L44)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:44`](../../../src/chronaxis/_process_start.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate-closed"></a>
 ### `StartupGate.closed`
@@ -118,7 +118,7 @@ bool；True只表示本对象不再持有端点，不表示业务进程退出。
 
 无。
 
-源码：[`src/chronaxis/_process_start.py:64`](../../../src/chronaxis/_process_start.py#L64)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:64`](../../../src/chronaxis/_process_start.py#L64)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate-receive"></a>
 ### `StartupGate.receive`
@@ -144,7 +144,7 @@ StartupGate.receive(process, timeout=5.0)
 
 超时、提前退出、消息过长或断管时失败。
 
-源码：[`src/chronaxis/_process_start.py:73`](../../../src/chronaxis/_process_start.py#L73)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:73`](../../../src/chronaxis/_process_start.py#L73)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate-close_child"></a>
 ### `StartupGate.close_child`
@@ -170,7 +170,7 @@ None。
 
 真实关闭错误；尚未关闭的端点仍由本对象持有。
 
-源码：[`src/chronaxis/_process_start.py:87`](../../../src/chronaxis/_process_start.py#L87)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:87`](../../../src/chronaxis/_process_start.py#L87)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-StartupGate-close"></a>
 ### `StartupGate.close`
@@ -196,7 +196,7 @@ None；重复关闭安全。
 
 报告首个关闭错误，其余写入notes；未关闭端点保留供恢复。
 
-源码：[`src/chronaxis/_process_start.py:101`](../../../src/chronaxis/_process_start.py#L101)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:101`](../../../src/chronaxis/_process_start.py#L101)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-spawn_entry"></a>
 ## `spawn_entry`
@@ -223,4 +223,4 @@ spawn_entry(context, target, args)
 
 未支持的平台，或 Python 未提供 pidfd_open/pidfd_send_signal 时抛 NotImplementedError。管道创建错误原样传播；尚未关闭的启动资源通过 process_start_cleanup_owner 保留。内核是否实际接受进程组信号，由后续 ProcessTree 登记时检验。
 
-源码：[`src/chronaxis/_process_start.py:125`](../../../src/chronaxis/_process_start.py#L125)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_process_start.py:125`](../../../src/chronaxis/_process_start.py#L125)（行号对应 Chronaxis 0.1.0.dev6 源码）。

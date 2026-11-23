@@ -66,7 +66,7 @@ ResultFormatError为深度或未支持元数据。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history.py:15`](../../../src/chronaxis/execution/history.py#L15)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/history.py:15`](../../../src/chronaxis/execution/history.py#L15)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_metadata_cost"></a>
 ## `_metadata_cost`
@@ -98,7 +98,7 @@ _metadata_cost(value, depth, active, expression_costs)
 
 临时登记当前路径；返回或异常时移除，不修改调用方元数据。
 
-源码：[`src/chronaxis/execution/history.py:26`](../../../src/chronaxis/execution/history.py#L26)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/history.py:26`](../../../src/chronaxis/execution/history.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_expression_metadata_cost"></a>
 ## `_expression_metadata_cost`
@@ -130,7 +130,7 @@ _expression_metadata_cost(root, depth, active, costs)
 
 缓存只活到本次_metadata_bytes返回，不持有样本或跨任务状态。
 
-源码：[`src/chronaxis/execution/history.py:72`](../../../src/chronaxis/execution/history.py#L72)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/history.py:72`](../../../src/chronaxis/execution/history.py#L72)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_pending_bytes"></a>
 ## `_pending_bytes`
@@ -157,4 +157,4 @@ _pending_bytes(validator: BatchValidator) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/history.py:118`](../../../src/chronaxis/execution/history.py#L118)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/history.py:118`](../../../src/chronaxis/execution/history.py#L118)（行号对应 Chronaxis 0.1.0.dev6 源码）。

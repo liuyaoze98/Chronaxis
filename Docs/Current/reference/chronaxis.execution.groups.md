@@ -42,7 +42,7 @@ class DecodedTimeGroup
 |`time_ns`|int|是|无|完整组的共同纳秒坐标。|
 |`samples`|tuple[[HistorySample](chronaxis.execution.history_records.md#api-HistorySample) &#124; [RecordSample](chronaxis.execution.record_sample.md#api-RecordSample), ...]|是|无|同组全部原观测，不套用last_by_sequence策略。|
 
-源码：[`src/chronaxis/execution/groups.py:8`](../../../src/chronaxis/execution/groups.py#L8)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/groups.py:8`](../../../src/chronaxis/execution/groups.py#L8)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-DecodedTimeGroup-__post_init__"></a>
 ### `DecodedTimeGroup.__post_init__`
@@ -76,4 +76,4 @@ TypeError/ValueError/OverflowError为结构或身份错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/groups.py:14`](../../../src/chronaxis/execution/groups.py#L14)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/groups.py:14`](../../../src/chronaxis/execution/groups.py#L14)（行号对应 Chronaxis 0.1.0.dev6 源码）。

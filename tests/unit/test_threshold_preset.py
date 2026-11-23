@@ -248,9 +248,10 @@ class ThresholdPresetTests(unittest.TestCase):
         self.assertEqual(len(list(result.iter_calculations())),11)
         plan=self.work/'plan.json';plan.write_text(json.dumps(current_fixture(raw),ensure_ascii=False),encoding='utf-8')
         api=result.write(self.work/'api')
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         cli=subprocess.run([sys.executable,'-B','-m','chronaxis','run',str(plan),'--work-dir',
-            str(self.work/'cli-run'),'--output',str(self.work/'cli-output')],cwd=ROOT,env=os.environ.copy(),
-            capture_output=True,text=True,encoding='utf-8',timeout=90)
+            str(self.work/'cli-run'),'--output',str(self.work/'cli-output')],cwd=ROOT,
+            env=dict(os.environ,PYTHONIOENCODING='utf-8'),capture_output=True,text=True,encoding='utf-8',timeout=90)
         (self.work/'cli.json').write_text(json.dumps(current_fixture(dict(device_label='home',returncode=cli.returncode,
             stdout=cli.stdout,stderr=cli.stderr)),ensure_ascii=False,indent=2),encoding='utf-8')
         self.assertEqual(cli.returncode,0,cli.stderr)

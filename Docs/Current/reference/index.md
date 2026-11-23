@@ -1,6 +1,6 @@
 # 完整API参考
 
-> 对应 Chronaxis 0.1.0.dev5。
+> 对应 Chronaxis 0.1.0.dev6。
 
 覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。
 
@@ -146,19 +146,20 @@
 |[chronaxis.execution.batch_signal_groups](chronaxis.execution.batch_signal_groups.md)|将已校验的解析信号批按watermark归为同一时刻组，不创建磁盘历史。|6|
 |[chronaxis.execution.calculation_values](chronaxis.execution.calculation_values.md)|读取计算列中的有效标量，并按当前消息原值决定方向桶及跳过原因。|5|
 |[chronaxis.execution.can_batch_reader](chronaxis.execution.can_batch_reader.md)|将有界CAN批次接成按需历史，保留每条原yield的时间及必要记录的原序。|11|
-|[chronaxis.execution.can_block_codec](chronaxis.execution.can_block_codec.md)|普通 CAN 有界数据块；只恢复固定记录，绝不加载任意 Python 对象。|34|
+|[chronaxis.execution.can_block_codec](chronaxis.execution.can_block_codec.md)|普通 CAN 有界数据块；只恢复固定记录，绝不加载任意 Python 对象。|36|
 |[chronaxis.execution.can_reader](chronaxis.execution.can_reader.md)|把旧 CAN 读取和解码程序接到 Chronaxis，按批次返回信号样本。创建读取器或查询描述时不会打开 BLF、DBC；第一次取数据时才启动读取进程。|46|
 |[chronaxis.execution.csv_observation](chronaxis.execution.csv_observation.md)|在读取CSV的同时记录实际第一行和最后一行的时间。只有读到文件末尾并完成清理后，才能取得完整的观测范围；该范围来自数据行，不从请求窗口推算。|37|
 |[chronaxis.execution.csv_reader](chronaxis.execution.csv_reader.md)|在独立信号CSV读取、引用记录累积和数组分配前申请共享预算。|48|
 |[chronaxis.execution.current_message_calculation](chronaxis.execution.current_message_calculation.md)|用三格式共用的消息计算一项逐报文累计，不建立消息历史或原帧副本。|9|
 |[chronaxis.execution.driver_expression](chronaxis.execution.driver_expression.md)|从已提交的同一时刻信号状态取得所选驱动的数值或BOOL表达式，不保存输入历史。|14|
-|[chronaxis.execution.file_integral_terms](chronaxis.execution.file_integral_terms.md)|按文件并行计算原序面积，父进程独自处理跨文件边界和误差求和。|35|
+|[chronaxis.execution.file_group_points](chronaxis.execution.file_group_points.md)|time_order直接积分的文件工作进程端：把一个文件的目标帧归成同一时刻组点。|14|
+|[chronaxis.execution.file_integral_terms](chronaxis.execution.file_integral_terms.md)|按文件并行计算原序面积，父进程独自处理跨文件边界和误差求和。|36|
 |[chronaxis.execution.frame_capture](chronaxis.execution.frame_capture.md)|为显式报文导出保存同次记录和新编码所需DBC上下文。|15|
 |[chronaxis.execution.groups](chronaxis.execution.groups.md)|定义现役记录流一次交付的完整同一时刻组，不执行磁盘回放或排序。|2|
 |[chronaxis.execution.history](chronaxis.execution.history.md)|估算现役来源/表达式元数据和未完成批协议状态，不保存或回放历史。|4|
 |[chronaxis.execution.history_records](chronaxis.execution.history_records.md)|定义已解码历史记录与严格JSONL格式，不再次归一化数值。|8|
 |[chronaxis.execution.hosted_sample_reduction](chronaxis.execution.hosted_sample_reduction.md)|把有限真实样本块交给明确注册的宿主归约，复用原半开选择、覆盖与独立数值后端。|5|
-|[chronaxis.execution.integral_blocks](chronaxis.execution.integral_blocks.md)|并行积分的冻结任务与有界二进制块；只恢复列出的数值模型。|36|
+|[chronaxis.execution.integral_blocks](chronaxis.execution.integral_blocks.md)|并行积分的冻结任务与有界二进制块；只恢复列出的数值模型。|47|
 |[chronaxis.execution.legacy_frame_samples](chronaxis.execution.legacy_frame_samples.md)|把同次BLF原帧仓与稀疏解码仓按原序连接，供新增报文重建使用。|6|
 |[chronaxis.execution.memory_reader](chronaxis.execution.memory_reader.md)|在既有内存适配器之外预留输入、批次与协议状态预算。|12|
 |[chronaxis.execution.message_delivery](chronaxis.execution.message_delivery.md)|在读取器已有预算内同步交付必要消息，不建立额外历史或结果副本。|1|
@@ -166,7 +167,9 @@
 |[chronaxis.execution.parallel_can_worker](chronaxis.execution.parallel_can_worker.md)|单个可复用CAN文件工作进程：读取、解码并按许可交付有限数据块。|4|
 |[chronaxis.execution.parallel_integral_pool](chronaxis.execution.parallel_integral_pool.md)|按文件原序交付面积事件的有限工作进程池。|26|
 |[chronaxis.execution.parallel_integral_session](chronaxis.execution.parallel_integral_session.md)|把连续文件的内部面积生成交给工作进程，保留主会话的原序积分结果。|11|
-|[chronaxis.execution.parallel_integral_worker](chronaxis.execution.parallel_integral_worker.md)|一个积分工作槽按许可读取文件并生成原序面积块。|7|
+|[chronaxis.execution.parallel_integral_worker](chronaxis.execution.parallel_integral_worker.md)|一个积分工作槽按许可读取文件并生成原序面积块或同一时刻组点块。|9|
+|[chronaxis.execution.parallel_point_pool](chronaxis.execution.parallel_point_pool.md)|time_order直接积分的读取段：文件工作进程产出组点，主进程谁先就绪先收并写入暂存。|15|
+|[chronaxis.execution.parallel_point_session](chronaxis.execution.parallel_point_session.md)|time_order直接积分的组点并行会话：文件工作进程送同一时刻组点，主进程按串行顺序归并并积分。|12|
 |[chronaxis.execution.raw_signal_groups](chronaxis.execution.raw_signal_groups.md)|把三格式共用的已解码更新交给实时完整同一时刻组消费者，不写历史文件。|8|
 |[chronaxis.execution.record_alarm_duration](chronaxis.execution.record_alarm_duration.md)|仅在请求报警累计时，按实际有效区间折算所选周期。|7|
 |[chronaxis.execution.record_delta_condition](chronaxis.execution.record_delta_condition.md)|在当前窗口内保留必要数值片段，输出窗口变化量的三值条件。|8|
@@ -192,7 +195,7 @@
 |[chronaxis.execution.record_windows](chronaxis.execution.record_windows.md)|从最终事件表生成窗口，不再复制一份事件阶段或重扫原输入。|8|
 |[chronaxis.execution.result_aggregations](chronaxis.execution.result_aggregations.md)|在最终结果行产生时按具名引用分组。只保存归约状态和精确分位数所需的样本。|12|
 |[chronaxis.execution.run_session](chronaxis.execution.run_session.md)|执行一份分析计划：读取来源并保存历史，再生成事件、窗口片段和指标，最后返回统一的结果对象。它还负责将本次资源交给结果对象管理，避免读取结束后文件仍无人关闭。|18|
-|[chronaxis.execution.same_frame_integrals](chronaxis.execution.same_frame_integrals.md)|把同一物理报文的简单数值表达式直接交给现役实际时间积分器。|30|
+|[chronaxis.execution.same_frame_integrals](chronaxis.execution.same_frame_integrals.md)|把同一物理报文的简单数值表达式直接交给现役积分器（实际间隔或同一固定间隔）。|35|
 |[chronaxis.execution.signal_validity](chronaxis.execution.signal_validity.md)|从本次已经加载的DBC元数据补全必要信号的有效期。|1|
 |[chronaxis.execution.state](chronaxis.execution.state.md)|保存每个信号最新的值。同一时刻的全部更新收齐后一起写入状态，表达式不会看到“电压已更新、电流还未更新”的半成品。状态还保存时间、有效期和质量原因。|26|
 |[chronaxis.execution.static_metadata](chronaxis.execution.static_metadata.md)|按实际对象身份估算一次运行借用的静态声明，不展开重复引用。|2|
@@ -1166,6 +1169,8 @@
 |[`chronaxis.execution.can_block_codec._read_frame`](chronaxis.execution.can_block_codec.md#api-_read_frame)|function|
 |[`chronaxis.execution.can_block_codec.encode_block`](chronaxis.execution.can_block_codec.md#api-encode_block)|function|
 |[`chronaxis.execution.can_block_codec.decode_block`](chronaxis.execution.can_block_codec.md#api-decode_block)|function|
+|[`chronaxis.execution.can_block_codec._read_facts`](chronaxis.execution.can_block_codec.md#api-_read_facts)|function|
+|[`chronaxis.execution.can_block_codec.decode_block_prefix`](chronaxis.execution.can_block_codec.md#api-decode_block_prefix)|function|
 |[`chronaxis.execution.can_block_codec._metadata`](chronaxis.execution.can_block_codec.md#api-_metadata)|function|
 |[`chronaxis.execution.can_block_codec.encode_metadata`](chronaxis.execution.can_block_codec.md#api-encode_metadata)|function|
 |[`chronaxis.execution.can_block_codec.decode_metadata`](chronaxis.execution.can_block_codec.md#api-decode_metadata)|function|
@@ -1323,6 +1328,20 @@
 |[`chronaxis.execution.driver_expression.DriverExpression.invalidated_at`](chronaxis.execution.driver_expression.md#api-DriverExpression-invalidated_at)|function|
 |[`chronaxis.execution.driver_expression.DriverExpression.evaluate_at`](chronaxis.execution.driver_expression.md#api-DriverExpression-evaluate_at)|function|
 |[`chronaxis.execution.driver_expression.DriverExpression.close`](chronaxis.execution.driver_expression.md#api-DriverExpression-close)|function|
+|[`chronaxis.execution.file_group_points.DeferredPointError`](chronaxis.execution.file_group_points.md#api-DeferredPointError)|class|
+|[`chronaxis.execution.file_group_points.file_points_minimum_cost`](chronaxis.execution.file_group_points.md#api-file_points_minimum_cost)|function|
+|[`chronaxis.execution.file_group_points.file_points_cost`](chronaxis.execution.file_group_points.md#api-file_points_cost)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints`](chronaxis.execution.file_group_points.md#api-FileGroupPoints)|class|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.__init__`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-__init__)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.compatibility_fields`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-compatibility_fields)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.frame_identity`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-frame_identity)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.stopped`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-stopped)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints._require_open`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-_require_open)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints._defer`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-_defer)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.feed`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-feed)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.finish`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-finish)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.drain_prefix_on_error`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-drain_prefix_on_error)|function|
+|[`chronaxis.execution.file_group_points.FileGroupPoints.close`](chronaxis.execution.file_group_points.md#api-FileGroupPoints-close)|function|
 |[`chronaxis.execution.file_integral_terms.SameTimeGroupSummary`](chronaxis.execution.file_integral_terms.md#api-SameTimeGroupSummary)|class|
 |[`chronaxis.execution.file_integral_terms.FileIntegralHead`](chronaxis.execution.file_integral_terms.md#api-FileIntegralHead)|class|
 |[`chronaxis.execution.file_integral_terms.IntegralColumnTerms`](chronaxis.execution.file_integral_terms.md#api-IntegralColumnTerms)|class|
@@ -1340,6 +1359,7 @@
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms)|class|
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms.__init__`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-__init__)|function|
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms.compatibility_fields`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-compatibility_fields)|function|
+|[`chronaxis.execution.file_integral_terms.FileIntegralTerms.frame_identity`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-frame_identity)|function|
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms._require_open`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-_require_open)|function|
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms._flush_points`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-_flush_points)|function|
 |[`chronaxis.execution.file_integral_terms.FileIntegralTerms._append_group`](chronaxis.execution.file_integral_terms.md#api-FileIntegralTerms-_append_group)|function|
@@ -1399,6 +1419,7 @@
 |[`chronaxis.execution.integral_blocks.pack_task`](chronaxis.execution.integral_blocks.md#api-pack_task)|function|
 |[`chronaxis.execution.integral_blocks.check_task`](chronaxis.execution.integral_blocks.md#api-check_task)|function|
 |[`chronaxis.execution.integral_blocks.restore_task`](chronaxis.execution.integral_blocks.md#api-restore_task)|function|
+|[`chronaxis.execution.integral_blocks.task_mode`](chronaxis.execution.integral_blocks.md#api-task_mode)|function|
 |[`chronaxis.execution.integral_blocks.IntegralPacket`](chronaxis.execution.integral_blocks.md#api-IntegralPacket)|class|
 |[`chronaxis.execution.integral_blocks.IntegralBlockError`](chronaxis.execution.integral_blocks.md#api-IntegralBlockError)|class|
 |[`chronaxis.execution.integral_blocks.event_cost`](chronaxis.execution.integral_blocks.md#api-event_cost)|function|
@@ -1428,6 +1449,16 @@
 |[`chronaxis.execution.integral_blocks._read_group`](chronaxis.execution.integral_blocks.md#api-_read_group)|function|
 |[`chronaxis.execution.integral_blocks.encode_packet`](chronaxis.execution.integral_blocks.md#api-encode_packet)|function|
 |[`chronaxis.execution.integral_blocks.decode_packet`](chronaxis.execution.integral_blocks.md#api-decode_packet)|function|
+|[`chronaxis.execution.integral_blocks.PointPacket`](chronaxis.execution.integral_blocks.md#api-PointPacket)|class|
+|[`chronaxis.execution.integral_blocks.point_cost`](chronaxis.execution.integral_blocks.md#api-point_cost)|function|
+|[`chronaxis.execution.integral_blocks.point_facts_cost`](chronaxis.execution.integral_blocks.md#api-point_facts_cost)|function|
+|[`chronaxis.execution.integral_blocks._write_facts`](chronaxis.execution.integral_blocks.md#api-_write_facts)|function|
+|[`chronaxis.execution.integral_blocks._read_facts`](chronaxis.execution.integral_blocks.md#api-_read_facts)|function|
+|[`chronaxis.execution.integral_blocks._check_point_time`](chronaxis.execution.integral_blocks.md#api-_check_point_time)|function|
+|[`chronaxis.execution.integral_blocks._check_point_group`](chronaxis.execution.integral_blocks.md#api-_check_point_group)|function|
+|[`chronaxis.execution.integral_blocks.encode_points`](chronaxis.execution.integral_blocks.md#api-encode_points)|function|
+|[`chronaxis.execution.integral_blocks.decode_points_prefix`](chronaxis.execution.integral_blocks.md#api-decode_points_prefix)|function|
+|[`chronaxis.execution.integral_blocks.decode_points`](chronaxis.execution.integral_blocks.md#api-decode_points)|function|
 |[`chronaxis.execution.legacy_frame_samples.LegacyFrameSamples`](chronaxis.execution.legacy_frame_samples.md#api-LegacyFrameSamples)|class|
 |[`chronaxis.execution.legacy_frame_samples.LegacyFrameSamples.__init__`](chronaxis.execution.legacy_frame_samples.md#api-LegacyFrameSamples-__init__)|function|
 |[`chronaxis.execution.legacy_frame_samples.LegacyFrameSamples.closed`](chronaxis.execution.legacy_frame_samples.md#api-LegacyFrameSamples-closed)|function|
@@ -1509,6 +1540,8 @@
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession.execute`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-execute)|function|
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession._retain_notices`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-_retain_notices)|function|
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession.close`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-close)|function|
+|[`chronaxis.execution.parallel_integral_worker._points`](chronaxis.execution.parallel_integral_worker.md#api-_points)|function|
+|[`chronaxis.execution.parallel_integral_worker._limits`](chronaxis.execution.parallel_integral_worker.md#api-_limits)|function|
 |[`chronaxis.execution.parallel_integral_worker._facts`](chronaxis.execution.parallel_integral_worker.md#api-_facts)|function|
 |[`chronaxis.execution.parallel_integral_worker._error_text`](chronaxis.execution.parallel_integral_worker.md#api-_error_text)|function|
 |[`chronaxis.execution.parallel_integral_worker._close_file`](chronaxis.execution.parallel_integral_worker.md#api-_close_file)|function|
@@ -1516,6 +1549,33 @@
 |[`chronaxis.execution.parallel_integral_worker.read_events.append`](chronaxis.execution.parallel_integral_worker.md#api-read_events-append)|function|
 |[`chronaxis.execution.parallel_integral_worker.take_events`](chronaxis.execution.parallel_integral_worker.md#api-take_events)|function|
 |[`chronaxis.execution.parallel_integral_worker.worker_main`](chronaxis.execution.parallel_integral_worker.md#api-worker_main)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool)|class|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool.__init__`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-__init__)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool.points_minimum_cost`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-points_minimum_cost)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool._dispatch`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-_dispatch)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool._configuration`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-_configuration)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool._accept_point_facts`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-_accept_point_facts)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool._store`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-_store)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool._exit_error`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-_exit_error)|function|
+|[`chronaxis.execution.parallel_point_pool.ParallelPointPool.spool_all`](chronaxis.execution.parallel_point_pool.md#api-ParallelPointPool-spool_all)|function|
+|[`chronaxis.execution.parallel_point_pool.PointSpool`](chronaxis.execution.parallel_point_pool.md#api-PointSpool)|class|
+|[`chronaxis.execution.parallel_point_pool.PointSpool.__init__`](chronaxis.execution.parallel_point_pool.md#api-PointSpool-__init__)|function|
+|[`chronaxis.execution.parallel_point_pool.PointSpool.append`](chronaxis.execution.parallel_point_pool.md#api-PointSpool-append)|function|
+|[`chronaxis.execution.parallel_point_pool.PointSpool.open_readers`](chronaxis.execution.parallel_point_pool.md#api-PointSpool-open_readers)|function|
+|[`chronaxis.execution.parallel_point_pool.PointSpool.next_packet`](chronaxis.execution.parallel_point_pool.md#api-PointSpool-next_packet)|function|
+|[`chronaxis.execution.parallel_point_pool.PointSpool.close`](chronaxis.execution.parallel_point_pool.md#api-PointSpool-close)|function|
+|[`chronaxis.execution.parallel_point_session.parallel_point_inputs`](chronaxis.execution.parallel_point_session.md#api-parallel_point_inputs)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession)|class|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.fixed_cost`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-fixed_cost)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.__init__`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-__init__)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession._new`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_new)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.prepare`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-prepare)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession._update_bounds`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_update_bounds)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession._retain_notices`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_retain_notices)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession._merge`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_merge)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession._merge.advance`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_merge-advance)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.execute`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-execute)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.close`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-close)|function|
 |[`chronaxis.execution.raw_signal_groups.RawSignalGroups`](chronaxis.execution.raw_signal_groups.md#api-RawSignalGroups)|class|
 |[`chronaxis.execution.raw_signal_groups.RawSignalGroups.__init__`](chronaxis.execution.raw_signal_groups.md#api-RawSignalGroups-__init__)|function|
 |[`chronaxis.execution.raw_signal_groups.RawSignalGroups._require_open`](chronaxis.execution.raw_signal_groups.md#api-RawSignalGroups-_require_open)|function|
@@ -1771,7 +1831,10 @@
 |[`chronaxis.execution.run_session.RunSession._release_costs`](chronaxis.execution.run_session.md#api-RunSession-_release_costs)|function|
 |[`chronaxis.execution.run_session.RunSession._assert_owned_balance`](chronaxis.execution.run_session.md#api-RunSession-_assert_owned_balance)|function|
 |[`chronaxis.execution.run_session.RunSession.close`](chronaxis.execution.run_session.md#api-RunSession-close)|function|
+|[`chronaxis.execution.same_frame_integrals._direct_interval`](chronaxis.execution.same_frame_integrals.md#api-_direct_interval)|function|
 |[`chronaxis.execution.same_frame_integrals.direct_integral_inputs`](chronaxis.execution.same_frame_integrals.md#api-direct_integral_inputs)|function|
+|[`chronaxis.execution.same_frame_integrals.direct_integral_interval`](chronaxis.execution.same_frame_integrals.md#api-direct_integral_interval)|function|
+|[`chronaxis.execution.same_frame_integrals.dbc_driver_cycle`](chronaxis.execution.same_frame_integrals.md#api-dbc_driver_cycle)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameBinding`](chronaxis.execution.same_frame_integrals.md#api-SameFrameBinding)|class|
 |[`chronaxis.execution.same_frame_integrals.SameFrameBinding.matches`](chronaxis.execution.same_frame_integrals.md#api-SameFrameBinding-matches)|function|
 |[`chronaxis.execution.same_frame_integrals.same_frame_binding`](chronaxis.execution.same_frame_integrals.md#api-same_frame_binding)|function|
@@ -1792,11 +1855,13 @@
 |[`chronaxis.execution.same_frame_integrals.SameFrameEvaluator.normalize`](chronaxis.execution.same_frame_integrals.md#api-SameFrameEvaluator-normalize)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameEvaluator.evaluate`](chronaxis.execution.same_frame_integrals.md#api-SameFrameEvaluator-evaluate)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameEvaluator.close`](chronaxis.execution.same_frame_integrals.md#api-SameFrameEvaluator-close)|function|
+|[`chronaxis.execution.same_frame_integrals.same_frame_integrals_cost`](chronaxis.execution.same_frame_integrals.md#api-same_frame_integrals_cost)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals)|class|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals.__init__`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-__init__)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals._require_open`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-_require_open)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals.consume`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-consume)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals._consume_fast`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-_consume_fast)|function|
+|[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals.consume_group`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-consume_group)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals._flush_fast`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-_flush_fast)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals._flush`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-_flush)|function|
 |[`chronaxis.execution.same_frame_integrals.SameFrameIntegrals.finish`](chronaxis.execution.same_frame_integrals.md#api-SameFrameIntegrals-finish)|function|

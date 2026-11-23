@@ -61,6 +61,8 @@ def _startup_costs(spec,signals,process_count,options):
 class ParallelIntegralPool:
     """持有一个连续来源的工作槽及有界待交付状态，不累计数值总量。"""
 
+    _FILE_MERGE = 'concatenate'  # 本类接受的来源文件合并方式；子类按自己的模式覆盖。
+
     def __init__(self,spec,budget,signals,*,process_count,**options):
         """登记来源并预约固定声明空间，不读原文件。
 
@@ -69,8 +71,9 @@ class ParallelIntegralPool:
         异常: 非法进程数、非接续来源、空文件列表或原帧捕获上下文时ValueError；
             预算不足时BudgetExceededError，构造清理失败附parallel_integral_pool_cleanup_owner。
         """
-        if type(process_count) is not int or process_count<1 or spec.file_merge!='concatenate':
-            raise ValueError('并行积分需要正整数进程数及concatenate来源')
+        # 本类只服务concatenate面积；time_order组点由子类ParallelPointPool放宽此项。
+        if type(process_count) is not int or process_count<1 or spec.file_merge!=self._FILE_MERGE:
+            raise ValueError('并行积分需要正整数进程数及'+self._FILE_MERGE+'来源')
         if not spec.inputs:raise ValueError('并行积分需要至少一个文件')
         self.spec,self._budget,self.signals=spec,budget,tuple(signals)
         self._options=dict(options);self._frame_context=self._options.pop('database_context',None)
@@ -303,11 +306,12 @@ class ParallelIntegralPool:
         except BaseException as error:
             _cleanup_owner(self,error,'parallel_integral_pool_cleanup_owner','积分池准备');raise
 
-    def _configuration(self,definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals):
+    def _configuration(self,definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals,step_ns=None):
         """构造固定任务并计算配置实际需要的额外预约费用。
 
         参数: definitions、expressions、specs、binding、session_id、derived和domain为已验证数值声明；
-            batch_intervals为用户的正整数区间批上限，传输块会进一步限到64项及字节预算。
+            batch_intervals为用户的正整数区间批上限，传输块会进一步限到64项及字节预算；
+            step_ns为None（实际间隔）或固定间隔正纳秒，写入任务后由工作进程核验。
         返回: tuple[dict, int, int]，依次为固定task、父任务字节费和每子数值/任务额外字节费；
             不包含已预约的启动费。
         异常: 批上限非法时ValueError；原声明展开或静态费用错误继续传播。
@@ -316,26 +320,31 @@ class ParallelIntegralPool:
         rows=_configuration_rows(batch_intervals,len(specs))
         declared=_metadata_bytes((definitions,expressions[0].bindings,
             tuple((item.text,item.root.unit) for item in expressions),specs,binding,derived,domain))
-        task=pack_task(definitions,expressions,specs,binding,session_id,derived=derived,domain=domain,batch_intervals=rows)
+        task=pack_task(definitions,expressions,specs,binding,session_id,derived=derived,domain=domain,batch_intervals=rows,
+                       step_ns=step_ns)
         task_size=_task_bytes(task)
         parent=_TASK_BASE_COST+32*max(declared,task_size)
         # 32D覆盖控制JSON最坏转义、编码副本、解析树和重建声明；数值状态另按真正构造费预约。
         worker=_TASK_BASE_COST+32*task_size+file_terms_cost(definitions,expressions,specs,derived,batch_intervals=rows)
         return task,parent,worker
 
-    def configuration_cost(self,definitions,expressions,specs,binding,session_id,*,derived=(),domain=None,batch_intervals=64):
+    def configuration_cost(self,definitions,expressions,specs,binding,session_id,*,derived=(),domain=None,batch_intervals=64,
+                           step_ns=None):
         """查询configure还将预约的总费用，供首帧前预算准入。
 
-        参数: 与configure相同的实际声明。返回: int，父任务费与全部工作槽额外费之和，单位字节；不修改账本、不启动读取。
+        参数: 与configure相同的实际声明，含同一step_ns。返回: int，父任务费与全部工作槽额外费之和，单位字节；不修改账本、不启动读取。
         异常: 声明错误；调用方应在原计划已有固定工作区内使用短暂的任务结构。
         """
-        _,parent,worker=self._configuration(definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals)
+        _,parent,worker=self._configuration(definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals,
+                                            step_ns)
         return parent+self._process_count*worker
 
-    def configure(self,definitions,expressions,specs,binding,session_id,*,derived=(),domain=None,batch_intervals=64):
+    def configure(self,definitions,expressions,specs,binding,session_id,*,derived=(),domain=None,batch_intervals=64,
+                  step_ns=None):
         """安装实际有效期与表达式，之后才允许读取。
 
-        参数: 实际定义、静态表达式、指标、共同定位、会话及原派生/请求域；batch_intervals为用户上限。
+        参数: 实际定义、静态表达式、指标、共同定位、会话及原派生/请求域；batch_intervals为用户上限；
+            step_ns为父积分器共用的间隔（None为实际间隔），随任务发给每个工作进程。
         返回: None。异常: 未准备、重复安装或预算/声明错误。
         """
         if self._closed or self._configured or self._metadata is None:raise ValueError('积分池数值配置时机错误')
@@ -345,7 +354,8 @@ class ParallelIntegralPool:
             declaration_size=_metadata_bytes((definitions,expressions[0].bindings,
                 tuple((item.text,item.root.unit) for item in expressions),specs,binding,derived,domain))
             _reserve_owned_ram(self,_TASK_BASE_COST+32*declaration_size,'_task_cost')
-            task,amount,extra=self._configuration(definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals)
+            task,amount,extra=self._configuration(definitions,expressions,specs,binding,session_id,derived,domain,batch_intervals,
+                                                  step_ns)
             if amount>self._task_cost:_reserve_owned_ram(self,amount-self._task_cost,'_task_cost')
             _reserve_owned_ram(self,self._process_count*extra,'_workers_cost')
             self._worker_limit+=extra;self._task=task;self._configured=True
@@ -362,6 +372,10 @@ class ParallelIntegralPool:
         previous=self.file_facts.get(index)
         if previous is not None and (facts['count']<previous['count'] or facts['decode_calls']<previous['decode_calls']):
             raise ControlProtocolError('积分文件计数回退')
+        # 同一文件已记录的实际帧型不会改变；文件内混用已由读取器报错。
+        if (previous is not None and previous['frame_identity'] is not None
+                and facts['frame_identity']!=previous['frame_identity']):
+            raise ControlProtocolError('积分文件的实际帧型改变')
         self.file_facts[index]=facts
         self.count+=facts['count']-(0 if previous is None else previous['count'])
         self.decode_calls+=facts['decode_calls']-(0 if previous is None else previous['decode_calls'])

@@ -192,22 +192,36 @@ class SameFrameRunnerTests(unittest.TestCase):
         self.assertEqual(load.call_count, 1)
         self.assertEqual(actual, self.run_rows(plan, 'reference'))
 
-    def test_explicit_backend_and_fixed_period_keep_general_path(self):
-        """显式后端不被优化替换；固定周期依然算880J，不改成实际积分1344J。"""
-        path = self.fixtures()['can_asc']
-        plan = self.plan('can_asc', path)
+    def test_explicit_backend_keeps_general_path_and_periods_match_it(self):
+        """显式后端不被优化替换；固定0.1秒与DBC周期（样例DBC为100ms）在auto下走直接路径，
+        ASC、BLF和原始报文CSV都算880J而非实际积分1344J，且与显式reference逐行相同。"""
+        paths = self.fixtures()
+        plan = self.plan('can_asc', paths['can_asc'])
         with patch.object(SameFrameIntegrals, '__init__', side_effect=AssertionError('越过适用边界')):
             for backend in ('reference', 'numpy'):
                 self.assertAlmostEqual(self.run_rows(plan, backend)[0].value, 1344)
-            def edit(raw):
-                """改为固定周期。参数: 配置。返回: None。异常: 无。"""
-                raw['intervals']['default'] = dict(mode='fixed', value='0.1s', driver='current')
-            fixed = self.plan('can_asc', path, edit)
-            work = self.root / uuid4().hex
-            with AnalysisRunner().run(fixed, work) as result:
-                self.assertAlmostEqual(next(result.iter_calculations()).value, 880)
-                # 固定周期积分纳入已验证的 auto 类别；上面的故障注入仍禁止越过直接路径边界。
-                self.assertEqual(result.metadata.backend, 'reference')
+        original = SameFrameIntegrals.__init__
+        for kind in ('can_asc', 'can_blf', 'raw_can_csv'):
+            for interval in (dict(mode='fixed', value='0.1s', driver='current'), dict(mode='dbc', driver='current')):
+                def edit(raw, interval=interval):
+                    """改为所选周期。参数: 配置。返回: None。异常: 无。"""
+                    raw['intervals']['default'] = dict(interval)
+                periodic = self.plan(kind, paths[kind], edit)
+                with self.subTest(kind=kind, mode=interval['mode']):
+                    with patch.object(SameFrameIntegrals, '__init__', side_effect=AssertionError('越过适用边界')):
+                        # 显式reference是普通路径基准；故障注入证明它没有进入直接路径。
+                        general = self.run_rows(periodic, 'reference')
+                    self.assertAlmostEqual(general[0].value, 880)
+                    calls = []
+                    def construct(owner, *args, **kwargs):
+                        """记录一次直接同帧积分构造，再调用原实现。"""
+                        calls.append(True)
+                        return original(owner, *args, **kwargs)
+                    with patch.object(SameFrameIntegrals, '__init__', construct):
+                        # direct=True另行禁止构造通用最新状态和驱动表达式，确认DBC周期不再依赖state。
+                        rows = self.run_rows(periodic, direct=True)
+                    self.assertEqual(len(calls), 1)
+                    self.assertEqual(rows, general)
 
     def test_failure_cancel_and_close_restore_budget_without_retry(self):
         """消费失败与取消均保持一次扫描和预算归零，失败不交付前缀。"""

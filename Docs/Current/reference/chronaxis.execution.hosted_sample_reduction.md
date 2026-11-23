@@ -44,7 +44,7 @@ HostedSampleReduction(spec, input_unit, dtype, descriptor, conversion, backend, 
 ```
 
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:14`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L14)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:14`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L14)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-HostedSampleReduction-__init__"></a>
 ### `HostedSampleReduction.__init__`
@@ -76,7 +76,7 @@ HostedSampleReduction.__init__(spec, input_unit, dtype, descriptor, conversion, 
 
 宿主工厂或预算失败转交可重试清理句柄。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:17`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L17)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:17`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-HostedSampleReduction-push"></a>
 ### `HostedSampleReduction.push`
@@ -101,7 +101,7 @@ HostedSampleReduction.push(series)
 
 回调或输入错误。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:36`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:36`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L36)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-HostedSampleReduction-finish"></a>
 ### `HostedSampleReduction.finish`
@@ -127,7 +127,7 @@ SampleReductionResult。
 
 回调或转换错误。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:40`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L40)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:40`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-HostedSampleReduction-close"></a>
 ### `HostedSampleReduction.close`
@@ -153,4 +153,4 @@ None。
 
 清理失败可重试。
 
-源码：[`src/chronaxis/execution/hosted_sample_reduction.py:54`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L54)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/hosted_sample_reduction.py:54`](../../../src/chronaxis/execution/hosted_sample_reduction.py#L54)（行号对应 Chronaxis 0.1.0.dev6 源码）。

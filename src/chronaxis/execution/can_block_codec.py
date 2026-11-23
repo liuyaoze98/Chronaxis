@@ -1,7 +1,9 @@
 """普通 CAN 有界数据块；只恢复固定记录，绝不加载任意 Python 对象。
 
-CND1 头为 4 字节版本和网络序 uint32 主体长度。主体先存字符串表，再按
-固定字段依次存块、来源和原帧。字符串只在本块共享；原数值保留位型和整数精度。
+CND1 头为 4 字节版本和网络序 uint32 主体长度。主体先存字符串表，再依次存块号、
+EOF、文件事实和记录（来源与原帧）。字符串只在本块共享；原数值保留位型和整数精度。
+文件事实放在记录之前（BUG-P5-004），time_order收包时用decode_block_prefix只读到事实，
+不展开记录；归并读回时才用decode_block完整解码一次。
 """
 from decimal import Decimal
 from pathlib import Path
@@ -175,10 +177,11 @@ class _Writer:
 class _Reader:
     """只按固定顺序取字段；长度检查在切片或容器分配之前执行。"""
 
-    def __init__(self, packet, expected=b'CND1', *, on_expand=None):
+    def __init__(self, packet, expected=b'CND1', *, on_expand=None, strings=True):
         """核固定头并读取本块字符串表。
 
-        参数: packet为完整bytes，expected为本固定入口写定的版本；on_expand在模型新增分配前核预约。
+        参数: packet为完整bytes，expected为本固定入口写定的版本；on_expand在模型新增分配前核预约；
+            strings为False时只核字符串表长度并跳过内容，不解码文本（前缀解码用，之后不能读取文本字段）。
         返回: 新读取器，拥有游标及局部展开计数。
         异常: 版本、长度、编码或展开上限错误。
         """
@@ -201,6 +204,11 @@ class _Reader:
             count = self.uint()
             if count > self.remaining // 4 or expected==b'CMT1' and count>8195:
                 raise CANBlockError('CAN字符串表计数超出剩余包')
+            if not strings:
+                # 只跳过字符串内容：长度仍逐项核对，截断照样报错；不分配文本对象。
+                for _ in range(count):
+                    self.take(self.uint())
+                return
             self.charge(count * 128)
             for _ in range(count):
                 size = self.uint()
@@ -477,9 +485,17 @@ def encode_block(number, records, eof, facts):
     from ..sources.raw_can import RawCANRecord
     if type(number) is not int or number < 0 or type(eof) is not bool or len(records) > ROWS:
         raise CANBlockError('CAN块号、EOF或条数非法')
+    expected = {'count', 'first_ns', 'last_ns', 'decode_calls', 'first_order_time', 'last_order_time'}
+    if set(facts) != expected:
+        raise CANBlockError('CAN文件事实字段不符')
     writer = _Writer()
     writer.scalar(number)
     writer.byte(eof)
+    # 文件事实在记录之前，收包方可只读到这里。
+    for name in ('count', 'first_ns', 'last_ns', 'decode_calls'):
+        writer.scalar(facts[name])
+    for name in ('first_order_time', 'last_order_time'):
+        writer.decimal(facts[name])
     writer.uint(len(records))
     for record in records:
         writer.text(record.source)
@@ -503,13 +519,6 @@ def encode_block(number, records, eof, facts):
         writer.pairs(record.values)
         writer.pairs(record.frame_values)
         writer.pairs(record.frame_layout)
-    expected = {'count', 'first_ns', 'last_ns', 'decode_calls', 'first_order_time', 'last_order_time'}
-    if set(facts) != expected:
-        raise CANBlockError('CAN文件事实字段不符')
-    for name in ('count', 'first_ns', 'last_ns', 'decode_calls'):
-        writer.scalar(facts[name])
-    for name in ('first_order_time', 'last_order_time'):
-        writer.decimal(facts[name])
     return writer.finish()
 
 
@@ -530,7 +539,9 @@ def decode_block(packet):
     known_fields = values = frame_values = frame_layout = pair = key = None
     try:
         reader = _Reader(packet)
-        number, eof, count = reader.nonnegative(), reader.boolean(), reader.uint()
+        number, eof = reader.nonnegative(), reader.boolean()
+        facts = _read_facts(reader)
+        count = reader.uint()
         if count > ROWS:
             raise CANBlockError('CAN记录数超过64')
         reader.charge(count * 2048)
@@ -563,14 +574,6 @@ def decode_block(packet):
                     known_fields.add(key)
             records.append(DecodedCANRecord._from_bound_values(source, input_index, sequence, raw,
                 values, _STATUSES[status], frame_values, frame_layout, known_fields))
-        facts = {name: reader.scalar() for name in ('count', 'first_ns', 'last_ns', 'decode_calls')}
-        if any(type(facts[name]) is not int or facts[name] < 0 for name in ('count', 'decode_calls')):
-            raise CANBlockError('CAN文件计数非法')
-        if any(value is not None and (type(value) is not int or not -(2**63) <= value < 2**63)
-               for value in (facts['first_ns'], facts['last_ns'])):
-            raise CANBlockError('CAN文件纳秒事实非法')
-        for name in ('first_order_time', 'last_order_time'):
-            facts[name] = reader.decimal()
         if reader.remaining:
             raise CANBlockError('CAN数据块含未消费字节')
         return number, records, eof, facts
@@ -586,6 +589,40 @@ def decode_block(packet):
         # 成功的返回值已经持有所需模型；这里只撤销当前调用的引用，不修改交付列表。
         packet = records = frame = raw = facts = source = path = None
         known_fields = values = frame_values = frame_layout = pair = key = None
+
+
+def _read_facts(reader):
+    """读取块号与EOF之后的六项文件事实并核取值范围。
+
+    参数: reader为已读过块号和EOF的_Reader。
+    返回: facts字典（count、first_ns、last_ns、decode_calls、first_order_time、last_order_time）。
+    异常: 计数为负或非整数、纳秒越界、截断时CANBlockError。
+    """
+    facts = {name: reader.scalar() for name in ('count', 'first_ns', 'last_ns', 'decode_calls')}
+    if any(type(facts[name]) is not int or facts[name] < 0 for name in ('count', 'decode_calls')):
+        raise CANBlockError('CAN文件计数非法')
+    if any(value is not None and (type(value) is not int or not -(2**63) <= value < 2**63)
+           for value in (facts['first_ns'], facts['last_ns'])):
+        raise CANBlockError('CAN文件纳秒事实非法')
+    for name in ('first_order_time', 'last_order_time'):
+        facts[name] = reader.decimal()
+    return facts
+
+
+def decode_block_prefix(packet):
+    """收包时只核包头并读到文件事实为止，不解码字符串表和记录（BUG-P5-004）。
+
+    参数: packet为完整CND1 bytes。
+    返回: (块号, EOF, facts字典)。
+    异常: 版本、长度、字符串表结构、块号、事实非法或截断时CANBlockError。
+    记录的结构、条数和身份留给decode_block在读回时完整检查，本函数不代替它。
+    """
+    reader = _Reader(packet, strings=False)
+    try:
+        number, eof = reader.nonnegative(), reader.boolean()
+        return number, eof, _read_facts(reader)
+    finally:
+        reader.close()
 
 
 _METADATA_KEYS = {'profile','dbc_path','dbc_sha256','fields','decode_choices','allow_truncated',

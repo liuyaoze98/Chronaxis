@@ -53,4 +53,4 @@ WindowDeltaResult。
 
 输入错误；数值失败记录质量。
 
-源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/window_delta_numpy.py:13`](../../../src/chronaxis/core/window_delta_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。

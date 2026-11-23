@@ -87,7 +87,7 @@ int，1至64之间且不超过用户批上限的实际工作块行数；不读�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:24`](../../../src/chronaxis/execution/parallel_integral_pool.py#L24)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:24`](../../../src/chronaxis/execution/parallel_integral_pool.py#L24)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_task_bytes"></a>
 ## `_task_bytes`
@@ -112,7 +112,7 @@ int，保守预约字节数。
 
 发现非固定类型时TypeError；不把list传给只接受冻结容器的历史估算器。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:33`](../../../src/chronaxis/execution/parallel_integral_pool.py#L33)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:33`](../../../src/chronaxis/execution/parallel_integral_pool.py#L33)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_startup_costs"></a>
 ## `_startup_costs`
@@ -141,7 +141,7 @@ tuple[int, int, int]，单位均为字节，依次为池固定费、每工作进
 
 DBC文件stat失败时OSError；静态声明估算原错误继续传播。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:46`](../../../src/chronaxis/execution/parallel_integral_pool.py#L46)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:46`](../../../src/chronaxis/execution/parallel_integral_pool.py#L46)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool"></a>
 ## `ParallelIntegralPool`
@@ -152,8 +152,13 @@ DBC文件stat失败时OSError；静态声明估算原错误继续传播。
 ParallelIntegralPool(spec, budget, signals, *, process_count, **options)
 ```
 
+### 属性与数据字段
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:61`](../../../src/chronaxis/execution/parallel_integral_pool.py#L61)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`_FILE_MERGE`|类属性|类成员，不作为构造参数填写|'concatenate'|本类接受的来源文件合并方式；子类按自己的模式覆盖。|
+
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:61`](../../../src/chronaxis/execution/parallel_integral_pool.py#L61)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-__init__"></a>
 ### `ParallelIntegralPool.__init__`
@@ -183,7 +188,7 @@ None，构造新的池owner。
 非法进程数、非接续来源、空文件列表或原帧捕获上下文时ValueError；
     预算不足时BudgetExceededError，构造清理失败附parallel_integral_pool_cleanup_owner。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:64`](../../../src/chronaxis/execution/parallel_integral_pool.py#L64)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:66`](../../../src/chronaxis/execution/parallel_integral_pool.py#L66)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-startup_cost"></a>
 ### `ParallelIntegralPool.startup_cost`
@@ -214,7 +219,7 @@ int，全部启动预约字节数，不含数值任务和READY实际图。
 进程数或上下文不合法时ValueError，DBC stat失败时OSError；声明估算原错继续传播。
 不创建进程、不读取报文、不修改账本。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:97`](../../../src/chronaxis/execution/parallel_integral_pool.py#L97)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:100`](../../../src/chronaxis/execution/parallel_integral_pool.py#L100)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-configuration_minimum_cost"></a>
 ### `ParallelIntegralPool.configuration_minimum_cost`
@@ -246,7 +251,7 @@ int，父任务及全部工作槽的必要数值任务字节下界；包括固�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:112`](../../../src/chronaxis/execution/parallel_integral_pool.py#L112)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:115`](../../../src/chronaxis/execution/parallel_integral_pool.py#L115)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-closed"></a>
 ### `ParallelIntegralPool.closed`
@@ -274,7 +279,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:129`](../../../src/chronaxis/execution/parallel_integral_pool.py#L129)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:132`](../../../src/chronaxis/execution/parallel_integral_pool.py#L132)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-metadata"></a>
 ### `ParallelIntegralPool.metadata`
@@ -302,7 +307,7 @@ Mapping[str, object]，只读冻结映射。
 
 尚未准备时SourceReadError。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:134`](../../../src/chronaxis/execution/parallel_integral_pool.py#L134)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:137`](../../../src/chronaxis/execution/parallel_integral_pool.py#L137)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_dispatch"></a>
 ### `ParallelIntegralPool._dispatch`
@@ -328,7 +333,7 @@ None。
 
 发送失败。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:139`](../../../src/chronaxis/execution/parallel_integral_pool.py#L139)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:142`](../../../src/chronaxis/execution/parallel_integral_pool.py#L142)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_start"></a>
 ### `ParallelIntegralPool._start`
@@ -354,7 +359,7 @@ None。
 
 启动/预算/端点错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:146`](../../../src/chronaxis/execution/parallel_integral_pool.py#L146)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:149`](../../../src/chronaxis/execution/parallel_integral_pool.py#L149)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_bytes"></a>
 ### `ParallelIntegralPool._bytes`
@@ -380,7 +385,7 @@ bytes。
 
 断连/长度错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:179`](../../../src/chronaxis/execution/parallel_integral_pool.py#L179)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:182`](../../../src/chronaxis/execution/parallel_integral_pool.py#L182)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_configure_slot"></a>
 ### `ParallelIntegralPool._configure_slot`
@@ -405,7 +410,7 @@ None。
 
 发送错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:189`](../../../src/chronaxis/execution/parallel_integral_pool.py#L189)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:192`](../../../src/chronaxis/execution/parallel_integral_pool.py#L192)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_request"></a>
 ### `ParallelIntegralPool._request`
@@ -430,7 +435,7 @@ None。
 
 状态错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:199`](../../../src/chronaxis/execution/parallel_integral_pool.py#L199)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:202`](../../../src/chronaxis/execution/parallel_integral_pool.py#L202)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_poll_controls"></a>
 ### `ParallelIntegralPool._poll_controls`
@@ -457,7 +462,7 @@ bool，是否接收到至少一条控制消息。
 协议不一致时ControlProtocolError，工作进程退出时SourceReadError；
     端点错误立即传播，未来文件的数据错误仅缓存，不抢先作为当前文件错误抛出。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:205`](../../../src/chronaxis/execution/parallel_integral_pool.py#L205)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:208`](../../../src/chronaxis/execution/parallel_integral_pool.py#L208)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_wait"></a>
 ### `ParallelIntegralPool._wait`
@@ -484,7 +489,7 @@ None，指定状态已到达。
 
 当前文件错误按原阶段传播；任何工作槽的协议、端点或进程故障立即传播。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:245`](../../../src/chronaxis/execution/parallel_integral_pool.py#L245)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:248`](../../../src/chronaxis/execution/parallel_integral_pool.py#L248)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_raise_file"></a>
 ### `ParallelIntegralPool._raise_file`
@@ -510,7 +515,7 @@ ParallelIntegralPool._raise_file(slot)
 读取/清理包装SourceReadError；
     数值阶段仅恢复明确列出的标准及项目异常，其余仍保留类型文本。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:261`](../../../src/chronaxis/execution/parallel_integral_pool.py#L261)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:264`](../../../src/chronaxis/execution/parallel_integral_pool.py#L264)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_accept_metadata"></a>
 ### `ParallelIntegralPool._accept_metadata`
@@ -535,7 +540,7 @@ None。
 
 元数据不一致。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:278`](../../../src/chronaxis/execution/parallel_integral_pool.py#L278)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:281`](../../../src/chronaxis/execution/parallel_integral_pool.py#L281)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_accept_metadata-reserve_model"></a>
 ### `ParallelIntegralPool._accept_metadata.reserve_model`
@@ -560,7 +565,7 @@ None。
 
 预算原错。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:281`](../../../src/chronaxis/execution/parallel_integral_pool.py#L281)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:284`](../../../src/chronaxis/execution/parallel_integral_pool.py#L284)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-prepare_metadata"></a>
 ### `ParallelIntegralPool.prepare_metadata`
@@ -586,7 +591,7 @@ ParallelIntegralPool.prepare_metadata()
 
 启动/文件错。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:296`](../../../src/chronaxis/execution/parallel_integral_pool.py#L296)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:299`](../../../src/chronaxis/execution/parallel_integral_pool.py#L299)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_configuration"></a>
 ### `ParallelIntegralPool._configuration`
@@ -594,7 +599,7 @@ ParallelIntegralPool.prepare_metadata()
 构造固定任务并计算配置实际需要的额外预约费用。
 
 ```python
-ParallelIntegralPool._configuration(definitions, expressions, specs, binding, session_id, derived, domain, batch_intervals)
+ParallelIntegralPool._configuration(definitions, expressions, specs, binding, session_id, derived, domain, batch_intervals, step_ns=None)
 ```
 
 #### 参数
@@ -609,6 +614,7 @@ ParallelIntegralPool._configuration(definitions, expressions, specs, binding, se
 |`derived`|tuple[DerivedDefinition, ...]|是|无|位置或关键字。原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。|
 |`domain`|Interval &#124; None|是|无|位置或关键字。实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。|
 |`batch_intervals`|int|是|无|位置或关键字。用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。|
+|`step_ns`|int &#124; None|否|None|位置或关键字。父积分器共用的间隔，原样写入固定任务；None为实际间隔。|
 
 #### 返回说明
 
@@ -619,7 +625,7 @@ tuple[dict, int, int]，依次为固定task、父任务字节费和每子数值/
 
 批上限非法时ValueError；原声明展开或静态费用错误继续传播。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:306`](../../../src/chronaxis/execution/parallel_integral_pool.py#L306)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:309`](../../../src/chronaxis/execution/parallel_integral_pool.py#L309)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-configuration_cost"></a>
 ### `ParallelIntegralPool.configuration_cost`
@@ -627,7 +633,7 @@ tuple[dict, int, int]，依次为固定task、父任务字节费和每子数值/
 查询configure还将预约的总费用，供首帧前预算准入。
 
 ```python
-ParallelIntegralPool.configuration_cost(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64)
+ParallelIntegralPool.configuration_cost(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64, step_ns=None)
 ```
 
 #### 参数
@@ -642,6 +648,7 @@ ParallelIntegralPool.configuration_cost(definitions, expressions, specs, binding
 |`derived`|tuple[DerivedDefinition, ...]|否|()|仅关键字。原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。|
 |`domain`|Interval &#124; None|否|None|仅关键字。实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。|
 |`batch_intervals`|int|否|64|仅关键字。用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。|
+|`step_ns`|int &#124; None|否|None|仅关键字。与随后configure相同的共用间隔；只用于构造同一任务以计算费用，不安装任务。|
 
 #### 返回说明
 
@@ -651,7 +658,7 @@ int，父任务费与全部工作槽额外费之和，单位字节；不修改�
 
 声明错误；调用方应在原计划已有固定工作区内使用短暂的任务结构。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:326`](../../../src/chronaxis/execution/parallel_integral_pool.py#L326)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:331`](../../../src/chronaxis/execution/parallel_integral_pool.py#L331)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-configure"></a>
 ### `ParallelIntegralPool.configure`
@@ -659,7 +666,7 @@ int，父任务费与全部工作槽额外费之和，单位字节；不修改�
 安装实际有效期与表达式，之后才允许读取。
 
 ```python
-ParallelIntegralPool.configure(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64)
+ParallelIntegralPool.configure(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64, step_ns=None)
 ```
 
 #### 参数
@@ -674,6 +681,7 @@ ParallelIntegralPool.configure(definitions, expressions, specs, binding, session
 |`derived`|tuple[DerivedDefinition, ...]|否|()|仅关键字。原计划的派生声明，默认空tuple；用于核对表达式身份，不新增输出。|
 |`domain`|Interval &#124; None|否|None|仅关键字。实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。|
 |`batch_intervals`|int|否|64|仅关键字。用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。|
+|`step_ns`|int &#124; None|否|None|仅关键字。父积分器共用的间隔，随任务发给每个工作进程；None为实际间隔，否则为固定间隔纳秒。|
 
 #### 返回说明
 
@@ -683,7 +691,7 @@ None。
 
 未准备、重复安装或预算/声明错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:335`](../../../src/chronaxis/execution/parallel_integral_pool.py#L335)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:342`](../../../src/chronaxis/execution/parallel_integral_pool.py#L342)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-_accept_facts"></a>
 ### `ParallelIntegralPool._accept_facts`
@@ -709,7 +717,7 @@ None。
 
 计数或字段回退。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:356`](../../../src/chronaxis/execution/parallel_integral_pool.py#L356)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:366`](../../../src/chronaxis/execution/parallel_integral_pool.py#L366)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-iter_file"></a>
 ### `ParallelIntegralPool.iter_file`
@@ -736,7 +744,7 @@ ParallelIntegralPool.iter_file(index)
 调用次序不合法时ValueError；文件数据错误按阶段传播，协议故障时ControlProtocolError；
     失败自动清理自有进程与费用。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:377`](../../../src/chronaxis/execution/parallel_integral_pool.py#L377)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:391`](../../../src/chronaxis/execution/parallel_integral_pool.py#L391)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ParallelIntegralPool-close"></a>
 ### `ParallelIntegralPool.close`
@@ -762,4 +770,4 @@ None，可重复调用。
 
 持续退出/关闭/预算释放失败。
 
-源码：[`src/chronaxis/execution/parallel_integral_pool.py:420`](../../../src/chronaxis/execution/parallel_integral_pool.py#L420)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_pool.py:434`](../../../src/chronaxis/execution/parallel_integral_pool.py#L434)（行号对应 Chronaxis 0.1.0.dev6 源码）。

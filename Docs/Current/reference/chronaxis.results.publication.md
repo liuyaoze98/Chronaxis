@@ -58,7 +58,7 @@ output_root(value)
 
 路径/平台错误。
 
-源码：[`src/chronaxis/results/publication.py:16`](../../../src/chronaxis/results/publication.py#L16)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:16`](../../../src/chronaxis/results/publication.py#L16)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_identity"></a>
 ## `_identity`
@@ -83,7 +83,7 @@ _identity(path)
 
 原stat错误。
 
-源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:25`](../../../src/chronaxis/results/publication.py#L25)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-PublicationNames"></a>
 ## `PublicationNames`
@@ -95,7 +95,7 @@ PublicationNames(root, names)
 ```
 
 
-源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:31`](../../../src/chronaxis/results/publication.py#L31)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-PublicationNames-__init__"></a>
 ### `PublicationNames.__init__`
@@ -121,7 +121,7 @@ PublicationNames.__init__(root, names)
 
 IO错。
 
-源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:34`](../../../src/chronaxis/results/publication.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-PublicationNames-publish"></a>
 ### `PublicationNames.publish`
@@ -149,7 +149,7 @@ None。
 
 IO/取消。
 
-源码：[`src/chronaxis/results/publication.py:87`](../../../src/chronaxis/results/publication.py#L87)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:87`](../../../src/chronaxis/results/publication.py#L87)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-PublicationNames-close"></a>
 ### `PublicationNames.close`
@@ -175,4 +175,4 @@ None。
 
 IO错，不删除其他身份的文件。
 
-源码：[`src/chronaxis/results/publication.py:158`](../../../src/chronaxis/results/publication.py#L158)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/publication.py:158`](../../../src/chronaxis/results/publication.py#L158)（行号对应 Chronaxis 0.1.0.dev6 源码）。

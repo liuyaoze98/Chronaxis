@@ -31,13 +31,13 @@ The project originated from automotive and battery test analysis. Its intended a
 
 ## Installation and environment
 
-This source tree and its documentation correspond to **0.1.0.dev5**, a development preview. Use **Python 3.12 or 3.13**. The commands below use Windows; Linux process and filesystem requirements are described in the [installation guide](Docs/Current/en/installation.md). Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev5.en.md) before upgrading.
+This source tree and its documentation correspond to **0.1.0.dev6**, a development preview. Use **Python 3.12 or 3.13**. The commands below use Windows; Linux process and filesystem requirements are described in the [installation guide](Docs/Current/en/installation.md). Interfaces and configuration may change during the preview; see the [version policy](Docs/Release/versioning.md) and read the [release notes](Docs/Release/release-notes-0.1.0.dev6.en.md) before upgrading.
 
 Create an isolated environment and install this version from PyPI:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev5"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
@@ -46,7 +46,7 @@ To install from the matching source tree, use `python -m pip install .` in the d
 If you have a wheel for this version, use its actual file path in this installation command instead:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev5-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev6-py3-none-any.whl"
 ```
 
 Installation automatically includes the dependencies needed for CAN reading, DBC decoding, and other features. For offline installation, prepare the dependency packages in advance; see the [installation guide](Docs/Current/en/installation.md).

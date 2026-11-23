@@ -52,4 +52,4 @@ object_count_results(plan, rules, segment_counts)
 
 尚未完成的规则或不合法引用直接失败，不能在事件流前缀上报告完成。
 
-源码：[`src/chronaxis/execution/record_object_counts.py:12`](../../../src/chronaxis/execution/record_object_counts.py#L12)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/record_object_counts.py:12`](../../../src/chronaxis/execution/record_object_counts.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。

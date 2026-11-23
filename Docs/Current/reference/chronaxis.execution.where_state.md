@@ -59,7 +59,7 @@ before_context(state, names, time, *, ends=None, bounds=None, continuous=False, 
 
 声明或类型错误；不回退状态。
 
-源码：[`src/chronaxis/execution/where_state.py:12`](../../../src/chronaxis/execution/where_state.py#L12)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/where_state.py:12`](../../../src/chronaxis/execution/where_state.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-scalar_columns"></a>
 ## `scalar_columns`
@@ -84,7 +84,7 @@ scalar_columns(context)
 
 非法标签或列类型。
 
-源码：[`src/chronaxis/execution/where_state.py:40`](../../../src/chronaxis/execution/where_state.py#L40)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/where_state.py:40`](../../../src/chronaxis/execution/where_state.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-group_updates"></a>
 ## `group_updates`
@@ -114,7 +114,7 @@ bool。
 
 求值原错。
 
-源码：[`src/chronaxis/execution/where_state.py:57`](../../../src/chronaxis/execution/where_state.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/where_state.py:57`](../../../src/chronaxis/execution/where_state.py#L57)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-group_active"></a>
 ## `group_active`
@@ -143,4 +143,4 @@ bool。
 
 求值错误。
 
-源码：[`src/chronaxis/execution/where_state.py:70`](../../../src/chronaxis/execution/where_state.py#L70)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/where_state.py:70`](../../../src/chronaxis/execution/where_state.py#L70)（行号对应 Chronaxis 0.1.0.dev6 源码）。

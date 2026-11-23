@@ -57,7 +57,7 @@ _linux_rename()
 
 libc缺少该接口时抛NotImplementedError，不退回可覆盖的rename。
 
-源码：[`src/chronaxis/results/platform_files.py:11`](../../../src/chronaxis/results/platform_files.py#L11)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:11`](../../../src/chronaxis/results/platform_files.py#L11)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-require_publication_platform"></a>
 ## `require_publication_platform`
@@ -83,7 +83,7 @@ None；只核对当前平台及调用接口，不创建试探文件，也不预�
 
 Windows 直接通过；Linux 需要 libc 提供 renameat2，其余平台或接口缺失抛 NotImplementedError。Linux 内核与目标文件系统的 RENAME_NOREPLACE 支持在实际移动时核验。
 
-源码：[`src/chronaxis/results/platform_files.py:26`](../../../src/chronaxis/results/platform_files.py#L26)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:26`](../../../src/chronaxis/results/platform_files.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_DirectoryHandles"></a>
 ## `_DirectoryHandles`
@@ -95,7 +95,7 @@ _DirectoryHandles()
 ```
 
 
-源码：[`src/chronaxis/results/platform_files.py:40`](../../../src/chronaxis/results/platform_files.py#L40)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:40`](../../../src/chronaxis/results/platform_files.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_DirectoryHandles-__init__"></a>
 ### `_DirectoryHandles.__init__`
@@ -121,7 +121,7 @@ _DirectoryHandles.__init__()
 
 无主动异常。
 
-源码：[`src/chronaxis/results/platform_files.py:43`](../../../src/chronaxis/results/platform_files.py#L43)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:43`](../../../src/chronaxis/results/platform_files.py#L43)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_DirectoryHandles-closed"></a>
 ### `_DirectoryHandles.closed`
@@ -149,7 +149,7 @@ bool；关闭报错仍由close方法向外报告。
 
 无。
 
-源码：[`src/chronaxis/results/platform_files.py:53`](../../../src/chronaxis/results/platform_files.py#L53)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:53`](../../../src/chronaxis/results/platform_files.py#L53)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_DirectoryHandles-open"></a>
 ### `_DirectoryHandles.open`
@@ -175,7 +175,7 @@ _DirectoryHandles.open(name, path)
 
 链接、父目录身份替换或IO错误；已经打开的fd仍归本对象。
 
-源码：[`src/chronaxis/results/platform_files.py:62`](../../../src/chronaxis/results/platform_files.py#L62)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:62`](../../../src/chronaxis/results/platform_files.py#L62)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_DirectoryHandles-close"></a>
 ### `_DirectoryHandles.close`
@@ -201,7 +201,7 @@ None；已关闭的槽不重复操作。
 
 报告首个关闭错误，其余写入notes；不重试可能已被复用的fd编号。
 
-源码：[`src/chronaxis/results/platform_files.py:77`](../../../src/chronaxis/results/platform_files.py#L77)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:77`](../../../src/chronaxis/results/platform_files.py#L77)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-move_no_replace"></a>
 ## `move_no_replace`
@@ -227,4 +227,4 @@ None。单次名称移动使用平台不覆盖原语；不承诺多文件事务�
 
 已有目标、跨文件系统、目录身份变化或 I/O 错误原样失败。未支持的平台、libc 缺少 renameat2，或内核/目标文件系统不支持 RENAME_NOREPLACE 时抛 NotImplementedError；不会改用可覆盖的 rename。Linux 目录 fd 各关闭一次，关闭失败仍报告原错误，不重试可能已被复用的编号。
 
-源码：[`src/chronaxis/results/platform_files.py:100`](../../../src/chronaxis/results/platform_files.py#L100)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/platform_files.py:100`](../../../src/chronaxis/results/platform_files.py#L100)（行号对应 Chronaxis 0.1.0.dev6 源码）。

@@ -115,11 +115,51 @@ class P5SessionIntegralTests(unittest.TestCase):
             self.assertTrue(energy.quality & quality)
         return rows[1]
 
-    def failure(self, raw):
-        """参数为错误配置；返回真实异常链文本；若错误未发生或暂存残留则断言失败。"""
+    def paths_used(self):
+        """返回(补丁上下文, 计数dict)；统计直接同帧积分构造次数和并行积分成功执行次数。
+
+        只包住原构造/执行并原样返回结果；prepare后回退到普通路径的并行会话不计为执行。
+        """
+        from contextlib import ExitStack
+        session = importlib.import_module('chronaxis.execution.parallel_integral_session').ParallelIntegralSession
+        direct = importlib.import_module('chronaxis.execution.same_frame_integrals').SameFrameIntegrals
+        counts = dict(direct=0, parallel=0)
+        original_init, original_execute = direct.__init__, session.execute
+        def construct(owner, *args, **kwargs):
+            """记录一次直接同帧积分构造，再调用原实现。"""
+            counts['direct'] += 1
+            return original_init(owner, *args, **kwargs)
+        def execute(owner, *args, **kwargs):
+            """原execute成功返回后才记录并行执行。"""
+            result = original_execute(owner, *args, **kwargs)
+            counts['parallel'] += 1
+            return result
+        stack = ExitStack()
+        stack.enter_context(patch.object(direct, '__init__', construct))
+        stack.enter_context(patch.object(session, 'execute', execute))
+        return stack, counts
+
+    def compare_general(self, raw, expected, *, status=None, quality=None, paths=(1, 1)):
+        """1/4进程完整行须与显式reference普通路径逐行一致，并确认实际走过的路径。
+
+        参数: 配置、手算值或None、可选状态/质量；paths为(直接同帧积分构造次数,
+            并行积分成功执行次数)，默认(1,1)即1进程走直接路径、4进程走并行路径。
+        返回: 并行行。异常: 断言失败。
+        """
+        stack, counts = self.paths_used()
+        with stack:
+            rows = self.compare(raw, expected, status=status, quality=quality)
+            used = dict(counts)
+            general = self.run_rows(raw, backend='reference')
+        self.assertEqual(rows, general)
+        self.assertEqual(used, dict(direct=paths[0], parallel=paths[1]))
+        return rows
+
+    def failure(self, raw, backend=None):
+        """参数为错误配置及可选后端；返回真实异常链文本；若错误未发生或暂存残留则断言失败。"""
         work = self.root / ('failed-' + uuid4().hex)
         with self.assertRaises(AnalysisError) as caught:
-            with AnalysisRunner().run(AnalysisPlan.from_dict(deepcopy(raw)), work_dir=work):
+            with AnalysisRunner(backend).run(AnalysisPlan.from_dict(deepcopy(raw)), work_dir=work):
                 self.fail('失败输入被发布为成功结果')
         parts, seen = [], set()
         error = caught.exception
@@ -242,14 +282,182 @@ class P5SessionIntegralTests(unittest.TestCase):
                 message = self.failure(self.config([first, second], processes=count))
                 self.assertIn('时间回退', message)
 
-    def test_fixed_dbc_and_time_order_keep_existing_results(self):
-        """周期积分和时间归并只保原结果，不因P5改写积分依据或文件顺序。"""
+    def test_time_order_keeps_existing_results(self):
+        """时间归并不进入连续面积并行，结果不变。PERF-P5-ORDER-01起1/4进程都由组点并行会话完成，
+        其主进程仍构造同一个直接同帧积分owner，所以计数为(2, 0)；组点路径的选择与差分见test_p5_time_order_points。"""
         paths = self.standard_files()
+        self.compare_general(self.config(paths, merge='time_order'), 2700., paths=(2, 0))
+
+    def test_fixed_and_dbc_match_general_path_across_formats(self):
+        """固定125ms与DBC周期（测试DBC声明GenMsgCycleTime=125ms）：4000W与4800W两段各计一个周期得1100J；
+        末条驱动后不补尾段，故覆盖不全。"""
         for mode in ('fixed', 'dbc'):
+            for kinds in (('asc', 'asc'), ('blf', 'blf'), ('asc', 'blf')):
+                paths = [self.source_file(kinds[0], ((0., 256, b'\xc8\x0a'), (.125, 256, b'\xc8\x0c'))),
+                         self.source_file(kinds[1], ((.375, 256, b'\xc8\x14'), (.5, 512, b'\x00')))]
+                with self.subTest(mode=mode, kinds=kinds):
+                    self.compare_general(self.config(paths, mode=mode), 1100., status='partial')
+
+    def test_fixed_and_dbc_cross_file_ttl_domain_same_time_and_invalid(self):
+        """固定间隔与DBC周期下跨文件保持、有效期、domain、同刻覆盖和单点均与普通路径一致。
+
+        功率记录0s=4000W、0.25s=4800W（中间隔空文件和无关帧），间隔125ms（DBC周期同为125ms）：
+        有效期1s得4000×0.125=500J；有效期0.1875s截去该对后1/4，得375J；
+        再加domain 0.0625—0.4375s只剩0.0625—0.1875s，得4000×0.125×0.125/0.25=250J。
+        """
+        for kind in ('asc', 'blf'):
+            paths = [self.source_file(kind, ((0., 256, b'\xc8\x0a'),)),
+                     self.source_file(kind, ()),
+                     self.source_file(kind, ((.125, 512, b'\x00'),)),
+                     self.source_file(kind, ((.25, 256, b'\xc8\x0c'),)),
+                     self.source_file(kind, ((.5, 512, b'\x00'),))]
+            for mode in ('fixed', 'dbc'):
+                for ttl, domain, value in (('1s', None, 500.), ('0.1875s', None, 375.),
+                                           ('0.1875s', {'start': '0.0625s', 'end': '0.4375s'}, 250.)):
+                    with self.subTest(mode=mode, kind=kind, ttl=ttl, domain=domain):
+                        self.compare_general(self.config(paths, ttl=ttl, domain=domain, mode=mode), value,
+                                             status='partial')
+            # 0.125s的前后文件同刻组按last_by_sequence取后文件8000W：4000×0.125+8000×0.125=1500J。
+            first = self.source_file(kind, ((0., 256, b'\xc8\x0a'), (.0625, 512, b'\x00'),
+                                            (.125, 256, b'\xc8\x0c')))
+            second = self.source_file(kind, ((.125, 256, b'\xc8\x14'), (.25, 256, b'\xc8\x1e'),
+                                             (.5, 512, b'\x00')))
+            for mode in ('fixed', 'dbc'):
+                with self.subTest(mode=mode, kind=kind, case='same_time'):
+                    self.compare_general(self.config([first, second], policy='last_by_sequence', mode=mode), 1500.)
+        # 单条功率记录不构成驱动对，固定间隔与DBC周期都不造面积，也不补到观测末端。
+        paths = [self.source_file('asc', ((0., 512, b'\x00'),)),
+                 self.source_file('asc', ((.125, 256, b'\xc8\x0a'), (.5, 512, b'\x00')))]
+        for mode in ('fixed', 'dbc'):
+            with self.subTest(mode=mode, case='single'):
+                self.compare_general(self.config(paths, mode=mode), None)
+
+    def test_fixed_and_dbc_multiplex_invalid_frame_is_a_driver_update(self):
+        """无效子类型帧同样投影驱动字段并使当段无效：只计0—0.125s的500J，结果partial且含MISSING。
+
+        DBC另声明125ms周期，使DBC周期与固定125ms得到同一手算值。
+        """
+        self.dbc.write_text(
+            'VERSION ""\nNS_ :\nBS_:\nBU_: Node\n'
+            'BO_ 256 PowerFrame: 3 Node\n'
+            ' SG_ Mux M : 0|8@1+ (1,0) [0|255] "" Node\n'
+            ' SG_ Voltage m1 : 8|8@1+ (2,0) [0|510] "V" Node\n'
+            ' SG_ Current m1 : 16|8@1+ (1,0) [0|255] "A" Node\n'
+            'BA_DEF_ BO_ "GenMsgCycleTime" INT 0 100000;\n'
+            'BA_ "GenMsgCycleTime" BO_ 256 125;\n', encoding='utf-8')
+        paths = [self.source_file('asc', ((0., 256, b'\x01\xc8\x0a'),)),
+                 self.source_file('asc', ((.125, 256, b'\x02\xc8\x0a'),
+                                          (.25, 256, b'\x01\xc8\x0c'), (.375, 512, b'\x00')))]
+        for mode in ('fixed', 'dbc'):
+            raw = self.config(paths, mode=mode)
+            raw['sources'][0]['reader'] = dict(decode_policy='partial')
             with self.subTest(mode=mode):
-                # 只有三条驱动报文构成两段周期；末尾无关帧不再推进第三个周期。
-                self.compare(self.config(paths, mode=mode), 1100.)
-        self.compare(self.config(paths, merge='time_order'), 2700.)
+                self.compare_general(raw, 500., status='partial', quality=QualityFlag.MISSING)
+
+    def test_dbc_missing_cycle_reports_same_error_on_every_path(self):
+        """DBC未声明报文周期时，各路径都在读取前报告同一缺周期错误，不猜周期。
+
+        同一进程数下，auto（1进程直接积分、4进程并行积分）与显式reference普通路径的完整错误链相同；
+        多进程读取在原因前附文件路径，这是普通多进程读取原有的包装，与新路径无关。
+        """
+        self.dbc.write_text(
+            'VERSION ""\nNS_ :\nBS_:\nBU_: Node\n'
+            'BO_ 256 PowerFrame: 2 Node\n'
+            ' SG_ Voltage : 0|8@1+ (2,0) [0|510] "V" Node\n'
+            ' SG_ Current : 8|8@1+ (1,0) [0|255] "A" Node\n', encoding='utf-8')
+        paths = self.standard_files()
+        for count in (1, 4):
+            with self.subTest(processes=count):
+                selected = self.failure(self.config(paths, processes=count, mode='dbc'))
+                general = self.failure(self.config(paths, processes=count, mode='dbc'), 'reference')
+                self.assertIn('缺少cycle_time周期', selected)
+                self.assertEqual(selected, general)
+
+    def test_parallel_source_requests_dbc_driver_cycle_like_general_cursor(self):
+        """并行读取的周期请求与普通游标相同：先列DBC驱动字段，再列未填有效期的字段；无DBC间隔时不加驱动。"""
+        from chronaxis.execution.parallel_integral_session import parallel_integral_source
+        from chronaxis.planning.input_requirements import collect_input_requirements
+        from chronaxis.sources.can_spec import can_field_from_key
+        raw = self.config(self.standard_files(), processes=4, mode='dbc')
+        # voltage不填有效期，需要DBC周期补齐；current是DBC驱动。
+        raw['signals'][0].pop('valid_for')
+        plan = AnalysisPlan.from_dict(deepcopy(raw))
+        definitions = tuple(item.definition for item in plan.signals)
+        fields = {item.name: can_field_from_key(item.field) for item in definitions}
+        requirement = collect_input_requirements(plan).for_source('bus')
+        _, options = parallel_integral_source(plan.sources[0], definitions, requirement, plan.intervals.resolved)
+        self.assertEqual(options['cycle_fields'], (fields['current'], fields['voltage']))
+        _, options = parallel_integral_source(plan.sources[0], definitions, requirement)
+        self.assertEqual(options['cycle_fields'], (fields['voltage'],))
+
+    def test_dbc_driver_cycle_and_interval_helpers(self):
+        """只在全部驱动都有同一DBC周期事实时给出纳秒；缺事实或周期不一致返回None，交由普通路径。"""
+        from chronaxis.execution.same_frame_integrals import dbc_driver_cycle, direct_integral_interval
+        from chronaxis.legacy.records import field_to_dict
+        from chronaxis.sources.can_spec import can_field_from_key
+        raw = self.config(self.standard_files(), mode='dbc')
+        raw['calculations'].append(dict(raw['calculations'][0], name='energy_b',
+                                        interval={'mode': 'dbc', 'driver': 'voltage'}))
+        plan = AnalysisPlan.from_dict(deepcopy(raw))
+        self.assertEqual(direct_integral_interval(plan), ('dbc', None))
+        signals = {item.definition.name: item.definition for item in plan.signals}
+        def fact(name, cycle=None):
+            """参数为信号名和可选周期；返回与读取器相同形状的字段事实。"""
+            item = dict(locator=field_to_dict(can_field_from_key(signals[name].field)))
+            if cycle is not None:
+                item['cycle_ns'] = cycle
+            return item
+        self.assertEqual(dbc_driver_cycle(plan, (fact('voltage', 125_000_000), fact('current', 125_000_000))),
+                         125_000_000)
+        self.assertIsNone(dbc_driver_cycle(plan, (fact('voltage', 125_000_000), fact('current'))))
+        self.assertIsNone(dbc_driver_cycle(plan, (fact('voltage', 125_000_000), fact('current', 100_000_000))))
+        # 两项都用DBC周期才共用一种间隔；改一项为实际间隔后不再进入直接积分，间隔查询也拒绝。
+        mixed = deepcopy(raw)
+        mixed['calculations'][1]['interval'] = {'mode': 'actual'}
+        mixed_plan = AnalysisPlan.from_dict(mixed)
+        with self.assertRaisesRegex(ValueError, '共用'):
+            direct_integral_interval(mixed_plan)
+
+    def test_fixed_non_applicable_intervals_keep_general_path(self):
+        """混用实际/固定、两个不同固定值、驱动来自另一报文都不进入新路径，结果仍等于普通路径。"""
+        self.dbc.write_text(self.dbc.read_text(encoding='utf-8')
+                            + 'BO_ 512 OtherFrame: 1 Node\n SG_ Count : 0|8@1+ (1,0) [0|255] "" Node\n'
+                            + 'BA_ "GenMsgCycleTime" BO_ 512 125;\n', encoding='utf-8')
+        paths = self.standard_files()
+        mixed = self.config(paths, mode='fixed')
+        mixed['calculations'].append(dict(mixed['calculations'][0], name='energy_b', interval={'mode': 'actual'}))
+        steps = deepcopy(mixed)
+        steps['calculations'][1]['interval'] = {'mode': 'fixed', 'value': '0.25s', 'driver': 'current'}
+        other = self.config(paths, mode='fixed')
+        other['signals'].append(dict(name='count', source='bus', dtype='float64', valid_for='1s',
+                                     field=dict(frame_id='0x200', signal='Count')))
+        other['intervals']['default']['driver'] = 'count'
+        # DBC周期与实际间隔、与等值固定间隔混用，或以另一报文信号作DBC驱动，同样不进入新路径。
+        dbc_actual = deepcopy(mixed)
+        dbc_actual['intervals']['default'] = {'mode': 'dbc', 'driver': 'current'}
+        dbc_fixed = deepcopy(dbc_actual)
+        dbc_fixed['calculations'][1]['interval'] = {'mode': 'fixed', 'value': '0.125s', 'driver': 'current'}
+        dbc_other = deepcopy(other)
+        dbc_other['intervals']['default'] = {'mode': 'dbc', 'driver': 'count'}
+        for name, raw in (('mixed', mixed), ('steps', steps), ('other_driver', other), ('dbc_actual', dbc_actual),
+                          ('dbc_fixed', dbc_fixed), ('dbc_other_driver', dbc_other)):
+            with self.subTest(case=name):
+                stack, counts = self.paths_used()
+                with stack:
+                    rows = [self.run_rows(dict(raw, execution=dict(raw['execution'], process_count=count)))
+                            for count in (1, 4)]
+                    general = self.run_rows(raw, backend='reference')
+                self.assertEqual(counts, dict(direct=0, parallel=0))
+                self.assertEqual(rows[0], general)
+                self.assertEqual(rows[1], general)
+        # 混用时两项各按自己的间隔：固定125ms为1100J，实际2700J；固定250ms为4000×0.25+4800×0.25=2200J；
+        # 另一报文驱动只有一次更新，没有面积。
+        self.assertEqual([row.value for row in self.run_rows(mixed)], [1100., 2700.])
+        self.assertEqual([row.value for row in self.run_rows(steps)], [1100., 2200.])
+        self.assertEqual([row.value for row in self.run_rows(other)], [None])
+        self.assertEqual([row.value for row in self.run_rows(dbc_actual)], [1100., 2700.])
+        self.assertEqual([row.value for row in self.run_rows(dbc_fixed)], [1100., 1100.])
+        self.assertEqual([row.value for row in self.run_rows(dbc_other)], [None])
 
     def test_p5_selection_and_public_nonapplicable_controls(self):
         """成功例必须完成P5执行；静态不适用例连P5构造都不进入。"""
@@ -270,18 +478,21 @@ class P5SessionIntegralTests(unittest.TestCase):
             return result
         paths = self.standard_files()
         with patch.object(cls, '__init__', construct), patch.object(cls, 'execute', execute):
-            self.run_rows(self.config(paths, processes=4))
-            self.assertEqual(len(calls), 1)
-            self.assertEqual(len(completed), 1)
+            # 实际间隔、固定间隔和DBC周期都应真正执行并行积分。
+            for mode in ('actual', 'fixed', 'dbc'):
+                self.run_rows(self.config(paths, processes=4, mode=mode))
+            self.assertEqual(len(calls), 3)
+            self.assertEqual(len(completed), 3)
             for raw, backend in ((self.config(paths, processes=1), None),
                     (self.config(paths[:1], processes=4), None),
                     (self.config(paths, processes=4), 'reference'),
                     (self.config(paths, processes=4), 'numpy'),
-                    (self.config(paths, processes=4, mode='fixed'), None),
+                    (self.config(paths, processes=4, mode='fixed'), 'reference'),
+                    (self.config(paths, processes=4, mode='dbc'), 'reference'),
                     (self.config(paths, processes=4, merge='time_order'), None)):
                 self.run_rows(raw, backend=backend)
-                self.assertEqual(len(calls), 1)
-                self.assertEqual(len(completed), 1)
+                self.assertEqual(len(calls), 3)
+                self.assertEqual(len(completed), 3)
 
     def test_fast_keeps_its_own_fixed_message_path(self):
         """fast逐报文累计三条贡献为2100J，不能构造普通P5会话积分器。"""
@@ -317,6 +528,44 @@ class P5SessionIntegralTests(unittest.TestCase):
             with self.subTest(policy='strict', payload='extra', processes=count):
                 message = self.failure(self.pure_blf_config(padded, processes=count))
                 self.assertIn('载荷长度不一致', message)
+
+    def test_cross_file_frame_identity_matches_general_path(self):
+        """BUG-P5-005：DBC标FD且未写is_fd时，前后文件分别为FD帧与经典帧（及反向），
+        4进程并行积分须报出与4进程原路径相同的错误，不能给出混合两种帧型的数值。"""
+        import can
+        with self.dbc.open('a', encoding='utf-8') as stream:
+            stream.write('BA_DEF_ BO_ "VFrameFormat" ENUM "StandardCAN","ExtendedCAN",'
+                '"reserved","J1939PG","reserved","reserved","reserved","reserved",'
+                '"reserved","reserved","reserved","reserved","reserved","reserved",'
+                '"StandardCAN_FD","ExtendedCAN_FD";\n'
+                'BA_DEF_DEF_ "VFrameFormat" "StandardCAN";\nBA_ "VFrameFormat" BO_ 256 14;\n')
+
+        def blf(name, rows):
+            """写BLF。参数: 文件名、(秒, 字节, FD)行。返回: 路径项。异常: 写入错误。"""
+            path = self.root / (name + '.blf')
+            writer = can.BLFWriter(path)
+            try:
+                for second, data, fd in rows:
+                    writer.on_message_received(can.Message(timestamp=1700000000. + second, arbitration_id=256,
+                        is_extended_id=False, is_fd=fd, channel=0, data=data))
+            finally:
+                writer.stop()
+            return dict(path=str(path), offset='-1700000000s')
+        fd = ((0., b'\xc8\x0a', True), (.125, b'\xc8\x0c', True))
+        classic = ((.375, b'\xc8\x14', False), (.5, b'\xc8\x14', False))
+        general = patch('chronaxis.execution.parallel_integral_session.parallel_integral_inputs', lambda plan: None)
+        for label, first, second in (('fd_classic', fd, classic),
+                                     ('classic_fd', tuple((t - .375, d, False) for t, d, _ in classic),
+                                      tuple((t + .375, d, True) for t, d, _ in fd))):
+            paths = [blf(label + '-a', first), blf(label + '-b', second)]
+            for pure in (True, False):
+                raw = self.pure_blf_config(paths, processes=4) if pure else self.config(paths, processes=4)
+                with self.subTest(label=label, pure=pure):
+                    message = self.failure(raw)
+                    with general:
+                        expected = self.failure(raw)
+                    self.assertEqual(message, expected)
+                    self.assertIn('同一报文绑定匹配多种实际帧，请补充 is_fd', message)
 
     def test_dbc_fd_classic_automatic_and_explicit_notices(self):
         """DBC标FD而原帧为经典CAN时，显式/自动绑定均保留两条真实兼容提示。"""

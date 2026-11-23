@@ -75,7 +75,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-AnalysisPlan-extensions"></a>
 ### `AnalysisPlan.extensions`
@@ -103,7 +103,7 @@ ExtensionRegistry或None。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-AnalysisPlan-lookups"></a>
 ### `AnalysisPlan.lookups`
@@ -131,7 +131,7 @@ LookupTablePlan 元组。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -169,4 +169,4 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](AnalysisPlan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号对应 Chronaxis 0.1.0.dev6 源码）。

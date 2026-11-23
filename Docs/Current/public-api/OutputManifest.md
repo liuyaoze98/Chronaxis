@@ -28,4 +28,4 @@ OutputManifest(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Pat
 |`row_counts`|tuple[tuple[str, int], ...]|是|无|各固定结果表的实际行数记录。|
 |`status`|str|否|'completed'|本次发布结果状态，成功为completed。|
 
-源码：[`src/chronaxis/results/manifest.py:333`](../../../src/chronaxis/results/manifest.py#L333)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:333`](../../../src/chronaxis/results/manifest.py#L333)（行号对应 Chronaxis 0.1.0.dev6 源码）。

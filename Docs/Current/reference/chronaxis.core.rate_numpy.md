@@ -53,7 +53,7 @@ _relative_column(samples)
 
 内存分配或内部结构错误传播。整数差转float不精确时返回精度质量。
 
-源码：[`src/chronaxis/core/rate_numpy.py:13`](../../../src/chronaxis/core/rate_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/rate_numpy.py:13`](../../../src/chronaxis/core/rate_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_restore"></a>
 ## `_restore`
@@ -81,7 +81,7 @@ FLOAT64 ScalarValue。
 
 不可表示的最终数值以质量标识。
 
-源码：[`src/chronaxis/core/rate_numpy.py:37`](../../../src/chronaxis/core/rate_numpy.py#L37)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/rate_numpy.py:37`](../../../src/chronaxis/core/rate_numpy.py#L37)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-difference_numpy"></a>
 ## `difference_numpy`
@@ -108,7 +108,7 @@ FLOAT64 ScalarValue。
 
 输入结构和分配错误传播。
 
-源码：[`src/chronaxis/core/rate_numpy.py:60`](../../../src/chronaxis/core/rate_numpy.py#L60)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/rate_numpy.py:60`](../../../src/chronaxis/core/rate_numpy.py#L60)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-fit_numpy"></a>
 ## `fit_numpy`
@@ -134,4 +134,4 @@ FLOAT64 ScalarValue。
 
 结构和空间错误传播。
 
-源码：[`src/chronaxis/core/rate_numpy.py:72`](../../../src/chronaxis/core/rate_numpy.py#L72)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/rate_numpy.py:72`](../../../src/chronaxis/core/rate_numpy.py#L72)（行号对应 Chronaxis 0.1.0.dev6 源码）。

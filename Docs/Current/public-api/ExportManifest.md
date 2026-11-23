@@ -25,4 +25,4 @@ ExportManifest(output_dir: pathlib.Path, manifest_path: pathlib.Path, output_fil
 |`manifest_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|本次带时间后缀的完成清单Path，直接使用实际返回路径。|
 |`output_files`|tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), ...]|是|无|本次导出的数据文件Path元组，不含由manifest_path单独提供的完成清单。|
 
-源码：[`src/chronaxis/results/manifest.py:360`](../../../src/chronaxis/results/manifest.py#L360)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:360`](../../../src/chronaxis/results/manifest.py#L360)（行号对应 Chronaxis 0.1.0.dev6 源码）。

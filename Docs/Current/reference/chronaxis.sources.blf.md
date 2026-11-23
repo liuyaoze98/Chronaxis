@@ -54,7 +54,7 @@ class BLFSpec
 |`path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|输入.blf文件的Path，初始化只检查声明，不打开文件。|
 |`offset_ns`|int|否|0|分析坐标偏移，默认0纳秒；保留原始报文时间。|
 
-源码：[`src/chronaxis/sources/blf.py:16`](../../../src/chronaxis/sources/blf.py#L16)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:16`](../../../src/chronaxis/sources/blf.py#L16)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFSpec-__post_init__"></a>
 ### `BLFSpec.__post_init__`
@@ -68,7 +68,7 @@ BLFSpec.__post_init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/sources/blf.py:21`](../../../src/chronaxis/sources/blf.py#L21)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:21`](../../../src/chronaxis/sources/blf.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead"></a>
 ## `BLFRead`
@@ -80,7 +80,7 @@ BLFRead(spec, budget, *, check_cancel=None, retain_original=False, retain_source
 ```
 
 
-源码：[`src/chronaxis/sources/blf.py:28`](../../../src/chronaxis/sources/blf.py#L28)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:28`](../../../src/chronaxis/sources/blf.py#L28)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead-__init__"></a>
 ### `BLFRead.__init__`
@@ -118,7 +118,7 @@ BLFRead.__init__(spec, budget, *, check_cancel=None, retain_original=False, reta
 
 配置、文件头、预算或取消原错；失败不泄漏自有文件。
 
-源码：[`src/chronaxis/sources/blf.py:31`](../../../src/chronaxis/sources/blf.py#L31)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:31`](../../../src/chronaxis/sources/blf.py#L31)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead-closed"></a>
 ### `BLFRead.closed`
@@ -134,7 +134,7 @@ BLFRead.closed
 读取属性，不使用调用括号。
 
 
-源码：[`src/chronaxis/sources/blf.py:84`](../../../src/chronaxis/sources/blf.py#L84)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:84`](../../../src/chronaxis/sources/blf.py#L84)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead-__iter__"></a>
 ### `BLFRead.__iter__`
@@ -148,7 +148,7 @@ BLFRead.__iter__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/sources/blf.py:88`](../../../src/chronaxis/sources/blf.py#L88)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:88`](../../../src/chronaxis/sources/blf.py#L88)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead-__next__"></a>
 ### `BLFRead.__next__`
@@ -162,7 +162,7 @@ BLFRead.__next__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/sources/blf.py:92`](../../../src/chronaxis/sources/blf.py#L92)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:92`](../../../src/chronaxis/sources/blf.py#L92)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BLFRead-close"></a>
 ### `BLFRead.close`
@@ -176,7 +176,7 @@ BLFRead.close()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/sources/blf.py:153`](../../../src/chronaxis/sources/blf.py#L153)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:153`](../../../src/chronaxis/sources/blf.py#L153)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_UntimedBLFRecord"></a>
 ## `_UntimedBLFRecord`
@@ -207,4 +207,4 @@ class _UntimedBLFRecord
 工厂以真实解析输入构造。
 生命周期仅覆盖同次解码和有界传输；不作为公开RawCANRecord或时间线样本。
 
-源码：[`src/chronaxis/sources/blf.py:170`](../../../src/chronaxis/sources/blf.py#L170)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/blf.py:170`](../../../src/chronaxis/sources/blf.py#L170)（行号对应 Chronaxis 0.1.0.dev6 源码）。

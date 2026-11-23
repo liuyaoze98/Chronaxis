@@ -18,6 +18,7 @@ from chronaxis import AnalysisPlan,AnalysisRunner,validate_analysis_plan,explain
 from pathlib import Path
 from published_paths import published_file, export_root
 from copy import deepcopy
+import os
 import subprocess
 import sys
 from chronaxis.sources.models import ReadRequest
@@ -392,7 +393,9 @@ class TextCANPublicTests(unittest.TestCase):
         config['outputs']={'signal_csv':{'signals':['voltage']}}
         path=self.root/'plan.json'; path.write_text(json.dumps(current_fixture(config)),encoding='utf-8')
         for command in ('validate','explain'):
-            completed=subprocess.run([sys.executable,'-B','-m','chronaxis',command,str(path),'--format','json'],capture_output=True,text=True,encoding='utf-8')
+            # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
+            completed=subprocess.run([sys.executable,'-B','-m','chronaxis',command,str(path),'--format','json'],
+                env=dict(os.environ,PYTHONIOENCODING='utf-8'),capture_output=True,text=True,encoding='utf-8')
             self.assertEqual(completed.returncode,0,completed.stderr[-2000:])
             payload=json.loads(completed.stdout)
             validation=payload if command=='validate' else payload['validation']
@@ -400,8 +403,10 @@ class TextCANPublicTests(unittest.TestCase):
             self.assertTrue(validation['execution_ready'])
             self.assertIn('implemented',validation['capability_status'].values())
         destination=self.root/'cli-published'
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         completed=subprocess.run([sys.executable,'-B','-m','chronaxis','run',str(path),'--output',str(destination),
-            '--work-dir',str(self.root/'cli-run')],capture_output=True,text=True,encoding='utf-8')
+            '--work-dir',str(self.root/'cli-run')],env=dict(os.environ,PYTHONIOENCODING='utf-8'),
+            capture_output=True,text=True,encoding='utf-8')
         self.assertEqual(completed.returncode,0,completed.stderr[-2000:])
         manifest=json.loads(Path(json.loads(completed.stdout)['manifest']).read_text(encoding='utf-8'))
         self.assertTrue((destination/manifest['exports']['index_file']).is_file())

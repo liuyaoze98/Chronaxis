@@ -245,7 +245,7 @@ class RecordSessionCalculations:
             self._spool = self._append_result = None
 
     def _execute_parallel_integrals(self, requests):
-        """为适用的自动后端任务执行文件内面积并行。
+        """为适用的自动后端任务执行文件内面积并行（concatenate）或组点并行（time_order）。
 
         参数: requests 为原会话计算项。返回: True 表示已经写入完整结果；
             False 表示静态条件、绑定或预算不适用，输入尚未消费，继续既有路径。
@@ -254,13 +254,20 @@ class RecordSessionCalculations:
         if not self._direct_requested:
             return False
         from .parallel_integral_session import parallel_integral_inputs, ParallelIntegralSession
-        if parallel_integral_inputs(self._plan) is None:
-            return False
-        if (self._budget.ram_bytes + ParallelIntegralSession.fixed_cost(self._plan)
+        # concatenate走文件面积并行；time_order走组点并行（PERF-P5-ORDER-01）；两者条件互斥。
+        if parallel_integral_inputs(self._plan) is not None:
+            factory, recovery, arguments = (ParallelIntegralSession, 'parallel_integral_session_cleanup_owner',
+                                            (self._plan, self._budget, self._requirements))
+        else:
+            from .parallel_point_session import parallel_point_inputs, ParallelPointSession
+            if parallel_point_inputs(self._plan) is None:
+                return False
+            factory, recovery, arguments = (ParallelPointSession, 'parallel_point_session_cleanup_owner',
+                                            (self._plan, self._budget, self._requirements, self._path))
+        if (self._budget.ram_bytes + factory.fixed_cost(self._plan)
                 > self._budget.memory_budget_bytes):
             return False
-        owner = self._new(ParallelIntegralSession, 'parallel_integral_session_cleanup_owner',
-                          self._plan, self._budget, self._requirements)
+        owner = self._new(factory, recovery, *arguments)
         # 与普通来源一样立即登记到资源树，准备中失败也能由父会话关闭。
         self._cursors.append(owner)
         if not owner.prepare():
@@ -417,8 +424,12 @@ class RecordSessionCalculations:
                 choice = choices[request.calculation_id]
                 step = choice.step_ns
                 if choice.mode == 'dbc':
-                    locator = field_to_dict(can_field_from_key(state.definitions[choice.driver].field))
-                    metadata = source_cursors[state.definitions[choice.driver].source].metadata
+                    # 直接同帧积分不建通用最新状态；此时从同一份已补有效期的定义中取驱动，
+                    # 字段定位和来源与state中的定义相同，周期仍取同次DBC事实。
+                    driver = (state.definitions[choice.driver] if state is not None
+                              else next(item for item in definitions if item.name == choice.driver))
+                    locator = field_to_dict(can_field_from_key(driver.field))
+                    metadata = source_cursors[driver.source].metadata
                     step = next(item['cycle_ns'] for item in metadata['fields'] if item['locator'] == locator)
                 expression = request.signal if request.signal is not None else request.condition
                 condition = request.condition if request.signal is not None else None
@@ -529,6 +540,7 @@ class RecordSessionCalculations:
             # 仅放开本栈帧的临时引用；返回值已交付，子资源仍由会话所有者关闭。
             session_values = choices = definitions = source_cursors = state = plan = hosted_reductions = derived = request = choice = metadata = expression = condition = static = None
             descriptor = spec = factory = extra = event_requests = index_ids = drivers = steps = definition = locator = scope_requests = None
+            driver = None
 
     def _complete_results(self, session_values, spool):
         """输入真正EOF后完成尾部、统计和结果汇总，不发布未完成前缀。

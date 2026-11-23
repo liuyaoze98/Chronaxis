@@ -1,9 +1,14 @@
-"""一个积分工作槽按许可读取文件并生成原序面积块。
+"""一个积分工作槽按许可读取文件并生成原序面积块或同刻组点块。
 
 读取器和数值状态在子进程中关闭，父进程拥有整个进程生命周期。文件错误
 先保留已经形成的边界/面积前缀，下一次许可才交付错误。eof数据包晚于
 读取器和数值owner关闭，finished确认再证明包工作区已释放。没有许可时
 不继续读取，不生成面积文件或最终结果。
+
+任务的mode决定数值owner：terms构造FileIntegralTerms并发P5I1面积包（concatenate）；
+points构造FileGroupPoints并发P5G1组点包（time_order，PERF-P5-ORDER-01）。
+两种模式共用命令协议、许可与释放次序。points模式的错误信息只带str(错误)，
+不附加notes，与现有time_order读取的格式一致；其父进程把各阶段错误都按读取段报告。
 """
 import os
 import signal
@@ -13,31 +18,55 @@ from .._control_wire import ControlChannel
 from ..results.budget import ResourceBudget
 from ..sources.text_can_decode import CANTextDecodeRead
 from .can_block_codec import encode_metadata
-from .integral_blocks import BLOCK_RAM, WIRE_LIMIT, MAX_EVENTS, MODEL_LIMIT, event_cost, facts_cost, encode_packet, restore_task
+from .integral_blocks import (BLOCK_RAM, WIRE_LIMIT, MAX_EVENTS, MAX_POINTS, MODEL_LIMIT, event_cost, facts_cost,
+                              point_cost, point_facts_cost, encode_packet, encode_points, restore_task, task_mode)
 from .parallel_can_worker import plain
 
 READ_LIMIT = 4096  # 一次读取许可最多推进4096条原记录；也可因事件数或字节上限提前返回。
 
 
+def _points(terms):
+    """判断数值owner是否为组点模式。参数: terms为FileIntegralTerms或FileGroupPoints。返回: bool。异常: 无。"""
+    from .file_group_points import FileGroupPoints
+    return type(terms) is FileGroupPoints
+
+
+def _limits(terms):
+    """取得当前模式的事件费用函数、事实费用函数和单包事件上限。
+
+    参数: terms为FileIntegralTerms或FileGroupPoints。
+    返回: tuple，依次为event费用函数、facts费用函数和单包最大事件数int。
+    异常: 无；未知owner按面积模式处理，由原编码器拒绝未知事件。
+    """
+    return (point_cost,point_facts_cost,MAX_POINTS) if _points(terms) else (event_cost,facts_cost,MAX_EVENTS)
+
+
 def _facts(reader, terms, compatibility):
     """摘取同次文件事实。
 
-    参数: reader为CANTextDecodeRead；terms为FileIntegralTerms；compatibility为本文件的提示缓存dict。
-    返回: dict，含累计原帧/解码数、实际首末纳秒、精确顺序时间和帧型提示tuple。
+    参数: reader为CANTextDecodeRead；terms为FileIntegralTerms或FileGroupPoints；compatibility为本文件的提示缓存dict。
+    返回: dict，含累计原帧/解码数、实际首末纳秒、精确顺序时间、帧型提示tuple和frame_identity
+        （本文件目标帧实际帧型或None，两种模式都带，父进程据此跨文件核对）。
     异常: 非法内部对象时AttributeError；不读取下一帧。
     """
     fields=terms.compatibility_fields
     # 同一已证明物理帧的兼容字段只会增加；共享已冻结tuple，避免每块重复复制提示。
     if compatibility.get('size')!=len(fields):
         compatibility.update(size=len(fields),values=tuple((field.key,extended) for field,extended in fields.items()))
-    return dict(count=reader.count,first_ns=reader.first_ns,last_ns=reader.last_ns,
+    facts=dict(count=reader.count,first_ns=reader.first_ns,last_ns=reader.last_ns,
         decode_calls=reader.decode_calls,first_order_time=reader.first_order_time,
         last_order_time=reader._last_selected_time,
-        compatibility_fields=compatibility['values'])
+        compatibility_fields=compatibility['values'],frame_identity=terms.frame_identity)
+    return facts
 
 
-def _error_text(error):
-    """保留原错误及有限清理说明。参数: error为BaseException。返回: str。异常: 原对象字符串转换错误继续传播。"""
+def _error_text(error, notes=True):
+    """保留原错误及有限清理说明。
+
+    参数: error为BaseException；notes为False时只返回str(错误)（组点模式，与现有time_order读取格式一致）。
+    返回: str。异常: 原对象字符串转换错误继续传播。
+    """
+    if not notes:return str(error)
     notes=getattr(error,'__notes__',())
     return str(error)+''.join('\n'+str(note)[:256] for note in notes[:4])
 
@@ -62,20 +91,23 @@ def _close_file(reader, terms, primary=None):
 def read_events(reader, terms, compatibility):
     """读取一批原记录，返回已形成事件及真实EOF或原错误。
 
-    参数: reader为同次CANTextDecodeRead；terms为FileIntegralTerms；compatibility为本文件有限提示缓存dict。
+    参数: reader为同次CANTextDecodeRead；terms为FileIntegralTerms或FileGroupPoints；
+        compatibility为本文件有限提示缓存dict。
     返回: 五元tuple，依次为(event, facts)条目的tuple、eof bool、Exception或None、
         阶段str（read或compute）及最新facts dict。此eof尚未证明后续资源关闭成功。
     异常: KeyboardInterrupt/SystemExit原样抛；数据错误保留在返回值，先交付数值前缀；
         没有主错时，事实整理失败原样传播。
+    组点模式下FileGroupPoints停止交付后仍继续读取，使同一文件后面的读取错误照常报出。
     """
     events=[];eof=False;failure=None;phase='read';wire=model=0;fact_costs={}
+    cost_of,facts_cost_of,maximum=_limits(terms)
     facts=_facts(reader,terms,compatibility)
     def append(items):
         """只为实际事件保存同次事实。参数: 有限事件tuple。返回: None。异常: 编码模型错误。"""
         nonlocal wire,model,facts
         facts=_facts(reader,terms,compatibility)
         for event in items:
-            cost=event_cost(event);wire+=cost[0];model+=cost[1]+1024
+            cost=cost_of(event);wire+=cost[0];model+=cost[1]+1024
             events.append((event,facts))
     try:
         for _ in range(READ_LIMIT):
@@ -90,8 +122,8 @@ def read_events(reader, terms, compatibility):
                 append(emitted)
                 # 同一许可允许真正批量读取/计算；宽列按字节和展开量提前结束。
                 # 最后一次feed/finish额外产生的少数事件由发送层继续分包，不重读或丢弃。
-                facts_wire,facts_model=facts_cost(facts,fact_costs)
-                if len(events)>=MAX_EVENTS or wire+facts_wire>=WIRE_LIMIT or model+facts_model>=MODEL_LIMIT:break
+                facts_wire,facts_model=facts_cost_of(facts,fact_costs)
+                if len(events)>=maximum or wire+facts_wire>=WIRE_LIMIT or model+facts_model>=MODEL_LIMIT:break
     except (KeyboardInterrupt,SystemExit):raise
     except Exception as error:
         failure=error
@@ -105,27 +137,29 @@ def read_events(reader, terms, compatibility):
     return tuple(events),eof,failure,phase,facts
 
 
-def take_events(items, last_facts):
+def take_events(items, last_facts, *, points=False):
     """从已形成前缀中取得一份有界多事件包，不触发下一次读取。
 
-    参数: items为(event, facts)条目tuple；last_facts为本批最后读取事实dict。
+    参数: items为(event, facts)条目tuple；last_facts为本批最后读取事实dict；
+        points为True时按组点包的费用和每包2048个事件封包，默认False按面积包。
     返回: 三元tuple，依次为本包事件tuple、剩余(event, facts)条目tuple、本包facts dict；
         items为空时仍校验并交付last_facts。
     异常: 单事件连同事实或空包事实超限时ValueError；未知事件时IntegralBlockError，原事实错误继续传播。
     不扩大队列、不截短精确时间，也不丢弃尚未发送的事件。
     """
+    cost_of,facts_cost_of,maximum=(point_cost,point_facts_cost,MAX_POINTS) if points else (event_cost,facts_cost,MAX_EVENTS)
     count=wire=model=0;fact_costs={}
     for index,(event,event_facts) in enumerate(items):
-        size,expanded=event_cost(event)
-        facts_wire,facts_model=facts_cost(last_facts if index==len(items)-1 else event_facts,fact_costs)
+        size,expanded=cost_of(event)
+        facts_wire,facts_model=facts_cost_of(last_facts if index==len(items)-1 else event_facts,fact_costs)
         if size+facts_wire>WIRE_LIMIT or expanded+facts_model>MODEL_LIMIT:
             raise ValueError('积分单事件超过预付块空间')
-        if count>=MAX_EVENTS or wire+size+facts_wire>WIRE_LIMIT or model+expanded+facts_model>MODEL_LIMIT:break
+        if count>=maximum or wire+size+facts_wire>WIRE_LIMIT or model+expanded+facts_model>MODEL_LIMIT:break
         wire+=size;model+=expanded;count+=1
     chosen=items[:count];remaining=items[count:]
     facts=chosen[-1][1] if remaining else last_facts
     if not items:
-        facts_wire,facts_model=facts_cost(facts,fact_costs)
+        facts_wire,facts_model=facts_cost_of(facts,fact_costs)
         if facts_wire>WIRE_LIMIT or facts_model>MODEL_LIMIT:raise ValueError('积分事实超过预付块空间')
     return tuple(item[0] for item in chosen),remaining,facts
 
@@ -141,6 +175,8 @@ def worker_main(control, data):
     if type(control) is not ControlChannel or control.family!='integral':raise TypeError('积分工作进程需要固定控制端点')
     signal.signal(signal.SIGINT,signal.SIG_IGN)
     reader=terms=budget=None;index=number=0;pending_error=None;workspace=False
+    points=False  # 当前文件的任务模式；terms关闭后仍用它选择包格式和错误文本。
+    file_mode=None  # 文件命令声明的模式；None表示由configure的任务决定。
     packet=events=packet_facts=None
     pending_events=();pending_facts=None;pending_eof=False;pending_phase='read';compatibility={}
     try:
@@ -151,9 +187,12 @@ def worker_main(control, data):
             try:
                 if command[0]=='file':
                     if reader is not None or terms is not None or workspace:raise ValueError('积分槽尚未关闭上一文件')
-                    _,index,spec,signals,options,limit,context=command
+                    _,index,spec,signals,options,limit,context,*declared=command
                     if context is not None:raise ValueError('并行积分不接受原帧捕获上下文')
                     number=0;pending_error=None;pending_events=();pending_facts=None;pending_eof=False;compatibility={}
+                    # 文件命令带模式时，READY前的错误也按该模式报告（points不附notes）；缺省时等configure决定。
+                    file_mode=declared[0] if declared else None
+                    points=file_mode=='points'
                     budget=ResourceBudget(limit);budget.reserve_ram(BLOCK_RAM);workspace=True
                     reader=CANTextDecodeRead(spec,budget,signals,**options)
                     packet=encode_metadata(plain(reader.prepare_metadata()))
@@ -163,9 +202,14 @@ def worker_main(control, data):
                     if command[1]!=index or reader is None or terms is not None or pending_error is not None:
                         raise ValueError('积分数值任务的文件或状态不符')
                     from .file_integral_terms import FileIntegralTerms
+                    from .file_group_points import FileGroupPoints
                     if command[3]<budget.memory_budget_bytes:raise ValueError('积分工作预算不能缩减已预约份额')
                     budget.memory_budget_bytes=command[3]
-                    terms=FileIntegralTerms(budget,**restore_task(command[2]))
+                    # 任务模式决定构造面积生成器还是组点生成器；两者接收同一组重建参数。
+                    mode=task_mode(command[2])
+                    if file_mode is not None and mode!=file_mode:raise ValueError('积分任务模式与文件命令不符')
+                    points=mode=='points'
+                    terms=(FileGroupPoints if points else FileIntegralTerms)(budget,**restore_task(command[2]))
                     continue
                 if command[0]=='budget':
                     if reader is None or terms is not None or command[1]<budget.memory_budget_bytes:
@@ -180,7 +224,7 @@ def worker_main(control, data):
                     if workspace:
                         try:budget.release_ram(BLOCK_RAM);workspace=False
                         except BaseException as cleanup:pending_error.add_note('积分块退款失败：'+type(cleanup).__name__)
-                    control.send(('error',index,number,pending_phase,type(pending_error).__name__,_error_text(pending_error)))
+                    control.send(('error',index,number,pending_phase,type(pending_error).__name__,_error_text(pending_error,not points)))
                     pending_error=None
                     continue
                 started=perf_counter()
@@ -194,13 +238,13 @@ def worker_main(control, data):
                         if original is None and pending_error is not None:pending_phase='cleanup'
                         reader=None
                         pending_eof=pending_eof and pending_error is None
-                events,pending_events,packet_facts=take_events(pending_events,pending_facts)
+                events,pending_events,packet_facts=take_events(pending_events,pending_facts,points=points)
                 final=pending_eof and not pending_events
                 if final:
                     # 只剩至多一包展开量时由BLOCK_RAM覆盖；数值owner先完成自己的清理。
                     pending_error=_close_file(None,terms);terms=None
                     if pending_error is not None:pending_phase='cleanup';final=pending_eof=False
-                packet=encode_packet(index,number,events,final,packet_facts)
+                packet=(encode_points if points else encode_packet)(index,number,events,final,packet_facts)
                 control.send(('block',index,number,len(packet),perf_counter()-started))
                 data.send_bytes(packet)
                 packet=events=packet_facts=None;number+=1
@@ -222,7 +266,7 @@ def worker_main(control, data):
                 if workspace:
                     try:budget.release_ram(BLOCK_RAM);workspace=False
                     except BaseException as cleanup:failure.add_note('积分块退款失败：'+type(cleanup).__name__)
-                control.send(('error',index,number,reported_phase,type(failure).__name__,_error_text(failure)))
+                control.send(('error',index,number,reported_phase,type(failure).__name__,_error_text(failure,not points)))
                 pending_error=None
     except (EOFError,BrokenPipeError,OSError):
         pass

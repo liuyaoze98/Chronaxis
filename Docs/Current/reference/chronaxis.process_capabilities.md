@@ -40,7 +40,7 @@ _pidfd_group_capability()
 
 关闭描述符失败或取消原样传播；普通探测OSError保留errno为提示原因。
 
-源码：[`src/chronaxis/process_capabilities.py:15`](../../../src/chronaxis/process_capabilities.py#L15)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/process_capabilities.py:15`](../../../src/chronaxis/process_capabilities.py#L15)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-managed_worker_warnings"></a>
 ## `managed_worker_warnings`
@@ -66,7 +66,7 @@ managed_worker_warnings(required, context)
 
 探测资源关闭失败或取消传播；不把环境提示改成配置错误。
 
-源码：[`src/chronaxis/process_capabilities.py:49`](../../../src/chronaxis/process_capabilities.py#L49)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/process_capabilities.py:49`](../../../src/chronaxis/process_capabilities.py#L49)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-warn_managed_worker"></a>
 ## `warn_managed_worker`
@@ -92,4 +92,4 @@ None。
 
 资源关闭或取消传播；告警遵循调用者的Python warnings策略。
 
-源码：[`src/chronaxis/process_capabilities.py:68`](../../../src/chronaxis/process_capabilities.py#L68)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/process_capabilities.py:68`](../../../src/chronaxis/process_capabilities.py#L68)（行号对应 Chronaxis 0.1.0.dev6 源码）。

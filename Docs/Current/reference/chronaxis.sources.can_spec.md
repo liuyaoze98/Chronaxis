@@ -72,7 +72,7 @@ None，不重编号或转换类型。
 
 TypeError为非原生int，ValueError为负数；无I/O。
 
-源码：[`src/chronaxis/sources/can_spec.py:23`](../../../src/chronaxis/sources/can_spec.py#L23)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:23`](../../../src/chronaxis/sources/can_spec.py#L23)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-can_field_from_key"></a>
 ## `can_field_from_key`
@@ -98,7 +98,7 @@ LegacyCANField，保信号名大小写、点号及可选帧类型，不读取DBC
 TypeError/ValueError/UnicodeError为类型、JSON、重复键、字段、数值或非规范键；
     不接受仅语义相同但空白、键序或转义不同的文本，不eval或反序列化任意对象。
 
-源码：[`src/chronaxis/sources/can_spec.py:35`](../../../src/chronaxis/sources/can_spec.py#L35)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:35`](../../../src/chronaxis/sources/can_spec.py#L35)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-LegacyCANSpec"></a>
 ## `LegacyCANSpec`
@@ -127,7 +127,7 @@ class LegacyCANSpec
 |`decode_policy`|str|否|'legacy'|新版本默认strict；旧调用保原宽松解码。|
 |`file_merge`|str|否|'concatenate'|控制本来源文件记录的组合顺序。concatenate按声明文件顺序接续，沿用任务输入检查范围；time_order检查各文件所需时间非递减后，按时间/文件位置/局部序号稳定归并，不平移或去重。默认concatenate，与进程数独立。|
 
-源码：[`src/chronaxis/sources/can_spec.py:55`](../../../src/chronaxis/sources/can_spec.py#L55)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:55`](../../../src/chronaxis/sources/can_spec.py#L55)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-LegacyCANSpec-input_paths"></a>
 ### `LegacyCANSpec.input_paths`
@@ -155,7 +155,7 @@ tuple。
 
 无；不扫描目录。
 
-源码：[`src/chronaxis/sources/can_spec.py:74`](../../../src/chronaxis/sources/can_spec.py#L74)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:74`](../../../src/chronaxis/sources/can_spec.py#L74)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-LegacyCANSpec-__post_init__"></a>
 ### `LegacyCANSpec.__post_init__`
@@ -186,7 +186,7 @@ TypeError为路径/通道/时基/单位/profile/偏移/解码范围类型错误�
 
 无open/stat/resolve/DBC/依赖加载，不核实存在性或实际BLF内容。
 
-源码：[`src/chronaxis/sources/can_spec.py:78`](../../../src/chronaxis/sources/can_spec.py#L78)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:78`](../../../src/chronaxis/sources/can_spec.py#L78)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-CANSourceRef"></a>
 ## `CANSourceRef`
@@ -218,7 +218,7 @@ class CANSourceRef(SourceRef)
 |`timestamp`|float|是|无|有限原浮点秒，可保负数和-0.0；精度已损失时不能恢复。|
 |`time_quantized`|bool|是|无|显式时间转换是否按纳秒量化，不等于浮点精度完好。|
 
-源码：[`src/chronaxis/sources/can_spec.py:124`](../../../src/chronaxis/sources/can_spec.py#L124)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:124`](../../../src/chronaxis/sources/can_spec.py#L124)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-CANSourceRef-__post_init__"></a>
 ### `CANSourceRef.__post_init__`
@@ -245,7 +245,7 @@ None，全部原声明保持冻结。
 TypeError/ValueError/UnicodeError为身份、profile、JSON定位、序号、原时间
     或量化标志非法，或field与附加定位冲突；没有失效补零或隐式别名。
 
-源码：[`src/chronaxis/sources/can_spec.py:143`](../../../src/chronaxis/sources/can_spec.py#L143)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:143`](../../../src/chronaxis/sources/can_spec.py#L143)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-CANSourceRef-evaluation_index"></a>
 ### `CANSourceRef.evaluation_index`
@@ -273,4 +273,4 @@ CANSourceRef.evaluation_index
 
 无；不产生额外求值或计数。
 
-源码：[`src/chronaxis/sources/can_spec.py:178`](../../../src/chronaxis/sources/can_spec.py#L178)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/can_spec.py:178`](../../../src/chronaxis/sources/can_spec.py#L178)（行号对应 Chronaxis 0.1.0.dev6 源码）。

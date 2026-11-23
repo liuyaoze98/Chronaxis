@@ -6,6 +6,7 @@
 import argparse
 from contextlib import closing
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -16,8 +17,9 @@ from chronaxis import AnalysisPlan, AnalysisRunner, PlanValidationError, load_an
 def cli(*args, code=0):
     """参数: args为CLI参数，code为预期退出码。返回: stdout文本。异常: 命令不符抛AssertionError。"""
     # 使用已安装解释器，避免子命令意外从当前源码目录导入。
+    # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
     proc = subprocess.run([sys.executable,"-B","-m","chronaxis",*map(str,args)],
-                          capture_output=True, encoding="utf8")
+                          env=dict(os.environ, PYTHONIOENCODING="utf-8"), capture_output=True, encoding="utf8")
     if proc.returncode != code:
         raise AssertionError((args, proc.returncode, proc.stdout, proc.stderr))
     return proc.stdout
@@ -60,8 +62,9 @@ def check(guide):
                for n in explanation["nodes"])
     answer = {}
     # 指南自带脚本只用公开接口，数值手算38 J；输出必须真实发布。
+    # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
     proc = subprocess.run([sys.executable,"-B",str(guide/"run_analysis.py"),str(csv),"csv-out"],
-                          check=True, capture_output=True, encoding="utf8")
+                          env=dict(os.environ, PYTHONIOENCODING="utf-8"), check=True, capture_output=True, encoding="utf8")
     manifest = Path(proc.stdout.strip().splitlines()[-1])
     assert "38.0 J complete" in proc.stdout and manifest.is_file()
     assert manifest.parent.resolve() == Path("csv-out").resolve()

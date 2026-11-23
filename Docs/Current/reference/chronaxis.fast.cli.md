@@ -41,7 +41,7 @@ execute(args)
 |---|---|---|---|---|
 |`args`|argparse.Namespace|是|无|位置或关键字。命令行解析出的 fast 操作、配置路径、输出和总量选项。|
 
-源码：[`src/chronaxis/fast/cli.py:12`](../../../src/chronaxis/fast/cli.py#L12)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/cli.py:12`](../../../src/chronaxis/fast/cli.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_batch"></a>
 ## `_batch`
@@ -58,4 +58,4 @@ _batch(args)
 |---|---|---|---|---|
 |`args`|argparse.Namespace|是|无|位置或关键字。命令行解析出的 fast 操作、配置路径、输出和总量选项。|
 
-源码：[`src/chronaxis/fast/cli.py:54`](../../../src/chronaxis/fast/cli.py#L54)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/cli.py:54`](../../../src/chronaxis/fast/cli.py#L54)（行号对应 Chronaxis 0.1.0.dev6 源码）。

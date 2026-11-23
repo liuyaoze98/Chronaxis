@@ -31,6 +31,6 @@ ExtensionRegistry(functions=(), reductions=(), transforms=())
 
 [完整宿主示例](../host-extensions.md)
 
-源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/extensions.py:147`](../../../src/chronaxis/extensions.py#L147)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
-源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/extensions.py:154`](../../../src/chronaxis/extensions.py#L154)（行号对应 Chronaxis 0.1.0.dev6 源码）。

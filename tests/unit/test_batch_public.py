@@ -52,8 +52,10 @@ class BatchPublicTests(unittest.TestCase):
 
     def command(self, *arguments):
         """运行真实CLI并保存退出码及输出。参数: CLI文本参数。返回: CompletedProcess。异常: 子进程/文件错误。"""
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         result = subprocess.run([sys.executable, '-B', '-m', 'chronaxis', *map(str, arguments)],
-            cwd=ROOT, env=dict(os.environ,CHRONAXIS_DEVICE_LABEL='home'), capture_output=True, text=True, encoding='utf-8', timeout=60)
+            cwd=ROOT, env=dict(os.environ,CHRONAXIS_DEVICE_LABEL='home',PYTHONIOENCODING='utf-8'), capture_output=True,
+            text=True, encoding='utf-8', timeout=60)
         self.command_index += 1
         (self.work/f'command-{self.command_index}.json').write_text(json.dumps(dict(
             arguments=list(map(str, arguments)), returncode=result.returncode, stdout=result.stdout, stderr=result.stderr,

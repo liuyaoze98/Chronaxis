@@ -49,14 +49,14 @@ After completion, locate the session CSV through `outputs` in this run's complet
 
 Ordinary analysis can distribute integral calculations within each file while retaining one continuous session. Keep `process_count: 4` from the example above; no extra switch is needed. The requirements are:
 
-- One ASC/BLF source with at least two continuous files, `file_merge: concatenate`, requested decoding and a worker limit greater than `1`.
+- One ASC/BLF source with at least two continuous files and requested decoding; a worker limit greater than `1` with `file_merge: concatenate`, or any limit including `1` with `file_merge: time_order`.
 - The default `backend: auto`, with every calculation a simple session integral of numeric signals from the same physical CAN message. Supported forms include arithmetic and `abs`; every operation in a derived expression must also satisfy the [expression and binding conditions](execution.md#integral-path-conditions). `clip` and `minimum` remain on the main-process calculation path even when their backend is `reference`.
-- Actual elapsed intervals (`actual`) and zero-order hold (`zoh`), without a separate timing driver, rules, windows, calculation conditions, lookups or analysis tasks other than these session integrals.
+- One shared interval basis for all integrals (all actual elapsed intervals `actual`, all the same fixed interval `fixed`, or all the DBC period `dbc`; for the latter two the timing driver must be a signal referenced by the integral expression) and zero-order hold (`zoh`), without rules, windows, calculation conditions, lookups or analysis tasks other than these session integrals.
 - No signal or raw-frame exports, tracing or integrity diagnostics. See [calculation implementation](execution.md#integral-path-conditions) for the complete numeric and binding requirements.
 
-Workers evaluate expressions and calculate integral areas for time intervals within each file. The main process handles state between the end of one file and the start of the next, then accumulates areas in the original order. This remains one continuous analysis; do not replace it with independent batch jobs whose results are added together.
+With `concatenate`, workers evaluate expressions and calculate integral areas for time intervals within each file; the main process handles state between the end of one file and the start of the next, then accumulates areas in the original order. With `time_order`, workers group each file's messages that share a timestamp; after every file has been read, the main process merges those groups in time order, then evaluates and accumulates them. This remains one continuous analysis; do not replace it with independent batch jobs whose results are added together.
 
-If the budget does not fit this approach, the original path is retained before reading the first frame. Single-file, single-process, `time_order`, fixed-period or DBC-period runs, explicit `reference`/`numpy`, and other analysis combinations retain their existing processing. They can still use ordinary analysis.
+If the budget does not fit this approach, the original path is retained before reading the first frame. Single-file runs, single-process `concatenate`, explicit `reference`/`numpy`, and other analysis combinations retain their existing processing. They can still use ordinary analysis.
 
 ## Choose the file ordering
 

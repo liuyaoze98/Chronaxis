@@ -253,6 +253,13 @@
           }
         ]
       }
+    },
+    "perf_p5_fixed_01": {
+      "updated_at": "2026-11-20T10:04:06+08:00",
+      "device_label": "school",
+      "author": "liuyaoze",
+      "source_baseline": "06ae717f6c1a770473c5ba72da22a390f14447ca",
+      "change": "固定间隔进入直接与并行积分后，补新增间隔参数step_ns（7处）及新函数_direct_interval两个参数的类型与用途。"
     }
   },
   "chronaxis.core.conditional_time_reduction.require_conditional_time_series": {
@@ -22743,6 +22750,10 @@
       "domain": {
         "type": "Interval | None",
         "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "与父积分器相同的间隔：None为实际间隔；正整数为固定间隔纳秒，面积=左值×间隔×实际交集÷实际跨度。"
       }
     },
     "返回": "tuple[IntegralColumnTerms, ...]，按计算项顺序保留面积、掩码和覆盖事实，不先求和。"
@@ -22830,6 +22841,10 @@
       "domain": {
         "type": "Interval | None",
         "description": "实际纳秒坐标中的请求范围；None表示按已有观测范围处理，不创建第二套时钟。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "父进程任务传入的共用间隔；None为实际间隔，否则为int64范围内正整数纳秒，构造时校验。"
       }
     }
   },
@@ -23111,6 +23126,10 @@
       "quality": {
         "type": "QualityFlag",
         "description": "原面积核已确认的质量位，合并到本次积分状态。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "调用方计算这些面积时用的间隔；必须与本积分器构造时的间隔相同，否则ValueError。"
       }
     }
   },
@@ -23248,6 +23267,10 @@
       "batch_intervals": {
         "type": "int",
         "description": "单个传输面积块的区间上限，默认64，允许1至64；不是原帧读取数或采样周期。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "写入工作进程任务的共用间隔；None为实际间隔，否则为int64范围内正整数纳秒，check_task再次校验。"
       }
     }
   },
@@ -23652,6 +23675,10 @@
       "batch_intervals": {
         "type": "int",
         "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "父积分器共用的间隔，原样写入固定任务；None为实际间隔。"
       }
     }
   },
@@ -23688,6 +23715,10 @@
       "batch_intervals": {
         "type": "int",
         "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "与随后configure相同的共用间隔；只用于构造同一任务以计算费用，不安装任务。"
       }
     }
   },
@@ -23724,6 +23755,10 @@
       "batch_intervals": {
         "type": "int",
         "description": "用户指定的正整数区间批上限，默认64；传输部分进一步按64项及字节预算缩小，不改变父进程全局批界。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "父积分器共用的间隔，随任务发给每个工作进程；None为实际间隔，否则为固定间隔纳秒。"
       }
     }
   },
@@ -23922,5 +23957,434 @@
     },
     "返回": "int，父任务及全部工作槽的必要数值任务字节下界；包括固定重建和数值状态，不含DBC和声明图。用于创建进程前排除预算必然不足的情况，不能代替后续完整费用核对。",
     "异常": "计算项数不是非负原生整数，或进程上限、文件数、批上限不是正原生整数时抛ValueError；不创建进程、任务树或修改预算。"
+  },
+  "chronaxis.execution.same_frame_integrals._direct_interval": {
+    "parameters": {
+      "choice": {
+        "type": "IntervalChoice",
+        "description": "本积分项已解析的计算间隔；fixed和dbc已补齐驱动，DBC周期的数值在运行时由同次DBC核实，这里只判断驱动位置。"
+      },
+      "dependencies": {
+        "type": "tuple[str, ...]",
+        "description": "本积分表达式引用的原信号别名；固定间隔和DBC周期的驱动必须在其中。"
+      }
+    },
+    "返回": "bool；实际间隔且无驱动、或固定间隔/DBC周期且驱动为表达式依赖时为True。"
+  },
+  "chronaxis.execution.can_block_codec._read_facts": {
+    "parameters": {
+      "reader": {
+        "type": "_Reader",
+        "description": "已读过块号和EOF的CND1解码器，游标位于文件事实开头。"
+      }
+    }
+  },
+  "chronaxis.execution.can_block_codec.decode_block_prefix": {
+    "parameters": {
+      "packet": {
+        "type": "bytes",
+        "description": "完整CND1数据块，含8字节包头。"
+      }
+    }
+  },
+  "chronaxis.execution.file_group_points.file_points_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "组点任务的信号定义，按任务顺序。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "与计算项同序的静态表达式；只用于构造归一化求值器时的一致性检查。"
+      }
+    }
+  },
+  "chronaxis.execution.file_group_points.FileGroupPoints.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "工作进程本文件的预算账本，本owner与求值器都在其中预约。"
+      },
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "已补齐有效期的信号定义，组点里的值按此顺序排列。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "与计算项同序的静态表达式；只用于求值器的一致性检查，工作进程不求值。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式同序的积分计算项；只为与restore_task结果同形而接收，分组不使用。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "父进程同次DBC证明的共同报文定位，用于投影和绑定匹配。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "当前会话名，须与表达式声明一致。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "请求范围；只为同形而接收，分组不按范围裁剪。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "积分间隔（None为实际间隔，正整数为固定纳秒）；只为同形而接收，分组不使用。"
+      }
+    }
+  },
+  "chronaxis.execution.file_group_points.FileGroupPoints._defer": {
+    "parameters": {
+      "time_ns": {
+        "type": "int | None",
+        "description": "出错帧的实际时间纳秒；为None时不能延迟，原样抛出error。"
+      },
+      "error": {
+        "type": "Exception",
+        "description": "投影、匹配或归一化抛出的异常，类型须恰为DEFERRED_KINDS之一。"
+      }
+    }
+  },
+  "chronaxis.execution.file_group_points.FileGroupPoints.feed": {
+    "parameters": {
+      "record": {
+        "type": "DecodedCANRecord",
+        "description": "本文件读取器逐条交付的已解码记录。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.task_mode": {
+    "parameters": {
+      "task": {
+        "type": "dict",
+        "description": "pack_task产生的原生任务dict。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.point_cost": {
+    "parameters": {
+      "event": {
+        "type": "SameTimeGroupSummary | DeferredPointError",
+        "description": "待编码的一个组点或延迟错误事件。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.point_facts_cost": {
+    "parameters": {
+      "facts": {
+        "type": "dict",
+        "description": "含frame_identity的文件事实。"
+      },
+      "cache": {
+        "type": "dict[int, tuple[int, int]]",
+        "description": "本批兼容字段费用缓存，按兼容字段tuple的对象身份复用。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._write_facts": {
+    "parameters": {
+      "writer": {
+        "type": "_Writer",
+        "description": "当前包的编码器。"
+      },
+      "facts": {
+        "type": "dict",
+        "description": "字段与_FACTS相同的文件事实，含frame_identity。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._read_facts": {
+    "parameters": {
+      "reader": {
+        "type": "_Reader",
+        "description": "游标已到文件事实位置的解码器（面积包在事件之后，组点包在EOF之后）。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._check_point_time": {
+    "parameters": {
+      "value": {
+        "type": "int | None",
+        "description": "已解码或待编码的组点时间。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks._check_point_group": {
+    "parameters": {
+      "group": {
+        "type": "SameTimeGroupSummary",
+        "description": "待编码的组点，按组内位置约定填写。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.encode_points": {
+    "parameters": {
+      "file_index": {
+        "type": "int",
+        "description": "原来源声明中的零起文件序号。"
+      },
+      "number": {
+        "type": "int",
+        "description": "本文件从0递增的块号。"
+      },
+      "events": {
+        "type": "tuple[SameTimeGroupSummary | DeferredPointError, ...]",
+        "description": "按文件内时间顺序的组点与延迟错误，最多MAX_POINTS个。"
+      },
+      "eof": {
+        "type": "bool",
+        "description": "本包是否为本文件的数据终点。"
+      },
+      "facts": {
+        "type": "dict",
+        "description": "本文件截至本包的累计事实，含frame_identity。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.decode_points_prefix": {
+    "parameters": {
+      "packet": {
+        "type": "bytes",
+        "description": "收到的完整P5G1包；只读到文件事实为止。"
+      }
+    }
+  },
+  "chronaxis.execution.integral_blocks.decode_points": {
+    "parameters": {
+      "packet": {
+        "type": "bytes",
+        "description": "从暂存读回的完整P5G1包。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker._points": {
+    "parameters": {
+      "terms": {
+        "type": "FileIntegralTerms | FileGroupPoints",
+        "description": "当前文件的数值owner。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_integral_worker._limits": {
+    "parameters": {
+      "terms": {
+        "type": "FileIntegralTerms | FileGroupPoints",
+        "description": "当前文件的数值owner，决定使用哪种包的费用和单包上限。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool.__init__": {
+    "parameters": {
+      "spec": {
+        "type": "CANTextSpec",
+        "description": "file_merge为time_order的单一ASC/BLF来源声明。"
+      },
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "父会话共享预算；池的固定费、工作槽和元数据都在其中预约。"
+      },
+      "signals": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "本来源需要读取的原信号定义。"
+      },
+      "process_count": {
+        "type": "int",
+        "description": "正整数工作进程上限，实际不超过文件数。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool._dispatch": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "已空闲、可领取下一个文件的工作槽。"
+      },
+      "index": {
+        "type": "int",
+        "description": "要派发的文件序号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool._configuration": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "已补齐有效期的信号定义。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "与计算项同序的静态表达式。"
+      },
+      "specs": {
+        "type": "tuple[CalculationDefinition, ...]",
+        "description": "与表达式同序的积分计算项。"
+      },
+      "binding": {
+        "type": "SameFrameBinding",
+        "description": "同次DBC证明的共同报文定位。"
+      },
+      "session_id": {
+        "type": "str",
+        "description": "当前会话名。"
+      },
+      "derived": {
+        "type": "tuple[DerivedDefinition, ...]",
+        "description": "计划声明的派生定义，可为空。"
+      },
+      "domain": {
+        "type": "Interval | None",
+        "description": "请求范围；省略时为None。"
+      },
+      "batch_intervals": {
+        "type": "int",
+        "description": "用户正整数区间批上限，传输任务另限到64。"
+      },
+      "step_ns": {
+        "type": "int | None",
+        "description": "None为实际间隔，正整数为固定间隔纳秒。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool._accept_point_facts": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "事实所属的文件序号。"
+      },
+      "facts": {
+        "type": "dict",
+        "description": "decode_points_prefix得到的本文件累计事实。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool._store": {
+    "parameters": {
+      "slot": {
+        "type": "dict",
+        "description": "已收到一个组点包的当前文件槽。"
+      },
+      "index": {
+        "type": "int",
+        "description": "该槽正在读取的文件序号。"
+      },
+      "spool": {
+        "type": "PointSpool",
+        "description": "本次组点暂存，包原样追加到该文件的暂存文件。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool._exit_error": {
+    "parameters": {
+      "error": {
+        "type": "BrokenPipeError | EOFError | ConnectionError",
+        "description": "轮询或发送读取许可时遇到的管道断开异常。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool.spool_all": {
+    "parameters": {
+      "spool": {
+        "type": "PointSpool",
+        "description": "本次组点暂存，负责暂存文件与配额。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.PointSpool.__init__": {
+    "parameters": {
+      "budget": {
+        "type": "ResourceBudget",
+        "description": "共享预算；写包时计入spool_quota_bytes，读回前预约归并缓冲。"
+      },
+      "work_dir": {
+        "type": "str | Path",
+        "description": "本次会话自有工作目录，暂存目录建在其下。"
+      },
+      "file_count": {
+        "type": "int",
+        "description": "来源的文件数，正整数。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.PointSpool.append": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "包所属的文件序号。"
+      },
+      "packet": {
+        "type": "bytes",
+        "description": "已核前缀的完整P5G1包。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.PointSpool.next_packet": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "要读回下一个包的文件序号。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_session.ParallelPointSession.__init__": {
+    "parameters": {
+      "work_dir": {
+        "type": "str | Path",
+        "description": "本次会话自有工作目录，组点暂存目录建在其下。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_session.ParallelPointSession._new": {
+    "parameters": {
+      "factory": {
+        "type": "type",
+        "description": "要构造的资源类。"
+      },
+      "recovery": {
+        "type": "str",
+        "description": "构造异常上携带待清理owner的属性名。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_session.ParallelPointSession._merge": {
+    "parameters": {
+      "identities": {
+        "type": "tuple[tuple[bool, bool] | None, ...]",
+        "description": "按文件序号排列的实际帧型（扩展帧, FD），无目标帧的文件为None。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_session.ParallelPointSession._merge.advance": {
+    "parameters": {
+      "index": {
+        "type": "int",
+        "description": "要取下一个事件的文件序号。"
+      }
+    }
+  },
+  "chronaxis.execution.same_frame_integrals.same_frame_integrals_cost": {
+    "parameters": {
+      "definitions": {
+        "type": "tuple[SignalDefinition, ...]",
+        "description": "同帧积分owner的信号定义。"
+      },
+      "expressions": {
+        "type": "tuple[StaticExpression, ...]",
+        "description": "与积分项同序的静态表达式。"
+      }
+    }
+  },
+  "chronaxis.execution.parallel_point_pool.ParallelPointPool.points_minimum_cost": {
+    "parameters": {
+      "process_count": {
+        "type": "int",
+        "description": "正整数工作进程上限。"
+      },
+      "file_count": {
+        "type": "int",
+        "description": "来源的文件数，正整数；实际工作槽数取它与进程上限中较小者。"
+      }
+    }
   }
 }

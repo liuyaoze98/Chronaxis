@@ -15,7 +15,7 @@ from time import perf_counter
 from uuid import uuid4
 
 from .._control_wire import ControlChannel
-from .can_block_codec import decode_block, decode_metadata
+from .can_block_codec import decode_block, decode_block_prefix, decode_metadata
 from ..results.budget import _reserve_owned_ram, _release_owned_ram, _cleanup_owner
 from ..sources.models import freeze_metadata
 from ..sources.protocol import SourceReadError
@@ -266,8 +266,12 @@ class ParallelCANDecodeRead:
             _cleanup_owner(self,error,'text_can_cleanup_owner','并行CAN启动')
             raise
 
-    def _block(self,index):
-        """收一块并记录已见事实，原始计数不以传输记录数替代。参数: 文件位置。返回: 块。异常: 协议/读取错误。
+    def _block(self,index,*,records=True):
+        """收一块并记录已见事实，原始计数不以传输记录数替代。
+
+        参数: index为文件位置；records为False时只解码包头和文件事实（time_order暂存用，BUG-P5-004），
+            记录留到归并读回时由_push完整解码并核身份。
+        返回: (记录list或None, eof, facts, 原包bytes)。异常: 协议/读取错误。
         """
         slot=self._file_slots[index]
         reply=self._receive(slot)
@@ -277,10 +281,17 @@ class ParallelCANDecodeRead:
         sent=self._receive(slot)
         if sent[0]!='sent':
             raise SourceReadError('CAN数据块缺少发送完成确认')
-        number,records,eof,facts=decode_block(packet)
-        if number!=slot['block'] or type(records) is not list or len(records)>64:
-            raise SourceReadError('CAN文件数据块序号或长度不符')
-        self._record_identity(index,records)
+        if records:
+            number,records,eof,facts=decode_block(packet)
+            if number!=slot['block'] or type(records) is not list or len(records)>64:
+                raise SourceReadError('CAN文件数据块序号或长度不符')
+            self._record_identity(index,records)
+        else:
+            # 暂存路径不在这里展开记录：块号仍须连续，事实仍立即用于观测范围。
+            number,eof,facts=decode_block_prefix(packet)
+            records=None
+            if number!=slot['block']:
+                raise SourceReadError('CAN文件数据块序号或长度不符')
         slot['block']+=1
         self.timings['worker_read_seconds']+=reply[2]
         self.timings['worker_serialize_seconds']+=reply[3]
@@ -380,7 +391,8 @@ class ParallelCANDecodeRead:
                     self._file_slots[index]['control'].poll(0.05)
                     continue
                 for index in ready:
-                    records,eof,facts,packet=self._block(index)
+                    # 只读包头和事实即写暂存；完整解码只在归并读回时做一次（BUG-P5-004）。
+                    records,eof,facts,packet=self._block(index,records=False)
                     if index not in writers:
                         path=self._root/(str(index)+'.blocks')
                         handle=path.open('xb');self._paths.append(path);writers[index]=handle
@@ -438,7 +450,8 @@ class ParallelCANDecodeRead:
             if expected is not None and sha256(packet).digest()!=expected:
                 raise SourceReadError('CAN归并暂存完整性校验失败')
             number,records,eof,_=decode_block(packet)
-            if number!=self._disk_blocks[index]:
+            # 收包时只核了块号和事实；记录条数和来源身份在这里（唯一一次完整解码）核对。
+            if number!=self._disk_blocks[index] or len(records)>64:
                 raise SourceReadError('CAN归并暂存块序号不符')
             self._record_identity(index,records)
             self._disk_blocks[index]+=1

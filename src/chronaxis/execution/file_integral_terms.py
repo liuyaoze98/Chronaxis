@@ -119,13 +119,16 @@ def _merge_group(left, right, definitions):
                                 left.count + right.count, left.first_values, right.last_values, tuple(conflicts))
 
 
-def _columns(points, expressions, specs, domain):
+def _columns(points, expressions, specs, domain, step_ns=None):
     """调用现役参考面积核，不先累计、不改变乘除顺序。
 
     参数: points为有界(实际纳秒, 求值结果)点列；expressions和specs为同序的
-        StaticExpression与CalculationDefinition tuple；domain为Interval或None。
+        StaticExpression与CalculationDefinition tuple；domain为Interval或None；
+        step_ns为None（实际间隔）或固定间隔正纳秒，与父积分器相同。
     返回: tuple[IntegralColumnTerms, ...]，按计算项顺序保留各区间面积。
     异常: 原面积核的类型、时间及数值结构错误原样传播。
+    固定间隔时每对相邻点的面积为左值×间隔×实际交集÷实际跨度，交集仍按实际时间
+    和有效期截止裁剪；覆盖时长和有效时长继续报告实际纳秒，不换成间隔。
     """
     times = tuple(item[0] for item in points)
     observation = Interval(times[0], times[-1])
@@ -135,7 +138,8 @@ def _columns(points, expressions, specs, domain):
         deadlines = tuple(item[1][index][1] for item in points)
         series = CalculationSeries(observation, times, values, (True,) * len(times), expression.root.unit)
         terms = compute_integral_terms_reference(series, replace(spec, window=domain or observation),
-                                                 valid_until_ns=deadlines, retain_unknown_ranges=False)
+                                                 step_ns=step_ns, valid_until_ns=deadlines,
+                                                 retain_unknown_ranges=False)
         facts = terms.facts
         covered = 0 if facts.actual_window is None else facts.actual_window.end_ns - facts.actual_window.start_ns
         columns.append(IntegralColumnTerms(terms.areas, terms.valid, covered, facts.value_valid_duration_ns, facts.quality))
@@ -202,14 +206,15 @@ class FileIntegralTerms:
     """文件工作进程的有界归组及面积生产器，不拥有求和状态。"""
 
     def __init__(self, budget, definitions, expressions, specs, binding, session_id,
-                 *, derived=(), batch_intervals=64, domain=None):
+                 *, derived=(), batch_intervals=64, domain=None, step_ns=None):
         """安装已验证任务及投影，首条原帧尚未读取。
 
         参数: budget为ResourceBudget；definitions、expressions、specs为同序声明tuple；
             binding为SameFrameBinding；session_id为会话名；derived为派生声明tuple，默认空；
-            batch_intervals为1至4096的区间数上限，默认64；domain为Interval或None。
+            batch_intervals为1至4096的区间数上限，默认64；domain为Interval或None；
+            step_ns为None（实际间隔）或int64范围内的固定间隔正纳秒，由父进程任务传入。
         返回: None，构造新的文件面积owner，不读取原帧。
-        异常: 非法声明或批上限时ValueError，范围类型错误时TypeError，预算不足时BudgetExceededError；
+        异常: 非法声明、批上限或间隔时ValueError，范围类型错误时TypeError，预算不足时BudgetExceededError；
             原求值器异常继续传播，构造清理失败附file_integral_terms_cleanup_owner。
         """
         self._budget = budget
@@ -227,6 +232,9 @@ class FileIntegralTerms:
                 raise ValueError('文件面积需要对应ZOH积分项')
             if domain is not None and type(domain) is not Interval:
                 raise TypeError('文件面积范围需要Interval或None')
+            # 间隔来自外部任务，先按积分器的同一规则检查，避免工作进程用非法值算出面积。
+            if step_ns is not None and (type(step_ns) is not int or not 0 < step_ns <= (1 << 63) - 1):
+                raise ValueError('文件面积固定间隔需要int64范围内正整数纳秒')
             # 覆盖当前组的首末值、有限求值点、面积核临时列与待交付的一块DTO。
             cost = file_terms_cost(definitions, expressions, specs, derived, batch_intervals=batch_intervals)
             cost -= same_frame_evaluator_cost(definitions, expressions, derived)
@@ -237,7 +245,7 @@ class FileIntegralTerms:
                 self._evaluator = getattr(error, 'same_frame_evaluator_cleanup_owner', None)
                 raise
             self._definitions, self._expressions, self._specs = definitions, expressions, specs
-            self._limit, self._domain = batch_intervals, domain
+            self._limit, self._domain, self._step_ns = batch_intervals, domain, step_ns
             self._points = []
             fields = tuple(dict.fromkeys(can_field_from_key(item.field) for item in definitions))
             self._projection = CANUpdateProjection(binding.source, session_id, fields)
@@ -260,6 +268,17 @@ class FileIntegralTerms:
         """
         return {} if self._projection is None else self._projection.compatibility_fields
 
+    @property
+    def frame_identity(self):
+        """返回本文件目标帧实际的（扩展帧, FD），供父进程跨文件核对帧型（BUG-P5-005）。
+
+        参数: 无。返回: 两个bool的tuple；尚无目标帧或投影已释放时None。
+        异常: 无。同一文件内帧型不一致时读取器或投影已经报错，所以记录到的帧型唯一。
+        """
+        if self._projection is None or not self._projection._seen:
+            return None
+        return next(iter(self._projection._seen.values()))
+
     def _require_open(self):
         """拒绝失败、完成或关闭后的推进。参数: 无。返回: None。异常: ResultClosedError。"""
         if self._closed or self._closing or self._failed or self._finished:
@@ -275,7 +294,8 @@ class FileIntegralTerms:
         if len(self._points) < 2:
             return None
         block = IntegralTermsChunk(self._points[0][0], self._points[-1][0],
-                                   _columns(self._points, self._expressions, self._specs, self._domain), right_closed)
+                                   _columns(self._points, self._expressions, self._specs, self._domain,
+                                            self._step_ns), right_closed)
         self._points[:] = self._points[-1:]
         return block
 
@@ -415,8 +435,9 @@ class ParentIntegralTerms:
             binding为SameFrameBinding；session_id为会话名；derived为派生声明tuple，默认空；
             domain为Interval或None，默认沿实际观测范围。
         返回: None，构造新的父边界owner，借用外部积分器。
-        异常: 声明、范围或积分器不一致时ValueError，预算不足时BudgetExceededError；
+        异常: 声明、范围、积分器或间隔不一致时ValueError，预算不足时BudgetExceededError；
             原求值器异常继续传播，构造清理失败附parent_integral_terms_cleanup_owner。
+        积分器共用的间隔（实际或同一固定间隔）同时用于跨文件边界面积和末端处理。
         """
         self._budget = budget
         self._held_cost = self._fixed_cost = 0
@@ -427,13 +448,19 @@ class ParentIntegralTerms:
         self._next = None
         self._areas = self._valid = None
         self._right_closed = True
+        self._step_ns = None  # 构造核实后为积分器共用间隔：None为实际间隔，正整数为固定纳秒。
         try:
             if len(expressions) != len(calculations) or domain is not None and type(domain) is not Interval:
                 raise ValueError('父进程面积需要对应计算项及可选范围')
             for expression, calculation in zip(expressions, calculations):
-                if (calculation._step_ns is not None or calculation._conditioned
+                if (calculation._conditioned
                         or calculation._dtype != expression.root.dtype or calculation._input_unit != expression.root.unit):
-                    raise ValueError('父进程面积与实际时间积分器不一致')
+                    raise ValueError('父进程面积与积分器不一致')
+            # 边界面积和工作进程面积必须按同一种间隔计算，混用时没有唯一的末端规则。
+            steps = {calculation._step_ns for calculation in calculations}
+            if len(steps) != 1:
+                raise ValueError('并行积分各计算项必须共用实际间隔或同一个固定间隔')
+            self._step_ns = next(iter(steps))
             limits = {calculation._limit for calculation in calculations}
             if len(limits) != 1:
                 raise ValueError('并行积分各计算项必须使用同一全局批上限')
@@ -479,7 +506,8 @@ class ParentIntegralTerms:
         while available >= self._limit or final and available:
             count = min(available, self._limit)
             for areas, valid, calculation in zip(self._areas, self._valid, self._calculations):
-                calculation.consume_terms(tuple(areas[:count]), tuple(valid[:count]), 0, 0, QualityFlag.NONE)
+                calculation.consume_terms(tuple(areas[:count]), tuple(valid[:count]), 0, 0, QualityFlag.NONE,
+                                          step_ns=self._step_ns)
             for areas, valid in zip(self._areas, self._valid):
                 del areas[:count]
                 del valid[:count]
@@ -502,7 +530,8 @@ class ParentIntegralTerms:
         for column, calculation, areas, valid in zip(columns, self._calculations, self._areas, self._valid):
             if len(column.valid) != len(column.areas):
                 raise ValueError('面积与有效掩码长度不同')
-            calculation.consume_terms((), (), column.covered_ns, column.valid_ns, column.quality)
+            calculation.consume_terms((), (), column.covered_ns, column.valid_ns, column.quality,
+                                      step_ns=self._step_ns)
             areas.extend(column.areas)
             valid.extend(column.valid)
         self._right_closed = right_closed
@@ -514,7 +543,8 @@ class ParentIntegralTerms:
             raise ValueError('积分边界需要严格递增时间')
         evaluated = self._evaluator.evaluate(group.time_ns, group.last_values)
         points = ((group.time_ns, evaluated), (right, evaluated))
-        self._accept(_columns(points, self._expressions, tuple(c._spec for c in self._calculations), self._domain), right_closed=False)
+        self._accept(_columns(points, self._expressions, tuple(c._spec for c in self._calculations), self._domain,
+                              self._step_ns), right_closed=False)
 
     def consume(self, event):
         """接收当前文件的首组、面积块或末组；文件顺序由池保证。
@@ -576,9 +606,11 @@ class ParentIntegralTerms:
             raise
 
     def finish(self, observed_end):
-        """读取池已证明全部EOF后，仅补到实际观测末端。
+        """读取池已证明全部EOF后，实际间隔仅补到实际观测末端。
 
         参数: 真实末端或None。返回: None。异常: 未完成文件、时间倒退或原累计错误。
+        固定间隔只在相邻两次驱动更新之间计面积；最后一组之后没有下一次更新，
+        因此不补尾段，与通用路径一致。观测末端仍须不早于最后一组。
         """
         self._require_open()
         try:
@@ -588,7 +620,7 @@ class ParentIntegralTerms:
                 if observed_end is None or observed_end < self._pending.time_ns:
                     raise ValueError('观测末端早于目标帧')
                 self._mark_closed()
-                if observed_end > self._pending.time_ns:
+                if self._step_ns is None and observed_end > self._pending.time_ns:
                     self._boundary(self._pending, observed_end)
             self._right_closed = True
             self._drain(final=True)

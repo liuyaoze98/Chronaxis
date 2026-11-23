@@ -1,8 +1,8 @@
 {
   "device_label": "school",
-  "generated_at": "2026-11-16T09:11:34+08:00",
+  "generated_at": "2026-11-23T21:01:15+08:00",
   "runnable_configurations": 78,
-  "runtime_fingerprint": "48991b6238f92039057d337c626c840e3d5a6afaad610bb671f5e5f926cecc4d",
+  "runtime_fingerprint": "913af8452441713c91c47238258ad411fd70bef6de899bc4b2ec779d690b2def",
   "non_runnable_definitions": [
     "teaching-base.yaml",
     "electrical-base.yaml",

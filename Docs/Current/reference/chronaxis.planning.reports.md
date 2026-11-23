@@ -75,7 +75,7 @@ class ValidationReport
 |`capability_status`|Mapping[str, str]|是|无|读取各能力名称到状态的映射：implemented已实现，partial部分支持，unavailable不可用，declared仅有声明。结合warnings判断当前计划限制。|
 |`execution_ready`|bool|是|无|读取当前计划是否使用已接入公共执行路径：True可尝试运行，False应先解决errors；不保证文件存在或实际内存足够。|
 
-源码：[`src/chronaxis/planning/reports.py:44`](../../../src/chronaxis/planning/reports.py#L44)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:44`](../../../src/chronaxis/planning/reports.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ExplainNode"></a>
 ## `ExplainNode`
@@ -99,7 +99,7 @@ class ExplainNode
 |`unit`|str &#124; None|是|无|读取该节点适用的结果单位；没有单位时为None。|
 |`backend`|str|是|无|读取该节点预计采用的计算方式：reference独立参考实现、numpy生产数值实现、state_driver状态计算或unavailable不可执行；numpy路径可使用逐点或数组计算，尚未运行。|
 
-源码：[`src/chronaxis/planning/reports.py:58`](../../../src/chronaxis/planning/reports.py#L58)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:58`](../../../src/chronaxis/planning/reports.py#L58)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ExplainReport"></a>
 ## `ExplainReport`
@@ -136,7 +136,7 @@ class ExplainReport
 |`selected_backend`|str &#124; None|否|None|计划运行将采用的reference或numpy；非法带有明确类型的选择为unavailable。静态选择不读取日志，不是性能测量。 直接构造旧式报告未提供此字段时为None，不表示已完成选择。|
 |`backend_reason`|str &#124; None|否|None|用文字说明显式选择或auto类别选择的依据。不是运行失败时的回退记录。 直接构造旧式报告未提供此字段时为None，不表示已完成选择。|
 
-源码：[`src/chronaxis/planning/reports.py:73`](../../../src/chronaxis/planning/reports.py#L73)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:73`](../../../src/chronaxis/planning/reports.py#L73)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_window_available"></a>
 ## `_window_available`
@@ -168,7 +168,7 @@ bool，同一判断供validation和explain节点使用。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/reports.py:100`](../../../src/chronaxis/planning/reports.py#L100)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:100`](../../../src/chronaxis/planning/reports.py#L100)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_can_source_available"></a>
 ## `_can_source_available`
@@ -199,7 +199,7 @@ bool，供来源、raw输出和能力表共享。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/planning/reports.py:116`](../../../src/chronaxis/planning/reports.py#L116)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:116`](../../../src/chronaxis/planning/reports.py#L116)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_static_errors"></a>
 ## `_static_errors`
@@ -230,7 +230,7 @@ _static_errors(plan: AnalysisPlan) -> tuple[str, ...]
 
 返回类型：tuple[str, ...]。
 
-源码：[`src/chronaxis/planning/reports.py:129`](../../../src/chronaxis/planning/reports.py#L129)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:129`](../../../src/chronaxis/planning/reports.py#L129)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_extension_backend_errors"></a>
 ## `_extension_backend_errors`
@@ -257,7 +257,7 @@ _extension_backend_errors(plan)
 
 在打开日志前检查，只查看编译好的表达式与变换。未引用的函数不要求提供当前后端。
 
-源码：[`src/chronaxis/planning/reports.py:249`](../../../src/chronaxis/planning/reports.py#L249)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:249`](../../../src/chronaxis/planning/reports.py#L249)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-validate_analysis_plan"></a>
 ## `validate_analysis_plan`
@@ -304,7 +304,7 @@ report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
-源码：[`src/chronaxis/planning/reports.py:287`](../../../src/chronaxis/planning/reports.py#L287)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:287`](../../../src/chronaxis/planning/reports.py#L287)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-explain_analysis_plan"></a>
 ## `explain_analysis_plan`
@@ -350,4 +350,4 @@ plan = load_analysis_plan("examples/analysis.yaml")
 print(explain_analysis_plan(plan))
 ```
 
-源码：[`src/chronaxis/planning/reports.py:443`](../../../src/chronaxis/planning/reports.py#L443)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:443`](../../../src/chronaxis/planning/reports.py#L443)（行号对应 Chronaxis 0.1.0.dev6 源码）。

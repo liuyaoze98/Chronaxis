@@ -46,4 +46,4 @@ __getattr__(name: str) -> object
 
 返回类型：object。
 
-源码：[`src/chronaxis/sources/__init__.py:22`](../../../src/chronaxis/sources/__init__.py#L22)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/sources/__init__.py:22`](../../../src/chronaxis/sources/__init__.py#L22)（行号对应 Chronaxis 0.1.0.dev6 源码）。

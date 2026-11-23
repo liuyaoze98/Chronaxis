@@ -73,7 +73,7 @@ JSON文本。
 
 非有限值拒绝。
 
-源码：[`src/chronaxis/results/readable.py:28`](../../../src/chronaxis/results/readable.py#L28)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:28`](../../../src/chronaxis/results/readable.py#L28)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter"></a>
 ## `ReadableWriter`
@@ -85,7 +85,7 @@ ReadableWriter(owner, directory, iterator_factory)
 ```
 
 
-源码：[`src/chronaxis/results/readable.py:33`](../../../src/chronaxis/results/readable.py#L33)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:33`](../../../src/chronaxis/results/readable.py#L33)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-__init__"></a>
 ### `ReadableWriter.__init__`
@@ -112,7 +112,7 @@ ReadableWriter.__init__(owner, directory, iterator_factory)
 
 无文件副作用。
 
-源码：[`src/chronaxis/results/readable.py:36`](../../../src/chronaxis/results/readable.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:36`](../../../src/chronaxis/results/readable.py#L36)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_execute"></a>
 ### `ReadableWriter._execute`
@@ -139,7 +139,7 @@ cursor。
 
 配额、SQL、IO或取消传播。预留包含B树分裂余量，不按总行数预占RAM。
 
-源码：[`src/chronaxis/results/readable.py:57`](../../../src/chronaxis/results/readable.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:57`](../../../src/chronaxis/results/readable.py#L57)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_reader"></a>
 ### `ReadableWriter._reader`
@@ -167,7 +167,7 @@ ReadableWriter._reader(table, *, indexed=False)
 
 读错优先，关闭错附记；恢复owner保留。
 
-源码：[`src/chronaxis/results/readable.py:73`](../../../src/chronaxis/results/readable.py#L73)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:73`](../../../src/chronaxis/results/readable.py#L73)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_output"></a>
 ### `ReadableWriter._output`
@@ -194,7 +194,7 @@ ReadableWriter._output(path)
 
 原写入错误优先；未关闭句柄归writer，关闭可以重试。
 
-源码：[`src/chronaxis/results/readable.py:110`](../../../src/chronaxis/results/readable.py#L110)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:110`](../../../src/chronaxis/results/readable.py#L110)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_rows"></a>
 ### `ReadableWriter._rows`
@@ -219,7 +219,7 @@ ReadableWriter._rows(table)
 
 读取/校验/关闭错误传播。
 
-源码：[`src/chronaxis/results/readable.py:141`](../../../src/chronaxis/results/readable.py#L141)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:141`](../../../src/chronaxis/results/readable.py#L141)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-prepare"></a>
 ### `ReadableWriter.prepare`
@@ -245,7 +245,7 @@ None。
 
 重复身份、重复指标、配额/IO传播。
 
-源码：[`src/chronaxis/results/readable.py:169`](../../../src/chronaxis/results/readable.py#L169)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:169`](../../../src/chronaxis/results/readable.py#L169)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_number"></a>
 ### `ReadableWriter._number`
@@ -272,7 +272,7 @@ ReadableWriter._number(kind, row, identifier)
 
 ResultFormatError为悬空父关联。
 
-源码：[`src/chronaxis/results/readable.py:233`](../../../src/chronaxis/results/readable.py#L233)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:233`](../../../src/chronaxis/results/readable.py#L233)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_metric_columns"></a>
 ### `ReadableWriter._metric_columns`
@@ -297,7 +297,7 @@ ReadableWriter._metric_columns(scope)
 
 无。
 
-源码：[`src/chronaxis/results/readable.py:249`](../../../src/chronaxis/results/readable.py#L249)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:249`](../../../src/chronaxis/results/readable.py#L249)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_metric_values"></a>
 ### `ReadableWriter._metric_values`
@@ -324,7 +324,7 @@ ReadableWriter._metric_values(scope, row, parent)
 
 关联/JSON错误传播。
 
-源码：[`src/chronaxis/results/readable.py:257`](../../../src/chronaxis/results/readable.py#L257)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:257`](../../../src/chronaxis/results/readable.py#L257)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_base"></a>
 ### `ReadableWriter._base`
@@ -351,7 +351,7 @@ ReadableWriter._base(table, row, number)
 
 悬空关联传播。
 
-源码：[`src/chronaxis/results/readable.py:274`](../../../src/chronaxis/results/readable.py#L274)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:274`](../../../src/chronaxis/results/readable.py#L274)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_write"></a>
 ### `ReadableWriter._write`
@@ -378,7 +378,7 @@ ReadableWriter._write(table, columns, rows)
 
 编码、IO或取消原样传播；仅清理本层编码缓冲。
 
-源码：[`src/chronaxis/results/readable.py:295`](../../../src/chronaxis/results/readable.py#L295)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:295`](../../../src/chronaxis/results/readable.py#L295)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_write_owned_rows"></a>
 ### `ReadableWriter._write_owned_rows`
@@ -405,7 +405,7 @@ ReadableWriter._write_owned_rows(table, columns, *, detail=False)
 
 原写入异常优先；关闭失败由原游标/父结果继续承担。
 
-源码：[`src/chronaxis/results/readable.py:350`](../../../src/chronaxis/results/readable.py#L350)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:350`](../../../src/chronaxis/results/readable.py#L350)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-write"></a>
 ### `ReadableWriter.write`
@@ -431,7 +431,7 @@ ReadableWriter.write(quality_handle=None, coverage=None)
 
 关联/预算/IO错误传播。
 
-源码：[`src/chronaxis/results/readable.py:374`](../../../src/chronaxis/results/readable.py#L374)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:374`](../../../src/chronaxis/results/readable.py#L374)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_detail_rows"></a>
 ### `ReadableWriter._detail_rows`
@@ -456,7 +456,7 @@ ReadableWriter._detail_rows(table)
 
 缺失父对象或原读取错误。
 
-源码：[`src/chronaxis/results/readable.py:412`](../../../src/chronaxis/results/readable.py#L412)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:412`](../../../src/chronaxis/results/readable.py#L412)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-_main_rows"></a>
 ### `ReadableWriter._main_rows`
@@ -481,7 +481,7 @@ CSV行生成器。
 
 JSON/关联错误。
 
-源码：[`src/chronaxis/results/readable.py:461`](../../../src/chronaxis/results/readable.py#L461)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:461`](../../../src/chronaxis/results/readable.py#L461)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-presentation"></a>
 ### `ReadableWriter.presentation`
@@ -507,7 +507,7 @@ ReadableWriter.presentation()
 
 无。
 
-源码：[`src/chronaxis/results/readable.py:478`](../../../src/chronaxis/results/readable.py#L478)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:478`](../../../src/chronaxis/results/readable.py#L478)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ReadableWriter-close"></a>
 ### `ReadableWriter.close`
@@ -533,4 +533,4 @@ None。
 
 IO/释放错误传播，不删除输入或其他文件。
 
-源码：[`src/chronaxis/results/readable.py:488`](../../../src/chronaxis/results/readable.py#L488)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/readable.py:488`](../../../src/chronaxis/results/readable.py#L488)（行号对应 Chronaxis 0.1.0.dev6 源码）。

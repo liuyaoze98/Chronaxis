@@ -426,19 +426,19 @@ On a normal with exit, close failures propagate. If the block already raised an 
 
 ## Source locations
 
-- [`src/chronaxis/results/result.py:202`](../../../../src/chronaxis/results/result.py#L202) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:212`](../../../../src/chronaxis/results/result.py#L212) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:334`](../../../../src/chronaxis/results/result.py#L334) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:383`](../../../../src/chronaxis/results/result.py#L383) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:392`](../../../../src/chronaxis/results/result.py#L392) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:404`](../../../../src/chronaxis/results/result.py#L404) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:408`](../../../../src/chronaxis/results/result.py#L408) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:413`](../../../../src/chronaxis/results/result.py#L413) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:423`](../../../../src/chronaxis/results/result.py#L423) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:546`](../../../../src/chronaxis/results/result.py#L546) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:706`](../../../../src/chronaxis/results/result.py#L706) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:757`](../../../../src/chronaxis/results/result.py#L757) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/results/result.py:765`](../../../../src/chronaxis/results/result.py#L765) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/results/result.py:202`](../../../../src/chronaxis/results/result.py#L202) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:212`](../../../../src/chronaxis/results/result.py#L212) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:334`](../../../../src/chronaxis/results/result.py#L334) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:359`](../../../../src/chronaxis/results/result.py#L359) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:367`](../../../../src/chronaxis/results/result.py#L367) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:375`](../../../../src/chronaxis/results/result.py#L375) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:383`](../../../../src/chronaxis/results/result.py#L383) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:392`](../../../../src/chronaxis/results/result.py#L392) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:404`](../../../../src/chronaxis/results/result.py#L404) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:408`](../../../../src/chronaxis/results/result.py#L408) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:413`](../../../../src/chronaxis/results/result.py#L413) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:423`](../../../../src/chronaxis/results/result.py#L423) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:546`](../../../../src/chronaxis/results/result.py#L546) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:706`](../../../../src/chronaxis/results/result.py#L706) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:757`](../../../../src/chronaxis/results/result.py#L757) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/result.py:765`](../../../../src/chronaxis/results/result.py#L765) — line number in the Chronaxis 0.1.0.dev6 source.

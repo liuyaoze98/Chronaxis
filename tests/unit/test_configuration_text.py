@@ -41,8 +41,9 @@ class ConfigurationTextTests(unittest.TestCase):
 
     def command(self,*arguments):
         """实际-m运行。参数: CLI参数。返回: CompletedProcess。异常: IO/超时。"""
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         return subprocess.run([sys.executable,'-B','-m','chronaxis',*map(str,arguments)],cwd=self.root,
-            env=os.environ.copy(),capture_output=True,text=True,encoding='utf-8',timeout=60)
+            env=dict(os.environ,PYTHONIOENCODING='utf-8'),capture_output=True,text=True,encoding='utf-8',timeout=60)
 
     def test_default_cli_explains_inputs_semantics_defaults_and_override(self):
         """普通人读入口直接说明有效期/统计口径和未核实项。参数: 无。返回: None。异常: 断言。"""

@@ -235,9 +235,9 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/runner.py:52`](../../../../src/chronaxis/runner.py#L52) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/runner.py:80`](../../../../src/chronaxis/runner.py#L80) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/runner.py:91`](../../../../src/chronaxis/runner.py#L91) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/runner.py:103`](../../../../src/chronaxis/runner.py#L103) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/runner.py:23`](../../../../src/chronaxis/runner.py#L23) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/runner.py:30`](../../../../src/chronaxis/runner.py#L30) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/runner.py:52`](../../../../src/chronaxis/runner.py#L52) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/runner.py:80`](../../../../src/chronaxis/runner.py#L80) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/runner.py:91`](../../../../src/chronaxis/runner.py#L91) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/runner.py:103`](../../../../src/chronaxis/runner.py#L103) — line number in the Chronaxis 0.1.0.dev6 source.

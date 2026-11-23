@@ -54,4 +54,4 @@ compile_host_function(compiler, call, spec)
 
 ValueError为位置数量、类型、单位或整数字面量非法；不加载配置路径。
 
-源码：[`src/chronaxis/core/extension_points.py:13`](../../../src/chronaxis/core/extension_points.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/extension_points.py:13`](../../../src/chronaxis/core/extension_points.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。

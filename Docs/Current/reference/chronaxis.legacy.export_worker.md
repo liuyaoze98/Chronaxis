@@ -59,7 +59,7 @@ TypeError/ValueError为字段、版本、profile、后缀或受保护路径；
 
 仅检查文件系统；真正独占创建仍在writer建立之前执行。
 
-源码：[`src/chronaxis/legacy/export_worker.py:17`](../../../src/chronaxis/legacy/export_worker.py#L17)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/export_worker.py:17`](../../../src/chronaxis/legacy/export_worker.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_message"></a>
 ## `_message`
@@ -85,7 +85,7 @@ _message(can, frame)
 
 原can.Message构造错误；不以新层猜测修正旧格式限制。
 
-源码：[`src/chronaxis/legacy/export_worker.py:41`](../../../src/chronaxis/legacy/export_worker.py#L41)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/export_worker.py:41`](../../../src/chronaxis/legacy/export_worker.py#L41)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -122,4 +122,4 @@ worker_main(connection)
 独占创建一个新BLF、一次BLFWrite、每许可一次on_message_received，
     至多一次stop；不读取输入CAN/DBC，不调parse或为ACK额外写帧。
 
-源码：[`src/chronaxis/legacy/export_worker.py:57`](../../../src/chronaxis/legacy/export_worker.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/legacy/export_worker.py:57`](../../../src/chronaxis/legacy/export_worker.py#L57)（行号对应 Chronaxis 0.1.0.dev6 源码）。

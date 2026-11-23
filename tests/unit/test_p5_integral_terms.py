@@ -26,8 +26,8 @@ from chronaxis.sources.text_can_decode import DecodedCANRecord
 class FileIntegralTermsTests(unittest.TestCase):
     """只使用内存帧；期望值由手算或现役独立串行入口提供。"""
 
-    def task(self, *, policy='error', ttl=10**9, domain=None, size=2, dtype=D.FLOAT64, limit=4096):
-        """建立一项功率积分。参数: 同刻/TTL/范围/批/类型/误差项限额。返回: 工厂所需冻结任务。"""
+    def task(self, *, policy='error', ttl=10**9, domain=None, size=2, dtype=D.FLOAT64, limit=4096, step=None):
+        """建立一项功率积分。参数: 同刻/TTL/范围/批/类型/误差项限额及间隔（None实际，正整数固定纳秒）。返回: 工厂所需冻结任务。"""
         clock = TimebaseSpec('analysis', TimeType.RELATIVE, 'origin')
         field = LegacyCANField(0, 'Power', 256)
         definition = SignalDefinition('power', 'bus', field.key, dtype, 'W', ttl, same_time_policy=policy)
@@ -36,7 +36,7 @@ class FileIntegralTermsTests(unittest.TestCase):
         expression = validate_expression('power', bindings)
         spec = CalculationDefinition('energy', 'integral', domain or Interval(0, 10**9))
         budget = ResourceBudget()
-        calculation = RecordIntegral(budget, spec, expression.root.unit, expression.root.dtype, None,
+        calculation = RecordIntegral(budget, spec, expression.root.unit, expression.root.dtype, step,
                                      backend='reference', batch_intervals=size, partial_limit=limit)
         self.addCleanup(calculation.close)
         return budget, (definition,), (expression,), (spec,), calculation, SameFrameBinding('bus', 0, 256, False, None, False)
@@ -55,7 +55,8 @@ class FileIntegralTermsTests(unittest.TestCase):
         offset, largest = 0, 0
         for frames in files:
             worker = FileIntegralTerms(budget, definitions, expressions, specs, binding, 'session',
-                                       domain=options.get('domain'), batch_intervals=worker_size)
+                                       domain=options.get('domain'), batch_intervals=worker_size,
+                                       step_ns=options.get('step'))
             self.addCleanup(worker.close)
             parent.begin_file(offset)
             for sequence, (time, value, target) in enumerate(frames):
@@ -106,6 +107,67 @@ class FileIntegralTermsTests(unittest.TestCase):
                 actual, _, largest = self.run_split(files, observed_end=560_000_000, worker_size=worker_size, **options)
                 self.assertEqual(actual, self.serial(files, observed_end=560_000_000, **options))
                 self.assertLessEqual(largest, worker_size)
+
+    def test_fixed_step_hand_values_and_partition_invariance(self):
+        """固定间隔面积=左值×间隔×实际交集÷实际跨度；无尾段，跨文件切分不改变结果。
+
+        三条记录0/250/500ms、功率4/8/2W、间隔125ms：两对各计一个间隔，0.5+1.0=1.5J；
+        domain为125—375ms时各对只剩一半交集，得0.25+0.5=0.75J；有效期125ms同样截去每对后半，
+        得0.75J。最后一条记录之后到观测末端900ms不补尾段。
+        """
+        step = 125_000_000
+        frames = [(0, 4., True), (250_000_000, 8., True), (500_000_000, 2., True)]
+        for options, expected in ((dict(step=step), 1.5),
+                                  (dict(step=step, domain=Interval(125_000_000, 375_000_000)), .75),
+                                  (dict(step=step, ttl=125_000_000), .75)):
+            for files in ([frames], [frames[:1], frames[1:]], [frames[:2], [], frames[2:]]):
+                with self.subTest(options=options, files=len(files)):
+                    actual, _, _ = self.run_split(files, observed_end=900_000_000, **options)
+                    self.assertEqual(actual.value, expected)
+                    self.assertEqual(actual, self.serial(files, observed_end=900_000_000, **options))
+        # 与实际间隔测试相同的随机帧、无效值和同刻重复，换成固定间隔后逐项比较串行与分文件结果。
+        rng = random.Random(977)
+        frames = [(index * 7_000_000, None if index % 11 == 4 else float(rng.randrange(-100, 100)), True)
+                  for index in range(61)]
+        frames.insert(17, (frames[16][0], frames[16][1], True))
+        for size in (1, 3, 64):
+            for worker_size in (1, 4, 64):
+                options = dict(size=size, step=3_000_000, ttl=5_000_000, domain=Interval(2_000_000, 401_000_000))
+                files = [frames[:1], [], frames[1:18], frames[18:20], frames[20:]]
+                with self.subTest(size=size, worker_size=worker_size):
+                    actual, _, largest = self.run_split(files, observed_end=430_000_000,
+                                                        worker_size=worker_size, **options)
+                    self.assertEqual(actual, self.serial(files, observed_end=430_000_000, **options))
+                    self.assertLessEqual(largest, worker_size)
+
+    def test_step_mismatch_is_rejected_before_any_area(self):
+        """面积块、父边界、同帧入口与工作进程都拒绝间隔不一致，不能按一种间隔算、另一种解释。"""
+        budget, definitions, expressions, specs, fixed, binding = self.task(step=125_000_000)
+        with self.assertRaisesRegex(ValueError, '间隔与积分器不一致'):
+            fixed.consume_terms((), (), 0, 0, Q.NONE)
+        _, _, _, _, actual, _ = self.task()
+        with self.assertRaisesRegex(ValueError, '间隔与积分器不一致'):
+            actual.consume_terms((), (), 0, 0, Q.NONE, step_ns=125_000_000)
+        other = RecordIntegral(budget, replace(specs[0], calculation_id='other'), expressions[0].root.unit,
+                               expressions[0].root.dtype, 250_000_000, backend='reference', batch_intervals=2)
+        self.addCleanup(other.close)
+        pair = RecordIntegral(budget, replace(specs[0], calculation_id='pair'), expressions[0].root.unit,
+                              expressions[0].root.dtype, 125_000_000, backend='reference', batch_intervals=2)
+        self.addCleanup(pair.close)
+        before = budget.ram_bytes
+        with self.assertRaisesRegex(ValueError, '共用实际间隔或同一个固定间隔'):
+            ParentIntegralTerms(budget, definitions, expressions * 2, (pair, other), binding, 'session')
+        with self.assertRaisesRegex(ValueError, '共用实际间隔或同一个固定间隔'):
+            SameFrameIntegrals(budget, definitions, expressions * 2, (pair, other), binding, 'session', lambda: None)
+        for bad in (0, -1, 1.5, True):
+            with self.subTest(step=bad), self.assertRaisesRegex(ValueError, '固定间隔'):
+                FileIntegralTerms(budget, definitions, expressions, specs, binding, 'session', step_ns=bad)
+        # 构造失败须退回本次预约，只剩三个积分器的固定费用。
+        self.assertEqual(budget.ram_bytes, before)
+        # 相同固定间隔可共同构造，确认上面的拒绝来自间隔不一致而非其他声明。
+        same = ParentIntegralTerms(budget, definitions, expressions * 2, (fixed, pair), binding, 'session')
+        self.assertEqual(same._step_ns, 125_000_000)
+        same.close()
 
     def test_one_group_across_many_files_and_empty_files(self):
         """同一时刻跨100份文件只保首末摘要；原帧偏移包括无关帧。"""

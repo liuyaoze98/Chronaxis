@@ -10,7 +10,7 @@
 
 ## 安装与运行
 
-先按[安装说明](installation.md)安装 Chronaxis 0.1.0.dev5，推荐 `pip install "chronaxis==0.1.0.dev5"`。然后进入[手册的 examples 目录](installation.md#find-examples)下的 `fast` 子目录，保持其中 data 子目录结构。下面的命令假定已激活虚拟环境；未激活时把 `python` 换成虚拟环境中的 `python.exe` 完整路径，见[安装页](installation.md#run-without-activation)。
+先按[安装说明](installation.md)安装 Chronaxis 0.1.0.dev6，推荐 `pip install "chronaxis==0.1.0.dev6"`。然后进入[手册的 examples 目录](installation.md#find-examples)下的 `fast` 子目录，保持其中 data 子目录结构。下面的命令假定已激活虚拟环境；未激活时把 `python` 换成虚拟环境中的 `python.exe` 完整路径，见[安装页](installation.md#run-without-activation)。
 
 ```powershell
 python -m chronaxis fast --help

@@ -40,7 +40,7 @@ bytes。
 
 超大块或非法数值；不会改成低精度或丢弃尾部。
 
-源码：[`src/chronaxis/fast/blocks.py:19`](../../../src/chronaxis/fast/blocks.py#L19)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/blocks.py:19`](../../../src/chronaxis/fast/blocks.py#L19)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-decode"></a>
 ## `decode`
@@ -68,7 +68,7 @@ decode(payload, file_index, number, metric_count)
 
 身份、长度、CRC、序号、计算项或数值非法；不接受重复项。
 
-源码：[`src/chronaxis/fast/blocks.py:38`](../../../src/chronaxis/fast/blocks.py#L38)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/blocks.py:38`](../../../src/chronaxis/fast/blocks.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-batches"></a>
 ## `batches`
@@ -93,4 +93,4 @@ batches(stream)
 
 单帧超限；不会拆散同帧元数据或整文件载入。
 
-源码：[`src/chronaxis/fast/blocks.py:74`](../../../src/chronaxis/fast/blocks.py#L74)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/blocks.py:74`](../../../src/chronaxis/fast/blocks.py#L74)（行号对应 Chronaxis 0.1.0.dev6 源码）。

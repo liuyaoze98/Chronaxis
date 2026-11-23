@@ -15,7 +15,7 @@
 | [part-2.asc](examples/data/can/conditional-energy/part-2.asc) | 第2卷，90～123秒；延续上一卷的条件状态。|
 | [signals.dbc](examples/data/can/conditional-energy/signals.dbc) | 合成报文0x100的状态、电流、电压及1000ms周期。|
 
-本例对应 Chronaxis 0.1.0.dev5。先按[安装说明](installation.md)安装，推荐 `pip install "chronaxis==0.1.0.dev5"`；安装会自动带上本版声明的 CAN 依赖，不要另行更换 cantools 版本。然后进入[手册的 examples 目录](installation.md#find-examples)执行：
+本例对应 Chronaxis 0.1.0.dev6。先按[安装说明](installation.md)安装，推荐 `pip install "chronaxis==0.1.0.dev6"`；安装会自动带上本版声明的 CAN 依赖，不要另行更换 cantools 版本。然后进入[手册的 examples 目录](installation.md#find-examples)执行：
 
 ```powershell
 chronaxis validate conditional-energy.yaml --format json

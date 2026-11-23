@@ -90,7 +90,7 @@ RunMetadata(run_id: str, input_identity: str | None, plan_hash: str, backend: st
 |`analysis_outcome`|[AnalysisOutcome](chronaxis.results.analysis_outcome.md#api-AnalysisOutcome) &#124; None|否|None|同次执行累计的AnalysisOutcome或None：逐规则说明有事件、条件未成立、未达到时长、无观测或数据不足，并分别统计complete/partial/indeterminate指标行。None表示该路径未提供概况，不能当作无事件；completed只说明执行结束。无二次输入扫描或逐条追溯。|
 |`aggregation_definitions`|tuple[[AggregationPlan](chronaxis.planning.aggregations.md#api-AggregationPlan), ...]|否|()|本次运行使用的聚合定义及总体政策。非空时随清单序列化，省略时不增加该字段。|
 
-源码：[`src/chronaxis/results/manifest.py:29`](../../../src/chronaxis/results/manifest.py#L29)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:29`](../../../src/chronaxis/results/manifest.py#L29)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-RunMetadata-__post_init__"></a>
 ### `RunMetadata.__post_init__`
@@ -147,7 +147,7 @@ TypeError/ValueError为结构或事实格式错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/manifest.py:73`](../../../src/chronaxis/results/manifest.py#L73)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:73`](../../../src/chronaxis/results/manifest.py#L73)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-RunMetadata-estimated_bytes"></a>
 ### `RunMetadata.estimated_bytes`
@@ -175,7 +175,7 @@ RunMetadata.estimated_bytes() -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/manifest.py:205`](../../../src/chronaxis/results/manifest.py#L205)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:205`](../../../src/chronaxis/results/manifest.py#L205)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-RunMetadata-to_dict"></a>
 ### `RunMetadata.to_dict`
@@ -203,7 +203,7 @@ RunMetadata.to_dict() -> dict
 
 返回类型：dict。
 
-源码：[`src/chronaxis/results/manifest.py:216`](../../../src/chronaxis/results/manifest.py#L216)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:216`](../../../src/chronaxis/results/manifest.py#L216)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_metadata_size"></a>
 ## `_metadata_size`
@@ -230,7 +230,7 @@ _metadata_size(value) -> int
 
 返回类型：int。
 
-源码：[`src/chronaxis/results/manifest.py:306`](../../../src/chronaxis/results/manifest.py#L306)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:306`](../../../src/chronaxis/results/manifest.py#L306)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-OutputManifest"></a>
 ## `OutputManifest`
@@ -252,7 +252,7 @@ OutputManifest(run_id: str, output_dir: pathlib.Path, manifest_path: pathlib.Pat
 |`row_counts`|tuple[tuple[str, int], ...]|是|无|各固定结果表的实际行数记录。|
 |`status`|str|否|'completed'|本次发布结果状态，成功为completed。|
 
-源码：[`src/chronaxis/results/manifest.py:333`](../../../src/chronaxis/results/manifest.py#L333)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:333`](../../../src/chronaxis/results/manifest.py#L333)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-OutputManifest-__post_init__"></a>
 ### `OutputManifest.__post_init__`
@@ -286,7 +286,7 @@ TypeError/ValueError为字段错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/results/manifest.py:343`](../../../src/chronaxis/results/manifest.py#L343)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:343`](../../../src/chronaxis/results/manifest.py#L343)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ExportManifest"></a>
 ## `ExportManifest`
@@ -305,7 +305,7 @@ ExportManifest(output_dir: pathlib.Path, manifest_path: pathlib.Path, output_fil
 |`manifest_path`|[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|本次带时间后缀的完成清单Path，直接使用实际返回路径。|
 |`output_files`|tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), ...]|是|无|本次导出的数据文件Path元组，不含由manifest_path单独提供的完成清单。|
 
-源码：[`src/chronaxis/results/manifest.py:360`](../../../src/chronaxis/results/manifest.py#L360)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:360`](../../../src/chronaxis/results/manifest.py#L360)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-ExportManifest-__post_init__"></a>
 ### `ExportManifest.__post_init__`
@@ -331,4 +331,4 @@ None。
 
 类型或路径错，不访问文件。
 
-源码：[`src/chronaxis/results/manifest.py:367`](../../../src/chronaxis/results/manifest.py#L367)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/results/manifest.py:367`](../../../src/chronaxis/results/manifest.py#L367)（行号对应 Chronaxis 0.1.0.dev6 源码）。

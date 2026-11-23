@@ -70,7 +70,12 @@ class CANBlockResourceTests(unittest.TestCase):
             packet = packet[:offset] + b'\x03\x00\x00\x00\x02\x00\x00' + packet[offset+6:]
             packet = packet[:4] + struct.pack('!I', len(packet)-8) + packet[8:]
         elif mode == 'decimal':
-            packet = packet[:-1] + b'\x0a'
+            # PERF-P5-FIX-01起文件事实位于记录之前：last_order_time的最后一个数字字节紧挨记录条数之前。
+            reader = codec._Reader(packet)
+            reader.nonnegative(); reader.boolean(); codec._read_facts(reader)
+            offset = reader.position - 1
+            reader.close()
+            packet = packet[:offset] + b'\x0a' + packet[offset+1:]
         return packet
 
     def check_failure_cleanup(self, mode, message):
@@ -117,7 +122,8 @@ class CANBlockResourceTests(unittest.TestCase):
                             values[name].nbytes
             stack = stack.tb_next
         self.assertEqual(len(model_ids), 1 if mode == 'model' else 0)
-        self.assertEqual(len(references), 7 if mode == 'model' else 0 if mode == 'integer' else 8)
+        # integer与decimal都在记录之前失败（事实先于记录解码），此时没有建成任何记录。
+        self.assertEqual(len(references), 7 if mode == 'model' else 0 if mode in ('integer', 'decimal') else 8)
 
     def test_tail_error_releases_all_completed_records(self):
         """尾部损坏后不让异常保留前八条已完成记录。"""
@@ -132,7 +138,7 @@ class CANBlockResourceTests(unittest.TestCase):
         self.check_failure_cleanup('integer', '非最短')
 
     def test_invalid_decimal_releases_subview_and_records(self):
-        """Decimal数字损坏时关闭内层视图并释放已完成模型。"""
+        """Decimal数字损坏时关闭内层视图；事实位于记录之前，失败时尚未建成任何记录模型。"""
         self.check_failure_cleanup('decimal', 'Decimal数字')
 
 

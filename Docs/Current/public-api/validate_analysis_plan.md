@@ -53,4 +53,4 @@ report = validate_analysis_plan(plan)
 print(report.valid, report.execution_ready)
 ```
 
-源码：[`src/chronaxis/planning/reports.py:287`](../../../src/chronaxis/planning/reports.py#L287)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/reports.py:287`](../../../src/chronaxis/planning/reports.py#L287)（行号对应 Chronaxis 0.1.0.dev6 源码）。

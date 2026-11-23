@@ -584,6 +584,8 @@ include Docs/Release/release-notes-0.1.0.dev4.en.md
 include Docs/Release/release-notes-0.1.0.dev4.md
 include Docs/Release/release-notes-0.1.0.dev5.en.md
 include Docs/Release/release-notes-0.1.0.dev5.md
+include Docs/Release/release-notes-0.1.0.dev6.en.md
+include Docs/Release/release-notes-0.1.0.dev6.md
 include Docs/Release/security.md
 include Docs/Release/third-party.md
 include Docs/Release/trusted-publishing.en.md

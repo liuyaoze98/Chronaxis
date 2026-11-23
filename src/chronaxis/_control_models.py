@@ -337,9 +337,10 @@ def pack_message(family, message):
     """
     operation, *arguments = message
     if family == 'integral' and operation == 'file':
-        index, source, signals, options, limit, context = arguments
+        # 第7个参数为可选任务模式字符串，原样传输。
+        index, source, signals, options, limit, context, *mode = arguments
         arguments = [index,pack_source(source),[pack_signal(item) for item in signals],
-                     pack_options(options),limit,pack_frame_context(context)]
+                     pack_options(options),limit,pack_frame_context(context),*mode]
     elif family == 'can' and operation == 'file':
         source, signals, options, limit, context = arguments
         arguments = [pack_source(source),[pack_signal(item) for item in signals],
@@ -367,13 +368,15 @@ def restore_message(family, operation, arguments):
     if type(arguments) is not list:
         raise ValueError('控制消息参数需要列表')
     if family == 'integral' and operation == 'file':
-        if len(arguments)!=6 or type(arguments[0]) is not int or arguments[0]<0:
+        if len(arguments) not in (6,7) or type(arguments[0]) is not int or arguments[0]<0:
             raise ValueError('并行积分文件命令参数非法')
-        index, source, signals, options, limit, context = arguments
+        index, source, signals, options, limit, context, *mode = arguments
         if type(signals) is not list or len(signals)>4096 or type(limit) is not int or limit<=0:
             raise ValueError('并行积分声明数量或预算非法')
+        if mode and mode[0] not in ('terms','points'):
+            raise ValueError('并行积分文件命令模式非法')
         arguments = [index,restore_source(source),tuple(restore_signal(item) for item in signals),
-                     restore_options(options),limit,restore_frame_context(context)]
+                     restore_options(options),limit,restore_frame_context(context),*mode]
     elif family == 'can' and operation == 'file':
         if len(arguments) != 5:
             raise ValueError('CAN文件命令参数数量不符')

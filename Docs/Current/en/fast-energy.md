@@ -10,7 +10,7 @@ Download the [ASC plan](../examples/fast/analysis.yaml), [BLF plan](../examples/
 
 ## Install and run
 
-First install Chronaxis 0.1.0.dev5 as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev5"` is recommended. Then change to the `fast` subdirectory of the manual's [examples directory](installation.md#find-examples), keeping its data subdirectory. The commands below assume an activated environment; otherwise replace `python` with the full path of the environment's `python.exe`, as described in [Installation](installation.md#run-without-activation).
+First install Chronaxis 0.1.0.dev6 as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev6"` is recommended. Then change to the `fast` subdirectory of the manual's [examples directory](installation.md#find-examples), keeping its data subdirectory. The commands below assume an activated environment; otherwise replace `python` with the full path of the environment's `python.exe`, as described in [Installation](installation.md#run-without-activation).
 
 ```powershell
 python -m chronaxis fast --help

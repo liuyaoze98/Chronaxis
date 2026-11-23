@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 对应 Chronaxis 0.1.0.dev5。
+> 对应 Chronaxis 0.1.0.dev6。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 

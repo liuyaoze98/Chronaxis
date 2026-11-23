@@ -51,7 +51,7 @@ Truth.TRUE、Truth.FALSE或Truth.UNKNOWN。
 
 无主动异常；调用者必须先完成带有明确类型的结果校验。
 
-源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/condition_evidence.py:22`](../../../src/chronaxis/core/condition_evidence.py#L22)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-condition_ticks_reference"></a>
 ## `condition_ticks_reference`
@@ -88,7 +88,7 @@ TypeError为容器、原生元素、模型或非BOOL；ValueError为长度、回
 
 只创建当前有限输入的输出模型，不修改任何输入；申请预算由调用者负责。
 
-源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/condition_evidence.py:36`](../../../src/chronaxis/core/condition_evidence.py#L36)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-condition_ticks_numpy"></a>
 ## `condition_ticks_numpy`
@@ -126,4 +126,4 @@ TypeError为数组布局、模型或非BOOL；ValueError为shape、非递增时�
 
 临时状态/quality/因果/诊断列均为(N,)，不修改借用的输入；预算须由调用者先申请。
 
-源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/condition_evidence.py:114`](../../../src/chronaxis/core/condition_evidence.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。

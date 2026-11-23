@@ -57,4 +57,4 @@ ScalarValue。
 
 配置错误。
 
-源码：[`src/chronaxis/core/rolling_values.py:13`](../../../src/chronaxis/core/rolling_values.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/rolling_values.py:13`](../../../src/chronaxis/core/rolling_values.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。

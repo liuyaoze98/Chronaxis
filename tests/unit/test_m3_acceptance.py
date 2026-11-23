@@ -102,9 +102,11 @@ class M3AcceptanceTests(unittest.TestCase):
         self.assertEqual(summary, exported)
         plan = self.work / 'plan.json'
         plan.write_text(json.dumps(current_fixture(raw), ensure_ascii=False, indent=2), encoding='utf-8')
+        # 测试按UTF-8读取输出；显式要求子进程UTF-8输出，不依赖启动终端是否设置PYTHONIOENCODING（BUG-ENV-005）。
         process = subprocess.run([sys.executable, '-B', '-m', 'chronaxis', 'run', str(plan),
             '--work-dir', str(self.work / 'cli-run'), '--output', str(self.work / 'cli-output')],
-            cwd=ROOT, env=os.environ.copy(), capture_output=True, text=True, encoding='utf-8', timeout=90)
+            cwd=ROOT, env=dict(os.environ, PYTHONIOENCODING='utf-8'), capture_output=True, text=True,
+            encoding='utf-8', timeout=90)
         (self.work / 'cli.json').write_text(json.dumps(current_fixture(dict(device_label='home', returncode=process.returncode,
             stdout=process.stdout, stderr=process.stderr)), ensure_ascii=False, indent=2), encoding='utf-8')
         self.assertEqual(process.returncode, 0, process.stderr)

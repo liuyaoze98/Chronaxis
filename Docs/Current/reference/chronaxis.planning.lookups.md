@@ -47,4 +47,4 @@ parse_lookups(raw, version)
 
 含具体位置的配置错误。
 
-源码：[`src/chronaxis/planning/lookups.py:7`](../../../src/chronaxis/planning/lookups.py#L7)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/planning/lookups.py:7`](../../../src/chronaxis/planning/lookups.py#L7)（行号对应 Chronaxis 0.1.0.dev6 源码）。

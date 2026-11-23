@@ -27,7 +27,7 @@ BatchPlan(jobs: tuple[chronaxis.batch.models.BatchJob, ...], process_count: int 
 |`fail_fast`|bool|否|False|控制某任务失败后的调度：False继续其他独立任务；True停止提交新任务，已运行任务按批量执行器的取消流程收尾。|
 |`backend`|str &#124; None|否|None|`auto`按整份计划选择reference或numpy，不预读或试跑；`reference`和`numpy`固定使用对应数值实现。None沿用计划设置。详见[运行参数](../execution.md)。|
 
-源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/batch/models.py:58`](../../../src/chronaxis/batch/models.py#L58)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-BatchPlan-from_dict"></a>
 ### `BatchPlan.from_dict`
@@ -55,4 +55,4 @@ BatchPlan.from_dict(config, *, base_dir=None)
 
 PlanValidationError定位非法字段、重名、缺少模板输入或来源歧义。jobs可为空；jobs只保留计划路径，template会读取模板、展开文件集合并按需读取DBC元数据，不扫描业务报文。
 
-源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/batch/models.py:80`](../../../src/chronaxis/batch/models.py#L80)（行号对应 Chronaxis 0.1.0.dev6 源码）。

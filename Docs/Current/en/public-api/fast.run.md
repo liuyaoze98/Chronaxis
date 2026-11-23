@@ -33,4 +33,4 @@ Read configuration, DBC and volumes. Workers evaluate individual contributions; 
 
 [High-performance integrator tutorial](../fast-energy.md)
 
-Source: [`src/chronaxis/fast/run.py:65`](../../../../src/chronaxis/fast/run.py#L65) (line number in the Chronaxis 0.1.0.dev5 source).
+Source: [`src/chronaxis/fast/run.py:65`](../../../../src/chronaxis/fast/run.py#L65) (line number in the Chronaxis 0.1.0.dev6 source).

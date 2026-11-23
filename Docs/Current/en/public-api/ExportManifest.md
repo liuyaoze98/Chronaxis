@@ -30,4 +30,4 @@ for path in exported.output_files:
 
 ## Source locations
 
-- [`src/chronaxis/results/manifest.py:360`](../../../../src/chronaxis/results/manifest.py#L360) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/results/manifest.py:360`](../../../../src/chronaxis/results/manifest.py#L360) — line number in the Chronaxis 0.1.0.dev6 source.

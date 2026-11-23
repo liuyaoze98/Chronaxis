@@ -41,7 +41,7 @@ CANDependencyError(module_name)
 |---|---|---|---|---|
 |`code`|str|类成员，不作为构造参数填写|'dependency_missing'|固定为dependency_missing，标明CAN库或其依赖缺失；不表示信号字段配置错误。|
 
-源码：[`src/chronaxis/can_dependencies.py:17`](../../../src/chronaxis/can_dependencies.py#L17)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/can_dependencies.py:17`](../../../src/chronaxis/can_dependencies.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-CANDependencyError-__init__"></a>
 ### `CANDependencyError.__init__`
@@ -66,7 +66,7 @@ None。
 
 无。
 
-源码：[`src/chronaxis/can_dependencies.py:22`](../../../src/chronaxis/can_dependencies.py#L22)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/can_dependencies.py:22`](../../../src/chronaxis/can_dependencies.py#L22)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-import_can_dependency"></a>
 ## `import_can_dependency`
@@ -92,7 +92,7 @@ import_can_dependency(module_name)
 CANDependencyError 表示模块或其依赖缺失；
 其他 ImportError 原样传播，避免将损坏或不兼容安装误报成信号错误。
 
-源码：[`src/chronaxis/can_dependencies.py:29`](../../../src/chronaxis/can_dependencies.py#L29)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/can_dependencies.py:29`](../../../src/chronaxis/can_dependencies.py#L29)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-runtime_dependency_versions"></a>
 ## `runtime_dependency_versions`
@@ -118,4 +118,4 @@ dict[str, str]；四个键为 python、python-can、cantools、natsort，值来�
 
 任一分发缺少安装元数据时抛 importlib.metadata.PackageNotFoundError。不导入 CAN 库、不读取业务文件，也不代替安装元数据中的支持范围检查。
 
-源码：[`src/chronaxis/can_dependencies.py:45`](../../../src/chronaxis/can_dependencies.py#L45)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/can_dependencies.py:45`](../../../src/chronaxis/can_dependencies.py#L45)（行号对应 Chronaxis 0.1.0.dev6 源码）。

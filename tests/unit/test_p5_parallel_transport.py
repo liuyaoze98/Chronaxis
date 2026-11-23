@@ -40,7 +40,8 @@ from chronaxis.sources.text_can_spec import CANTextSpec
 def fixture_facts():
     """返回独立有限事实。参数: 无。返回: dict。异常: 无。"""
     return dict(count=3,first_ns=0,last_ns=2000000000,decode_calls=3,
-        first_order_time=Decimal('0'),last_order_time=Decimal('2.000000000000000001'),compatibility_fields=())
+        first_order_time=Decimal('0'),last_order_time=Decimal('2.000000000000000001'),compatibility_fields=(),
+        frame_identity=None)
 
 
 class _ByteEndpoint:
@@ -98,7 +99,7 @@ def _fault_worker(control,data,mode):
                     control.send(('error',index,0,'compute','ValueError','数值结构错误'))
                     continue
                 facts=dict(count=0,first_ns=None,last_ns=None,decode_calls=0,
-                    first_order_time=None,last_order_time=None,compatibility_fields=())
+                    first_order_time=None,last_order_time=None,compatibility_fields=(),frame_identity=None)
                 encoded=encode_packet(index,0,(FileIntegralTail(None,False),),True,facts)
                 if mode=='pipe':encoded=b'x'*524288
                 control.send(('block',index+1 if mode=='protocol' else index,0,len(encoded),0.0))
@@ -197,6 +198,24 @@ class P5ParallelTransportTests(unittest.TestCase):
         self.assertEqual(result['derived'],derived);self.assertIsNone(result['domain'])
         task['bindings']['identity']='bad'
         with self.assertRaisesRegex(ValueError,'身份不符'):restore_task(task)
+
+    def test_task_step_roundtrip_and_rejects_invalid_values(self):
+        """固定间隔随任务原样到达工作进程；实际间隔为None；零、负数、浮点、布尔和超界值在重建前拒绝。"""
+        actual=pack_task((self.definition,),(self.expression,),(self.specification,),self.binding,'session')
+        self.assertIsNone(actual['step_ns']);self.assertIsNone(restore_task(actual)['step_ns'])
+        fixed=pack_task((self.definition,),(self.expression,),(self.specification,),self.binding,'session',
+                        step_ns=125_000_000)
+        self.assertEqual(restore_task(fixed)['step_ns'],125_000_000)
+        for bad in (0,-1,1.5,True,1<<63,'125ms'):
+            with self.subTest(step=bad):
+                task=dict(fixed,step_ns=bad)
+                with self.assertRaisesRegex(ValueError,'积分任务间隔'):restore_task(task)
+                with self.assertRaisesRegex(ValueError,'积分任务间隔'):
+                    pack_task((self.definition,),(self.expression,),(self.specification,),self.binding,'session',
+                              step_ns=bad)
+        # 旧格式任务缺少间隔字段时不能默认为实际间隔，必须按固定白名单拒绝。
+        missing=dict(fixed);missing.pop('step_ns')
+        with self.assertRaises(ValueError):restore_task(missing)
 
     def test_admission_cost_matches_actual_reservation_without_reading(self):
         """首帧前查询费用与实际配置增量一致，用户大批上限不放大传输块。"""
@@ -445,7 +464,7 @@ class P5ParallelTransportTests(unittest.TestCase):
         self.assertFalse(boundary_supported((self.definition,)*4096))
         self.assertFalse(boundary_supported((SimpleNamespace(field='宽'*200000),)))
         field=LegacyCANField(0,'Power',256,False,True)
-        terms=SimpleNamespace(compatibility_fields={field:False})
+        terms=SimpleNamespace(compatibility_fields={field:False},frame_identity=(False,False))
         reader=SimpleNamespace(count=1,first_ns=0,last_ns=0,decode_calls=1,
             first_order_time=Decimal('0'),_last_selected_time=Decimal('0'))
         cache={};first=_facts(reader,terms,cache)

@@ -52,4 +52,4 @@ convert_result_reference(value, input_dtype, conversion)
 
 非法模型或系数错误传播，数值范围错误由质量表示。
 
-源码：[`src/chronaxis/core/calculation_output_reference.py:12`](../../../src/chronaxis/core/calculation_output_reference.py#L12)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/calculation_output_reference.py:12`](../../../src/chronaxis/core/calculation_output_reference.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。

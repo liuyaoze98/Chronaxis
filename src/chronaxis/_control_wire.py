@@ -156,7 +156,9 @@ def _check(family, command, args):
     elif command == 'error':
         valid = len(args)==2 and all(type(v) is str for v in args)
     elif family == 'integral':
-        valid = (command=='file' and len(args)==6 and _integer(args[0])
+        # file可带第7个参数说明任务模式（terms/points），使READY前的错误也按该模式报告。
+        valid = (command=='file' and len(args) in (6,7) and _integer(args[0])
+                and (len(args)==6 or args[6] in ('terms','points'))
             or command=='budget' and len(args)==1 and _integer(args[0],1)
             or command=='configure' and len(args)==3 and _integer(args[0]) and type(args[1]) is dict and _integer(args[2],1)
             or command=='ready' and len(args)==3 and _integer(args[0]) and _integer(args[1],1) and _integer(args[2],1)

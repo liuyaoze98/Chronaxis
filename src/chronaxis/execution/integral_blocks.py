@@ -3,6 +3,11 @@
 面积以网络序float64传输，不求和、不转换单位。首尾同刻组保留定宽原值、
 质量和序号；精确时间使用Decimal元组，避免十进制上下文影响文件顺序检查。
 任务只包含声明、表达式文本及必要积分字段，不传可调用对象或任意Python对象。
+
+两种包：P5I1是concatenate面积包（mode为terms）；P5G1是time_order组点包
+（mode为points，PERF-P5-ORDER-01 A2合同）。P5G1把文件事实放在事件之前，
+主进程收包时用decode_points_prefix只读到事实为止，归并读回时才用
+decode_points完整解码一次事件。
 """
 from dataclasses import dataclass
 from decimal import Decimal
@@ -22,8 +27,17 @@ _F64 = struct.Struct('!d')  # 原面积按网络序float64传输，不在传输�
 _SPECS = ('calculation_id','operation','partial_policy','output_unit','scope',
           'minimum_coverage','config_version','ddof','q')
 _BINDING = ('source','channel','frame_id','extended','fd','dbc_fd')
-_FACTS = ('count','first_ns','last_ns','decode_calls','first_order_time','last_order_time','compatibility_fields')
-_TASK = ('definitions','bindings','expressions','specs','binding','session_id','derived','domain','batch_intervals')
+# 两种包共用同一组文件事实；frame_identity为本文件目标帧实际的（扩展帧, FD），父进程据此跨文件核对帧型（BUG-P5-005）。
+_FACTS = ('count','first_ns','last_ns','decode_calls','first_order_time','last_order_time','compatibility_fields',
+          'frame_identity')
+_TASK = ('definitions','bindings','expressions','specs','binding','session_id','derived','domain','batch_intervals',
+         'step_ns','mode')  # step_ns为None（实际间隔）或固定间隔正纳秒，与父积分器一致；mode见TASK_MODES。
+TASK_MODES = ('terms','points')  # terms为concatenate文件面积；points为time_order同刻组点。
+MAX_POINTS = 2048  # 单个组点包最多2048个事件，与字节和展开上限共同决定何时封包。
+POINT_MESSAGE_LIMIT = 262144  # 延迟错误原文UTF-8最多256KiB；更长时按读取段错误处理，不截断。
+# 延迟错误只允许这四种内建类型，按固定序号编码；不按远端名字导入类，子类也不算。
+DEFERRED_KINDS = (ValueError, TypeError, OverflowError, ZeroDivisionError)
+_POINT_FACTS = _FACTS  # 组点包与面积包的事实字段相同，只是位置在事件之前。
 
 
 def _timebase(value):
@@ -53,14 +67,17 @@ def _restore_interval(value):
     return Interval(*value)
 
 
-def pack_task(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64):
+def pack_task(definitions, expressions, specs, binding, session_id, *, derived=(), domain=None, batch_intervals=64,
+              step_ns=None, mode='terms'):
     """展开已验证数值任务，不读取文件。
 
     参数: definitions、expressions、specs为同序的SignalDefinition、StaticExpression和CalculationDefinition tuple；
         binding为SameFrameBinding，session_id为会话名；derived为原派生声明tuple，默认空；
-        domain为Interval或None；batch_intervals为1至64的区间数上限，默认64。
+        domain为Interval或None；batch_intervals为1至64的区间数上限，默认64；
+        step_ns为None（实际间隔）或固定间隔正纳秒，工作进程按它计算面积；
+        mode为'terms'（文件面积，默认）或'points'（同刻组点，只归一化和分组，不求值）。
     返回: dict，只含固定JSON原生值，不包含可调用对象。
-    异常: 非支持绑定、声明不一致或块上限非法时ValueError；原模型展开错误继续传播。
+    异常: 非支持绑定、声明不一致、块上限或模式非法时ValueError；原模型展开错误继续传播。
     """
     from ..core.declarations import DeclarationBindings
     if not expressions or len(expressions)!=len(specs):raise ValueError('积分表达式与指标数量不符')
@@ -82,7 +99,7 @@ def pack_task(definitions, expressions, specs, binding, session_id, *, derived=(
         specs=[dict(**extract(item,_SPECS),window=_interval(item.window)) for item in specs],
         binding=extract(binding,_BINDING),session_id=session_id,
         derived=[extract(item,('name','expr','unit')) for item in derived],domain=_interval(domain),
-        batch_intervals=batch_intervals))
+        batch_intervals=batch_intervals,step_ns=step_ns,mode=mode))
     check_task(task)
     return task
 
@@ -96,6 +113,13 @@ def check_task(task):
         raise ValueError('积分任务为空或指标数量不符')
     if type(task['batch_intervals']) is not int or not 1<=task['batch_intervals']<=64:
         raise ValueError('积分块区间数需要1至64')
+    # 间隔只能是null或int64范围内正整数；不接受浮点、布尔或零，防止工作进程按错误间隔算面积。
+    step=task['step_ns']
+    if step is not None and (type(step) is not int or not 0<step<=(1<<63)-1):
+        raise ValueError('积分任务间隔需要null或int64范围内正整数纳秒')
+    # 模式决定工作进程构造面积生成器还是组点生成器；缺省或未知值不能静默当作面积模式。
+    if type(task['mode']) is not str or task['mode'] not in TASK_MODES:
+        raise ValueError('积分任务模式需要terms或points')
     if type(task['session_id']) is not str:raise ValueError('积分会话需要文本')
     keys(task['binding'],_BINDING)
     keys(task['bindings'],('session_id','timebase','domain','sources','signals','derived_names',
@@ -115,7 +139,8 @@ def check_task(task):
 def restore_task(task):
     """仅通过明确构造器重建数值任务，并核原声明身份。
 
-    参数: task为pack_task产生的原生dict。返回: dict[str, object]，供FileIntegralTerms构造时展开。
+    参数: task为pack_task产生的原生dict。返回: dict[str, object]，供FileIntegralTerms或FileGroupPoints
+        构造时展开；不含mode，模式另由task_mode读取。
     异常: 固定字段或声明身份不一致时ValueError；原类型、表达式和声明构造错误继续传播。
     此处不加载DBC和报文文件。
     """
@@ -145,7 +170,17 @@ def restore_task(task):
                 for item in task['specs'])
     return dict(definitions=tuple(restore_signal(item) for item in task['definitions']),expressions=expressions,
         specs=specs,binding=SameFrameBinding(**task['binding']),session_id=task['session_id'],derived=derived,
-        domain=_restore_interval(task['domain']),batch_intervals=task['batch_intervals'])
+        domain=_restore_interval(task['domain']),batch_intervals=task['batch_intervals'],step_ns=task['step_ns'])
+
+
+def task_mode(task):
+    """读取已核任务的工作模式。
+
+    参数: task为pack_task产生的原生dict。返回: str，'terms'或'points'。
+    异常: 任务外形或模式非法时ValueError，与check_task相同；不重建声明。
+    """
+    check_task(task)
+    return task['mode']
 
 
 @dataclass(frozen=True)
@@ -203,15 +238,15 @@ def _compatibility_cost(names):
 def facts_cost(facts, cache):
     """估算固定事实的传输和展开，复用每批未变化的兼容字段图费用。
 
-    参数: facts为同次读取的固定dict，含精确Decimal时间及compatibility_fields tuple；
+    参数: facts为同次读取的固定dict，含精确Decimal时间、compatibility_fields tuple及frame_identity；
         cache为本批dict[int, tuple[int, int]]，按兼容字段tuple的对象身份复用费用。
-    返回: tuple[int, int]，依次为保守编码和模型展开字节数。
+    返回: tuple[int, int]，依次为保守编码和模型展开字节数（帧型字段计3字节编码及64字节展开）。
     异常: 缺字段时KeyError；原时间类型或UTF-8编码错误继续传播。
     仅在形成事件或封包时调用，不逐帧扫描字段名。
     """
     fields=facts['compatibility_fields'];key=id(fields)
     if key not in cache:cache[key]=_compatibility_cost(name for name,_ in fields)
-    wire,model=cache[key];wire+=256;model+=1024
+    wire,model=cache[key];wire+=256+3;model+=1024+64
     for name in ('first_order_time','last_order_time'):
         value=facts[name]
         if value is not None:
@@ -266,11 +301,14 @@ class _Writer:
 
 class _Reader:
     """先检查数量再分配模型；data为借用包，position为字节游标，expansion为累计展开字节数。"""
-    def __init__(self,packet):
-        """核包头。参数: packet为bytes。返回: None，构造解码器。异常: 格式或长度错误时IntegralBlockError。"""
+    def __init__(self,packet,magic=b'P5I1'):
+        """核包头。参数: packet为bytes；magic为期望的4字节协议标志，默认面积包P5I1。
+        返回: None，构造解码器。异常: 格式、标志或长度错误时IntegralBlockError。
+        """
         if type(packet) is not bytes or not 8<=len(packet)<=WIRE_LIMIT:raise IntegralBlockError('积分块长度非法')
-        magic,size=_HEAD.unpack_from(packet)
-        if magic!=b'P5I1' or size!=len(packet)-8:raise IntegralBlockError('积分块版本或长度不符')
+        found,size=_HEAD.unpack_from(packet)
+        # 面积包与组点包标志不同，两种解码器互不接受对方的包，避免按错误格式展开。
+        if found!=magic or size!=len(packet)-8:raise IntegralBlockError('积分块版本或长度不符')
         self.data=packet;self.position=8;self.expansion=0
     def take(self,size):
         """读取有限片段。参数: 非负int。返回: bytes。异常: 截断错误。"""
@@ -383,12 +421,7 @@ def encode_packet(file_index,number,events,eof,facts):
         elif type(event) is FileIntegralFrontier:
             writer.byte(3);writer.integer(event.time_ns)
         else:raise IntegralBlockError('未知积分块事件')
-    keys(facts,_FACTS)
-    for name in _FACTS[:4]:writer.integer(facts[name])
-    for name in _FACTS[4:6]:writer.decimal(facts[name])
-    writer.count(len(facts['compatibility_fields']))
-    for name,value in facts['compatibility_fields']:
-        encoded=name.encode('utf-8');writer.count(len(encoded));writer.add(encoded);writer.byte(value)
+    _write_facts(writer,facts)
     return _HEAD.pack(b'P5I1',len(writer.body))+writer.body
 
 
@@ -423,6 +456,74 @@ def decode_packet(packet):
             events.append(FileIntegralTail(group,reader.boolean()))
         elif kind==3:events.append(FileIntegralFrontier(reader.integer()))
         else:raise IntegralBlockError('积分事件标记非法')
+    facts=_read_facts(reader)
+    if reader.position!=len(packet):raise IntegralBlockError('积分块含尾随内容')
+    return IntegralPacket(index,number,tuple(events),eof,facts)
+
+
+@dataclass(frozen=True)
+class PointPacket:
+    """一个已完整解码的组点块；字段含义同IntegralPacket，事件为组点或延迟错误。"""
+    file_index: int  # 原来源声明中的零起文件序号，不按worker完成先后重排。
+    number: int  # 当前文件从0递增的块序号。
+    events: tuple  # SameTimeGroupSummary或DeferredPointError，按文件内时间顺序。
+    eof: bool  # 原帧读尽且读取器/组点owner已关闭；资源释放另等finished控制确认。
+    facts: dict  # 本文件截至本包的累计事实，比面积包多frame_identity。
+
+
+def point_cost(event):
+    """按固定字段估算一个组点事件的保守编码与展开字节数，不遍历值内容。
+
+    参数: event为SameTimeGroupSummary（组点）或DeferredPointError（延迟错误）。
+    返回: tuple[int, int]，依次为保守编码字节数及模型展开字节数，不含整包事实。
+    异常: 未知事件时IntegralBlockError；延迟错误原文不能编码为UTF-8时UnicodeEncodeError。
+    编码上界：时间等整数最多18字节，单个数值最多39字节；展开上界与decode_points的charge一致。
+    """
+    from .file_group_points import DeferredPointError
+    from .file_integral_terms import SameTimeGroupSummary
+    if type(event) is SameTimeGroupSummary:
+        count=len(event.first_values)
+        # 单帧组点只传一份值；多帧组点传首值、末值和每个信号一个冲突位置。
+        if event.count==1:return 23+39*count,512+448*count
+        return 41+96*count,512+832*count
+    if type(event) is DeferredPointError:
+        size=len(event.message.encode('utf-8'))
+        return 24+size,512+4*size
+    raise IntegralBlockError('未知组点事件')
+
+
+def point_facts_cost(facts, cache):
+    """估算组点包事实的传输和展开字节数；两种包事实相同，直接沿用facts_cost。
+
+    参数: facts为含frame_identity的事实dict；cache为本批兼容字段费用缓存dict，同facts_cost。
+    返回: tuple[int, int]，与facts_cost相同。
+    异常: 缺字段时KeyError；原时间类型或UTF-8编码错误继续传播。
+    """
+    return facts_cost(facts,cache)
+
+
+def _write_facts(writer,facts):
+    """写文件事实：面积包在事件之后，组点包在事件之前。参数: writer为编码器；facts为固定事实dict。返回: None。
+    异常: 字段集合不符时ValueError；帧型结构非法或超长时IntegralBlockError。
+    """
+    keys(facts,_POINT_FACTS)
+    for name in _FACTS[:4]:writer.integer(facts[name])
+    for name in _FACTS[4:6]:writer.decimal(facts[name])
+    writer.count(len(facts['compatibility_fields']))
+    for name,value in facts['compatibility_fields']:
+        encoded=name.encode('utf-8');writer.count(len(encoded));writer.add(encoded);writer.byte(value)
+    identity=facts['frame_identity']
+    # 帧型为None表示本文件尚无目标帧；否则是（扩展帧, FD）两个bool，供主进程跨文件核对。
+    if identity is None:writer.byte(0);return
+    if type(identity) is not tuple or len(identity)!=2 or any(type(item) is not bool for item in identity):
+        raise IntegralBlockError('积分帧型需要两个bool')
+    writer.byte(1);writer.byte(identity[0]);writer.byte(identity[1])
+
+
+def _read_facts(reader):
+    """恢复文件事实。参数: reader为已读到事实位置的解码器（面积包在事件之后，组点包在EOF之后）。
+    返回: dict，字段同_POINT_FACTS。异常: 计数非法、截断或展开超限时IntegralBlockError；非法UTF-8继续传播。
+    """
     facts={name:reader.integer() for name in _FACTS[:4]}
     facts.update({name:reader.decimal() for name in _FACTS[4:6]})
     compatibility=[]
@@ -430,7 +531,129 @@ def decode_packet(packet):
         size=reader.count(WIRE_LIMIT);reader.charge(256+4*size)
         compatibility.append((reader.take(size).decode('utf-8'),reader.boolean()))
     facts['compatibility_fields']=tuple(compatibility)
+    facts['frame_identity']=(reader.boolean(),reader.boolean()) if reader.boolean() else None
     if any(type(facts[name]) is not int or facts[name]<0 for name in ('count','decode_calls')):
         raise IntegralBlockError('积分文件计数非法')
-    if reader.position!=len(packet):raise IntegralBlockError('积分块含尾随内容')
-    return IntegralPacket(index,number,tuple(events),eof,facts)
+    return facts
+
+
+def _check_point_time(value):
+    """核组点时间。参数: value为已解码或待编码的时间。返回: None。异常: 不是int64整数时IntegralBlockError。"""
+    if type(value) is not int or not -(1<<63)<=value<(1<<63):raise IntegralBlockError('组点时间需要int64纳秒')
+
+
+def _check_point_group(group):
+    """编码前核组点使用组内位置的约定。
+
+    参数: group为SameTimeGroupSummary。返回: None。
+    异常: 时间、帧数、组内位置或冲突位置不合约定时IntegralBlockError。
+    约定：first_sequence为0，last_sequence为帧数减1，冲突位置是组内第几帧（1至帧数减1）；
+    不传来源原序号，主进程按文件位置另加偏移（A2-2）。
+    """
+    _check_point_time(group.time_ns)
+    count=group.count
+    if type(count) is not int or count<1 or group.first_sequence!=0 or group.last_sequence!=count-1:
+        raise IntegralBlockError('组点帧数或组内位置非法')
+    size=len(group.first_values)
+    if size>4096 or len(group.last_values)!=size or len(group.first_conflicts)!=size:
+        raise IntegralBlockError('组点信号数不一致')
+    if count==1:
+        if group.first_values!=group.last_values or any(value is not None for value in group.first_conflicts):
+            raise IntegralBlockError('单帧组点不能有不同末值或冲突')
+    elif any(value is not None and (type(value) is not int or not 1<=value<count) for value in group.first_conflicts):
+        raise IntegralBlockError('组点冲突位置非法')
+
+
+def encode_points(file_index,number,events,eof,facts):
+    """编码一个组点块，事实在事件之前，数值位型不变。
+
+    参数: file_index和number为非负文件/块号；events为SameTimeGroupSummary或DeferredPointError的tuple，
+        最多MAX_POINTS个；eof为本文件数据终点bool；facts为含frame_identity的累计事实dict。
+    返回: bytes，含包头最多512KiB，标志P5G1。
+    异常: 事件过多、未知事件、组点约定不符、错误类型不在DEFERRED_KINDS、原文超过256KiB或包超限时
+        IntegralBlockError；事实字段不符时ValueError；编码原错误继续传播。
+    """
+    from .file_group_points import DeferredPointError
+    from .file_integral_terms import SameTimeGroupSummary
+    if len(events)>MAX_POINTS:raise IntegralBlockError('组点包超过2048个事件')
+    writer=_Writer();writer.integer(file_index);writer.integer(number);writer.byte(eof)
+    _write_facts(writer,facts)
+    writer.count(len(events))
+    for event in events:
+        if type(event) is SameTimeGroupSummary:
+            _check_point_group(event)
+            single=event.count==1
+            # 0为单帧组点，1为多帧组点；多帧另写帧数、末值和冲突位置。
+            writer.byte(0 if single else 1);writer.integer(event.time_ns)
+            if not single:writer.integer(event.count)
+            writer.count(len(event.first_values))
+            for value in event.first_values:_write_scalar(writer,value)
+            if not single:
+                for value in event.last_values:_write_scalar(writer,value)
+                for value in event.first_conflicts:writer.integer(value)
+        elif type(event) is DeferredPointError:
+            _check_point_time(event.time_ns)
+            # 类型按固定序号编码，不传类名；只接受四种内建类型本身，不接受子类。
+            kind=next((index for index,item in enumerate(DEFERRED_KINDS) if event.kind is item),None)
+            if kind is None:raise IntegralBlockError('延迟错误类型不受支持')
+            encoded=event.message.encode('utf-8')
+            if len(encoded)>POINT_MESSAGE_LIMIT:raise IntegralBlockError('延迟错误原文超过256KiB')
+            writer.byte(2);writer.integer(event.time_ns);writer.byte(kind);writer.count(len(encoded));writer.add(encoded)
+        else:raise IntegralBlockError('未知组点事件')
+    return _HEAD.pack(b'P5G1',len(writer.body))+writer.body
+
+
+def decode_points_prefix(packet):
+    """收包时只核包头并读到文件事实为止，不解码事件。
+
+    参数: packet为encode_points产生的bytes。
+    返回: tuple，依次为文件序号int、块号int、eof bool和facts dict。
+    异常: 标志、长度、编号或事实非法时IntegralBlockError；非法UTF-8继续传播。
+    事件部分的合法性留到decode_points在归并读回时检查，本函数不代替它。
+    """
+    reader=_Reader(packet,b'P5G1');index=reader.integer();number=reader.integer();eof=reader.boolean()
+    if any(type(value) is not int or value<0 for value in (index,number)):raise IntegralBlockError('组点文件或块号非法')
+    return index,number,eof,_read_facts(reader)
+
+
+def decode_points(packet):
+    """完整恢复一个组点块，并核完整消费与有界模型。
+
+    参数: packet为encode_points产生的bytes。
+    返回: PointPacket，事件按原顺序；组点的组内位置按A2-2约定恢复。
+    异常: 截断、非法计数/事件/位置、未知错误类型或展开超过4MiB时IntegralBlockError；
+        非法UTF-8及数值模型构造错误继续传播。只重建列出的模型，不加载任意类。
+    """
+    from .file_group_points import DeferredPointError
+    from .file_integral_terms import SameTimeGroupSummary
+    reader=_Reader(packet,b'P5G1');index=reader.integer();number=reader.integer();eof=reader.boolean()
+    if any(type(value) is not int or value<0 for value in (index,number)):raise IntegralBlockError('组点文件或块号非法')
+    facts=_read_facts(reader)
+    events=[]
+    for _ in range(reader.count(MAX_POINTS)):
+        kind=reader.byte()
+        if kind in (0,1):
+            time=reader.integer();_check_point_time(time)
+            frames=1 if kind==0 else reader.integer()
+            if kind==1 and (type(frames) is not int or frames<2):raise IntegralBlockError('多帧组点帧数非法')
+            size=reader.count()
+            # 先按信号数付组结构费用，每个数值另由_read_scalar付384字节。
+            reader.charge(512+64*size)
+            first=tuple(_read_scalar(reader) for _ in range(size))
+            if kind==0:
+                last,conflicts=first,(None,)*size
+            else:
+                last=tuple(_read_scalar(reader) for _ in range(size))
+                conflicts=tuple(reader.integer() for _ in range(size))
+                if any(value is not None and not 1<=value<frames for value in conflicts):
+                    raise IntegralBlockError('组点冲突位置非法')
+            events.append(SameTimeGroupSummary(time,0,frames-1,frames,first,last,conflicts))
+        elif kind==2:
+            time=reader.integer();_check_point_time(time)
+            position=reader.byte();size=reader.count(POINT_MESSAGE_LIMIT)
+            if position>=len(DEFERRED_KINDS):raise IntegralBlockError('延迟错误类型非法')
+            reader.charge(512+4*size)
+            events.append(DeferredPointError(time,DEFERRED_KINDS[position],reader.take(size).decode('utf-8')))
+        else:raise IntegralBlockError('组点事件标记非法')
+    if reader.position!=len(packet):raise IntegralBlockError('组点块含尾随内容')
+    return PointPacket(index,number,tuple(events),eof,facts)

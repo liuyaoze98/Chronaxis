@@ -1,6 +1,6 @@
 # 支持范围与限制
 
-本手册对应 Chronaxis 0.1.0.dev5，分析配置必须使用整数 `config_version: 4`。本版支持单位自动换算、统计、滚动计算和变化率。按[安装说明](installation.md)安装（推荐从 PyPI 安装同版本）后运行示例；旧版用户请先阅读[升级说明](../Release/release-notes-0.1.0.dev5.md)。YAML 适合手写配置，JSON 适合程序交换。
+本手册对应 Chronaxis 0.1.0.dev6，分析配置必须使用整数 `config_version: 4`。本版支持单位自动换算、统计、滚动计算和变化率。按[安装说明](installation.md)安装（推荐从 PyPI 安装同版本）后运行示例；旧版用户请先阅读[升级说明](../Release/release-notes-0.1.0.dev6.md)。YAML 适合手写配置，JSON 适合程序交换。
 
 | 能力 | 当前支持范围 |
 |---|---|

@@ -1,6 +1,6 @@
 # `chronaxis.execution.same_frame_integrals`
 
-把同一物理报文的简单数值表达式直接交给现役实际时间积分器。
+把同一物理报文的简单数值表达式直接交给现役积分器（实际间隔或同一固定间隔）。
 
 本对象只保存一个待完成同一时刻组；不构造信号数组、历史或通用最新状态。
 读取、DBC投影、范围推进、积分器及结果发布仍由原会话负责。只有首帧前
@@ -16,7 +16,10 @@
 
 |对象|用途|
 |---|---|
+|[`_direct_interval`](#api-_direct_interval)|判断一个已解析间隔能否由同帧分组直接驱动，不读取DBC或数据。|
 |[`direct_integral_inputs`](#api-direct_integral_inputs)|检查直接积分的完整静态边界，不读取DBC或数据。|
+|[`direct_integral_interval`](#api-direct_integral_interval)|读取已通过direct_integral_inputs的计划共用的积分间隔。|
+|[`dbc_driver_cycle`](#api-dbc_driver_cycle)|从同次DBC字段事实取各积分驱动报文的共同周期，不加载DBC。|
 |[`SameFrameBinding`](#api-SameFrameBinding)|保存同次DBC证明的共同定位；fd可为None，真实歧义继续由原投影器检查。|
 |[`SameFrameBinding.matches`](#api-SameFrameBinding-matches)|匹配已投影更新。|
 |[`same_frame_binding`](#api-same_frame_binding)|复用同次DBC字段事实证明唯一共同绑定，不加载文件。|
@@ -37,14 +40,16 @@
 |[`SameFrameEvaluator.normalize`](#api-SameFrameEvaluator-normalize)|归一化一条已投影报文，保留原质量规则。|
 |[`SameFrameEvaluator.evaluate`](#api-SameFrameEvaluator-evaluate)|对一个已解决同一时刻选择的组求值。|
 |[`SameFrameEvaluator.close`](#api-SameFrameEvaluator-close)|先解除闭包和声明引用再退款。|
+|[`same_frame_integrals_cost`](#api-same_frame_integrals_cost)|估算SameFrameIntegrals构造后常驻的自有费用，供首帧前准入使用。|
 |[`SameFrameIntegrals`](#api-SameFrameIntegrals)|拥有同一时刻选择和表达式上下文；借用积分器，关闭时不代替父会话关闭它们。|
 |[`SameFrameIntegrals.__init__`](#api-SameFrameIntegrals-__init__)|检查静态表达式与实定义，预付有界状态，不读取输入。|
 |[`SameFrameIntegrals._require_open`](#api-SameFrameIntegrals-_require_open)|失败后仅允许关闭。|
 |[`SameFrameIntegrals.consume`](#api-SameFrameIntegrals-consume)|接收一条已投影报文，完整同一时刻组才推进积分。|
 |[`SameFrameIntegrals._consume_fast`](#api-SameFrameIntegrals-_consume_fast)|浮点快速路径逐帧接收；检查、同一时刻选择和冲突规则与consume相同。|
+|[`SameFrameIntegrals.consume_group`](#api-SameFrameIntegrals-consume_group)|接收主进程已归并并通过冲突检查的一个同一时刻组，按与逐帧接收相同的规则求值并交给积分器。|
 |[`SameFrameIntegrals._flush_fast`](#api-SameFrameIntegrals-_flush_fast)|提交完整同一时刻组，取最早有效截止并追加到借用积分器。|
 |[`SameFrameIntegrals._flush`](#api-SameFrameIntegrals-_flush)|按已选求值路径提交完整同一时刻值并复用积分器。|
-|[`SameFrameIntegrals.finish`](#api-SameFrameIntegrals-finish)|在原读取器确认EOF并关闭后，补算到来源真实末端的保持尾段。|
+|[`SameFrameIntegrals.finish`](#api-SameFrameIntegrals-finish)|在原读取器确认EOF并关闭后，实际间隔补算到来源真实末端的保持尾段。|
 |[`SameFrameIntegrals.close`](#api-SameFrameIntegrals-close)|释放自有上下文及费用，借用积分器由父会话关闭。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -72,6 +77,34 @@ from .static_metadata import static_metadata_bytes
 
 </details>
 
+<a id="api-_direct_interval"></a>
+## `_direct_interval`
+
+判断一个已解析间隔能否由同帧分组直接驱动，不读取DBC或数据。
+
+```python
+_direct_interval(choice, dependencies) -> bool
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`choice`|IntervalChoice|是|无|位置或关键字。本积分项已解析的计算间隔；fixed和dbc已补齐驱动，DBC周期的数值在运行时由同次DBC核实，这里只判断驱动位置。|
+|`dependencies`|tuple[str, ...]|是|无|位置或关键字。本积分表达式引用的原信号别名；固定间隔和DBC周期的驱动必须在其中。|
+
+### 返回说明
+
+bool；实际间隔且无驱动、或固定间隔/DBC周期且驱动为表达式依赖时为True。
+
+### 异常说明
+
+无；未知模式按不适用处理，由原计划校验负责报错。
+
+返回类型：bool。
+
+源码：[`src/chronaxis/execution/same_frame_integrals.py:37`](../../../src/chronaxis/execution/same_frame_integrals.py#L37)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
 <a id="api-direct_integral_inputs"></a>
 ## `direct_integral_inputs`
 
@@ -94,10 +127,70 @@ direct_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...] | Non
 ### 异常说明
 
 非法带有明确类型的结构，不把运行错误当成选择其他路径的理由。
+全部积分项须使用同一种间隔：都为实际间隔、都为同一个固定间隔或都为DBC周期；
+混用或固定值不同的计划仍走原路径，避免父累计器和工作进程各用一套间隔。
+全部依赖属于同一报文，因此各DBC驱动的周期相同；数值在读取首帧前由同次DBC确定。
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...] &#124; None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:37`](../../../src/chronaxis/execution/same_frame_integrals.py#L37)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:52`](../../../src/chronaxis/execution/same_frame_integrals.py#L52)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
+<a id="api-direct_integral_interval"></a>
+## `direct_integral_interval`
+
+读取已通过direct_integral_inputs的计划共用的积分间隔。
+
+```python
+direct_integral_interval(plan: AnalysisPlan) -> tuple[str, int | None]
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。plan为direct_integral_inputs返回非None的计划。|
+
+### 返回说明
+
+(模式, 固定纳秒)。实际间隔为('actual', None)，固定间隔为('fixed', 正纳秒)，
+    DBC周期为('dbc', None)，其纳秒由dbc_driver_cycle按同次DBC事实取得。
+
+### 异常说明
+
+计划没有积分项或各项间隔不同时ValueError，防止调用方在未核实的计划上取用第一个积分项的间隔。
+
+返回类型：tuple[str, int &#124; None]。
+
+源码：[`src/chronaxis/execution/same_frame_integrals.py:95`](../../../src/chronaxis/execution/same_frame_integrals.py#L95)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
+<a id="api-dbc_driver_cycle"></a>
+## `dbc_driver_cycle`
+
+从同次DBC字段事实取各积分驱动报文的共同周期，不加载DBC。
+
+```python
+dbc_driver_cycle(plan: AnalysisPlan, fields: Sequence[Mapping]) -> int | None
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。plan为共用DBC周期的直接积分计划|
+|`fields`|Sequence[Mapping]|是|无|位置或关键字。fields为同次读取器交付的metadata['fields']，     每项含locator，按请求核实周期的字段另含正整数cycle_ns。|
+
+### 返回说明
+
+全部驱动共同的周期纳秒；任一驱动缺少周期事实或各驱动周期不同时返回None，
+    调用方据此在读取首帧前沿用普通路径。
+
+### 异常说明
+
+字段事实结构损坏时原样传播，不把损坏当成不适用。
+
+返回类型：int &#124; None。
+
+源码：[`src/chronaxis/execution/same_frame_integrals.py:111`](../../../src/chronaxis/execution/same_frame_integrals.py#L111)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameBinding"></a>
 ## `SameFrameBinding`
@@ -119,7 +212,7 @@ class SameFrameBinding
 |`fd`|bool &#124; None|是|无|原配置的CAN/FD约束；None保留原投影器的自动识别。|
 |`dbc_fd`|bool|是|无|DBC声明的FD属性，沿用经典CAN兼容规则。|
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:72`](../../../src/chronaxis/execution/same_frame_integrals.py#L72)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:134`](../../../src/chronaxis/execution/same_frame_integrals.py#L134)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameBinding-matches"></a>
 ### `SameFrameBinding.matches`
@@ -146,7 +239,7 @@ bool。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:82`](../../../src/chronaxis/execution/same_frame_integrals.py#L82)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:144`](../../../src/chronaxis/execution/same_frame_integrals.py#L144)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-same_frame_binding"></a>
 ## `same_frame_binding`
@@ -174,7 +267,7 @@ same_frame_binding(definitions: tuple[SignalDefinition, ...], facts: Sequence[Ma
 
 返回类型：[SameFrameBinding](chronaxis.execution.same_frame_integrals.md#api-SameFrameBinding) &#124; None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:91`](../../../src/chronaxis/execution/same_frame_integrals.py#L91)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:153`](../../../src/chronaxis/execution/same_frame_integrals.py#L153)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_NotCompilable"></a>
 ## `_NotCompilable`
@@ -188,7 +281,7 @@ class _NotCompilable(Exception)
 继承关系：Exception。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:129`](../../../src/chronaxis/execution/same_frame_integrals.py#L129)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:191`](../../../src/chronaxis/execution/same_frame_integrals.py#L191)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_has_shared_composite_nodes"></a>
 ## `_has_shared_composite_nodes`
@@ -214,7 +307,7 @@ _has_shared_composite_nodes(roots)
 非法内部树的属性错误；不改变合法表达式或求值规则。
 只遍历一次实际节点；共享派生树继续使用原求值核的单次结果缓存。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:138`](../../../src/chronaxis/execution/same_frame_integrals.py#L138)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:200`](../../../src/chronaxis/execution/same_frame_integrals.py#L200)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_compile_float_program"></a>
 ## `_compile_float_program`
@@ -241,7 +334,7 @@ _NotCompilable为非FLOAT64节点、非简单算子或编译期常量/系数不�
 规则来源: binary_reference（两侧原因并集、除零DOMAIN_ERROR、非有限NONFINITE）、
     unary_reference、to_float_reference、affine_reference（含纯倍率下溢PRECISION_LOSS）。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:158`](../../../src/chronaxis/execution/same_frame_integrals.py#L158)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:220`](../../../src/chronaxis/execution/same_frame_integrals.py#L220)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_compile_float_program-binary"></a>
 ### `_compile_float_program.binary`
@@ -269,7 +362,7 @@ _compile_float_program.binary(context, left=left, right=right, op=op)
 
 内部上下文缺键KeyError。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:183`](../../../src/chronaxis/execution/same_frame_integrals.py#L183)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:245`](../../../src/chronaxis/execution/same_frame_integrals.py#L245)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_compile_float_program-unary"></a>
 ### `_compile_float_program.unary`
@@ -296,7 +389,7 @@ _compile_float_program.unary(context, child=child, negate=negate)
 
 内部上下文缺键KeyError。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:212`](../../../src/chronaxis/execution/same_frame_integrals.py#L212)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:274`](../../../src/chronaxis/execution/same_frame_integrals.py#L274)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_compile_float_program-affine"></a>
 ### `_compile_float_program.affine`
@@ -324,7 +417,7 @@ _compile_float_program.affine(context, child=child, factor=factor, shift=shift)
 
 内部上下文缺键KeyError；数值失败作为质量返回。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:230`](../../../src/chronaxis/execution/same_frame_integrals.py#L230)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:292`](../../../src/chronaxis/execution/same_frame_integrals.py#L292)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_float_normalizer"></a>
 ## `_float_normalizer`
@@ -351,7 +444,7 @@ callable(raw)->(value, quality)。
 
 内部定义结构不合法时保留原TypeError或ValueError。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:248`](../../../src/chronaxis/execution/same_frame_integrals.py#L248)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:310`](../../../src/chronaxis/execution/same_frame_integrals.py#L310)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_float_normalizer-slow"></a>
 ### `_float_normalizer.slow`
@@ -376,7 +469,7 @@ _float_normalizer.slow(raw)
 
 原值不符合标量协议时保留参考核TypeError。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:261`](../../../src/chronaxis/execution/same_frame_integrals.py#L261)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:323`](../../../src/chronaxis/execution/same_frame_integrals.py#L323)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_float_normalizer-normalize"></a>
 ### `_float_normalizer.normalize`
@@ -401,7 +494,7 @@ _float_normalizer.normalize(raw)
 
 不支持的原值结构沿参考核报TypeError。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:272`](../../../src/chronaxis/execution/same_frame_integrals.py#L272)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:334`](../../../src/chronaxis/execution/same_frame_integrals.py#L334)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_same_value"></a>
 ## `_same_value`
@@ -429,7 +522,7 @@ bool。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:295`](../../../src/chronaxis/execution/same_frame_integrals.py#L295)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:357`](../../../src/chronaxis/execution/same_frame_integrals.py#L357)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_reference_group_values"></a>
 ## `_reference_group_values`
@@ -458,7 +551,7 @@ _reference_group_values(expressions, definitions, time, context)
 
 原表达式求值异常继续传播，不用空值代替错误。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:302`](../../../src/chronaxis/execution/same_frame_integrals.py#L302)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:364`](../../../src/chronaxis/execution/same_frame_integrals.py#L364)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-same_frame_evaluator_cost"></a>
 ## `same_frame_evaluator_cost`
@@ -485,7 +578,7 @@ int，非负的保守预约字节数。
 
 非法静态模型的原类型或属性错误。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:322`](../../../src/chronaxis/execution/same_frame_integrals.py#L322)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:384`](../../../src/chronaxis/execution/same_frame_integrals.py#L384)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameEvaluator"></a>
 ## `SameFrameEvaluator`
@@ -497,7 +590,7 @@ SameFrameEvaluator(budget, definitions, expressions, binding, session_id, *, der
 ```
 
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:333`](../../../src/chronaxis/execution/same_frame_integrals.py#L333)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:395`](../../../src/chronaxis/execution/same_frame_integrals.py#L395)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameEvaluator-__init__"></a>
 ### `SameFrameEvaluator.__init__`
@@ -528,7 +621,7 @@ None，构造新的有限求值owner。
 参数类型错误时TypeError；定义、绑定或表达式不一致时ValueError；
     预算不足时BudgetExceededError，清理失败附same_frame_evaluator_cleanup_owner。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:336`](../../../src/chronaxis/execution/same_frame_integrals.py#L336)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:398`](../../../src/chronaxis/execution/same_frame_integrals.py#L398)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameEvaluator-normalize"></a>
 ### `SameFrameEvaluator.normalize`
@@ -553,7 +646,7 @@ tuple[ScalarValue, ...]，与definitions的声明顺序一致。
 
 已关闭时ResultClosedError，缺少已证明字段时ValueError；原归一化异常继续传播。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:396`](../../../src/chronaxis/execution/same_frame_integrals.py#L396)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:458`](../../../src/chronaxis/execution/same_frame_integrals.py#L458)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameEvaluator-evaluate"></a>
 ### `SameFrameEvaluator.evaluate`
@@ -580,7 +673,7 @@ tuple[tuple[ScalarValue, int | None], ...]，与计算项同序；第二项为�
 
 已关闭时ResultClosedError；原表达式求值异常继续传播。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:420`](../../../src/chronaxis/execution/same_frame_integrals.py#L420)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:482`](../../../src/chronaxis/execution/same_frame_integrals.py#L482)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameEvaluator-close"></a>
 ### `SameFrameEvaluator.close`
@@ -606,7 +699,34 @@ None。
 
 预算退款失败可重试。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:445`](../../../src/chronaxis/execution/same_frame_integrals.py#L445)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:507`](../../../src/chronaxis/execution/same_frame_integrals.py#L507)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
+<a id="api-same_frame_integrals_cost"></a>
+## `same_frame_integrals_cost`
+
+估算SameFrameIntegrals构造后常驻的自有费用，供首帧前准入使用。
+
+```python
+same_frame_integrals_cost(definitions, expressions, derived=())
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`definitions`|tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...]|是|无|位置或关键字。同帧积分owner的信号定义。|
+|`expressions`|tuple[[StaticExpression](chronaxis.core.expression.md#api-StaticExpression), ...]|是|无|位置或关键字。与积分项同序的静态表达式。|
+|`derived`|tuple|否|()|位置或关键字。derived为DerivedDefinition tuple。|
+
+### 返回说明
+
+int，保守字节数：固定声明费、快速路径工作区及首个同一时刻槽之和（通用路径的逐帧工作区不常驻，按同额计入）。
+
+### 异常说明
+
+非法静态模型的原类型或属性错误；不构造owner、不修改账本。
+
+源码：[`src/chronaxis/execution/same_frame_integrals.py:517`](../../../src/chronaxis/execution/same_frame_integrals.py#L517)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals"></a>
 ## `SameFrameIntegrals`
@@ -618,7 +738,7 @@ SameFrameIntegrals(budget: ResourceBudget, definitions: tuple[SignalDefinition, 
 ```
 
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:455`](../../../src/chronaxis/execution/same_frame_integrals.py#L455)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:529`](../../../src/chronaxis/execution/same_frame_integrals.py#L529)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-__init__"></a>
 ### `SameFrameIntegrals.__init__`
@@ -652,7 +772,7 @@ None。构造器预付并安装自有状态；调用SameFrameIntegrals(...)取�
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:458`](../../../src/chronaxis/execution/same_frame_integrals.py#L458)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:532`](../../../src/chronaxis/execution/same_frame_integrals.py#L532)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-_require_open"></a>
 ### `SameFrameIntegrals._require_open`
@@ -680,7 +800,7 @@ ResultClosedError。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:547`](../../../src/chronaxis/execution/same_frame_integrals.py#L547)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:627`](../../../src/chronaxis/execution/same_frame_integrals.py#L627)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-consume"></a>
 ### `SameFrameIntegrals.consume`
@@ -708,7 +828,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:552`](../../../src/chronaxis/execution/same_frame_integrals.py#L552)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:632`](../../../src/chronaxis/execution/same_frame_integrals.py#L632)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-_consume_fast"></a>
 ### `SameFrameIntegrals._consume_fast`
@@ -737,7 +857,39 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:606`](../../../src/chronaxis/execution/same_frame_integrals.py#L606)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:686`](../../../src/chronaxis/execution/same_frame_integrals.py#L686)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+
+<a id="api-SameFrameIntegrals-consume_group"></a>
+### `SameFrameIntegrals.consume_group`
+
+接收主进程已归并并通过冲突检查的一个同一时刻组，按与逐帧接收相同的规则求值并交给积分器。
+
+供time_order组点路径使用（PERF-P5-ORDER-01 A2-6）：同一时刻选择已由工作进程和主进程归并完成，
+这里不再做投影、同一时刻选择或冲突检查，只沿用_flush/_flush_fast的求值、有效期和积分器推进。
+
+```python
+SameFrameIntegrals.consume_group(time: int, values: tuple) -> None
+```
+
+#### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`time`|int|是|无|位置或关键字。time为本组实际纳秒int，须严格晚于上一组|
+|`values`|tuple|是|无|位置或关键字。values为按definitions顺序的ScalarValue tuple，     即各信号在本组最后一帧的归一化值（无效值也覆盖）。|
+
+#### 返回说明
+
+None。
+
+#### 异常说明
+
+已关闭/失败时ResultClosedError；已用逐帧接收、时间不递增或值个数不符时ValueError；
+    求值、积分器和预算原错误继续传播；任何错误后owner只能关闭。
+
+返回类型：None。
+
+源码：[`src/chronaxis/execution/same_frame_integrals.py:738`](../../../src/chronaxis/execution/same_frame_integrals.py#L738)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-_flush_fast"></a>
 ### `SameFrameIntegrals._flush_fast`
@@ -765,7 +917,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:658`](../../../src/chronaxis/execution/same_frame_integrals.py#L658)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:769`](../../../src/chronaxis/execution/same_frame_integrals.py#L769)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-_flush"></a>
 ### `SameFrameIntegrals._flush`
@@ -793,12 +945,12 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:689`](../../../src/chronaxis/execution/same_frame_integrals.py#L689)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:800`](../../../src/chronaxis/execution/same_frame_integrals.py#L800)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-finish"></a>
 ### `SameFrameIntegrals.finish`
 
-在原读取器确认EOF并关闭后，补算到来源真实末端的保持尾段。
+在原读取器确认EOF并关闭后，实际间隔补算到来源真实末端的保持尾段。
 
 ```python
 SameFrameIntegrals.finish(observed_end: int | None) -> None
@@ -818,10 +970,12 @@ None。
 
 原数值、预算或取消错误。
 不替代EOF证明，不把domain.end当采集终点，不虚构固定周期。
+固定间隔只在相邻两条驱动记录之间计面积，最后一条驱动记录之后没有下一次
+驱动更新，因此与通用路径一样不补尾段。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:728`](../../../src/chronaxis/execution/same_frame_integrals.py#L728)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:839`](../../../src/chronaxis/execution/same_frame_integrals.py#L839)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-SameFrameIntegrals-close"></a>
 ### `SameFrameIntegrals.close`
@@ -849,13 +1003,13 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/same_frame_integrals.py:752`](../../../src/chronaxis/execution/same_frame_integrals.py#L752)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/execution/same_frame_integrals.py:865`](../../../src/chronaxis/execution/same_frame_integrals.py#L865)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 ## 内部匿名回调
 
 
-<a id="lambda-174"></a>
-### 第174行匿名函数
+<a id="lambda-236"></a>
+### 第236行匿名函数
 
 ```python
 lambda context: pair
@@ -865,8 +1019,8 @@ lambda context: pair
 |---|---|---|
 |`context`|参数按上方签名传入；具体调用语义尚待补充。|返回值由上方表达式决定；具体用途和异常尚待核对，不据模板推断。|
 
-<a id="lambda-179"></a>
-### 第179行匿名函数
+<a id="lambda-241"></a>
+### 第241行匿名函数
 
 ```python
 lambda context: context[name]

@@ -56,7 +56,7 @@ class TimeOverflowError(OverflowError)
 继承关系：OverflowError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/timebase/conversion.py:38`](../../../src/chronaxis/timebase/conversion.py#L38)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:38`](../../../src/chronaxis/timebase/conversion.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-TimeConversion"></a>
 ## `TimeConversion`
@@ -84,7 +84,7 @@ TimeConversion(time_ns: int, input_representation: str, input_unit: str, input_t
 |`rounding`|str|否|'round_half_even'|最终纳秒固定采用最近偶数舍入。|
 |`source_timezone`|str &#124; None|否|None|日期实际采用的tzinfo说明，纯数值不猜。|
 
-源码：[`src/chronaxis/timebase/conversion.py:47`](../../../src/chronaxis/timebase/conversion.py#L47)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:47`](../../../src/chronaxis/timebase/conversion.py#L47)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-require_int64_ns"></a>
 ## `require_int64_ns`
@@ -113,7 +113,7 @@ TypeError: 非整数或bool，不能靠隐式截断转换。
 
 返回类型：int。
 
-源码：[`src/chronaxis/timebase/conversion.py:65`](../../../src/chronaxis/timebase/conversion.py#L65)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:65`](../../../src/chronaxis/timebase/conversion.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_decimal_input"></a>
 ## `_decimal_input`
@@ -149,7 +149,7 @@ TypeError: 布尔或未支持的类型。
 
 返回类型：tuple[Decimal, str, str]。
 
-源码：[`src/chronaxis/timebase/conversion.py:97`](../../../src/chronaxis/timebase/conversion.py#L97)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:97`](../../../src/chronaxis/timebase/conversion.py#L97)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-convert_time"></a>
 ## `convert_time`
@@ -188,7 +188,7 @@ TypeError或ValueError: 输入类型、文本语法、有效数字长度或单�
 
 返回类型：[TimeConversion](chronaxis.timebase.conversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:149`](../../../src/chronaxis/timebase/conversion.py#L149)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:149`](../../../src/chronaxis/timebase/conversion.py#L149)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-parse_duration"></a>
 ## `parse_duration`
@@ -217,7 +217,7 @@ TypeError: 非文本。
 
 返回类型：[TimeConversion](chronaxis.timebase.conversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:210`](../../../src/chronaxis/timebase/conversion.py#L210)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:210`](../../../src/chronaxis/timebase/conversion.py#L210)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-parse_datetime_ns"></a>
 ## `parse_datetime_ns`
@@ -251,7 +251,7 @@ TypeError/ValueError: 文本/时区非法、naive缺时区、本地时刻模糊�
 
 返回类型：[TimeConversion](chronaxis.timebase.conversion.md#api-TimeConversion)。
 
-源码：[`src/chronaxis/timebase/conversion.py:242`](../../../src/chronaxis/timebase/conversion.py#L242)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:242`](../../../src/chronaxis/timebase/conversion.py#L242)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-checked_add_ns"></a>
 ## `checked_add_ns`
@@ -280,7 +280,7 @@ TypeError: 任一输入不是非布尔整数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/timebase/conversion.py:307`](../../../src/chronaxis/timebase/conversion.py#L307)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:307`](../../../src/chronaxis/timebase/conversion.py#L307)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-shift_times_reference"></a>
 ## `shift_times_reference`
@@ -312,7 +312,7 @@ TypeError/TimeOverflowError: 参数类型或任一坐标/结果超界。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/timebase/conversion.py:325`](../../../src/chronaxis/timebase/conversion.py#L325)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:325`](../../../src/chronaxis/timebase/conversion.py#L325)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-time_deltas_reference"></a>
 ## `time_deltas_reference`
@@ -348,4 +348,4 @@ TypeError/ValueError: 非整数或来源内时间回退。
 
 返回类型：tuple[int, ...]。
 
-源码：[`src/chronaxis/timebase/conversion.py:344`](../../../src/chronaxis/timebase/conversion.py#L344)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:344`](../../../src/chronaxis/timebase/conversion.py#L344)（行号对应 Chronaxis 0.1.0.dev6 源码）。

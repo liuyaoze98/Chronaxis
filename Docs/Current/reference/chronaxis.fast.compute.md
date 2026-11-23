@@ -47,7 +47,7 @@ _float(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:17`](../../../src/chronaxis/fast/compute.py#L17)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:17`](../../../src/chronaxis/fast/compute.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_typed"></a>
 ## `_typed`
@@ -65,7 +65,7 @@ _typed(value, dtype)
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 |`dtype`|str|是|无|位置或关键字。要得到的 int64、uint64 或 float64，决定合法范围与转换规则。|
 
-源码：[`src/chronaxis/fast/compute.py:27`](../../../src/chronaxis/fast/compute.py#L27)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:27`](../../../src/chronaxis/fast/compute.py#L27)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_number_type"></a>
 ## `_number_type`
@@ -82,7 +82,7 @@ _number_type(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:39`](../../../src/chronaxis/fast/compute.py#L39)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:39`](../../../src/chronaxis/fast/compute.py#L39)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_affine"></a>
 ## `_affine`
@@ -102,7 +102,7 @@ _affine(value, scale, offset, dtype)
 |`offset`|int &#124; float|是|无|位置或关键字。乘倍率后增加的偏移，与输出类型一起核验。|
 |`dtype`|str|是|无|位置或关键字。要得到的 int64、uint64 或 float64，决定合法范围与转换规则。|
 
-源码：[`src/chronaxis/fast/compute.py:51`](../../../src/chronaxis/fast/compute.py#L51)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:51`](../../../src/chronaxis/fast/compute.py#L51)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-encode_program"></a>
 ## `encode_program`
@@ -119,7 +119,7 @@ encode_program(node)
 |---|---|---|---|---|
 |`node`|ExprNode|是|无|位置或关键字。已通过类型和单位检查的表达式节点，编码后传给文件进程。|
 
-源码：[`src/chronaxis/fast/compute.py:61`](../../../src/chronaxis/fast/compute.py#L61)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:61`](../../../src/chronaxis/fast/compute.py#L61)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_syntax"></a>
 ## `_syntax`
@@ -138,7 +138,7 @@ _syntax(text, signals, parameters)
 |`signals`|dict|是|无|位置或关键字。别名到本帧 DBC 信号、数值类型和线性变换的映射。|
 |`parameters`|dict|是|无|位置或关键字。公式引用的有限数值常量，名称不能与信号冲突。|
 
-源码：[`src/chronaxis/fast/compute.py:78`](../../../src/chronaxis/fast/compute.py#L78)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:78`](../../../src/chronaxis/fast/compute.py#L78)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_syntax-literal"></a>
 ### `_syntax.literal`
@@ -155,7 +155,7 @@ _syntax.literal(value)
 |---|---|---|---|---|
 |`value`|int &#124; float|是|无|位置或关键字。要检查的数值，按本操作约束核验类型、精度和有限性。|
 
-源码：[`src/chronaxis/fast/compute.py:86`](../../../src/chronaxis/fast/compute.py#L86)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:86`](../../../src/chronaxis/fast/compute.py#L86)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_syntax-visit"></a>
 ### `_syntax.visit`
@@ -172,7 +172,7 @@ _syntax.visit(node)
 |---|---|---|---|---|
 |`node`|ast.AST|是|无|位置或关键字。正在检查的语法树节点，仅接受数值算术和受支持的名称。|
 
-源码：[`src/chronaxis/fast/compute.py:89`](../../../src/chronaxis/fast/compute.py#L89)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:89`](../../../src/chronaxis/fast/compute.py#L89)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_bind"></a>
 ## `_bind`
@@ -191,7 +191,7 @@ _bind(node, signals, depth=0)
 |`signals`|dict|是|无|位置或关键字。别名到本帧 DBC 信号、数值类型和线性变换的映射。|
 |`depth`|int|否|0|位置或关键字。当前绑定的指令嵌套深度，用来限制递归。|
 
-源码：[`src/chronaxis/fast/compute.py:115`](../../../src/chronaxis/fast/compute.py#L115)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:115`](../../../src/chronaxis/fast/compute.py#L115)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Accumulator"></a>
 ## `_Accumulator`
@@ -203,7 +203,7 @@ _Accumulator(spec)
 ```
 
 
-源码：[`src/chronaxis/fast/compute.py:159`](../../../src/chronaxis/fast/compute.py#L159)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:159`](../../../src/chronaxis/fast/compute.py#L159)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Accumulator-__init__"></a>
 ### `_Accumulator.__init__`
@@ -220,7 +220,7 @@ _Accumulator.__init__(spec)
 |---|---|---|---|---|
 |`spec`|dict[str, object]|是|无|位置或关键字。当前计算项的内部声明，读取 name 和 unit；累计值及观测计数从空状态开始。|
 
-源码：[`src/chronaxis/fast/compute.py:162`](../../../src/chronaxis/fast/compute.py#L162)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:162`](../../../src/chronaxis/fast/compute.py#L162)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Accumulator-add"></a>
 ### `_Accumulator.add`
@@ -238,7 +238,7 @@ _Accumulator.add(contribution, keep)
 |`contribution`|float|是|无|位置或关键字。已求值、换算和检查的当前帧贡献；入选时按原顺序加入总量。|
 |`keep`|bool|是|无|位置或关键字。当前帧是否进入所选方向桶；False 仍增加匹配计数，不增加入选数或总量。|
 
-源码：[`src/chronaxis/fast/compute.py:168`](../../../src/chronaxis/fast/compute.py#L168)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:168`](../../../src/chronaxis/fast/compute.py#L168)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Accumulator-result"></a>
 ### `_Accumulator.result`
@@ -252,7 +252,7 @@ _Accumulator.result()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/fast/compute.py:175`](../../../src/chronaxis/fast/compute.py#L175)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:175`](../../../src/chronaxis/fast/compute.py#L175)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Metric"></a>
 ## `_Metric`
@@ -266,7 +266,7 @@ _Metric(spec, formula)
 继承关系：[_Accumulator](chronaxis.fast.compute.md#api-_Accumulator)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/fast/compute.py:182`](../../../src/chronaxis/fast/compute.py#L182)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:182`](../../../src/chronaxis/fast/compute.py#L182)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Metric-__init__"></a>
 ### `_Metric.__init__`
@@ -284,7 +284,7 @@ _Metric.__init__(spec, formula)
 |`spec`|dict|是|无|位置或关键字。一个指标的绑定、公式、输出尺度和可选方向桶。|
 |`formula`|Callable|是|无|位置或关键字。已绑定的数值函数，输入当前帧的物理解码字典。|
 
-源码：[`src/chronaxis/fast/compute.py:185`](../../../src/chronaxis/fast/compute.py#L185)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:185`](../../../src/chronaxis/fast/compute.py#L185)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Metric-consume"></a>
 ### `_Metric.consume`
@@ -301,7 +301,7 @@ _Metric.consume(decoded)
 |---|---|---|---|---|
 |`decoded`|dict|是|无|位置或关键字。当前 DBC 报文的信号名到物理值映射，供求值后按原方向分桶。|
 
-源码：[`src/chronaxis/fast/compute.py:196`](../../../src/chronaxis/fast/compute.py#L196)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:196`](../../../src/chronaxis/fast/compute.py#L196)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_Metric-contribution"></a>
 ### `_Metric.contribution`
@@ -326,7 +326,7 @@ _Metric.contribution(decoded)
 
 类型、单位换算、公式或方向值错误；未入桶也必须先求值。
 
-源码：[`src/chronaxis/fast/compute.py:201`](../../../src/chronaxis/fast/compute.py#L201)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:201`](../../../src/chronaxis/fast/compute.py#L201)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-prepare_metric"></a>
 ## `prepare_metric`
@@ -343,7 +343,7 @@ prepare_metric(spec)
 |---|---|---|---|---|
 |`spec`|dict|是|无|位置或关键字。一个指标的绑定、公式、输出尺度和可选方向桶。|
 
-源码：[`src/chronaxis/fast/compute.py:218`](../../../src/chronaxis/fast/compute.py#L218)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:218`](../../../src/chronaxis/fast/compute.py#L218)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_prepare_program_metric"></a>
 ## `_prepare_program_metric`
@@ -369,7 +369,7 @@ _prepare_program_metric(spec)
 指令、类型或数值声明错误。
 仅内部调用；普通字典入口仍通过 prepare_metric 检查文本，即使带有 program。
 
-源码：[`src/chronaxis/fast/compute.py:227`](../../../src/chronaxis/fast/compute.py#L227)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:227`](../../../src/chronaxis/fast/compute.py#L227)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_check_program_spec"></a>
 ## `_check_program_spec`
@@ -394,7 +394,7 @@ _check_program_spec(spec)
 
 与 prepare_metric 相同；非法文本不能借合法 program 绕过检查。
 
-源码：[`src/chronaxis/fast/compute.py:240`](../../../src/chronaxis/fast/compute.py#L240)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/fast/compute.py:240`](../../../src/chronaxis/fast/compute.py#L240)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 ## 内部匿名回调
 

@@ -1,4 +1,4 @@
-"""把同一物理报文的简单数值表达式直接交给现役实际时间积分器。
+"""把同一物理报文的简单数值表达式直接交给现役积分器（实际间隔或同一固定间隔）。
 
 本对象只保存一个待完成同刻组；不构造信号数组、历史或通用最新状态。
 读取、DBC投影、范围推进、积分器及结果发布仍由原会话负责。只有首帧前
@@ -34,11 +34,29 @@ if TYPE_CHECKING:
     from .record_integral import RecordIntegral
 
 
+def _direct_interval(choice, dependencies) -> bool:
+    """判断一个已解析间隔能否由同帧分组直接驱动，不读取DBC或数据。
+
+    参数: choice为IntervalChoice；dependencies为本积分表达式的原信号别名集合。
+    返回: bool。实际间隔要求没有驱动；固定间隔和DBC周期要求驱动是表达式依赖之一。
+        同一报文的每帧都会投影全部已请求字段（缺失或解码失败为无效值），
+        所以这类驱动的每次更新恰好对应直接路径的一个同刻组。
+        DBC周期的数值在运行时由同次DBC加载核实，这里只判断驱动位置。
+    异常: 无；未知模式按不适用处理，由原计划校验负责报错。
+    """
+    if choice.mode == 'actual':
+        return choice.driver is None
+    return choice.mode in ('fixed', 'dbc') and choice.driver in dependencies
+
+
 def direct_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...] | None:
     """检查直接积分的完整静态边界，不读取DBC或数据。
 
     参数: 已选reference的计划。返回: 本次必要定义tuple；不适用为None。
     异常: 非法typed结构，不把运行错误当成选择其他路径的理由。
+    全部积分项须使用同一种间隔：都为实际间隔、都为同一个固定间隔或都为DBC周期；
+    混用或固定值不同的计划仍走原路径，避免父累计器和工作进程各用一套间隔。
+    全部依赖属于同一报文，因此各DBC驱动的周期相同；数值在读取首帧前由同次DBC确定。
     """
     if (plan.execution.backend != 'reference' or plan.extensions is not None
             or plan.rules or plan.windows or plan.sequences or plan.transforms or plan.aggregations
@@ -46,14 +64,20 @@ def direct_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...] |
             or plan.outputs.signal_csv is not None or plan.outputs.can_frames is not None
             or plan.diagnostics.trace or plan.diagnostics.integrity):
         return None
-    choices, used = dict(plan.intervals.resolved), set()
+    choices, used, kinds = dict(plan.intervals.resolved), set(), set()
     for item in plan.calculations:
         if (item.operation != 'integral' or item.scope != 'session' or item.method != 'zoh'
                 or item.condition is not None or not simple_numeric_expression(item.signal)
-                or item.calculation_id not in choices or choices[item.calculation_id].mode != 'actual'
-                or choices[item.calculation_id].driver is not None):
+                or item.calculation_id not in choices
+                or not _direct_interval(choices[item.calculation_id], item.signal.dependencies)):
             return None
+        # 以(模式, 固定纳秒)区分间隔：实际与DBC的纳秒都为None，只看纳秒会把二者混为一类。
+        # 集合多于一项即表示混用或固定值不同。
+        choice = choices[item.calculation_id]
+        kinds.add((choice.mode, choice.step_ns))
         used.update(item.signal.dependencies)
+    if len(kinds) != 1:
+        return None
     definitions = tuple(item.definition for item in plan.signals if item.definition.name in used)
     if {item.name for item in definitions} != used or len({item.source for item in definitions}) != 1:
         return None
@@ -66,6 +90,44 @@ def direct_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...] |
     if any(item.dtype not in (D.INT64, D.UINT64, D.FLOAT64) or item.capture_code for item in definitions):
         return None
     return definitions
+
+
+def direct_integral_interval(plan: AnalysisPlan) -> tuple[str, int | None]:
+    """读取已通过direct_integral_inputs的计划共用的积分间隔。
+
+    参数: plan为direct_integral_inputs返回非None的计划。
+    返回: (模式, 固定纳秒)。实际间隔为('actual', None)，固定间隔为('fixed', 正纳秒)，
+        DBC周期为('dbc', None)，其纳秒由dbc_driver_cycle按同次DBC事实取得。
+    异常: 计划没有积分项或各项间隔不同时ValueError，防止调用方在未核实的计划上取用第一个积分项的间隔。
+    """
+    choices = dict(plan.intervals.resolved)
+    kinds = {(choices[item.calculation_id].mode, choices[item.calculation_id].step_ns)
+             for item in plan.calculations if item.calculation_id in choices}
+    if len(kinds) != 1:
+        raise ValueError('直接积分需要全部积分项共用实际间隔、同一个固定间隔或DBC周期')
+    return next(iter(kinds))
+
+
+def dbc_driver_cycle(plan: AnalysisPlan, fields: Sequence[Mapping]) -> int | None:
+    """从同次DBC字段事实取各积分驱动报文的共同周期，不加载DBC。
+
+    参数: plan为共用DBC周期的直接积分计划；fields为同次读取器交付的metadata['fields']，
+        每项含locator，按请求核实周期的字段另含正整数cycle_ns。
+    返回: 全部驱动共同的周期纳秒；任一驱动缺少周期事实或各驱动周期不同时返回None，
+        调用方据此在读取首帧前沿用普通路径。
+    异常: 字段事实结构损坏时原样传播，不把损坏当成不适用。
+    """
+    choices = dict(plan.intervals.resolved)
+    signals = {item.definition.name: item.definition for item in plan.signals}
+    # 与普通路径相同，用字段定位key匹配事实；不按名称或报文猜周期。
+    by_field = {field_from_dict(dict(fact['locator'])).key: fact for fact in fields}
+    cycles = set()
+    for item in plan.calculations:
+        fact = by_field.get(signals[choices[item.calculation_id].driver].field)
+        if fact is None or 'cycle_ns' not in fact:
+            return None
+        cycles.add(fact['cycle_ns'])
+    return next(iter(cycles)) if len(cycles) == 1 else None
 
 
 @dataclass(frozen=True)
@@ -452,6 +514,18 @@ class SameFrameEvaluator:
         self._closed = True
 
 
+def same_frame_integrals_cost(definitions, expressions, derived=()):
+    """估算SameFrameIntegrals构造后常驻的自有费用，供首帧前准入使用。
+
+    参数: definitions为SignalDefinition tuple；expressions为StaticExpression tuple；derived为DerivedDefinition tuple。
+    返回: int，保守字节数：固定声明费、快速路径工作区及首个同刻槽之和（通用路径的逐帧工作区不常驻，按同额计入）。
+    异常: 非法静态模型的原类型或属性错误；不构造owner、不修改账本。
+    """
+    trees = tuple((expr.root, expr.text, expr.normalized_ast, expr.dependencies) for expr in expressions)
+    return (131072 + 32 * static_metadata_bytes((definitions, trees, derived))
+            + 65536 + 32 * static_metadata_bytes(tuple(expr.root for expr in expressions)) + _SEQUENCE_SLOT_BYTES)
+
+
 class SameFrameIntegrals:
     """拥有同刻选择和表达式上下文；借用积分器，关闭时不代替父会话关闭它们。"""
 
@@ -478,6 +552,7 @@ class SameFrameIntegrals:
         self._time = self._last_time = None
         self._binding, self._session = binding, session_id
         self._fast = False
+        self._step_ns = None  # 构造核实后为各积分器共用的间隔：None为实际间隔，正整数为固定纳秒。
         self._programs = self._normalizers = self._deps = self._ttl = None
         try:
             # bindings由父计划持有；这里只计校验树、当前字段索引和必要同刻槽。
@@ -510,10 +585,15 @@ class SameFrameIntegrals:
                     if declared != actual:
                         raise ValueError('同帧表达式与实际定义不一致：' + name)
                 expression.bindings.require_synchronized(expression.dependencies)
-                if (calculation._step_ns is not None or calculation._conditioned
+                if (calculation._conditioned
                         or calculation._dtype != expression.root.dtype
                         or calculation._input_unit != expression.root.unit):
-                    raise ValueError('同帧表达式与实际时间积分器不一致')
+                    raise ValueError('同帧表达式与积分器不一致')
+            # 积分器可为实际间隔(None)或同一个固定间隔；混用时尾段规则无法统一，直接拒绝。
+            steps = {calculation._step_ns for calculation in calculations}
+            if len(steps) != 1:
+                raise ValueError('同帧积分各积分器必须共用实际间隔或同一个固定间隔')
+            self._step_ns = next(iter(steps))
             self._definitions, self._fields = by_name, fields
             self._expressions, self._calculations = expressions, calculations
             self._chosen, self._seen = {}, set()
@@ -655,6 +735,37 @@ class SameFrameIntegrals:
             # 与consume相同：异常回溯不钉住本帧消息、原值映射或选择状态。
             update = raw = chosen = pending = pair = previous = normalize = None
 
+    def consume_group(self, time: int, values: tuple) -> None:
+        """接收主进程已归并并通过冲突检查的一个同刻组，按与逐帧接收相同的规则求值并交给积分器。
+
+        供time_order组点路径使用（PERF-P5-ORDER-01 A2-6）：同刻选择已由工作进程和主进程归并完成，
+        这里不再做投影、同刻选择或冲突检查，只沿用_flush/_flush_fast的求值、有效期和积分器推进。
+        参数: time为本组实际纳秒int，须严格晚于上一组；values为按definitions顺序的ScalarValue tuple，
+            即各信号在本组最后一帧的归一化值（无效值也覆盖）。
+        返回: None。
+        异常: 已关闭/失败时ResultClosedError；已用逐帧接收、时间不递增或值个数不符时ValueError；
+            求值、积分器和预算原错误继续传播；任何错误后owner只能关闭。
+        """
+        self._require_open()
+        try:
+            if self._time is not None or self._seen:
+                raise ValueError('同帧积分不能混用逐帧接收与归并组接收')
+            if type(time) is not int or self._last_time is not None and time <= self._last_time:
+                raise ValueError('同帧积分需要严格递增的组时间')
+            if type(values) is not tuple or len(values) != len(self._fields):
+                raise ValueError('同帧归并组的信号数与定义不一致')
+            if self._fast:
+                # 快速路径的上下文是(数值, 无效原因)对；与逐帧归一化得到的对逐位相同。
+                self._chosen = {alias: (0, (value.value, None if value.valid else value.quality))
+                                for (alias, _, _, _), value in zip(self._normalizers, values)}
+            else:
+                self._chosen = {definition.name: (0, value) for (definition, _), value in zip(self._fields, values)}
+            self._time = self._last_time = time
+            self._flush()
+        except BaseException:
+            self._failed = True
+            raise
+
     def _flush_fast(self) -> None:
         """提交完整同刻组，取最早有效截止并追加到借用积分器。
 
@@ -726,16 +837,18 @@ class SameFrameIntegrals:
                 primary.add_note('同帧表达式工作区清理失败：' + type(cleanup).__name__)
 
     def finish(self, observed_end: int | None) -> None:
-        """在原读取器确认EOF并关闭后，补算到来源真实末端的保持尾段。
+        """在原读取器确认EOF并关闭后，实际间隔补算到来源真实末端的保持尾段。
 
         参数: 来源实际末端或None。返回: None。异常: 原数值、预算或取消错误。
         不替代EOF证明，不把domain.end当采集终点，不虚构固定周期。
+        固定间隔只在相邻两条驱动记录之间计面积，最后一条驱动记录之后没有下一次
+        驱动更新，因此与通用路径一样不补尾段。
         """
         self._require_open()
         try:
             self._before_group()
             self._flush()
-            if observed_end is not None:
+            if observed_end is not None and self._step_ns is None:
                 for calculation in self._calculations:
                     if calculation._rows and calculation._last_time < observed_end:
                         time, value, deadline, _, _ = calculation._rows[-1]

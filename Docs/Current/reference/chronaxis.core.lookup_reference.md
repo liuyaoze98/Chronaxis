@@ -52,4 +52,4 @@ lookup_reference(table, value)
 
 非法声明类型。
 
-源码：[`src/chronaxis/core/lookup_reference.py:13`](../../../src/chronaxis/core/lookup_reference.py#L13)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/core/lookup_reference.py:13`](../../../src/chronaxis/core/lookup_reference.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。

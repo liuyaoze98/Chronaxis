@@ -129,7 +129,7 @@ Register trusted callbacks in Python and pass the same immutable registry when l
 
 ## Source locations
 
-- [`src/chronaxis/planning/plan.py:63`](../../../../src/chronaxis/planning/plan.py#L63) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/planning/plan.py:109`](../../../../src/chronaxis/planning/plan.py#L109) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/planning/plan.py:114`](../../../../src/chronaxis/planning/plan.py#L114) — line number in the Chronaxis 0.1.0.dev5 source.
-- [`src/chronaxis/planning/plan.py:121`](../../../../src/chronaxis/planning/plan.py#L121) — line number in the Chronaxis 0.1.0.dev5 source.
+- [`src/chronaxis/planning/plan.py:63`](../../../../src/chronaxis/planning/plan.py#L63) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/planning/plan.py:109`](../../../../src/chronaxis/planning/plan.py#L109) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/planning/plan.py:114`](../../../../src/chronaxis/planning/plan.py#L114) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/planning/plan.py:121`](../../../../src/chronaxis/planning/plan.py#L121) — line number in the Chronaxis 0.1.0.dev6 source.

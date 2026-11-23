@@ -71,7 +71,7 @@ native(value, depth=0)
 
 类型、深度或非有限数错误。
 
-源码：[`src/chronaxis/_control_models.py:21`](../../../src/chronaxis/_control_models.py#L21)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:21`](../../../src/chronaxis/_control_models.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-keys"></a>
 ## `keys`
@@ -97,7 +97,7 @@ keys(data, names)
 
 缺项、多项或非字典时ValueError。
 
-源码：[`src/chronaxis/_control_models.py:45`](../../../src/chronaxis/_control_models.py#L45)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:45`](../../../src/chronaxis/_control_models.py#L45)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-extract"></a>
 ## `extract`
@@ -123,7 +123,7 @@ extract(value, names)
 
 缺少已声明属性时AttributeError。
 
-源码：[`src/chronaxis/_control_models.py:57`](../../../src/chronaxis/_control_models.py#L57)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:57`](../../../src/chronaxis/_control_models.py#L57)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_scalar"></a>
 ## `_scalar`
@@ -148,7 +148,7 @@ _scalar(value)
 
 未支持类型时ValueError。
 
-源码：[`src/chronaxis/_control_models.py:67`](../../../src/chronaxis/_control_models.py#L67)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:67`](../../../src/chronaxis/_control_models.py#L67)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_restore_scalar"></a>
 ## `_restore_scalar`
@@ -173,7 +173,7 @@ _restore_scalar(data)
 
 种类、数量或浮点文本非法时ValueError。
 
-源码：[`src/chronaxis/_control_models.py:81`](../../../src/chronaxis/_control_models.py#L81)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:81`](../../../src/chronaxis/_control_models.py#L81)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_signal"></a>
 ## `pack_signal`
@@ -198,7 +198,7 @@ JSON原生字段字典。
 
 模型类型或字段值非法。
 
-源码：[`src/chronaxis/_control_models.py:97`](../../../src/chronaxis/_control_models.py#L97)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:97`](../../../src/chronaxis/_control_models.py#L97)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_signal"></a>
 ## `restore_signal`
@@ -223,7 +223,7 @@ SignalDefinition，其派生单位状态由构造重新核对。
 
 字段、dtype或模型约束错误。
 
-源码：[`src/chronaxis/_control_models.py:114`](../../../src/chronaxis/_control_models.py#L114)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:114`](../../../src/chronaxis/_control_models.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_input"></a>
 ## `pack_input`
@@ -248,7 +248,7 @@ pack_input(item)
 
 未知输入类型时TypeError。
 
-源码：[`src/chronaxis/_control_models.py:132`](../../../src/chronaxis/_control_models.py#L132)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:132`](../../../src/chronaxis/_control_models.py#L132)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_input"></a>
 ## `restore_input`
@@ -273,7 +273,7 @@ ASCSpec、BLFSpec或CANCSVSpec，不读取输入。
 
 种类、字段或原模型约束错误。
 
-源码：[`src/chronaxis/_control_models.py:157`](../../../src/chronaxis/_control_models.py#L157)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:157`](../../../src/chronaxis/_control_models.py#L157)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_source"></a>
 ## `pack_source`
@@ -298,7 +298,7 @@ pack_source(source)
 
 类型或嵌套模型错误。
 
-源码：[`src/chronaxis/_control_models.py:190`](../../../src/chronaxis/_control_models.py#L190)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:190`](../../../src/chronaxis/_control_models.py#L190)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_source"></a>
 ## `restore_source`
@@ -323,7 +323,7 @@ CANTextSpec，不打开DBC或日志。
 
 字段、时间类型或输入数量错误。
 
-源码：[`src/chronaxis/_control_models.py:207`](../../../src/chronaxis/_control_models.py#L207)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:207`](../../../src/chronaxis/_control_models.py#L207)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_options"></a>
 ## `pack_options`
@@ -348,7 +348,7 @@ pack_options(options)
 
 回调、未知关键字或未支持值类型错误。
 
-源码：[`src/chronaxis/_control_models.py:227`](../../../src/chronaxis/_control_models.py#L227)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:227`](../../../src/chronaxis/_control_models.py#L227)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_options"></a>
 ## `restore_options`
@@ -373,7 +373,7 @@ restore_options(options)
 
 未知选项或非法定位模型错误。
 
-源码：[`src/chronaxis/_control_models.py:247`](../../../src/chronaxis/_control_models.py#L247)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:247`](../../../src/chronaxis/_control_models.py#L247)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_frame_context"></a>
 ## `pack_frame_context`
@@ -398,7 +398,7 @@ None或固定三元素列表。
 
 非原生字段错误。
 
-源码：[`src/chronaxis/_control_models.py:267`](../../../src/chronaxis/_control_models.py#L267)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:267`](../../../src/chronaxis/_control_models.py#L267)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_frame_context"></a>
 ## `restore_frame_context`
@@ -423,7 +423,7 @@ None或FrameRebuildRule元组与两个bool。
 
 字段、开关或规则校验错误。
 
-源码：[`src/chronaxis/_control_models.py:280`](../../../src/chronaxis/_control_models.py#L280)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:280`](../../../src/chronaxis/_control_models.py#L280)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_result"></a>
 ## `pack_result`
@@ -448,7 +448,7 @@ pack_result(result)
 
 未知类型或仍持恢复句柄时TypeError。
 
-源码：[`src/chronaxis/_control_models.py:300`](../../../src/chronaxis/_control_models.py#L300)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:300`](../../../src/chronaxis/_control_models.py#L300)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_result"></a>
 ## `restore_result`
@@ -473,7 +473,7 @@ BatchJobResult，指定路径字段恢复为Path，恢复对象仍为空。
 
 字段或结果模型约束错误。
 
-源码：[`src/chronaxis/_control_models.py:316`](../../../src/chronaxis/_control_models.py#L316)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:316`](../../../src/chronaxis/_control_models.py#L316)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-pack_message"></a>
 ## `pack_message`
@@ -499,7 +499,7 @@ JSON原生参数列表。
 
 未支持对象或固定模型错误。
 
-源码：[`src/chronaxis/_control_models.py:331`](../../../src/chronaxis/_control_models.py#L331)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:331`](../../../src/chronaxis/_control_models.py#L331)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-restore_message"></a>
 ## `restore_message`
@@ -526,7 +526,7 @@ restore_message(family, operation, arguments)
 
 数量、类型或模型校验错误。
 
-源码：[`src/chronaxis/_control_models.py:360`](../../../src/chronaxis/_control_models.py#L360)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:361`](../../../src/chronaxis/_control_models.py#L361)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_object"></a>
 ## `_object`
@@ -553,7 +553,7 @@ None，不改输入。
 
 缺项、未知字段或类型错误。
 
-源码：[`src/chronaxis/_control_models.py:412`](../../../src/chronaxis/_control_models.py#L412)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:415`](../../../src/chronaxis/_control_models.py#L415)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_program"></a>
 ## `_program`
@@ -579,7 +579,7 @@ None，不重新编译文本表达式。
 
 未知操作、dtype、参数或深度错误。
 
-源码：[`src/chronaxis/_control_models.py:423`](../../../src/chronaxis/_control_models.py#L423)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:426`](../../../src/chronaxis/_control_models.py#L426)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-check_fast_spec"></a>
 ## `check_fast_spec`
@@ -604,7 +604,7 @@ None，不加载数据库或运行公式。
 
 未知字段、缺项或固定指令错误。
 
-源码：[`src/chronaxis/_control_models.py:455`](../../../src/chronaxis/_control_models.py#L455)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:458`](../../../src/chronaxis/_control_models.py#L458)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-_check_fast_rows"></a>
 ## `_check_fast_rows`
@@ -629,7 +629,7 @@ None；不改数值、名称和顺序，也不限制合法任务的计算项数�
 
 未知字段、类型或结果状态错误。
 
-源码：[`src/chronaxis/_control_models.py:492`](../../../src/chronaxis/_control_models.py#L492)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:495`](../../../src/chronaxis/_control_models.py#L495)（行号对应 Chronaxis 0.1.0.dev6 源码）。
 
 <a id="api-check_message_fields"></a>
 ## `check_message_fields`
@@ -656,4 +656,4 @@ None，用户config仍交原AnalysisPlan验证。
 
 固定字段、计数、结果状态或指令错误。
 
-源码：[`src/chronaxis/_control_models.py:515`](../../../src/chronaxis/_control_models.py#L515)（行号对应 Chronaxis 0.1.0.dev5 源码）。
+源码：[`src/chronaxis/_control_models.py:518`](../../../src/chronaxis/_control_models.py#L518)（行号对应 Chronaxis 0.1.0.dev6 源码）。

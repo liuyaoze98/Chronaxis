@@ -180,22 +180,27 @@ class RecordIntegral(RecordPointBuffer):
             self._false_ns += conditional.false_duration_ns
         self._quality |= quality
 
-    def consume_terms(self, areas, valid, covered_ns, valid_ns, quality):
-        """消费已校验、有界的实际时间面积块；此入口不接收文件部分和。
+    def consume_terms(self, areas, valid, covered_ns, valid_ns, quality, *, step_ns=None):
+        """消费已校验、有界的面积块；此入口不接收文件部分和。
 
-        参数: 对应的面积/掩码tuple、非负覆盖/有效纳秒及QualityFlag。
-        返回: None。异常: 关闭或完成时ResultClosedError，结构或混用入口时ValueError；
+        参数: 对应的面积/掩码tuple、非负覆盖/有效纳秒及QualityFlag；step_ns为
+            调用方计算这些面积时使用的间隔，None为实际间隔，正整数为固定间隔纳秒。
+        返回: None。异常: 关闭或完成时ResultClosedError，结构、间隔不符或混用入口时ValueError；
             原误差求和的类型、数值及IntegralStateLimitError继续传播；
             数值前缀溢出保存在累计失败状态中，由finish返回失败结果。
-        调用方负责跨块时间连续性；禁止与点输入、条件或固定周期路径混用。
+        调用方负责跨块时间连续性；禁止与点输入或条件路径混用。step_ns必须与本积分器
+        构造时的间隔相同，避免面积按一种间隔计算、却按另一种间隔解释。
         """
         self._require_open()
         if self._finished:
             raise ResultClosedError('记录流积分已完成')
         try:
             if (self._rows or self._last_time is not None or self._conditioned
-                    or self._step_ns is not None or not isinstance(self._sum, ReferenceIntegralSum)):
-                raise ValueError('面积块仅用于无条件实际时间reference积分，不能混用点输入')
+                    or not isinstance(self._sum, ReferenceIntegralSum)):
+                raise ValueError('面积块仅用于无条件reference积分，不能混用点输入')
+            # 面积块已含间隔折算；只在调用方与本积分器的间隔一致时接受。
+            if step_ns != self._step_ns:
+                raise ValueError('面积块的间隔与积分器不一致')
             if (type(areas) is not tuple or type(valid) is not tuple or len(areas) != len(valid)
                     or len(areas) > self._limit or any(type(v) is not bool for v in valid)
                     or type(covered_ns) is not int or type(valid_ns) is not int

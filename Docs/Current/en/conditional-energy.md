@@ -10,7 +10,7 @@ The supplied ASC logs and DBC are synthetic examples. They do not establish the 
 
 Use [conditional-energy.yaml](../examples/conditional-energy.yaml), [part-1.asc](../examples/data/can/conditional-energy/part-1.asc), [part-2.asc](../examples/data/can/conditional-energy/part-2.asc), and [signals.dbc](../examples/data/can/conditional-energy/signals.dbc). The first log covers 0–89 seconds and the second continues at 90–123 seconds. The teaching DBC defines state, current, and voltage in message `0x100`, with a 1000 ms period.
 
-This example covers Chronaxis 0.1.0.dev5. First install it as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev5"` is recommended. Installation includes the CAN dependencies declared for this version; do not independently install a different `cantools` version. Then change to the manual's [examples directory](installation.md#find-examples) and run:
+This example covers Chronaxis 0.1.0.dev6. First install it as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev6"` is recommended. Installation includes the CAN dependencies declared for this version; do not independently install a different `cantools` version. Then change to the manual's [examples directory](installation.md#find-examples) and run:
 
 ```powershell
 chronaxis validate conditional-energy.yaml --format json
