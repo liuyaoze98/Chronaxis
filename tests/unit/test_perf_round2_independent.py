@@ -67,7 +67,7 @@ def base():
       'signals':[{'name':'counter','field':'counter','dtype':'int64','unit':'1','valid_for':'250ms'},
         {'name':'power','field':'power','dtype':'float64','unit':'W','valid_for':'250ms'},
         {'name':'temperature','field':'temperature','dtype':'float64','unit':'degC','valid_for':'250ms'}],
-      'rules':[{'name':'on','rule_type':'condition_duration','condition':'power > 0','minimum_duration':'0s','duration_comparison':'>='},
+      'rules':[{'name':'on','rule_type':'condition_duration', 'selection_origin': 'onset','condition':'power > 0','minimum_duration':'0s','duration_comparison':'>='},
         {'name':'up','rule_type':'rising_edge','condition':'power > 0','emit_initial':True}],
       'windows':[{'name':'around','rule':'on','anchor':'activity','pre':'10ms','post':'20ms'}],
       'calculations':[{'name':'energy','operation':'integral','expr':'power','condition':'bit_test(counter,0)'},

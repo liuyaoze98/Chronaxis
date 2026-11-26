@@ -41,6 +41,7 @@ class RecordSourceCursor:
         self._budget = budget
         self.source_name = source.name
         self.frame_format_notices = ()
+        self.worker_process_count = 0  # 本来源实际启动的文件工作进程数，非CAN或串行读取为0。
         self._definitions = definitions
         self._held_cost = self._fixed_cost = self._queue_cost = 0
         self._adapter = self._read = self._groups = self._pending = None
@@ -235,6 +236,8 @@ class RecordSourceCursor:
                     if self._raw:
                         observed = self._read.observation
                         self.observed_start, self.observed_end = observed.first_ns, observed.last_ns
+                        # 读取器关闭前取下实际启动数，供运行清单汇总。
+                        self.worker_process_count = getattr(self._read, 'worker_process_count', 0)
                         self._retain_frame_notices()
                     if self._retain_frames:
                         self._read.take_raw_store(self,'_raw_store')

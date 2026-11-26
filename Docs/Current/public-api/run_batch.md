@@ -52,4 +52,4 @@ if __name__ == "__main__":
     main()
 ```
 
-源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/api.py:13`](../../../src/chronaxis/batch/api.py#L13)（行号对应 Chronaxis 0.1.0 源码）。

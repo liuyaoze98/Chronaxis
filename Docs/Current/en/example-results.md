@@ -12,7 +12,7 @@ Each `result-summary.json` extracts status, table counts, applicable analysis ou
 
 
 
-The result tables below retain the software's actual Chinese headers and values. Key translations: `区间` = interval; `规则` = rule; `开始时间（s）` / `确认时间（s）` / `结束时间（s）` = start / confirmation / end in seconds; `窗口编号` / `窗口` / `父事件区间` = window number / window name / parent event intervals; `状态` = status; `说明` = explanation; `正常结束` = ended normally; `完整` = complete; `部分有效` = partial; `无法确定` = indeterminate; `超时结束` = ended by timeout; `数据中断` = data interruption; `观测结束，活动尚未确认结束` = observation ended before activity end was confirmed. A metric's `：状态` and `：说明` columns describe that metric alone. `—` displays an empty cell. See [Understanding results](results.md) for all status and quality meanings.
+The result tables below retain the software's actual Chinese headers and values. Key translations: `区间` = interval; `规则` = rule; `开始时间（s）` / `确认时间（s）` / `结束时间（s）` = start / confirmation / end in seconds; `统计开始（s）` = where the metric statistics start, in seconds; `窗口编号` / `窗口` / `父事件区间` = window number / window name / parent event intervals; `状态` = status; `说明` = explanation; `正常结束` = ended normally; `完整` = complete; `部分有效` = partial; `无法确定` = indeterminate; `超时结束` = ended by timeout; `数据中断` = data interruption; `观测结束，活动尚未确认结束` = observation ended before activity end was confirmed. A metric's `：状态` and `：说明` columns describe that metric alone. `—` displays an empty cell. See [Understanding results](results.md) for all status and quality meanings.
 
 <a id="按文件查找"></a>
 ## Find an example by filename
@@ -113,9 +113,9 @@ Why these results: Temperature reaches 80°C at 1 s, is confirmed after two cont
 
 **Event results: [Download full 事件结果.csv](../examples/results/activity-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | event_energy（J） | event_energy：状态 | event_energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | hot | 1 | 3 | 6 | 正常结束 | — | 50.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | event_energy（J） | event_energy：状态 | event_energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | hot | 1 | 3 | 6 | 正常结束 | — | 50.0 | 完整 | — | 1 |
 
 **Window results: [Download full 窗口结果.csv](../examples/results/activity-yaml/窗口结果.csv) (1 rows)**
 
@@ -348,9 +348,9 @@ Why these results: State is 0x2 and current is exactly 10 A, satisfying >=10 A. 
 
 **Event results: [Download full 事件结果.csv](../examples/results/conditional-energy-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — | 61 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -754,9 +754,9 @@ Why these results: 400 V × 10 A gives 4000 W. Integrating over the four seconds
 
 **Event results: [Download full 事件结果.csv](../examples/results/expression-extended-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | working | 0 | 4 | 观测结束，活动尚未确认结束 | 数据缺失 | 16000.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | working | 0 | 4 | 观测结束，活动尚未确认结束 | 数据缺失 | 16000.0 | 完整 | — | 0 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1103,12 +1103,12 @@ Why these results: The five readings are 0, 10, 0, 20, and 0 W. Their mean is 6 
 
 **Event results: [Download full 事件结果.csv](../examples/results/power-statistics-yaml/事件结果.csv) (4 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — |
-| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — |
-| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — |
-| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — | — |
+| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — | — |
+| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — | 1 |
+| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — | 5 |
 
 **Session results: [Download full 会话结果.csv](../examples/results/power-statistics-yaml/会话结果.csv) (1 row)**
 
@@ -1146,9 +1146,9 @@ Why these results: Charging [1,3) lasts 2 s: 400 V × 10 A × 2 s = 8000 J = 800
 
 **Event results: [Download full 事件结果.csv](../examples/results/preset-charge-energy-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_charge（Ah） | demo_preset_charge：状态 | demo_preset_charge：说明 | demo_preset_energy（Wh） | demo_preset_energy：状态 | demo_preset_energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 3 | 正常结束 | — | 0.005555555555555556 | 完整 | — | 2.2222222222222223 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_charge（Ah） | demo_preset_charge：状态 | demo_preset_charge：说明 | demo_preset_energy（Wh） | demo_preset_energy：状态 | demo_preset_energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 3 | 正常结束 | — | 0.005555555555555556 | 完整 | — | 2.2222222222222223 | 完整 | — | 1 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1310,9 +1310,9 @@ Session summary for the threshold preset:
 
 **Event results: [Download full 事件结果.csv](../examples/results/preset-threshold-delay-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1.5 | 1.5 | 3.5 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1.5 | 1.5 | 3.5 | 正常结束 | — | 2.0 | 完整 | — | 1.5 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1338,9 +1338,9 @@ Session summary for the threshold preset:
 
 **Event results: [Download full 事件结果.csv](../examples/results/preset-threshold-minimal-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — | 1 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1366,9 +1366,9 @@ Session summary for the threshold preset:
 
 **Event results: [Download full 事件结果.csv](../examples/results/preset-threshold-partial-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — | 1 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1410,9 +1410,9 @@ Why these results: Activity remains [1,6), but selection_origin=confirmed starts
 
 **Event results: [Download full 事件结果.csv](../examples/results/rule-condition_duration-extended-yaml/事件结果.csv) (1 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | detected | 1 | 6 | 正常结束 | — | 30.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | detected | 1 | 6 | 正常结束 | — | 30.0 | 完整 | — | 3 |
 
 No window, request/response table was produced. Only requested, actually generated results are shown; this tutorial does not enable additional tables. Use the index for other event/window examples.
 
@@ -1956,11 +1956,11 @@ Why these results: The three activities are [0,2), [4,9), and [11,14) s. Time-we
 
 **Event results: [Download full 事件结果.csv](../examples/results/start-end-yaml/事件结果.csv) (3 rows)**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | cycle_mean（1） | cycle_mean：状态 | cycle_mean：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | cycle | 0 | 0 | 2 | 正常结束 | — | 10.0 | 完整 | — |
-| 2 | cycle | 4 | 4 | 9 | 超时结束 | — | 52.0 | 完整 | — |
-| 3 | cycle | 11 | 11 | 14 | 正常结束 | — | 110.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | cycle_mean（1） | cycle_mean：状态 | cycle_mean：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | cycle | 0 | 0 | 2 | 正常结束 | — | 10.0 | 完整 | — | 0 |
+| 2 | cycle | 4 | 4 | 9 | 超时结束 | — | 52.0 | 完整 | — | 4 |
+| 3 | cycle | 11 | 11 | 14 | 正常结束 | — | 110.0 | 完整 | — | 11 |
 
 **Window results: [Download full 窗口结果.csv](../examples/results/start-end-yaml/窗口结果.csv) (3 rows)**
 

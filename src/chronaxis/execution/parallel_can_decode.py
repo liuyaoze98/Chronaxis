@@ -212,6 +212,11 @@ class ParallelCANDecodeRead:
         finally:
             self._ready_model_cost=0
 
+    @property
+    def worker_process_count(self):
+        """返回本次实际启动的文件工作进程数，关闭后仍可查看。参数: 无。返回: 非负int。异常: 无。"""
+        return len(self.timings['worker_pids'])
+
     def prepare_metadata(self):
         """启动有限工作槽，只初始化DBC再授予首块。参数: 无。返回: 元数据。异常: 启动/预算/元数据错。
         """

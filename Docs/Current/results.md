@@ -8,11 +8,11 @@
 
 例如[连续条件能量示例](conditional-energy.md)只产生一段合格区间：
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
-|---|---|---|---|---|---|---|---|
-| 1 | eligible | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 | 统计开始（s） |
+|---|---|---|---|---|---|---|---|---|
+| 1 | eligible | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | | 61 |
 
-直接读作：第1段活动从61秒开始，到122秒结束，能量为0.06777777777777777kWh，计算完整。区间是左闭右开[61,122)。普通整事件积分不额外显示确认时刻；独立事件、窗口、配对或其他计算有此用途时才显示“确认时间（s）”。起止时间仍是实际时间，未额外计算持续时间。
+直接读作：第1段活动从61秒开始，到122秒结束，能量为0.06777777777777777kWh，计算完整。区间是左闭右开[61,122)。末列“统计开始（s）”是指标实际从哪里开始统计，由规则的`selection_origin`决定，没有事件指标的行留空。普通整事件积分不额外显示确认时刻；独立事件、窗口、配对或其他计算有此用途时才显示“确认时间（s）”。起止时间仍是实际时间，未额外计算持续时间。
 
 | 实际请求的结果 | 默认文件 | 读法 |
 |---|---|---|
@@ -240,7 +240,7 @@ for row in result.iter_calculations():
 <a id="metadata-output"></a>
 ## 运行清单里有什么
 
-运行清单记录本次运行的基本信息：run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、worker_config、retain_work和detailed_diagnostics，以及本次实际写出的结果文件。输入身份、会话边界、限制等只在实际适用时出现；在diagnostics中开启trace或integrity时，还会写入相应的诊断信息，见[执行设置](execution.md)。
+运行清单记录本次运行的基本信息：run_id、plan_hash、backend、config_version、started_at、device_label、software_version、source_time_interpretation、parsing_policy、process_count、worker_process_count、retain_work和detailed_diagnostics，以及本次实际写出的结果文件。process_count是本次生效的文件工作进程上限，已计入命令行或Python调用的覆盖；worker_process_count是实际启动并完成工作的文件工作进程数，0表示全部在主进程内完成。有持续条件规则被计算按事件统计时，selection_origins写明各规则的统计起点（`onset`或`confirmed`）。输入身份、会话边界、限制等只在实际适用时出现；在diagnostics中开启trace或integrity时，还会写入相应的诊断信息，见[执行设置](execution.md)。
 
 普通运行不需要为清单做任何设置。读取清单时，先确认某个键存在再使用，不要假定所有可选字段都有值。字段的完整定义见[RunMetadata](public-api/RunMetadata.md)。
 

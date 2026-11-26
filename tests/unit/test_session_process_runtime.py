@@ -51,7 +51,7 @@ class SessionProcessRuntimeTests(unittest.TestCase):
             file_merge=merge,dbc_by_channel={'1':str(self.dbc)},time=dict(offset='-1700000000s' if kind=='blf' else '0s'))],
             signals=[dict(name='power',field=dict(frame_id=256,signal='Power'),dtype='float64',unit='W',
                 valid_for='2s',same_time_policy=same_time)],
-            rules=[dict(name='active',rule_type='condition_duration',condition='power > 0',
+            rules=[dict(name='active',rule_type='condition_duration', selection_origin='onset',condition='power > 0',
                 minimum_duration='1s',duration_comparison='>=')],
             calculations=[dict(name='energy',operation='integral',expr='power',unit='J')],outputs=dict(tables='jsonl'))
         if raw_frames:
@@ -102,7 +102,7 @@ class SessionProcessRuntimeTests(unittest.TestCase):
             signals=[dict(name=name,field=dict(frame_id=256,signal=field),valid_for='2s')
                 for name,field in (('power','BatteryPackPower'),('state','BatteryChargeState'),
                                    ('voltage','BatteryPackVoltage'))],
-            rules=[dict(name='active',rule_type='condition_duration',
+            rules=[dict(name='active',rule_type='condition_duration', selection_origin='onset',
                 condition='state == 2 and voltage > 10 and power > 0',
                 minimum_duration='60s',duration_comparison='>')],
             calculations=[dict(name='energy',operation='integral',scope=dict(rule='active'),expr='power')])

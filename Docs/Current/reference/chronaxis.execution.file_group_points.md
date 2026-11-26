@@ -75,7 +75,7 @@ class DeferredPointError
 |`kind`|type|是|无|DEFERRED_KINDS之一，不保存子类或任意类。|
 |`message`|str|是|无|str(错误)原文，不截断、不附加说明。|
 
-源码：[`src/chronaxis/execution/file_group_points.py:34`](../../../src/chronaxis/execution/file_group_points.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:34`](../../../src/chronaxis/execution/file_group_points.py#L34)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-file_points_minimum_cost"></a>
 ## `file_points_minimum_cost`
@@ -102,7 +102,7 @@ int字节数，含固定状态、当前同一时刻组首末值和求值器基�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/file_group_points.py:42`](../../../src/chronaxis/execution/file_group_points.py#L42)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:42`](../../../src/chronaxis/execution/file_group_points.py#L42)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-file_points_cost"></a>
 ## `file_points_cost`
@@ -132,7 +132,7 @@ int，保守预约的字节数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/file_group_points.py:54`](../../../src/chronaxis/execution/file_group_points.py#L54)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:54`](../../../src/chronaxis/execution/file_group_points.py#L54)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints"></a>
 ## `FileGroupPoints`
@@ -146,7 +146,7 @@ FileGroupPoints(budget, definitions, expressions, specs, binding, session_id, *,
 ```
 
 
-源码：[`src/chronaxis/execution/file_group_points.py:65`](../../../src/chronaxis/execution/file_group_points.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:65`](../../../src/chronaxis/execution/file_group_points.py#L65)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-__init__"></a>
 ### `FileGroupPoints.__init__`
@@ -181,7 +181,7 @@ None，构造新的组点owner，不读取原帧。
 计算项与表达式数量不一致时ValueError；预算不足时BudgetExceededError；
     求值器构造原错误继续传播；构造清理失败附file_group_points_cleanup_owner。
 
-源码：[`src/chronaxis/execution/file_group_points.py:71`](../../../src/chronaxis/execution/file_group_points.py#L71)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:71`](../../../src/chronaxis/execution/file_group_points.py#L71)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-compatibility_fields"></a>
 ### `FileGroupPoints.compatibility_fields`
@@ -209,7 +209,7 @@ CANField到实际扩展帧标志bool的映射；投影释放后返回空dict。
 
 无；调用方不能修改借用的映射。
 
-源码：[`src/chronaxis/execution/file_group_points.py:114`](../../../src/chronaxis/execution/file_group_points.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:114`](../../../src/chronaxis/execution/file_group_points.py#L114)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-frame_identity"></a>
 ### `FileGroupPoints.frame_identity`
@@ -237,7 +237,7 @@ FileGroupPoints.frame_identity
 
 无。同一文件内帧型不一致时，投影或读取器已经报错，所以记录到的帧型唯一。
 
-源码：[`src/chronaxis/execution/file_group_points.py:123`](../../../src/chronaxis/execution/file_group_points.py#L123)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:123`](../../../src/chronaxis/execution/file_group_points.py#L123)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-stopped"></a>
 ### `FileGroupPoints.stopped`
@@ -265,7 +265,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/file_group_points.py:134`](../../../src/chronaxis/execution/file_group_points.py#L134)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:134`](../../../src/chronaxis/execution/file_group_points.py#L134)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-_require_open"></a>
 ### `FileGroupPoints._require_open`
@@ -291,7 +291,7 @@ None。
 
 ResultClosedError。
 
-源码：[`src/chronaxis/execution/file_group_points.py:138`](../../../src/chronaxis/execution/file_group_points.py#L138)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:138`](../../../src/chronaxis/execution/file_group_points.py#L138)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-_defer"></a>
 ### `FileGroupPoints._defer`
@@ -317,7 +317,7 @@ FileGroupPoints._defer(time_ns, error)
 
 出错帧没有时间或原文超过256KiB时原样抛出error，由调用方按读取段错误报告。
 
-源码：[`src/chronaxis/execution/file_group_points.py:143`](../../../src/chronaxis/execution/file_group_points.py#L143)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:143`](../../../src/chronaxis/execution/file_group_points.py#L143)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-feed"></a>
 ### `FileGroupPoints.feed`
@@ -344,7 +344,7 @@ FileGroupPoints.feed(record)
     投影、匹配和归一化抛出的四种内建类型错误转成延迟错误事件，不抛出。
 停止后只返回空tuple；读取器仍由调用方继续推进到EOF。
 
-源码：[`src/chronaxis/execution/file_group_points.py:158`](../../../src/chronaxis/execution/file_group_points.py#L158)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:158`](../../../src/chronaxis/execution/file_group_points.py#L158)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-finish"></a>
 ### `FileGroupPoints.finish`
@@ -370,7 +370,7 @@ FileGroupPoints.finish()
 
 已关闭、失败或完成时ResultClosedError。
 
-源码：[`src/chronaxis/execution/file_group_points.py:215`](../../../src/chronaxis/execution/file_group_points.py#L215)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:215`](../../../src/chronaxis/execution/file_group_points.py#L215)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-drain_prefix_on_error"></a>
 ### `FileGroupPoints.drain_prefix_on_error`
@@ -396,7 +396,7 @@ FileGroupPoints.drain_prefix_on_error()
 
 已关闭时ResultClosedError。
 
-源码：[`src/chronaxis/execution/file_group_points.py:227`](../../../src/chronaxis/execution/file_group_points.py#L227)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:227`](../../../src/chronaxis/execution/file_group_points.py#L227)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileGroupPoints-close"></a>
 ### `FileGroupPoints.close`
@@ -422,4 +422,4 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/file_group_points.py:238`](../../../src/chronaxis/execution/file_group_points.py#L238)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/file_group_points.py:238`](../../../src/chronaxis/execution/file_group_points.py#L238)（行号对应 Chronaxis 0.1.0 源码）。

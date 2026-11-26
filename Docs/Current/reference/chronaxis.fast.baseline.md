@@ -35,4 +35,4 @@ main()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/fast/baseline.py:10`](../../../src/chronaxis/fast/baseline.py#L10)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/baseline.py:10`](../../../src/chronaxis/fast/baseline.py#L10)（行号对应 Chronaxis 0.1.0 源码）。

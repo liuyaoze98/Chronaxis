@@ -25,7 +25,7 @@ Map the requirements already supplied by the user to configuration without askin
 | Signals and expression | Bind `BMS_ChrgSta`, `BMS_BatPackActCur`, and `BMS_BatPackActVol`. Calculate current times voltage; do not substitute another measurement point. |
 | Comparisons and logic | Use `state == 0x2 and current >= 10`, binding aliases to those signals. Preserve equality, inclusive `>=`, and logical AND. |
 | Continuously longer than 60 seconds | Use `condition_duration`, `minimum_duration: 60s`, and `duration_comparison: ">"`. Exactly 60 seconds does not qualify. Do not replace it with 60.1 seconds or omit continuity by merely filtering frames. |
-| Integration boundaries | “Within the qualifying interval” uses default `selection_origin: onset`, from first satisfaction to the interval end. Do not discard the first 60 seconds. Use `confirmed` only when explicitly requested. |
+| Integration boundaries | Write `selection_origin` whenever a calculation references the rule; omitting it fails validation. “Within the qualifying interval” uses `selection_origin: onset`, from first satisfaction to the interval end. Do not discard the first 60 seconds. Use `confirmed` only when explicitly requested, and ask the user if it is unspecified and affects the result. |
 | Unit | Confirm A and V from the DBC or established definitions, and request `kWh` output. Do not relabel a J or Wh value as kWh. |
 | File relationships and timing | Put continuous volumes in one source so state continues across files. Batch only independent tasks. Preserve the chosen actual, fixed, or DBC period; do not edit timestamps instead of configuring it correctly. |
 

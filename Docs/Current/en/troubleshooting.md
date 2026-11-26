@@ -56,6 +56,8 @@ When a calculation is missing `operation`, correct that field first. Checks spec
 
 For `condition_duration`, a missing `duration_comparison` requires a business choice: `">="` includes the threshold and `">"` requires strictly longer.
 
+If a rule referenced by a calculation's `scope.rule` has no `selection_origin`, choose `onset` (from the first time the condition becomes true) or `confirmed` (from confirmation). Older configurations that omitted it behaved as `onset`; add `selection_origin: onset` to keep the previous result.
+
 
 | Symptom | Cause or check | Remedy |
 |---|---|---|

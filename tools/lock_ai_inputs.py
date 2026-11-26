@@ -103,6 +103,7 @@ def lock(manual, runtime, device):
                  "Docs/Release/release-notes-0.1.0.dev4.md", "Docs/Release/release-notes-0.1.0.dev4.en.md",
                  "Docs/Release/release-notes-0.1.0.dev5.md", "Docs/Release/release-notes-0.1.0.dev5.en.md",
                  "Docs/Release/release-notes-0.1.0.dev6.md", "Docs/Release/release-notes-0.1.0.dev6.en.md",
+                 "Docs/Release/release-notes-0.1.0.md", "Docs/Release/release-notes-0.1.0.en.md",
                  "requirements/README.md", "requirements/constraints-windows-py312-min.txt",
                  "requirements/constraints-windows-py312-max.txt", "requirements/constraints-windows-py313-min.txt",
                  "requirements/constraints-windows-py313-max.txt",

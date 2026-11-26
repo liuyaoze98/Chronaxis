@@ -33,7 +33,7 @@
 
 同一次充电的多个ASC/BLF放在同一sources来源，不要拆成多个batch jobs再相加。参见[完整可运行指南](../Current/continuous-files.md)。
 
-- 进程数：execution.process_count为正整数，设置文件工作进程上限，默认1，基础示例保留4。普通run/validate/explain的--process-count及AnalysisRunner同名仅关键字参数可覆盖。主进程保留跨文件分析状态，适用的积分可以按[计算实现的选择](#backend-choice)中的条件并行计算。
+- 进程数：execution.process_count为正整数，设置文件工作进程上限，默认1，基础示例保留4。命令行`run`、`validate`、`explain`用`--process-count`覆盖；Python中写在方法上，只能按名称传入：`AnalysisRunner().run(plan, process_count=4)`，`validate`和`explain`同理。`AnalysisRunner(...)`构造函数只接受`backend`和`extensions`，不能把process_count写进去。主进程保留跨文件分析状态，适用的积分可以按[计算实现的选择](#backend-choice)中的条件并行计算。
 - 文件接续：file_merge: concatenate按文件顺序接续；time_order在各文件内部所需时间有序且时钟可比较时稳定归并，不平移、不去重。
 - 当前范围：仅一个ASC/BLF来源、requested解码；批量worker内不嵌套文件池。
 - 默认行为：默认1加concatenate时ASC/BLF在当前进程读取解码；time_order即使上限为1也使用文件工作进程，并使用本次受配额暂存。资源共用，不保证进程越多越快。
@@ -92,7 +92,7 @@ origins回答字段来自哪个声明；resolve展示展开后的配置和当前
 
 ## 持续门槛与积分起点
 
-`condition_duration`必须填写`duration_comparison`，没有默认比较方式。配合`minimum_duration: 60s`，用户要求“达到/至少60秒”时填`">="`，要求“超过60秒”时填`">"`，不改成60.1秒。未说明是否包含恰好60秒且会影响结果时，先向用户确认；不能擅自选择。`selection_origin`默认`onset`，整个合格区间参与积分；只有用户要求从持续确认之后计算才选择`confirmed`。恰好60秒的活动：`>=`有事件，`>`无事件。时间精度为1ns；实际模式最早在门槛后1ns确认，固定/DBC模式等下一条使累计严格超过门槛的驱动报文。
+`condition_duration`必须填写`duration_comparison`，没有默认比较方式。配合`minimum_duration: 60s`，用户要求“达到/至少60秒”时填`">="`，要求“超过60秒”时填`">"`，不改成60.1秒。未说明是否包含恰好60秒且会影响结果时，先向用户确认；不能擅自选择。规则被计算的`scope: {rule: 名称}`引用时，必须明确写`selection_origin`，省略会在校验时被拒绝：`onset`让整个合格区间参与积分（包含达到门槛前已成立的部分），`confirmed`从持续确认之后开始。用户说“合格区间内”“整个活动”填`onset`，明确要求从持续确认之后计算才填`confirmed`；没有说明且会影响结果时先向用户确认。结果表末列“统计开始（s）”和清单`selection_origins`写明实际起点。恰好60秒的活动：`>=`有事件，`>`无事件。时间精度为1ns；实际模式最早在门槛后1ns确认，固定/DBC模式等下一条使累计严格超过门槛的驱动报文。
 
 ## 资源不足时保留原任务
 

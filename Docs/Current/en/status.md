@@ -2,7 +2,7 @@
 
 # Supported features and requirements
 
-This manual describes Chronaxis 0.1.0.dev6. Analysis configurations must use the integer `config_version: 4`. This version supports automatic unit conversion, statistics, rolling calculations and rates of change. Follow [Installation](installation.md) to install the matching version (PyPI recommended) before running the examples, and read the [upgrade notes](../../Release/release-notes-0.1.0.dev6.en.md) when moving from an earlier version. YAML suits hand-written plans; JSON is also supported.
+This manual describes Chronaxis 0.1.0. Analysis configurations must use the integer `config_version: 4`. This version supports automatic unit conversion, statistics, rolling calculations and rates of change. Follow [Installation](installation.md) to install the matching version (PyPI recommended) before running the examples, and read the [upgrade notes](../../Release/release-notes-0.1.0.en.md) when moving from an earlier version. YAML suits hand-written plans; JSON is also supported.
 
 One continuous ASC/BLF source can use an explicit reading/decoding process limit and stable time merging. See [continuous-file multiprocessing](continuous-files.md) for support and resource limits.
 

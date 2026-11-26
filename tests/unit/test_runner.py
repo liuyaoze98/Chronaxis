@@ -57,7 +57,7 @@ class RunnerTests(unittest.TestCase):
             'dataset': {'name': 'runner_dataset', 'entity': 'runner_device', 'session': 'runner_session',
                 'domain': {'start': str(domain[0]) + 'ns', 'end': str(domain[1]) + 'ns'}},
             'sources': [], 'signals': [], 'derived': {'twice': {'expr': 'a * 2', 'unit': '1'}} if signals else {},
-            'rules': ([dict(name='z_duration', rule_type='condition_duration', duration_comparison='>=', condition='a > 0', minimum_duration='0ns'),
+            'rules': ([dict(name='z_duration', rule_type='condition_duration', selection_origin='onset', duration_comparison='>=', condition='a > 0', minimum_duration='0ns'),
                       dict(name='a_rising', rule_type='rising_edge', condition='a > 0', emit_initial=True),
                       dict(name='m_start', rule_type='start_only', condition='a > 0', emit_initial=True, window_duration='4ns')]
                 if rules is None else rules),
@@ -293,7 +293,7 @@ class RunnerTests(unittest.TestCase):
             for backend in ('reference', 'numpy'):
                 data = self.fixture(kind=kind, backend=backend, size=None, other_rows=None,
                     rows=((0, 2), (1, 4), (3, 0)), domain=(0, 4),
-                    rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='a > 0', minimum_duration='0ns')],
+                    rules=[dict(name='active', rule_type='condition_duration', selection_origin='onset', duration_comparison='>=', condition='a > 0', minimum_duration='0ns')],
                     windows=[dict(name='whole', rule='active', anchor='activity', pre='0ns', post='1ns')],
                     calculations=[dict(name='area', scope='session', operation='integral', expr='a')])
                 self.assertNotIn('batch_rows', data.config['execution'])
@@ -449,7 +449,7 @@ class RunnerTests(unittest.TestCase):
         for kind in ('memory','csv'):
             for backend in ('reference','numpy'):
                 data=self.fixture(kind=kind,backend=backend,rows=(),other_rows=None,
-                    rules=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='True',minimum_duration='0ns')],
+                    rules=[dict(name='active',rule_type='condition_duration', selection_origin='onset', duration_comparison='>=',condition='True',minimum_duration='0ns')],
                     windows=[dict(name='whole',rule='active',anchor='activity',pre='0ns',post='1ns')],
                     calculations=[dict(name='area',scope='session',operation='integral',expr='a'),
                         dict(name='duration',scope='session',operation='duration',condition='True'),
@@ -470,7 +470,7 @@ class RunnerTests(unittest.TestCase):
         """
         rules = [dict(name='active', rule_type='rising_edge', condition='a > 0', emit_initial=True),
                  dict(name='default_rising', rule_type='rising_edge', condition='a > 0'),
-                 dict(name='duration', rule_type='condition_duration', duration_comparison='>=', condition='True', minimum_duration='0ns')]
+                 dict(name='duration', rule_type='condition_duration', selection_origin='onset', duration_comparison='>=', condition='True', minimum_duration='0ns')]
         windows = [dict(name='whole', rule='active', anchor='point', pre='1ns', post='1ns')]
         calculations = [dict(name='area', scope='session', operation='integral', expr='a')]
         for kind in ('memory', 'csv'):
@@ -510,7 +510,7 @@ class RunnerTests(unittest.TestCase):
 
         参数: 无。返回: None。异常: 没字段就丢原行观测、借请求起点或补时长断言失败。
         """
-        rules = [dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='True', minimum_duration='2ns')]
+        rules = [dict(name='active', rule_type='condition_duration', selection_origin='onset', duration_comparison='>=', condition='True', minimum_duration='2ns')]
         windows = [dict(name='whole', rule='active', anchor='activity', pre='0ns', post='1ns')]
         calculations = [dict(name='session_duration', scope='session', operation='duration', condition='True'),
                    dict(name='event_duration', scope='event:active', operation='duration', condition='True'),

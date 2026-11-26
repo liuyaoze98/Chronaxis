@@ -61,7 +61,7 @@ RunSession(plan, work_dir=None)
 ```
 
 
-源码：[`src/chronaxis/execution/run_session.py:30`](../../../src/chronaxis/execution/run_session.py#L30)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:30`](../../../src/chronaxis/execution/run_session.py#L30)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-__init__"></a>
 ### `RunSession.__init__`
@@ -92,7 +92,7 @@ RunSession.__init__(plan, work_dir=None)
 
 - `TypeError`：RunSession需AnalysisPlan及可选新工作路径。
 
-源码：[`src/chronaxis/execution/run_session.py:38`](../../../src/chronaxis/execution/run_session.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:38`](../../../src/chronaxis/execution/run_session.py#L38)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_require_static_derived"></a>
 ### `RunSession._require_static_derived`
@@ -120,7 +120,7 @@ TypeError/ValueError为带有明确类型的声明或静态对象被替换；预
 所有解析表、遍历容器和展开树先付到本owner的_fixed_cost槽，构造失败由
 原RunSession清理链回收；本方法不创建目录、不打开来源、不生成普通样本。
 
-源码：[`src/chronaxis/execution/run_session.py:105`](../../../src/chronaxis/execution/run_session.py#L105)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:105`](../../../src/chronaxis/execution/run_session.py#L105)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-closed"></a>
 ### `RunSession.closed`
@@ -148,7 +148,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/run_session.py:166`](../../../src/chronaxis/execution/run_session.py#L166)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:166`](../../../src/chronaxis/execution/run_session.py#L166)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-failed"></a>
 ### `RunSession.failed`
@@ -176,7 +176,7 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/run_session.py:172`](../../../src/chronaxis/execution/run_session.py#L172)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:172`](../../../src/chronaxis/execution/run_session.py#L172)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-work_dir"></a>
 ### `RunSession.work_dir`
@@ -204,7 +204,7 @@ Path或构造未取得时None。
 
 无。
 
-源码：[`src/chronaxis/execution/run_session.py:178`](../../../src/chronaxis/execution/run_session.py#L178)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:178`](../../../src/chronaxis/execution/run_session.py#L178)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_construct"></a>
 ### `RunSession._construct`
@@ -232,7 +232,7 @@ RunSession._construct(slot, factory, *args, **kwargs)
 
 原工厂错误传播，不对旧半初始化对象调用close。
 
-源码：[`src/chronaxis/execution/run_session.py:183`](../../../src/chronaxis/execution/run_session.py#L183)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:183`](../../../src/chronaxis/execution/run_session.py#L183)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-execute"></a>
 ### `RunSession.execute`
@@ -260,7 +260,7 @@ RunSession.execute()
     错误保留，普通非AnalysisError由公开AnalysisRunner包装；本方法不反复清理，原错
     附runner_cleanup_owner供公开层统一清理或恢复后close。
 
-源码：[`src/chronaxis/execution/run_session.py:202`](../../../src/chronaxis/execution/run_session.py#L202)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:202`](../../../src/chronaxis/execution/run_session.py#L202)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_run_record_calculations"></a>
 ### `RunSession._run_record_calculations`
@@ -286,7 +286,7 @@ None，完成结果仍由execute统一封存和移交。
 
 静态未支持组合在I/O前拒绝，实际子owner统一登记及清理。
 
-源码：[`src/chronaxis/execution/run_session.py:240`](../../../src/chronaxis/execution/run_session.py#L240)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:240`](../../../src/chronaxis/execution/run_session.py#L240)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_adopt_cleanup"></a>
 ### `RunSession._adopt_cleanup`
@@ -311,7 +311,7 @@ RunSession._adopt_cleanup(exc)
 
 原属性访问错误；不凭字段猜测内层资源。
 
-源码：[`src/chronaxis/execution/run_session.py:290`](../../../src/chronaxis/execution/run_session.py#L290)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:295`](../../../src/chronaxis/execution/run_session.py#L295)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_diagnose"></a>
 ### `RunSession._diagnose`
@@ -336,7 +336,7 @@ RunSession._diagnose(exc)
 
 不替换主异常，不接触未取得或已有根。
 
-源码：[`src/chronaxis/execution/run_session.py:308`](../../../src/chronaxis/execution/run_session.py#L308)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:313`](../../../src/chronaxis/execution/run_session.py#L313)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_require_closed"></a>
 ### `RunSession._require_closed`
@@ -368,7 +368,7 @@ AnalysisError为未完成关闭；
 
 - `AnalysisError`：内部资源close返回但没有完成关闭。
 
-源码：[`src/chronaxis/execution/run_session.py:323`](../../../src/chronaxis/execution/run_session.py#L323)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:328`](../../../src/chronaxis/execution/run_session.py#L328)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_close_slot"></a>
 ### `RunSession._close_slot`
@@ -393,7 +393,7 @@ RunSession._close_slot(slot)
 
 原关闭错误。
 
-源码：[`src/chronaxis/execution/run_session.py:335`](../../../src/chronaxis/execution/run_session.py#L335)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:340`](../../../src/chronaxis/execution/run_session.py#L340)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_close_inputs"></a>
 ### `RunSession._close_inputs`
@@ -419,7 +419,7 @@ RunSession._close_inputs()
 
 原关闭错误；不越过尚未关闭的依赖资源。
 
-源码：[`src/chronaxis/execution/run_session.py:345`](../../../src/chronaxis/execution/run_session.py#L345)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:350`](../../../src/chronaxis/execution/run_session.py#L350)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_clear_contracts"></a>
 ### `RunSession._clear_contracts`
@@ -445,7 +445,7 @@ RunSession._clear_contracts()
 
 无；不修改调用方计划或已经移交的结果。
 
-源码：[`src/chronaxis/execution/run_session.py:352`](../../../src/chronaxis/execution/run_session.py#L352)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:357`](../../../src/chronaxis/execution/run_session.py#L357)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_release_costs"></a>
 ### `RunSession._release_costs`
@@ -471,7 +471,7 @@ RunSession._release_costs()
 
 原预算错误。
 
-源码：[`src/chronaxis/execution/run_session.py:360`](../../../src/chronaxis/execution/run_session.py#L360)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:365`](../../../src/chronaxis/execution/run_session.py#L365)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-_assert_owned_balance"></a>
 ### `RunSession._assert_owned_balance`
@@ -502,7 +502,7 @@ AnalysisError为真实内部责任或账本残留。
 - `AnalysisError`：成功前仍有未关闭内部资源。
 - `AnalysisError`：共享RAM账本与实际存活owner费用不一致，拒绝成功移交。
 
-源码：[`src/chronaxis/execution/run_session.py:366`](../../../src/chronaxis/execution/run_session.py#L366)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:371`](../../../src/chronaxis/execution/run_session.py#L371)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RunSession-close"></a>
 ### `RunSession.close`
@@ -529,4 +529,4 @@ RunSession.close()
 原句柄、预算或取消错误附
     runner_cleanup_owner；不会用共享余额抵销旧工厂遗失的费用。
 
-源码：[`src/chronaxis/execution/run_session.py:385`](../../../src/chronaxis/execution/run_session.py#L385)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/run_session.py:390`](../../../src/chronaxis/execution/run_session.py#L390)（行号对应 Chronaxis 0.1.0 源码）。

@@ -41,4 +41,4 @@ OverflowError为任何中间累计非有限；NumPy分配、导入或取消原�
 
 返回类型：float。
 
-源码：[`src/chronaxis/legacy/sum_numpy.py:17`](../../../src/chronaxis/legacy/sum_numpy.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/sum_numpy.py:17`](../../../src/chronaxis/legacy/sum_numpy.py#L17)（行号对应 Chronaxis 0.1.0 源码）。

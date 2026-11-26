@@ -46,7 +46,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/planning/record_execution.py:12`](../../../src/chronaxis/planning/record_execution.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/record_execution.py:12`](../../../src/chronaxis/planning/record_execution.py#L12)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-record_execution_errors"></a>
 ## `record_execution_errors`
@@ -71,4 +71,4 @@ record_execution_errors(plan)
 
 非法带有明确类型的对象属性错误传播；不访问文件或修改计划。
 
-源码：[`src/chronaxis/planning/record_execution.py:19`](../../../src/chronaxis/planning/record_execution.py#L19)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/record_execution.py:19`](../../../src/chronaxis/planning/record_execution.py#L19)（行号对应 Chronaxis 0.1.0 源码）。

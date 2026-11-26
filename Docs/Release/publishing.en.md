@@ -31,6 +31,7 @@ Verify and commit in the internal repository, then export a specific commit. The
 |---|---|
 |`tools/build_m2_docs.py --edition Current`|Generate references from the source revision in `Docs/Current/documentation.json`; public signatures must match the actual interfaces|
 |`tools/english_docs.py --record-reviewed`|Review affected translations before recording source hashes; refreshing hashes alone does not resolve a failed check|
+|`tools/build_example_results.py --check`|Check only the runtime fingerprint, configurations, inputs, and result-file digests recorded in the example inventory, without rerunning the analyses; it must pass before trial runs and review material are prepared. After `src/chronaxis` changes, the fingerprint no longer matches and the check fails. In that case rerun every example and update the manual results with `--work <new-directory> --publish --device-label <actual-label>`, review the differences in the results, and only then lock the guide inputs. This tool is used only in the internal repository and is not part of the public source|
 |`tools/lock_ai_inputs.py <manual-commit> --runtime <runtime-commit> --device-label <home-or-work>`|Lock the matching guide inputs after committing the corresponding material|
 |`tools/export_public_source.py <new-directory> --revision <commit>`|Export the public allowlist and `PUBLIC-SOURCE.json`, excluding internal Git history, management records, real data, and uncommitted files|
 |`tools/verify_ai_distribution.py <new-build-directory> --public-source <public-export>`|Build an sdist from clean source without Git, build its wheel, and compare the installed guide with the optional ZIP|
@@ -72,6 +73,8 @@ The workflows do not infer new versions or rebuild files. **Changing the local `
 |`.github/workflows/pypi-publish.yml`|Version description, Release tag, public source SHA resolved by that tag, wheel/sdist filenames, and both SHA256 values|`contents: read`, `id-token: write`|
 
 Both workflows are restricted to this repository and `main`, with official Actions pinned to commits. After freezing the source tag, make a separate workflow commit on `main` if necessary; do not move the tag to fill in its source SHA. This is the sequence used for `dev1`. Read the current workflow files to determine their pinned versions and hashes; do not infer them from this historical record. Keep existing workflows while a candidate still lacks its final public-source commit or asset hashes. Update and verify those values together before an authorized publication, without placeholder hashes or premature dispatch.
+
+After the new pins are committed to public `main`, synchronize the same two workflow files in the internal repository and commit them. Ignoring line endings, they must match public `main` byte for byte. Public source is exported from an internal commit: without this step, the next release commit would return the workflows to the older pins kept in the internal repository, and they would have to be changed again.
 
 ## 4. Deploy HTML
 

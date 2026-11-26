@@ -12,7 +12,7 @@ Every rule requires [`name`](#rule-id) and [`rule_type`](#rule-rule_type). Requi
 
 | `rule_type` | Required fields | Optional fields and defaults | Use it for |
 |---|---|---|---|
-| [`condition_duration`](#rule-duration) | `condition`, `minimum_duration`, `duration_comparison` | `selection_origin: onset` | Record an activity after a condition remains true for a required duration. |
+| [`condition_duration`](#rule-duration) | `condition`, `minimum_duration`, `duration_comparison`; also [`selection_origin`](#duration-selection-origin) when a calculation references the rule | None | Record an activity after a condition remains true for a required duration. |
 | [`rising_edge`](#rule-rising_edge) | `condition` | `emit_initial: false` | Record the instant a button changes from released to pressed. |
 | [`falling_edge`](#rule-falling_edge) | `condition` | `emit_initial: false`; true is forbidden | Record the instant a button changes from pressed to released. |
 | [`start_only`](#rule-start-only) | `condition`, `window_duration` | `emit_initial: false` | Trigger a fixed capture interval and suppress further triggers during it. |
@@ -129,7 +129,7 @@ rules:                             # Event detection rules.
 | <a id="duration-condition"></a>`condition` | String | Required | Boolean expression using defined signals. Here temperature >= 80 is true; below 80 is false. |
 | <a id="duration-duration"></a>`minimum_duration` | Duration string | Required | Nonnegative minimum continuous duration. `2s` rejects a 1.9 s activity; `0s` with `>=` removes the wait; `>` still requires a positive duration. |
 | `duration_comparison` | String | Required; no default | `>=` includes the threshold; `>` requires strictly longer. Exactly 60 s satisfies only `>=`; 60.000000001 s satisfies both. For “over 60 s”, use `>` rather than changing the threshold to 60.1 s. |
-| <a id="duration-selection-origin"></a>`selection_origin` | String | Optional; `onset` | `onset` includes the confirmation wait in event calculations; `confirmed` starts calculation at confirmation. |
+| <a id="duration-selection-origin"></a>`selection_origin` | String | Required when a calculation's `scope.rule` references the rule; optional otherwise | `onset` includes the confirmation wait in event calculations; `confirmed` starts calculation at confirmation. |
 
 <a id="selection_origin事件计算的起点"></a>
 <a id="selection_origin-事件计算的起点"></a>
@@ -137,7 +137,7 @@ Omitting `duration_comparison` produces a missing-field error when loading the c
 
 ### Strictly longer than a duration
 
-`minimum_duration: 60s` with `duration_comparison: ">"` requires strictly more than 60 continuous seconds. The default `selection_origin: onset` still integrates the entire qualifying activity; only explicit `confirmed` starts at confirmation.
+`minimum_duration: 60s` with `duration_comparison: ">"` requires strictly more than 60 continuous seconds. The start of statistics comes from `selection_origin`: `onset` integrates the entire qualifying activity, and `confirmed` starts at confirmation.
 
 With 1 ns time precision, actual mode confirms at the first representable instant after 60 s. Fixed/DBC mode advances only on selected messages: exactly 60 s does not qualify, and confirmation waits for the record that takes accumulation beyond 60 s. Continuous file boundaries do not reset the candidate, but invalid updates and expired validity still interrupt continuity.
 
@@ -151,7 +151,7 @@ Suppose temperature reaches 80 at 1 s, remains at or above 80 through 3 s, and f
 | `onset` | 1–6 s, including the confirmation wait: 5 s | 50 J |
 | `confirmed` | 3–6 s, excluding the wait: 3 s | 30 J |
 
-Write `selection_origin: confirmed` to change the calculation start. It does not change the condition that qualifies the activity.
+The field is required when a calculation's `scope.rule` references the rule, because the two choices give different results; omitting it fails validation. Rules that no calculation references may omit it. Write `selection_origin: confirmed` to change the calculation start. It does not change the condition that qualifies the activity.
 
 Replace the root `rules` and `calculations` sections of the teaching base with:
 

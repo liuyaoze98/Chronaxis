@@ -279,6 +279,14 @@ class RecordSessionCalculations:
             self._emit_event_duration(request, None, result)
         return True
 
+    @property
+    def worker_process_count(self):
+        """汇总本次真正参与读取或计算的文件工作进程数。参数: 无。返回: 非负int，0表示全部在主进程内。异常: 无。
+
+        候选并行会话未被采用时已从游标列表移除，只汇总完成本次工作的所有者。
+        """
+        return sum(getattr(owner, 'worker_process_count', 0) for owner in self._cursors or () if owner is not None)
+
     def _prepare_requests(self, spool):
         """从已验证计划取得请求和间隔选择；只为实际输出建立汇总状态。
 

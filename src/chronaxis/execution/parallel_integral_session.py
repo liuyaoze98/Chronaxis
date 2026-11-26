@@ -331,6 +331,11 @@ class ParallelIntegralSession:
                     field.frame_id, automatic[field], True, False, 'dbc_fd_classic_selector'))
         self.frame_format_notices = tuple(result)
 
+    @property
+    def worker_process_count(self) -> int:
+        """返回本次面积并行实际启动的工作进程数，关闭后仍可查看。参数: 无。返回: 非负int。异常: 无。"""
+        return len(self.timings.get('worker_pids', ()))
+
     def close(self) -> None:
         """关闭真实资源后逐项退款，失败保留所有权供重试。
 

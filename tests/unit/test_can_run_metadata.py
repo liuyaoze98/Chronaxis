@@ -78,7 +78,7 @@ class CANRunMetadataTests(unittest.TestCase):
         document = run.to_dict()
         expected_keys = {'run_id', 'input_identity', 'plan_hash', 'backend', 'config_version',
             'source_time_interpretation', 'session_boundaries', 'started_at',
-            'parsing_policy', 'worker_config', 'software_version',
+            'parsing_policy', 'process_count', 'worker_process_count', 'software_version',
             'retain_work', 'detailed_diagnostics', 'device_label'}
         self.assertEqual(set(document), expected_keys)
         self.assertNotIn('can_sources', document)

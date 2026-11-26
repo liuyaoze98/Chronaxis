@@ -39,7 +39,7 @@ moment_ddof(operation, value)
 
 不适用或越界。
 
-源码：[`src/chronaxis/core/moments.py:13`](../../../src/chronaxis/core/moments.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/moments.py:13`](../../../src/chronaxis/core/moments.py#L13)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-moment_source_unit"></a>
 ## `moment_source_unit`
@@ -65,7 +65,7 @@ Unit。
 
 未知单位或偏移RMS。
 
-源码：[`src/chronaxis/core/moments.py:26`](../../../src/chronaxis/core/moments.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/moments.py:26`](../../../src/chronaxis/core/moments.py#L26)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-compute_moment_series"></a>
 ## `compute_moment_series`
@@ -95,4 +95,4 @@ CalculationResult。
 
 与分块公开执行相同的类型、单位和时间错误。
 
-源码：[`src/chronaxis/core/moments.py:41`](../../../src/chronaxis/core/moments.py#L41)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/moments.py:41`](../../../src/chronaxis/core/moments.py#L41)（行号对应 Chronaxis 0.1.0 源码）。

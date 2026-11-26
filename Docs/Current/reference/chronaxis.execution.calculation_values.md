@@ -57,7 +57,7 @@ ScalarValue。
 
 原类型/布局错误；不做第二次数值转换。
 
-源码：[`src/chronaxis/execution/calculation_values.py:13`](../../../src/chronaxis/execution/calculation_values.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/calculation_values.py:13`](../../../src/chronaxis/execution/calculation_values.py#L13)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_scalar_from_validated_column"></a>
 ## `_scalar_from_validated_column`
@@ -84,7 +84,7 @@ ScalarValue；不复制列或保留另一份值。
 索引/分配原错。
 公开或来源不明的列须用scalar_from_column，不使用本内部入口。
 
-源码：[`src/chronaxis/execution/calculation_values.py:22`](../../../src/chronaxis/execution/calculation_values.py#L22)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/calculation_values.py:22`](../../../src/chronaxis/execution/calculation_values.py#L22)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_extract_scalar"></a>
 ## `_extract_scalar`
@@ -111,7 +111,7 @@ ScalarValue。
 
 索引、标签或构造错误传播；无效值不读取数组占位为真值。
 
-源码：[`src/chronaxis/execution/calculation_values.py:32`](../../../src/chronaxis/execution/calculation_values.py#L32)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/calculation_values.py:32`](../../../src/chronaxis/execution/calculation_values.py#L32)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-direction_bucket_state"></a>
 ## `direction_bucket_state`
@@ -137,7 +137,7 @@ direction_bucket_state(raw, bucket)
 
 TypeError为非原生数值，不接受NumPy标量。
 
-源码：[`src/chronaxis/execution/calculation_values.py:53`](../../../src/chronaxis/execution/calculation_values.py#L53)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/calculation_values.py:53`](../../../src/chronaxis/execution/calculation_values.py#L53)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-direction_skip_reason"></a>
 ## `direction_skip_reason`
@@ -165,4 +165,4 @@ direction_skip_reason(value, reason, direction_quality, selected)
 
 无主动异常；不修改累计器或原质量。
 
-源码：[`src/chronaxis/execution/calculation_values.py:67`](../../../src/chronaxis/execution/calculation_values.py#L67)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/calculation_values.py:67`](../../../src/chronaxis/execution/calculation_values.py#L67)（行号对应 Chronaxis 0.1.0 源码）。

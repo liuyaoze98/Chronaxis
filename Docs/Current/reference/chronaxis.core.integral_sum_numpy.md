@@ -48,7 +48,7 @@ NumpyIntegralSum(partial_limit: int=4096)
 ```
 
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:23`](../../../src/chronaxis/core/integral_sum_numpy.py#L23)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:23`](../../../src/chronaxis/core/integral_sum_numpy.py#L23)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-__init__"></a>
 ### `NumpyIntegralSum.__init__`
@@ -73,7 +73,7 @@ NumpyIntegralSum.__init__(partial_limit: int=4096)
 
 TypeError/ValueError 为限额不合法；内存分配错误直接传播。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:30`](../../../src/chronaxis/core/integral_sum_numpy.py#L30)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:30`](../../../src/chronaxis/core/integral_sum_numpy.py#L30)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-valid_term_count"></a>
 ### `NumpyIntegralSum.valid_term_count`
@@ -103,7 +103,7 @@ NumpyIntegralSum.valid_term_count: int
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:44`](../../../src/chronaxis/core/integral_sum_numpy.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:44`](../../../src/chronaxis/core/integral_sum_numpy.py#L44)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-calculation_failed"></a>
 ### `NumpyIntegralSum.calculation_failed`
@@ -133,7 +133,7 @@ bool；finish 的单位换算故障不修改本属性。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:53`](../../../src/chronaxis/core/integral_sum_numpy.py#L53)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:53`](../../../src/chronaxis/core/integral_sum_numpy.py#L53)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-partial_count"></a>
 ### `NumpyIntegralSum.partial_count`
@@ -163,7 +163,7 @@ NumpyIntegralSum.partial_count: int
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:62`](../../../src/chronaxis/core/integral_sum_numpy.py#L62)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:62`](../../../src/chronaxis/core/integral_sum_numpy.py#L62)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-push"></a>
 ### `NumpyIntegralSum.push`
@@ -191,7 +191,7 @@ TypeError 为输入类型错误；IntegralStateLimitError 为候选容量超限�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:70`](../../../src/chronaxis/core/integral_sum_numpy.py#L70)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:70`](../../../src/chronaxis/core/integral_sum_numpy.py#L70)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-push_values"></a>
 ### `NumpyIntegralSum.push_values`
@@ -220,7 +220,7 @@ TypeError/ValueError 为结构或写保护错误；容量、分配和取消传�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:88`](../../../src/chronaxis/core/integral_sum_numpy.py#L88)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:88`](../../../src/chronaxis/core/integral_sum_numpy.py#L88)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-_push_scalar"></a>
 ### `NumpyIntegralSum._push_scalar`
@@ -249,7 +249,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:118`](../../../src/chronaxis/core/integral_sum_numpy.py#L118)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:118`](../../../src/chronaxis/core/integral_sum_numpy.py#L118)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-_advance"></a>
 ### `NumpyIntegralSum._advance`
@@ -280,7 +280,7 @@ IntegralStateLimitError 为候选超限；分配和取消错误传播。
 
 返回类型：np.ndarray &#124; None。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:167`](../../../src/chronaxis/core/integral_sum_numpy.py#L167)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:167`](../../../src/chronaxis/core/integral_sum_numpy.py#L167)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-finish"></a>
 ### `NumpyIntegralSum.finish`
@@ -309,7 +309,7 @@ TypeError/ValueError 为参数错误；分配或取消错误传播。
 
 返回类型：[IntegralSumResult](chronaxis.core.integral_sum.md#api-IntegralSumResult)。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:203`](../../../src/chronaxis/core/integral_sum_numpy.py#L203)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:203`](../../../src/chronaxis/core/integral_sum_numpy.py#L203)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-NumpyIntegralSum-_rounded"></a>
 ### `NumpyIntegralSum._rounded`
@@ -337,4 +337,4 @@ NumpyIntegralSum._rounded() -> np.float64
 
 返回类型：np.float64。
 
-源码：[`src/chronaxis/core/integral_sum_numpy.py:232`](../../../src/chronaxis/core/integral_sum_numpy.py#L232)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/integral_sum_numpy.py:232`](../../../src/chronaxis/core/integral_sum_numpy.py#L232)（行号对应 Chronaxis 0.1.0 源码）。

@@ -72,7 +72,7 @@ ID到去重信号名字典的有限映射，名字次序保持请求顺序。
 ValueError表示字段所在报文不在解码范围；原分配/取消错误直接传播。
 父策略费用为每个字段另付1024B，覆盖此表及构建临时槽；名称借自原请求。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:40`](../../../src/chronaxis/legacy/batch_worker.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/batch_worker.py:40`](../../../src/chronaxis/legacy/batch_worker.py#L40)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_project_values"></a>
 ## `_project_values`
@@ -99,7 +99,7 @@ _project_values(values, names)
 有字段需求时非Mapping报TypeError；所需键访问和取消错误原样传播。
 无字段的常量触发报文直接返回空dict，不遍历或校验没有用途的原values。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:61`](../../../src/chronaxis/legacy/batch_worker.py#L61)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/batch_worker.py:61`](../../../src/chronaxis/legacy/batch_worker.py#L61)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_encode_fresh_packet"></a>
 ## `_encode_fresh_packet`
@@ -126,7 +126,7 @@ _encode_fresh_packet(packet)
 完整模型已检查全部帧字段、含ITEM外壳的长度及收到的Mapping两遍，再复制冻结数值；
 原转换只生成固定字段与非有限数值标签。沿用原批许可费用，不保留跨记录状态。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:88`](../../../src/chronaxis/legacy/batch_worker.py#L88)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/batch_worker.py:88`](../../../src/chronaxis/legacy/batch_worker.py#L88)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_limits"></a>
 ## `_limits`
@@ -158,7 +158,7 @@ TypeError/ValueError。
 - `ValueError`：批次许可条数或字节上限非法。
 - `ValueError`：解码后保留ID必须是无重复29位整数列表或None。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:111`](../../../src/chronaxis/legacy/batch_worker.py#L111)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/batch_worker.py:111`](../../../src/chronaxis/legacy/batch_worker.py#L111)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-batch_worker_main"></a>
 ## `batch_worker_main`
@@ -206,4 +206,4 @@ batch_worker_main(connection, *, decode_frame_ids=None, input_check='full', time
     解码值，仍检查原帧；原始帧保留范围不扩大解码范围。
     只关闭自己连接及同次共用读取器；第三方内部RSS仍不作硬上限保证。
 
-源码：[`src/chronaxis/legacy/batch_worker.py:131`](../../../src/chronaxis/legacy/batch_worker.py#L131)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/legacy/batch_worker.py:131`](../../../src/chronaxis/legacy/batch_worker.py#L131)（行号对应 Chronaxis 0.1.0 源码）。

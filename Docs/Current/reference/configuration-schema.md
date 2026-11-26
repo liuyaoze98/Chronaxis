@@ -1,6 +1,6 @@
 # 配置字段完整参考
 
-> 对应 Chronaxis 0.1.0.dev6。
+> 对应 Chronaxis 0.1.0。
 
 先读[配置教程](../configuration.md)。JSON路径含`$defs`的条目是可复用结构；`$ref`指向这些结构。schema描述形状，运行能力由计划解析和AnalysisRunner校验决定，不能据枚举值推断已接线。
 
@@ -7975,8 +7975,7 @@
     "onset",
     "confirmed"
   ],
-  "description": "持续条件事件的统计起点，选择首次成立时刻或持续时间得到确认的时刻。可选值：\"onset\"：从条件首次成立时刻计算；\"confirmed\"：从持续条件确认时刻计算。",
-  "default": "onset"
+  "description": "持续条件事件的统计起点，选择首次成立时刻或持续时间得到确认的时刻。可选值：\"onset\"：从条件首次成立时刻计算；\"confirmed\"：从持续条件确认时刻计算。规则被calculations的scope.rule引用时必须填写，两种取值会得到不同结果；未被引用时可以省略。"
 }
 ```
 
@@ -8012,7 +8011,7 @@
     ">=",
     ">"
   ],
-  "description": "持续时间与minimum_duration的比较，必须明确填写：>=达到，>严格超过。60秒整仅符合>=；不更改活动起点，selection_origin仍默认onset。"
+  "description": "持续时间与minimum_duration的比较，必须明确填写：>=达到，>严格超过。60秒整仅符合>=；不更改活动起点，也不改变selection_origin的选择。"
 }
 ```
 

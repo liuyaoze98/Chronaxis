@@ -53,7 +53,7 @@ ArgumentParser，不读取任何配置或来源。
 
 返回类型：argparse.ArgumentParser。
 
-源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/cli.py:14`](../../../src/chronaxis/cli.py#L14)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-main"></a>
 ## `main`
@@ -85,4 +85,4 @@ argparse帮助/参数错误按标准抛SystemExit；MemoryError及内部编程�
 
 返回类型：int。
 
-源码：[`src/chronaxis/cli.py:87`](../../../src/chronaxis/cli.py#L87)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/cli.py:87`](../../../src/chronaxis/cli.py#L87)（行号对应 Chronaxis 0.1.0 源码）。

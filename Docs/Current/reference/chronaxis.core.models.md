@@ -72,7 +72,7 @@ class Interval
 |`start_ns`|int|是|无|包含的开始坐标，整数纳秒。|
 |`end_ns`|int|是|无|连续范围不包含的终点，允许等于开始。|
 
-源码：[`src/chronaxis/core/models.py:26`](../../../src/chronaxis/core/models.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:26`](../../../src/chronaxis/core/models.py#L26)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-Interval-__post_init__"></a>
 ### `Interval.__post_init__`
@@ -108,7 +108,7 @@ TypeError为错误类型；ValueError为反向；TimeOverflowError为超界。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:35`](../../../src/chronaxis/core/models.py#L35)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:35`](../../../src/chronaxis/core/models.py#L35)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-Interval-duration_ns"></a>
 ### `Interval.duration_ns`
@@ -136,7 +136,7 @@ int；非负int64纳秒，零长度返回0。
 
 返回类型：int。
 
-源码：[`src/chronaxis/core/models.py:56`](../../../src/chronaxis/core/models.py#L56)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:56`](../../../src/chronaxis/core/models.py#L56)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-Interval-contains"></a>
 ### `Interval.contains`
@@ -168,7 +168,7 @@ TypeError为时间/point类型错误；TimeOverflowError为坐标超界。
 
 返回类型：bool。
 
-源码：[`src/chronaxis/core/models.py:66`](../../../src/chronaxis/core/models.py#L66)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:66`](../../../src/chronaxis/core/models.py#L66)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TimebaseSpec"></a>
 ## `TimebaseSpec`
@@ -191,7 +191,7 @@ class TimebaseSpec
 |`time_type`|[TimeType](chronaxis.core.types.md#api-TimeType)|是|无|TimeType.RELATIVE表示相对于明确起点的时间，需填写origin；TimeType.ABSOLUTE表示UTC绝对时间，以Unix epoch为基准。不要把相对0秒当成1970年的绝对时间。|
 |`origin`|str &#124; None|否|None|相对来源明确起点标签；绝对坐标使用UTC epoch。 None表示未提供相对时间的共同起点标签，不能仅据此把两个相对时钟当作已同步。|
 
-源码：[`src/chronaxis/core/models.py:84`](../../../src/chronaxis/core/models.py#L84)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:84`](../../../src/chronaxis/core/models.py#L84)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TimebaseSpec-__post_init__"></a>
 ### `TimebaseSpec.__post_init__`
@@ -224,7 +224,7 @@ TypeError为错误类型；ValueError为名称/起点缺项或冲突。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:96`](../../../src/chronaxis/core/models.py#L96)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:96`](../../../src/chronaxis/core/models.py#L96)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-MemoryRow"></a>
 ## `MemoryRow`
@@ -247,7 +247,7 @@ class MemoryRow
 |`values`|Mapping[str, int &#124; float &#124; bool &#124; str &#124; None]|是|无|原字段到原值，非表达式名。|
 |`sequence`|int|是|无|来源内原序号，同时间不同序号不去重。|
 
-源码：[`src/chronaxis/core/models.py:119`](../../../src/chronaxis/core/models.py#L119)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:119`](../../../src/chronaxis/core/models.py#L119)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-MemoryRow-__post_init__"></a>
 ### `MemoryRow.__post_init__`
@@ -283,7 +283,7 @@ TypeError/ValueError为容器/字段/值/序号错误；TimeOverflowError为时�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:131`](../../../src/chronaxis/core/models.py#L131)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:131`](../../../src/chronaxis/core/models.py#L131)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SourceSpec"></a>
 ## `SourceSpec`
@@ -310,7 +310,7 @@ class SourceSpec
 |`observation_end_ns`|int &#124; None|否|None|已知来源末点坐标，否则unknown。 None表示末端范围未知，不自动用请求终点补齐。|
 |`source_type`|[SourceType](chronaxis.core.types.md#api-SourceType)|否|SourceType.MEMORY|填SourceType.MEMORY，表示已准备好的内存信号。这是底层内存模型；公共AnalysisRunner另外支持CSV、BLF、ASC及原始CAN CSV，见[输入](../inputs.md)。|
 
-源码：[`src/chronaxis/core/models.py:164`](../../../src/chronaxis/core/models.py#L164)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:164`](../../../src/chronaxis/core/models.py#L164)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SourceSpec-__post_init__"></a>
 ### `SourceSpec.__post_init__`
@@ -350,7 +350,7 @@ TypeError为结构；ValueError为回退/重复序号/边界冲突；TimeOverflo
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:180`](../../../src/chronaxis/core/models.py#L180)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:180`](../../../src/chronaxis/core/models.py#L180)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SourceRef"></a>
 ## `SourceRef`
@@ -371,7 +371,7 @@ class SourceRef
 |`source_name`|str|是|无|会话内来源名。|
 |`field`|str|是|无|内存原字段；不是semantic_id或Python属性路径。|
 
-源码：[`src/chronaxis/core/models.py:245`](../../../src/chronaxis/core/models.py#L245)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:245`](../../../src/chronaxis/core/models.py#L245)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SourceRef-__post_init__"></a>
 ### `SourceRef.__post_init__`
@@ -399,7 +399,7 @@ TypeError/ValueError为名称/字段缺失或非法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:255`](../../../src/chronaxis/core/models.py#L255)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:255`](../../../src/chronaxis/core/models.py#L255)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SignalSample"></a>
 ## `SignalSample`
@@ -426,7 +426,7 @@ class SignalSample
 |`sequence`|int|是|无|来源内稳定原序号。|
 |`code`|'[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None'|否|None|仅请求枚举原码时保留独立类型与质量。|
 
-源码：[`src/chronaxis/core/models.py:271`](../../../src/chronaxis/core/models.py#L271)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:271`](../../../src/chronaxis/core/models.py#L271)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SignalSample-__post_init__"></a>
 ### `SignalSample.__post_init__`
@@ -464,7 +464,7 @@ TypeError为结构/标量类型；ValueError为有效性矛盾；TimeOverflowErr
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:287`](../../../src/chronaxis/core/models.py#L287)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:287`](../../../src/chronaxis/core/models.py#L287)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SignalSample-validate_dtype"></a>
 ### `SignalSample.validate_dtype`
@@ -504,7 +504,7 @@ TypeError为类型不符；ValueError为枚举域/标签；OverflowError为整�
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:320`](../../../src/chronaxis/core/models.py#L320)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:320`](../../../src/chronaxis/core/models.py#L320)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SessionSpec"></a>
 ## `SessionSpec`
@@ -529,7 +529,7 @@ class SessionSpec
 |`domain_end_ns`|int|是|无|连续末端不含，真实点上下文包含。|
 |`sources`|tuple[[SourceSpec](chronaxis.core.models.md#api-SourceSpec), ...]|否|()|会话内来源名唯一；空会话描述合法。|
 
-源码：[`src/chronaxis/core/models.py:374`](../../../src/chronaxis/core/models.py#L374)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:374`](../../../src/chronaxis/core/models.py#L374)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SessionSpec-__post_init__"></a>
 ### `SessionSpec.__post_init__`
@@ -562,7 +562,7 @@ TypeError为结构；ValueError为名称/重复来源/反向；TimeOverflowError
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:388`](../../../src/chronaxis/core/models.py#L388)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:388`](../../../src/chronaxis/core/models.py#L388)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SessionSpec-validate_sample"></a>
 ### `SessionSpec.validate_sample`
@@ -599,7 +599,7 @@ TypeError为非样本；ValueError为身份、字段或范围不符。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:422`](../../../src/chronaxis/core/models.py#L422)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:422`](../../../src/chronaxis/core/models.py#L422)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-DatasetSpec"></a>
 ## `DatasetSpec`
@@ -622,7 +622,7 @@ class DatasetSpec
 |`entity_id`|str|是|无|试验对象身份，不写死车辆或电池领域。|
 |`session`|[SessionSpec](chronaxis.core.models.md#api-SessionSpec)|是|无|首版单会话，来源在会话中明确声明。|
 
-源码：[`src/chronaxis/core/models.py:462`](../../../src/chronaxis/core/models.py#L462)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:462`](../../../src/chronaxis/core/models.py#L462)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-DatasetSpec-__post_init__"></a>
 ### `DatasetSpec.__post_init__`
@@ -654,4 +654,4 @@ TypeError/ValueError为身份或会话类型错误。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/models.py:474`](../../../src/chronaxis/core/models.py#L474)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/models.py:474`](../../../src/chronaxis/core/models.py#L474)（行号对应 Chronaxis 0.1.0 源码）。

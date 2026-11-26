@@ -41,7 +41,7 @@ BLFWrite(path)
 ```
 
 
-源码：[`src/chronaxis/results/blf_writer.py:10`](../../../src/chronaxis/results/blf_writer.py#L10)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:10`](../../../src/chronaxis/results/blf_writer.py#L10)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BLFWrite-__init__"></a>
 ### `BLFWrite.__init__`
@@ -69,7 +69,7 @@ owner。
 传入文件对象由python-can的stop关闭；本对象只在第三方未完成关闭时收尾同一句柄。
 构造失败仍保留blf_write_cleanup_owner，不借重新打开文件修补失败。
 
-源码：[`src/chronaxis/results/blf_writer.py:13`](../../../src/chronaxis/results/blf_writer.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:13`](../../../src/chronaxis/results/blf_writer.py#L13)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BLFWrite-closed"></a>
 ### `BLFWrite.closed`
@@ -97,7 +97,7 @@ bool，不表示失败文件可发布。
 
 无。
 
-源码：[`src/chronaxis/results/blf_writer.py:33`](../../../src/chronaxis/results/blf_writer.py#L33)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:33`](../../../src/chronaxis/results/blf_writer.py#L33)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BLFWrite-write"></a>
 ### `BLFWrite.write`
@@ -123,7 +123,7 @@ None。
 原写入错误或已结束时RuntimeError。
 不重试写入，避免重复添加帧。
 
-源码：[`src/chronaxis/results/blf_writer.py:40`](../../../src/chronaxis/results/blf_writer.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:40`](../../../src/chronaxis/results/blf_writer.py#L40)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BLFWrite-finish"></a>
 ### `BLFWrite.finish`
@@ -149,7 +149,7 @@ None，仅真实stop成功可正常返回。
 
 原收尾错误；已经失败的最终写入不能重试，返回RuntimeError。
 
-源码：[`src/chronaxis/results/blf_writer.py:49`](../../../src/chronaxis/results/blf_writer.py#L49)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:49`](../../../src/chronaxis/results/blf_writer.py#L49)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BLFWrite-close"></a>
 ### `BLFWrite.close`
@@ -175,4 +175,4 @@ None，重复关闭安全。
 
 保留原收尾错误；实际文件仍未关闭时附可重试owner，其他错误加入notes。
 
-源码：[`src/chronaxis/results/blf_writer.py:60`](../../../src/chronaxis/results/blf_writer.py#L60)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/blf_writer.py:60`](../../../src/chronaxis/results/blf_writer.py#L60)（行号对应 Chronaxis 0.1.0 源码）。

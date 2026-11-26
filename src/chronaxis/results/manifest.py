@@ -36,6 +36,8 @@ class RunMetadata:
     角色契约通过也不表示物理事实已测量。can_sources保存同次真实CAN读取/暂存/
     单位核对的结构化事实；text_can_sources保存新文本解析/DBC/观测事实。
     未提供的详细事实不作为当前运行的验证证明。
+    process_count与worker_process_count是实际执行事实：前者是生效上限，后者是实际启动数，
+    二者不能由计划身份推出（运行时覆盖不改变plan_hash）。
     """
 
     run_id: str
@@ -49,7 +51,6 @@ class RunMetadata:
     mapping_hashes: tuple[str, ...] = ()
     dbc_hashes: tuple[str, ...] = ()
     parsing_policy: str = 'decoded-results'
-    worker_config: str = 'single-thread'
     dependency_versions: tuple[tuple[str, str], ...] = ()
     limitations: tuple[str, ...] = ()
     software_version: str = field(default_factory=software_version)  # 构造本次元数据时读取版本；显式历史值保持。
@@ -69,6 +70,9 @@ class RunMetadata:
 
     analysis_outcome: AnalysisOutcome | None = None  # 同次推进的轻量业务结果概况，非逐条追溯。
     aggregation_definitions: tuple = ()  # 本次组级总体、单位及排除政策，每项只登记一次。
+    process_count: int = 1  # 本次生效的文件工作进程上限，已计入命令行或Python调用的覆盖。
+    worker_process_count: int = 0  # 实际启动并完成读取或计算的文件工作进程数；0表示全部在主进程内完成。
+    selection_origins: tuple[tuple[str, str], ...] = ()  # 被事件计算引用的持续条件规则及实际统计起点onset/confirmed。
 
     def __post_init__(self) -> None:
         """验证清单文本与明确会话范围，不访问外部输入。
@@ -83,8 +87,19 @@ class RunMetadata:
                 raise TypeError('聚合清单需要已冻结的聚合定义')
         # 必填文本不能用空字符串表示已经取得的运行身份。
         for name in ('run_id', 'plan_hash', 'source_time_interpretation',
-                     'parsing_policy', 'worker_config', 'software_version', 'device_label'):
+                     'parsing_policy', 'software_version', 'device_label'):
             require_text(getattr(self, name), name)
+        # 进程数只接受原生整数；实际启动数不能超过生效上限，避免清单声称不存在的并行。
+        if (type(self.process_count) is not int or self.process_count < 1
+                or type(self.worker_process_count) is not int
+                or not 0 <= self.worker_process_count <= self.process_count):
+            raise ValueError('清单进程数需要正整数上限，实际启动数在0与上限之间')
+        # 统计起点只记录onset/confirmed两种事实，同一规则只能有一项。
+        if (type(self.selection_origins) is not tuple
+                or any(type(item) is not tuple or len(item) != 2 or type(item[0]) is not str or not item[0]
+                       or item[1] not in ('onset', 'confirmed') for item in self.selection_origins)
+                or len({item[0] for item in self.selection_origins}) != len(self.selection_origins)):
+            raise ValueError('统计起点清单需要不重复的(规则, onset/confirmed)tuple')
         if self.backend not in ('reference', 'numpy') or type(self.config_version) is not int or self.config_version != 4:
             raise ValueError('结果清单需实际reference/numpy及配置版本4')
         if (self.input_identity is not None):
@@ -209,9 +224,10 @@ class RunMetadata:
         """
         # 文本/tuple结构只读遍历，转换副本成本以16倍和固定余量保守覆盖。
         # 空默认新字段不增加旧金额；非空定义/角色/CAN事实在asdict复制前递归覆盖。
+        # 两个进程数是固定大小的小整数，由固定余量覆盖，不增加已有清单的预约。
         return 8192 + 16 * sum(_metadata_size(getattr(self, field.name)) + 256 for field in fields(self)
-            if field.name not in ('signal_bindings', 'preset_bindings', 'can_sources', 'session_ids','text_can_sources','threshold_durations','detailed_diagnostics','retain_work','input_diagnostics','trace_requested','integrity_diagnostics','frame_format_notices','analysis_outcome','aggregation_definitions')
-            or getattr(self, field.name))
+            if field.name not in ('process_count', 'worker_process_count') and (field.name not in ('signal_bindings', 'preset_bindings', 'can_sources', 'session_ids','text_can_sources','threshold_durations','detailed_diagnostics','retain_work','input_diagnostics','trace_requested','integrity_diagnostics','frame_format_notices','analysis_outcome','aggregation_definitions','selection_origins')
+            or getattr(self, field.name)))
 
     def to_dict(self) -> dict:
         """返回独立JSON兼容元数据，调用侧必须先预留estimated_bytes。
@@ -228,7 +244,8 @@ class RunMetadata:
             # 从生成处只复制必要运行信息，不先展开完整绑定/来源后再隐藏。
             result = {name: getattr(self, name) for name in ('run_id', 'plan_hash', 'backend',
                 'config_version', 'started_at', 'device_label', 'software_version',
-                'source_time_interpretation', 'parsing_policy', 'worker_config', 'retain_work', 'detailed_diagnostics')}
+                'source_time_interpretation', 'parsing_policy', 'process_count', 'worker_process_count',
+                'retain_work', 'detailed_diagnostics')}
             for name in ('input_identity', 'session_boundaries', 'session_ids', 'limitations', 'dependency_versions'):
                 if getattr(self, name):
                     result[name] = getattr(self, name)
@@ -243,8 +260,14 @@ class RunMetadata:
                 result['analysis_outcome']=self.analysis_outcome.to_dict()
             if self.aggregation_definitions:
                 result['aggregation_definitions']=[asdict(a) for a in self.aggregation_definitions]
+            if self.selection_origins:
+                result['selection_origins']=dict(self.selection_origins)
             return result
         result = asdict(self)
+        if self.selection_origins:
+            result['selection_origins']=dict(self.selection_origins)
+        else:
+            result.pop('selection_origins')
         if not self.aggregation_definitions:
             result.pop('aggregation_definitions')
         if self.analysis_outcome is None:

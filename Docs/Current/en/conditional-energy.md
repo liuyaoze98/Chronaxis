@@ -10,7 +10,7 @@ The supplied ASC logs and DBC are synthetic examples. They do not establish the 
 
 Use [conditional-energy.yaml](../examples/conditional-energy.yaml), [part-1.asc](../examples/data/can/conditional-energy/part-1.asc), [part-2.asc](../examples/data/can/conditional-energy/part-2.asc), and [signals.dbc](../examples/data/can/conditional-energy/signals.dbc). The first log covers 0–89 seconds and the second continues at 90–123 seconds. The teaching DBC defines state, current, and voltage in message `0x100`, with a 1000 ms period.
 
-This example covers Chronaxis 0.1.0.dev6. First install it as described in [Installation](installation.md); `pip install "chronaxis==0.1.0.dev6"` is recommended. Installation includes the CAN dependencies declared for this version; do not independently install a different `cantools` version. Then change to the manual's [examples directory](installation.md#find-examples) and run:
+This example covers Chronaxis 0.1.0. First install it as described in [Installation](installation.md); `pip install "chronaxis==0.1.0"` is recommended. Installation includes the CAN dependencies declared for this version; do not independently install a different `cantools` version. Then change to the manual's [examples directory](installation.md#find-examples) and run:
 
 ```powershell
 chronaxis validate conditional-energy.yaml --format json
@@ -58,6 +58,7 @@ rules:                                              # Conditions or transitions 
     condition: state == 0x2 and current >= 10       # Boolean expression used to select an activity
     minimum_duration: 60s                           # Required continuous time for the activity
     duration_comparison: ">"                        # Strictly longer than 60 seconds
+    selection_origin: onset                         # Start of statistics: onset or confirmed; change to confirmed to start at confirmation
 calculations:                                       # Requested statistics or selected rows
   - name: energy_kwh                                # Name used to identify and reference this object
     operation: integral                             # Calculation to apply to the expression
@@ -73,7 +74,7 @@ The file format, sole source, and unambiguous channel are inferred. Public chann
 
 `execution.process_count` parallelizes only file reading and decoding; it does not split events or integrals at file boundaries. See [execution settings](execution.md) for the value and [continuous-file multiprocessing](continuous-files.md) for merging overlapping files by time.
 
-The default interval selection starts at the condition's onset, the default interval mode is actual elapsed time, and the default output is a readable table, so those fields are omitted. To integrate from the confirmation time instead, add `selection_origin: confirmed` to the `eligible` item under `rules`, at the same level as `minimum_duration`. `duration_comparison` is required: choose `">"` for strictly longer or `">="` to include the threshold. Omitting it produces a missing-field error. Integer state comparisons such as `state == 0x2` (decimal 2) need no Boolean or enumeration mapping. Check the actual state definition for your own data.
+This example writes `selection_origin: onset`, so integration starts at the condition's onset. A rule referenced by a calculation's `scope.rule` must state this field; omitting it fails validation. To integrate from the confirmation time instead, change it to `selection_origin: confirmed` at the same level as `minimum_duration`. The default interval mode is actual elapsed time and the default output is a readable table, so those fields are omitted. `duration_comparison` is required: choose `">"` for strictly longer or `">="` to include the threshold. Omitting it produces a missing-field error. Integer state comparisons such as `state == 0x2` (decimal 2) need no Boolean or enumeration mapping. Check the actual state definition for your own data.
 
 <a id="输入发生了什么为什么只有一条能量结果"></a>
 ## 3. What happens in the input
@@ -96,13 +97,13 @@ Exactly 10 A qualifies because this task uses `>=`. The charging preset's `curre
 
 See the supplied [事件结果.csv](../examples/results/conditional-energy-yaml/事件结果.csv) (event results) and [result-summary.json](../examples/results/conditional-energy-yaml/result-summary.json).
 
-| 区间 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 |
-|---|---|---|---|---|---|
-| 1 | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 |
+| 区间 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | 统计开始（s） |
+|---|---|---|---|---|---|---|
+| 1 | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | 61 |
 
 `区间` is the interval number; the next two columns are actual start and end times. `正常结束` means the interval ended normally, and `完整` means the calculation is complete. Only the 61-second activity qualifies. Its calculation range is `[61, 122)`, including the first 60 seconds.
 
-The strict threshold is first met at 121.000000001 seconds—the first nanosecond strictly beyond 60 seconds from the onset. That confirmation does not change the integration start. The ordinary table does not save an extra confirmation timestamp; use `iter_events()` when your task needs it.
+The strict threshold is first met at 121.000000001 seconds—the first nanosecond strictly beyond 60 seconds from the onset. That confirmation does not change the integration start. The last column `统计开始（s）` (statistics start) is 61, showing where integration begins; with `selection_origin: confirmed` it becomes 121.000000001 and the energy becomes 0.00111111111 kWh. The ordinary table does not save an extra confirmation timestamp; use `iter_events()` when your task needs it.
 
 The manifest's `analysis_outcome.rules` reports one `eligible` event with `has_unknown: false`; `calculations.complete` is 1. These are counts, not energy values. A run marked completed means it ran and published successfully; calculation quality is reported separately.
 

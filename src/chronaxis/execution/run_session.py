@@ -285,7 +285,12 @@ class RunSession:
             frame_format_notices=frame_notices,analysis_outcome=analysis_outcome,aggregation_definitions=plan.aggregations,
             limitations=tuple(f'{source}.{notice.alias}: DBC声明CAN FD，按显式经典CAN定位读取；原帧未转换'
                               for source, notice in frame_notices),
-            trace_requested=plan.diagnostics.trace,integrity_diagnostics=plan.diagnostics.integrity)
+            trace_requested=plan.diagnostics.trace,integrity_diagnostics=plan.diagnostics.integrity,
+            process_count=plan.execution.process_count,
+            worker_process_count=self._record_calculations.worker_process_count,
+            selection_origins=tuple((rule.rule_id, rule.selection_origin) for rule in plan.rules
+                if rule.rule_type == 'condition_duration'
+                and any(item.scope == 'event:' + rule.rule_id for item in plan.calculations)))
 
     def _adopt_cleanup(self, exc):
         """接管当前工厂明确移交的最高资源所有者，保留失败后可重试关闭的责任。

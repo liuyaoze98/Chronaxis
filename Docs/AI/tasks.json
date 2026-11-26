@@ -176,10 +176,10 @@
       "intent": "BLF/ASC连续分卷：多条件持续超过门槛，对整个合格区间计算能量积分，输出kWh",
       "example": "../Current/examples/conditional-energy.yaml",
       "requires": "原始ASC/BLF与对应DBC，目标信号/编码/单位、比较符、持续时长及积分范围。类型/单位/周期能由DBC取得时不要求重复填写。",
-      "applicable": "自定义状态和数值条件、达到或严格超过时长、从条件开始处积分、可选能量单位。示例为strict >60s、默认onset、实际时间间隔。",
+      "applicable": "自定义状态和数值条件、达到或严格超过时长、从条件开始处积分、可选能量单位。示例为strict >60s、显式selection_origin: onset、实际时间间隔。",
       "not_applicable": "逐消息贡献查询MESSAGE_ENERGY；满足同帧计算等限制时再选FAST_MESSAGE_ENERGY。独立任务使用BATCH，同模板fast总计查询FAST_TEMPLATE_TOTAL。",
       "alternative": "charge_session只适用于它的严格电流>、持续>=、Wh/Ah及方向/测点契约，不因为名称包含充电就套用。",
-      "check": "运行成功后打开终端JSON的manifest字段指向的清单，通过outputs定位以下可读结果表。事件结果仅有一个合格区间：同一行开始时间（s）=61、结束时间（s）=122、energy_kwh（kWh）=0.06777777777777777、energy_kwh：状态=完整、energy_kwh：说明为空；60秒整无事件，不能改成60.1秒模拟严格比较。默认可读CSV无需按ID拼表。",
+      "check": "运行成功后打开终端JSON的manifest字段指向的清单，通过outputs定位以下可读结果表。事件结果仅有一个合格区间：同一行开始时间（s）=61、结束时间（s）=122、energy_kwh（kWh）=0.06777777777777777、energy_kwh：状态=完整、energy_kwh：说明为空、统计开始（s）=61；60秒整无事件，不能改成60.1秒模拟严格比较。默认可读CSV无需按ID拼表。",
       "fields": [
         "sources",
         "signals",
@@ -219,7 +219,7 @@
       "intent": "充电过程、电量与充电能量",
       "example": "../Current/examples/preset-charge-energy.yaml",
       "requires": "模式编码、电流正向、端口位置、电压、阈值与持续时间。教学例使用ASC；使用BLF时替换为自己的日志、DBC及绑定。",
-      "check": "运行成功后打开终端JSON的manifest字段指向的清单，通过outputs定位以下可读结果表。事件结果同一行开始时间（s）=1、结束时间（s）=3、demo_preset_energy（Wh）=2.2222222222222223、demo_preset_charge（Ah）=0.005555555555555556，两项状态完整。先核预设适用条件；恰好current_min不参与，恰好minimum_duration合格，默认从onset起算。",
+      "check": "运行成功后打开终端JSON的manifest字段指向的清单，通过outputs定位以下可读结果表。事件结果同一行开始时间（s）=1、结束时间（s）=3、demo_preset_energy（Wh）=2.2222222222222223、demo_preset_charge（Ah）=0.005555555555555556，两项状态完整。先核预设适用条件；恰好current_min不参与，恰好minimum_duration合格，预设固定从onset起算。",
       "fields": [
         "presets",
         "signals",

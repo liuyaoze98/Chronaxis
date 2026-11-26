@@ -1,7 +1,7 @@
 {
   "edition": "Current",
-  "baseline": "52504b7e8bd2bd40147e215ee48b0ea11f27826c",
-  "updated_at": "2026-11-23T18:57:07+08:00",
+  "baseline": "73edde41bdf151418282e6be301c5c6bb4d85e8c",
+  "updated_at": "2026-11-26T15:17:08+08:00",
   "device_label": "school",
-  "task": "RELEASE-DEV6-01"
+  "task": "RELEASE-010-01"
 }

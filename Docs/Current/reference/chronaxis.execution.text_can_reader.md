@@ -30,6 +30,7 @@
 |[`TextCANObservationRead.__init__`](#api-TextCANObservationRead-__init__)|验证原会话/投影并构造未开始的解码器。|
 |[`TextCANObservationRead.closed`](#api-TextCANObservationRead-closed)|返回真实关闭状态。|
 |[`TextCANObservationRead.failed`](#api-TextCANObservationRead-failed)|返回当前读取是否失败。|
+|[`TextCANObservationRead.worker_process_count`](#api-TextCANObservationRead-worker_process_count)|返回本次读取实际启动的文件工作进程数；单进程解码器没有工作进程。|
 |[`TextCANObservationRead.exhausted`](#api-TextCANObservationRead-exhausted)|返回完整EOF及解析器关闭事实。|
 |[`TextCANObservationRead.observation`](#api-TextCANObservationRead-observation)|仅交付本read已完成的真实观测。|
 |[`TextCANObservationRead.observed_bounds`](#api-TextCANObservationRead-observed_bounds)|返回同次解析已经看到的首末时间，不额外扫描或冒充EOF。|
@@ -88,7 +89,7 @@ values、重建值/布局、路径及原时间文本的基础字节费用，尚�
 传播内存分配错误；不接受任意外部对象树。
 每个引用位置仍计费，仅省去通用元数据的递归类型分流；不降低预算金额。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:26`](../../../src/chronaxis/execution/text_can_reader.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:26`](../../../src/chronaxis/execution/text_can_reader.py#L26)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter"></a>
 ## `BudgetedTextCANSourceAdapter`
@@ -100,7 +101,7 @@ BudgetedTextCANSourceAdapter(budget, spec, session_id, signals, *, backend='nump
 ```
 
 
-源码：[`src/chronaxis/execution/text_can_reader.py:46`](../../../src/chronaxis/execution/text_can_reader.py#L46)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:46`](../../../src/chronaxis/execution/text_can_reader.py#L46)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-__init__"></a>
 ### `BudgetedTextCANSourceAdapter.__init__`
@@ -151,7 +152,7 @@ adapter。
 - `ValueError`：文本CAN来源配置或后端非法。
 - `ValueError`：显式原帧保存需要新工作目录。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:49`](../../../src/chronaxis/execution/text_can_reader.py#L49)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:49`](../../../src/chronaxis/execution/text_can_reader.py#L49)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-retain_raw_frames"></a>
 ### `BudgetedTextCANSourceAdapter.retain_raw_frames`
@@ -179,7 +180,7 @@ True表示保存原始报文供后续导出；False表示不为此目的保存�
 
 无。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:125`](../../../src/chronaxis/execution/text_can_reader.py#L125)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:125`](../../../src/chronaxis/execution/text_can_reader.py#L125)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-_ensure_open"></a>
 ### `BudgetedTextCANSourceAdapter._ensure_open`
@@ -209,7 +210,7 @@ SourceClosedError。
 
 - `SourceClosedError`：文本CAN来源已关闭。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:130`](../../../src/chronaxis/execution/text_can_reader.py#L130)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:130`](../../../src/chronaxis/execution/text_can_reader.py#L130)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-describe"></a>
 ### `BudgetedTextCANSourceAdapter.describe`
@@ -235,7 +236,7 @@ SourceDescription。
 
 已关闭。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:136`](../../../src/chronaxis/execution/text_can_reader.py#L136)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:136`](../../../src/chronaxis/execution/text_can_reader.py#L136)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-iter_batches_with_observation"></a>
 ### `BudgetedTextCANSourceAdapter.iter_batches_with_observation`
@@ -264,7 +265,7 @@ read。
 
 - `ResultClosedError`：文本CAN仍有未返回read待清理。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:142`](../../../src/chronaxis/execution/text_can_reader.py#L142)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:142`](../../../src/chronaxis/execution/text_can_reader.py#L142)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-iter_batches"></a>
 ### `BudgetedTextCANSourceAdapter.iter_batches`
@@ -289,7 +290,7 @@ read。
 
 原工厂错。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:163`](../../../src/chronaxis/execution/text_can_reader.py#L163)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:163`](../../../src/chronaxis/execution/text_can_reader.py#L163)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BudgetedTextCANSourceAdapter-close"></a>
 ### `BudgetedTextCANSourceAdapter.close`
@@ -315,7 +316,7 @@ BudgetedTextCANSourceAdapter.close()
 
 关闭/费用错可重试。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:168`](../../../src/chronaxis/execution/text_can_reader.py#L168)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:168`](../../../src/chronaxis/execution/text_can_reader.py#L168)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead"></a>
 ## `TextCANObservationRead`
@@ -327,7 +328,7 @@ TextCANObservationRead(owner, request)
 ```
 
 
-源码：[`src/chronaxis/execution/text_can_reader.py:184`](../../../src/chronaxis/execution/text_can_reader.py#L184)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:184`](../../../src/chronaxis/execution/text_can_reader.py#L184)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-__init__"></a>
 ### `TextCANObservationRead.__init__`
@@ -358,7 +359,7 @@ read。
 - `ValueError`：文本CAN读取需要原会话ReadRequest。
 - `ValueError`：文本CAN请求包含未声明信号。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:187`](../../../src/chronaxis/execution/text_can_reader.py#L187)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:187`](../../../src/chronaxis/execution/text_can_reader.py#L187)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-closed"></a>
 ### `TextCANObservationRead.closed`
@@ -386,7 +387,7 @@ True表示本对象的关闭已完成；False表示尚未关闭完毕。
 
 无。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:244`](../../../src/chronaxis/execution/text_can_reader.py#L244)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:245`](../../../src/chronaxis/execution/text_can_reader.py#L245)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-failed"></a>
 ### `TextCANObservationRead.failed`
@@ -414,7 +415,35 @@ True表示本对象已记录处理失败；False表示尚未记录失败。
 
 无。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:250`](../../../src/chronaxis/execution/text_can_reader.py#L250)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:251`](../../../src/chronaxis/execution/text_can_reader.py#L251)（行号对应 Chronaxis 0.1.0 源码）。
+
+<a id="api-TextCANObservationRead-worker_process_count"></a>
+### `TextCANObservationRead.worker_process_count`
+
+返回本次读取实际启动的文件工作进程数；单进程解码器没有工作进程。
+
+```python
+TextCANObservationRead.worker_process_count
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+非负int。
+
+#### 异常说明
+
+无。
+
+源码：[`src/chronaxis/execution/text_can_reader.py:257`](../../../src/chronaxis/execution/text_can_reader.py#L257)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-exhausted"></a>
 ### `TextCANObservationRead.exhausted`
@@ -442,7 +471,7 @@ True表示输入或结果已正常读完；False表示尚未正常读完。发�
 
 无。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:256`](../../../src/chronaxis/execution/text_can_reader.py#L256)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:265`](../../../src/chronaxis/execution/text_can_reader.py#L265)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-observation"></a>
 ### `TextCANObservationRead.observation`
@@ -474,7 +503,7 @@ CANObservation。
 
 - `ResultClosedError`：文本CAN观测尚未完成。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:262`](../../../src/chronaxis/execution/text_can_reader.py#L262)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:271`](../../../src/chronaxis/execution/text_can_reader.py#L271)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-observed_bounds"></a>
 ### `TextCANObservationRead.observed_bounds`
@@ -502,7 +531,7 @@ TextCANObservationRead.observed_bounds
 
 失败/关闭状态拒绝借读。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:270`](../../../src/chronaxis/execution/text_can_reader.py#L270)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:279`](../../../src/chronaxis/execution/text_can_reader.py#L279)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-runtime_metadata"></a>
 ### `TextCANObservationRead.runtime_metadata`
@@ -530,7 +559,7 @@ TextCANObservationRead.runtime_metadata
 
 未完成。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:282`](../../../src/chronaxis/execution/text_can_reader.py#L282)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:291`](../../../src/chronaxis/execution/text_can_reader.py#L291)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-prepare_metadata"></a>
 ### `TextCANObservationRead.prepare_metadata`
@@ -556,7 +585,7 @@ TextCANObservationRead.prepare_metadata()
 
 关闭/失败或启动原错；清理由本read负责。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:288`](../../../src/chronaxis/execution/text_can_reader.py#L288)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:297`](../../../src/chronaxis/execution/text_can_reader.py#L297)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-__iter__"></a>
 ### `TextCANObservationRead.__iter__`
@@ -582,7 +611,7 @@ TextCANObservationRead.__iter__()
 
 无。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:305`](../../../src/chronaxis/execution/text_can_reader.py#L305)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:314`](../../../src/chronaxis/execution/text_can_reader.py#L314)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-_accept"></a>
 ### `TextCANObservationRead._accept`
@@ -607,7 +636,7 @@ TextCANObservationRead._accept(batch)
 
 校验/预算错。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:310`](../../../src/chronaxis/execution/text_can_reader.py#L310)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:319`](../../../src/chronaxis/execution/text_can_reader.py#L319)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-_fill"></a>
 ### `TextCANObservationRead._fill`
@@ -633,7 +662,7 @@ TextCANObservationRead._fill()
 
 原读/预算/暂存错。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:323`](../../../src/chronaxis/execution/text_can_reader.py#L323)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:332`](../../../src/chronaxis/execution/text_can_reader.py#L332)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-__next__"></a>
 ### `TextCANObservationRead.__next__`
@@ -663,7 +692,7 @@ EOF/原读/预算/合同错。
 
 - `ResultClosedError`：失败的文本CAN读取只能清理。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:348`](../../../src/chronaxis/execution/text_can_reader.py#L348)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:357`](../../../src/chronaxis/execution/text_can_reader.py#L357)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-_finish"></a>
 ### `TextCANObservationRead._finish`
@@ -693,7 +722,7 @@ TextCANObservationRead._finish()
 
 - `ValueError`：文本原始解析器没有真正到达EOF。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:386`](../../../src/chronaxis/execution/text_can_reader.py#L386)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:395`](../../../src/chronaxis/execution/text_can_reader.py#L395)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-take_raw_store"></a>
 ### `TextCANObservationRead.take_raw_store`
@@ -723,7 +752,7 @@ TextCANObservationRead.take_raw_store(receiver, slot)
 
 - `ValueError`：文本原帧仓不能移交。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:407`](../../../src/chronaxis/execution/text_can_reader.py#L407)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:418`](../../../src/chronaxis/execution/text_can_reader.py#L418)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-TextCANObservationRead-close"></a>
 ### `TextCANObservationRead.close`
@@ -749,4 +778,4 @@ TextCANObservationRead.close()
 
 原清理错可恢复。
 
-源码：[`src/chronaxis/execution/text_can_reader.py:416`](../../../src/chronaxis/execution/text_can_reader.py#L416)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/text_can_reader.py:427`](../../../src/chronaxis/execution/text_can_reader.py#L427)（行号对应 Chronaxis 0.1.0 源码）。

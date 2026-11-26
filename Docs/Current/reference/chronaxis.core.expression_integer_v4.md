@@ -58,7 +58,7 @@ None。
 
 ValueError为非整数、未知单位、带物理单位或非1倍率。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:21`](../../../src/chronaxis/core/expression_integer_v4.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:21`](../../../src/chronaxis/core/expression_integer_v4.py#L21)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_bit_parameter"></a>
 ## `_bit_parameter`
@@ -85,7 +85,7 @@ _bit_parameter(compiler, child, call)
 
 ValueError为依赖运行数据或静态数值本身无效。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:34`](../../../src/chronaxis/core/expression_integer_v4.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:34`](../../../src/chronaxis/core/expression_integer_v4.py#L34)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-compile_integer"></a>
 ## `compile_integer`
@@ -111,4 +111,4 @@ ExprNode；cast结果按所选尺度保持目标dtype，位索引不构造运行
 
 ValueError为签名、输入类型/单位、位参数、常量越界或隐式混合定宽。
 
-源码：[`src/chronaxis/core/expression_integer_v4.py:51`](../../../src/chronaxis/core/expression_integer_v4.py#L51)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/expression_integer_v4.py:51`](../../../src/chronaxis/core/expression_integer_v4.py#L51)（行号对应 Chronaxis 0.1.0 源码）。

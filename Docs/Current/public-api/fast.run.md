@@ -33,4 +33,4 @@ PlanValidationError为配置不合法；ValueError为非法覆盖或数值/协�
 
 [高性能积分器教程](../fast-energy.md)
 
-源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号对应 Chronaxis 0.1.0 源码）。

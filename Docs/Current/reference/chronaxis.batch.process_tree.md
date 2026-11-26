@@ -47,7 +47,7 @@ class _BasicLimits(ctypes.Structure)
 |---|---|---|---|---|
 |`_fields_`|list[tuple[str, type]]|类成员，不作为构造参数填写|[('per_process', ctypes.c_longlong), ('per_job', ctypes.c_longlong), ('flags', wintypes.DWORD), ('min_ws', ctypes.c_size_t), ('max_ws', ctypes.c_size_t), ('active_limit', wintypes.DWORD), ('affinity', ctypes.c_size_t), ('priority', wintypes.DWORD), ('scheduling', wintypes.DWORD)]|Windows作业结构的固定ABI布局；由ctypes使用，不是用户配置参数，不能按字段名称随意调整次序或宽度。|
 
-源码：[`src/chronaxis/batch/process_tree.py:17`](../../../src/chronaxis/batch/process_tree.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:17`](../../../src/chronaxis/batch/process_tree.py#L17)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_ExtendedLimits"></a>
 ## `_ExtendedLimits`
@@ -66,7 +66,7 @@ class _ExtendedLimits(ctypes.Structure)
 |---|---|---|---|---|
 |`_fields_`|list[tuple[str, type]]|类成员，不作为构造参数填写|[('basic', _BasicLimits), ('io', ctypes.c_ulonglong * 6), ('process_memory', ctypes.c_size_t), ('job_memory', ctypes.c_size_t), ('peak_process', ctypes.c_size_t), ('peak_job', ctypes.c_size_t)]|Windows作业结构的固定ABI布局；由ctypes使用，不是用户配置参数，不能按字段名称随意调整次序或宽度。|
 
-源码：[`src/chronaxis/batch/process_tree.py:27`](../../../src/chronaxis/batch/process_tree.py#L27)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:27`](../../../src/chronaxis/batch/process_tree.py#L27)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree"></a>
 ## `ProcessTree`
@@ -78,7 +78,7 @@ ProcessTree(pid, *, registration=None, process=None)
 ```
 
 
-源码：[`src/chronaxis/batch/process_tree.py:35`](../../../src/chronaxis/batch/process_tree.py#L35)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:35`](../../../src/chronaxis/batch/process_tree.py#L35)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree-__init__"></a>
 ### `ProcessTree.__init__`
@@ -105,7 +105,7 @@ __init__ 返回 None；构造所得 ProcessTree 持有作业句柄或 pidfd，�
 
 不支持的平台或缺少 Linux 进程组信号能力时抛 NotImplementedError；Linux 的进程或握手身份不符时抛 ValueError。等待、管道和系统调用错误原样传播。构造失败会先尝试清理，尚未释放的资源通过原异常的 process_tree_cleanup_owner 保留。
 
-源码：[`src/chronaxis/batch/process_tree.py:38`](../../../src/chronaxis/batch/process_tree.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:38`](../../../src/chronaxis/batch/process_tree.py#L38)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree-_register_linux"></a>
 ### `ProcessTree._register_linux`
@@ -132,7 +132,7 @@ None；能力与身份核验完成后才发GO。
 
 无效身份、握手或系统错误原样传播；未确认fd只关闭，不发送组信号。
 
-源码：[`src/chronaxis/batch/process_tree.py:77`](../../../src/chronaxis/batch/process_tree.py#L77)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:77`](../../../src/chronaxis/batch/process_tree.py#L77)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree-_close_linux"></a>
 ### `ProcessTree._close_linux`
@@ -158,7 +158,7 @@ None；未确认fd仅关闭。
 
 组未消失或信号失败时保留责任；Linux close本身报错也不重试已释放编号。
 
-源码：[`src/chronaxis/batch/process_tree.py:115`](../../../src/chronaxis/batch/process_tree.py#L115)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:115`](../../../src/chronaxis/batch/process_tree.py#L115)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree-_close_process_handle"></a>
 ### `ProcessTree._close_process_handle`
@@ -184,7 +184,7 @@ None。
 
 失败仍保留句柄。
 
-源码：[`src/chronaxis/batch/process_tree.py:153`](../../../src/chronaxis/batch/process_tree.py#L153)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:153`](../../../src/chronaxis/batch/process_tree.py#L153)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ProcessTree-close"></a>
 ### `ProcessTree.close`
@@ -212,4 +212,4 @@ None；重复关闭安全。
 Windows作业关闭后结束残余后代；登记句柄失败仍尝试结束作业。
 Linux组确认消失后只close一次pidfd；错误向上传播，不重试已释放编号。
 
-源码：[`src/chronaxis/batch/process_tree.py:160`](../../../src/chronaxis/batch/process_tree.py#L160)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/batch/process_tree.py:160`](../../../src/chronaxis/batch/process_tree.py#L160)（行号对应 Chronaxis 0.1.0 源码）。

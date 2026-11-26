@@ -342,6 +342,11 @@ class ParallelPointSession:
         finally:
             self.timings['parent_cpu_seconds'] += process_time() - cpu
 
+    @property
+    def worker_process_count(self) -> int:
+        """返回本次组点并行实际启动的工作进程数，关闭后仍可查看。参数: 无。返回: 非负int。异常: 无。"""
+        return len(self.timings.get('worker_pids', ()))
+
     def close(self) -> None:
         """关闭真实资源后逐项退款，失败保留所有权供重试。
 

@@ -89,7 +89,7 @@ class DatasetPlan
 |`metadata`|Mapping|是|无|深冻结自由JSON元数据。|
 |`domain_explicit`|bool|否|True|旧位置构造保留显式请求；False仅供合格整文件消息任务。|
 
-源码：[`src/chronaxis/planning/models.py:34`](../../../src/chronaxis/planning/models.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:34`](../../../src/chronaxis/planning/models.py#L34)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SourcePlan"></a>
 ## `SourcePlan`
@@ -118,7 +118,7 @@ class SourcePlan
 |`input_identity`|str|是|无|规范来源配置，包含路径顺序/格式/时间映射。|
 |`metadata`|Mapping|是|无|深冻结自由元数据。|
 
-源码：[`src/chronaxis/planning/models.py:55`](../../../src/chronaxis/planning/models.py#L55)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:55`](../../../src/chronaxis/planning/models.py#L55)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-SignalPlan"></a>
 ## `SignalPlan`
@@ -141,7 +141,7 @@ class SignalPlan
 |`definition`|[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition)|是|无|当前信号的SignalDefinition；valid_for_ns可暂为None以等待DBC周期，不能以未解析定义执行状态计算。|
 |`metadata`|Mapping|是|无|只读业务元数据，不把自由键当作周期、有效期或帧型配置。|
 
-源码：[`src/chronaxis/planning/models.py:75`](../../../src/chronaxis/planning/models.py#L75)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:75`](../../../src/chronaxis/planning/models.py#L75)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-DerivedPlan"></a>
 ## `DerivedPlan`
@@ -169,7 +169,7 @@ class DerivedPlan
 |`measurement_location`|str &#124; None|是|无|结果对应的测量位置，例如 `"pack_terminal"`。|
 |`metadata`|Mapping|是|无|新信号的备注。|
 
-源码：[`src/chronaxis/planning/models.py:89`](../../../src/chronaxis/planning/models.py#L89)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:89`](../../../src/chronaxis/planning/models.py#L89)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RulePlan"></a>
 ## `RulePlan`
@@ -198,7 +198,7 @@ class RulePlan
 |`start_end`|[StartEndSpec](chronaxis.core.start_end.md#api-StartEndSpec) &#124; None|否|None|保存start_end活动的StartEndSpec，包含超时限制与初始触发选择；仅此规则使用，其他类型填写None。|
 |`duration_comparison`|str|否|'>='|持续时长比较符：>=表示达到minimum_duration，>表示严格超过；此底层Python对象默认>=；用户配置中的condition_duration必须显式填写比较符。仅condition_duration使用。实际时间模式按整数纳秒比较，固定/DBC模式随所选报文推进；不改变onset/confirmed的积分起点选择。|
 
-源码：[`src/chronaxis/planning/models.py:108`](../../../src/chronaxis/planning/models.py#L108)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:108`](../../../src/chronaxis/planning/models.py#L108)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RulePlan-__post_init__"></a>
 ### `RulePlan.__post_init__`
@@ -238,7 +238,7 @@ RulePlan.__post_init__()
 - `ValueError`：window_delta参数冲突或重触发策略非法。
 - `ValueError`：普通规则不接受window_delta或retrigger参数。
 
-源码：[`src/chronaxis/planning/models.py:133`](../../../src/chronaxis/planning/models.py#L133)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:133`](../../../src/chronaxis/planning/models.py#L133)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RulePlan-temporal_rule_type"></a>
 ### `RulePlan.temporal_rule_type`
@@ -269,7 +269,7 @@ str。
 window_delta使用rising_edge；迟滞/防抖确认后的状态使用condition_duration=0活动。
 完整窗口、条件、防抖和开始/结束时限保留在原计划；start_end也输出活动。
 
-源码：[`src/chronaxis/planning/models.py:183`](../../../src/chronaxis/planning/models.py#L183)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:183`](../../../src/chronaxis/planning/models.py#L183)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RulePlan-expressions"></a>
 ### `RulePlan.expressions`
@@ -299,7 +299,7 @@ tuple。
 
 迟滞退出条件同样参与实际绑定、投影、同步与预算，不遗漏第二个来源。
 
-源码：[`src/chronaxis/planning/models.py:193`](../../../src/chronaxis/planning/models.py#L193)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:193`](../../../src/chronaxis/planning/models.py#L193)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RulePlan-dependencies"></a>
 ### `RulePlan.dependencies`
@@ -327,7 +327,7 @@ RulePlan.dependencies
 
 无。
 
-源码：[`src/chronaxis/planning/models.py:201`](../../../src/chronaxis/planning/models.py#L201)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:201`](../../../src/chronaxis/planning/models.py#L201)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-WindowPlan"></a>
 ## `WindowPlan`
@@ -350,7 +350,7 @@ class WindowPlan
 |`merge`|str|是|无|多段窗口如何合并，四种值见下表。|
 |`exit_delay_ns`|int &#124; None|是|无|仅exit_delay模式有效。|
 
-源码：[`src/chronaxis/planning/models.py:207`](../../../src/chronaxis/planning/models.py#L207)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:207`](../../../src/chronaxis/planning/models.py#L207)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-CalculationPlan"></a>
 ## `CalculationPlan`
@@ -378,7 +378,7 @@ class CalculationPlan
 |`ddof`|int &#124; None|否|None|样本/时间方差和标准差的分母选择。|
 |`q`|int &#124; float &#124; None|否|None|仅sample_quantile显式指定概率。|
 
-源码：[`src/chronaxis/planning/models.py:226`](../../../src/chronaxis/planning/models.py#L226)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:226`](../../../src/chronaxis/planning/models.py#L226)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-LegacyMessageSelector"></a>
 ## `LegacyMessageSelector`
@@ -402,7 +402,7 @@ class LegacyMessageSelector
 |`is_extended`|bool &#124; None|否|None|None表示未限定，运行时结合DBC及实际帧识别；False限定标准帧且ID不超过0x7FF，True限定扩展帧。Python允许None表达省略，JSON/YAML填写时只能是布尔值。|
 |`is_fd`|bool &#124; None|否|None|None表示未限定，按日志实际帧匹配；False限定经典CAN，True限定CAN FD。DBC为FD而实际为经典CAN可按已批准规则兼容，不修改真实帧。JSON/YAML填写时只能是布尔值。|
 
-源码：[`src/chronaxis/planning/models.py:251`](../../../src/chronaxis/planning/models.py#L251)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:251`](../../../src/chronaxis/planning/models.py#L251)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-LegacyMessageSelector-__post_init__"></a>
 ### `LegacyMessageSelector.__post_init__`
@@ -436,7 +436,7 @@ TypeError为非原生int/bool；ValueError为负通道或ID超相应帧范围。
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/models.py:264`](../../../src/chronaxis/planning/models.py#L264)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:264`](../../../src/chronaxis/planning/models.py#L264)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-MessageCalculationPlan"></a>
 ## `MessageCalculationPlan`
@@ -468,7 +468,7 @@ class MessageCalculationPlan
 |`message_policy`|str|是|无|填`"current_message-v1"`：每次求值只取当前报文中的值，缺值就记录跳过原因，不借用前一条消息或另一条报文的值。|
 |`disjunction`|[LegacyDisjunction](chronaxis.legacy.disjunction.md#api-LegacyDisjunction) &#124; None|否|None|可选原解码方向选择，不进入表达式或TTL。|
 
-源码：[`src/chronaxis/planning/models.py:282`](../../../src/chronaxis/planning/models.py#L282)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:282`](../../../src/chronaxis/planning/models.py#L282)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-MessageCalculationPlan-__post_init__"></a>
 ### `MessageCalculationPlan.__post_init__`
@@ -505,7 +505,7 @@ TypeError为模型/容器错误；ValueError为模式、来源、单位或参数
 
 返回类型：None。
 
-源码：[`src/chronaxis/planning/models.py:303`](../../../src/chronaxis/planning/models.py#L303)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:303`](../../../src/chronaxis/planning/models.py#L303)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ExecutionPlan"></a>
 ## `ExecutionPlan`
@@ -529,7 +529,7 @@ class ExecutionPlan
 |`on_budget_exceeded`|str|否|'error'|首版不丢数据或增加旧扫描。|
 |`process_count`|int|否|1|控制本任务共用的文件工作进程上限；正整数，默认1，不包含主进程，不根据CPU数量自动增加。实际是否启动及数量由文件数、归并方式和适用路径决定；满足[连续积分条件](../continuous-files.md#parallel-integrals)时工作进程也计算文件内面积。|
 
-源码：[`src/chronaxis/planning/models.py:338`](../../../src/chronaxis/planning/models.py#L338)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:338`](../../../src/chronaxis/planning/models.py#L338)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-OutputPlan"></a>
 ## `OutputPlan`
@@ -554,4 +554,4 @@ class OutputPlan
 |`signal_csv`|[SignalCSVOutput](chronaxis.planning.export_options.md#api-SignalCSVOutput) &#124; None|否|None|显式请求的信号长表，可单独设置线性网格。 None表示不导出信号CSV。|
 |`can_frames`|[CANFramesOutput](chronaxis.planning.export_options.md#api-CANFramesOutput) &#124; None|否|None|显式原帧/重建帧输出，默认不保额外原始数据。|
 
-源码：[`src/chronaxis/planning/models.py:361`](../../../src/chronaxis/planning/models.py#L361)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/models.py:361`](../../../src/chronaxis/planning/models.py#L361)（行号对应 Chronaxis 0.1.0 源码）。

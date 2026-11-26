@@ -22,6 +22,7 @@ rules:                               # 列出识别活动或瞬间变化的规�
     rule_type: condition_duration    # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
     condition: temperature >= 80     # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     duration_comparison: ">="        # 达到门槛即满足；要求严格超过时填>
+    selection_origin: onset          # 统计起点：onset从条件首次成立算起，confirmed从持续确认算起；被计算引用时必填
     minimum_duration: 2s             # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
 windows:                             # 围绕已定义规则的事件选取时间片段，供计算或导出使用
   - name: hot_context                # 为窗口定义取唯一名称；计算或导出通过此名选择产生的片段

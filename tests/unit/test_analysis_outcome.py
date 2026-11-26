@@ -26,7 +26,7 @@ class AnalysisOutcomeTests(unittest.TestCase):
         """参数: (秒,值)序列、规则类别、是否无信号常量。返回: 最小公共配置。异常: 无。"""
         rule=dict(name='active',rule_type=rule_type,condition='True' if constant else 'power > 0')
         if rule_type=='condition_duration':
-            rule.update(minimum_duration='2s',duration_comparison='>=')
+            rule.update(minimum_duration='2s',duration_comparison='>=',selection_origin='onset')
         return dict(config_version=4,dataset=dict(name='sample',domain=dict(start='0s',end='4s')),
             sources=[dict(name='table',source_type='memory',rows=[dict(time=f'{time}s',
                 values={} if constant else dict(raw=value)) for time,value in values])],
@@ -145,7 +145,7 @@ class RawAnalysisOutcomeTests(unittest.TestCase):
         raw.pop('message_calculations')
         raw['sources'][0]['dbc_by_channel']={'2':str(self.dbc)}
         raw['signals'][0]['field']['channel']=2
-        raw['rules']=[dict(name='active',rule_type='condition_duration', duration_comparison='>=',condition='power > 0',minimum_duration='0.1s')]
+        raw['rules']=[dict(name='active',rule_type='condition_duration', selection_origin='onset', duration_comparison='>=',condition='power > 0',minimum_duration='0.1s')]
         raw['calculations']=[dict(name='area',scope=dict(rule='active'),operation='integral',expr='power',unit='J')]
         with AnalysisRunner().run(AnalysisPlan.from_dict(current_fixture(raw)),self.root/uuid4().hex) as result:
             outcome=result.metadata.analysis_outcome

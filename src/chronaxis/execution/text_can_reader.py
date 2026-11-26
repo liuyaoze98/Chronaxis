@@ -201,6 +201,7 @@ class TextCANObservationRead:
         self._held_cost=self._fixed_cost=self._records_cost=self._batch_cost=self._pending_cost=self._validation_cost=self._runtime_cost=self._update_cost=0
         self._decoder=self._raw_store=self._current=self._validator=self._runtime_metadata=self._observation=None
         self._binding_projection=None
+        self._worker_process_count=0
         self._records=[]
         self._column=0
         self._raw_eof=self._eof_sent=False
@@ -251,6 +252,14 @@ class TextCANObservationRead:
         """返回当前读取是否失败。参数: 无。返回: bool。异常: 无。
         """
         return self._failed
+
+    @property
+    def worker_process_count(self):
+        """返回本次读取实际启动的文件工作进程数；单进程解码器没有工作进程。参数: 无。返回: 非负int。异常: 无。
+        """
+        if self._decoder is not None:
+            return getattr(self._decoder,'worker_process_count',0)
+        return self._worker_process_count
 
     @property
     def exhausted(self):
@@ -399,6 +408,8 @@ class TextCANObservationRead:
         self._runtime_metadata=freeze_metadata(metadata)
         if self._raw_store is not None:
             self._raw_store.seal()
+        # 关闭解析器后仍要为清单保留实际启动数，不能等到会话收尾再猜。
+        self._worker_process_count=self.worker_process_count
         self._decoder.close()
         self._decoder=None
         self._observation=fact

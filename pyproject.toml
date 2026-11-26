@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chronaxis"
-version = "0.1.0.dev6"
+version = "0.1.0"
 description = "Declarative analysis of multi-source time series"
 dynamic = ["readme"]
 authors = [{name = "liuyaoze", email = "work@liuyaoze.com"}]
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.12",

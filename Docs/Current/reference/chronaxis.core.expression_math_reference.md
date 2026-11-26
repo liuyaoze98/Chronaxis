@@ -51,7 +51,7 @@ ScalarValue；有效极值/限幅保持dtype，开方输出FLOAT64。
 
 ValueError为内部未注册名称。缺失、倒置或开方不可计算表示为质量。
 
-源码：[`src/chronaxis/core/expression_math_reference.py:12`](../../../src/chronaxis/core/expression_math_reference.py#L12)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/expression_math_reference.py:12`](../../../src/chronaxis/core/expression_math_reference.py#L12)（行号对应 Chronaxis 0.1.0 源码）。
 
 ## 内部匿名回调
 

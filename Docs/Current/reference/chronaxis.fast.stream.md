@@ -47,7 +47,7 @@ FileContributions(spec, database, cancel=None, budget=None, *, _programs_checked
 ```
 
 
-源码：[`src/chronaxis/fast/stream.py:17`](../../../src/chronaxis/fast/stream.py#L17)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:17`](../../../src/chronaxis/fast/stream.py#L17)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-__init__"></a>
 ### `FileContributions.__init__`
@@ -78,7 +78,7 @@ FileContributions.__init__(spec, database, cancel=None, budget=None, *, _program
 ASC/BLF共用各自文件owner；第三方BLF文件头构造失败也保留实际文件关闭责任。
 _programs_checked只供已完成公式准备的内部调用；普通调用仍检查原公式。
 
-源码：[`src/chronaxis/fast/stream.py:20`](../../../src/chronaxis/fast/stream.py#L20)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:20`](../../../src/chronaxis/fast/stream.py#L20)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-_measured"></a>
 ### `FileContributions._measured`
@@ -104,7 +104,7 @@ FileContributions._measured(iterator)
 原错误。
 正式执行不使用此包装，避免每条原始报文计时开销。
 
-源码：[`src/chronaxis/fast/stream.py:76`](../../../src/chronaxis/fast/stream.py#L76)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:76`](../../../src/chronaxis/fast/stream.py#L76)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-_selected_time"></a>
 ### `FileContributions._selected_time`
@@ -130,7 +130,7 @@ bool。
 无。
 范围过滤前选择，零贡献和方向不影响集合；无时间消费者不加强检查。
 
-源码：[`src/chronaxis/fast/stream.py:90`](../../../src/chronaxis/fast/stream.py#L90)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:90`](../../../src/chronaxis/fast/stream.py#L90)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-__iter__"></a>
 ### `FileContributions.__iter__`
@@ -156,7 +156,7 @@ FileContributions.__iter__()
 
 无。
 
-源码：[`src/chronaxis/fast/stream.py:98`](../../../src/chronaxis/fast/stream.py#L98)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:98`](../../../src/chronaxis/fast/stream.py#L98)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-__next__"></a>
 ### `FileContributions.__next__`
@@ -182,7 +182,7 @@ FileContributions.__next__()
 
 解析、时间、解码、公式错误或取消；EOF在读取资源成功关闭后抛出。
 
-源码：[`src/chronaxis/fast/stream.py:102`](../../../src/chronaxis/fast/stream.py#L102)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:102`](../../../src/chronaxis/fast/stream.py#L102)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-summary"></a>
 ### `FileContributions.summary`
@@ -208,7 +208,7 @@ FileContributions.summary()
 
 未成功EOF时拒绝。
 
-源码：[`src/chronaxis/fast/stream.py:169`](../../../src/chronaxis/fast/stream.py#L169)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:169`](../../../src/chronaxis/fast/stream.py#L169)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-FileContributions-close"></a>
 ### `FileContributions.close`
@@ -234,4 +234,4 @@ None。
 
 原关闭错误；失败继续保留实际owner供重试。
 
-源码：[`src/chronaxis/fast/stream.py:177`](../../../src/chronaxis/fast/stream.py#L177)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/stream.py:177`](../../../src/chronaxis/fast/stream.py#L177)（行号对应 Chronaxis 0.1.0 源码）。

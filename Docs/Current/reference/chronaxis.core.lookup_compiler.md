@@ -52,4 +52,4 @@ compile_lookup(compiler, node)
 
 签名、表名、类型或单位错。
 
-源码：[`src/chronaxis/core/lookup_compiler.py:14`](../../../src/chronaxis/core/lookup_compiler.py#L14)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/lookup_compiler.py:14`](../../../src/chronaxis/core/lookup_compiler.py#L14)（行号对应 Chronaxis 0.1.0 源码）。

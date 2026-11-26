@@ -46,7 +46,7 @@ OLD_CAN_FIELDS = ('source','session_id','legacy_profile','path','dbc_path','chan
     'raw_store_sha256','raw_spool_bytes','dependency_versions','vendor_sha256','unit_checks')
 OLD_RUN_FIELDS = ('run_id','input_identity','plan_hash','backend','config_version',
     'source_time_interpretation','session_boundaries','started_at','mapping_hashes','dbc_hashes',
-    'parsing_policy','worker_config','dependency_versions','limitations','software_version',
+    'parsing_policy','dependency_versions','limitations','software_version',
     'semantic_version','device_label','can_sources')
 
 

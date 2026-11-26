@@ -75,7 +75,7 @@ class RunnerReportTests(unittest.TestCase):
             signals=[dict(name=name, source='table', field='raw.'+name, dtype='float64',
                 unit=unit, valid_for='2ns') for name, unit in (('a', 'W'), ('b', '1'), ('c', 'custom_unit'))],
             derived={'twice': dict(expr='a * 2', unit='W')},
-            rules=[dict(name='active', rule_type='condition_duration', duration_comparison='>=', condition='b > 0', minimum_duration='1ns'),
+            rules=[dict(name='active', rule_type='condition_duration', selection_origin='onset', duration_comparison='>=', condition='b > 0', minimum_duration='1ns'),
                 dict(name='start', rule_type='start_only', condition='b > 0', emit_initial=True, window_duration='3ns')],
             windows=[dict(name='context', rule='active', anchor='activity', pre='3ns', post='0ns',
                 merge='exit_delay', exit_delay='2ns'),

@@ -22,4 +22,4 @@ Raises `TypeError` if either argument is not a non-boolean integer. Raises `Time
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:307`](../../../../src/chronaxis/timebase/conversion.py#L307) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/timebase/conversion.py:307`](../../../../src/chronaxis/timebase/conversion.py#L307) — line number in the Chronaxis 0.1.0 source.

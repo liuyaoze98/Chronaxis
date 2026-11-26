@@ -51,6 +51,7 @@ class ReadableWriter:
         self.metrics = {'session': {}, 'event': {}, 'segment': {}}
         self.counts, self.infos = {}, {}
         self.confirmation = False
+        self.origins = {}
         self.quality_handle = None
         self.coverage = None
 
@@ -254,6 +255,13 @@ class ReadableWriter:
             columns.extend((f'{name}（{unit}）', f'{name}：状态', f'{name}：说明'))
         return columns
 
+    def _statistics_start(self, row: dict) -> int:
+        """返回本事件指标实际统计的起点。参数: row为事件行。返回: 纳秒整数。异常: 无。
+
+        起点由规则的selection_origin决定，结束时间与事件相同；规则不在清单登记内时与事件开始一致。
+        """
+        return row['confirmed_ns'] if self.origins.get(row['rule_id']) == 'confirmed' else row['start_ns']
+
     def _metric_values(self, scope, row, parent):
         """按同一完整身份取指标，未产生的指标不伪装为完整或零。
 
@@ -283,7 +291,12 @@ class ReadableWriter:
             if self.confirmation:
                 values.append(seconds(row['confirmed_ns']))
             values.extend((seconds(row['end_ns']), STATES[row['status']], quality_text(row['quality'])))
-            return values + self._metric_values('event', row, row['event_id'])
+            metrics = self._metric_values('event', row, row['event_id'])
+            if not self.metrics['event']:
+                return values + metrics
+            # 没有本事件指标的行（例如同一表中的其他规则）不填统计起点。
+            counted = any(state != '无此项结果' for state in metrics[1::3])
+            return values + metrics + [seconds(self._statistics_start(row)) if counted else '']
         if table == 'segments':
             return [number, row['window_id'], seconds(row['start_ns']), seconds(row['end_ns']),
                     STATES[row['status']], '、'.join(str(self._number('events', row, p)) for p in row['parent_event_ids']),
@@ -378,6 +391,7 @@ class ReadableWriter:
         异常: 关联/预算/IO错误传播。
         """
         self.quality_handle, self.coverage = quality_handle, coverage
+        self.origins = dict(self.owner.metadata.selection_origins)
         self.prepare()
         identity = self.owner.spool.identity_summary or (None, None, None)
         self.varying = tuple(index for index, value in enumerate(identity) if value is None)
@@ -385,7 +399,8 @@ class ReadableWriter:
         columns = {
             'calculations': self._metric_columns('session'),
             'events': ['区间', '规则', '开始时间（s）'] + (['确认时间（s）'] if self.confirmation else [])
-                + ['结束时间（s）', '区间状态', '说明'] + self._metric_columns('event'),
+                + ['结束时间（s）', '区间状态', '说明'] + self._metric_columns('event')
+                + (['统计开始（s）'] if self.metrics['event'] else []),
             'segments': ['窗口编号', '窗口', '开始时间（s）', '结束时间（s）', '窗口状态', '父事件区间', '说明']
                 + self._metric_columns('segment'),
             'sequences': ['配对编号', '规则', '请求区间', '响应区间', '判定时间（s）', '延迟（s）', '配对状态', '说明'],

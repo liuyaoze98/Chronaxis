@@ -82,7 +82,7 @@ ParallelPointPool(spec, budget, signals, *, process_count, **options)
 |---|---|---|---|---|
 |`_FILE_MERGE`|类属性|类成员，不作为构造参数填写|'time_order'|组点池只服务time_order来源。|
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:35`](../../../src/chronaxis/execution/parallel_point_pool.py#L35)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:35`](../../../src/chronaxis/execution/parallel_point_pool.py#L35)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-__init__"></a>
 ### `ParallelPointPool.__init__`
@@ -112,7 +112,7 @@ None，构造新的池owner。
 进程数或合并方式非法、空文件列表、原帧上下文时ValueError；预算不足时BudgetExceededError，
     清理失败附parallel_integral_pool_cleanup_owner。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:40`](../../../src/chronaxis/execution/parallel_point_pool.py#L40)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:40`](../../../src/chronaxis/execution/parallel_point_pool.py#L40)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-points_minimum_cost"></a>
 ### `ParallelPointPool.points_minimum_cost`
@@ -143,7 +143,7 @@ int字节数，含父任务与每个工作槽的固定重建和组点状态；�
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:53`](../../../src/chronaxis/execution/parallel_point_pool.py#L53)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:53`](../../../src/chronaxis/execution/parallel_point_pool.py#L53)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-_dispatch"></a>
 ### `ParallelPointPool._dispatch`
@@ -171,7 +171,7 @@ None。
 
 与父类相同地重置槽状态；第7个参数使工作进程在READY前出错时也不附加notes（A2-4）。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:65`](../../../src/chronaxis/execution/parallel_point_pool.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:65`](../../../src/chronaxis/execution/parallel_point_pool.py#L65)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-_configuration"></a>
 ### `ParallelPointPool._configuration`
@@ -204,7 +204,7 @@ tuple[dict, int, int]，依次为固定task、父任务字节费和每子额外�
 
 批上限非法时ValueError；声明展开或静态费用原错误继续传播。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:76`](../../../src/chronaxis/execution/parallel_point_pool.py#L76)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:76`](../../../src/chronaxis/execution/parallel_point_pool.py#L76)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-_accept_point_facts"></a>
 ### `ParallelPointPool._accept_point_facts`
@@ -230,7 +230,7 @@ None。
 
 计数回退或已记录的实际帧型改变时ControlProtocolError。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:95`](../../../src/chronaxis/execution/parallel_point_pool.py#L95)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:95`](../../../src/chronaxis/execution/parallel_point_pool.py#L95)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-_store"></a>
 ### `ParallelPointPool._store`
@@ -257,7 +257,7 @@ None。
 
 包内身份或块号不符时ControlProtocolError；前缀非法时IntegralBlockError；暂存配额或磁盘错误原样传播。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:120`](../../../src/chronaxis/execution/parallel_point_pool.py#L120)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:120`](../../../src/chronaxis/execution/parallel_point_pool.py#L120)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-_exit_error"></a>
 ### `ParallelPointPool._exit_error`
@@ -282,7 +282,7 @@ SourceReadError；找不到已退出的工作进程时返回原error，由调用
 
 无；只等待各进程最多0.5秒以取得真实退出码。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:144`](../../../src/chronaxis/execution/parallel_point_pool.py#L144)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:144`](../../../src/chronaxis/execution/parallel_point_pool.py#L144)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointPool-spool_all"></a>
 ### `ParallelPointPool.spool_all`
@@ -308,7 +308,7 @@ None；成功后file_facts含每个文件的最终事实，可关闭本池再归
 读取段错误时SourceReadError('{路径}: {类型}: {信息}')；工作进程退出、协议或暂存错误原样传播；
     任何失败都清理本池的进程与费用（附parallel_integral_pool_cleanup_owner）。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:161`](../../../src/chronaxis/execution/parallel_point_pool.py#L161)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:161`](../../../src/chronaxis/execution/parallel_point_pool.py#L161)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool"></a>
 ## `PointSpool`
@@ -322,7 +322,7 @@ PointSpool(budget, work_dir, file_count, *, integrity=False)
 ```
 
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:230`](../../../src/chronaxis/execution/parallel_point_pool.py#L230)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:230`](../../../src/chronaxis/execution/parallel_point_pool.py#L230)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool-__init__"></a>
 ### `PointSpool.__init__`
@@ -350,7 +350,7 @@ None。
 
 文件数非法时ValueError；目录已存在或无法创建时OSError；构造清理失败附point_spool_cleanup_owner。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:236`](../../../src/chronaxis/execution/parallel_point_pool.py#L236)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:236`](../../../src/chronaxis/execution/parallel_point_pool.py#L236)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool-append"></a>
 ### `PointSpool.append`
@@ -377,7 +377,7 @@ None。
 已开始读回或已关闭时ValueError；暂存配额不足时BudgetExceededError；独占创建或写入失败时OSError。
 P5G1自带8字节包头分帧，不另存长度；开启integrity时在包头后写SHA-256。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:263`](../../../src/chronaxis/execution/parallel_point_pool.py#L263)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:263`](../../../src/chronaxis/execution/parallel_point_pool.py#L263)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool-open_readers"></a>
 ### `PointSpool.open_readers`
@@ -403,7 +403,7 @@ None。
 
 某文件没有任何暂存包时SourceReadError；预算不足时BudgetExceededError；打开失败时OSError。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:287`](../../../src/chronaxis/execution/parallel_point_pool.py#L287)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:287`](../../../src/chronaxis/execution/parallel_point_pool.py#L287)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool-next_packet"></a>
 ### `PointSpool.next_packet`
@@ -429,7 +429,7 @@ PointPacket；该文件已读完时None。
 截断、长度或标志非法、摘要不符、块号不连续、缺少EOF或EOF后仍有数据时SourceReadError；
     包内容非法时IntegralBlockError。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:304`](../../../src/chronaxis/execution/parallel_point_pool.py#L304)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:304`](../../../src/chronaxis/execution/parallel_point_pool.py#L304)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-PointSpool-close"></a>
 ### `PointSpool.close`
@@ -455,4 +455,4 @@ None；成功后幂等。
 
 删除或rmdir失败时OSError原样抛出（目录中有未登记文件时rmdir失败，不递归删除），保留owner供重试。
 
-源码：[`src/chronaxis/execution/parallel_point_pool.py:341`](../../../src/chronaxis/execution/parallel_point_pool.py#L341)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_pool.py:341`](../../../src/chronaxis/execution/parallel_point_pool.py#L341)（行号对应 Chronaxis 0.1.0 源码）。

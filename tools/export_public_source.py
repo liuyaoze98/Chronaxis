@@ -31,7 +31,7 @@ PUBLIC_TOOLS = {
     'check_ai_install.py', 'verify_ai_distribution.py', 'lock_ai_inputs.py',
     'test_public_docs.py', 'test_doc_sources.py', 'test_docs_reference.py', 'test_current_html.py',
     'test_manual_example_comments.py', 'test_manual_r2.py',
-    'export_public_source.py', 'pypi_readme.py', 'ai_resource_bytes.py',
+    'export_public_source.py', 'pypi_readme.py', 'ai_resource_bytes.py', 'check_documented_calls.py',
     'test_ai_result_bytes.py', 'public_api_catalog.py', 'public_api_notes.py', 'public_api_english.py',
     'annotate_manual_examples.py', 'manual_example_comments.py',
     'run_ci_tests.py',

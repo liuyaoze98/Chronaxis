@@ -59,7 +59,7 @@ _unsupported(path, message)
 |`path`|str|是|无|位置或关键字。不受支持设置的配置字段路径，如 $.outputs.contributions。|
 |`message`|str|是|无|位置或关键字。当前字段为什么不能按 fast 方式执行的具体原因。|
 
-源码：[`src/chronaxis/fast/config.py:21`](../../../src/chronaxis/fast/config.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:21`](../../../src/chronaxis/fast/config.py#L21)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_capabilities"></a>
 ## `_capabilities`
@@ -76,7 +76,7 @@ _capabilities(raw)
 |---|---|---|---|---|
 |`raw`|dict|是|无|位置或关键字。显式声明的配置字段，在加默认值前检查 fast 能力限制。|
 
-源码：[`src/chronaxis/fast/config.py:26`](../../../src/chronaxis/fast/config.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:26`](../../../src/chronaxis/fast/config.py#L26)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_source"></a>
 ## `_source`
@@ -101,7 +101,7 @@ _source(plan)
 
 不支持来源或解码策略。
 
-源码：[`src/chronaxis/fast/config.py:73`](../../../src/chronaxis/fast/config.py#L73)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:73`](../../../src/chronaxis/fast/config.py#L73)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_flag"></a>
 ## `_flag`
@@ -120,7 +120,7 @@ _flag(selector, fields, name)
 |`fields`|Iterable|是|无|位置或关键字。本公式涉及的信号字段，用于与选择器合并帧型限制。|
 |`name`|str|是|无|位置或关键字。要合并的帧型字段，取 is_extended 或 is_fd。|
 
-源码：[`src/chronaxis/fast/config.py:104`](../../../src/chronaxis/fast/config.py#L104)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:104`](../../../src/chronaxis/fast/config.py#L104)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_metric"></a>
 ## `_metric`
@@ -139,7 +139,7 @@ _metric(plan, item, database)
 |`item`|MessageCalculationPlan|是|无|位置或关键字。一个已解析的逐消息累计项，含选择器、公式和方向规则。|
 |`database`|cantools.database.Database &#124; None|是|无|位置或关键字。预检时加载的 DBC，可交本次执行复用。|
 
-源码：[`src/chronaxis/fast/config.py:112`](../../../src/chronaxis/fast/config.py#L112)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:112`](../../../src/chronaxis/fast/config.py#L112)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_compile_plan"></a>
 ## `_compile_plan`
@@ -157,7 +157,7 @@ _compile_plan(plan, with_database)
 |`plan`|[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)|是|无|位置或关键字。公开解析器构建的计划，含静态信号绑定及逐消息计算项。|
 |`with_database`|bool|是|无|位置或关键字。是否将已加载的数据库交给当前进程继续执行。|
 
-源码：[`src/chronaxis/fast/config.py:156`](../../../src/chronaxis/fast/config.py#L156)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:156`](../../../src/chronaxis/fast/config.py#L156)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-compile_template_plan"></a>
 ## `compile_template_plan`
@@ -179,7 +179,7 @@ compile_template_plan(plan, *, template_path=None, _with_database=False)
 |`template_path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; None|否|None|仅关键字。原始模板路径，用于保持显式设置和拒绝位置。|
 |`_with_database`|bool|否|False|仅关键字。启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。|
 
-源码：[`src/chronaxis/fast/config.py:192`](../../../src/chronaxis/fast/config.py#L192)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:192`](../../../src/chronaxis/fast/config.py#L192)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-compile_config"></a>
 ## `compile_config`
@@ -199,4 +199,4 @@ compile_config(path, *, _with_database=False)
 |`path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。要读取的文件路径。|
 |`_with_database`|bool|否|False|仅关键字。启用时附上本次 DBC 对象供同进程复用，默认产出可传递的普通参数。|
 
-源码：[`src/chronaxis/fast/config.py:219`](../../../src/chronaxis/fast/config.py#L219)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/config.py:219`](../../../src/chronaxis/fast/config.py#L219)（行号对应 Chronaxis 0.1.0 源码）。

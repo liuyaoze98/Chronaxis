@@ -184,6 +184,35 @@ def parse_rules(value, bindings, derived, ids) -> tuple[RulePlan, ...]:
     return tuple(result)
 
 
+def require_selection_origin(rules: tuple[RulePlan, ...], calculations: tuple[CalculationPlan, ...], raw_rules: tuple | list) -> None:
+    """持续条件规则被计算按事件统计时，必须明确写出统计起点。
+
+    onset从条件首次成立算起，confirmed从持续确认算起，同一数据可能得到相差很大的积分和时长，
+    因此不提供静默默认值。只检查真正受影响的组合：被calculations的scope.rule引用的condition_duration规则；
+    窗口、配对、导出和单纯列出事件的规则不受影响，仍可省略；预设生成的规则自带显式值。
+
+    参数: rules为已解析RulePlan；calculations为已解析CalculationPlan；raw_rules为合入预设后的原规则节点。
+    返回: None。异常: PlanValidationError逐条收集，非汇总模式抛第一条。
+    """
+    explicit = {row['name'] for row in raw_rules if type(row) is dict and 'name' in row and 'selection_origin' in row}
+    consumers = {}
+    for item in calculations:
+        if item.scope.startswith('event:'):
+            consumers.setdefault(item.scope[len('event:'):], []).append(item.calculation_id)
+    for rule in rules:
+        if rule.rule_type != 'condition_duration' or rule.rule_id in explicit or rule.rule_id not in consumers:
+            continue
+        # 路径指向原配置位置；同名规则在原节点中唯一，重复名称已由规则解析拒绝。
+        index, raw = next((i, row) for i, row in enumerate(raw_rules)
+                          if type(row) is dict and row.get('name') == rule.rule_id)
+        names = '、'.join(consumers[rule.rule_id])
+        error = PlanValidationError(f'$.rules[{index}].selection_origin',
+            f'规则{rule.rule_id}被计算{names}按事件统计，统计起点会改变结果，必须填写selection_origin：'
+            'onset从条件首次成立算起，confirmed从持续确认算起', 'missing_field',
+            hint='在该规则中加一行selection_origin: onset或selection_origin: confirmed')
+        collect_node_error(error, f'$.rules[{index}]', raw)
+
+
 def parse_windows(value, rules, ids) -> tuple[WindowPlan, ...]:
     """检查事件窗口锚点、前后扩展和合并参数，不改变原事件声明。
 

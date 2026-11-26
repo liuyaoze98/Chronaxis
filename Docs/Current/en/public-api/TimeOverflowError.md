@@ -15,4 +15,4 @@ Base class: `OverflowError`. No additional fields are declared by this class.
 
 ## Source locations
 
-- [`src/chronaxis/timebase/conversion.py:38`](../../../../src/chronaxis/timebase/conversion.py#L38) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/timebase/conversion.py:38`](../../../../src/chronaxis/timebase/conversion.py#L38) — line number in the Chronaxis 0.1.0 source.

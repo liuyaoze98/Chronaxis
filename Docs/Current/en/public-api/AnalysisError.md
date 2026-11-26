@@ -15,4 +15,4 @@ Base class: `RuntimeError`. No additional fields are declared by this class.
 
 ## Source locations
 
-- [`src/chronaxis/results/errors.py:8`](../../../../src/chronaxis/results/errors.py#L8) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/results/errors.py:8`](../../../../src/chronaxis/results/errors.py#L8) — line number in the Chronaxis 0.1.0 source.

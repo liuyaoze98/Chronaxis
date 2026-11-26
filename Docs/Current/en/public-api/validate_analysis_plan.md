@@ -31,4 +31,4 @@ print(report.valid, report.execution_ready)
 
 ## Source locations
 
-- [`src/chronaxis/planning/reports.py:287`](../../../../src/chronaxis/planning/reports.py#L287) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/planning/reports.py:287`](../../../../src/chronaxis/planning/reports.py#L287) — line number in the Chronaxis 0.1.0 source.

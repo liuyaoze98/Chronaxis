@@ -63,7 +63,7 @@ ScalarValue。
 
 模型合同错误。
 
-源码：[`src/chronaxis/core/numeric_point.py:20`](../../../src/chronaxis/core/numeric_point.py#L20)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:20`](../../../src/chronaxis/core/numeric_point.py#L20)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-exact_float"></a>
 ## `exact_float`
@@ -88,7 +88,7 @@ exact_float(value)
 
 非数值结构错误；超大整数作为NONFINITE返回，不抛转换溢出。
 
-源码：[`src/chronaxis/core/numeric_point.py:25`](../../../src/chronaxis/core/numeric_point.py#L25)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:25`](../../../src/chronaxis/core/numeric_point.py#L25)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-to_float_point"></a>
 ## `to_float_point`
@@ -113,7 +113,7 @@ FLOAT64值。
 
 非数值类型。
 
-源码：[`src/chronaxis/core/numeric_point.py:51`](../../../src/chronaxis/core/numeric_point.py#L51)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:51`](../../../src/chronaxis/core/numeric_point.py#L51)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-checked_result"></a>
 ## `checked_result`
@@ -139,7 +139,7 @@ checked_result(number, dtype)
 
 非数值类型。
 
-源码：[`src/chronaxis/core/numeric_point.py:61`](../../../src/chronaxis/core/numeric_point.py#L61)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:61`](../../../src/chronaxis/core/numeric_point.py#L61)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-binary_point"></a>
 ## `binary_point`
@@ -167,7 +167,7 @@ ScalarValue。
 
 未登记操作或内部类型合同错误；除零和定宽失败转成质量。
 
-源码：[`src/chronaxis/core/numeric_point.py:72`](../../../src/chronaxis/core/numeric_point.py#L72)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:72`](../../../src/chronaxis/core/numeric_point.py#L72)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-unary_point"></a>
 ## `unary_point`
@@ -193,7 +193,7 @@ unary_point(op, value)
 
 未知操作。
 
-源码：[`src/chronaxis/core/numeric_point.py:99`](../../../src/chronaxis/core/numeric_point.py#L99)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:99`](../../../src/chronaxis/core/numeric_point.py#L99)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-affine_point"></a>
 ## `affine_point`
@@ -221,7 +221,7 @@ ScalarValue。
 
 内部静态合同错误；数值失败保存为质量。
 
-源码：[`src/chronaxis/core/numeric_point.py:109`](../../../src/chronaxis/core/numeric_point.py#L109)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:109`](../../../src/chronaxis/core/numeric_point.py#L109)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-logic_point"></a>
 ## `logic_point`
@@ -247,7 +247,7 @@ BOOL。
 
 未知操作。
 
-源码：[`src/chronaxis/core/numeric_point.py:136`](../../../src/chronaxis/core/numeric_point.py#L136)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:136`](../../../src/chronaxis/core/numeric_point.py#L136)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-math_point"></a>
 ## `math_point`
@@ -273,7 +273,7 @@ math_point(op, values)
 
 未知操作。
 
-源码：[`src/chronaxis/core/numeric_point.py:152`](../../../src/chronaxis/core/numeric_point.py#L152)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:152`](../../../src/chronaxis/core/numeric_point.py#L152)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-integer_point"></a>
 ## `integer_point`
@@ -299,7 +299,7 @@ integer_point(node, values)
 
 未知操作；小数、越界、零除保存对应质量。
 
-源码：[`src/chronaxis/core/numeric_point.py:187`](../../../src/chronaxis/core/numeric_point.py#L187)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:187`](../../../src/chronaxis/core/numeric_point.py#L187)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-lookup_point"></a>
 ## `lookup_point`
@@ -327,4 +327,4 @@ lookup_point(table, axis, nodes, value)
 
 静态表结构错误；范围、精度及非有限结果保存为质量。
 
-源码：[`src/chronaxis/core/numeric_point.py:215`](../../../src/chronaxis/core/numeric_point.py#L215)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric_point.py:215`](../../../src/chronaxis/core/numeric_point.py#L215)（行号对应 Chronaxis 0.1.0 源码）。

@@ -50,7 +50,7 @@ prepare_batch(plan_path)
 |---|---|---|---|---|
 |`plan_path`|str &#124; [Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)|是|无|位置或关键字。声明 jobs 或 template 的批量 YAML/JSON 路径。|
 
-源码：[`src/chronaxis/fast/batch.py:18`](../../../src/chronaxis/fast/batch.py#L18)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/batch.py:18`](../../../src/chronaxis/fast/batch.py#L18)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-run_batch"></a>
 ## `run_batch`
@@ -74,4 +74,4 @@ run_batch(plan_path, output, *, process_count=None, cancel_event=None, total=Fal
 |`cancel_event`|Event &#124; None|否|None|仅关键字。已设置时取消本次操作，省略时按调用方的正常生命周期运行。|
 |`total`|bool|否|False|仅关键字。是否回传未舍入指标，供同一模板的成员按输入顺序相加。|
 
-源码：[`src/chronaxis/fast/batch.py:51`](../../../src/chronaxis/fast/batch.py#L51)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/batch.py:51`](../../../src/chronaxis/fast/batch.py#L51)（行号对应 Chronaxis 0.1.0 源码）。

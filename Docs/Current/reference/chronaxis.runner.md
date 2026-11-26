@@ -43,7 +43,7 @@ AnalysisRunner(backend=None, *, extensions=None)
 ```
 
 
-源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:23`](../../../src/chronaxis/runner.py#L23)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-__init__"></a>
 ### `AnalysisRunner.__init__`
@@ -75,7 +75,7 @@ TypeError：backend非文本且不是None，或extensions不是ExtensionRegistry
 - `ValueError`：`AnalysisRunner仅支持auto、reference与numpy后端`。
 - `TypeError`：`extensions需要宿主建立的ExtensionRegistry`。
 
-源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:30`](../../../src/chronaxis/runner.py#L30)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-backend"></a>
 ### `AnalysisRunner.backend`
@@ -103,7 +103,7 @@ None/auto/reference/numpy。
 
 无。
 
-源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:52`](../../../src/chronaxis/runner.py#L52)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-_effective_plan"></a>
 ### `AnalysisRunner._effective_plan`
@@ -133,7 +133,7 @@ TypeError为非计划/执行声明；不重新解析配置或复制原输入行�
 
 - `TypeError`：AnalysisRunner需要load_analysis_plan或AnalysisPlan.from_dict构建的计划。
 
-源码：[`src/chronaxis/runner.py:59`](../../../src/chronaxis/runner.py#L59)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:59`](../../../src/chronaxis/runner.py#L59)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-validate"></a>
 ### `AnalysisRunner.validate`
@@ -185,7 +185,7 @@ print(type(explanation).__name__)
 
 ```
 
-源码：[`src/chronaxis/runner.py:80`](../../../src/chronaxis/runner.py#L80)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:80`](../../../src/chronaxis/runner.py#L80)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-explain"></a>
 ### `AnalysisRunner.explain`
@@ -217,7 +217,7 @@ ValueError：process_count显式覆盖不是正原生int（含bool），或Runne
 
 不读取CSV/DBC，也不测量实耗。
 
-源码：[`src/chronaxis/runner.py:91`](../../../src/chronaxis/runner.py#L91)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:91`](../../../src/chronaxis/runner.py#L91)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisRunner-run"></a>
 ### `AnalysisRunner.run`
@@ -289,4 +289,4 @@ if __name__ == '__main__':
 
 ```
 
-源码：[`src/chronaxis/runner.py:103`](../../../src/chronaxis/runner.py#L103)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/runner.py:103`](../../../src/chronaxis/runner.py#L103)（行号对应 Chronaxis 0.1.0 源码）。

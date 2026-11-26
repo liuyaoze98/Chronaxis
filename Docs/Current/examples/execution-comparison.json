@@ -39,7 +39,8 @@
       "rule_type": "condition_duration",
       "minimum_duration": "0s",
       "name": "working",
-      "duration_comparison": ">="
+      "duration_comparison": ">=",
+      "selection_origin": "onset"
     }
   ],
   "windows": [

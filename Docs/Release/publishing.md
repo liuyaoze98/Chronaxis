@@ -31,6 +31,7 @@ PyPI 通过 GitHub 的短期身份凭据接收文件，无需向 AI 提供密码
 |---|---|
 |`tools/build_m2_docs.py --edition Current`|从 `Docs/Current/documentation.json` 指定源码生成参考；公开签名与实际接口一致|
 |`tools/english_docs.py --record-reviewed`|先核对受影响译文，再登记中英文来源；不能仅刷新摘要消除失败|
+|`tools/build_example_results.py --check`|只检查示例结果清单记录的运行指纹、配置、输入和结果文件摘要，不重新运行分析；须在试跑和准备审阅材料之前通过。`src/chronaxis` 有变化后会因指纹不一致而报错，此时先用 `--work <新目录> --publish --device-label <实际标签>` 重新运行全部示例并更新手册结果，核对结果差异后再锁定指南输入。该工具只在内部仓库中使用，不随公开源码发布|
 |`tools/lock_ai_inputs.py <手册提交> --runtime <运行源码提交> --device-label <home或work>`|锁定同版指南输入；在提交对应资料后执行|
 |`tools/export_public_source.py <新目录> --revision <提交>`|按白名单导出公开文件和 `PUBLIC-SOURCE.json`，排除内部 Git 历史、管理记录、真实数据及工作区未提交内容|
 |`tools/verify_ai_distribution.py <新构建目录> --public-source <公开导出目录>`|从无 Git 的干净源码构建 sdist，再由 sdist 构建 wheel，检查安装指南与可选 ZIP 一致|
@@ -72,6 +73,8 @@ git -C $PublicRepo push origin "v$Version"
 |`.github/workflows/pypi-publish.yml`|版本说明、Release 标签、该标签指向的公开源码 SHA、wheel/sdist 文件名及各自 SHA256|`contents: read`、`id-token: write`|
 
 两项均限定本仓库和 `main`，官方 Action 固定到提交。源码标签冻结后，可以另外提交发布工作流到 `main`，不为填入公开源码 SHA 而移动标签。本次 `dev1` 就采用这个顺序。工作流锁定的版本和摘要以当前文件为准，不从这份历史记录推断。新候选尚未确定公开源码提交和附件摘要时，保留已有工作流；实际发布前再一次性更新并核对，不能填占位摘要或提前运行。
+
+新的锁定值提交到公开 `main` 后，把内部仓库中同名的两个工作流文件同步为相同内容并提交，忽略换行差异后应与公开 `main` 逐字节一致。公开源码从内部提交导出：不同步时，下一次发布提交中的工作流会退回内部仓库里较旧的锁定值，需要再次修改。
 
 ## 4. HTML上线
 

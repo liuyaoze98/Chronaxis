@@ -69,7 +69,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:28`](../../../src/chronaxis/execution/parallel_integral_worker.py#L28)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:28`](../../../src/chronaxis/execution/parallel_integral_worker.py#L28)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_limits"></a>
 ## `_limits`
@@ -94,7 +94,7 @@ tuple，依次为event费用函数、facts费用函数和单包最大事件数in
 
 无；未知owner按面积模式处理，由原编码器拒绝未知事件。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:34`](../../../src/chronaxis/execution/parallel_integral_worker.py#L34)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:34`](../../../src/chronaxis/execution/parallel_integral_worker.py#L34)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_facts"></a>
 ## `_facts`
@@ -122,7 +122,7 @@ dict，含累计原帧/解码数、实际首末纳秒、精确顺序时间、帧
 
 非法内部对象时AttributeError；不读取下一帧。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:44`](../../../src/chronaxis/execution/parallel_integral_worker.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:44`](../../../src/chronaxis/execution/parallel_integral_worker.py#L44)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_error_text"></a>
 ## `_error_text`
@@ -148,7 +148,7 @@ str。
 
 原对象字符串转换错误继续传播。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:63`](../../../src/chronaxis/execution/parallel_integral_worker.py#L63)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:63`](../../../src/chronaxis/execution/parallel_integral_worker.py#L63)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_close_file"></a>
 ## `_close_file`
@@ -175,7 +175,7 @@ BaseException或None；保留已有主错，把后续清理错误写入其说明
 
 两资源的close异常作为返回值交付，不直接抛出。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:74`](../../../src/chronaxis/execution/parallel_integral_worker.py#L74)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:74`](../../../src/chronaxis/execution/parallel_integral_worker.py#L74)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-read_events"></a>
 ## `read_events`
@@ -205,7 +205,7 @@ KeyboardInterrupt/SystemExit原样抛；数据错误保留在返回值，先交�
     没有主错时，事实整理失败原样传播。
 组点模式下FileGroupPoints停止交付后仍继续读取，使同一文件后面的读取错误照常报出。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:91`](../../../src/chronaxis/execution/parallel_integral_worker.py#L91)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:91`](../../../src/chronaxis/execution/parallel_integral_worker.py#L91)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-read_events-append"></a>
 ### `read_events.append`
@@ -230,7 +230,7 @@ None。
 
 编码模型错误。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:105`](../../../src/chronaxis/execution/parallel_integral_worker.py#L105)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:105`](../../../src/chronaxis/execution/parallel_integral_worker.py#L105)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-take_events"></a>
 ## `take_events`
@@ -259,7 +259,7 @@ take_events(items, last_facts, *, points=False)
 单事件连同事实或空包事实超限时ValueError；未知事件时IntegralBlockError，原事实错误继续传播。
 不扩大队列、不截短精确时间，也不丢弃尚未发送的事件。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:140`](../../../src/chronaxis/execution/parallel_integral_worker.py#L140)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:140`](../../../src/chronaxis/execution/parallel_integral_worker.py#L140)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -286,4 +286,4 @@ None，收到关闭指令或父进程断连后结束。
 control类型或通道族不符时TypeError；运行数据错误按阶段发回父进程，
     与父进程通信的EOFError、BrokenPipeError或OSError导致退出；最终未能清理的资源错误原样抛出。
 
-源码：[`src/chronaxis/execution/parallel_integral_worker.py:167`](../../../src/chronaxis/execution/parallel_integral_worker.py#L167)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_worker.py:167`](../../../src/chronaxis/execution/parallel_integral_worker.py#L167)（行号对应 Chronaxis 0.1.0 源码）。

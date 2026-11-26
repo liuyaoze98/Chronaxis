@@ -1,6 +1,6 @@
 {
   "device_label": "school",
-  "updated_at": "2026-11-23T18:57:07+08:00",
+  "updated_at": "2026-11-26T15:17:08+08:00",
   "objects": [
     {
       "name": "TimeConversion",
@@ -843,7 +843,7 @@
       "qualified": "RunMetadata",
       "group": "执行与结果",
       "kind": "class",
-      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', worker_config: str = 'single-thread', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = <factory>, device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = ()) -> None",
+      "signature": "(run_id: str, input_identity: str | None, plan_hash: str, backend: str, config_version: int, source_time_interpretation: str, session_boundaries: tuple[tuple[str, int, int], ...], started_at: str, mapping_hashes: tuple[str, ...] = (), dbc_hashes: tuple[str, ...] = (), parsing_policy: str = 'decoded-results', dependency_versions: tuple[tuple[str, str], ...] = (), limitations: tuple[str, ...] = (), software_version: str = <factory>, device_label: str = 'pending', signal_bindings: tuple[chronaxis.core.binding.SignalDefinition, ...] = (), preset_bindings: tuple[chronaxis.results.binding_metadata.PresetBindingMetadata, ...] = (), can_sources: tuple[chronaxis.results.can_metadata.CANSourceMetadata, ...] = (), session_ids: tuple[str, ...] = (), text_can_sources: tuple[chronaxis.results.text_can_metadata.TextCANSourceMetadata, ...] = (), threshold_durations: tuple[chronaxis.results.threshold_metadata.SummaryThresholdDuration, ...] = (), detailed_diagnostics: bool = False, retain_work: bool = False, input_diagnostics: tuple[chronaxis.results.input_diagnostics.InputDiagnostic, ...] = (), trace_requested: bool = False, integrity_diagnostics: bool = False, frame_format_notices: tuple[tuple[str, chronaxis.results.can_metadata.CANFrameFormatNotice], ...] = (), analysis_outcome: chronaxis.results.analysis_outcome.AnalysisOutcome | None = None, aggregation_definitions: tuple = (), process_count: int = 1, worker_process_count: int = 0, selection_origins: tuple[tuple[str, str], ...] = ()) -> None",
       "parameters": [
         {
           "name": "run_id",
@@ -921,13 +921,6 @@
           "type": "str",
           "required": false,
           "default": "'decoded-results'"
-        },
-        {
-          "name": "worker_config",
-          "kind": "POSITIONAL_OR_KEYWORD",
-          "type": "str",
-          "required": false,
-          "default": "'single-thread'"
         },
         {
           "name": "dependency_versions",
@@ -1052,6 +1045,27 @@
           "name": "aggregation_definitions",
           "kind": "POSITIONAL_OR_KEYWORD",
           "type": "tuple",
+          "required": false,
+          "default": "()"
+        },
+        {
+          "name": "process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "1"
+        },
+        {
+          "name": "worker_process_count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "int",
+          "required": false,
+          "default": "0"
+        },
+        {
+          "name": "selection_origins",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "type": "tuple[tuple[str, str], ...]",
           "required": false,
           "default": "()"
         }
@@ -1839,5 +1853,5 @@
     "unchanged": true,
     "note": "另3个继承内建异常类没有inspect.signature，沿用异常类入口，不捏造签名。"
   },
-  "baseline": "52504b7e8bd2bd40147e215ee48b0ea11f27826c"
+  "baseline": "73edde41bdf151418282e6be301c5c6bb4d85e8c"
 }

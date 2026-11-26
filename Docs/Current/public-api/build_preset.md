@@ -41,4 +41,4 @@ PlanValidationError为参数/角色契约、模式编码范围及生成ID与信�
 
 返回类型：[PlanFragment](PlanFragment.md#api-PlanFragment)。
 
-源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/presets.py:158`](../../../src/chronaxis/presets.py#L158)（行号对应 Chronaxis 0.1.0 源码）。

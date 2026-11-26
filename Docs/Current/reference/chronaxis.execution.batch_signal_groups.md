@@ -47,7 +47,7 @@ BatchSignalGroups(budget, definitions, session_id, consumer)
 ```
 
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:18`](../../../src/chronaxis/execution/batch_signal_groups.py#L18)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BatchSignalGroups-__init__"></a>
 ### `BatchSignalGroups.__init__`
@@ -75,7 +75,7 @@ owner。
 
 预算/取消原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:21`](../../../src/chronaxis/execution/batch_signal_groups.py#L21)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BatchSignalGroups-consume"></a>
 ### `BatchSignalGroups.consume`
@@ -100,7 +100,7 @@ None。
 
 预算/模型/回退，失败后只清理。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:38`](../../../src/chronaxis/execution/batch_signal_groups.py#L38)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BatchSignalGroups-_flush"></a>
 ### `BatchSignalGroups._flush`
@@ -126,7 +126,7 @@ None。
 
 原错。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:69`](../../../src/chronaxis/execution/batch_signal_groups.py#L69)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:69`](../../../src/chronaxis/execution/batch_signal_groups.py#L69)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BatchSignalGroups-finish"></a>
 ### `BatchSignalGroups.finish`
@@ -152,7 +152,7 @@ None。
 
 失败拒绝完成。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:102`](../../../src/chronaxis/execution/batch_signal_groups.py#L102)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:102`](../../../src/chronaxis/execution/batch_signal_groups.py#L102)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-BatchSignalGroups-close"></a>
 ### `BatchSignalGroups.close`
@@ -178,4 +178,4 @@ None。
 
 退款失败可重试。
 
-源码：[`src/chronaxis/execution/batch_signal_groups.py:115`](../../../src/chronaxis/execution/batch_signal_groups.py#L115)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/batch_signal_groups.py:115`](../../../src/chronaxis/execution/batch_signal_groups.py#L115)（行号对应 Chronaxis 0.1.0 源码）。

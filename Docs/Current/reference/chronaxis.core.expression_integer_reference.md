@@ -50,4 +50,4 @@ ScalarValue，质量非零时不产生有效值。
 
 ValueError为未登记的内部操作；有效输入的数值失败写入质量。
 
-源码：[`src/chronaxis/core/expression_integer_reference.py:11`](../../../src/chronaxis/core/expression_integer_reference.py#L11)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/expression_integer_reference.py:11`](../../../src/chronaxis/core/expression_integer_reference.py#L11)（行号对应 Chronaxis 0.1.0 源码）。

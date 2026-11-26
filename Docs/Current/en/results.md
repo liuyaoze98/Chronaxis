@@ -12,11 +12,11 @@ To see what the output looks like first, open [Example results](example-results.
 
 For example, the [conditional energy example](conditional-energy.md) produces one qualifying interval. These are the actual Chinese output headers and values:
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
-|---|---|---|---|---|---|---|---|
-| 1 | eligible | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 | 统计开始（s） |
+|---|---|---|---|---|---|---|---|---|
+| 1 | eligible | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | | 61 |
 
-This reads: interval (`区间`) 1 for rule (`规则`) `eligible` starts at 61 seconds and ends at 122 seconds, with energy **0.06777777777777777 kWh**. `正常结束` means it ended normally; `完整` means this calculation is complete. The interval includes 61 and excludes 122: `[61,122)`. A whole-event integral does not also display confirmation time. `确认时间（s）` appears when requested event, window, pairing, or other results need it. Start/end remain actual times; no extra duration is calculated just for presentation.
+This reads: interval (`区间`) 1 for rule (`规则`) `eligible` starts at 61 seconds and ends at 122 seconds, with energy **0.06777777777777777 kWh**. `正常结束` means it ended normally; `完整` means this calculation is complete. The interval includes 61 and excludes 122: `[61,122)`. The last column `统计开始（s）` (statistics start) is where the metrics actually begin, determined by the rule's `selection_origin`; rows without event metrics leave it blank. A whole-event integral does not also display confirmation time. `确认时间（s）` appears when requested event, window, pairing, or other results need it. Start/end remain actual times; no extra duration is calculated just for presentation.
 
 | Requested result | Default file | How to read it |
 |---|---|---|
@@ -260,7 +260,7 @@ Signal CSV and CAN frame exports are explicitly requested through `outputs`, wit
 <a id="运行清单的摘要与详细字段"></a>
 ## What the run manifest contains
 
-The run manifest records basic information about the run: `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `worker_config`, `retain_work` and `detailed_diagnostics`, together with the result files actually written. Input identities, session boundaries, limitations and similar fields appear only when they apply. Enabling `trace` or `integrity` under `diagnostics` adds the corresponding diagnostics; see [Execution](execution.md).
+The run manifest records basic information about the run: `run_id`, `plan_hash`, `backend`, `config_version`, `started_at`, `device_label`, `software_version`, `source_time_interpretation`, `parsing_policy`, `process_count`, `worker_process_count`, `retain_work` and `detailed_diagnostics`, together with the result files actually written. `process_count` is the effective file-worker limit, including command-line or Python overrides; `worker_process_count` is the number of file workers that actually started and did the work, with 0 meaning everything ran in the main process. When a duration rule is used by event-scoped calculations, `selection_origins` records each rule's start of statistics (`onset` or `confirmed`). Input identities, session boundaries, limitations and similar fields appear only when they apply. Enabling `trace` or `integrity` under `diagnostics` adds the corresponding diagnostics; see [Execution](execution.md).
 
 Ordinary runs need no manifest settings. When reading a manifest, check that an optional key exists before using it. See [RunMetadata](public-api/RunMetadata.md) for the full field definitions.
 

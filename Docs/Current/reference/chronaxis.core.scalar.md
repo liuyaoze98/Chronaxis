@@ -59,7 +59,7 @@ class ScalarValue
 |`code`|'[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue) &#124; None'|否|None|仅 enum_code 需要的原整数，可与标签有不同有效性。|
 |`partial`|bool|否|False|此值是否使用了可估算但覆盖不全的变换输入；有效数值可以同时携带这个标志。|
 
-源码：[`src/chronaxis/core/scalar.py:21`](../../../src/chronaxis/core/scalar.py#L21)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/scalar.py:21`](../../../src/chronaxis/core/scalar.py#L21)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ScalarValue-__post_init__"></a>
 ### `ScalarValue.__post_init__`
@@ -89,7 +89,7 @@ TypeError: 字段类型或枚举标签域结构不合法。
 
 返回类型：None。
 
-源码：[`src/chronaxis/core/scalar.py:39`](../../../src/chronaxis/core/scalar.py#L39)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/scalar.py:39`](../../../src/chronaxis/core/scalar.py#L39)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_scalar_from_validated_fields"></a>
 ## `_scalar_from_validated_fields`
@@ -120,4 +120,4 @@ _scalar_from_validated_fields(value, dtype, valid=True, quality=QualityFlag.NONE
 
 分配错误原样传播。仅限内部调用，公开构造仍完整验证。
 
-源码：[`src/chronaxis/core/scalar.py:109`](../../../src/chronaxis/core/scalar.py#L109)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/scalar.py:109`](../../../src/chronaxis/core/scalar.py#L109)（行号对应 Chronaxis 0.1.0 源码）。

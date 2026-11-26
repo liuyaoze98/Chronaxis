@@ -57,7 +57,7 @@ run_prepared(spec: dict, output: str | Path, *, engine: str, database: object | 
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path) &#124; tuple[[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path), tuple]。
 
-源码：[`src/chronaxis/fast/run.py:11`](../../../src/chronaxis/fast/run.py#L11)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/run.py:11`](../../../src/chronaxis/fast/run.py#L11)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-run"></a>
 ## `run`
@@ -88,4 +88,4 @@ pathlib.Path，本次成功清单。
 
 返回类型：[Path](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path)。
 
-源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/fast/run.py:65`](../../../src/chronaxis/fast/run.py#L65)（行号对应 Chronaxis 0.1.0 源码）。

@@ -8,7 +8,7 @@ The language resembles a restricted subset of Python. A numeric expression produ
 <a id="完整最小例与扩展例"></a>
 ## Complete minimal and extended examples
 
-[expression-minimal.yaml](../examples/expression-minimal.yaml) defines 400 V and 10 A over 0–4 s and returns a maximum derived power of 4000 W. [expression-extended.yaml](../examples/expression-extended.yaml) adds `current > 5 and voltage > 300`, requiring 2 s of continuous agreement. It confirms at 2 s and, with the default onset-based range, integrates the full 0–4 s interval to 16000 J.
+[expression-minimal.yaml](../examples/expression-minimal.yaml) defines 400 V and 10 A over 0–4 s and returns a maximum derived power of 4000 W. [expression-extended.yaml](../examples/expression-extended.yaml) adds `current > 5 and voltage > 300`, requiring 2 s of continuous agreement. It confirms at 2 s and, with `selection_origin: onset`, integrates the full 0–4 s interval to 16000 J.
 
 <a id="先准备来源和信号"></a>
 ## Prepare sources and signals
@@ -68,6 +68,7 @@ rules:                                        # Event detection rules.
   - name: working                             # Rule name.
     condition: current > 5 and voltage > 300  # Both conditions must be true.
     duration_comparison: ">="                 # Include the threshold; use > for strictly longer.
+    selection_origin: onset                   # Start of statistics: onset or confirmed; required when a calculation references the rule.
     minimum_duration: 2s                      # Require two continuous seconds.
     rule_type: condition_duration             # Detect sustained conditions.
 calculations:                                 # Requested results.

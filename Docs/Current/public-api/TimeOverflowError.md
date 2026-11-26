@@ -23,4 +23,4 @@ class TimeOverflowError(OverflowError)
 继承关系：OverflowError。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/timebase/conversion.py:38`](../../../src/chronaxis/timebase/conversion.py#L38)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/timebase/conversion.py:38`](../../../src/chronaxis/timebase/conversion.py#L38)（行号对应 Chronaxis 0.1.0 源码）。

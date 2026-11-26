@@ -49,7 +49,7 @@ class InputDiagnostic
 |`sha256`|str &#124; None|否|None|明确请求时对所需记录流计算的SHA256文本；未请求时为None且发布时省略该键。|
 |`digest_scope`|str|否|'required-decoded-records-v1'|固定required-decoded-records-v1，限定摘要只覆盖交给分析层的所需解码记录，不是原文件字节证明。|
 
-源码：[`src/chronaxis/results/input_diagnostics.py:11`](../../../src/chronaxis/results/input_diagnostics.py#L11)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/input_diagnostics.py:11`](../../../src/chronaxis/results/input_diagnostics.py#L11)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-InputDiagnostic-__post_init__"></a>
 ### `InputDiagnostic.__post_init__`
@@ -75,7 +75,7 @@ None。
 
 类型/值错误。
 
-源码：[`src/chronaxis/results/input_diagnostics.py:25`](../../../src/chronaxis/results/input_diagnostics.py#L25)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/input_diagnostics.py:25`](../../../src/chronaxis/results/input_diagnostics.py#L25)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-InputDiagnostic-to_dict"></a>
 ### `InputDiagnostic.to_dict`
@@ -101,4 +101,4 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/results/input_diagnostics.py:46`](../../../src/chronaxis/results/input_diagnostics.py#L46)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/results/input_diagnostics.py:46`](../../../src/chronaxis/results/input_diagnostics.py#L46)（行号对应 Chronaxis 0.1.0 源码）。

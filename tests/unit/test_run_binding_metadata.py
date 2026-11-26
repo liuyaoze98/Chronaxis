@@ -166,7 +166,7 @@ class RunBindingMetadataTests(unittest.TestCase):
             backend='reference', config_version=4, source_time_interpretation='relative ns; explicit origin',
             session_boundaries=(('session', 0, 100),), started_at='2026-10-16T01:00:00+08:00',
             mapping_hashes=('declared-binding',), dbc_hashes=(), parsing_policy='decoded-results',
-            worker_config='single-thread', dependency_versions=(('numpy', '1.26.3'),), limitations=('synthetic only',),
+            dependency_versions=(('numpy', '1.26.3'),), limitations=('synthetic only',),
             software_version='0.1.0.dev0',  device_label='home')
         return RunMetadata(**expected), expected
 
@@ -309,10 +309,10 @@ class RunBindingMetadataTests(unittest.TestCase):
         """
         metadata, declared = self.declared_metadata()
         keys=('run_id','plan_hash','backend','config_version','started_at','device_label',
-              'software_version','source_time_interpretation','parsing_policy','worker_config',
+              'software_version','source_time_interpretation','parsing_policy',
               'input_identity','session_boundaries','limitations','dependency_versions')
         expected={name:declared[name] for name in keys}
-        expected.update(retain_work=False,detailed_diagnostics=False)
+        expected.update(retain_work=False,detailed_diagnostics=False,process_count=1,worker_process_count=0)
         self.assertEqual(metadata.to_dict(),expected)
         self.assertNotIn('signal_bindings',metadata.to_dict())
         self.assertNotIn('mapping_hashes',metadata.to_dict())

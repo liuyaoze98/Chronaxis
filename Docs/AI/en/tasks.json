@@ -176,10 +176,10 @@
       "intent": "Continuous BLF/ASC volumes: require multiple conditions for longer than a threshold, then integrate energy over the full qualifying interval in kWh",
       "example": "../../Current/examples/conditional-energy.yaml",
       "requires": "Raw ASC/BLF and matching DBC; target signals, codes, units, comparisons, continuous duration, and integration scope. Do not require types, units, or periods to be repeated when the DBC supplies them.",
-      "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, default onset, and actual elapsed time.",
+      "applicable": "Custom state and numeric conditions; inclusive or strict duration thresholds; integration from condition onset; optional energy unit. The example uses strict >60s, explicit selection_origin: onset, and actual elapsed time.",
       "not_applicable": "For per-message contributions query MESSAGE_ENERGY; choose FAST_MESSAGE_ENERGY only when its current-message restrictions fit. Independent tasks use BATCH; fast template totals use FAST_TEMPLATE_TOTAL.",
       "alternative": "charge_session applies only to its strict current > comparison, duration >= comparison, Wh/Ah outputs, and direction/measurement-point requirements. Do not choose it merely because a task mentions charging.",
-      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table has one qualifying interval: the same row has 开始时间（s）=61, 结束时间（s）=122, energy_kwh（kWh）=0.06777777777777777, energy_kwh：状态=完整 (complete), and an empty energy_kwh：说明. Exactly 60 seconds produces no event; do not replace strict comparison with 60.1 seconds. No ID join is needed for the default readable CSV.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event table has one qualifying interval: the same row has 开始时间（s）=61, 结束时间（s）=122, energy_kwh（kWh）=0.06777777777777777, energy_kwh：状态=完整 (complete), an empty energy_kwh：说明, and 统计开始（s）=61 (statistics start). Exactly 60 seconds produces no event; do not replace strict comparison with 60.1 seconds. No ID join is needed for the default readable CSV.",
       "fields": [
         "sources",
         "signals",
@@ -219,7 +219,7 @@
       "intent": "Charging activities, electric charge, and charging energy",
       "example": "../../Current/examples/preset-charge-energy.yaml",
       "requires": "Mode codes, positive current direction, terminal measurement point, voltage, thresholds, and duration. The teaching example uses ASC; for BLF replace the logs, DBC, and bindings with your own.",
-      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event row starts at 1 s and ends at 3 s, with demo_preset_energy（Wh）=2.2222222222222223 and demo_preset_charge（Ah）=0.005555555555555556, both complete. Check applicability first: current equals current_min is excluded, duration equals minimum_duration qualifies, and onset is the default integration start.",
+      "check": "After run succeeds, open the path in the CLI JSON manifest field and use outputs to locate the named readable tables. The event row starts at 1 s and ends at 3 s, with demo_preset_energy（Wh）=2.2222222222222223 and demo_preset_charge（Ah）=0.005555555555555556, both complete. Check applicability first: current equals current_min is excluded, duration equals minimum_duration qualifies, and the preset always starts integration at onset.",
       "fields": [
         "presets",
         "signals",

@@ -58,7 +58,7 @@ plain(value)
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:26`](../../../src/chronaxis/execution/parallel_can_worker.py#L26)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:26`](../../../src/chronaxis/execution/parallel_can_worker.py#L26)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-facts"></a>
 ## `facts`
@@ -83,7 +83,7 @@ dict。
 
 无。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:36`](../../../src/chronaxis/execution/parallel_can_worker.py#L36)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:36`](../../../src/chronaxis/execution/parallel_can_worker.py#L36)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-read_block"></a>
 ## `read_block`
@@ -108,7 +108,7 @@ read_block(reader)
 
 单条记录超过原4MiB估算上限或读取失败；不丢弃、回读或重排记录。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:44`](../../../src/chronaxis/execution/parallel_can_worker.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:44`](../../../src/chronaxis/execution/parallel_can_worker.py#L44)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-worker_main"></a>
 ## `worker_main`
@@ -137,4 +137,4 @@ None。
 生命周期由父拥有；正常文件结束关闭解析器，异常先发错误控制消息再关闭。
 任意时刻取消可由父终止工作进程；不等待满数据管道才能报告错误。
 
-源码：[`src/chronaxis/execution/parallel_can_worker.py:72`](../../../src/chronaxis/execution/parallel_can_worker.py#L72)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_can_worker.py:72`](../../../src/chronaxis/execution/parallel_can_worker.py#L72)（行号对应 Chronaxis 0.1.0 源码）。

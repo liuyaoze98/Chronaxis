@@ -69,7 +69,7 @@ from .lookups import parse_lookups
 from .models import DatasetPlan, DerivedPlan, ExecutionPlan, MessageCalculationPlan, CalculationPlan, OutputPlan, RulePlan, SignalPlan, SourcePlan, WindowPlan
 from .message_calculations import parse_message_calculations
 from .legacy_execution import require_can_decode_scope
-from .nodes import expression_at, parse_calculations, parse_rules, parse_windows
+from .nodes import expression_at, parse_calculations, parse_rules, parse_windows, require_selection_origin
 from .preset_models import PresetSpec, RoleBinding
 from .sequences import SequencePlan, parse_sequences
 from .intervals import IntervalPlan, DiagnosticPlan
@@ -141,7 +141,7 @@ for preset, bindings in zip(plan.presets, plan.preset_bindings):
 # demo_preset current current explicit
 ```
 
-源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:63`](../../../src/chronaxis/planning/plan.py#L63)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisPlan-__post_init__"></a>
 ### `AnalysisPlan.__post_init__`
@@ -155,7 +155,7 @@ AnalysisPlan.__post_init__()
 参数：无显式参数。
 
 
-源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:103`](../../../src/chronaxis/planning/plan.py#L103)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisPlan-extensions"></a>
 ### `AnalysisPlan.extensions`
@@ -183,7 +183,7 @@ ExtensionRegistry或None。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:109`](../../../src/chronaxis/planning/plan.py#L109)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisPlan-lookups"></a>
 ### `AnalysisPlan.lookups`
@@ -211,7 +211,7 @@ LookupTablePlan 元组。
 
 无。
 
-源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:114`](../../../src/chronaxis/planning/plan.py#L114)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-AnalysisPlan-from_dict"></a>
 ### `AnalysisPlan.from_dict`
@@ -249,7 +249,7 @@ PlanValidationError: 字段或版本不合法，名称冲突、表达式或引�
 
 返回类型：'[AnalysisPlan](chronaxis.planning.plan.md#api-AnalysisPlan)'。
 
-源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:121`](../../../src/chronaxis/planning/plan.py#L121)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-load_analysis_plan"></a>
 ## `load_analysis_plan`
@@ -291,4 +291,4 @@ from chronaxis import load_analysis_plan
 plan = load_analysis_plan("examples/analysis.yaml")
 ```
 
-源码：[`src/chronaxis/planning/plan.py:376`](../../../src/chronaxis/planning/plan.py#L376)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/plan.py:380`](../../../src/chronaxis/planning/plan.py#L380)（行号对应 Chronaxis 0.1.0 源码）。

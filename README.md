@@ -31,13 +31,13 @@ Chronaxis 希望把日志读取、条件筛选和指标计算整理成可复用�
 
 ## 安装与运行环境
 
-本源码及配套资料对应 **0.1.0.dev6**，属于开发预览版。Python 支持 **3.12 和 3.13**；Windows 可直接按下方步骤安装，Linux 的进程与文件系统条件见[安装说明](Docs/Current/installation.md)。预览版的接口和配置可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.dev6.md)。
+本源码及配套资料对应 **0.1.0**，这是 0.x 阶段的首个正式版本。Python 支持 **3.12 和 3.13**；Windows 可直接按下方步骤安装，Linux 的进程与文件系统条件见[安装说明](Docs/Current/installation.md)。0.x 阶段的接口和配置仍可能调整，版本命名见[版本规则](Docs/Release/versioning.md)，从旧版升级前请阅读[本版说明](Docs/Release/release-notes-0.1.0.md)。
 
 创建独立环境，从 PyPI 安装本版：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0"
 .\.venv\Scripts\python.exe -m chronaxis --help
 ```
 
@@ -46,7 +46,7 @@ py -3.12 -m venv .venv
 若取得的是同版 wheel，将上面的安装命令替换为以下命令，并填写实际文件路径：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev6-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0-py3-none-any.whl"
 ```
 
 安装时会自动安装 CAN 读取、DBC 解码等所需依赖。离线安装请提前准备依赖包，具体方法见[安装说明](Docs/Current/installation.md)。

@@ -37,4 +37,4 @@ Starts worker processes, reads job inputs, writes reports, and closes batch reso
 
 [High-performance integrator tutorial](../fast-energy.md)
 
-Source: [`src/chronaxis/fast/batch.py:51`](../../../../src/chronaxis/fast/batch.py#L51) (line number in the Chronaxis 0.1.0.dev6 source).
+Source: [`src/chronaxis/fast/batch.py:51`](../../../../src/chronaxis/fast/batch.py#L51) (line number in the Chronaxis 0.1.0 source).

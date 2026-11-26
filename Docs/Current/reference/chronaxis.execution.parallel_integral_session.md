@@ -27,6 +27,7 @@ CAN 并行路径；未满足静态条件时不创建资源。工作进程不发�
 |[`ParallelIntegralSession._update_bounds`](#api-ParallelIntegralSession-_update_bounds)|同步已消费输入的实际范围。|
 |[`ParallelIntegralSession.execute`](#api-ParallelIntegralSession-execute)|按文件顺序消费面积及边界，全部 EOF 后交付最终结果。|
 |[`ParallelIntegralSession._retain_notices`](#api-ParallelIntegralSession-_retain_notices)|保留本次实际帧型兼容提示。|
+|[`ParallelIntegralSession.worker_process_count`](#api-ParallelIntegralSession-worker_process_count)|返回本次面积并行实际启动的工作进程数，关闭后仍可查看。|
 |[`ParallelIntegralSession.close`](#api-ParallelIntegralSession-close)|关闭真实资源后逐项退款，失败保留所有权供重试。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -72,7 +73,7 @@ parallel_integral_inputs(plan: AnalysisPlan) -> tuple[SignalDefinition, ...] | N
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...] &#124; None。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:33`](../../../src/chronaxis/execution/parallel_integral_session.py#L33)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:33`](../../../src/chronaxis/execution/parallel_integral_session.py#L33)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-parallel_integral_source"></a>
 ## `parallel_integral_source`
@@ -105,7 +106,7 @@ parallel_integral_source(source: SourcePlan, definitions: tuple[SignalDefinition
 
 返回类型：tuple[[CANTextSpec](chronaxis.sources.text_can_spec.md#api-CANTextSpec), dict]。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:66`](../../../src/chronaxis/execution/parallel_integral_session.py#L66)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:66`](../../../src/chronaxis/execution/parallel_integral_session.py#L66)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession"></a>
 ## `ParallelIntegralSession`
@@ -121,7 +122,7 @@ ParallelIntegralSession(plan: AnalysisPlan, budget: ResourceBudget, requirements
 ```
 
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:111`](../../../src/chronaxis/execution/parallel_integral_session.py#L111)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:111`](../../../src/chronaxis/execution/parallel_integral_session.py#L111)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-fixed_cost"></a>
 ### `ParallelIntegralSession.fixed_cost`
@@ -150,7 +151,7 @@ int，保守预约的字节数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:120`](../../../src/chronaxis/execution/parallel_integral_session.py#L120)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:120`](../../../src/chronaxis/execution/parallel_integral_session.py#L120)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-__init__"></a>
 ### `ParallelIntegralSession.__init__`
@@ -180,7 +181,7 @@ None，构造新的会话owner，尚未读取原帧。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:131`](../../../src/chronaxis/execution/parallel_integral_session.py#L131)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:131`](../../../src/chronaxis/execution/parallel_integral_session.py#L131)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-_new"></a>
 ### `ParallelIntegralSession._new`
@@ -208,7 +209,7 @@ object，factory成功返回的资源owner；构造失败时只接管恢复属�
 
 原错。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:161`](../../../src/chronaxis/execution/parallel_integral_session.py#L161)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:161`](../../../src/chronaxis/execution/parallel_integral_session.py#L161)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-prepare"></a>
 ### `ParallelIntegralSession.prepare`
@@ -237,7 +238,7 @@ bool；True表示已安装数值任务，False表示绑定不能证明同帧或�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:169`](../../../src/chronaxis/execution/parallel_integral_session.py#L169)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:169`](../../../src/chronaxis/execution/parallel_integral_session.py#L169)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-_update_bounds"></a>
 ### `ParallelIntegralSession._update_bounds`
@@ -267,7 +268,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:250`](../../../src/chronaxis/execution/parallel_integral_session.py#L250)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:250`](../../../src/chronaxis/execution/parallel_integral_session.py#L250)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-execute"></a>
 ### `ParallelIntegralSession.execute`
@@ -295,7 +296,7 @@ ParallelIntegralSession.execute() -> tuple[RecordIntegralResult, ...]
 
 返回类型：tuple[[RecordIntegralResult](chronaxis.execution.record_integral.md#api-RecordIntegralResult), ...]。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:261`](../../../src/chronaxis/execution/parallel_integral_session.py#L261)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:261`](../../../src/chronaxis/execution/parallel_integral_session.py#L261)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-_retain_notices"></a>
 ### `ParallelIntegralSession._retain_notices`
@@ -323,7 +324,37 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:309`](../../../src/chronaxis/execution/parallel_integral_session.py#L309)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:309`](../../../src/chronaxis/execution/parallel_integral_session.py#L309)（行号对应 Chronaxis 0.1.0 源码）。
+
+<a id="api-ParallelIntegralSession-worker_process_count"></a>
+### `ParallelIntegralSession.worker_process_count`
+
+返回本次面积并行实际启动的工作进程数，关闭后仍可查看。
+
+```python
+ParallelIntegralSession.worker_process_count: int
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+非负int。
+
+#### 异常说明
+
+无。
+
+返回类型：int。
+
+源码：[`src/chronaxis/execution/parallel_integral_session.py:335`](../../../src/chronaxis/execution/parallel_integral_session.py#L335)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelIntegralSession-close"></a>
 ### `ParallelIntegralSession.close`
@@ -351,4 +382,4 @@ None；成功后幂等。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_integral_session.py:334`](../../../src/chronaxis/execution/parallel_integral_session.py#L334)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_integral_session.py:339`](../../../src/chronaxis/execution/parallel_integral_session.py#L339)（行号对应 Chronaxis 0.1.0 源码）。

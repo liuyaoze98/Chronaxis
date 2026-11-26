@@ -20,15 +20,15 @@ The relative commands below illustrate a source or standalone guide directory. F
 
 ## Install Chronaxis and its default dependencies
 
-A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install 0.1.0.dev6, matching this guide, from PyPI:
+A normal installation includes the runtime dependencies for BLF, ASC, raw-message CSV, DBC decoding, decoded-signal CSV, and memory tasks. These Windows PowerShell commands create an environment and install 0.1.0, matching this guide, from PyPI:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0"
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-With the matching wheel, replace `"chronaxis==0.1.0.dev6"` with the wheel's actual path. With the matching source tree, run `.\.venv\Scripts\python.exe -m pip install .` from its root containing `pyproject.toml`.
+With the matching wheel, replace `"chronaxis==0.1.0"` with the wheel's actual path. With the matching source tree, run `.\.venv\Scripts\python.exe -m pip install .` from its root containing `pyproject.toml`.
 
 Use the same `.venv\Scripts\python.exe` for subsequent commands; activation is optional. Python 3.12 and 3.13 are allowed. Default CAN dependencies are `python-can==4.6.1`, `cantools>=39.4.3,<46` and `natsort==8.4.0`, constrained by the installed wheel metadata. NumPy requires `>=1.26.3,<2.6` on Python 3.12 and `>=2.1,<2.6` on Python 3.13; jsonschema requires `>=4.25.1,<4.27`. The source `requirements/` directory contains four exact Windows environment snapshots. Allowed ranges do not prove every intermediate or cross-combination was tested. Use the release or wheel requested by the user, and prepare dependency wheels for offline installation. Do not change signals, thresholds or the DBC to fix an installation error.
 

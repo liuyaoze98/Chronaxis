@@ -38,6 +38,7 @@ PERF-P5-ORDER-01（A1、A2合同）。适用计划与连续多文件并行积分
 |[`ParallelPointSession._merge`](#api-ParallelPointSession-_merge)|归并段：k路归并各文件组点，合并同一时刻组并交给同帧积分owner（A2-6）。|
 |[`ParallelPointSession._merge.advance`](#api-ParallelPointSession-_merge-advance)|取文件的下一个事件压入堆。|
 |[`ParallelPointSession.execute`](#api-ParallelPointSession-execute)|执行读取段与归并段，全部完成后交付最终结果。|
+|[`ParallelPointSession.worker_process_count`](#api-ParallelPointSession-worker_process_count)|返回本次组点并行实际启动的工作进程数，关闭后仍可查看。|
 |[`ParallelPointSession.close`](#api-ParallelPointSession-close)|关闭真实资源后逐项退款，失败保留所有权供重试。|
 
 <details><summary>导入与重导出来源（展开）</summary>
@@ -85,7 +86,7 @@ time_scope为source的动态条件需要需求分析结果，在ParallelPointSes
 
 返回类型：tuple[[SignalDefinition](chronaxis.core.binding.md#api-SignalDefinition), ...] &#124; None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:42`](../../../src/chronaxis/execution/parallel_point_session.py#L42)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:42`](../../../src/chronaxis/execution/parallel_point_session.py#L42)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession"></a>
 ## `ParallelPointSession`
@@ -100,7 +101,7 @@ ParallelPointSession(plan: AnalysisPlan, budget: ResourceBudget, requirements: I
 ```
 
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:76`](../../../src/chronaxis/execution/parallel_point_session.py#L76)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:76`](../../../src/chronaxis/execution/parallel_point_session.py#L76)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-fixed_cost"></a>
 ### `ParallelPointSession.fixed_cost`
@@ -129,7 +130,7 @@ int，保守预约的字节数。
 
 返回类型：int。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:84`](../../../src/chronaxis/execution/parallel_point_session.py#L84)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:84`](../../../src/chronaxis/execution/parallel_point_session.py#L84)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-__init__"></a>
 ### `ParallelPointSession.__init__`
@@ -159,7 +160,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:95`](../../../src/chronaxis/execution/parallel_point_session.py#L95)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:95`](../../../src/chronaxis/execution/parallel_point_session.py#L95)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-_new"></a>
 ### `ParallelPointSession._new`
@@ -187,7 +188,7 @@ ParallelPointSession._new(factory, recovery, *args, **kwargs)
 
 原构造错误，已部分创建的资源记入_pending。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:124`](../../../src/chronaxis/execution/parallel_point_session.py#L124)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:124`](../../../src/chronaxis/execution/parallel_point_session.py#L124)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-prepare"></a>
 ### `ParallelPointSession.prepare`
@@ -215,7 +216,7 @@ bool；True表示已安装数值任务并许可读取，False表示条件或预�
 
 返回类型：bool。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:136`](../../../src/chronaxis/execution/parallel_point_session.py#L136)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:136`](../../../src/chronaxis/execution/parallel_point_session.py#L136)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-_update_bounds"></a>
 ### `ParallelPointSession._update_bounds`
@@ -245,7 +246,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:218`](../../../src/chronaxis/execution/parallel_point_session.py#L218)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:218`](../../../src/chronaxis/execution/parallel_point_session.py#L218)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-_retain_notices"></a>
 ### `ParallelPointSession._retain_notices`
@@ -273,7 +274,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:230`](../../../src/chronaxis/execution/parallel_point_session.py#L230)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:230`](../../../src/chronaxis/execution/parallel_point_session.py#L230)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-_merge"></a>
 ### `ParallelPointSession._merge`
@@ -301,7 +302,7 @@ None。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:235`](../../../src/chronaxis/execution/parallel_point_session.py#L235)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:235`](../../../src/chronaxis/execution/parallel_point_session.py#L235)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-_merge-advance"></a>
 ### `ParallelPointSession._merge.advance`
@@ -326,7 +327,7 @@ None。
 
 读回错误或文件内时间倒退。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:252`](../../../src/chronaxis/execution/parallel_point_session.py#L252)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:252`](../../../src/chronaxis/execution/parallel_point_session.py#L252)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-execute"></a>
 ### `ParallelPointSession.execute`
@@ -354,7 +355,37 @@ ParallelPointSession.execute() -> tuple[RecordIntegralResult, ...]
 
 返回类型：tuple[[RecordIntegralResult](chronaxis.execution.record_integral.md#api-RecordIntegralResult), ...]。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:305`](../../../src/chronaxis/execution/parallel_point_session.py#L305)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:305`](../../../src/chronaxis/execution/parallel_point_session.py#L305)（行号对应 Chronaxis 0.1.0 源码）。
+
+<a id="api-ParallelPointSession-worker_process_count"></a>
+### `ParallelPointSession.worker_process_count`
+
+返回本次组点并行实际启动的工作进程数，关闭后仍可查看。
+
+```python
+ParallelPointSession.worker_process_count: int
+```
+
+装饰器：`property`。
+
+读取属性，不使用调用括号。
+
+
+#### 参数说明
+
+无。
+
+#### 返回说明
+
+非负int。
+
+#### 异常说明
+
+无。
+
+返回类型：int。
+
+源码：[`src/chronaxis/execution/parallel_point_session.py:346`](../../../src/chronaxis/execution/parallel_point_session.py#L346)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-ParallelPointSession-close"></a>
 ### `ParallelPointSession.close`
@@ -382,4 +413,4 @@ None；成功后幂等。
 
 返回类型：None。
 
-源码：[`src/chronaxis/execution/parallel_point_session.py:345`](../../../src/chronaxis/execution/parallel_point_session.py#L345)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/parallel_point_session.py:350`](../../../src/chronaxis/execution/parallel_point_session.py#L350)（行号对应 Chronaxis 0.1.0 源码）。

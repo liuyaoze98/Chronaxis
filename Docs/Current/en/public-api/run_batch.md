@@ -42,4 +42,4 @@ If worker construction is interrupted and cleanup remains incomplete, the origin
 
 ## Source locations
 
-- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/batch/api.py:13`](../../../../src/chronaxis/batch/api.py#L13) — line number in the Chronaxis 0.1.0 source.

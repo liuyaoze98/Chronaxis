@@ -15,7 +15,7 @@
 | [part-2.asc](examples/data/can/conditional-energy/part-2.asc) | 第2卷，90～123秒；延续上一卷的条件状态。|
 | [signals.dbc](examples/data/can/conditional-energy/signals.dbc) | 合成报文0x100的状态、电流、电压及1000ms周期。|
 
-本例对应 Chronaxis 0.1.0.dev6。先按[安装说明](installation.md)安装，推荐 `pip install "chronaxis==0.1.0.dev6"`；安装会自动带上本版声明的 CAN 依赖，不要另行更换 cantools 版本。然后进入[手册的 examples 目录](installation.md#find-examples)执行：
+本例对应 Chronaxis 0.1.0。先按[安装说明](installation.md)安装，推荐 `pip install "chronaxis==0.1.0"`；安装会自动带上本版声明的 CAN 依赖，不要另行更换 cantools 版本。然后进入[手册的 examples 目录](installation.md#find-examples)执行：
 
 ```powershell
 chronaxis validate conditional-energy.yaml --format json
@@ -63,6 +63,7 @@ rules:                                              # 先找合格区间
     condition: state == 0x2 and current >= 10       # 状态为2且电流至少10A
     minimum_duration: 60s                           # 持续时长门槛
     duration_comparison: ">"                        # 严格超过；恰好60秒不合格
+    selection_origin: onset                         # 从条件首次成立处累计；积分需要从确认时刻开始时改为confirmed
 calculations:                                       # 只请求所需的能量结果
   - name: energy_kwh                                # 结果表中的计算项名称
     operation: integral                             # 按实际时间积分
@@ -78,7 +79,7 @@ ASC/BLF格式自动识别；唯一来源及通道不用在每条信号中重复�
 
 `execution.process_count`只让文件并行读取和解码，不把事件或积分按文件切开；取值见[执行设置](execution.md)，交叠文件按时间归并见[连续记录多进程](continuous-files.md)。
 
-本例也省略了默认`selection_origin: onset`、实际时间间隔模式和默认结果输出。需要从持续确认的时刻开始积分时，在rules中eligible这一项加一行`selection_origin: confirmed`，与`minimum_duration`同级。`duration_comparison`必须明确填写：本例要求严格超过，选择`">"`；要求达到门槛则选择`">="`。省略会报告缺少字段。状态直接保留整数，表达式中的`0x2`等于十进制2，无需先配置bool或enum映射。更换真实数据时，报文ID、信号名和状态编码以实际DBC及设备定义为准。
+本例写了`selection_origin: onset`：从条件首次成立处开始积分。规则被计算的`scope.rule`引用时这一项必须写明，省略会在校验时报错；需要从持续确认的时刻开始积分时，把它改为`selection_origin: confirmed`，与`minimum_duration`同级。省略的是实际时间间隔模式和默认结果输出。`duration_comparison`必须明确填写：本例要求严格超过，选择`">"`；要求达到门槛则选择`">="`。省略会报告缺少字段。状态直接保留整数，表达式中的`0x2`等于十进制2，无需先配置bool或enum映射。更换真实数据时，报文ID、信号名和状态编码以实际DBC及设备定义为准。
 
 ## 输入发生了什么，为什么只有一条能量结果
 
@@ -97,11 +98,11 @@ ASC/BLF格式自动识别；唯一来源及通道不用在每条信号中重复�
 
 普通配置默认输出一张[事件结果.csv](examples/results/conditional-energy-yaml/事件结果.csv)，起止时间和能量在同一行，没有额外的贡献明细或输入追溯。[状态摘要](examples/results/conditional-energy-yaml/result-summary.json)摘取真实运行清单的必要信息。
 
-| 区间 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 |
-|---|---|---|---|---|---|
-| 1 | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 |
+| 区间 | 开始时间（s） | 结束时间（s） | 区间状态 | energy_kwh（kWh） | energy_kwh：状态 | 统计开始（s） |
+|---|---|---|---|---|---|---|
+| 1 | 61 | 122 | 正常结束 | 0.06777777777777777 | 完整 | 61 |
 
-只有61秒长的活动合格，60秒整的活动被排除；积分范围为[61,122)，包括最初的60秒。确认时刻是121.000000001秒，代表从61秒开始严格超过60秒的第一个整数纳秒时刻，它不改变积分起点。本例只要整段积分，普通表不额外保存确认时刻；需要底层事件时可使用iter_events。
+只有61秒长的活动合格，60秒整的活动被排除；积分范围为[61,122)，包括最初的60秒。确认时刻是121.000000001秒，代表从61秒开始严格超过60秒的第一个整数纳秒时刻，它不改变积分起点。末列“统计开始（s）”写明积分从61秒开始；改为`selection_origin: confirmed`后该列为121.000000001，能量变为0.00111111111kWh。本例只要整段积分，普通表不额外保存确认时刻；需要底层事件时可使用iter_events。
 
 清单analysis_outcome.rules显示eligible找到1个事件且has_unknown为false；calculations.complete为1，表示一项计算完整，不是能量值。能量直接读取energy_kwh（kWh）列，无需再换单位。completed只代表任务及结果发布成功，是否完整仍看每项指标的状态。
 

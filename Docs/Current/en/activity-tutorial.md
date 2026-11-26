@@ -54,6 +54,7 @@ rules:                             # Conditions or transitions that produce even
     rule_type: condition_duration  # Event detection algorithm
     condition: temperature >= 80   # Enter the candidate activity
     duration_comparison: ">="      # Include the threshold; use > for strictly longer.
+    selection_origin: onset        # Start of statistics: onset or confirmed; required when a calculation references the rule
     minimum_duration: 2s           # Confirm after 2 seconds
 windows:                           # Time ranges selected around events
   - name: hot_context              # Name used to identify and reference this object
@@ -90,6 +91,6 @@ chronaxis run activity.yaml --output activity-result
 
 The activity lasts 5 seconds, so its energy is `10 W × 5 s = 50 J`. The window lasts 7 seconds and contains `70 J`.
 
-Adding `selection_origin: confirmed` to the `hot` rule (in that item of the `rules` list, at the same level as `minimum_duration`) selects the activity from its confirmation time: `[3, 6)`, giving 30 J. The surrounding window still covers `[0, 7)` and gives 70 J.
+Changing `selection_origin: onset` to `confirmed` in the `hot` rule (in that item of the `rules` list, at the same level as `minimum_duration`) selects the activity from its confirmation time: `[3, 6)`, giving 30 J. The surrounding window still covers `[0, 7)` and gives 70 J.
 
 If a calculation is partial, check the observed range and signal validity periods using the [execution guide](execution.md). Increasing `pre` or `post` does not create observations outside the input data.

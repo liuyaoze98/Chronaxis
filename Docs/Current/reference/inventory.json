@@ -1,5 +1,5 @@
 {
-  "baseline": "52504b7e8bd2bd40147e215ee48b0ea11f27826c",
+  "baseline": "73edde41bdf151418282e6be301c5c6bb4d85e8c",
   "device_label": "school",
   "modules": [
     {
@@ -29252,7 +29252,7 @@
     {
       "module": "chronaxis.execution.parallel_can_decode",
       "path": "src/chronaxis/execution/parallel_can_decode.py",
-      "sha256": "899adb95f931539db8bd6ddf5d5cc489a6ea21077641a36e3996d7afe4a360ad",
+      "sha256": "aec25ff1770ba6b4ed5359cd14f80cea4b786280936f0439aaf0ec1ad73856eb",
       "exports": [],
       "objects": [
         {
@@ -29510,9 +29510,26 @@
           "decorators": []
         },
         {
+          "name": "ParallelCANDecodeRead.worker_process_count",
+          "kind": "function",
+          "line": 216,
+          "summary": "返回本次实际启动的文件工作进程数，关闭后仍可查看。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
           "name": "ParallelCANDecodeRead.prepare_metadata",
           "kind": "function",
-          "line": 215,
+          "line": 220,
           "summary": "启动有限工作槽，只初始化DBC再授予首块。",
           "parameters": [
             {
@@ -29527,7 +29544,7 @@
         {
           "name": "ParallelCANDecodeRead._block",
           "kind": "function",
-          "line": 269,
+          "line": 274,
           "summary": "收一块并记录已见事实，原始计数不以传输记录数替代。",
           "parameters": [
             {
@@ -29554,7 +29571,7 @@
         {
           "name": "ParallelCANDecodeRead._record_identity",
           "kind": "function",
-          "line": 314,
+          "line": 319,
           "summary": "核当前包的来源和文件身份，不将包内路径用作新文件打开目标。",
           "parameters": [
             {
@@ -29581,7 +29598,7 @@
         {
           "name": "ParallelCANDecodeRead._next_task",
           "kind": "function",
-          "line": 326,
+          "line": 331,
           "summary": "完成文件后复用同一工作槽；没有下一文件时保留槽待统一关闭。",
           "parameters": [
             {
@@ -29602,7 +29619,7 @@
         {
           "name": "ParallelCANDecodeRead._stop_workers",
           "kind": "function",
-          "line": 334,
+          "line": 339,
           "summary": "关闭全部本次进程和管道，不等待满管道自行排空。",
           "parameters": [
             {
@@ -29623,7 +29640,7 @@
         {
           "name": "ParallelCANDecodeRead._prepare_sorted",
           "kind": "function",
-          "line": 378,
+          "line": 383,
           "summary": "先流式暂存已校验文件，再释放进程额度开始归并。",
           "parameters": [
             {
@@ -29638,7 +29655,7 @@
         {
           "name": "ParallelCANDecodeRead._push",
           "kind": "function",
-          "line": 426,
+          "line": 431,
           "summary": "为一个有序文件取下一记录，堆键固定时间/文件位置/局部序号。",
           "parameters": [
             {
@@ -29659,7 +29676,7 @@
         {
           "name": "ParallelCANDecodeRead.__iter__",
           "kind": "function",
-          "line": 464,
+          "line": 469,
           "summary": "返回本次游标。",
           "parameters": [
             {
@@ -29674,7 +29691,7 @@
         {
           "name": "ParallelCANDecodeRead.__next__",
           "kind": "function",
-          "line": 468,
+          "line": 473,
           "summary": "返回按明确归并政策排序的下一记录。",
           "parameters": [
             {
@@ -29689,7 +29706,7 @@
         {
           "name": "ParallelCANDecodeRead.close",
           "kind": "function",
-          "line": 518,
+          "line": 523,
           "summary": "释放本次进程、块和登记暂存。",
           "parameters": [
             {
@@ -30525,7 +30542,7 @@
     {
       "module": "chronaxis.execution.parallel_integral_session",
       "path": "src/chronaxis/execution/parallel_integral_session.py",
-      "sha256": "3d6b2e7dab8a57cedffc4cd5c2825dce4e95a86d91e56df88ef3748a2daba504",
+      "sha256": "f26ecdc0871013313b307c1f5b2a95a3346b1beb04f6d0157b42d21d51b868fb",
       "exports": [],
       "objects": [
         {
@@ -30734,9 +30751,26 @@
           "decorators": []
         },
         {
+          "name": "ParallelIntegralSession.worker_process_count",
+          "kind": "function",
+          "line": 335,
+          "summary": "返回本次面积并行实际启动的工作进程数，关闭后仍可查看。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
           "name": "ParallelIntegralSession.close",
           "kind": "function",
-          "line": 334,
+          "line": 339,
           "summary": "关闭真实资源后逐项退款，失败保留所有权供重试。",
           "parameters": [
             {
@@ -31381,7 +31415,7 @@
     {
       "module": "chronaxis.execution.parallel_point_session",
       "path": "src/chronaxis/execution/parallel_point_session.py",
-      "sha256": "2b7ceaae4841190270b4e821810db9a393d7c3f27af7fe3b0fdff7c166b4d93e",
+      "sha256": "4ee3c801184bc73562b661568b6ea94ef46b1a80e904f29cecda4141f4a83fbf",
       "exports": [],
       "objects": [
         {
@@ -31599,9 +31633,26 @@
           "decorators": []
         },
         {
+          "name": "ParallelPointSession.worker_process_count",
+          "kind": "function",
+          "line": 346,
+          "summary": "返回本次组点并行实际启动的工作进程数，关闭后仍可查看。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
           "name": "ParallelPointSession.close",
           "kind": "function",
-          "line": 345,
+          "line": 350,
           "summary": "关闭真实资源后逐项退款，失败保留所有权供重试。",
           "parameters": [
             {
@@ -34876,7 +34927,7 @@
     {
       "module": "chronaxis.execution.record_session_calculations",
       "path": "src/chronaxis/execution/record_session_calculations.py",
-      "sha256": "e1e75241be06f196f7c570f76c89d2ae1259074777be23d934817dabf97527ab",
+      "sha256": "352c6ad826a0a64c9913b0e89a50c4d8b0d00210aa884d22886e700330223a2e",
       "exports": [],
       "objects": [
         {
@@ -35164,9 +35215,26 @@
           "decorators": []
         },
         {
+          "name": "RecordSessionCalculations.worker_process_count",
+          "kind": "function",
+          "line": 283,
+          "summary": "汇总本次真正参与读取或计算的文件工作进程数。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
           "name": "RecordSessionCalculations._prepare_requests",
           "kind": "function",
-          "line": 282,
+          "line": 290,
           "summary": "从已验证计划取得请求和间隔选择；只为实际输出建立汇总状态。",
           "parameters": [
             {
@@ -35187,7 +35255,7 @@
         {
           "name": "RecordSessionCalculations._prepare_input_state",
           "kind": "function",
-          "line": 311,
+          "line": 319,
           "summary": "按共用需求打开来源并建立最新信号状态，不提前读完文件。",
           "parameters": [
             {
@@ -35208,7 +35276,7 @@
         {
           "name": "RecordSessionCalculations._prepare_operators",
           "kind": "function",
-          "line": 414,
+          "line": 422,
           "summary": "依次建立实际请求的计算、事件、窗口和序列算子。",
           "parameters": [
             {
@@ -35253,7 +35321,7 @@
         {
           "name": "RecordSessionCalculations._complete_results",
           "kind": "function",
-          "line": 545,
+          "line": 553,
           "summary": "输入真正EOF后完成尾部、统计和结果汇总，不发布未完成前缀。",
           "parameters": [
             {
@@ -35280,7 +35348,7 @@
         {
           "name": "RecordSessionCalculations._append_aggregate_input",
           "kind": "function",
-          "line": 593,
+          "line": 601,
           "summary": "从同一源行同时得到公开记录和聚合输入，不复制或重扫源表。",
           "parameters": [
             {
@@ -35301,7 +35369,7 @@
         {
           "name": "RecordSessionCalculations._finish_actual_tails",
           "kind": "function",
-          "line": 601,
+          "line": 609,
           "summary": "以实际来源EOF结算连续计算和样本统计，固定周期不凭空加报文。",
           "parameters": [
             {
@@ -35316,7 +35384,7 @@
         {
           "name": "RecordSessionCalculations._consume_constants",
           "kind": "function",
-          "line": 640,
+          "line": 648,
           "summary": "常量只需真实首末范围，EOF后复用相同统计核，不创建假信号或逐行值。",
           "parameters": [
             {
@@ -35331,7 +35399,7 @@
         {
           "name": "RecordSessionCalculations._emit_event",
           "kind": "function",
-          "line": 663,
+          "line": 671,
           "summary": "将必要事件字段直接写一次最终结果仓。",
           "parameters": [
             {
@@ -35352,7 +35420,7 @@
         {
           "name": "RecordSessionCalculations._emit_event_duration",
           "kind": "function",
-          "line": 678,
+          "line": 686,
           "summary": "把每段事件指标直接写最终指标表。",
           "parameters": [
             {
@@ -35385,7 +35453,7 @@
         {
           "name": "RecordSessionCalculations._emit_segment",
           "kind": "function",
-          "line": 692,
+          "line": 700,
           "summary": "只写实际片段与父关联，后续指标借用同一片段。",
           "parameters": [
             {
@@ -35406,7 +35474,7 @@
         {
           "name": "RecordSessionCalculations._count_outcome",
           "kind": "function",
-          "line": 708,
+          "line": 716,
           "summary": "随已写出的指标计数。",
           "parameters": [
             {
@@ -35433,7 +35501,7 @@
         {
           "name": "RecordSessionCalculations.analysis_outcome",
           "kind": "function",
-          "line": 714,
+          "line": 722,
           "summary": "取得同次规则和指标概况。",
           "parameters": [
             {
@@ -35448,7 +35516,7 @@
         {
           "name": "RecordSessionCalculations.threshold_summaries",
           "kind": "function",
-          "line": 719,
+          "line": 727,
           "summary": "生成明确预设请求的有限汇总，不复制状态轨迹。",
           "parameters": [
             {
@@ -35463,7 +35531,7 @@
         {
           "name": "RecordSessionCalculations._emit_sequence",
           "kind": "function",
-          "line": 732,
+          "line": 740,
           "summary": "只写最终配对结论，不复制事件全文。",
           "parameters": [
             {
@@ -35484,7 +35552,7 @@
         {
           "name": "RecordSessionCalculations._consume_message",
           "kind": "function",
-          "line": 744,
+          "line": 752,
           "summary": "按原序收集有限目标批，供同来源各累计器共用。",
           "parameters": [
             {
@@ -35505,7 +35573,7 @@
         {
           "name": "RecordSessionCalculations._flush_messages",
           "kind": "function",
-          "line": 785,
+          "line": 793,
           "summary": "共享当前目标批完成各汇总计算，不创建历史或逐次输出。",
           "parameters": [
             {
@@ -35520,7 +35588,7 @@
         {
           "name": "RecordSessionCalculations._consume_direct_update",
           "kind": "function",
-          "line": 813,
+          "line": 821,
           "summary": "向已完成首帧前检查的同帧owner交付更新。",
           "parameters": [
             {
@@ -35541,7 +35609,7 @@
         {
           "name": "RecordSessionCalculations._before_direct_group",
           "kind": "function",
-          "line": 817,
+          "line": 825,
           "summary": "结算前更新省略domain的实际范围；显式裁剪不额外查询。",
           "parameters": [
             {
@@ -35556,7 +35624,7 @@
         {
           "name": "RecordSessionCalculations._advance_observed_domain",
           "kind": "function",
-          "line": 825,
+          "line": 833,
           "summary": "用已付费游标的真实首末更新在线范围，不读取更多输入或保存时间序列。",
           "parameters": [
             {
@@ -35571,7 +35639,7 @@
         {
           "name": "RecordSessionCalculations._merge_sources",
           "kind": "function",
-          "line": 857,
+          "line": 865,
           "summary": "每来源只取已付费前瞻，收齐同一时刻更新再求值。",
           "parameters": [
             {
@@ -35586,7 +35654,7 @@
         {
           "name": "RecordSessionCalculations._close_slot",
           "kind": "function",
-          "line": 919,
+          "line": 927,
           "summary": "关闭成功才解除责任。",
           "parameters": [
             {
@@ -35607,7 +35675,7 @@
         {
           "name": "RecordSessionCalculations._require_closed",
           "kind": "function",
-          "line": 928,
+          "line": 936,
           "summary": "核实子资源真实关闭再撤槽。",
           "parameters": [
             {
@@ -35624,7 +35692,7 @@
         {
           "name": "RecordSessionCalculations.close",
           "kind": "function",
-          "line": 933,
+          "line": 941,
           "summary": "反向释放自有资源，保留失败槽供父会话重试。",
           "parameters": [
             {
@@ -35865,7 +35933,7 @@
     {
       "module": "chronaxis.execution.record_source_cursor",
       "path": "src/chronaxis/execution/record_source_cursor.py",
-      "sha256": "54b734a6365c712d3f0d1aba3e97ff0cef342b03266c9d547bd10a4019a7b574",
+      "sha256": "fe2ed26854ae1539875671bf55c7e6931979ca2f20be8c0b255be0d477678385",
       "exports": [],
       "objects": [
         {
@@ -35987,7 +36055,7 @@
         {
           "name": "RecordSourceCursor._consume_message",
           "kind": "function",
-          "line": 172,
+          "line": 173,
           "summary": "同次解码先交逐消息消费者，再按需归组。",
           "parameters": [
             {
@@ -36008,7 +36076,7 @@
         {
           "name": "RecordSourceCursor._attach_raw_groups",
           "kind": "function",
-          "line": 182,
+          "line": 183,
           "summary": "候选绑定不适用时，在同一游标首帧前建立普通归组。",
           "parameters": [
             {
@@ -36041,7 +36109,7 @@
         {
           "name": "RecordSourceCursor._refresh_observed_bounds",
           "kind": "function",
-          "line": 194,
+          "line": 195,
           "summary": "同步消息回调中取得同次读取已见范围。",
           "parameters": [
             {
@@ -36056,7 +36124,7 @@
         {
           "name": "RecordSourceCursor._new",
           "kind": "function",
-          "line": 202,
+          "line": 203,
           "summary": "接实际未返回的子owner。",
           "parameters": [
             {
@@ -36095,7 +36163,7 @@
         {
           "name": "RecordSourceCursor._enqueue",
           "kind": "function",
-          "line": 210,
+          "line": 211,
           "summary": "在上游释放组费用前接管必要组。",
           "parameters": [
             {
@@ -36116,7 +36184,7 @@
         {
           "name": "RecordSourceCursor.peek",
           "kind": "function",
-          "line": 219,
+          "line": 220,
           "summary": "读取到下一个完整组或真实EOF，返回借用组。",
           "parameters": [
             {
@@ -36131,7 +36199,7 @@
         {
           "name": "RecordSourceCursor.advance",
           "kind": "function",
-          "line": 279,
+          "line": 282,
           "summary": "消费当前组并释放其费用，不主动读取下一组。",
           "parameters": [
             {
@@ -36146,7 +36214,7 @@
         {
           "name": "RecordSourceCursor._retain_frame_notices",
           "kind": "function",
-          "line": 285,
+          "line": 288,
           "summary": "在同次真实EOF后保留已核DBC帧型提示，不借清单声明代替读取。",
           "parameters": [
             {
@@ -36161,7 +36229,7 @@
         {
           "name": "RecordSourceCursor._require_closed",
           "kind": "function",
-          "line": 320,
+          "line": 323,
           "summary": "关闭未完成时保留槽。",
           "parameters": [
             {
@@ -36178,7 +36246,7 @@
         {
           "name": "RecordSourceCursor._close_slot",
           "kind": "function",
-          "line": 325,
+          "line": 328,
           "summary": "成功关闭后才撤槽。",
           "parameters": [
             {
@@ -36199,7 +36267,7 @@
         {
           "name": "RecordSourceCursor.close",
           "kind": "function",
-          "line": 333,
+          "line": 336,
           "summary": "按责任释放当前批/队列和输入；提前关闭不交付末组。",
           "parameters": [
             {
@@ -37515,7 +37583,7 @@
     {
       "module": "chronaxis.execution.run_session",
       "path": "src/chronaxis/execution/run_session.py",
-      "sha256": "79eda651eb95c2afd534f4cb71a6bd9790b14ed4dfd4abf2a246535074232819",
+      "sha256": "684fb49b7b9d47d8fad8e225f69115f5a84be5444881ce7a9b8891e5a9527e39",
       "exports": [],
       "objects": [
         {
@@ -37691,7 +37759,7 @@
         {
           "name": "RunSession._adopt_cleanup",
           "kind": "function",
-          "line": 290,
+          "line": 295,
           "summary": "接管当前工厂明确移交的最高资源所有者，保留失败后可重试关闭的责任。",
           "parameters": [
             {
@@ -37712,7 +37780,7 @@
         {
           "name": "RunSession._diagnose",
           "kind": "function",
-          "line": 308,
+          "line": 313,
           "summary": "在本次已取得的最终暂存标失败，诊断清理副错只附note。",
           "parameters": [
             {
@@ -37733,7 +37801,7 @@
         {
           "name": "RunSession._require_closed",
           "kind": "function",
-          "line": 323,
+          "line": 328,
           "summary": "检查真实close完成及已知费用槽，不让旧提前closed掩盖尚持有资源。",
           "parameters": [
             {
@@ -37750,7 +37818,7 @@
         {
           "name": "RunSession._close_slot",
           "kind": "function",
-          "line": 335,
+          "line": 340,
           "summary": "关闭一个最高owner并在成功后才清槽。",
           "parameters": [
             {
@@ -37771,7 +37839,7 @@
         {
           "name": "RunSession._close_inputs",
           "kind": "function",
-          "line": 345,
+          "line": 350,
           "summary": "关闭记录执行树，失败时保留其最高所有者供调用方重试。",
           "parameters": [
             {
@@ -37786,7 +37854,7 @@
         {
           "name": "RunSession._clear_contracts",
           "kind": "function",
-          "line": 352,
+          "line": 357,
           "summary": "释放本会话借用的有限声明，随后才退还覆盖它们的预算。",
           "parameters": [
             {
@@ -37801,7 +37869,7 @@
         {
           "name": "RunSession._release_costs",
           "kind": "function",
-          "line": 360,
+          "line": 365,
           "summary": "逐笔释放本owner真实槽，覆盖释放前后取消。",
           "parameters": [
             {
@@ -37816,7 +37884,7 @@
         {
           "name": "RunSession._assert_owned_balance",
           "kind": "function",
-          "line": 366,
+          "line": 371,
           "summary": "检查执行树已关闭且账本只含本会话及待移交结果费用。",
           "parameters": [
             {
@@ -37831,7 +37899,7 @@
         {
           "name": "RunSession.close",
           "kind": "function",
-          "line": 385,
+          "line": 390,
           "summary": "可重试关闭本次最高资源和协调费用，保留文件及已移交结果。",
           "parameters": [
             {
@@ -39958,7 +40026,7 @@
     {
       "module": "chronaxis.execution.text_can_reader",
       "path": "src/chronaxis/execution/text_can_reader.py",
-      "sha256": "5acfe7db1f66a829a68f76cdcf8672ab5d4310069a0e7131663138baf2b3b97c",
+      "sha256": "b906af198636b8a39e473bd46cc1fe795099d8d4b66dbfa4ad7fa1a520d0c41d",
       "exports": [],
       "objects": [
         {
@@ -40273,7 +40341,7 @@
         {
           "name": "TextCANObservationRead.closed",
           "kind": "function",
-          "line": 244,
+          "line": 245,
           "summary": "返回真实关闭状态。",
           "parameters": [
             {
@@ -40290,8 +40358,25 @@
         {
           "name": "TextCANObservationRead.failed",
           "kind": "function",
-          "line": 250,
+          "line": 251,
           "summary": "返回当前读取是否失败。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": [
+            "property"
+          ]
+        },
+        {
+          "name": "TextCANObservationRead.worker_process_count",
+          "kind": "function",
+          "line": 257,
+          "summary": "返回本次读取实际启动的文件工作进程数；单进程解码器没有工作进程。",
           "parameters": [
             {
               "name": "self",
@@ -40307,7 +40392,7 @@
         {
           "name": "TextCANObservationRead.exhausted",
           "kind": "function",
-          "line": 256,
+          "line": 265,
           "summary": "返回完整EOF及解析器关闭事实。",
           "parameters": [
             {
@@ -40324,7 +40409,7 @@
         {
           "name": "TextCANObservationRead.observation",
           "kind": "function",
-          "line": 262,
+          "line": 271,
           "summary": "仅交付本read已完成的真实观测。",
           "parameters": [
             {
@@ -40341,7 +40426,7 @@
         {
           "name": "TextCANObservationRead.observed_bounds",
           "kind": "function",
-          "line": 270,
+          "line": 279,
           "summary": "返回同次解析已经看到的首末时间，不额外扫描或冒充EOF。",
           "parameters": [
             {
@@ -40358,7 +40443,7 @@
         {
           "name": "TextCANObservationRead.runtime_metadata",
           "kind": "function",
-          "line": 282,
+          "line": 291,
           "summary": "交付同次DBC身份与解码次数。",
           "parameters": [
             {
@@ -40375,7 +40460,7 @@
         {
           "name": "TextCANObservationRead.prepare_metadata",
           "kind": "function",
-          "line": 288,
+          "line": 297,
           "summary": "在读取前取得同次DBC周期，不冒充最终解码计数。",
           "parameters": [
             {
@@ -40390,7 +40475,7 @@
         {
           "name": "TextCANObservationRead.__iter__",
           "kind": "function",
-          "line": 305,
+          "line": 314,
           "summary": "返回独立游标。",
           "parameters": [
             {
@@ -40405,7 +40490,7 @@
         {
           "name": "TextCANObservationRead._accept",
           "kind": "function",
-          "line": 310,
+          "line": 319,
           "summary": "按既有批合同核同一时刻组，保留所需pending费用。",
           "parameters": [
             {
@@ -40426,7 +40511,7 @@
         {
           "name": "TextCANObservationRead._fill",
           "kind": "function",
-          "line": 323,
+          "line": 332,
           "summary": "按全部别名的样本容量取有限原记录，所有值只解码一次。",
           "parameters": [
             {
@@ -40441,7 +40526,7 @@
         {
           "name": "TextCANObservationRead.__next__",
           "kind": "function",
-          "line": 348,
+          "line": 357,
           "summary": "交付全局时间非递减的有界批，最终EOF后保完成事实。",
           "parameters": [
             {
@@ -40456,7 +40541,7 @@
         {
           "name": "TextCANObservationRead._finish",
           "kind": "function",
-          "line": 386,
+          "line": 395,
           "summary": "封口可选原帧仓，解析器真正关闭后提交完整事实。",
           "parameters": [
             {
@@ -40471,7 +40556,7 @@
         {
           "name": "TextCANObservationRead.take_raw_store",
           "kind": "function",
-          "line": 407,
+          "line": 418,
           "summary": "移交本read的同次封口原帧仓。",
           "parameters": [
             {
@@ -40498,7 +40583,7 @@
         {
           "name": "TextCANObservationRead.close",
           "kind": "function",
-          "line": 416,
+          "line": 427,
           "summary": "关闭实际解析器/原帧仓并释放自身费用，不释放共享DBC。",
           "parameters": [
             {
@@ -53040,7 +53125,7 @@
     {
       "module": "chronaxis.planning.nodes",
       "path": "src/chronaxis/planning/nodes.py",
-      "sha256": "f0c4159b2ba9a77ce174f1a6e4b6822c993af5414013dc1d4ed105e4bc477aed",
+      "sha256": "ff3866a9b8780ab97edd533446a388a6c623703e9de51b17842615015a4f09b2",
       "exports": [],
       "objects": [
         {
@@ -53149,9 +53234,36 @@
           "decorators": []
         },
         {
-          "name": "parse_windows",
+          "name": "require_selection_origin",
           "kind": "function",
           "line": 187,
+          "summary": "持续条件规则被计算按事件统计时，必须明确写出统计起点。",
+          "parameters": [
+            {
+              "name": "rules",
+              "type": "tuple[RulePlan, ...]",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "calculations",
+              "type": "tuple[CalculationPlan, ...]",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "raw_rules",
+              "type": "tuple | list",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
+          "name": "parse_windows",
+          "kind": "function",
+          "line": 216,
           "summary": "检查事件窗口锚点、前后扩展和合并参数，不改变原事件声明。",
           "parameters": [
             {
@@ -53178,7 +53290,7 @@
         {
           "name": "parse_calculations",
           "kind": "function",
-          "line": 264,
+          "line": 293,
           "summary": "检查指标统计范围、信号、条件、单位和覆盖政策。",
           "parameters": [
             {
@@ -53232,7 +53344,7 @@
     {
       "module": "chronaxis.planning.plan",
       "path": "src/chronaxis/planning/plan.py",
-      "sha256": "50b407d2a499a05653ee0eaf07a604dec2492e70451e51b714d473c0aff6e334",
+      "sha256": "6eac9c52c604912638c222d407132bbd87c6f59c7eaa84bd2d904d24185888b6",
       "exports": [],
       "objects": [
         {
@@ -53477,7 +53589,7 @@
         {
           "name": "load_analysis_plan",
           "kind": "function",
-          "line": 376,
+          "line": 380,
           "summary": "加载JSON/YAML及显式公共定义，应用受限覆盖并编译分析计划。目录输入会展开文件名；信号缺省类型、单位或枚举映射时按需读取DBC，不扫描业务报文。",
           "parameters": [
             {
@@ -58562,7 +58674,7 @@
     {
       "module": "chronaxis.results.manifest",
       "path": "src/chronaxis/results/manifest.py",
-      "sha256": "45e13b64f19e358b422e2ea42ffdb30d5819fd51a5c87b658c7403b89ce0f326",
+      "sha256": "1f356bf0b27f3b3925ff374f6fd80d423ce8a954afa7c61bcfac03000c463d13",
       "exports": [],
       "objects": [
         {
@@ -58635,12 +58747,6 @@
               "name": "parsing_policy",
               "type": "str",
               "default": "'decoded-results'",
-              "description": ""
-            },
-            {
-              "name": "worker_config",
-              "type": "str",
-              "default": "'single-thread'",
               "description": ""
             },
             {
@@ -58750,6 +58856,24 @@
               "type": "tuple",
               "default": "()",
               "description": "本次组级总体、单位及排除政策，每项只登记一次。"
+            },
+            {
+              "name": "process_count",
+              "type": "int",
+              "default": "1",
+              "description": "本次生效的文件工作进程上限，已计入命令行或Python调用的覆盖。"
+            },
+            {
+              "name": "worker_process_count",
+              "type": "int",
+              "default": "0",
+              "description": "实际启动并完成读取或计算的文件工作进程数；0表示全部在主进程内完成。"
+            },
+            {
+              "name": "selection_origins",
+              "type": "tuple[tuple[str, str], ...]",
+              "default": "()",
+              "description": "被事件计算引用的持续条件规则及实际统计起点onset/confirmed。"
             }
           ],
           "bases": []
@@ -58757,7 +58881,7 @@
         {
           "name": "RunMetadata.__post_init__",
           "kind": "function",
-          "line": 73,
+          "line": 77,
           "summary": "验证清单文本与明确会话范围，不访问外部输入。",
           "parameters": [
             {
@@ -58772,7 +58896,7 @@
         {
           "name": "RunMetadata.estimated_bytes",
           "kind": "function",
-          "line": 205,
+          "line": 220,
           "summary": "在asdict/JSON复制前估算元数据与其临时对象开销。",
           "parameters": [
             {
@@ -58787,7 +58911,7 @@
         {
           "name": "RunMetadata.to_dict",
           "kind": "function",
-          "line": 216,
+          "line": 232,
           "summary": "返回独立JSON兼容元数据，调用侧必须先预留estimated_bytes。",
           "parameters": [
             {
@@ -58802,7 +58926,7 @@
         {
           "name": "_metadata_size",
           "kind": "function",
-          "line": 306,
+          "line": 329,
           "summary": "统计已校验元数据树的基础对象大小，不产生转换树。",
           "parameters": [
             {
@@ -58817,7 +58941,7 @@
         {
           "name": "OutputManifest",
           "kind": "class",
-          "line": 333,
+          "line": 356,
           "summary": "保存成功发布目录、清单和固定白名单表行数；legacy只在启用时出现。",
           "fields": [
             {
@@ -58862,7 +58986,7 @@
         {
           "name": "OutputManifest.__post_init__",
           "kind": "function",
-          "line": 343,
+          "line": 366,
           "summary": "校验返回清单身份，不凭构造调用证明目录已发布。",
           "parameters": [
             {
@@ -58877,7 +59001,7 @@
         {
           "name": "ExportManifest",
           "kind": "class",
-          "line": 360,
+          "line": 383,
           "summary": "独立信号或原帧导出的实际输出路径；调用者无需猜测时间文件名。",
           "fields": [
             {
@@ -58904,7 +59028,7 @@
         {
           "name": "ExportManifest.__post_init__",
           "kind": "function",
-          "line": 367,
+          "line": 390,
           "summary": "核对实际路径类型和所属目录。",
           "parameters": [
             {
@@ -60058,7 +60182,7 @@
     {
       "module": "chronaxis.results.readable",
       "path": "src/chronaxis/results/readable.py",
-      "sha256": "8675433c197b3ff77d980b5d59003e9b4b7145453bc7cae91bf6acce4e149311",
+      "sha256": "e355fa4a688e8f0240bf35adfa6ac2ed168eb9adfae22ff0e37c53aeba830a54",
       "exports": [],
       "objects": [
         {
@@ -60120,7 +60244,7 @@
         {
           "name": "ReadableWriter._execute",
           "kind": "function",
-          "line": 57,
+          "line": 58,
           "summary": "写前预留SQLite页面，上限由数据库本身强制执行。",
           "parameters": [
             {
@@ -60153,7 +60277,7 @@
         {
           "name": "ReadableWriter._reader",
           "kind": "function",
-          "line": 73,
+          "line": 74,
           "summary": "拥有一次结果流或索引游标，关闭失败留给writer重试。",
           "parameters": [
             {
@@ -60182,7 +60306,7 @@
         {
           "name": "ReadableWriter._output",
           "kind": "function",
-          "line": 110,
+          "line": 111,
           "summary": "持有唯一输出句柄，写入与关闭同时失败时保留原写入错误。",
           "parameters": [
             {
@@ -60205,7 +60329,7 @@
         {
           "name": "ReadableWriter._rows",
           "kind": "function",
-          "line": 141,
+          "line": 142,
           "summary": "按原游标逐条读已计算结果，保持严格解析和真实关闭。",
           "parameters": [
             {
@@ -60226,7 +60350,7 @@
         {
           "name": "ReadableWriter.prepare",
           "kind": "function",
-          "line": 169,
+          "line": 170,
           "summary": "建立必要关联和列定义，不读取原始日志。",
           "parameters": [
             {
@@ -60241,7 +60365,7 @@
         {
           "name": "ReadableWriter._number",
           "kind": "function",
-          "line": 233,
+          "line": 234,
           "summary": "将完整父ID映射为本次表编号，缺失关系直接报错。",
           "parameters": [
             {
@@ -60274,7 +60398,7 @@
         {
           "name": "ReadableWriter._metric_columns",
           "kind": "function",
-          "line": 249,
+          "line": 250,
           "summary": "创建已付预算的有限指标列。",
           "parameters": [
             {
@@ -60293,9 +60417,30 @@
           "decorators": []
         },
         {
+          "name": "ReadableWriter._statistics_start",
+          "kind": "function",
+          "line": 258,
+          "summary": "返回本事件指标实际统计的起点。",
+          "parameters": [
+            {
+              "name": "self",
+              "type": "",
+              "default": "必填",
+              "kind": "位置或关键字"
+            },
+            {
+              "name": "row",
+              "type": "dict",
+              "default": "必填",
+              "kind": "位置或关键字"
+            }
+          ],
+          "decorators": []
+        },
+        {
           "name": "ReadableWriter._metric_values",
           "kind": "function",
-          "line": 257,
+          "line": 265,
           "summary": "按同一完整身份取指标，未产生的指标不伪装为完整或零。",
           "parameters": [
             {
@@ -60328,7 +60473,7 @@
         {
           "name": "ReadableWriter._base",
           "kind": "function",
-          "line": 274,
+          "line": 282,
           "summary": "形成业务列，保留事件/窗口/配对不同含义。",
           "parameters": [
             {
@@ -60361,7 +60506,7 @@
         {
           "name": "ReadableWriter._write",
           "kind": "function",
-          "line": 295,
+          "line": 308,
           "summary": "借用行流写最终CSV，并随写计算显式请求的摘要。",
           "parameters": [
             {
@@ -60394,7 +60539,7 @@
         {
           "name": "ReadableWriter._write_owned_rows",
           "kind": "function",
-          "line": 350,
+          "line": 363,
           "summary": "写入本对象刚创建的行流，成功、失败或取消后结束该流。",
           "parameters": [
             {
@@ -60427,7 +60572,7 @@
         {
           "name": "ReadableWriter.write",
           "kind": "function",
-          "line": 374,
+          "line": 387,
           "summary": "发布全部关联主表；明细由后续专门分支逐条处理。",
           "parameters": [
             {
@@ -60454,7 +60599,7 @@
         {
           "name": "ReadableWriter._detail_rows",
           "kind": "function",
-          "line": 412,
+          "line": 427,
           "summary": "直接输出请求的明细，保留未知、值类型及必要定位。",
           "parameters": [
             {
@@ -60475,7 +60620,7 @@
         {
           "name": "ReadableWriter._main_rows",
           "kind": "function",
-          "line": 461,
+          "line": 476,
           "summary": "按索引顺序产生一行，查询不在RAM排序全表。",
           "parameters": [
             {
@@ -60496,7 +60641,7 @@
         {
           "name": "ReadableWriter.presentation",
           "kind": "function",
-          "line": 478,
+          "line": 493,
           "summary": "仅返回共同身份和必要使用说明，不增加ID映射副本。",
           "parameters": [
             {
@@ -60511,7 +60656,7 @@
         {
           "name": "ReadableWriter.close",
           "kind": "function",
-          "line": 488,
+          "line": 503,
           "summary": "关闭并删除本次索引，失败保留真实owner供重试。",
           "parameters": [
             {
@@ -68863,5 +69008,5 @@
       "lambdas": []
     }
   ],
-  "version": "0.1.0.dev6"
+  "version": "0.1.0"
 }

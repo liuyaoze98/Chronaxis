@@ -1,6 +1,6 @@
 # 完整API参考
 
-> 对应 Chronaxis 0.1.0.dev6。
+> 对应 Chronaxis 0.1.0。
 
 覆盖包内全部Python模块、类、手写方法、函数、私有/嵌套函数、构造字段和参数。测试、示例、tools不是包API，见[示例索引](../examples.md)及[维护说明](../maintenance.md)。
 
@@ -163,13 +163,13 @@
 |[chronaxis.execution.legacy_frame_samples](chronaxis.execution.legacy_frame_samples.md)|把同次BLF原帧仓与稀疏解码仓按原序连接，供新增报文重建使用。|6|
 |[chronaxis.execution.memory_reader](chronaxis.execution.memory_reader.md)|在既有内存适配器之外预留输入、批次与协议状态预算。|12|
 |[chronaxis.execution.message_delivery](chronaxis.execution.message_delivery.md)|在读取器已有预算内同步交付必要消息，不建立额外历史或结果副本。|1|
-|[chronaxis.execution.parallel_can_decode](chronaxis.execution.parallel_can_decode.md)|按文件并行解码并恢复一个来源的连续记录流。|21|
+|[chronaxis.execution.parallel_can_decode](chronaxis.execution.parallel_can_decode.md)|按文件并行解码并恢复一个来源的连续记录流。|22|
 |[chronaxis.execution.parallel_can_worker](chronaxis.execution.parallel_can_worker.md)|单个可复用CAN文件工作进程：读取、解码并按许可交付有限数据块。|4|
 |[chronaxis.execution.parallel_integral_pool](chronaxis.execution.parallel_integral_pool.md)|按文件原序交付面积事件的有限工作进程池。|26|
-|[chronaxis.execution.parallel_integral_session](chronaxis.execution.parallel_integral_session.md)|把连续文件的内部面积生成交给工作进程，保留主会话的原序积分结果。|11|
+|[chronaxis.execution.parallel_integral_session](chronaxis.execution.parallel_integral_session.md)|把连续文件的内部面积生成交给工作进程，保留主会话的原序积分结果。|12|
 |[chronaxis.execution.parallel_integral_worker](chronaxis.execution.parallel_integral_worker.md)|一个积分工作槽按许可读取文件并生成原序面积块或同一时刻组点块。|9|
 |[chronaxis.execution.parallel_point_pool](chronaxis.execution.parallel_point_pool.md)|time_order直接积分的读取段：文件工作进程产出组点，主进程谁先就绪先收并写入暂存。|15|
-|[chronaxis.execution.parallel_point_session](chronaxis.execution.parallel_point_session.md)|time_order直接积分的组点并行会话：文件工作进程送同一时刻组点，主进程按串行顺序归并并积分。|12|
+|[chronaxis.execution.parallel_point_session](chronaxis.execution.parallel_point_session.md)|time_order直接积分的组点并行会话：文件工作进程送同一时刻组点，主进程按串行顺序归并并积分。|13|
 |[chronaxis.execution.raw_signal_groups](chronaxis.execution.raw_signal_groups.md)|把三格式共用的已解码更新交给实时完整同一时刻组消费者，不写历史文件。|8|
 |[chronaxis.execution.record_alarm_duration](chronaxis.execution.record_alarm_duration.md)|仅在请求报警累计时，按实际有效区间折算所选周期。|7|
 |[chronaxis.execution.record_delta_condition](chronaxis.execution.record_delta_condition.md)|在当前窗口内保留必要数值片段，输出窗口变化量的三值条件。|8|
@@ -186,7 +186,7 @@
 |[chronaxis.execution.record_scope_calculations](chronaxis.execution.record_scope_calculations.md)|只对明确的事件指标保存必要计算值，并按事件真实范围回读。|15|
 |[chronaxis.execution.record_selection](chronaxis.execution.record_selection.md)|把真实样本更新有界地交给原select核，并直接写最终选择表。|5|
 |[chronaxis.execution.record_sequences](chronaxis.execution.record_sequences.md)|收齐同一时刻的请求、响应和条件后配对，直接交付最终结果。|11|
-|[chronaxis.execution.record_session_calculations](chronaxis.execution.record_session_calculations.md)|在原AnalysisRunner会话内合并所需来源并执行会话时间指标。|32|
+|[chronaxis.execution.record_session_calculations](chronaxis.execution.record_session_calculations.md)|在原AnalysisRunner会话内合并所需来源并执行会话时间指标。|33|
 |[chronaxis.execution.record_signal_export](chronaxis.execution.record_signal_export.md)|会话信号CSV随同次合并流在线写出；只暂留最后一个所需时刻组。|11|
 |[chronaxis.execution.record_source_cursor](chronaxis.execution.record_source_cursor.md)|按需读取一个来源并提供完整同一时刻组，供多来源按时间合并。|14|
 |[chronaxis.execution.record_time_calculation](chronaxis.execution.record_time_calculation.md)|用有限记录计算时间统计和真实样本统计；仅时间均值暂存必要值/权重。|10|
@@ -200,7 +200,7 @@
 |[chronaxis.execution.state](chronaxis.execution.state.md)|保存每个信号最新的值。同一时刻的全部更新收齐后一起写入状态，表达式不会看到“电压已更新、电流还未更新”的半成品。状态还保存时间、有效期和质量原因。|26|
 |[chronaxis.execution.static_metadata](chronaxis.execution.static_metadata.md)|按实际对象身份估算一次运行借用的静态声明，不展开重复引用。|2|
 |[chronaxis.execution.temporal_buffer](chronaxis.execution.temporal_buffer.md)|在运行时序规则前，先为本次输入和可能产生的事件申请内存。输入是一组完整的ConditionTick，以及规则、会话范围和来源引用；可选配置包括持续稳定要求和迟滞退出条件。返回TemporalEventBatch，使用完后须调用close。|34|
-|[chronaxis.execution.text_can_reader](chronaxis.execution.text_can_reader.md)|把ASC、BLF、原始CSV的同次解码接到公共信号批次和真实观测协议。|25|
+|[chronaxis.execution.text_can_reader](chronaxis.execution.text_can_reader.md)|把ASC、BLF、原始CSV的同次解码接到公共信号批次和真实观测协议。|26|
 |[chronaxis.execution.transform_partial](chronaxis.execution.transform_partial.md)|区分滚动输入窗口的部分性和下游查询轴的覆盖率，只标记确实参与的原值。|2|
 |[chronaxis.execution.transform_stream](chronaxis.execution.transform_stream.md)|在原始记录流及下游规则之间插入按需的时序变换。|17|
 |[chronaxis.execution.transform_window](chronaxis.execution.transform_window.md)|保留一个变换所需的有限真实记录区间，按原端点裁剪滚动窗口。|9|
@@ -260,7 +260,7 @@
 |[chronaxis.planning.lookups](chronaxis.planning.lookups.md)|在静态配置中解析 v4 一维表；仅创建冻结点对，不创建求值数组或打开文件。|1|
 |[chronaxis.planning.message_calculations](chronaxis.planning.message_calculations.md)|静态解析当前消息legacy_sum声明，保持解码profile和新计算policy分开。|2|
 |[chronaxis.planning.models](chronaxis.planning.models.md)|保存配置解析得到的来源、信号、计算节点和执行选项声明。|17|
-|[chronaxis.planning.nodes](chronaxis.planning.nodes.md)|检查计算条件、窗口和指标配置，保存静态依赖与边界声明。|5|
+|[chronaxis.planning.nodes](chronaxis.planning.nodes.md)|检查计算条件、窗口和指标配置，保存静态依赖与边界声明。|6|
 |[chronaxis.planning.plan](chronaxis.planning.plan.md)|把分析配置转换成经过静态检查的分析计划。|6|
 |[chronaxis.planning.preset_models](chronaxis.planning.preset_models.md)|定义预设配置及其角色要求。例如充电预设需要电流角色，角色可要求特定单位、方向或测量位置。展开后的规则、窗口和指标仍是普通分析配置，可以保存为JSON。|9|
 |[chronaxis.planning.process_execution](chronaxis.planning.process_execution.md)|静态检查单会话文件读取并行的支持范围，不打开日志或DBC。|2|
@@ -295,7 +295,7 @@
 |[chronaxis.results.platform_files](chronaxis.results.platform_files.md)|按平台原语不覆盖地移动一个文件或目录，不复制内容或重读分析输入。|8|
 |[chronaxis.results.publication](chronaxis.results.publication.md)|给同次输出分配时间文件名，并在已有结果目录中不覆盖地发布。|6|
 |[chronaxis.results.raw_exports](chronaxis.results.raw_exports.md)|保存原始片段索引并复制已生成的BLF，不重新调用旧读写或解码路径。|31|
-|[chronaxis.results.readable](chronaxis.results.readable.md)|将结果流关联成可直接阅读的CSV，不重新读取或计算输入。|19|
+|[chronaxis.results.readable](chronaxis.results.readable.md)|将结果流关联成可直接阅读的CSV，不重新读取或计算输入。|20|
 |[chronaxis.results.readable_format](chronaxis.results.readable_format.md)|将已计算的时间、状态和质量格式化为可读文字，不改变计算结果。|4|
 |[chronaxis.results.result](chronaxis.results.result.md)|管理一次已完成的分析结果。游标逐行读取平坦摘要，write向新目录发布；close关闭读取资源，默认清理本次程序为本次运行创建的临时数据，原输入与已发布结果保留。|33|
 |[chronaxis.results.rows](chronaxis.results.rows.md)|为当前平坦结果确定所属表和稳定排序键，不构造额外结果包装。|2|
@@ -1489,6 +1489,7 @@
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._assign`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-_assign)|function|
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._accept_metadata`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-_accept_metadata)|function|
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._accept_metadata.reserve_model`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-_accept_metadata-reserve_model)|function|
+|[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead.worker_process_count`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-worker_process_count)|function|
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead.prepare_metadata`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-prepare_metadata)|function|
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._block`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-_block)|function|
 |[`chronaxis.execution.parallel_can_decode.ParallelCANDecodeRead._record_identity`](chronaxis.execution.parallel_can_decode.md#api-ParallelCANDecodeRead-_record_identity)|function|
@@ -1539,6 +1540,7 @@
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession._update_bounds`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-_update_bounds)|function|
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession.execute`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-execute)|function|
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession._retain_notices`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-_retain_notices)|function|
+|[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession.worker_process_count`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-worker_process_count)|function|
 |[`chronaxis.execution.parallel_integral_session.ParallelIntegralSession.close`](chronaxis.execution.parallel_integral_session.md#api-ParallelIntegralSession-close)|function|
 |[`chronaxis.execution.parallel_integral_worker._points`](chronaxis.execution.parallel_integral_worker.md#api-_points)|function|
 |[`chronaxis.execution.parallel_integral_worker._limits`](chronaxis.execution.parallel_integral_worker.md#api-_limits)|function|
@@ -1575,6 +1577,7 @@
 |[`chronaxis.execution.parallel_point_session.ParallelPointSession._merge`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_merge)|function|
 |[`chronaxis.execution.parallel_point_session.ParallelPointSession._merge.advance`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-_merge-advance)|function|
 |[`chronaxis.execution.parallel_point_session.ParallelPointSession.execute`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-execute)|function|
+|[`chronaxis.execution.parallel_point_session.ParallelPointSession.worker_process_count`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-worker_process_count)|function|
 |[`chronaxis.execution.parallel_point_session.ParallelPointSession.close`](chronaxis.execution.parallel_point_session.md#api-ParallelPointSession-close)|function|
 |[`chronaxis.execution.raw_signal_groups.RawSignalGroups`](chronaxis.execution.raw_signal_groups.md#api-RawSignalGroups)|class|
 |[`chronaxis.execution.raw_signal_groups.RawSignalGroups.__init__`](chronaxis.execution.raw_signal_groups.md#api-RawSignalGroups-__init__)|function|
@@ -1712,6 +1715,7 @@
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations._emit_contribution`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-_emit_contribution)|function|
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations.execute_into`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-execute_into)|function|
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations._execute_parallel_integrals`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-_execute_parallel_integrals)|function|
+|[`chronaxis.execution.record_session_calculations.RecordSessionCalculations.worker_process_count`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-worker_process_count)|function|
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations._prepare_requests`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-_prepare_requests)|function|
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations._prepare_input_state`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-_prepare_input_state)|function|
 |[`chronaxis.execution.record_session_calculations.RecordSessionCalculations._prepare_operators`](chronaxis.execution.record_session_calculations.md#api-RecordSessionCalculations-_prepare_operators)|function|
@@ -1942,6 +1946,7 @@
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.__init__`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-__init__)|function|
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.closed`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-closed)|function|
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.failed`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-failed)|function|
+|[`chronaxis.execution.text_can_reader.TextCANObservationRead.worker_process_count`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-worker_process_count)|function|
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.exhausted`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-exhausted)|function|
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.observation`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-observation)|function|
 |[`chronaxis.execution.text_can_reader.TextCANObservationRead.observed_bounds`](chronaxis.execution.text_can_reader.md#api-TextCANObservationRead-observed_bounds)|function|
@@ -2463,6 +2468,7 @@
 |[`chronaxis.planning.nodes.expression_at`](chronaxis.planning.nodes.md#api-expression_at)|function|
 |[`chronaxis.planning.nodes.register_id`](chronaxis.planning.nodes.md#api-register_id)|function|
 |[`chronaxis.planning.nodes.parse_rules`](chronaxis.planning.nodes.md#api-parse_rules)|function|
+|[`chronaxis.planning.nodes.require_selection_origin`](chronaxis.planning.nodes.md#api-require_selection_origin)|function|
 |[`chronaxis.planning.nodes.parse_windows`](chronaxis.planning.nodes.md#api-parse_windows)|function|
 |[`chronaxis.planning.nodes.parse_calculations`](chronaxis.planning.nodes.md#api-parse_calculations)|function|
 |[`chronaxis.planning.plan.AnalysisPlan`](chronaxis.planning.plan.md#api-AnalysisPlan)|class|
@@ -2726,6 +2732,7 @@
 |[`chronaxis.results.readable.ReadableWriter.prepare`](chronaxis.results.readable.md#api-ReadableWriter-prepare)|function|
 |[`chronaxis.results.readable.ReadableWriter._number`](chronaxis.results.readable.md#api-ReadableWriter-_number)|function|
 |[`chronaxis.results.readable.ReadableWriter._metric_columns`](chronaxis.results.readable.md#api-ReadableWriter-_metric_columns)|function|
+|[`chronaxis.results.readable.ReadableWriter._statistics_start`](chronaxis.results.readable.md#api-ReadableWriter-_statistics_start)|function|
 |[`chronaxis.results.readable.ReadableWriter._metric_values`](chronaxis.results.readable.md#api-ReadableWriter-_metric_values)|function|
 |[`chronaxis.results.readable.ReadableWriter._base`](chronaxis.results.readable.md#api-ReadableWriter-_base)|function|
 |[`chronaxis.results.readable.ReadableWriter._write`](chronaxis.results.readable.md#api-ReadableWriter-_write)|function|

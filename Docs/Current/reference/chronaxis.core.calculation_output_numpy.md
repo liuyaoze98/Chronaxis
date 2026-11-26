@@ -52,4 +52,4 @@ convert_result_numpy(value, input_dtype, conversion)
 
 非法模型、分配或系数错误传播；数值故障写入质量。
 
-源码：[`src/chronaxis/core/calculation_output_numpy.py:13`](../../../src/chronaxis/core/calculation_output_numpy.py#L13)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/calculation_output_numpy.py:13`](../../../src/chronaxis/core/calculation_output_numpy.py#L13)（行号对应 Chronaxis 0.1.0 源码）。

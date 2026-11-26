@@ -51,6 +51,8 @@ KeyboardInterrupt/SystemExit表示取消，不应作为成功返回。异常链�
 
 `condition_duration`缺少`duration_comparison`时，请按业务选择：`">="`包含恰好达到门槛的活动，`">"`要求严格超过。
 
+规则被计算的`scope.rule`引用、却没有`selection_origin`时，请按业务选择：`onset`从条件首次成立算起，`confirmed`从持续确认算起。旧配置以前省略时等于`onset`，要保持原结果就补一行`selection_origin: onset`。
+
 
 | 现象或错误 | 原因与检查 | 修正动作 |
 |---|---|---|

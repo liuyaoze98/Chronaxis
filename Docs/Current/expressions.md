@@ -11,7 +11,7 @@
 
 [expression-minimal.yaml](examples/expression-minimal.yaml)引用0～4秒合成CAN记录，先定义电压400V和电流10A，再派生功率，求得最大功率4000W。无需自行准备前置配置。
 
-[expression-extended.yaml](examples/expression-extended.yaml)使用相同数据，增加“电流>5A且电压>300V持续2秒”的活动，再对活动积分。活动在2秒确认，默认从0秒起算，得到4000W×4s=16000J。两个文件都可用`chronaxis run 文件名.yaml --output 结果目录`运行。
+[expression-extended.yaml](examples/expression-extended.yaml)使用相同数据，增加“电流>5A且电压>300V持续2秒”的活动，再对活动积分。活动在2秒确认；配置写了`selection_origin: onset`，所以从0秒起算，得到4000W×4s=16000J。两个文件都可用`chronaxis run 文件名.yaml --output 结果目录`运行。
 
 ## 先准备来源和信号
 
@@ -73,6 +73,7 @@ rules:                                        # 列出识别活动或瞬间变�
   - name: working                             # 窗口或计算引用的规则名称
     condition: current > 5 and voltage > 300  # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     duration_comparison: ">="                 # 达到门槛即满足；要求严格超过时填>
+    selection_origin: onset                   # 统计起点：onset从条件首次成立算起，confirmed从持续确认算起；被计算引用时必填
     minimum_duration: 2s                      # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
     rule_type: condition_duration             # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
 calculations:                                 # 本例的统计结果

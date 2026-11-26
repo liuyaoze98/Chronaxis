@@ -27,6 +27,7 @@ rules:                                                # 先找合格区间
     condition: state == 0x2 and current >= 10         # 状态为2且电流至少10A
     minimum_duration: 60s                             # 持续时长门槛
     duration_comparison: ">"                          # 严格超过；恰好60秒不合格
+    selection_origin: onset                           # 从条件首次成立处累计；积分需要从确认时刻开始时改为confirmed
 calculations:                                         # 只请求所需的能量结果
   - name: energy_kwh                                  # 结果表中的计算项名称
     operation: integral                               # 按实际时间积分

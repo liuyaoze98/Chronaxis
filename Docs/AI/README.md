@@ -20,15 +20,15 @@ python "$guide/run_analysis.py" "$guide/examples/conditional-energy.yaml" result
 
 ## 安装Chronaxis及默认运行依赖
 
-普通安装会自动安装完整运行依赖，支持 BLF、ASC、原始报文 CSV、DBC 解码、已解码信号 CSV 和内存任务。下面在 Windows PowerShell 中创建环境，并从 PyPI 安装与本指南对应的 0.1.0.dev6：
+普通安装会自动安装完整运行依赖，支持 BLF、ASC、原始报文 CSV、DBC 解码、已解码信号 CSV 和内存任务。下面在 Windows PowerShell 中创建环境，并从 PyPI 安装与本指南对应的 0.1.0：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0"
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-已有同版 wheel 时，把安装命令中的 `"chronaxis==0.1.0.dev6"` 换成 wheel 文件的实际路径；使用同版源码时，在包含 `pyproject.toml` 的源码根目录执行 `.\.venv\Scripts\python.exe -m pip install .`。
+已有同版 wheel 时，把安装命令中的 `"chronaxis==0.1.0"` 换成 wheel 文件的实际路径；使用同版源码时，在包含 `pyproject.toml` 的源码根目录执行 `.\.venv\Scripts\python.exe -m pip install .`。
 
 在后续命令中用同一个 `.venv\Scripts\python.exe`；无需激活环境。Python支持3.12和3.13。默认CAN依赖为 `python-can==4.6.1`、`cantools>=39.4.3,<46`、`natsort==8.4.0`，以所安装wheel的元数据为准。NumPy在Python3.12要求 `>=1.26.3,<2.6`，在Python3.13要求 `>=2.1,<2.6`；jsonschema要求 `>=4.25.1,<4.27`。源码 `requirements/` 保存四个Windows精确环境快照；允许范围不代表所有中间版本及交叉组合都经过测试。按用户指定的发布版本或wheel安装，离线安装须事先备齐依赖；不要为解决安装错误更改信号、阈值或DBC。
 

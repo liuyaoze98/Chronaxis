@@ -106,9 +106,9 @@ chronaxis run activity.yaml --output result-activity-yaml
 
 **事件结果：[下载完整 事件结果.csv](examples/results/activity-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | event_energy（J） | event_energy：状态 | event_energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | hot | 1 | 3 | 6 | 正常结束 | — | 50.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | event_energy（J） | event_energy：状态 | event_energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | hot | 1 | 3 | 6 | 正常结束 | — | 50.0 | 完整 | — | 1 |
 
 **窗口结果：[下载完整 窗口结果.csv](examples/results/activity-yaml/窗口结果.csv)（1行）**
 
@@ -338,9 +338,9 @@ chronaxis run conditional-energy.yaml --output result-conditional-energy-yaml
 
 **事件结果：[下载完整 事件结果.csv](examples/results/conditional-energy-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy_kwh（kWh） | energy_kwh：状态 | energy_kwh：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | eligible | 61 | 122 | 正常结束 | — | 0.06777777777777777 | 完整 | — | 61 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -744,9 +744,9 @@ chronaxis run expression-extended.yaml --output result-expression-extended-yaml
 
 **事件结果：[下载完整 事件结果.csv](examples/results/expression-extended-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | working | 0 | 4 | 观测结束，活动尚未确认结束 | 数据缺失 | 16000.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | working | 0 | 4 | 观测结束，活动尚未确认结束 | 数据缺失 | 16000.0 | 完整 | — | 0 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1093,12 +1093,12 @@ chronaxis run power-statistics.yaml --output result-power-statistics-yaml
 
 **事件结果：[下载完整 事件结果.csv](examples/results/power-statistics-yaml/事件结果.csv)（4行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — |
-| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — |
-| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — |
-| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | load_mean（W） | load_mean：状态 | load_mean：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | load_start | 1 | 1 | — | 瞬时事件 | — | — | 无此项结果 | — | — |
+| 2 | load_start | 5 | 5 | — | 瞬时事件 | — | — | 无此项结果 | — | — |
+| 3 | loaded | 1 | 1 | 4 | 正常结束 | — | 10.0 | 完整 | — | 1 |
+| 4 | loaded | 5 | 5 | 7 | 正常结束 | — | 20.0 | 完整 | — | 5 |
 
 **会话结果：[下载完整 会话结果.csv](examples/results/power-statistics-yaml/会话结果.csv)（1行）**
 
@@ -1136,9 +1136,9 @@ chronaxis run preset-charge-energy.yaml --output result-preset-charge-energy-yam
 
 **事件结果：[下载完整 事件结果.csv](examples/results/preset-charge-energy-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_charge（Ah） | demo_preset_charge：状态 | demo_preset_charge：说明 | demo_preset_energy（Wh） | demo_preset_energy：状态 | demo_preset_energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 3 | 正常结束 | — | 0.005555555555555556 | 完整 | — | 2.2222222222222223 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_charge（Ah） | demo_preset_charge：状态 | demo_preset_charge：说明 | demo_preset_energy（Wh） | demo_preset_energy：状态 | demo_preset_energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 3 | 正常结束 | — | 0.005555555555555556 | 完整 | — | 2.2222222222222223 | 完整 | — | 1 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1300,9 +1300,9 @@ chronaxis run preset-threshold-delay.yaml --output result-preset-threshold-delay
 
 **事件结果：[下载完整 事件结果.csv](examples/results/preset-threshold-delay-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1.5 | 1.5 | 3.5 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1.5 | 1.5 | 3.5 | 正常结束 | — | 2.0 | 完整 | — | 1.5 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1328,9 +1328,9 @@ chronaxis run preset-threshold-minimal.yaml --output result-preset-threshold-min
 
 **事件结果：[下载完整 事件结果.csv](examples/results/preset-threshold-minimal-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — | 1 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1356,9 +1356,9 @@ chronaxis run preset-threshold-partial.yaml --output result-preset-threshold-par
 
 **事件结果：[下载完整 事件结果.csv](examples/results/preset-threshold-partial-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | demo_preset_duration（s） | demo_preset_duration：状态 | demo_preset_duration：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | demo_preset_activity | 1 | 1 | 3 | 正常结束 | — | 2.0 | 完整 | — | 1 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1400,9 +1400,9 @@ chronaxis run rule-condition_duration-extended.yaml --output result-rule-conditi
 
 **事件结果：[下载完整 事件结果.csv](examples/results/rule-condition_duration-extended-yaml/事件结果.csv)（1行）**
 
-| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | detected | 1 | 6 | 正常结束 | — | 30.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 结束时间（s） | 区间状态 | 说明 | energy（J） | energy：状态 | energy：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | detected | 1 | 6 | 正常结束 | — | 30.0 | 完整 | — | 3 |
 
 本次没有窗口、请求响应结果表：只显示配置请求且实际产生的结果；未请求的表不会为教程额外生成。需要事件/窗口的其他例子请按上方索引查看。
 
@@ -1946,11 +1946,11 @@ chronaxis run start-end.yaml --output result-start-end-yaml
 
 **事件结果：[下载完整 事件结果.csv](examples/results/start-end-yaml/事件结果.csv)（3行）**
 
-| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | cycle_mean（1） | cycle_mean：状态 | cycle_mean：说明 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | cycle | 0 | 0 | 2 | 正常结束 | — | 10.0 | 完整 | — |
-| 2 | cycle | 4 | 4 | 9 | 超时结束 | — | 52.0 | 完整 | — |
-| 3 | cycle | 11 | 11 | 14 | 正常结束 | — | 110.0 | 完整 | — |
+| 区间 | 规则 | 开始时间（s） | 确认时间（s） | 结束时间（s） | 区间状态 | 说明 | cycle_mean（1） | cycle_mean：状态 | cycle_mean：说明 | 统计开始（s） |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | cycle | 0 | 0 | 2 | 正常结束 | — | 10.0 | 完整 | — | 0 |
+| 2 | cycle | 4 | 4 | 9 | 超时结束 | — | 52.0 | 完整 | — | 4 |
+| 3 | cycle | 11 | 11 | 14 | 正常结束 | — | 110.0 | 完整 | — | 11 |
 
 **窗口结果：[下载完整 窗口结果.csv](examples/results/start-end-yaml/窗口结果.csv)（3行）**
 

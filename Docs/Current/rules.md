@@ -10,7 +10,7 @@
 
 |rule_type|必填字段|可选字段及默认值|适合的问题|
 |---|---|---|---|
-|[`condition_duration`](#rule-duration)|[`condition`](#duration-condition)、[`minimum_duration`](#duration-duration)、`duration_comparison`|[`selection_origin="onset"`](#duration-selection-origin)|条件连续成立至少3秒后，记录这段活动|
+|[`condition_duration`](#rule-duration)|[`condition`](#duration-condition)、[`minimum_duration`](#duration-duration)、`duration_comparison`；被计算引用时还要[`selection_origin`](#duration-selection-origin)|无|条件连续成立至少3秒后，记录这段活动|
 |[`rising_edge`](#rule-rising_edge)|[`condition`](#rising_edge-condition)|[`emit_initial=false`](#rising_edge-emit-initial)|按钮由松开变成按下时记一个点|
 |[`falling_edge`](#rule-falling_edge)|[`condition`](#falling_edge-condition)|[`emit_initial=false`](#falling_edge-emit-initial)，不允许true|按钮由按下变成松开时记一个点|
 |[`start_only`](#rule-start-only)|[`condition`](#start-only-condition)、[`window_duration`](#start-only-window-duration)|[`emit_initial=false`](#start-only-emit-initial)|触发后取固定5秒，这5秒内不重复触发|
@@ -125,13 +125,13 @@ rules:                             # 列出识别活动或瞬间变化的规则�
 |<a id="duration-condition"></a>`condition`|要检查的条件。本例表示温度达到80时条件成立；低于80时不成立。|能计算出真或假的表达式，例如 `"temperature >= 80"`|字符串|是；无|用已定义信号名，按业务判断要求组合表达式。|
 |<a id="duration-duration"></a>`minimum_duration`|条件连续成立这么久，才把这次过程记为一次活动。填 `"2s"` 时，持续1.9秒的过程不会被记录；填 `"0s"` 且比较符为 `">="` 时无需等待；`">"` 仍要求持续时间大于0。|大于或等于0，例如 `"2s"`|时长字符串|是；无|由业务规定连续成立的最短时间。|
 |`duration_comparison`|持续时长与minimum_duration的比较。`>=`表示达到，`>`表示严格超过。60秒整只符合前者，60.000000001秒符合两者。|`>=`、`>`|字符串|是；无|需求写“至少/达到”时填`">="`，“超过”时填`">"`；不要把60秒改为60.1秒。|
-|<a id="duration-selection-origin"></a>`selection_origin`|计算每次活动的时长、平均值或积分时，选择是否计入确认前的等待时间。|`"onset"` 或 `"confirmed"`；逐项解释见下方|字符串|否；`"onset"`|按统计是否包含等待确认时间选择。|
+|<a id="duration-selection-origin"></a>`selection_origin`|计算每次活动的时长、平均值或积分时，选择是否计入确认前的等待时间。|`"onset"` 或 `"confirmed"`；逐项解释见下方|字符串|被计算的 `scope.rule` 引用时必填；未被计算引用时可以省略|按统计是否包含等待确认时间选择。|
 
 漏填`duration_comparison`会在加载配置时报告缺少字段。请按业务要求明确选择`">="`或`">"`；程序不代替用户选择是否包含恰好达到门槛的活动。
 
 ### 严格超过指定时长
 
-`minimum_duration: 60s` 配合 `duration_comparison: ">"` 表示连续成立严格超过60秒。`selection_origin`仍默认`onset`，积分覆盖整个合格活动；显式`confirmed`才从确认时刻开始。程序时间精度为1ns，实际间隔模式在60秒后第一个可表示时刻确认；固定/DBC模式仅随所选报文推进，达到60秒整不会确认，要等累计严格超过60秒的那条报文。跨连续分卷不重置候选；无效更新或有效期到期仍中断连续性。
+`minimum_duration: 60s` 配合 `duration_comparison: ">"` 表示连续成立严格超过60秒。统计起点由`selection_origin`决定：`onset`时积分覆盖整个合格活动，`confirmed`才从确认时刻开始。程序时间精度为1ns，实际间隔模式在60秒后第一个可表示时刻确认；固定/DBC模式仅随所选报文推进，达到60秒整不会确认，要等累计严格超过60秒的那条报文。跨连续分卷不重置候选；无效更新或有效期到期仍中断连续性。
 
 
 ### selection_origin：事件计算的起点
@@ -151,7 +151,7 @@ rules:                             # 列出识别活动或瞬间变化的规则�
 |`"onset"`|从条件开始成立时算起，包含等待确认的时间。|第1秒到第6秒，共5秒。|能量为10×5＝50J。|
 |`"confirmed"`|从确认这次活动时算起，不包含等待确认的时间。|第3秒到第6秒，共3秒。|能量为10×3＝30J。|
 
-这是可选的字符串字段，省略时为onset。YAML写法为`selection_origin: confirmed`。它改变事件内的计算起点，不改变事件确认条件。
+规则被计算的`scope.rule`引用时必须写出这个字段，省略会在校验时报错，因为两种取值会得到不同结果；没有被计算引用的规则可以省略。YAML写法为`selection_origin: confirmed`。它改变事件内的计算起点，不改变事件确认条件。
 
 下面把规则和能量计算项写在一起。`scope` 的 `{rule: hot}` 表示“对hot规则找到的每一次活动分别计算”；`power`是事先定义好的功率信号，单位为W。
 

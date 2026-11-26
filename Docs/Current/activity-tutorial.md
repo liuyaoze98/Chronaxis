@@ -50,6 +50,7 @@ rules:                             # 列出识别活动或瞬间变化的规则�
     rule_type: condition_duration  # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
     condition: temperature >= 80   # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     duration_comparison: ">="      # 达到门槛即满足；要求严格超过时填>
+    selection_origin: onset        # 统计起点：onset从条件首次成立算起，confirmed从持续确认算起；被计算引用时必填
     minimum_duration: 2s           # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
 windows:                           # 围绕已定义规则的事件选取时间片段，供计算或导出使用
   - name: hot_context              # 为窗口定义取唯一名称；计算或导出通过此名选择产生的片段
@@ -83,6 +84,6 @@ chronaxis run activity.yaml --output activity-result
 | 事件结果.csv | 一次hot活动：开始1秒、确认3秒、结束6秒；event_energy（J）为50，状态“完整”。 |
 | 窗口结果.csv | 一段hot_context窗口：[0,7)秒，“父事件区间”列为1，即事件结果表中的第1个区间；context_energy（J）为70，状态“完整”。 |
 
-10W在活动内保持5秒，因此50J；前后窗口共7秒，因此70J。在hot规则中加一行`selection_origin: confirmed`（写在rules列表的这一项里，与`minimum_duration`同级）时，活动计算改为[3,6)，得到30J；窗口仍为[0,7)，仍得到70J。只更改这个字段，其他数据与配置保持一致，便于理解差异。
+10W在活动内保持5秒，因此50J；前后窗口共7秒，因此70J。把hot规则里的`selection_origin: onset`改为`confirmed`（写在rules列表的这一项里，与`minimum_duration`同级）时，活动计算改为[3,6)，得到30J；窗口仍为[0,7)，仍得到70J。只更改这个字段，其他数据与配置保持一致，便于理解差异。
 
 如果自己数据的结果为partial，先检查观测范围和valid_for，再读[部分结果处理](execution.md)；增大pre/post只扩大请求范围，不会增加真实观测。

@@ -29,6 +29,7 @@ rules:                                          # 列出识别活动或瞬间变
     rule_type: condition_duration               # 选择活动或变化识别算法；本例条件连续成立达到minimum_duration后确认活动
     condition: current > 5 and voltage > 300    # 填写由已定义信号组成的真假条件；按要检测的业务情况设置
     duration_comparison: ">="                   # 达到门槛即满足；要求严格超过时填>
+    selection_origin: onset                     # 统计起点：onset从条件首次成立算起，confirmed从持续确认算起；被计算引用时必填
     minimum_duration: 2s                        # 设置条件连续成立多久才确认活动；时长阈值由业务要求决定
 calculations:                                   # 列出希望获得的统计或积分结果，每项独立选择范围和算法
   - name: energy                                # 为这项计算结果取唯一名称；结果表用它区分计算项

@@ -62,7 +62,7 @@ No explicit parameters. Returns None, not additional calculation values. Raises 
 
 ## Source locations
 
-- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line number in the Chronaxis 0.1.0.dev6 source.
-- [`src/chronaxis/batch/models.py:194`](../../../../src/chronaxis/batch/models.py#L194) — line number in the Chronaxis 0.1.0.dev6 source.
-- [`src/chronaxis/batch/models.py:200`](../../../../src/chronaxis/batch/models.py#L200) — line number in the Chronaxis 0.1.0.dev6 source.
-- [`src/chronaxis/batch/models.py:211`](../../../../src/chronaxis/batch/models.py#L211) — line number in the Chronaxis 0.1.0.dev6 source.
+- [`src/chronaxis/batch/models.py:179`](../../../../src/chronaxis/batch/models.py#L179) — line number in the Chronaxis 0.1.0 source.
+- [`src/chronaxis/batch/models.py:194`](../../../../src/chronaxis/batch/models.py#L194) — line number in the Chronaxis 0.1.0 source.
+- [`src/chronaxis/batch/models.py:200`](../../../../src/chronaxis/batch/models.py#L200) — line number in the Chronaxis 0.1.0 source.
+- [`src/chronaxis/batch/models.py:211`](../../../../src/chronaxis/batch/models.py#L211) — line number in the Chronaxis 0.1.0 source.

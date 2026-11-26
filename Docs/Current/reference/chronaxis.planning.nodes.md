@@ -21,6 +21,7 @@
 |[`expression_at`](#api-expression_at)|检查表达式声明，并将语法、类型或时钟错误关联到配置位置。|
 |[`register_id`](#api-register_id)|将一个合法节点ID登记到本计划的名称集合。|
 |[`parse_rules`](#api-parse_rules)|检查普通布尔规则或数值窗口规则，保存参数与静态依赖。|
+|[`require_selection_origin`](#api-require_selection_origin)|持续条件规则被计算按事件统计时，必须明确写出统计起点。|
 |[`parse_windows`](#api-parse_windows)|检查事件窗口锚点、前后扩展和合并参数，不改变原事件声明。|
 |[`parse_calculations`](#api-parse_calculations)|检查指标统计范围、信号、条件、单位和覆盖政策。|
 
@@ -73,7 +74,7 @@ StaticExpression。保留类型、单位和依赖，尚未读取数据或执行�
 
 PlanValidationError: 受控语法、名称、依赖、类型、单位或同步声明不合法。
 
-源码：[`src/chronaxis/planning/nodes.py:28`](../../../src/chronaxis/planning/nodes.py#L28)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/nodes.py:28`](../../../src/chronaxis/planning/nodes.py#L28)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-register_id"></a>
 ## `register_id`
@@ -106,7 +107,7 @@ PlanValidationError: ID非法或已经存在，不自动改名或覆盖。
 
 返回类型：str。
 
-源码：[`src/chronaxis/planning/nodes.py:56`](../../../src/chronaxis/planning/nodes.py#L56)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/nodes.py:56`](../../../src/chronaxis/planning/nodes.py#L56)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-parse_rules"></a>
 ## `parse_rules`
@@ -136,7 +137,40 @@ PlanValidationError: 字段、ID、kind、条件类型、初始触发或持续�
 
 返回类型：tuple[[RulePlan](chronaxis.planning.models.md#api-RulePlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:82`](../../../src/chronaxis/planning/nodes.py#L82)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/nodes.py:82`](../../../src/chronaxis/planning/nodes.py#L82)（行号对应 Chronaxis 0.1.0 源码）。
+
+<a id="api-require_selection_origin"></a>
+## `require_selection_origin`
+
+持续条件规则被计算按事件统计时，必须明确写出统计起点。
+
+onset从条件首次成立算起，confirmed从持续确认算起，同一数据可能得到相差很大的积分和时长，
+因此不提供静默默认值。只检查真正受影响的组合：被calculations的scope.rule引用的condition_duration规则；
+窗口、配对、导出和单纯列出事件的规则不受影响，仍可省略；预设生成的规则自带显式值。
+
+```python
+require_selection_origin(rules: tuple[RulePlan, ...], calculations: tuple[CalculationPlan, ...], raw_rules: tuple | list) -> None
+```
+
+### 参数
+
+|名称|数据类型|必填|省略时的值|用途、取值和效果|
+|---|---|---|---|---|
+|`rules`|tuple[[RulePlan](chronaxis.planning.models.md#api-RulePlan), ...]|是|无|位置或关键字。rules为已解析RulePlan|
+|`calculations`|tuple[[CalculationPlan](chronaxis.planning.models.md#api-CalculationPlan), ...]|是|无|位置或关键字。calculations为已解析CalculationPlan|
+|`raw_rules`|tuple &#124; list|是|无|位置或关键字。raw_rules为合入预设后的原规则节点。|
+
+### 返回说明
+
+None。
+
+### 异常说明
+
+PlanValidationError逐条收集，非汇总模式抛第一条。
+
+返回类型：None。
+
+源码：[`src/chronaxis/planning/nodes.py:187`](../../../src/chronaxis/planning/nodes.py#L187)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-parse_windows"></a>
 ## `parse_windows`
@@ -170,7 +204,7 @@ PlanValidationError: 引用、ID、锚点、扩展时间或合并参数冲突。
 
 返回类型：tuple[[WindowPlan](chronaxis.planning.models.md#api-WindowPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:187`](../../../src/chronaxis/planning/nodes.py#L187)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/nodes.py:216`](../../../src/chronaxis/planning/nodes.py#L216)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-parse_calculations"></a>
 ## `parse_calculations`
@@ -209,4 +243,4 @@ PlanValidationError: 算子、ID、引用、信号类型、条件、单位或覆
 
 返回类型：tuple[[CalculationPlan](chronaxis.planning.models.md#api-CalculationPlan), ...]。
 
-源码：[`src/chronaxis/planning/nodes.py:264`](../../../src/chronaxis/planning/nodes.py#L264)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/planning/nodes.py:293`](../../../src/chronaxis/planning/nodes.py#L293)（行号对应 Chronaxis 0.1.0 源码）。

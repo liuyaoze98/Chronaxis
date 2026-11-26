@@ -82,7 +82,7 @@ TypeError: 类型声明或字面量证明标志的类型不合法。
 
 返回类型：[SignalDType](chronaxis.core.types.md#api-SignalDType)。
 
-源码：[`src/chronaxis/core/numeric.py:46`](../../../src/chronaxis/core/numeric.py#L46)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:46`](../../../src/chronaxis/core/numeric.py#L46)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-_exact_float"></a>
 ## `_exact_float`
@@ -109,7 +109,7 @@ float值及NONE，或None及PRECISION_LOSS/NONFINITE。
 
 返回类型：tuple[float &#124; None, [QualityFlag](chronaxis.core.types.md#api-QualityFlag)]。
 
-源码：[`src/chronaxis/core/numeric.py:94`](../../../src/chronaxis/core/numeric.py#L94)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:94`](../../../src/chronaxis/core/numeric.py#L94)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-to_float_reference"></a>
 ## `to_float_reference`
@@ -140,7 +140,7 @@ TypeError/ValueError为结构或逻辑dtype。
 
 返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:120`](../../../src/chronaxis/core/numeric.py#L120)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:120`](../../../src/chronaxis/core/numeric.py#L120)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-binary_reference"></a>
 ## `binary_reference`
@@ -181,7 +181,7 @@ TypeError、ValueError: 输入模型、运算类型或枚举比较域不符合�
 
 返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:141`](../../../src/chronaxis/core/numeric.py#L141)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:141`](../../../src/chronaxis/core/numeric.py#L141)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-unary_reference"></a>
 ## `unary_reference`
@@ -213,7 +213,7 @@ TypeError/ValueError为输入或未支持逻辑/运算。
 
 返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:214`](../../../src/chronaxis/core/numeric.py#L214)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:214`](../../../src/chronaxis/core/numeric.py#L214)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-normalize_reference"></a>
 ## `normalize_reference`
@@ -254,7 +254,7 @@ TypeError: 声明、质量或原生标量结构不合法。
 
 返回类型：[ScalarValue](chronaxis.core.scalar.md#api-ScalarValue)。
 
-源码：[`src/chronaxis/core/numeric.py:243`](../../../src/chronaxis/core/numeric.py#L243)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:243`](../../../src/chronaxis/core/numeric.py#L243)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-memory_series_reference"></a>
 ## `memory_series_reference`
@@ -288,4 +288,4 @@ SignalSeries。保存正常转换值或无效原值，以及质量、时间、�
 
 返回类型：[SignalSeries](chronaxis.core.state.md#api-SignalSeries)。
 
-源码：[`src/chronaxis/core/numeric.py:354`](../../../src/chronaxis/core/numeric.py#L354)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/core/numeric.py:354`](../../../src/chronaxis/core/numeric.py#L354)（行号对应 Chronaxis 0.1.0 源码）。

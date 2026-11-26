@@ -18,11 +18,11 @@ Python 支持 3.12 和 3.13（`>=3.12,<3.14`）。推荐按下文“从 PyPI 安
 
 ## 从 PyPI 安装
 
-本手册对应 `0.1.0.dev6` 开发预览版。指定版本号安装，避免使用其他版本的配置说明：
+本手册对应 `0.1.0`，这是 0.x 阶段的首个正式版本。指定版本号安装，避免使用其他版本的配置说明：
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0.dev6"
+.\.venv\Scripts\python.exe -m pip install "chronaxis==0.1.0"
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\python.exe -m chronaxis guide
 .\.venv\Scripts\python.exe -m chronaxis manual
@@ -32,11 +32,11 @@ py -3.12 -m venv .venv
 
 ## 使用本地安装包
 
-本手册对应 0.1.0.dev6。取得同版 wheel 后，在 Windows PowerShell 中创建独立环境，并把下列 wheel 路径替换为实际文件路径。普通安装包含信号表分析、CAN 日志和 DBC 解码的运行依赖；离线安装需事先备齐依赖包。
+本手册对应 0.1.0。取得同版 wheel 后，在 Windows PowerShell 中创建独立环境，并把下列 wheel 路径替换为实际文件路径。普通安装包含信号表分析、CAN 日志和 DBC 解码的运行依赖；离线安装需事先备齐依赖包。
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0.dev6-py3-none-any.whl"
+.\.venv\Scripts\python.exe -m pip install ".\chronaxis-0.1.0-py3-none-any.whl"
 .\.venv\Scripts\python.exe -m chronaxis guide
 .\.venv\Scripts\python.exe -m chronaxis manual
 ```
@@ -47,7 +47,7 @@ wheel 同样附带 Markdown 用户手册和 AI 指南。直接打开命令显示
 
 ## 从同版源码安装
 
-取得 0.1.0.dev6 源码后，在包含 `pyproject.toml` 的仓库根目录执行以下 Windows PowerShell 命令。显式调用虚拟环境中的 Python，无需修改脚本执行策略或依赖终端激活状态。
+取得 0.1.0 源码后，在包含 `pyproject.toml` 的仓库根目录执行以下 Windows PowerShell 命令。显式调用虚拟环境中的 Python，无需修改脚本执行策略或依赖终端激活状态。
 
 ```powershell
 py -3.12 -m venv .venv
@@ -115,7 +115,7 @@ first-result可以复用，每次结果使用时间文件名。然后按[BLF／A
 | 找不到py或示例中的Python3.12 | 先安装Python 3.12或3.13；使用3.13时将示例改为py -3.13，或填写对应解释器的完整路径。 |
 | pip无法取得依赖 | 检查软件源/网络，或准备pyproject.toml规定版本的本地安装包；不要把下载失败当作项目已安装。 |
 | No module named chronaxis | 当前使用的 Python 不是安装 Chronaxis 的那个。改用虚拟环境里的 `.\.venv\Scripts\python.exe`，或按[上文](#run-without-activation)的写法运行；源码可编辑安装时，还要确认源码目录没有被移动。 |
-| `dependency_missing`／缺少 CAN 读取或解码依赖 | 在运行分析的同一个 Python 环境里重新安装：PyPI 安装的执行 `pip install "chronaxis==0.1.0.dev6"`，本地 wheel 安装的重新安装该 wheel，源码安装的执行 `pip install -e "."`。这是环境缺项，无需修改信号、通道或DBC。 |
+| `dependency_missing`／缺少 CAN 读取或解码依赖 | 在运行分析的同一个 Python 环境里重新安装：PyPI 安装的执行 `pip install "chronaxis==0.1.0"`，本地 wheel 安装的重新安装该 wheel，源码安装的执行 `pip install -e "."`。这是环境缺项，无需修改信号、通道或DBC。 |
 | 命令能校验但不能发布结果 | 查看原异常链和平台限制；静态校验不执行发布。 |
 
 完整错误处理见[故障排查](troubleshooting.md)。源码安装以仓库pyproject.toml为依赖和版本依据；使用wheel时以该安装包的元数据为准。

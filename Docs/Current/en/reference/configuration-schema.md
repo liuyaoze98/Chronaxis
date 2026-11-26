@@ -8627,8 +8627,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     "onset",
     "confirmed"
   ],
-  "description": "Start of statistics for a duration-qualified event. Options: \"onset\", when the condition first becomes true; \"confirmed\", when the duration requirement is confirmed.",
-  "default": "onset"
+  "description": "Start of statistics for a duration-qualified event. Options: \"onset\", when the condition first becomes true; \"confirmed\", when the duration requirement is confirmed. Required when a calculation's scope.rule references the rule, because the two choices give different results; may be omitted when the rule is not referenced."
 }
 ```
 
@@ -8664,7 +8663,7 @@ Start with the [configuration guide](../configuration.md). The paths below locat
     ">=",
     ">"
   ],
-  "description": "Required comparison between the continuous duration and minimum_duration: >= includes the threshold; > requires strictly longer. Exactly 60 seconds satisfies only >=. The activity start is unchanged; selection_origin still defaults to onset."
+  "description": "Required comparison between the continuous duration and minimum_duration: >= includes the threshold; > requires strictly longer. Exactly 60 seconds satisfies only >=. The activity start is unchanged, and the selection_origin choice is not affected."
 }
 ```
 

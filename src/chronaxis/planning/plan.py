@@ -53,7 +53,7 @@ from .lookups import parse_lookups
 from .models import DatasetPlan, DerivedPlan, ExecutionPlan, MessageCalculationPlan, CalculationPlan, OutputPlan, RulePlan, SignalPlan, SourcePlan, WindowPlan
 from .message_calculations import parse_message_calculations
 from .legacy_execution import require_can_decode_scope
-from .nodes import expression_at, parse_calculations, parse_rules, parse_windows
+from .nodes import expression_at, parse_calculations, parse_rules, parse_windows, require_selection_origin
 from .preset_models import PresetSpec, RoleBinding
 from .sequences import SequencePlan, parse_sequences
 from .intervals import IntervalPlan, DiagnosticPlan
@@ -349,6 +349,10 @@ class AnalysisPlan:
                 metadata = metadata_at(root.get('metadata', {}), '$.metadata')
                 if 'device_label' in metadata:
                     text_at(metadata['device_label'], '$.metadata.device_label')
+        # 统计起点改变事件计算的结果，引用关系要等全部节点解析完才能确定。
+        with collection.stage('$.rules', requires=True, check=False) as ready:
+            if ready:
+                require_selection_origin(rules, calculations, root.get('rules', ()))
         # 在构造完整计划前拒绝任何结构/依赖错误，不输出部分可执行对象。
         collection.finish()
         from dataclasses import replace

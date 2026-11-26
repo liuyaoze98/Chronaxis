@@ -75,7 +75,7 @@ class RecordIntegralResult
 |`quality`|[QualityFlag（源码别名Q）](chronaxis.core.types.md#api-QualityFlag)|是|无|输入和数值计算质量，不包含逐条副本。|
 |`coverage_status`|str &#124; None|否|None|对明确配置的覆盖门槛给出的结论；独立于数值本身的complete/partial/indeterminate状态。|
 
-源码：[`src/chronaxis/execution/record_integral.py:33`](../../../src/chronaxis/execution/record_integral.py#L33)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:33`](../../../src/chronaxis/execution/record_integral.py#L33)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-record_integral_cost"></a>
 ## `record_integral_cost`
@@ -103,7 +103,7 @@ int，保守预约的字节数；不创建累计器、不读取输入。
 
 批上限或误差项容量不合法时ValueError；静态元数据原错误继续传播。
 
-源码：[`src/chronaxis/execution/record_integral.py:44`](../../../src/chronaxis/execution/record_integral.py#L44)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:44`](../../../src/chronaxis/execution/record_integral.py#L44)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral"></a>
 ## `RecordIntegral`
@@ -120,7 +120,7 @@ RecordIntegral(budget, spec, input_unit, dtype, step_ns, *, backend='numpy', bat
 继承关系：[RecordPointBuffer](chronaxis.execution.record_point_buffer.md#api-RecordPointBuffer)。下表列本类声明的字段；基类字段及其约束见对应类型链接。
 
 
-源码：[`src/chronaxis/execution/record_integral.py:58`](../../../src/chronaxis/execution/record_integral.py#L58)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:58`](../../../src/chronaxis/execution/record_integral.py#L58)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-__init__"></a>
 ### `RecordIntegral.__init__`
@@ -154,7 +154,7 @@ RecordIntegral.__init__(budget, spec, input_unit, dtype, step_ns, *, backend='nu
 配置/预算/取消错误；构造清理失败通过异常的
     record_integral_cleanup_owner提供重试入口。
 
-源码：[`src/chronaxis/execution/record_integral.py:65`](../../../src/chronaxis/execution/record_integral.py#L65)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:65`](../../../src/chronaxis/execution/record_integral.py#L65)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-_flush"></a>
 ### `RecordIntegral._flush`
@@ -181,7 +181,7 @@ None。
 数值结构/预算/取消；
     清理异常不覆盖原错误，临时申请保留在owner供close重试。
 
-源码：[`src/chronaxis/execution/record_integral.py:114`](../../../src/chronaxis/execution/record_integral.py#L114)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:114`](../../../src/chronaxis/execution/record_integral.py#L114)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-_accept_terms"></a>
 ### `RecordIntegral._accept_terms`
@@ -212,7 +212,7 @@ None。
 原误差求和的TypeError、ValueError及IntegralStateLimitError继续传播；
     数值前缀溢出保存在累计失败状态中，由finish返回失败结果。
 
-源码：[`src/chronaxis/execution/record_integral.py:164`](../../../src/chronaxis/execution/record_integral.py#L164)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:164`](../../../src/chronaxis/execution/record_integral.py#L164)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-consume_terms"></a>
 ### `RecordIntegral.consume_terms`
@@ -246,7 +246,7 @@ None。
 调用方负责跨块时间连续性；禁止与点输入或条件路径混用。step_ns必须与本积分器
 构造时的间隔相同，避免面积按一种间隔计算、却按另一种间隔解释。
 
-源码：[`src/chronaxis/execution/record_integral.py:183`](../../../src/chronaxis/execution/record_integral.py#L183)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:183`](../../../src/chronaxis/execution/record_integral.py#L183)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-finish"></a>
 ### `RecordIntegral.finish`
@@ -273,7 +273,7 @@ RecordIntegralResult，
 
 预算/数值结构/取消错误，不发布前缀。
 
-源码：[`src/chronaxis/execution/record_integral.py:214`](../../../src/chronaxis/execution/record_integral.py#L214)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:214`](../../../src/chronaxis/execution/record_integral.py#L214)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-closed"></a>
 ### `RecordIntegral.closed`
@@ -301,7 +301,7 @@ bool。
 
 无。
 
-源码：[`src/chronaxis/execution/record_integral.py:243`](../../../src/chronaxis/execution/record_integral.py#L243)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:243`](../../../src/chronaxis/execution/record_integral.py#L243)（行号对应 Chronaxis 0.1.0 源码）。
 
 <a id="api-RecordIntegral-close"></a>
 ### `RecordIntegral.close`
@@ -327,4 +327,4 @@ None；重复关闭安全。
 
 预算释放失败可重试，不假报已关闭。
 
-源码：[`src/chronaxis/execution/record_integral.py:247`](../../../src/chronaxis/execution/record_integral.py#L247)（行号对应 Chronaxis 0.1.0.dev6 源码）。
+源码：[`src/chronaxis/execution/record_integral.py:247`](../../../src/chronaxis/execution/record_integral.py#L247)（行号对应 Chronaxis 0.1.0 源码）。
